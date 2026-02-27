@@ -33,6 +33,10 @@ All packages are published to GitHub Packages (`npm.pkg.github.com`) under the `
 Each package has its own scripts. The most common patterns:
 
 ```bash
+# Org-wide health check (PRs, CI, issues, worktrees, dep drift)
+make health
+# or: bash .github/scripts/org-health.sh
+
 # Most packages (Node.js / MCP servers)
 npm run build         # Build TypeScript
 npm test              # Run tests (Vitest)
