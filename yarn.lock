@@ -19,15 +19,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/anthropic@npm:3.0.48":
-  version: 3.0.48
-  resolution: "@ai-sdk/anthropic@npm:3.0.48"
+"@ai-sdk/anthropic@npm:3.0.50":
+  version: 3.0.50
+  resolution: "@ai-sdk/anthropic@npm:3.0.50"
   dependencies:
     "@ai-sdk/provider": "npm:3.0.8"
-    "@ai-sdk/provider-utils": "npm:4.0.15"
+    "@ai-sdk/provider-utils": "npm:4.0.16"
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/c06365a732da3bd2a27765630dd410420f83390f51783068533c9509026d0de9aafd7c746120c27bce4b946fb3cf4f3c54b96c44e9e44a8a465ecd830fd68246
+  checksum: 10c0/1cacfe756e6d7d32da02d0a92bc19d55739e81971ef9635ec99e7a9ba9e1c7e057c43457cbf3e7f1dc59f91f7f473b508766331273db08a0859bd131a704bdc1
   languageName: node
   linkType: hard
 
@@ -44,7 +44,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/google@npm:^3.0.33":
+"@ai-sdk/google@npm:^3.0.34":
   version: 3.0.34
   resolution: "@ai-sdk/google@npm:3.0.34"
   dependencies:
@@ -98,19 +98,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ampproject/remapping@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@ampproject/remapping@npm:2.3.0"
-  dependencies:
-    "@jridgewell/gen-mapping": "npm:^0.3.5"
-    "@jridgewell/trace-mapping": "npm:^0.3.24"
-  checksum: 10c0/81d63cca5443e0f0c72ae18b544cc28c7c0ec2cea46e7cb888bb0e0f411a1191d0d6b7af798d54e30777d8d1488b2ec0732aac2be342d3d7d3ffd271c6f489ed
-  languageName: node
-  linkType: hard
-
-"@anthropic-ai/claude-agent-sdk@npm:0.2.62":
-  version: 0.2.62
-  resolution: "@anthropic-ai/claude-agent-sdk@npm:0.2.62"
+"@anthropic-ai/claude-agent-sdk@npm:0.2.63":
+  version: 0.2.63
+  resolution: "@anthropic-ai/claude-agent-sdk@npm:0.2.63"
   dependencies:
     "@img/sharp-darwin-arm64": "npm:^0.34.2"
     "@img/sharp-darwin-x64": "npm:^0.34.2"
@@ -142,7 +132,7 @@ __metadata:
       optional: true
     "@img/sharp-win32-x64":
       optional: true
-  checksum: 10c0/9ae646f03ecefc41fc9370e732f727e5a03ea83c8f538c2af7075e478900f802e11fb9de551d07c89f920c35d7307a563f77686c8eed3bc5e9331bbb4b447683
+  checksum: 10c0/428fcf8ba7f270da5c0f3d3c5b27ad55fbd78e96ad2b9315552faa10d585347638f5216b848c97fbf405f69e24923d8e9a7fbf73175da6e4416d61eaf12f241f
   languageName: node
   linkType: hard
 
@@ -336,7 +326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ec2@npm:^3.999.0":
+"@aws-sdk/client-ec2@npm:^3.1000.0":
   version: 3.1000.0
   resolution: "@aws-sdk/client-ec2@npm:3.1000.0"
   dependencies:
@@ -385,9 +375,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/client-s3@npm:3.999.0"
+"@aws-sdk/client-s3@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/client-s3@npm:3.1000.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -444,7 +434,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.1"
     "@smithy/util-waiter": "npm:^4.2.10"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/0fef9a458bc596556b1f5ecb49425cbb637c8f575bb21b0fd790c486d1b6e219870d80b8ffe4e675559480fe7c3adc51e785c45329507f5042293811a4e3db3d
+  checksum: 10c0/8bf83de442fa7a58b2ee5eaf1aa9739143e112b8dbe1714ea57ab308e1c9ee89f38aec57e39599f6f840368fe3c44792298b53a8189a0017428690940070a256
   languageName: node
   linkType: hard
 
@@ -613,9 +603,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/lib-storage@npm:3.999.0"
+"@aws-sdk/lib-storage@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/lib-storage@npm:3.1000.0"
   dependencies:
     "@smithy/abort-controller": "npm:^4.2.10"
     "@smithy/middleware-endpoint": "npm:^4.4.20"
@@ -625,8 +615,8 @@ __metadata:
     stream-browserify: "npm:3.0.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@aws-sdk/client-s3": ^3.999.0
-  checksum: 10c0/b97375b0e9362891f8424c6ebf92c93926d7b3a61bf7362dd849d77539218eae226c3af92fccb29f3d95dd3524cbc0a87756030d8fb2f622cedf98331818a8ff
+    "@aws-sdk/client-s3": ^3.1000.0
+  checksum: 10c0/2dfcfc111c49615a767e157348a3b6bf9548df330ce1dbf16677bbd43bd5fa8b3a10ee85b9ac34f3860efcfefc443d17fdd18ee19fcbee2e9053cdf90b295555
   languageName: node
   linkType: hard
 
@@ -849,9 +839,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.999.0"
+"@aws-sdk/s3-request-presigner@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.1000.0"
   dependencies:
     "@aws-sdk/signature-v4-multi-region": "npm:^3.996.3"
     "@aws-sdk/types": "npm:^3.973.4"
@@ -861,7 +851,7 @@ __metadata:
     "@smithy/smithy-client": "npm:^4.12.0"
     "@smithy/types": "npm:^4.13.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/ebced3afef98a34bcd92312fd1a2b6cc381f7106910f1ff154fd29c867fcb74cb404ef489749fae6b3262b00f747008adb0441d3741e238d9c2a0832ae692065
+  checksum: 10c0/25a5f79951aa46178805a0c8df57edf7dc14ac305e3ae64b19adb48f94002c92f8ce782d1baa1e1a68dc5f1344ec00af68569bd89742ea300511381996c94036
   languageName: node
   linkType: hard
 
@@ -1139,7 +1129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.23.6, @babel/parser@npm:^7.24.4, @babel/parser@npm:^7.25.4, @babel/parser@npm:^7.26.7, @babel/parser@npm:^7.28.5, @babel/parser@npm:^7.28.6, @babel/parser@npm:^7.29.0":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.23.6, @babel/parser@npm:^7.24.4, @babel/parser@npm:^7.26.7, @babel/parser@npm:^7.28.5, @babel/parser@npm:^7.28.6, @babel/parser@npm:^7.29.0":
   version: 7.29.0
   resolution: "@babel/parser@npm:7.29.0"
   dependencies:
@@ -1227,7 +1217,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.0.0, @babel/types@npm:^7.20.7, @babel/types@npm:^7.23.6, @babel/types@npm:^7.25.4, @babel/types@npm:^7.28.2, @babel/types@npm:^7.28.5, @babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0, @babel/types@npm:^7.8.3":
+"@babel/types@npm:^7.0.0, @babel/types@npm:^7.20.7, @babel/types@npm:^7.23.6, @babel/types@npm:^7.28.2, @babel/types@npm:^7.28.5, @babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0, @babel/types@npm:^7.8.3":
   version: 7.29.0
   resolution: "@babel/types@npm:7.29.0"
   dependencies:
@@ -1299,7 +1289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/cli@npm:^2.29.4":
+"@changesets/cli@npm:^2.29.8":
   version: 2.29.8
   resolution: "@changesets/cli@npm:2.29.8"
   dependencies:
@@ -3286,13 +3276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@istanbuljs/schema@npm:^0.1.2":
-  version: 0.1.3
-  resolution: "@istanbuljs/schema@npm:0.1.3"
-  checksum: 10c0/61c5286771676c9ca3eb2bd8a7310a9c063fb6e0e9712225c8471c582d157392c88f5353581c8c9adbe0dff98892317d2fdfc56c3499aa42e0194405206a963a
-  languageName: node
-  linkType: hard
-
 "@jridgewell/gen-mapping@npm:^0.3.12, @jridgewell/gen-mapping@npm:^0.3.2, @jridgewell/gen-mapping@npm:^0.3.5":
   version: 0.3.13
   resolution: "@jridgewell/gen-mapping@npm:0.3.13"
@@ -3347,7 +3330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/trace-mapping@npm:^0.3.23, @jridgewell/trace-mapping@npm:^0.3.24, @jridgewell/trace-mapping@npm:^0.3.25, @jridgewell/trace-mapping@npm:^0.3.28, @jridgewell/trace-mapping@npm:^0.3.31":
+"@jridgewell/trace-mapping@npm:^0.3.24, @jridgewell/trace-mapping@npm:^0.3.25, @jridgewell/trace-mapping@npm:^0.3.28, @jridgewell/trace-mapping@npm:^0.3.31":
   version: 0.3.31
   resolution: "@jridgewell/trace-mapping@npm:0.3.31"
   dependencies:
@@ -4027,29 +4010,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/adapter-pg@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/adapter-pg@npm:7.4.1"
+"@prisma/adapter-pg@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/adapter-pg@npm:7.4.2"
   dependencies:
-    "@prisma/driver-adapter-utils": "npm:7.4.1"
+    "@prisma/driver-adapter-utils": "npm:7.4.2"
     pg: "npm:^8.16.3"
     postgres-array: "npm:3.0.4"
-  checksum: 10c0/77aead62e8b42e2b2be21ffdd29b2363e415f2fe62c8204143a7ce85f8740e512565c0792b5a995964e43ae73cc82d9e4b38b2e917168407ebe723ee113848b6
+  checksum: 10c0/6f4b8ad2b701d2735c3c4ce5dd99647313529287d643d509615a63300e1721b9f4f5e3354ad142e3a57197db7a80d89817720a9198435bbff961ac2e6456febc
   languageName: node
   linkType: hard
 
-"@prisma/client-runtime-utils@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/client-runtime-utils@npm:7.4.1"
-  checksum: 10c0/59ca9754427a749a2fc83568d2c03e015cd81150e36b0a5dc985791753ea6dcb0763632f204e00abd6ec79921690c8358b010dada98e936713a24d4b2d5a5a29
+"@prisma/client-runtime-utils@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/client-runtime-utils@npm:7.4.2"
+  checksum: 10c0/d53184cb57d0782a0a5db8f48ba259c22c0ddb0801af657b060d0fc6cf8830699259b1f1909b2789ecdc10025faad7f82bdff61e75cd29022c810b715019cad3
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/client@npm:7.4.1"
+"@prisma/client@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/client@npm:7.4.2"
   dependencies:
-    "@prisma/client-runtime-utils": "npm:7.4.1"
+    "@prisma/client-runtime-utils": "npm:7.4.2"
   peerDependencies:
     prisma: "*"
     typescript: ">=5.4.0"
@@ -4058,7 +4041,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/91c90050d16ce6dd74cc42f7331ddc2791ade78a6c8dbb091a4a90f6fe079deb3ef9252777a64a2ff288842c5526ff1d67f6e8fe580e55e7f8a801a9163e8ed4
+  checksum: 10c0/b33ea3c7256fa1b46adeec2b5d75384735702ed94df23c86cf1dcd86420a88e3e3129a186de8542d442cf022fa17e38dd2c1b583687db381b5bc14bb041c5068
   languageName: node
   linkType: hard
 
@@ -4127,12 +4110,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/driver-adapter-utils@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/driver-adapter-utils@npm:7.4.1"
+"@prisma/driver-adapter-utils@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/driver-adapter-utils@npm:7.4.2"
   dependencies:
-    "@prisma/debug": "npm:7.4.1"
-  checksum: 10c0/764ad43aece75f5461129ccb35bc2f9cf496a112e0355990ec299840141a6f1783177890b5b0f582764744c934266c939111001a93c13583237797ef5e1d63b9
+    "@prisma/debug": "npm:7.4.2"
+  checksum: 10c0/a88bb7d100131ab47892e45f7e8e92fd3a7a87859298e8e77e4326b6e43d910785d14a1b923f6a723d18c6847708ac53483fe52a92266076c297fd792b6f7297
   languageName: node
   linkType: hard
 
@@ -7303,7 +7286,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/code@workspace:code"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@dmsnell/diff-match-patch": "npm:1.1.0"
     "@emotion/cache": "npm:11.14.0"
     "@emotion/react": "npm:11.14.0"
@@ -7322,8 +7305,8 @@ __metadata:
     "@tailwindcss/browser": "npm:4.2.1"
     "@tailwindcss/postcss": "npm:4.2.1"
     "@tailwindcss/vite": "npm:4.2.1"
-    "@tanstack/react-router": "npm:1.163.2"
-    "@tanstack/router-plugin": "npm:1.163.2"
+    "@tanstack/react-router": "npm:1.163.3"
+    "@tanstack/router-plugin": "npm:1.163.3"
     "@testing-library/dom": "npm:10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
     "@testing-library/react": "npm:16.3.2"
@@ -7405,7 +7388,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/esbuild-wasm-mcp@workspace:esbuild-wasm-mcp"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@spike-land-ai/esbuild-wasm": "npm:0.27.4"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
@@ -7424,7 +7407,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/esbuild-wasm@workspace:esbuild-wasm"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
   languageName: unknown
   linkType: soft
@@ -7449,7 +7432,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/hackernews-mcp@workspace:hackernews-mcp"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
@@ -7469,7 +7452,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/mcp-nanobanana@workspace:mcp-nanobanana"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
@@ -7489,7 +7472,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/openclaw-mcp@workspace:openclaw-mcp"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
@@ -7509,7 +7492,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/react-ts-worker@workspace:react-ts-worker"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
     eslint: "npm:^9.27.0"
@@ -7524,7 +7507,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/shared@workspace:shared"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
     "@vitest/coverage-v8": "npm:4.0.18"
@@ -7540,7 +7523,7 @@ __metadata:
   resolution: "@spike-land-ai/spike-cli@workspace:spike-cli"
   dependencies:
     "@anthropic-ai/sdk": "npm:^0.78.0"
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
@@ -7564,8 +7547,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/spike-land-backend@workspace:spike-land-backend"
   dependencies:
-    "@ai-sdk/anthropic": "npm:3.0.48"
-    "@ai-sdk/google": "npm:^3.0.33"
+    "@ai-sdk/anthropic": "npm:3.0.50"
+    "@ai-sdk/google": "npm:^3.0.34"
     "@cloudflare/vitest-pool-workers": "npm:0.12.18"
     "@cloudflare/workers-types": "npm:4.20260305.0"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
@@ -7573,7 +7556,7 @@ __metadata:
     "@spike-land-ai/esbuild-wasm": "workspace:*"
     "@spike-land-ai/esbuild-wasm-mcp": "workspace:*"
     "@types/node": "npm:25.3.2"
-    "@vitest/coverage-v8": "npm:3.2.4"
+    "@vitest/coverage-v8": "npm:4.0.18"
     ai: "npm:6.0.103"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -7593,7 +7576,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/spike-review@workspace:spike-review"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@octokit/rest": "npm:^22.0.1"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
@@ -7626,7 +7609,7 @@ __metadata:
     "@cloudflare/workers-types": "npm:4.20260305.0"
     "@spike-land-ai/code": "workspace:*"
     "@spike-land-ai/esbuild-wasm": "workspace:*"
-    "@vitest/coverage-v8": "npm:3.2.4"
+    "@vitest/coverage-v8": "npm:4.0.18"
     rimraf: "npm:6.1.3"
     typescript: "npm:5.9.3"
     vitest: "npm:3.2.4"
@@ -7644,7 +7627,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/vibe-dev@workspace:vibe-dev"
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@spike-land-ai/eslint-config": "npm:^2.0.1"
     "@spike-land-ai/tsconfig": "npm:^2.0.0"
     "@types/node": "npm:25.3.2"
@@ -7691,8 +7674,8 @@ __metadata:
   dependencies:
     "@hono/node-server": "npm:^1.19.9"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@prisma/adapter-pg": "npm:7.4.1"
-    "@prisma/client": "npm:7.4.1"
+    "@prisma/adapter-pg": "npm:7.4.2"
+    "@prisma/client": "npm:7.4.2"
     "@types/node": "npm:25.3.2"
     "@upstash/redis": "npm:1.36.3"
     bcryptjs: "npm:3.0.3"
@@ -8104,20 +8087,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:1.163.2":
-  version: 1.163.2
-  resolution: "@tanstack/react-router@npm:1.163.2"
+"@tanstack/react-router@npm:1.163.3":
+  version: 1.163.3
+  resolution: "@tanstack/react-router@npm:1.163.3"
   dependencies:
     "@tanstack/history": "npm:1.161.4"
     "@tanstack/react-store": "npm:^0.9.1"
-    "@tanstack/router-core": "npm:1.163.2"
+    "@tanstack/router-core": "npm:1.163.3"
     isbot: "npm:^5.1.22"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
   peerDependencies:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: 10c0/cce2193af1ffad8a1cd21bd9625b582b8a255f9f5ada7078a32446b7cccb6f9d0ecf311e098d00f02a5185331b6bab945c5167d8906d545812728112b35f894d
+  checksum: 10c0/9e7fb8feccfeafaa18dbbbc568d41e0bce27c56cb0f0599eabf2767ba472ac8387d51ff13c71fcb38d334c2f920e1ef8f2568310293a01a56259ade3c4622317
   languageName: node
   linkType: hard
 
@@ -8134,9 +8117,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-core@npm:1.163.2":
-  version: 1.163.2
-  resolution: "@tanstack/router-core@npm:1.163.2"
+"@tanstack/router-core@npm:1.163.3":
+  version: 1.163.3
+  resolution: "@tanstack/router-core@npm:1.163.3"
   dependencies:
     "@tanstack/history": "npm:1.161.4"
     "@tanstack/store": "npm:^0.9.1"
@@ -8145,15 +8128,15 @@ __metadata:
     seroval-plugins: "npm:^1.4.2"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
-  checksum: 10c0/f3893a0e1acc1d232313bd242f88be6d715b109d5d629163c6c72ce57b839a587cf6f40063b1a4f4d462baa678cbf70cca2292806664f38a0941a6974a56cb2c
+  checksum: 10c0/d132dc2f7b645a8a74c7833df61922c8fa779967a9d97834deace619af21b65014f7f3c34964726981f81bd8c99d1fe5e3cbde9b5b652592fc721cb84111250a
   languageName: node
   linkType: hard
 
-"@tanstack/router-generator@npm:1.163.2":
-  version: 1.163.2
-  resolution: "@tanstack/router-generator@npm:1.163.2"
+"@tanstack/router-generator@npm:1.163.3":
+  version: 1.163.3
+  resolution: "@tanstack/router-generator@npm:1.163.3"
   dependencies:
-    "@tanstack/router-core": "npm:1.163.2"
+    "@tanstack/router-core": "npm:1.163.3"
     "@tanstack/router-utils": "npm:1.161.4"
     "@tanstack/virtual-file-routes": "npm:1.161.4"
     prettier: "npm:^3.5.0"
@@ -8161,13 +8144,13 @@ __metadata:
     source-map: "npm:^0.7.4"
     tsx: "npm:^4.19.2"
     zod: "npm:^3.24.2"
-  checksum: 10c0/c83da9be1710408dd3b7d01161ddcd3da945048254bf1ae9a300a978710534863c092211a2bc82d7c8799f4464320b065b5756da20416b41f0485b0f53c7cb1c
+  checksum: 10c0/5a76bb50fa791975ff67ef6a3c3cd317c58216a42069b0897531d45d840c5009cceaa87ff97a06be7301a918eed9bbdef9efce83c42124ba9a4c7293e9a87068
   languageName: node
   linkType: hard
 
-"@tanstack/router-plugin@npm:1.163.2":
-  version: 1.163.2
-  resolution: "@tanstack/router-plugin@npm:1.163.2"
+"@tanstack/router-plugin@npm:1.163.3":
+  version: 1.163.3
+  resolution: "@tanstack/router-plugin@npm:1.163.3"
   dependencies:
     "@babel/core": "npm:^7.28.5"
     "@babel/plugin-syntax-jsx": "npm:^7.27.1"
@@ -8175,8 +8158,8 @@ __metadata:
     "@babel/template": "npm:^7.27.2"
     "@babel/traverse": "npm:^7.28.5"
     "@babel/types": "npm:^7.28.5"
-    "@tanstack/router-core": "npm:1.163.2"
-    "@tanstack/router-generator": "npm:1.163.2"
+    "@tanstack/router-core": "npm:1.163.3"
+    "@tanstack/router-generator": "npm:1.163.3"
     "@tanstack/router-utils": "npm:1.161.4"
     "@tanstack/virtual-file-routes": "npm:1.161.4"
     chokidar: "npm:^3.6.0"
@@ -8184,7 +8167,7 @@ __metadata:
     zod: "npm:^3.24.2"
   peerDependencies:
     "@rsbuild/core": ">=1.0.2"
-    "@tanstack/react-router": ^1.163.2
+    "@tanstack/react-router": ^1.163.3
     vite: ">=5.0.0 || >=6.0.0 || >=7.0.0"
     vite-plugin-solid: ^2.11.10
     webpack: ">=5.92.0"
@@ -8199,7 +8182,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10c0/d1019658001d8287046a2dd0e80f5a85f79f483654dc5bcadf461b638bf703bd7149bc270e26d36027f0d0f35ed248ff7fc63a3059ea83389fbd5fc06c5c2aff
+  checksum: 10c0/1b12edfecf83292189daddb4563ae0400d651508041eed494a6434ad5485ae7ff6890d7f4f93d16351dc4b5ff422c96dcdde0cf04befd312c0467c5e1d3f18a5
   languageName: node
   linkType: hard
 
@@ -9195,33 +9178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:3.2.4":
-  version: 3.2.4
-  resolution: "@vitest/coverage-v8@npm:3.2.4"
-  dependencies:
-    "@ampproject/remapping": "npm:^2.3.0"
-    "@bcoe/v8-coverage": "npm:^1.0.2"
-    ast-v8-to-istanbul: "npm:^0.3.3"
-    debug: "npm:^4.4.1"
-    istanbul-lib-coverage: "npm:^3.2.2"
-    istanbul-lib-report: "npm:^3.0.1"
-    istanbul-lib-source-maps: "npm:^5.0.6"
-    istanbul-reports: "npm:^3.1.7"
-    magic-string: "npm:^0.30.17"
-    magicast: "npm:^0.3.5"
-    std-env: "npm:^3.9.0"
-    test-exclude: "npm:^7.0.1"
-    tinyrainbow: "npm:^2.0.0"
-  peerDependencies:
-    "@vitest/browser": 3.2.4
-    vitest: 3.2.4
-  peerDependenciesMeta:
-    "@vitest/browser":
-      optional: true
-  checksum: 10c0/cae3e58d81d56e7e1cdecd7b5baab7edd0ad9dee8dec9353c52796e390e452377d3f04174d40b6986b17c73241a5e773e422931eaa8102dcba0605ff24b25193
-  languageName: node
-  linkType: hard
-
 "@vitest/coverage-v8@npm:4.0.18, @vitest/coverage-v8@npm:^4.0.18":
   version: 4.0.18
   resolution: "@vitest/coverage-v8@npm:4.0.18"
@@ -10050,7 +10006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ast-v8-to-istanbul@npm:^0.3.10, ast-v8-to-istanbul@npm:^0.3.3":
+"ast-v8-to-istanbul@npm:^0.3.10":
   version: 0.3.12
   resolution: "ast-v8-to-istanbul@npm:0.3.12"
   dependencies:
@@ -12576,7 +12532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:7.0.1":
+"eslint-plugin-react-hooks@npm:7.0.1, eslint-plugin-react-hooks@npm:^7.0.1":
   version: 7.0.1
   resolution: "eslint-plugin-react-hooks@npm:7.0.1"
   dependencies:
@@ -12588,15 +12544,6 @@ __metadata:
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
   checksum: 10c0/1e711d1a9d1fa9cfc51fa1572500656577201199c70c795c6a27adfc1df39e5c598f69aab6aa91117753d23cc1f11388579a2bed14921cf9a4efe60ae8618496
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-react-hooks@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "eslint-plugin-react-hooks@npm:5.2.0"
-  peerDependencies:
-    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
-  checksum: 10c0/1c8d50fa5984c6dea32470651807d2922cc3934cf3425e78f84a24c2dfd972e7f019bee84aefb27e0cf2c13fea0ac1d4473267727408feeb1c56333ca1489385
   languageName: node
   linkType: hard
 
@@ -13804,7 +13751,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.3.7, glob@npm:^10.4.1":
+"glob@npm:^10.3.7":
   version: 10.5.0
   resolution: "glob@npm:10.5.0"
   dependencies:
@@ -15061,18 +15008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-source-maps@npm:^5.0.6":
-  version: 5.0.6
-  resolution: "istanbul-lib-source-maps@npm:5.0.6"
-  dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.23"
-    debug: "npm:^4.1.1"
-    istanbul-lib-coverage: "npm:^3.0.0"
-  checksum: 10c0/ffe75d70b303a3621ee4671554f306e0831b16f39ab7f4ab52e54d356a5d33e534d97563e318f1333a6aae1d42f91ec49c76b6cd3f3fb378addcb5c81da0255f
-  languageName: node
-  linkType: hard
-
-"istanbul-reports@npm:^3.1.7, istanbul-reports@npm:^3.2.0":
+"istanbul-reports@npm:^3.2.0":
   version: 3.2.0
   resolution: "istanbul-reports@npm:3.2.0"
   dependencies:
@@ -15910,17 +15846,6 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.5.5"
   checksum: 10c0/299378e38f9a270069fc62358522ddfb44e94244baa0d6a8980ab2a9b2490a1d03b236b447eee309e17eb3bddfa482c61259d47960eb018a904f0ded52780c4a
-  languageName: node
-  linkType: hard
-
-"magicast@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "magicast@npm:0.3.5"
-  dependencies:
-    "@babel/parser": "npm:^7.25.4"
-    "@babel/types": "npm:^7.25.4"
-    source-map-js: "npm:^1.2.0"
-  checksum: 10c0/a6cacc0a848af84f03e3f5bda7b0de75e4d0aa9ddce5517fd23ed0f31b5ddd51b2d0ff0b7e09b51f7de0f4053c7a1107117edda6b0732dca3e9e39e6c5a68c64
   languageName: node
   linkType: hard
 
@@ -20781,7 +20706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.0.1, source-map-js@npm:^1.0.2, source-map-js@npm:^1.2.0, source-map-js@npm:^1.2.1":
+"source-map-js@npm:^1.0.1, source-map-js@npm:^1.0.2, source-map-js@npm:^1.2.1":
   version: 1.2.1
   resolution: "source-map-js@npm:1.2.1"
   checksum: 10c0/7bda1fc4c197e3c6ff17de1b8b2c20e60af81b63a52cb32ec5a5d67a20a7d42651e2cb34ebe93833c5a2a084377e17455854fee3e21e7925c64a51b6a52b0faf
@@ -20863,12 +20788,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "spike-land-ai@workspace:."
   dependencies:
-    "@changesets/cli": "npm:^2.29.4"
+    "@changesets/cli": "npm:^2.29.8"
     "@types/node": "npm:^25.3.2"
     "@vitest/coverage-v8": "npm:^4.0.18"
     eslint: "npm:^10.0.2"
     eslint-plugin-react: "npm:^7.37.5"
-    eslint-plugin-react-hooks: "npm:^5.2.0"
+    eslint-plugin-react-hooks: "npm:^7.0.1"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:^8.35.1"
     vitest: "npm:^4.0.18"
@@ -20879,13 +20804,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "spike-land@workspace:packages/spike.land"
   dependencies:
-    "@anthropic-ai/claude-agent-sdk": "npm:0.2.62"
+    "@anthropic-ai/claude-agent-sdk": "npm:0.2.63"
     "@anthropic-ai/sdk": "npm:0.78.0"
     "@auth/prisma-adapter": "npm:^2.11.1"
-    "@aws-sdk/client-ec2": "npm:^3.999.0"
-    "@aws-sdk/client-s3": "npm:3.999.0"
-    "@aws-sdk/lib-storage": "npm:3.999.0"
-    "@aws-sdk/s3-request-presigner": "npm:3.999.0"
+    "@aws-sdk/client-ec2": "npm:^3.1000.0"
+    "@aws-sdk/client-s3": "npm:3.1000.0"
+    "@aws-sdk/lib-storage": "npm:3.1000.0"
+    "@aws-sdk/s3-request-presigner": "npm:3.1000.0"
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/sortable": "npm:10.0.0"
     "@dnd-kit/utilities": "npm:3.2.2"
@@ -20894,8 +20819,8 @@ __metadata:
     "@modelcontextprotocol/sdk": "npm:1.27.1"
     "@next/eslint-plugin-next": "npm:16.1.6"
     "@playwright/test": "npm:^1.58.2"
-    "@prisma/adapter-pg": "npm:7.4.1"
-    "@prisma/client": "npm:7.4.1"
+    "@prisma/adapter-pg": "npm:7.4.2"
+    "@prisma/client": "npm:7.4.2"
     "@radix-ui/react-accordion": "npm:1.2.12"
     "@radix-ui/react-alert-dialog": "npm:1.1.15"
     "@radix-ui/react-avatar": "npm:1.1.11"
@@ -21676,17 +21601,6 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: 10c0/93ad468f13187c4f66b609bbfc00a6aee752007779ca3157f2c1ee063697815748d6010fd449a16c30be33213748431d5f54cc0224ba6a3fbbf5acd3582a4356
-  languageName: node
-  linkType: hard
-
-"test-exclude@npm:^7.0.1":
-  version: 7.0.2
-  resolution: "test-exclude@npm:7.0.2"
-  dependencies:
-    "@istanbuljs/schema": "npm:^0.1.2"
-    glob: "npm:^10.4.1"
-    minimatch: "npm:^10.2.2"
-  checksum: 10c0/b79b855af9168c6a362146015ccf40f5e3a25e307304ba9bea930818507f6319d230380d5d7b5baa659c981ccc11f1bd21b6f012f85606353dec07e02dee67c9
   languageName: node
   linkType: hard
 
