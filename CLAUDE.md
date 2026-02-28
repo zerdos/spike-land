@@ -23,7 +23,7 @@ All packages are published to GitHub Packages (`npm.pkg.github.com`) under the `
 | `spike-cli` | `@spike-land-ai/spike-cli` | Node.js CLI | MCP multiplexer CLI with Claude chat integration |
 | `spike-review` | `@spike-land-ai/spike-review` | Node.js | AI code review bot with GitHub integration |
 | `hackernews-mcp` | `@spike-land-ai/hackernews-mcp` | Node.js | MCP server for HackerNews read/write |
-| `mcp-pixel` | `@spike-land-ai/mcp-pixel` | Node.js | Image management/enhancement MCP tools |
+| `mcp-nanobanana` | `@spike-land-ai/mcp-nanobanana` | Node.js | Image management/enhancement MCP tools |
 | `openclaw-mcp` | `@spike-land-ai/openclaw-mcp` | Node.js | MCP bridge for OpenClaw gateway |
 | `vibe-dev` | `@spike-land-ai/vibe-dev` | Node.js CLI | Docker-based dev workflow tool |
 | `video` | `@spike-land-ai/video` | Remotion | Educational video compositions |
@@ -134,7 +134,7 @@ bash .github/scripts/verify-deps.sh
 
 ### Excluded repos
 - `vinext.spike.land` — uses git-SHA deps, not registry versions
-- Leaf MCP servers (hackernews-mcp, mcp-pixel, openclaw-mcp, spike-review, vibe-dev) — no internal deps
+- Leaf MCP servers (hackernews-mcp, mcp-nanobanana, openclaw-mcp, spike-review, vibe-dev) — no internal deps
 
 ## Key Conventions
 
