@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
+import { EditableText } from "@/components/docs/EditableText";
 import type { DocsTool } from "@/lib/docs/types";
 
 import toolsManifest from "@/lib/docs/generated/tools-manifest.json";
@@ -105,9 +106,11 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
               {tool.tier}
             </Badge>
           </div>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            {tool.description}
-          </p>
+          <EditableText
+            content={tool.description}
+            contentId={`tool-${category}-${name}-desc`}
+            className="text-lg text-muted-foreground leading-relaxed"
+          />
         </div>
 
         {/* Parameters */}
@@ -169,7 +172,10 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
                               )}
                           </td>
                           <td className="py-3 px-4 text-muted-foreground">
-                            {param.description}
+                            <EditableText
+                              content={param.description}
+                              contentId={`tool-${category}-${name}-param-${param.name}`}
+                            />
                           </td>
                         </tr>
                       ))}

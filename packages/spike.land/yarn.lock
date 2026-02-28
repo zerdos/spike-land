@@ -26,9 +26,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anthropic-ai/claude-agent-sdk@npm:0.2.62":
-  version: 0.2.62
-  resolution: "@anthropic-ai/claude-agent-sdk@npm:0.2.62"
+"@anthropic-ai/claude-agent-sdk@npm:0.2.63":
+  version: 0.2.63
+  resolution: "@anthropic-ai/claude-agent-sdk@npm:0.2.63"
   dependencies:
     "@img/sharp-darwin-arm64": "npm:^0.34.2"
     "@img/sharp-darwin-x64": "npm:^0.34.2"
@@ -60,7 +60,7 @@ __metadata:
       optional: true
     "@img/sharp-win32-x64":
       optional: true
-  checksum: 10c9/35563c612a0e34a9c5d83e7b544701123bcd2cea4bbd9629f52698c6db87a9aa409a2aca9131f080362685e1944b5d631de34458745d0a3af460e7ecea97e03b
+  checksum: 10c9/5d1f7ce6a339b99e71e72316c842fd8b8258735456256bad54297f714e71e8e321cb8043735bccd400b2fce3e9e974267ebb545826597af9de3da98fd952327c
   languageName: node
   linkType: hard
 
@@ -161,7 +161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth/prisma-adapter@npm:^2.11.1":
+"@auth/prisma-adapter@npm:2.11.1":
   version: 2.11.1
   resolution: "@auth/prisma-adapter@npm:2.11.1"
   dependencies:
@@ -254,9 +254,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ec2@npm:^3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/client-ec2@npm:3.999.0"
+"@aws-sdk/client-ec2@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/client-ec2@npm:3.1000.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:5.2.0"
     "@aws-crypto/sha256-js": "npm:5.2.0"
@@ -299,13 +299,13 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.1"
     "@smithy/util-waiter": "npm:^4.2.10"
     tslib: "npm:^2.6.2"
-  checksum: 10c9/0ffc519fc0676b4511c33db8ac9db3edc86d1bbd62d1a55a2ccf1e0cd85b194c9118d6329ced19a5f45f844fdca81a0097f18755f7429cf02d136c458de069fb
+  checksum: 10c9/28155d622a97d1179b1463026b09c6376f9505a03214b8e33bc6fd18f6943e5b36cfbfd1d3d7f5dbd529f1b34d023766e3f3a65cf81fbd6016212cc26eb8b8bb
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/client-s3@npm:3.999.0"
+"@aws-sdk/client-s3@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/client-s3@npm:3.1000.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -362,7 +362,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.1"
     "@smithy/util-waiter": "npm:^4.2.10"
     tslib: "npm:^2.6.2"
-  checksum: 10c9/ca7f5163ec76e5fe4b14f7ed1fab610d290a30b2328c41b4bf37fcd70062db975dbfb75a54ae4dd5d5cf08bbab8819aa0f7739611a0b383b77e2e730646a5ae9
+  checksum: 10c9/299bda54c8f4ea2c6384a4c4101144a7c56bcf8c10fe22f4bd9ab9506aa2be9a47264d6aa1d3512b3bbb4397b7aed93dfe66c4011f0437cb087eb270b77262fd
   languageName: node
   linkType: hard
 
@@ -531,9 +531,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/lib-storage@npm:3.999.0"
+"@aws-sdk/lib-storage@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/lib-storage@npm:3.1000.0"
   dependencies:
     "@smithy/abort-controller": "npm:^4.2.10"
     "@smithy/middleware-endpoint": "npm:^4.4.20"
@@ -543,8 +543,8 @@ __metadata:
     stream-browserify: "npm:3.0.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@aws-sdk/client-s3": ^3.999.0
-  checksum: 10c9/40769e46010da2c42f2b692322bd2aa25836aea076b6e6d6137e10c3adcc128a3dace4119f364f663aba53cfe78e08bf1d8386dec02881b7f0355798275265c1
+    "@aws-sdk/client-s3": ^3.1000.0
+  checksum: 10c9/0787315f3839d7b75a75cc10461a86e382f9b72a1144e7d88fad11dd0dd657be6be3b4b91372e4cf513b28efb0db16fe554098df7e8548c9eeb4282ac3f28152
   languageName: node
   linkType: hard
 
@@ -767,9 +767,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.999.0":
-  version: 3.999.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.999.0"
+"@aws-sdk/s3-request-presigner@npm:3.1000.0":
+  version: 3.1000.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.1000.0"
   dependencies:
     "@aws-sdk/signature-v4-multi-region": "npm:^3.996.3"
     "@aws-sdk/types": "npm:^3.973.4"
@@ -779,7 +779,7 @@ __metadata:
     "@smithy/smithy-client": "npm:^4.12.0"
     "@smithy/types": "npm:^4.13.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c9/33c41d1793124701193808cda5d09d03370885a8ff82b39535e671f271e9844b1d9902069bb8db4d71f00c89da27f5f9f30454af9a85b8abd7d7ec2d0d21b91f
+  checksum: 10c9/a6ddc749262f7f842be4555957a67512f48c14e531dd8c9229ab37d74f0e97d9f1c90eeccab3491a2771c179fe94aa9f731f5f36a58b4423da73109f9caced65
   languageName: node
   linkType: hard
 
@@ -2573,7 +2573,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.58.2":
+"@playwright/test@npm:1.58.2":
   version: 1.58.2
   resolution: "@playwright/test@npm:1.58.2"
   dependencies:
@@ -2591,29 +2591,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/adapter-pg@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/adapter-pg@npm:7.4.1"
+"@prisma/adapter-pg@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/adapter-pg@npm:7.4.2"
   dependencies:
-    "@prisma/driver-adapter-utils": "npm:7.4.1"
+    "@prisma/driver-adapter-utils": "npm:7.4.2"
     pg: "npm:^8.16.3"
     postgres-array: "npm:3.0.4"
-  checksum: 10c9/9cfb99ce8d9f9bc825095acec0c1fc45d224409405822b71850525dba81937ed7d91d7a2347db504c94d2601de68d21f428f3286ca711df9f0193bc74938a790
+  checksum: 10c9/a5460436059bf822d4eabb06cbaa7b9059e3d46b8c42fac8b2e1a20caec48e43118ed2b2231c21de7cdf0dd36dc22ca511a548ce3c841c74ccf5461ccf540f85
   languageName: node
   linkType: hard
 
-"@prisma/client-runtime-utils@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/client-runtime-utils@npm:7.4.1"
-  checksum: 10c9/99716fe156b67869f05956e92988e49ab6c50d0c50f07a88f91ddf00da131b0ab81ae95f885e9a08c92f6b0e317d6c1611ef3b1075fecdb95a4729121ad782cf
+"@prisma/client-runtime-utils@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/client-runtime-utils@npm:7.4.2"
+  checksum: 10c9/951903171dd2437450c45a637218ba5e79000ac2bed1593dce5c2c1e2d5fe37f3a17483cf458f6ad0cd364a10d53e584d90489c171be7f2a54c7d84f2d9c90ba
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/client@npm:7.4.1"
+"@prisma/client@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/client@npm:7.4.2"
   dependencies:
-    "@prisma/client-runtime-utils": "npm:7.4.1"
+    "@prisma/client-runtime-utils": "npm:7.4.2"
   peerDependencies:
     prisma: "*"
     typescript: ">=5.4.0"
@@ -2622,7 +2622,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c9/144ef4f64c3ee674c04fc0147fcfc6f8065a5089b2e0eb225d9f8f6c3cd24cc52d17263d60d192c460e1963a1404279bbb38a1440c81327f73c6e20fc36dc0ba
+  checksum: 10c9/70ca5397be2386c45f9f80c0c6fa8a7089bc495591d020391fe83150818c60710a7c41c46157e3df6970aaaf7f29aa09a7747b616404199971ea14b4862f1071
   languageName: node
   linkType: hard
 
@@ -2649,6 +2649,13 @@ __metadata:
   version: 7.4.1
   resolution: "@prisma/debug@npm:7.4.1"
   checksum: 10c9/f6de579974c193c7f47a9a18e2ce92bf50060a8458317ebacc4338f3cac3d67678e24947b8ec60589ed17dff4149665c808099fac8d6d4841361b887589eb235
+  languageName: node
+  linkType: hard
+
+"@prisma/debug@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/debug@npm:7.4.2"
+  checksum: 10c9/07bb62caca919688163ad25d563f823df8b81bac9036b69e375dc088872f2c188ce8344b2a86eca588ca7059a345bd457e74d74422641bfe2c45c080a5ccbc06
   languageName: node
   linkType: hard
 
@@ -2684,12 +2691,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/driver-adapter-utils@npm:7.4.1":
-  version: 7.4.1
-  resolution: "@prisma/driver-adapter-utils@npm:7.4.1"
+"@prisma/driver-adapter-utils@npm:7.4.2":
+  version: 7.4.2
+  resolution: "@prisma/driver-adapter-utils@npm:7.4.2"
   dependencies:
-    "@prisma/debug": "npm:7.4.1"
-  checksum: 10c9/987614b9fbb9502a3f89cc782d0ee0ea92410e65279887a78f70e3c55827646bf44da09d1192a0bbf0574be38cc6d20fb222131f7d71d832e6f466af09958866
+    "@prisma/debug": "npm:7.4.2"
+  checksum: 10c9/80d9df36cc39bf0f1fe7f97e7f650a3335612bc2c05c3d6523939c0a2d1885e8309a71188e8ff4c3ebe06d46cfb99a41c8f894fd7bee45120dd0506bc95c06a0
   languageName: node
   linkType: hard
 
@@ -4190,7 +4197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spring/three@npm:^10.0.3":
+"@react-spring/three@npm:10.0.3":
   version: 10.0.3
   resolution: "@react-spring/three@npm:10.0.3"
   dependencies:
@@ -4213,7 +4220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-three/drei@npm:^10.7.7":
+"@react-three/drei@npm:10.7.7":
   version: 10.7.7
   resolution: "@react-three/drei@npm:10.7.7"
   dependencies:
@@ -5358,15 +5365,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land/hono-api@workspace:hono-api"
   dependencies:
-    "@hono/node-server": "npm:^1.19.9"
+    "@hono/node-server": "npm:1.19.9"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@prisma/adapter-pg": "npm:7.4.1"
-    "@prisma/client": "npm:7.4.1"
+    "@prisma/adapter-pg": "npm:7.4.2"
+    "@prisma/client": "npm:7.4.2"
     "@types/node": "npm:25.3.2"
     "@upstash/redis": "npm:1.36.3"
     bcryptjs: "npm:3.0.3"
     dotenv: "npm:17.3.1"
-    hono: "npm:^4.12.3"
+    hono: "npm:4.12.3"
     jose: "npm:6.1.3"
     nanoid: "npm:5.1.6"
     tsx: "npm:4.21.0"
@@ -6145,7 +6152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qrcode@npm:^1.5.6":
+"@types/qrcode@npm:1.5.6":
   version: 1.5.6
   resolution: "@types/qrcode@npm:1.5.6"
   dependencies:
@@ -6412,7 +6419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@use-gesture/react@npm:^10.3.1":
+"@use-gesture/react@npm:10.3.1, @use-gesture/react@npm:^10.3.1":
   version: 10.3.1
   resolution: "@use-gesture/react@npm:10.3.1"
   dependencies:
@@ -7994,7 +8001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dprint@npm:^0.52.0":
+"dprint@npm:0.52.0":
   version: 0.52.0
   resolution: "dprint@npm:0.52.0"
   dependencies:
@@ -9888,17 +9895,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:4.12.3":
+  version: 4.12.3
+  resolution: "hono@npm:4.12.3"
+  checksum: 10c9/9d5ccdda6d31920e6d59da84e898421e2e286a891e4c484623e8d471a85c543be16a0bab4f1465ad52af3b8d6f57b4896bfc0bceaf361d95b0d0d70eecabce6d
+  languageName: node
+  linkType: hard
+
 "hono@npm:^4.11.4":
   version: 4.12.2
   resolution: "hono@npm:4.12.2"
   checksum: 10c9/9c11e4c96cc9e8a1b5c36795e2d52e36e993c1a987a41b6817866f4af7b48acc5915cc17457fc578d5aed388f0e52b6b9a0d0c00d9ecf06ba58b33f1bf63751e
-  languageName: node
-  linkType: hard
-
-"hono@npm:^4.12.3":
-  version: 4.12.3
-  resolution: "hono@npm:4.12.3"
-  checksum: 10c9/9d5ccdda6d31920e6d59da84e898421e2e286a891e4c484623e8d471a85c543be16a0bab4f1465ad52af3b8d6f57b4896bfc0bceaf361d95b0d0d70eecabce6d
   languageName: node
   linkType: hard
 
@@ -10998,7 +11005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^16.2.7":
+"lint-staged@npm:16.2.7":
   version: 16.2.7
   resolution: "lint-staged@npm:16.2.7"
   dependencies:
@@ -13019,7 +13026,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.58.2, playwright@npm:^1.58.2":
+"playwright@npm:1.58.2":
   version: 1.58.2
   resolution: "playwright@npm:1.58.2"
   dependencies:
@@ -13315,7 +13322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qrcode@npm:^1.5.4":
+"qrcode@npm:1.5.4":
   version: 1.5.4
   resolution: "qrcode@npm:1.5.4"
   dependencies:
@@ -14616,13 +14623,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "spike-land@workspace:."
   dependencies:
-    "@anthropic-ai/claude-agent-sdk": "npm:0.2.62"
+    "@anthropic-ai/claude-agent-sdk": "npm:0.2.63"
     "@anthropic-ai/sdk": "npm:0.78.0"
-    "@auth/prisma-adapter": "npm:^2.11.1"
-    "@aws-sdk/client-ec2": "npm:^3.999.0"
-    "@aws-sdk/client-s3": "npm:3.999.0"
-    "@aws-sdk/lib-storage": "npm:3.999.0"
-    "@aws-sdk/s3-request-presigner": "npm:3.999.0"
+    "@auth/prisma-adapter": "npm:2.11.1"
+    "@aws-sdk/client-ec2": "npm:3.1000.0"
+    "@aws-sdk/client-s3": "npm:3.1000.0"
+    "@aws-sdk/lib-storage": "npm:3.1000.0"
+    "@aws-sdk/s3-request-presigner": "npm:3.1000.0"
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/sortable": "npm:10.0.0"
     "@dnd-kit/utilities": "npm:3.2.2"
@@ -14630,9 +14637,9 @@ __metadata:
     "@hookform/resolvers": "npm:5.2.2"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
     "@next/eslint-plugin-next": "npm:16.1.6"
-    "@playwright/test": "npm:^1.58.2"
-    "@prisma/adapter-pg": "npm:7.4.1"
-    "@prisma/client": "npm:7.4.1"
+    "@playwright/test": "npm:1.58.2"
+    "@prisma/adapter-pg": "npm:7.4.2"
+    "@prisma/client": "npm:7.4.2"
     "@radix-ui/react-accordion": "npm:1.2.12"
     "@radix-ui/react-alert-dialog": "npm:1.1.15"
     "@radix-ui/react-avatar": "npm:1.1.11"
@@ -14654,8 +14661,8 @@ __metadata:
     "@radix-ui/react-tooltip": "npm:1.2.8"
     "@radix-ui/react-visually-hidden": "npm:1.2.4"
     "@react-email/components": "npm:1.0.8"
-    "@react-spring/three": "npm:^10.0.3"
-    "@react-three/drei": "npm:^10.7.7"
+    "@react-spring/three": "npm:10.0.3"
+    "@react-three/drei": "npm:10.7.7"
     "@react-three/fiber": "npm:9.5.0"
     "@react-three/rapier": "npm:2.2.0"
     "@spike-land-ai/esbuild-wasm": "npm:0.27.4"
@@ -14673,12 +14680,12 @@ __metadata:
     "@types/eslint-plugin-jsx-a11y": "npm:6.10.1"
     "@types/mdx": "npm:2.0.13"
     "@types/node": "npm:25.3.2"
-    "@types/qrcode": "npm:^1.5.6"
+    "@types/qrcode": "npm:1.5.6"
     "@types/react": "npm:19.2.14"
     "@types/react-dom": "npm:19.2.3"
     "@types/three": "npm:0.183.1"
     "@upstash/redis": "npm:1.36.3"
-    "@use-gesture/react": "npm:^10.3.1"
+    "@use-gesture/react": "npm:10.3.1"
     "@vitejs/plugin-react": "npm:5.1.4"
     "@vitest/coverage-v8": "npm:4.0.18"
     "@vitest/ui": "npm:4.0.18"
@@ -14693,7 +14700,7 @@ __metadata:
     date-fns: "npm:4.1.0"
     diff: "npm:8.0.3"
     dotenv: "npm:17.3.1"
-    dprint: "npm:^0.52.0"
+    dprint: "npm:0.52.0"
     eslint: "npm:10.0.2"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.37.5"
@@ -14711,7 +14718,7 @@ __metadata:
     jstat: "npm:1.9.6"
     katex: "npm:0.16.33"
     knip: "npm:5.85.0"
-    lint-staged: "npm:^16.2.7"
+    lint-staged: "npm:16.2.7"
     lucide-react: "npm:0.575.0"
     minisearch: "npm:7.2.0"
     nanoid: "npm:5.1.6"
@@ -14721,11 +14728,11 @@ __metadata:
     next-themes: "npm:0.4.6"
     next-view-transitions: "npm:0.3.5"
     peerjs: "npm:1.5.5"
-    playwright: "npm:^1.58.2"
+    playwright: "npm:1.58.2"
     postcss: "npm:8.5.6"
     prisma: "npm:7.4.1"
     prisma-markdown: "npm:4.0.0"
-    qrcode: "npm:^1.5.4"
+    qrcode: "npm:1.5.4"
     qrcode.react: "npm:4.2.0"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -14748,7 +14755,7 @@ __metadata:
     tailwind-merge: "npm:3.5.0"
     tailwindcss: "npm:4.2.1"
     three: "npm:0.183.1"
-    ts-md5: "npm:^2.0.1"
+    ts-md5: "npm:2.0.1"
     tsx: "npm:4.21.0"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.56.1"
@@ -14756,10 +14763,10 @@ __metadata:
     vite: "npm:7.3.1"
     vitest: "npm:4.0.18"
     vitest-mock-extended: "npm:3.1.0"
-    y-indexeddb: "npm:^9.0.12"
-    yjs: "npm:^13.6.29"
+    y-indexeddb: "npm:9.0.12"
+    yjs: "npm:13.6.29"
     zod: "npm:4.3.6"
-    zod-to-json-schema: "npm:^3.25.1"
+    zod-to-json-schema: "npm:3.25.1"
     zustand: "npm:5.0.11"
   dependenciesMeta:
     "@prisma/client":
@@ -15422,7 +15429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-md5@npm:^2.0.1":
+"ts-md5@npm:2.0.1":
   version: 2.0.1
   resolution: "ts-md5@npm:2.0.1"
   checksum: 10c9/6cb5246794cc15d990715e443184433f073cba5e92bc998e34c93d6bd595b2e16d4e48fd150b813171444cc308d27da491280133001d67836516269fce005e07
@@ -16313,7 +16320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"y-indexeddb@npm:^9.0.12":
+"y-indexeddb@npm:9.0.12":
   version: 9.0.12
   resolution: "y-indexeddb@npm:9.0.12"
   dependencies:
@@ -16390,7 +16397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yjs@npm:^13.6.29":
+"yjs@npm:13.6.29":
   version: 13.6.29
   resolution: "yjs@npm:13.6.29"
   dependencies:
@@ -16416,7 +16423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.25.1":
+"zod-to-json-schema@npm:3.25.1, zod-to-json-schema@npm:^3.25.1":
   version: 3.25.1
   resolution: "zod-to-json-schema@npm:3.25.1"
   peerDependencies:

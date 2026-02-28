@@ -50,8 +50,8 @@ cat > /opt/vnc-proxy/package.json << 'PKGJSON'
   "name": "vnc-proxy",
   "private": true,
   "dependencies": {
-    "jose": "^6.0.0",
-    "http-proxy": "^1.18.1"
+    "jose": "6.0.0",
+    "http-proxy": "1.18.1"
   }
 }
 PKGJSON

@@ -67,7 +67,7 @@ describe("framework-detector", () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            dependencies: { "@remix-run/react": "^2.0.0" },
+            dependencies: { "@remix-run/react": "2.0.0" },
           }),
       } as unknown as Response);
       const framework = await detectFramework(
@@ -95,7 +95,7 @@ describe("framework-detector", () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            dependencies: { "react-scripts": "^5.0.0" },
+            dependencies: { "react-scripts": "5.0.0" },
           }),
       } as unknown as Response);
       const framework = await detectFramework(
