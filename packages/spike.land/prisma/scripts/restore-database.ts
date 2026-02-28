@@ -78,7 +78,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.user.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });
@@ -102,7 +102,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.enhancedImage.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });
@@ -124,7 +124,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.album.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });
@@ -179,7 +179,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.imageEnhancementJob.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });
@@ -203,7 +203,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.apiKey.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });
@@ -229,7 +229,7 @@ async function restore() {
         for (const record of data) {
           try {
             await prisma.featuredGalleryItem.upsert({
-              where: { id: record.id },
+              where: { id: record.id! },
               update: record,
               create: record,
             });

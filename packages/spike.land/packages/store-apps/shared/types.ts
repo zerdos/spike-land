@@ -17,9 +17,9 @@ import type { z } from "zod";
  * - `requires`: Must have been called successfully in this session before executing
  */
 export interface ToolDependencies {
-  dependsOn?: string[];
-  enables?: string[];
-  requires?: string[];
+  dependsOn?: string[] | undefined;
+  enables?: string[] | undefined;
+  requires?: string[] | undefined;
 }
 
 /**
@@ -45,11 +45,11 @@ export interface StandaloneToolDefinition {
   description: string;
   category: string;
   tier: "free" | "workspace";
-  complexity?: "primitive" | "composed" | "workflow";
-  inputSchema?: z.ZodRawShape;
-  annotations?: ToolAnnotations;
-  dependencies?: ToolDependencies;
-  alwaysEnabled?: boolean;
+  complexity?: "primitive" | "composed" | "workflow" | undefined;
+  inputSchema?: z.ZodRawShape | undefined;
+  annotations?: ToolAnnotations | undefined;
+  dependencies?: ToolDependencies | undefined;
+  alwaysEnabled?: boolean | undefined;
   handler: (input: never, ctx: ServerContext) => Promise<CallToolResult> | CallToolResult;
 }
 

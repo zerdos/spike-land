@@ -12,21 +12,21 @@ import type { WaveformOptions } from "../types";
 interface WaveformProps {
   data: number[];
   progress: number;
-  width?: number;
-  height?: number;
-  barColor?: string;
-  progressColor?: string;
-  onClick?: (progress: number) => void;
+  width?: number | undefined;
+  height?: number | undefined;
+  barColor?: string | undefined;
+  progressColor?: string | undefined;
+  onClick?: ((progress: number) => void) | undefined;
   /** Trim start point (0-1 normalized) */
-  trimStart?: number;
+  trimStart?: number | undefined;
   /** Trim end point (0-1 normalized) */
-  trimEnd?: number;
+  trimEnd?: number | undefined;
   /** Callback when trim start changes */
-  onTrimStartChange?: (value: number) => void;
+  onTrimStartChange?: ((value: number) => void) | undefined;
   /** Callback when trim end changes */
-  onTrimEndChange?: (value: number) => void;
+  onTrimEndChange?: ((value: number) => void) | undefined;
   /** Show trim handles */
-  showTrimHandles?: boolean;
+  showTrimHandles?: boolean | undefined;
 }
 
 export function Waveform({

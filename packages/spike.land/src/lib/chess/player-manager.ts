@@ -74,13 +74,17 @@ export async function getPlayersByUser(userId: string): Promise<ChessPlayer[]> {
 export async function updatePlayer(
   playerId: string,
   userId: string,
-  data: { name?: string; avatar?: string; soundEnabled?: boolean; },
+  data: { name?: string | undefined; avatar?: string | undefined; soundEnabled?: boolean | undefined; },
 ): Promise<ChessPlayer> {
   const prisma = (await import("@/lib/prisma")).default;
   try {
+    const updateData: Record<string, string | boolean> = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.avatar !== undefined) updateData.avatar = data.avatar;
+    if (data.soundEnabled !== undefined) updateData.soundEnabled = data.soundEnabled;
     return await prisma.chessPlayer.update({
       where: { id: playerId, userId },
-      data,
+      data: updateData,
     });
   } catch {
     throw new Error("Not authorized to update this player");

@@ -318,7 +318,7 @@ const cleanTasksStartSession: StandaloneToolDefinition = {
       const session = await prisma.cleaningSession.create({
         data: {
           userId: ctx.userId,
-          roomLabel: room_label,
+          ...(room_label !== undefined ? { roomLabel: room_label } : {}),
         },
       });
 
@@ -567,7 +567,7 @@ const cleanTasksSkip: StandaloneToolDefinition = {
         where: { id: task_id },
         data: {
           status: "SKIPPED",
-          skippedReason: reason,
+          ...(reason !== undefined ? { skippedReason: reason } : {}),
         },
       });
 
@@ -992,7 +992,7 @@ const cleanRemindersCreate: StandaloneToolDefinition = {
           userId: ctx.userId,
           time,
           days,
-          message,
+          ...(message !== undefined ? { message } : {}),
         },
       });
 

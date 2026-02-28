@@ -41,8 +41,8 @@ export function TableSurface() {
       >
         <boxGeometry args={[12, 12, 0.1]} />
         <meshStandardMaterial
-          map={woodAlbedo}
-          normalMap={feltNormal}
+          {...(woodAlbedo ? { map: woodAlbedo } : {})}
+          {...(feltNormal ? { normalMap: feltNormal } : {})}
           roughness={0.8}
           metalness={0.1}
           color="#ffffff" // Let texture drive the color
@@ -53,8 +53,8 @@ export function TableSurface() {
       <mesh position={[0, -0.03, -6.05]} receiveShadow>
         <boxGeometry args={[12.2, 0.15, 0.15]} />
         <meshStandardMaterial
-          map={woodAlbedo}
-          normalMap={woodNormal}
+          {...(woodAlbedo ? { map: woodAlbedo } : {})}
+          {...(woodNormal ? { normalMap: woodNormal } : {})}
           color="#8B4513"
           roughness={0.4}
           metalness={0.1}
@@ -63,8 +63,8 @@ export function TableSurface() {
       <mesh position={[0, -0.03, 6.05]} receiveShadow>
         <boxGeometry args={[12.2, 0.15, 0.15]} />
         <meshStandardMaterial
-          map={woodAlbedo}
-          normalMap={woodNormal}
+          {...(woodAlbedo ? { map: woodAlbedo } : {})}
+          {...(woodNormal ? { normalMap: woodNormal } : {})}
           color="#8B4513"
           roughness={0.4}
           metalness={0.1}
@@ -73,8 +73,8 @@ export function TableSurface() {
       <mesh position={[-6.05, -0.03, 0]} receiveShadow>
         <boxGeometry args={[0.15, 0.15, 12]} />
         <meshStandardMaterial
-          map={woodAlbedo}
-          normalMap={woodNormal}
+          {...(woodAlbedo ? { map: woodAlbedo } : {})}
+          {...(woodNormal ? { normalMap: woodNormal } : {})}
           color="#8B4513"
           roughness={0.4}
           metalness={0.1}
@@ -83,8 +83,8 @@ export function TableSurface() {
       <mesh position={[6.05, -0.03, 0]} receiveShadow>
         <boxGeometry args={[0.15, 0.15, 12]} />
         <meshStandardMaterial
-          map={woodAlbedo}
-          normalMap={woodNormal}
+          {...(woodAlbedo ? { map: woodAlbedo } : {})}
+          {...(woodNormal ? { normalMap: woodNormal } : {})}
           color="#8B4513"
           roughness={0.4}
           metalness={0.1}

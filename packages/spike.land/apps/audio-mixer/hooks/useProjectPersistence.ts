@@ -32,7 +32,7 @@ interface SerializedTrack {
   type: "file" | "recording";
   waveformData: number[];
   /** OPFS path where audio data is stored */
-  opfsPath?: string;
+  opfsPath?: string | undefined;
 }
 
 /**

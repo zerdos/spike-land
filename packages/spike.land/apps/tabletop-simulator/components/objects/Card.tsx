@@ -10,8 +10,8 @@ interface CardProps {
   isOwner: boolean;
   onMove: (id: string, pos: { x: number; y: number; z: number; }) => void;
   onFlip: (id: string) => void;
-  onGrab?: (id: string) => void;
-  onRelease?: (id: string) => void;
+  onGrab?: ((id: string) => void) | undefined;
+  onRelease?: ((id: string) => void) | undefined;
 }
 
 // Suit info lookup table (static, no function call needed)

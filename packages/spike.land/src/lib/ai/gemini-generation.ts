@@ -28,14 +28,14 @@ export interface EnhanceImageParams {
   imageData: string;
   mimeType: string;
   tier: "1K" | "2K" | "4K";
-  originalWidth?: number;
-  originalHeight?: number;
+  originalWidth?: number | undefined;
+  originalHeight?: number | undefined;
   /** Optional prompt override - when provided, skips internal analysis and uses this prompt directly */
-  promptOverride?: string;
+  promptOverride?: string | undefined;
   /** Optional reference images for style guidance - base64 encoded with mime types */
-  referenceImages?: ReferenceImageData[];
+  referenceImages?: ReferenceImageData[] | undefined;
   /** Optional model override - when provided, uses this model instead of DEFAULT_MODEL */
-  model?: string;
+  model?: string | undefined;
 }
 
 export interface GenerateImageParams {

@@ -11,8 +11,8 @@ export interface MoveResult {
   isStalemate: boolean;
   isDraw: boolean;
   isGameOver: boolean;
-  captured?: string;
-  promotion?: string;
+  captured?: string | undefined;
+  promotion?: string | undefined;
 }
 
 export interface GameState {

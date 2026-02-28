@@ -25,9 +25,9 @@ export type ToolComplexity = "primitive" | "composed" | "workflow";
  * Used by standalone store apps and enforced in the registry.
  */
 export interface ToolDependencies {
-  dependsOn?: string[];
-  enables?: string[];
-  requires?: string[];
+  dependsOn?: string[] | undefined;
+  enables?: string[] | undefined;
+  requires?: string[] | undefined;
 }
 
 export interface ToolDefinition {
@@ -35,13 +35,13 @@ export interface ToolDefinition {
   description: string;
   category: string;
   tier: "free" | "workspace";
-  complexity?: ToolComplexity;
-  inputSchema?: z.ZodRawShape;
-  annotations?: ToolAnnotations;
-  dependencies?: ToolDependencies;
+  complexity?: ToolComplexity | undefined;
+  inputSchema?: z.ZodRawShape | undefined;
+  annotations?: ToolAnnotations | undefined;
+  dependencies?: ToolDependencies | undefined;
   // Handlers are cast in register() — accept typed Zod-inferred params
   handler: (input: never) => Promise<CallToolResult> | CallToolResult;
-  alwaysEnabled?: boolean;
+  alwaysEnabled?: boolean | undefined;
 }
 
 export interface SearchResult {

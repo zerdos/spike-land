@@ -35,9 +35,9 @@ interface SortableTrackItemProps {
   onMuteToggle: () => void;
   onSoloToggle: () => void;
   onRemove: () => void;
-  onSeek?: (progress: number) => void;
-  onDelayChange?: (delay: number) => void;
-  onTrimChange?: (trimStart: number, trimEnd: number) => void;
+  onSeek?: ((progress: number) => void) | undefined;
+  onDelayChange?: ((delay: number) => void) | undefined;
+  onTrimChange?: ((trimStart: number, trimEnd: number) => void) | undefined;
 }
 
 function SortableTrackItem({
@@ -109,9 +109,9 @@ interface SortableTrackListProps {
   onMuteToggle: (id: string) => void;
   onSoloToggle: (id: string) => void;
   onRemove: (id: string) => void;
-  onSeek?: (id: string, progress: number) => void;
-  onDelayChange?: (id: string, delay: number) => void;
-  onTrimChange?: (id: string, trimStart: number, trimEnd: number) => void;
+  onSeek?: ((id: string, progress: number) => void) | undefined;
+  onDelayChange?: ((id: string, delay: number) => void) | undefined;
+  onTrimChange?: ((id: string, trimStart: number, trimEnd: number) => void) | undefined;
 }
 
 export function SortableTrackList({

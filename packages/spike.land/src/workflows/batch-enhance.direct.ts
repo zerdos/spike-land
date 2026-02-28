@@ -30,10 +30,10 @@ export interface BatchEnhanceInput {
 
 interface BatchResult {
   imageId: string;
-  jobId?: string;
+  jobId?: string | undefined;
   success: boolean;
-  refunded?: boolean;
-  error?: string;
+  refunded?: boolean | undefined;
+  error?: string | undefined;
 }
 
 /**

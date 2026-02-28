@@ -20,9 +20,9 @@ interface ScheduledDowngrade {
 
 interface DowngradeResult {
   success: boolean;
-  effectiveDate?: Date;
-  message?: string;
-  error?: string;
+  effectiveDate?: Date | undefined;
+  message?: string | undefined;
+  error?: string | undefined;
 }
 
 /**

@@ -11,8 +11,8 @@ interface FileUploadStatus {
   file: File;
   status: "pending" | "uploading" | "completed" | "failed" | "cancelled";
   progress: number; // 0-100
-  imageId?: string; // Set on success
-  error?: string;
+  imageId?: string | undefined; // Set on success
+  error?: string | undefined;
 }
 
 /**

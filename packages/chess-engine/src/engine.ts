@@ -9,10 +9,13 @@ export function createGame(fen?: string): Chess {
 
 export function makeMove(
   game: Chess,
-  move: { from: string; to: string; promotion?: string; },
+  move: { from: string; to: string; promotion?: string | undefined; },
 ): MoveResult {
   try {
-    const result = game.move(move);
+    const moveArg = move.promotion !== undefined
+      ? { from: move.from, to: move.to, promotion: move.promotion }
+      : { from: move.from, to: move.to };
+    const result = game.move(moveArg);
     return {
       success: true,
       san: result.san,

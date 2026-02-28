@@ -227,7 +227,7 @@ export const aiOrchestratorTools: StandaloneToolDefinition[] = [
             machineId: machine_id,
             sessionId: session_id,
             displayName: display_name,
-            projectPath: project_path,
+            ...(project_path !== undefined ? { projectPath: project_path } : {}),
             lastSeenAt: new Date(),
           },
         });
@@ -405,9 +405,9 @@ export const aiOrchestratorTools: StandaloneToolDefinition[] = [
             role: "AGENT",
             content,
             isRead: false,
-            metadata: (metadata ?? undefined) as
-              | import("@/generated/prisma").Prisma.InputJsonValue
-              | undefined,
+            ...(metadata != null
+              ? { metadata: metadata as import("@/generated/prisma").Prisma.InputJsonValue }
+              : {}),
           },
         });
         return textResult(

@@ -32,18 +32,18 @@ interface UseProjectManagerDeps {
     saveProject: (project: AudioProject) => Promise<{ success: boolean; }>;
     loadProject: (
       projectId: string,
-    ) => Promise<{ success: boolean; data?: AudioProject; }>;
+    ) => Promise<{ success: boolean; data?: AudioProject | undefined; }>;
     listProjects: () => Promise<{
       success: boolean;
-      data?: AudioProject[];
+      data?: AudioProject[] | undefined;
     }>;
     deleteProject: (projectId: string) => Promise<{ success: boolean; }>;
     createProject: (
       name: string,
-    ) => Promise<{ success: boolean; data?: AudioProject; }>;
+    ) => Promise<{ success: boolean; data?: AudioProject | undefined; }>;
     loadTrackByPath: (
       opfsPath: string,
-    ) => Promise<{ success: boolean; data?: Uint8Array; }>;
+    ) => Promise<{ success: boolean; data?: Uint8Array | undefined; }>;
     saveTrackToPath: (
       opfsPath: string,
       data: Uint8Array,

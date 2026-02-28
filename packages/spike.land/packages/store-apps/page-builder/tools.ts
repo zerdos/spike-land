@@ -636,7 +636,7 @@ export const pageBuilderTools: StandaloneToolDefinition[] = [
             description: description ?? null,
             layout,
             status: "DRAFT",
-            themeData: themeData ? (themeData as Prisma.InputJsonValue) : undefined,
+            ...(themeData ? { themeData: themeData as Prisma.InputJsonValue } : {}),
             tags: tags ?? [],
             customCss: customCss ? sanitizeCss(customCss) : null,
             userId: ctx.userId,
@@ -917,9 +917,9 @@ export const pageBuilderTools: StandaloneToolDefinition[] = [
             description: source.description,
             layout: source.layout,
             status: "DRAFT",
-            themeData: source.themeData ? (source.themeData as Prisma.InputJsonValue) : undefined,
+            ...(source.themeData ? { themeData: source.themeData as Prisma.InputJsonValue } : {}),
             tags: source.tags,
-            customCss: source.customCss ? sanitizeCss(source.customCss) : undefined,
+            ...(source.customCss ? { customCss: sanitizeCss(source.customCss) } : {}),
             seoTitle: source.seoTitle,
             seoDescription: source.seoDescription,
             ogImageUrl: source.ogImageUrl,
@@ -941,11 +941,11 @@ export const pageBuilderTools: StandaloneToolDefinition[] = [
             layout: true,
             status: true,
             createdAt: true,
-            _count: { select: { blocks: true } },
           },
         });
+        const blockCount = source.blocks.length;
         return textResult(
-          `**Page Cloned**\n\n**Source ID:** ${source.id}\n**New ID:** ${cloned.id}\n**Slug:** ${cloned.slug}\n**Title:** ${cloned.title}\n**Layout:** ${cloned.layout}\n**Status:** ${cloned.status}\n**Blocks Copied:** ${cloned._count.blocks}\n**Created:** ${cloned.createdAt.toISOString()}`,
+          `**Page Cloned**\n\n**Source ID:** ${source.id}\n**New ID:** ${cloned.id}\n**Slug:** ${cloned.slug}\n**Title:** ${cloned.title}\n**Layout:** ${cloned.layout}\n**Status:** ${cloned.status}\n**Blocks Copied:** ${blockCount}\n**Created:** ${cloned.createdAt.toISOString()}`,
         );
       });
     },

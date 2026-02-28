@@ -16,9 +16,9 @@ interface TimelineTrackProps {
   playheadTime: number;
   snapTime: (time: number) => number;
   onPositionChange: (position: number) => void;
-  onTrimChange?: (trimStart: number, trimEnd: number) => void;
+  onTrimChange?: ((trimStart: number, trimEnd: number) => void) | undefined;
   onSelect: () => void;
-  onClickPlay?: () => void;
+  onClickPlay?: (() => void) | undefined;
 }
 
 const TRACK_HEIGHT = 64;
