@@ -70,7 +70,7 @@ class StructuredLogger {
         error: {
           name: error.name,
           message: error.message,
-          stack: error.stack,
+          ...(error.stack !== undefined ? { stack: error.stack } : {}),
         },
       }),
     };
