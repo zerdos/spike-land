@@ -3,9 +3,10 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "predev": "tsx src/lib/docs/generate-docs-data.ts",
+    "content:sync": "[ -L docs ] || cp -r ../../docs ./docs 2>/dev/null; [ -L content ] || cp -r ../../content ./content 2>/dev/null; true",
+    "predev": "yarn content:sync && tsx src/lib/docs/generate-docs-data.ts",
     "dev": "next dev",
-    "build": "yarn db:generate && yarn docs:generate && next build",
+    "build": "yarn db:generate && yarn content:sync && yarn docs:generate && next build",
     "docs:generate": "tsx src/lib/docs/generate-docs-data.ts && cp -r src/lib/docs/generated/ public/docs-data/",
     "start": "next start",
     "start:standalone": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && node -r dotenv/config .next/standalone/server.js dotenv_config_path=.env.local",

@@ -19,6 +19,8 @@ for full company documentation.
 
 ## 📚 Documentation References
 
+**Note:** `docs/` and `content/` are symlinks to the umbrella repo root (`../../docs/`, `../../content/`). All doc paths below resolve through the symlink.
+
 **DO NOT duplicate content from these docs in this file. Link to them instead.**
 
 | Topic                         | Document                                                                                 |

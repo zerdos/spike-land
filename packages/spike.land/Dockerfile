@@ -57,6 +57,7 @@ COPY --link tsconfig*.json next.config.ts postcss.config.mjs prisma.config.ts ./
 COPY --link tailwind.config.ts eslint.config.mjs ./
 # Static assets (change less often)
 COPY --link public ./public
+COPY --link docs ./docs
 COPY --link content ./content
 # Workspace packages (change occasionally)
 COPY --link packages ./packages

@@ -1,8 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Legal strategy documents (private)
-docs/legal/
-docs/drafts/
+# Content lives in umbrella repo, symlinked here
+/docs
+/content
+
+# Legal strategy documents (private — applied to umbrella docs/)
+# docs/legal/
+# docs/drafts/
 
 # dependencies
 **/node_modules

@@ -88,7 +88,6 @@ tmp
 # Directories unused by main Dockerfile (reduces build context ~10MB)
 workers/
 .github/
-docs/
 terraform/
 
 # Large binary assets not needed in Docker build/CI (~78MB)

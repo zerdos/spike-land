@@ -140,6 +140,14 @@ bash .github/scripts/verify-deps.sh
 - `vinext.spike.land` — uses git-SHA deps, not registry versions
 - Leaf MCP servers (hackernews-mcp, mcp-nanobanana, openclaw-mcp, spike-review, vibe-dev) — no internal deps
 
+## Content
+
+User-facing documentation and blog posts live at the umbrella repo root:
+- `docs/` — architecture, guides, API docs, best practices (~140 files)
+- `content/blog/` — published MDX blog posts (18 files)
+
+These are symlinked into `packages/spike.land/` for local dev. CI copies them.
+
 ## Key Conventions
 
 - TypeScript strict mode across all packages

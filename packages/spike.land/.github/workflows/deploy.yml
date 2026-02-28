@@ -72,6 +72,18 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Sync content from umbrella repo
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse \
+            https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/spike-land-ai/spike-land-ai.git \
+            /tmp/umbrella
+          cd /tmp/umbrella
+          git sparse-checkout set docs content
+          cd -
+          cp -r /tmp/umbrella/docs ./docs/
+          cp -r /tmp/umbrella/content ./content/
+          rm -rf /tmp/umbrella
+
       - name: Setup Depot
         uses: depot/setup-action@v1
         continue-on-error: true
@@ -389,6 +401,18 @@ jobs:
       - name: Login to Amazon ECR
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Sync content from umbrella repo
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse \
+            https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/spike-land-ai/spike-land-ai.git \
+            /tmp/umbrella
+          cd /tmp/umbrella
+          git sparse-checkout set docs content
+          cd -
+          cp -r /tmp/umbrella/docs ./docs/
+          cp -r /tmp/umbrella/content ./content/
+          rm -rf /tmp/umbrella
 
       - name: Setup Depot
         uses: depot/setup-action@v1
