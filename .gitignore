@@ -1,5 +1,11 @@
-# Each subdirectory is its own git repo — ignore everything except top-level files
-/*
-!/.gitignore
-!/CLAUDE.md
+node_modules/
+dist/
+.yarn/cache
+.yarn/install-state.gz
+*.tsbuildinfo
+.env.local
 .github-private
+binaryen/
+.eslintcache
+.wrangler/
+.next/

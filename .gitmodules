@@ -1,0 +1,45 @@
+[submodule "shared"]
+	path = shared
+	url = https://github.com/spike-land-ai/shared.git
+[submodule "esbuild-wasm"]
+	path = esbuild-wasm
+	url = https://github.com/spike-land-ai/esbuild-wasm.git
+[submodule "esbuild-wasm-mcp"]
+	path = esbuild-wasm-mcp
+	url = https://github.com/spike-land-ai/esbuild-wasm-mcp.git
+[submodule "react-ts-worker"]
+	path = react-ts-worker
+	url = https://github.com/spike-land-ai/react-ts-worker.git
+[submodule "spike-cli"]
+	path = spike-cli
+	url = https://github.com/spike-land-ai/spike-cli.git
+[submodule "code"]
+	path = code
+	url = https://github.com/spike-land-ai/code.git
+[submodule "transpile"]
+	path = transpile
+	url = https://github.com/spike-land-ai/transpile.git
+[submodule "spike-land-backend"]
+	path = spike-land-backend
+	url = https://github.com/spike-land-ai/spike-land-backend.git
+[submodule "hackernews-mcp"]
+	path = hackernews-mcp
+	url = https://github.com/spike-land-ai/hackernews-mcp.git
+[submodule "mcp-nanobanana"]
+	path = mcp-nanobanana
+	url = https://github.com/spike-land-ai/mcp-nanobanana.git
+[submodule "openclaw-mcp"]
+	path = openclaw-mcp
+	url = https://github.com/spike-land-ai/openclaw-mcp.git
+[submodule "spike-review"]
+	path = spike-review
+	url = https://github.com/spike-land-ai/spike-review.git
+[submodule "vibe-dev"]
+	path = vibe-dev
+	url = https://github.com/spike-land-ai/vibe-dev.git
+[submodule "video"]
+	path = video
+	url = https://github.com/spike-land-ai/video.git
+[submodule "spike.land"]
+	path = spike.land
+	url = https://github.com/spike-land-ai/spike.land.git

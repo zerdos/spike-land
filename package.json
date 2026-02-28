@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "name": "spike-land-ai",
+  "packageManager": "yarn@4.12.0",
+  "workspaces": [
+    "packages/*",
+    "shared",
+    "esbuild-wasm",
+    "esbuild-wasm-mcp",
+    "react-ts-worker",
+    "spike-cli",
+    "code",
+    "transpile",
+    "spike-land-backend",
+    "spike.land",
+    "hackernews-mcp",
+    "mcp-nanobanana",
+    "openclaw-mcp",
+    "spike-review",
+    "vibe-dev",
+    "video"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -Apt run build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "yarn workspaces foreach -Ap run typecheck",
+    "lint": "eslint .",
+    "changeset": "changeset",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.4",
+    "@types/node": "^25.3.2",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^10.0.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.35.1",
+    "vitest": "^4.0.18"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "files": [],
+  "references": [
+    { "path": "shared" },
+    { "path": "esbuild-wasm-mcp" },
+    { "path": "react-ts-worker" },
+    { "path": "spike-cli" },
+    { "path": "code" },
+    { "path": "transpile" },
+    { "path": "spike-land-backend" },
+    { "path": "spike.land" },
+    { "path": "hackernews-mcp" },
+    { "path": "mcp-nanobanana" },
+    { "path": "openclaw-mcp" },
+    { "path": "spike-review" },
+    { "path": "vibe-dev" },
+    { "path": "video" }
+  ]
+}

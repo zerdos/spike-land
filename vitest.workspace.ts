@@ -1,0 +1,16 @@
+export default [
+  "shared",
+  "esbuild-wasm-mcp",
+  "hackernews-mcp",
+  "mcp-nanobanana",
+  "openclaw-mcp",
+  "spike-review",
+  "spike-cli",
+  "vibe-dev",
+  "react-ts-worker",
+  "code",
+  "transpile",
+  "spike-land-backend",
+  "spike.land",
+  "video",
+];
