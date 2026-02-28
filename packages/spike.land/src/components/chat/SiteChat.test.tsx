@@ -33,20 +33,20 @@ describe("SiteChat", () => {
     const mockMessages = [
       {
         id: "msg1",
-        role: "user",
+        role: "user" as const,
         blocks: [
-          { type: "image", content: "img1.png" },
-          { type: "text", content: "Hello" },
+          { type: "image" as const, content: "img1.png" },
+          { type: "text" as const, content: "Hello" },
         ],
         timestamp: Date.now(),
       },
       {
         id: "msg2",
-        role: "assistant",
+        role: "assistant" as const,
         blocks: [
-          { type: "text", content: "Thinking..." },
-          { type: "tool_call", id: "tool1", name: "calculator", status: "done", input: {} },
-          { type: "text", content: "Result is 42" },
+          { type: "text" as const, content: "Thinking..." },
+          { type: "tool_call" as const, id: "tool1", name: "calculator", serverName: "test", status: "done" as const, input: {} },
+          { type: "text" as const, content: "Result is 42" },
         ],
         timestamp: Date.now(),
       },
@@ -59,6 +59,8 @@ describe("SiteChat", () => {
       maxTurns: 0,
       error: null,
       sendMessage: vi.fn(),
+      clearMessages: vi.fn(),
+      abort: vi.fn(),
     });
 
     render(<SiteChat />);

@@ -7335,9 +7335,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spike-land-ai/code@workspace:*, @spike-land-ai/code@workspace:code":
+"@spike-land-ai/code@workspace:*, @spike-land-ai/code@workspace:packages/code":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/code@workspace:code"
+  resolution: "@spike-land-ai/code@workspace:packages/code"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@dmsnell/diff-match-patch": "npm:1.1.0"
@@ -7352,9 +7352,9 @@ __metadata:
     "@radix-ui/react-slot": "npm:1.2.4"
     "@radix-ui/react-toggle": "npm:1.1.10"
     "@radix-ui/react-tooltip": "npm:1.2.8"
-    "@spike-land-ai/esbuild-wasm": "npm:0.27.4"
-    "@spike-land-ai/esbuild-wasm-mcp": "npm:0.27.4"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
+    "@spike-land-ai/esbuild-wasm": "workspace:*"
+    "@spike-land-ai/esbuild-wasm-mcp": "workspace:*"
+    "@spike-land-ai/eslint-config": "workspace:*"
     "@tailwindcss/browser": "npm:4.2.1"
     "@tailwindcss/postcss": "npm:4.2.1"
     "@tailwindcss/vite": "npm:4.2.1"
@@ -7437,15 +7437,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/esbuild-wasm-mcp@npm:0.27.4, @spike-land-ai/esbuild-wasm-mcp@workspace:*, @spike-land-ai/esbuild-wasm-mcp@workspace:esbuild-wasm-mcp":
+"@spike-land-ai/esbuild-wasm-mcp@workspace:*, @spike-land-ai/esbuild-wasm-mcp@workspace:packages/esbuild-wasm-mcp":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/esbuild-wasm-mcp@workspace:esbuild-wasm-mcp"
+  resolution: "@spike-land-ai/esbuild-wasm-mcp@workspace:packages/esbuild-wasm-mcp"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/esbuild-wasm": "npm:0.27.4"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/esbuild-wasm": "workspace:*"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     eslint: "npm:9.27.0"
     typescript: "npm:5.9.3"
@@ -7456,16 +7456,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/esbuild-wasm@npm:0.27.4, @spike-land-ai/esbuild-wasm@workspace:*, @spike-land-ai/esbuild-wasm@workspace:esbuild-wasm":
+"@spike-land-ai/esbuild-wasm@workspace:*, @spike-land-ai/esbuild-wasm@workspace:packages/esbuild-wasm":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/esbuild-wasm@workspace:esbuild-wasm"
+  resolution: "@spike-land-ai/esbuild-wasm@workspace:packages/esbuild-wasm"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
+    "@spike-land-ai/eslint-config": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/eslint-config@npm:2.0.1, @spike-land-ai/eslint-config@workspace:packages/eslint-config":
+"@spike-land-ai/eslint-config@workspace:*, @spike-land-ai/eslint-config@workspace:packages/eslint-config":
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/eslint-config@workspace:packages/eslint-config"
   dependencies:
@@ -7481,14 +7481,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/hackernews-mcp@workspace:hackernews-mcp":
+"@spike-land-ai/hackernews-mcp@workspace:packages/hackernews-mcp":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/hackernews-mcp@workspace:hackernews-mcp"
+  resolution: "@spike-land-ai/hackernews-mcp@workspace:packages/hackernews-mcp"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     "@vitest/coverage-v8": "npm:4.0.18"
     eslint: "npm:9.27.0"
@@ -7501,14 +7501,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/mcp-nanobanana@workspace:mcp-nanobanana":
+"@spike-land-ai/mcp-nanobanana@workspace:packages/mcp-nanobanana":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/mcp-nanobanana@workspace:mcp-nanobanana"
+  resolution: "@spike-land-ai/mcp-nanobanana@workspace:packages/mcp-nanobanana"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     "@vitest/coverage-v8": "npm:4.0.18"
     chokidar: "npm:5.0.0"
@@ -7521,14 +7521,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/openclaw-mcp@workspace:openclaw-mcp":
+"@spike-land-ai/openclaw-mcp@workspace:packages/openclaw-mcp":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/openclaw-mcp@workspace:openclaw-mcp"
+  resolution: "@spike-land-ai/openclaw-mcp@workspace:packages/openclaw-mcp"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     eslint: "npm:9.27.0"
     typescript: "npm:5.9.3"
@@ -7541,13 +7541,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/react-ts-worker@npm:0.1.1, @spike-land-ai/react-ts-worker@workspace:react-ts-worker":
+"@spike-land-ai/react-ts-worker@workspace:*, @spike-land-ai/react-ts-worker@workspace:packages/react-ts-worker":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/react-ts-worker@workspace:react-ts-worker"
+  resolution: "@spike-land-ai/react-ts-worker@workspace:packages/react-ts-worker"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     eslint: "npm:9.27.0"
     jsdom: "npm:28.1.0"
     typescript: "npm:5.9.3"
@@ -7556,13 +7556,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/shared@workspace:shared":
+"@spike-land-ai/shared@workspace:packages/shared":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/shared@workspace:shared"
+  resolution: "@spike-land-ai/shared@workspace:packages/shared"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@vitest/coverage-v8": "npm:4.0.18"
     tsup: "npm:8.5.1"
     typescript: "npm:5.9.3"
@@ -7571,15 +7571,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/spike-cli@npm:0.1.1, @spike-land-ai/spike-cli@workspace:spike-cli":
+"@spike-land-ai/spike-cli@workspace:*, @spike-land-ai/spike-cli@workspace:packages/spike-cli":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/spike-cli@workspace:spike-cli"
+  resolution: "@spike-land-ai/spike-cli@workspace:packages/spike-cli"
   dependencies:
     "@anthropic-ai/sdk": "npm:0.78.0"
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     "@vitest/coverage-v8": "npm:4.0.18"
     commander: "npm:14.0.3"
@@ -7596,9 +7596,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/spike-land-backend@workspace:spike-land-backend":
+"@spike-land-ai/spike-land-backend@workspace:packages/spike-land-backend":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/spike-land-backend@workspace:spike-land-backend"
+  resolution: "@spike-land-ai/spike-land-backend@workspace:packages/spike-land-backend"
   dependencies:
     "@ai-sdk/anthropic": "npm:3.0.50"
     "@ai-sdk/google": "npm:3.0.34"
@@ -7625,15 +7625,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/spike-review@workspace:spike-review":
+"@spike-land-ai/spike-review@workspace:packages/spike-review":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/spike-review@workspace:spike-review"
+  resolution: "@spike-land-ai/spike-review@workspace:packages/spike-review"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
     "@octokit/rest": "npm:22.0.1"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     "@vitest/coverage-v8": "npm:4.0.18"
     eslint: "npm:9.27.0"
@@ -7654,9 +7654,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/transpile@workspace:transpile":
+"@spike-land-ai/transpile@workspace:packages/transpile":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/transpile@workspace:transpile"
+  resolution: "@spike-land-ai/transpile@workspace:packages/transpile"
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.12.18"
     "@cloudflare/workers-types": "npm:4.20260305.0"
@@ -7670,19 +7670,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/tsconfig@npm:2.0.0, @spike-land-ai/tsconfig@workspace:packages/tsconfig":
+"@spike-land-ai/tsconfig@workspace:*, @spike-land-ai/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/tsconfig@workspace:packages/tsconfig"
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/vibe-dev@workspace:vibe-dev":
+"@spike-land-ai/vibe-dev@workspace:packages/vibe-dev":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/vibe-dev@workspace:vibe-dev"
+  resolution: "@spike-land-ai/vibe-dev@workspace:packages/vibe-dev"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/tsconfig": "npm:2.0.0"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     chokidar: "npm:5.0.0"
     commander: "npm:14.0.3"
@@ -7697,9 +7697,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/video@workspace:video":
+"@spike-land-ai/video@workspace:packages/video":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/video@workspace:video"
+  resolution: "@spike-land-ai/video@workspace:packages/video"
   dependencies:
     "@remotion/bundler": "npm:4.0.429"
     "@remotion/cli": "npm:4.0.429"
@@ -21329,10 +21329,10 @@ __metadata:
     "@react-three/drei": "npm:10.7.7"
     "@react-three/fiber": "npm:9.5.0"
     "@react-three/rapier": "npm:2.2.0"
-    "@spike-land-ai/esbuild-wasm": "npm:0.27.4"
-    "@spike-land-ai/eslint-config": "npm:2.0.1"
-    "@spike-land-ai/react-ts-worker": "npm:0.1.1"
-    "@spike-land-ai/spike-cli": "npm:0.1.1"
+    "@spike-land-ai/esbuild-wasm": "workspace:*"
+    "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/react-ts-worker": "workspace:*"
+    "@spike-land-ai/spike-cli": "workspace:*"
     "@stripe/react-stripe-js": "npm:5.6.0"
     "@stripe/stripe-js": "npm:8.8.0"
     "@tailwindcss/postcss": "npm:4.2.1"

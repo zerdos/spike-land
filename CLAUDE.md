@@ -4,29 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is the **spike-land-ai** umbrella directory containing 15 independent git repositories under the `@spike-land-ai` GitHub org. Each subdirectory is a separate repo with its own git history — this is **not** a monorepo with a shared root `package.json`.
+This is the **spike-land-ai** umbrella directory containing 15 independent git repositories under the `@spike-land-ai` GitHub org. All packages live under the `packages/` directory, each as a separate git submodule with its own history. The root `package.json` uses a single Yarn workspace glob: `"workspaces": ["packages/*"]`.
 
 All packages are published to GitHub Packages (`npm.pkg.github.com`) under the `@spike-land-ai` scope using Changesets. CI/CD is shared via a reusable workflow in `.github/.github/workflows/ci-publish.yml`.
 
 ## Packages
 
+All packages live under `packages/`:
+
 | Directory | Package | Runtime | Purpose |
 |-----------|---------|---------|---------|
-| `spike.land` | `spike-land` | Next.js 16 / AWS ECS | Main platform — MCP registry, app store, auth, payments |
-| `code` | `@spike-land-ai/code` | Browser (Vite) | Monaco-based code editor with live preview |
-| `spike-land-backend` | `@spike-land-ai/spike-land-backend` | Cloudflare Workers | Backend API with Durable Objects, Hono framework |
-| `transpile` | `@spike-land-ai/transpile` | Cloudflare Workers | On-demand JS/TS transpilation via esbuild-wasm |
-| `react-ts-worker` | `@spike-land-ai/react-ts-worker` | Browser/Workers/Node | From-scratch React implementation (Fiber reconciler, scheduler, multi-target rendering) |
-| `esbuild-wasm` | `@spike-land-ai/esbuild-wasm` | Browser (WASM) | Cross-platform esbuild WASM binary |
-| `esbuild-wasm-mcp` | `@spike-land-ai/esbuild-wasm-mcp` | Node.js | MCP server wrapping esbuild-wasm |
-| `shared` | `@spike-land-ai/shared` | Node/Browser | Shared types, validations, constants, utilities |
-| `spike-cli` | `@spike-land-ai/spike-cli` | Node.js CLI | MCP multiplexer CLI with Claude chat integration |
-| `spike-review` | `@spike-land-ai/spike-review` | Node.js | AI code review bot with GitHub integration |
-| `hackernews-mcp` | `@spike-land-ai/hackernews-mcp` | Node.js | MCP server for HackerNews read/write |
-| `mcp-nanobanana` | `@spike-land-ai/mcp-nanobanana` | Node.js | Image management/enhancement MCP tools |
-| `openclaw-mcp` | `@spike-land-ai/openclaw-mcp` | Node.js | MCP bridge for OpenClaw gateway |
-| `vibe-dev` | `@spike-land-ai/vibe-dev` | Node.js CLI | Docker-based dev workflow tool |
-| `video` | `@spike-land-ai/video` | Remotion | Educational video compositions |
+| `packages/spike.land` | `spike-land` | Next.js 16 / AWS ECS | Main platform — MCP registry, app store, auth, payments |
+| `packages/code` | `@spike-land-ai/code` | Browser (Vite) | Monaco-based code editor with live preview |
+| `packages/spike-land-backend` | `@spike-land-ai/spike-land-backend` | Cloudflare Workers | Backend API with Durable Objects, Hono framework |
+| `packages/transpile` | `@spike-land-ai/transpile` | Cloudflare Workers | On-demand JS/TS transpilation via esbuild-wasm |
+| `packages/react-ts-worker` | `@spike-land-ai/react-ts-worker` | Browser/Workers/Node | From-scratch React implementation (Fiber reconciler, scheduler, multi-target rendering) |
+| `packages/esbuild-wasm` | `@spike-land-ai/esbuild-wasm` | Browser (WASM) | Cross-platform esbuild WASM binary |
+| `packages/esbuild-wasm-mcp` | `@spike-land-ai/esbuild-wasm-mcp` | Node.js | MCP server wrapping esbuild-wasm |
+| `packages/shared` | `@spike-land-ai/shared` | Node/Browser | Shared types, validations, constants, utilities |
+| `packages/spike-cli` | `@spike-land-ai/spike-cli` | Node.js CLI | MCP multiplexer CLI with Claude chat integration |
+| `packages/spike-review` | `@spike-land-ai/spike-review` | Node.js | AI code review bot with GitHub integration |
+| `packages/hackernews-mcp` | `@spike-land-ai/hackernews-mcp` | Node.js | MCP server for HackerNews read/write |
+| `packages/mcp-nanobanana` | `@spike-land-ai/mcp-nanobanana` | Node.js | Image management/enhancement MCP tools |
+| `packages/openclaw-mcp` | `@spike-land-ai/openclaw-mcp` | Node.js | MCP bridge for OpenClaw gateway |
+| `packages/vibe-dev` | `@spike-land-ai/vibe-dev` | Node.js CLI | Docker-based dev workflow tool |
+| `packages/video` | `@spike-land-ai/video` | Remotion | Educational video compositions |
+| `packages/eslint-config` | `@spike-land-ai/eslint-config` | — | Shared ESLint configuration |
+| `packages/tsconfig` | `@spike-land-ai/tsconfig` | — | Shared TypeScript configuration |
 
 ## Common Commands
 
@@ -43,7 +47,7 @@ npm test              # Run tests (Vitest)
 npm run test:coverage # Tests with coverage
 
 # spike.land (Next.js platform — uses Yarn)
-cd spike.land
+cd packages/spike.land
 yarn dev              # Dev server (localhost:3000)
 yarn build            # Production build
 yarn lint             # ESLint
@@ -78,7 +82,7 @@ The main platform is a Next.js 16 App Router application with:
 - Stripe payments, 17 first-party apps (chess, QA studio, audio mixer, etc.)
 - CI: GitHub Actions → AWS ECS (Depot for remote builds)
 
-Has its own detailed `spike.land/CLAUDE.md` with ticket-driven workflow requirements.
+Has its own detailed `packages/spike.land/CLAUDE.md` with ticket-driven workflow requirements.
 
 ### Edge Computing (spike-land-backend, transpile)
 
@@ -86,7 +90,7 @@ Cloudflare Workers using Hono framework and Durable Objects. The transpile worke
 
 ### Custom React (react-ts-worker)
 
-Full React reimplementation with Fiber reconciler, lane-based scheduling, and host config pattern for multi-target rendering (DOM, Worker-DOM, server streaming). See `react-ts-worker/CLAUDE.md` for architecture details.
+Full React reimplementation with Fiber reconciler, lane-based scheduling, and host config pattern for multi-target rendering (DOM, Worker-DOM, server streaming). See `packages/react-ts-worker/CLAUDE.md` for architecture details.
 
 ### MCP Ecosystem
 

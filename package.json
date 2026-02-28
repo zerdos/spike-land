@@ -3,29 +3,13 @@
   "name": "spike-land-ai",
   "packageManager": "yarn@4.12.0",
   "workspaces": [
-    "packages/*",
-    "shared",
-    "esbuild-wasm",
-    "esbuild-wasm-mcp",
-    "react-ts-worker",
-    "spike-cli",
-    "code",
-    "transpile",
-    "spike-land-backend",
-    "spike.land",
-    "hackernews-mcp",
-    "mcp-nanobanana",
-    "openclaw-mcp",
-    "spike-review",
-    "vibe-dev",
-    "video"
+    "packages/*"
   ],
   "scripts": {
     "build": "yarn workspaces foreach -Apt run build",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "yarn workspaces foreach -Ap run typecheck",
-    "lint": "eslint .",
+    "test": "yarn workspaces foreach -Ap run test",
+    "typecheck": "yarn workspaces foreach -Apt run typecheck",
+    "lint": "yarn workspaces foreach -Ap run lint",
     "changeset": "changeset",
     "release": "changeset publish"
   },

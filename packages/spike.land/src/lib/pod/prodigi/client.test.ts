@@ -202,7 +202,7 @@ describe("prodigi/client", () => {
         await prodigiProvider.createOrder(mockRequest);
 
         const body = JSON.parse(
-          mockFetch.mock.calls[0][1].body as string,
+          mockFetch.mock.calls[0]![1].body as string,
         );
         expect(body.merchantReference).toBe("order-123");
         expect(body.recipient.name).toBe("Test User");
@@ -273,10 +273,10 @@ describe("prodigi/client", () => {
 
         expect(result.currency).toBe("GBP");
         expect(result.items).toHaveLength(1);
-        expect(result.items[0].unitCost).toBe(5);
-        expect(result.items[0].totalCost).toBe(10);
+        expect(result.items![0]!.unitCost).toBe(5);
+        expect(result.items![0]!.totalCost).toBe(10);
         expect(result.shipping).toHaveLength(1);
-        expect(result.shipping[0].cost).toBe(5);
+        expect(result.shipping![0]!.cost).toBe(5);
       });
 
       it("should throw when no quotes are available", async () => {

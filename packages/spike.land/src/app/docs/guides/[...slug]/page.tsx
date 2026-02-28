@@ -110,7 +110,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
 
       {/* Content */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8">
-        <GuideContent content={content} />
+        <GuideContent content={content} slug={slug.join("/")} />
       </div>
     </div>
   );
