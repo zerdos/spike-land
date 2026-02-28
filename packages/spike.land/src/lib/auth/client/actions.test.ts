@@ -1,14 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Use vi.hoisted so mock fns are available inside vi.mock factory
-const { mockNextAuthSignIn, mockNextAuthSignOut } = vi.hoisted(() => ({
-  mockNextAuthSignIn: vi.fn(),
-  mockNextAuthSignOut: vi.fn(),
+const { mockSignIn, mockSignOut } = vi.hoisted(() => ({
+  mockSignIn: vi.fn(),
+  mockSignOut: vi.fn(),
 }));
 
-vi.mock("next-auth/react", () => ({
-  signIn: mockNextAuthSignIn,
-  signOut: mockNextAuthSignOut,
+vi.mock("@/lib/auth/client", () => ({
+  signIn: mockSignIn,
+  signOut: mockSignOut,
+  useSession: vi.fn(),
+  SessionProvider: vi.fn(),
+  authClient: {},
 }));
 
 import { signIn, signOut } from "./actions";
@@ -20,30 +23,30 @@ describe("auth client actions", () => {
   });
 
   describe("signIn", () => {
-    it("delegates to nextAuthSignIn with no args", async () => {
-      mockNextAuthSignIn.mockResolvedValue({ ok: true });
+    it("delegates to signIn with default provider 'email' when no args", async () => {
+      mockSignIn.mockResolvedValue({ ok: true });
       await signIn();
-      expect(mockNextAuthSignIn).toHaveBeenCalledWith(undefined, undefined);
+      expect(mockSignIn).toHaveBeenCalledWith("email", undefined);
     });
 
-    it("passes provider to nextAuthSignIn", async () => {
-      mockNextAuthSignIn.mockResolvedValue({ ok: true });
+    it("passes provider to signIn", async () => {
+      mockSignIn.mockResolvedValue({ ok: true });
       await signIn("github");
-      expect(mockNextAuthSignIn).toHaveBeenCalledWith("github", undefined);
+      expect(mockSignIn).toHaveBeenCalledWith("github", undefined);
     });
 
-    it("passes provider and options to nextAuthSignIn", async () => {
-      mockNextAuthSignIn.mockResolvedValue({ ok: true });
+    it("passes provider and options to signIn", async () => {
+      mockSignIn.mockResolvedValue({ ok: true });
       await signIn("google", { callbackUrl: "/dashboard", redirect: true });
-      expect(mockNextAuthSignIn).toHaveBeenCalledWith("google", {
+      expect(mockSignIn).toHaveBeenCalledWith("google", {
         callbackUrl: "/dashboard",
         redirect: true,
       });
     });
 
-    it("returns the result from nextAuthSignIn", async () => {
+    it("returns the result from signIn", async () => {
       const fakeResult = { ok: true, url: "/dashboard" };
-      mockNextAuthSignIn.mockResolvedValue(fakeResult);
+      mockSignIn.mockResolvedValue(fakeResult);
       const result = await signIn("github");
       expect(result).toEqual(fakeResult);
     });
@@ -59,16 +62,16 @@ describe("auth client actions", () => {
         "credentials",
       ];
       for (const provider of providers) {
-        mockNextAuthSignIn.mockResolvedValue({ ok: true });
+        mockSignIn.mockResolvedValue({ ok: true });
         await signIn(provider);
-        expect(mockNextAuthSignIn).toHaveBeenCalledWith(provider, undefined);
+        expect(mockSignIn).toHaveBeenCalledWith(provider, undefined);
       }
     });
 
     it("passes extra options fields through", async () => {
-      mockNextAuthSignIn.mockResolvedValue(null);
+      mockSignIn.mockResolvedValue(null);
       await signIn("email", { callbackUrl: "/home", redirect: false, email: "user@test.com" });
-      expect(mockNextAuthSignIn).toHaveBeenCalledWith("email", {
+      expect(mockSignIn).toHaveBeenCalledWith("email", {
         callbackUrl: "/home",
         redirect: false,
         email: "user@test.com",
@@ -77,23 +80,23 @@ describe("auth client actions", () => {
   });
 
   describe("signOut", () => {
-    it("delegates to nextAuthSignOut with no args", async () => {
-      mockNextAuthSignOut.mockResolvedValue(undefined);
+    it("delegates to signOut with no args", async () => {
+      mockSignOut.mockResolvedValue(undefined);
       await signOut();
-      expect(mockNextAuthSignOut).toHaveBeenCalledWith(undefined);
+      expect(mockSignOut).toHaveBeenCalledWith(undefined);
     });
 
-    it("passes options to nextAuthSignOut", async () => {
-      mockNextAuthSignOut.mockResolvedValue(undefined);
+    it("passes options to signOut", async () => {
+      mockSignOut.mockResolvedValue(undefined);
       await signOut({ callbackUrl: "/", redirect: true });
-      expect(mockNextAuthSignOut).toHaveBeenCalledWith({
+      expect(mockSignOut).toHaveBeenCalledWith({
         callbackUrl: "/",
         redirect: true,
       });
     });
 
-    it("returns result from nextAuthSignOut", async () => {
-      mockNextAuthSignOut.mockResolvedValue({ url: "/" });
+    it("returns result from signOut", async () => {
+      mockSignOut.mockResolvedValue({ url: "/" });
       const result = await signOut({ callbackUrl: "/" });
       expect(result).toEqual({ url: "/" });
     });

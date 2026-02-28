@@ -513,7 +513,7 @@ describe("useChessMcp — startGame", () => {
 
   it("does nothing when playerId is null", () => {
     // profileData is undefined → onSuccess never fires → playerId stays null
-    const mocks = setupDefaultMocks({ profileData: undefined });
+    const mocks = setupDefaultMocks({});
     const { result } = renderHook(() => useChessMcp());
 
     act(() => result.current.startGame());
@@ -573,7 +573,7 @@ describe("useChessMcp — joinGame", () => {
   });
 
   it("does nothing when playerId is null", () => {
-    const mocks = setupDefaultMocks({ profileData: undefined });
+    const mocks = setupDefaultMocks({});
     const { result } = renderHook(() => useChessMcp());
 
     act(() => result.current.joinGame("some-game-id"));

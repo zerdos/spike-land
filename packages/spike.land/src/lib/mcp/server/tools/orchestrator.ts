@@ -104,7 +104,7 @@ export function registerOrchestratorTools(
           id: planId,
           userId,
           description,
-          context,
+          ...(context !== undefined ? { context } : {}),
           status: "pending",
           subtasks: subtaskList,
           createdAt: new Date(),

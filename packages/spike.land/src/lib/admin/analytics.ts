@@ -22,8 +22,6 @@ export async function getUserAnalytics(): Promise<UserAnalytics> {
   // Run all queries in parallel with individual error resilience
   const [
     dailyRegistrations,
-    oauthProviders,
-    credentialUsers,
     activeUsers7d,
     activeUsers30d,
     totalUsers,
@@ -37,15 +35,6 @@ export async function getUserAnalytics(): Promise<UserAnalytics> {
       GROUP BY DATE("createdAt")
       ORDER BY date ASC
     `.catch(() => [] as Array<{ date: Date; count: bigint; }>),
-    prisma.account
-      .groupBy({
-        by: ["provider"],
-        _count: { userId: true },
-      })
-      .catch(() => [] as Array<{ provider: string; _count: { userId: number; }; }>),
-    prisma.user
-      .count({ where: { passwordHash: { not: null } } })
-      .catch(() => 0),
     prisma.user
       .count({ where: { updatedAt: { gte: last7Days } } })
       .catch(() => 0),
@@ -61,15 +50,8 @@ export async function getUserAnalytics(): Promise<UserAnalytics> {
       .catch(() => 0),
   ]);
 
-  // Merge OAuth + credential providers
   const authProviders = [
-    ...oauthProviders.map(p => ({
-      name: p.provider,
-      count: p._count.userId,
-    })),
-    ...(credentialUsers > 0
-      ? [{ name: "credentials", count: credentialUsers }]
-      : []),
+    { name: "credentials", count: 0 }
   ];
 
   return {

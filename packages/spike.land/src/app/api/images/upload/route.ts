@@ -208,13 +208,13 @@ async function handleUpload(
   await prisma.user.upsert({
     where: { id: session.user.id },
     update: {
-      name: session.user.name,
-      image: session.user.image,
+      ...(session.user.name !== undefined ? { name: session.user.name } : {}),
+      ...(session.user.image !== undefined ? { image: session.user.image } : {}),
     },
     create: {
       id: session.user.id,
-      name: session.user.name,
-      image: session.user.image,
+      ...(session.user.name !== undefined ? { name: session.user.name } : {}),
+      ...(session.user.image !== undefined ? { image: session.user.image } : {}),
     },
   });
 

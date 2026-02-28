@@ -205,7 +205,7 @@ export function registerSwarmTools(
             machineId: machine_id,
             sessionId: session_id,
             displayName: display_name,
-            projectPath: project_path,
+            projectPath: project_path ?? null,
             lastSeenAt: new Date(),
           },
         });
@@ -388,9 +388,9 @@ export function registerSwarmTools(
             role: "AGENT",
             content,
             isRead: false,
-            metadata: (metadata ?? undefined) as
+            metadata: (metadata ?? null) as
               | import("@/generated/prisma").Prisma.InputJsonValue
-              | undefined,
+              | null,
           },
         });
         return textResult(

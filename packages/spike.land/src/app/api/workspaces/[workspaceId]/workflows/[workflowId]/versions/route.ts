@@ -23,15 +23,15 @@ interface RouteParams {
 }
 
 const stepSchema: z.ZodType<{
-  id?: string;
+  id?: string | undefined;
   name: string;
   type: WorkflowStepType;
-  sequence?: number;
+  sequence?: number | undefined;
   config: Record<string, unknown>;
-  dependencies?: string[];
-  parentStepId?: string | null;
-  branchType?: "IF_TRUE" | "IF_FALSE" | "SWITCH_CASE" | "DEFAULT" | null;
-  branchCondition?: string | null;
+  dependencies?: string[] | undefined;
+  parentStepId?: string | null | undefined;
+  branchType?: "IF_TRUE" | "IF_FALSE" | "SWITCH_CASE" | "DEFAULT" | null | undefined;
+  branchCondition?: string | null | undefined;
 }> = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Step name is required"),
@@ -147,8 +147,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     );
   }
 
+  const { description: versionDesc, steps } = validation.data;
   const { data: version, error: createError } = await tryCatch(
-    createWorkflowVersion(workflowId, workspaceId, validation.data),
+    createWorkflowVersion(workflowId, workspaceId, {
+      ...(versionDesc !== undefined ? { description: versionDesc } : {}),
+      steps,
+    }),
   );
 
   if (createError) {

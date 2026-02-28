@@ -7,7 +7,7 @@
  * from `@/lib/auth/client` instead of `next-auth/react`.
  */
 
-import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react";
+import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "@/lib/auth/client";
 
 export type SignInProvider =
   | "github"
@@ -36,12 +36,12 @@ export async function signIn(
   provider?: SignInProvider,
   options?: SignInOptions,
 ) {
-  return nextAuthSignIn(provider, options as Parameters<typeof nextAuthSignIn>[1]);
+  return nextAuthSignIn(provider || "email", options);
 }
 
 /**
  * Trigger a sign-out flow.
  */
 export async function signOut(options?: SignOutOptions) {
-  return nextAuthSignOut(options as Parameters<typeof nextAuthSignOut>[0]);
+  return nextAuthSignOut(options);
 }

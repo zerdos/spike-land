@@ -70,6 +70,10 @@ async function handleForkPipeline(
   }
 
   // Create forked pipeline
+  const analysisConfigVal = source.analysisConfig as Prisma.InputJsonValue | undefined;
+  const autoCropConfigVal = source.autoCropConfig as Prisma.InputJsonValue | undefined;
+  const promptConfigVal = source.promptConfig as Prisma.InputJsonValue | undefined;
+  const generationConfigVal = source.generationConfig as Prisma.InputJsonValue | undefined;
   const forkedPipeline = await prisma.enhancementPipeline.create({
     data: {
       name: customName?.trim() || `${source.name} (copy)`,
@@ -77,16 +81,10 @@ async function handleForkPipeline(
       userId: userId,
       tier: source.tier,
       visibility: PipelineVisibility.PRIVATE, // Always private initially
-      analysisConfig: source.analysisConfig as
-        | Prisma.InputJsonValue
-        | undefined,
-      autoCropConfig: source.autoCropConfig as
-        | Prisma.InputJsonValue
-        | undefined,
-      promptConfig: source.promptConfig as Prisma.InputJsonValue | undefined,
-      generationConfig: source.generationConfig as
-        | Prisma.InputJsonValue
-        | undefined,
+      ...(analysisConfigVal !== undefined ? { analysisConfig: analysisConfigVal } : {}),
+      ...(autoCropConfigVal !== undefined ? { autoCropConfig: autoCropConfigVal } : {}),
+      ...(promptConfigVal !== undefined ? { promptConfig: promptConfigVal } : {}),
+      ...(generationConfigVal !== undefined ? { generationConfig: generationConfigVal } : {}),
     },
     select: {
       id: true,

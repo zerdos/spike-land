@@ -168,7 +168,7 @@ export function registerPagesTools(
             status: "DRAFT",
             themeData: themeData
               ? (themeData as Prisma.InputJsonValue)
-              : undefined,
+              : null,
             tags: tags ?? [],
             customCss: customCss ? sanitizeCss(customCss) : null,
             userId,
@@ -586,9 +586,9 @@ export function registerPagesTools(
             status: "DRAFT",
             themeData: source.themeData
               ? (source.themeData as Prisma.InputJsonValue)
-              : undefined,
+              : null,
             tags: source.tags,
-            customCss: source.customCss ? sanitizeCss(source.customCss) : undefined,
+            customCss: source.customCss ? sanitizeCss(source.customCss) : null,
             seoTitle: source.seoTitle,
             seoDescription: source.seoDescription,
             ogImageUrl: source.ogImageUrl,
@@ -622,7 +622,7 @@ export function registerPagesTools(
             + `**Title:** ${cloned.title}\n`
             + `**Layout:** ${cloned.layout}\n`
             + `**Status:** ${cloned.status}\n`
-            + `**Blocks Copied:** ${cloned._count.blocks}\n`
+            + `**Blocks Copied:** ${(cloned as typeof cloned & { _count: { blocks: number } })._count.blocks}\n`
             + `**Created:** ${cloned.createdAt.toISOString()}`,
         );
       }),

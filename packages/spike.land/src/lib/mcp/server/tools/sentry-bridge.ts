@@ -30,7 +30,7 @@ export function registerSentryBridgeTools(
     ): Promise<CallToolResult> =>
       safeToolCall("error_issues", async () => {
         const { listErrorIssues } = await import("@/lib/bridges/error-log");
-        const issues = await listErrorIssues({ query, limit });
+        const issues = await listErrorIssues({ ...(query !== undefined ? { query } : {}), limit });
         if (issues.length === 0) return textResult("No error issues found.");
         let text = `**Error Issues (${issues.length}):**\n\n`;
         for (const issue of issues) {

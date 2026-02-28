@@ -64,6 +64,8 @@ export async function POST(
 
   if (existing) {
     // Return existing status if already registered
+    const existingAgentId = existing.agentId || undefined;
+    const existingDisplayName = existing.displayName || undefined;
     const response: ConnectionStatusResponse = {
       status: existing.status === "CONNECTED"
         ? "connected"
@@ -71,8 +73,8 @@ export async function POST(
         ? "expired"
         : "pending",
       connectId: existing.connectId,
-      agentId: existing.agentId || undefined,
-      displayName: existing.displayName || undefined,
+      ...(existingAgentId !== undefined ? { agentId: existingAgentId } : {}),
+      ...(existingDisplayName !== undefined ? { displayName: existingDisplayName } : {}),
       expiresAt: existing.expiresAt.toISOString(),
     };
     return NextResponse.json(response, { status: 200 });
@@ -88,7 +90,7 @@ export async function POST(
         machineId,
         sessionId,
         displayName: displayName || `Agent ${machineId.slice(0, 8)}`,
-        projectPath,
+        ...(projectPath !== undefined ? { projectPath } : {}),
         status: "PENDING",
         expiresAt,
       },
@@ -103,10 +105,11 @@ export async function POST(
     );
   }
 
+  const createdDisplayName = created.displayName || undefined;
   const response: ConnectionStatusResponse = {
     status: "pending",
     connectId: created.connectId,
-    displayName: created.displayName || undefined,
+    ...(createdDisplayName !== undefined ? { displayName: createdDisplayName } : {}),
     expiresAt: created.expiresAt.toISOString(),
   };
 
@@ -156,6 +159,8 @@ export async function GET(
     );
   }
 
+  const requestAgentId = request.agentId || undefined;
+  const requestDisplayName = request.displayName || undefined;
   const response: ConnectionStatusResponse = {
     status: request.status === "CONNECTED"
       ? "connected"
@@ -163,8 +168,8 @@ export async function GET(
       ? "expired"
       : "pending",
     connectId: request.connectId,
-    agentId: request.agentId || undefined,
-    displayName: request.displayName || undefined,
+    ...(requestAgentId !== undefined ? { agentId: requestAgentId } : {}),
+    ...(requestDisplayName !== undefined ? { displayName: requestDisplayName } : {}),
     expiresAt: request.expiresAt.toISOString(),
   };
 

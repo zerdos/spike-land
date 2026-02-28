@@ -103,9 +103,9 @@ export async function POST(request: NextRequest) {
     manager,
     promptContext: {
       route: route || "/",
-      pageTitle,
+      ...(pageTitle !== undefined ? { pageTitle } : {}),
       isAuthenticated,
-      userName: session?.user?.name ?? undefined,
+      ...(session?.user?.name ? { userName: session.user.name } : {}),
     },
     attachments,
     maxTurns: 10,

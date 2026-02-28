@@ -140,9 +140,9 @@ export async function POST(request: NextRequest) {
       question: trimmedQuestion,
       sessionId: sid,
       route: routeStr,
-      pageTitle,
+      ...(pageTitle !== undefined ? { pageTitle } : {}),
       isAuthenticated,
-      userName: session?.user?.name || undefined,
+      ...(session?.user?.name ? { userName: session.user.name } : {}),
     });
 
     if (gatewayStream) {

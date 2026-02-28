@@ -60,7 +60,7 @@ import {
   requireAdminByUserId,
   verifyAdminAccess,
 } from "./admin-middleware";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/types";
 
 function makeSession(role: string, id = "user_123"): Session {
   return {

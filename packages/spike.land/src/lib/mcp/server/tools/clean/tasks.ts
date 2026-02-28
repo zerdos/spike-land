@@ -40,7 +40,7 @@ export function registerCleanTasksTools(
         const session = await prisma.cleaningSession.create({
           data: {
             userId,
-            roomLabel: room_label,
+            roomLabel: room_label ?? null,
           },
         });
 
@@ -288,7 +288,7 @@ export function registerCleanTasksTools(
           where: { id: task_id },
           data: {
             status: "SKIPPED",
-            skippedReason: reason,
+            skippedReason: reason ?? null,
           },
         });
 

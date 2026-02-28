@@ -149,7 +149,11 @@ export async function POST(request: NextRequest) {
     }
 
     const blendResult = await resolveBlendSource(
-      blendSource,
+      {
+        ...(blendSource.imageId !== undefined ? { imageId: blendSource.imageId } : {}),
+        ...(blendSource.base64 !== undefined ? { base64: blendSource.base64 } : {}),
+        ...(blendSource.mimeType !== undefined ? { mimeType: blendSource.mimeType } : {}),
+      },
       session.user.id,
       imageId,
     );

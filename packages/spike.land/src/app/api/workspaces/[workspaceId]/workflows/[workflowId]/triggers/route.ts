@@ -186,7 +186,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       const { data: schedule, error } = await tryCatch(
         createScheduleTrigger(workflowId, workspaceId, {
           cronExpression: input.cronExpression,
-          timezone: input.timezone,
+          ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
         }),
       );
 
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     case "webhook": {
       const { data: webhook, error } = await tryCatch(
         createWebhookTrigger(workflowId, workspaceId, {
-          secret: input.secret,
+          ...(input.secret !== undefined ? { secret: input.secret } : {}),
         }),
       );
 
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       const { data: subscription, error } = await tryCatch(
         createEventSubscription(workflowId, workspaceId, {
           eventType: input.eventType as WorkflowEventType,
-          filterConfig: input.filterConfig,
+          ...(input.filterConfig !== undefined ? { filterConfig: input.filterConfig } : {}),
         }),
       );
 
@@ -311,12 +311,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         );
       }
 
+      const { cronExpression: schCron, timezone: schTz, isActive: schActive } = validation.data;
       const { data: schedule, error } = await tryCatch(
         updateScheduleTrigger(
           triggerId,
           workflowId,
           workspaceId,
-          validation.data,
+          {
+            ...(schCron !== undefined ? { cronExpression: schCron } : {}),
+            ...(schTz !== undefined ? { timezone: schTz } : {}),
+            ...(schActive !== undefined ? { isActive: schActive } : {}),
+          },
         ),
       );
 
@@ -345,12 +350,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         );
       }
 
+      const { secret: wbSecret, regenerateToken: wbRegen, isActive: wbActive } = validation.data;
       const { data: webhook, error } = await tryCatch(
         updateWebhookTrigger(
           triggerId,
           workflowId,
           workspaceId,
-          validation.data,
+          {
+            ...(wbSecret !== undefined ? { secret: wbSecret } : {}),
+            ...(wbRegen !== undefined ? { regenerateToken: wbRegen } : {}),
+            ...(wbActive !== undefined ? { isActive: wbActive } : {}),
+          },
         ),
       );
 
@@ -379,12 +389,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         );
       }
 
+      const { filterConfig: evFilter, isActive: evActive } = validation.data;
       const { data: subscription, error } = await tryCatch(
         updateEventSubscription(
           triggerId,
           workflowId,
           workspaceId,
-          validation.data,
+          {
+            ...(evFilter !== undefined ? { filterConfig: evFilter } : {}),
+            ...(evActive !== undefined ? { isActive: evActive } : {}),
+          },
         ),
       );
 

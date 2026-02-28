@@ -78,8 +78,8 @@ export async function POST(req: Request) {
       title: generated.title,
       description: generated.description,
       content: generateMdxFromResponse(generated), // Helper to stitch sections
-      generatedById: userId,
-      aiModel: generated.aiModel,
+      ...(userId !== undefined ? { generatedById: userId } : {}),
+      ...(generated.aiModel !== undefined ? { aiModel: generated.aiModel } : {}),
     });
 
     return NextResponse.json(saved);

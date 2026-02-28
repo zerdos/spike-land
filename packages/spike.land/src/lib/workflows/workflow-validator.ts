@@ -63,7 +63,7 @@ function validateStep(
     errors.push({
       code: "MISSING_NAME",
       message: "Step name is required",
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -71,7 +71,7 @@ function validateStep(
     errors.push({
       code: "INVALID_TYPE",
       message: `Invalid step type: ${step.type}. Must be one of: ${VALID_STEP_TYPES.join(", ")}`,
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -82,7 +82,7 @@ function validateStep(
     errors.push({
       code: "INVALID_SEQUENCE",
       message: "Step sequence must be a non-negative number",
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -91,7 +91,7 @@ function validateStep(
     errors.push({
       code: "INVALID_CONFIG",
       message: "Step config must be an object",
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -100,7 +100,7 @@ function validateStep(
     errors.push({
       code: "BRANCH_WITHOUT_PARENT",
       message: "Branch type specified but no parent step ID provided",
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -112,7 +112,7 @@ function validateStep(
     warnings.push({
       code: "CONDITION_NO_BRANCHES",
       message: "Condition step has no branches defined",
-      stepId: step.id,
+      ...(step.id !== undefined ? { stepId: step.id } : {}),
     });
   }
 
@@ -198,7 +198,7 @@ function checkMissingDependencies(
           errors.push({
             code: "MISSING_DEPENDENCY",
             message: `Step references non-existent dependency: ${depId}`,
-            stepId: step.id,
+            ...(step.id !== undefined ? { stepId: step.id } : {}),
           });
         }
       }
@@ -208,7 +208,7 @@ function checkMissingDependencies(
       errors.push({
         code: "MISSING_PARENT",
         message: `Step references non-existent parent: ${step.parentStepId}`,
-        stepId: step.id,
+        ...(step.id !== undefined ? { stepId: step.id } : {}),
       });
     }
 

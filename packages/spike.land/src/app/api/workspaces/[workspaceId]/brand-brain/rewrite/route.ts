@@ -228,8 +228,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         platform: platform as ContentPlatform,
         status: "COMPLETED",
         characterLimit: getPlatformLimit(platform),
-        changes: rewriteResult.changes as unknown as undefined,
-        toneAnalysis: rewriteResult.toneAnalysis as unknown as undefined,
         processedAt: new Date(),
         createdById: userId,
       },

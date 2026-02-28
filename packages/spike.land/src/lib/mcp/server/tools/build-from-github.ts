@@ -69,7 +69,7 @@ export function registerBuildFromGithubTools(
           entryPoints: [entryPoint],
           minify,
           plugins: [
-            githubResolverPlugin({ repoUrl, branchOrCommit, cache }),
+            githubResolverPlugin({ repoUrl, ...(branchOrCommit !== undefined ? { branchOrCommit } : {}), cache }),
             npmResolverPlugin({ mode: npmMode, cache }),
           ],
           define: {

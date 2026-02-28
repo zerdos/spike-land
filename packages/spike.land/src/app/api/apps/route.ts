@@ -71,7 +71,16 @@ export async function POST(request: NextRequest) {
 
   const promptResult = appPromptCreationSchema.safeParse(body);
   if (promptResult.success) {
-    const res = await createAppFromPrompt(userId, promptResult.data);
+    const { prompt, codespaceId, imageIds, templateId, workspaceId, linkedCampaign } =
+      promptResult.data;
+    const res = await createAppFromPrompt(userId, {
+      prompt,
+      ...(codespaceId !== undefined ? { codespaceId } : {}),
+      ...(imageIds !== undefined ? { imageIds } : {}),
+      ...(templateId !== undefined ? { templateId } : {}),
+      ...(workspaceId !== undefined ? { workspaceId } : {}),
+      ...(linkedCampaign !== undefined ? { linkedCampaign } : {}),
+    });
     if (res.error) {
       return NextResponse.json({ error: res.error }, { status: res.status });
     }
@@ -86,7 +95,15 @@ export async function POST(request: NextRequest) {
     }, { status: 400 });
   }
 
-  const res = await createLegacyApp(userId, parseResult.data);
+  const { name, description, codespaceId: legacyCodespaceId, requirements, monetizationModel } =
+    parseResult.data;
+  const res = await createLegacyApp(userId, {
+    name,
+    description,
+    requirements,
+    monetizationModel,
+    ...(legacyCodespaceId !== undefined ? { codespaceId: legacyCodespaceId } : {}),
+  });
   if (res.error) {
     return NextResponse.json({ error: res.error }, { status: res.status });
   }

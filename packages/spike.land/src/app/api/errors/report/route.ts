@@ -137,25 +137,29 @@ export async function POST(request: Request) {
         ? "BACKEND"
         : "FRONTEND";
 
+      const stackVal = error.stack?.slice(0, 50000);
+      const sourceFileVal = error.sourceFile?.slice(0, 500);
+      const sourceLineVal = typeof error.sourceLine === "number" ? error.sourceLine : undefined;
+      const sourceColumnVal = typeof error.sourceColumn === "number" ? error.sourceColumn : undefined;
+      const callerNameVal = error.callerName?.slice(0, 200);
+      const errorTypeVal = error.errorType?.slice(0, 100);
+      const errorCodeVal = error.errorCode?.slice(0, 100);
+      const routeVal = error.route?.slice(0, 500);
+      const userIdVal = error.userId?.slice(0, 100);
+      const metadataVal = typeof error.metadata === "object" ? error.metadata : undefined;
       validErrors.push({
         error: {
           message: error.message.slice(0, 10000),
-          stack: error.stack?.slice(0, 50000),
-          sourceFile: error.sourceFile?.slice(0, 500),
-          sourceLine: typeof error.sourceLine === "number"
-            ? error.sourceLine
-            : undefined,
-          sourceColumn: typeof error.sourceColumn === "number"
-            ? error.sourceColumn
-            : undefined,
-          callerName: error.callerName?.slice(0, 200),
-          errorType: error.errorType?.slice(0, 100),
-          errorCode: error.errorCode?.slice(0, 100),
-          route: error.route?.slice(0, 500),
-          userId: error.userId?.slice(0, 100),
-          metadata: typeof error.metadata === "object"
-            ? error.metadata
-            : undefined,
+          ...(stackVal !== undefined ? { stack: stackVal } : {}),
+          ...(sourceFileVal !== undefined ? { sourceFile: sourceFileVal } : {}),
+          ...(sourceLineVal !== undefined ? { sourceLine: sourceLineVal } : {}),
+          ...(sourceColumnVal !== undefined ? { sourceColumn: sourceColumnVal } : {}),
+          ...(callerNameVal !== undefined ? { callerName: callerNameVal } : {}),
+          ...(errorTypeVal !== undefined ? { errorType: errorTypeVal } : {}),
+          ...(errorCodeVal !== undefined ? { errorCode: errorCodeVal } : {}),
+          ...(routeVal !== undefined ? { route: routeVal } : {}),
+          ...(userIdVal !== undefined ? { userId: userIdVal } : {}),
+          ...(metadataVal !== undefined ? { metadata: metadataVal } : {}),
           timestamp: error.timestamp || new Date().toISOString(),
         },
         environment: env,

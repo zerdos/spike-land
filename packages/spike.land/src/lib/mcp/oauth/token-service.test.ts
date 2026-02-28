@@ -554,8 +554,6 @@ describe("token-service", () => {
         userId: "user-1",
         redirectUri: "https://example.com/callback",
         codeChallenge: "challenge123",
-        state: undefined,
-        resource: undefined,
       });
 
       expect(mockPrisma.oAuthAuthorizationCode.create).toHaveBeenCalledWith({

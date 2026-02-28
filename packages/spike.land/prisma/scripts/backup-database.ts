@@ -54,8 +54,6 @@ async function backup() {
   // Define tables to backup with their Prisma model names
   const tables = [
     { name: "users", query: () => prisma.user.findMany() },
-    { name: "accounts", query: () => prisma.account.findMany() },
-    { name: "sessions", query: () => prisma.session.findMany() },
     { name: "enhanced_images", query: () => prisma.enhancedImage.findMany() },
     {
       name: "image_enhancement_jobs",

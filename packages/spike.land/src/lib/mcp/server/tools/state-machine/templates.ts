@@ -470,7 +470,7 @@ export function registerStateMachineTemplateTools(
             source: trDef.source,
             target: trDef.target,
             event: trDef.event,
-            guard: trDef.guard ? { expression: trDef.guard } : undefined,
+            ...(trDef.guard ? { guard: { expression: trDef.guard } } : {}),
             actions: [],
             internal: false,
           });

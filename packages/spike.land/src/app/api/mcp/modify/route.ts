@@ -285,7 +285,7 @@ export async function POST(request: NextRequest) {
   const { data: result, error: jobError } = await tryCatch(
     createModificationJob({
       userId: userId!,
-      apiKeyId,
+      ...(apiKeyId !== undefined ? { apiKeyId } : {}),
       prompt: prompt.trim(),
       tier: tier as EnhancementTier,
       imageData: finalImageData,

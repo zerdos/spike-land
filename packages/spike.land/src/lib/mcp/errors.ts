@@ -131,7 +131,9 @@ export class McpError extends Error {
     this.code = code;
     // Use provided retryable value or look up from config
     this.retryable = retryable ?? MCP_ERROR_RETRYABLE[code];
-    this.cause = cause;
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
 
     // Maintains proper stack trace for where our error was thrown
     if (Error.captureStackTrace) {

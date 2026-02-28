@@ -12,13 +12,11 @@ erDiagram
   String id PK
   String name "nullable"
   String email UK "nullable"
-  DateTime emailVerified "nullable"
   String image "nullable"
   DateTime createdAt
   DateTime updatedAt
   String stripeCustomerId UK "nullable"
   UserRole role
-  String passwordHash "nullable"
 }
 "state_machines" {
   String id PK
@@ -79,20 +77,6 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"accounts" {
-  String id PK
-  String userId FK
-  String type
-  String provider
-  String providerAccountId
-  String refresh_token "nullable"
-  String access_token "nullable"
-  Int expires_at "nullable"
-  String token_type "nullable"
-  String scope "nullable"
-  String id_token "nullable"
-  String session_state "nullable"
-}
 "marketing_accounts" {
   String id PK
   String userId FK
@@ -117,17 +101,6 @@ erDiagram
   Int spend
   DateTime createdAt
   DateTime updatedAt
-}
-"sessions" {
-  String id PK
-  String sessionToken UK
-  String userId FK
-  DateTime expires
-}
-"verification_tokens" {
-  String identifier
-  String token UK
-  DateTime expires
 }
 "apps" {
   String id PK
@@ -3220,10 +3193,8 @@ erDiagram
 "campaign_briefs" }o--o| "workspaces" : workspace
 "campaign_target_audiences" |o--|| "campaign_briefs" : brief
 "campaign_objectives" }o--|| "campaign_briefs" : brief
-"accounts" }o--|| "users" : user
 "marketing_accounts" }o--|| "users" : user
 "google_ads_campaigns" }o--|| "marketing_accounts" : marketingAccount
-"sessions" }o--|| "users" : user
 "apps" }o--o| "apps" : parentApp
 "apps" }o--|| "users" : user
 "requirements" }o--|| "apps" : app
@@ -3539,13 +3510,11 @@ Properties as follows:
 - `id`:
 - `name`:
 - `email`:
-- `emailVerified`:
 - `image`:
 - `createdAt`:
 - `updatedAt`:
 - `stripeCustomerId`:
 - `role`:
-- `passwordHash`:
 
 ### `state_machines`
 
@@ -3618,23 +3587,6 @@ Properties as follows:
 - `createdAt`:
 - `updatedAt`:
 
-### `accounts`
-
-Properties as follows:
-
-- `id`:
-- `userId`:
-- `type`:
-- `provider`:
-- `providerAccountId`:
-- `refresh_token`:
-- `access_token`:
-- `expires_at`:
-- `token_type`:
-- `scope`:
-- `id_token`:
-- `session_state`:
-
 ### `marketing_accounts`
 
 Properties as follows:
@@ -3665,23 +3617,6 @@ Properties as follows:
 - `spend`:
 - `createdAt`:
 - `updatedAt`:
-
-### `sessions`
-
-Properties as follows:
-
-- `id`:
-- `sessionToken`:
-- `userId`:
-- `expires`:
-
-### `verification_tokens`
-
-Properties as follows:
-
-- `identifier`:
-- `token`:
-- `expires`:
 
 ### `apps`
 

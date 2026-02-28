@@ -109,8 +109,8 @@ export function registerImageTools(
           userId,
           prompt: prompt.trim(),
           tier: tier as EnhancementTier,
-          negativePrompt: negative_prompt?.trim(),
-          aspectRatio: aspect_ratio as AspectRatio | undefined,
+          ...(negative_prompt !== undefined ? { negativePrompt: negative_prompt.trim() } : {}),
+          ...(aspect_ratio !== undefined ? { aspectRatio: aspect_ratio as AspectRatio } : {}),
         });
 
         if (!result.success || !result.jobId) {

@@ -357,11 +357,13 @@ function parseTestOutput(output: string, format: string): TestReport {
       /FAIL\s+(.+?)(?:\n|$)[\s\S]*?Expected:?\s*(.+?)(?:\n|$)[\s\S]*?Received:?\s*(.+?)(?:\n|$)/g,
     );
     for (const match of failBlocks) {
+      const expectedVal = match[2]?.trim();
+      const receivedVal = match[3]?.trim();
       failures.push({
         name: match[1]?.trim() || "Unknown test",
         error: "Assertion failed",
-        expected: match[2]?.trim(),
-        received: match[3]?.trim(),
+        ...(expectedVal !== undefined ? { expected: expectedVal } : {}),
+        ...(receivedVal !== undefined ? { received: receivedVal } : {}),
       });
     }
   } else {

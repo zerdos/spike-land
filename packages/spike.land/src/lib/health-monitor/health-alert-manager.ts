@@ -46,12 +46,12 @@ export async function createHealthEvent(
       workspaceId: options.workspaceId,
       eventType: options.eventType,
       severity: options.severity,
-      previousStatus: options.previousStatus,
+      ...(options.previousStatus !== undefined ? { previousStatus: options.previousStatus } : {}),
       newStatus: options.newStatus,
-      previousScore: options.previousScore,
+      ...(options.previousScore !== undefined ? { previousScore: options.previousScore } : {}),
       newScore: options.newScore,
       message: options.message,
-      details: options.details as Prisma.InputJsonValue | undefined,
+      ...(options.details !== undefined ? { details: options.details as Prisma.InputJsonValue } : {}),
     },
   });
 
@@ -245,7 +245,7 @@ export async function sendHealthAlertEmail(
     to: recipient.email,
     subject: `${severityEmoji} Account Health Alert: ${alert.accountName}`,
     react: HealthAlertEmail({
-      recipientName: recipient.name,
+      ...(recipient.name !== undefined ? { recipientName: recipient.name } : {}),
       accountName: alert.accountName,
       platform: alert.platform,
       healthScore: alert.healthScore,
@@ -335,10 +335,8 @@ export async function sendHealthAlerts(
       health: {
         OR: [
           { healthScore: { lte: config.alertOnScoreBelow ?? 50 } },
-          { isRateLimited: config.alertOnRateLimit ? true : undefined },
-          {
-            tokenRefreshRequired: config.alertOnTokenExpiry ? true : undefined,
-          },
+          ...(config.alertOnRateLimit ? [{ isRateLimited: true }] : []),
+          ...(config.alertOnTokenExpiry ? [{ tokenRefreshRequired: true }] : []),
         ],
       },
     },
@@ -406,7 +404,7 @@ export async function sendHealthAlerts(
     if (config.notifyChannels.includes("email")) {
       for (const admin of validAdmins) {
         await sendHealthAlertEmail(
-          { email: admin.user.email!, name: admin.user.name || undefined },
+          { email: admin.user.email!, ...(admin.user.name ? { name: admin.user.name } : {}) },
           {
             accountName: account.accountName,
             platform: account.platform,

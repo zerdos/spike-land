@@ -189,10 +189,12 @@ export function CoverageReport(
             </div>
 
             <OverallScore
-              lines={state.result.lines}
-              functions={state.result.functions}
-              branches={state.result.branches}
-              statements={state.result.statements}
+              {...(state.result.lines !== undefined ? { lines: state.result.lines } : {})}
+              {...(state.result.functions !== undefined ? { functions: state.result.functions } : {})}
+              {...(state.result.branches !== undefined ? { branches: state.result.branches } : {})}
+              {...(state.result.statements !== undefined
+                ? { statements: state.result.statements }
+                : {})}
             />
 
             <div className="space-y-4">

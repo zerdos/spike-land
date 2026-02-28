@@ -133,10 +133,8 @@ export async function POST(req: NextRequest) {
       where: { id: taskId },
       data: {
         status,
-        result: result
-          ? (JSON.parse(JSON.stringify(result)) as Prisma.InputJsonValue)
-          : undefined,
-        error: error ? error : undefined,
+        ...(result ? { result: JSON.parse(JSON.stringify(result)) as Prisma.InputJsonValue } : {}),
+        ...(error ? { error } : {}),
       },
     }),
   );

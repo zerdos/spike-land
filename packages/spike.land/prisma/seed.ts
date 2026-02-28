@@ -46,7 +46,6 @@ async function main() {
     create: {
       email: "test@example.com",
       name: "Test User",
-      emailVerified: new Date(),
     },
   });
 

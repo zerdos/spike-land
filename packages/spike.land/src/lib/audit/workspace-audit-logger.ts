@@ -36,15 +36,15 @@ export class WorkspaceAuditLogger {
           workspaceId: options.workspaceId,
           userId: options.userId,
           action: options.action,
-          targetId: options.targetId,
-          targetType: options.targetType,
-          resourceId: options.resourceId,
-          resourceType: options.resourceType,
-          oldValue: options.oldValue as object | undefined,
-          newValue: options.newValue as object | undefined,
-          metadata: options.metadata as object | undefined,
-          ipAddress: options.ipAddress,
-          userAgent: options.userAgent,
+          ...(options.targetId !== undefined ? { targetId: options.targetId } : {}),
+          ...(options.targetType !== undefined ? { targetType: options.targetType } : {}),
+          ...(options.resourceId !== undefined ? { resourceId: options.resourceId } : {}),
+          ...(options.resourceType !== undefined ? { resourceType: options.resourceType } : {}),
+          ...(options.oldValue !== undefined ? { oldValue: options.oldValue as object } : {}),
+          ...(options.newValue !== undefined ? { newValue: options.newValue as object } : {}),
+          ...(options.metadata !== undefined ? { metadata: options.metadata as object } : {}),
+          ...(options.ipAddress !== undefined ? { ipAddress: options.ipAddress } : {}),
+          ...(options.userAgent !== undefined ? { userAgent: options.userAgent } : {}),
         },
       }),
     );
@@ -80,9 +80,9 @@ export class WorkspaceAuditLogger {
       action: action as AuditAction,
       targetId: draftId,
       targetType: "relay_draft",
-      metadata,
-      ipAddress,
-      userAgent,
+      ...(metadata !== undefined ? { metadata } : {}),
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
+      ...(userAgent !== undefined ? { userAgent } : {}),
     });
   }
 
@@ -105,8 +105,8 @@ export class WorkspaceAuditLogger {
       targetType: "workspace",
       oldValue: oldSettings,
       newValue: newSettings,
-      ipAddress,
-      userAgent,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
+      ...(userAgent !== undefined ? { userAgent } : {}),
     });
   }
 
@@ -135,9 +135,9 @@ export class WorkspaceAuditLogger {
       action: action as AuditAction,
       targetId: contentId,
       targetType: contentType,
-      metadata,
-      ipAddress,
-      userAgent,
+      ...(metadata !== undefined ? { metadata } : {}),
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
+      ...(userAgent !== undefined ? { userAgent } : {}),
     });
   }
 
@@ -165,9 +165,9 @@ export class WorkspaceAuditLogger {
       action: action as AuditAction,
       targetId: resourceId,
       targetType: resourceType,
-      metadata,
-      ipAddress,
-      userAgent,
+      ...(metadata !== undefined ? { metadata } : {}),
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
+      ...(userAgent !== undefined ? { userAgent } : {}),
     });
   }
 
@@ -193,9 +193,9 @@ export class WorkspaceAuditLogger {
       action: action as AuditAction,
       targetId: integrationId,
       targetType: integrationType,
-      metadata,
-      ipAddress,
-      userAgent,
+      ...(metadata !== undefined ? { metadata } : {}),
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
+      ...(userAgent !== undefined ? { userAgent } : {}),
     });
   }
 
@@ -398,11 +398,14 @@ export class WorkspaceAuditLogger {
     });
 
     const userMap = new Map(users.map(u => [u.id, u.name]));
-    const logsByUser = userCounts.map(item => ({
-      userId: item.userId,
-      userName: userMap.get(item.userId) || undefined,
-      count: item._count.userId,
-    }));
+    const logsByUser = userCounts.map(item => {
+      const userName = userMap.get(item.userId) || undefined;
+      return {
+        userId: item.userId,
+        ...(userName !== undefined ? { userName } : {}),
+        count: item._count.userId,
+      };
+    });
 
     // Get logs by day (last 30 days)
     const thirtyDaysAgo = new Date();
@@ -453,8 +456,8 @@ export class WorkspaceAuditLogger {
       logsByUser,
       logsByDay,
       averageLogsPerDay,
-      oldestLog: oldestLog?.createdAt,
-      newestLog: newestLog?.createdAt,
+      ...(oldestLog?.createdAt !== undefined ? { oldestLog: oldestLog.createdAt } : {}),
+      ...(newestLog?.createdAt !== undefined ? { newestLog: newestLog.createdAt } : {}),
     };
   }
 

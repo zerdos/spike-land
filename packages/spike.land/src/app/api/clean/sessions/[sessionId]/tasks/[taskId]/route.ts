@@ -81,12 +81,12 @@ export async function PATCH(
         where: { id: params.taskId },
         data: {
           status,
-          completedAt: status === "COMPLETED" || status === "VERIFIED"
-            ? new Date()
-            : undefined,
-          skippedReason: status === "SKIPPED"
-            ? (skippedReason ?? null)
-            : undefined,
+          ...(status === "COMPLETED" || status === "VERIFIED"
+            ? { completedAt: new Date() }
+            : {}),
+          ...(status === "SKIPPED"
+            ? { skippedReason: skippedReason ?? null }
+            : {}),
         },
       });
 

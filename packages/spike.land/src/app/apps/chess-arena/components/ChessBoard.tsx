@@ -80,8 +80,8 @@ export function ChessBoard({
                 isCheck={kingSquare === square}
                 theme={theme}
                 onClick={onSquareClick}
-                fileLabel={isBottomRow ? file : undefined}
-                rankLabel={isLeftCol ? rank : undefined}
+                {...(isBottomRow ? { fileLabel: file } : {})}
+                {...(isLeftCol ? { rankLabel: rank } : {})}
               />
             );
           })

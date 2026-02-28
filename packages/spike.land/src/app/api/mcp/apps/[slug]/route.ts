@@ -135,7 +135,6 @@ export async function POST(
   });
 
   const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
     enableJsonResponse: !acceptsSSE,
   });
 

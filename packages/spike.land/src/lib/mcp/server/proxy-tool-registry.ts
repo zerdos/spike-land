@@ -35,7 +35,7 @@ export class ProxyToolRegistry {
       name: def.name,
       description: def.description,
       handler: def.handler,
-      inputSchema: def.inputSchema,
+      ...(def.inputSchema !== undefined ? { inputSchema: def.inputSchema } : {}),
       category: def.category,
       tier: def.tier,
     });

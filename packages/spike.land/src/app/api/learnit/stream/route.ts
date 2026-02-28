@@ -244,7 +244,7 @@ function createAgentProxyResponse(
                   title,
                   description,
                   content: contentOnly,
-                  generatedById: userId,
+                  ...(userId !== undefined ? { generatedById: userId } : {}),
                   aiModel: `agent:${agentName}`,
                 });
 
@@ -445,7 +445,7 @@ async function* generateWithGemini(
       title,
       description,
       content: finalContent,
-      generatedById: userId,
+      ...(userId !== undefined ? { generatedById: userId } : {}),
       aiModel: "gemini-3-flash-preview",
     });
 

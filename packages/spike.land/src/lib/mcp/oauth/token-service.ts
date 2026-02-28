@@ -82,7 +82,7 @@ export async function generateTokenPair(
         clientId,
         userId,
         scope,
-        resource,
+        resource: resource ?? null,
         expiresAt: new Date(now.getTime() + REFRESH_TOKEN_TTL_MS),
       },
     });
@@ -94,7 +94,7 @@ export async function generateTokenPair(
         clientId,
         userId,
         scope,
-        resource,
+        resource: resource ?? null,
         expiresAt: new Date(now.getTime() + ttlMs),
         refreshTokenId: refreshRecord.id,
       },
@@ -269,8 +269,8 @@ export async function generateAuthorizationCode(params: {
       codeChallenge: params.codeChallenge,
       codeChallengeMethod: params.codeChallengeMethod || "S256",
       scope: params.scope || "mcp",
-      state: params.state ?? undefined,
-      resource: params.resource ?? undefined,
+      state: params.state ?? null,
+      resource: params.resource ?? null,
       expiresAt: new Date(Date.now() + AUTH_CODE_TTL_MS),
     },
   });

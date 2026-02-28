@@ -74,13 +74,31 @@ export async function getSession(): Promise<AuthSession | null> {
     }
   }
 
-  // Delegate to NextAuth
-  // Future: switch based on AUTH_PROVIDER env var
-  const { auth: nextAuth } = await import("@/auth");
-  const session = await nextAuth();
+  const { headers } = await import("next/headers");
+  const { data: headersList } = await tryCatch(headers());
+  if (!headersList) return null;
 
-  if (!session?.user) return null;
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8787";
+  const { data: response, error } = await tryCatch(
+    fetch(`${authUrl}/api/auth/get-session`, {
+      headers: headersList
+    })
+  );
+
+  if (error || !response.ok) return null;
+
+  const sessionData = await response.json() as any;
+  if (!sessionData?.session || !sessionData?.user) return null;
 
   // Normalize to AuthSession shape
-  return session as AuthSession;
+  return {
+    user: {
+      id: sessionData.user.id,
+      email: sessionData.user.email,
+      name: sessionData.user.name,
+      image: sessionData.user.image,
+      role: sessionData.user.role || "USER",
+    },
+    expires: sessionData.session.expiresAt
+  } as unknown as AuthSession;
 }

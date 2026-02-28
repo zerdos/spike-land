@@ -8,7 +8,6 @@ import logger from "@/lib/logger";
  * sign in using the credentials provider.
  */
 
-import { createStableUserId } from "@/auth.config";
 import { ensureUserAlbums } from "@/lib/albums/ensure-user-albums";
 import { bootstrapAdminIfNeeded } from "@/lib/auth/bootstrap-admin";
 import prisma from "@/lib/prisma";
@@ -16,7 +15,6 @@ import { checkRateLimit } from "@/lib/rate-limiter";
 import { getClientIp } from "@/lib/security/ip";
 import { tryCatch } from "@/lib/try-catch";
 import { ensurePersonalWorkspace } from "@/lib/workspace/ensure-personal-workspace";
-import bcrypt from "bcryptjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -114,35 +112,46 @@ async function handleSignup(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Check if user already exists
-  const existingUser = await prisma.user.findUnique({
-    where: { email: trimmedEmail },
-    select: { id: true },
-  });
+  // Proxy registration to Better Auth MCP Worker
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8787";
+  const { data: authResponse, error: authError } = await tryCatch(
+    fetch(`${authUrl}/api/auth/sign-up/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: trimmedEmail, password, name: "" }),
+    })
+  );
 
-  if (existingUser) {
+  if (authError || !authResponse) {
+    logger.error("Mobile signup error:", authError);
     return NextResponse.json(
-      { error: "An account with this email already exists" },
-      { status: 409 },
+      { error: "Failed to create account" },
+      { status: 500 },
     );
   }
 
-  // Hash the password
-  const passwordHash = await bcrypt.hash(password, 12);
+  if (!authResponse.ok) {
+    const errorData = await authResponse.json().catch(() => ({}));
+    return NextResponse.json(
+      { error: errorData.message || "Failed to create account" },
+      { status: authResponse.status },
+    );
+  }
 
-  // Create the user with stable ID
-  const stableId = createStableUserId(trimmedEmail);
-  const newUser = await prisma.user.create({
-    data: {
-      id: stableId,
-      email: trimmedEmail,
-      passwordHash,
+  const authData = await authResponse.json() as any;
+  const newUser = authData.user;
+
+  // Since better-auth created the user, ensure it exists in Prisma
+  // (Assuming BetterAuth has the same ID logic, or creates a stub in Prisma DB later)
+  // If we need the user to exist in the local Prisma DB for relations:
+  await prisma.user.upsert({
+    where: { id: newUser.id },
+    create: {
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
     },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-    },
+    update: {},
   });
 
   // Handle post-signup tasks (same as OAuth signup in auth.ts handleSignIn)

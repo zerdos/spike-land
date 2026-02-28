@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
         where: { email: trimmedEmail },
         select: {
           id: true,
-          passwordHash: true,
         },
       }),
       DB_QUERY_TIMEOUT_MS,
@@ -145,9 +144,9 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // User exists - check if they have a password set
+  // User exists - since we use Better Auth, we assume they can attempt password login or magic link.
   return NextResponse.json({
     exists: true,
-    hasPassword: user.passwordHash !== null,
+    hasPassword: true,
   });
 }

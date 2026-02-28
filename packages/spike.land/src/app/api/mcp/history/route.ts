@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     getJobHistory(userId!, {
       limit,
       offset,
-      type,
+      ...(type !== undefined ? { type } : {}),
     }),
   );
 

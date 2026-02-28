@@ -217,8 +217,8 @@ describe("McpError", () => {
     it("should still work if Error.captureStackTrace is not available", () => {
       const originalCapture = Error.captureStackTrace;
       // Temporarily remove captureStackTrace
-      (Error as { captureStackTrace?: typeof Error.captureStackTrace; })
-        .captureStackTrace = undefined;
+      delete (Error as { captureStackTrace?: typeof Error.captureStackTrace; })
+        .captureStackTrace;
       try {
         const error = new McpError("No capture", McpErrorCode.UNKNOWN);
         expect(error.message).toBe("No capture");

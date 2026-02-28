@@ -8,7 +8,7 @@
 import prisma from "@/lib/prisma";
 import { tryCatch } from "@/lib/try-catch";
 import { UserRole } from "@prisma/client";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/types";
 import { headers } from "next/headers";
 import { logger } from "@/lib/logger";
 

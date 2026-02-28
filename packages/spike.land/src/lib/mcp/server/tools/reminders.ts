@@ -82,7 +82,7 @@ export function registerRemindersTools(
           data: {
             workspaceId: workspace.id,
             title: args.title,
-            description: args.description,
+            description: args.description ?? null,
             type: args.type as ReminderType,
             dueDate: new Date(args.dueDate),
             connectionId: args.connectionId,

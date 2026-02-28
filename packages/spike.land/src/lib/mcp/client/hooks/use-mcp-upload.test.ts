@@ -662,7 +662,7 @@ describe("useMcpUpload", () => {
         .mockResolvedValueOnce({ id: "ok" });
 
       const { result } = renderHook(() =>
-        useMcpUpload("image", { onSuccess: undefined, onError: undefined })
+        useMcpUpload("image", {})
       );
 
       let asyncResult;

@@ -60,7 +60,7 @@ export function registerReactionsTools(
           sourceEvent,
           targetTool,
           targetInput: targetInput as import("@/generated/prisma").Prisma.InputJsonValue,
-          description,
+          description: description ?? null,
           enabled: true,
         },
       });

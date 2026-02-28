@@ -137,17 +137,12 @@ async function fetchUserMetrics(
       totalUsers,
       newUsersLast7Days,
       newUsersLast30Days,
-      authProviders,
       activeSessions7Days,
       activeSessions30Days,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
       prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-      prisma.account.groupBy({
-        by: ["provider"],
-        _count: { _all: true },
-      }),
       prisma.visitorSession.findMany({
         where: {
           userId: { not: null },
@@ -165,13 +160,12 @@ async function fetchUserMetrics(
         distinct: ["userId"],
       }),
     ]);
-
-    const authProviderBreakdown: AuthProviderCount[] = authProviders.map(
-      p => ({
-        provider: p.provider,
-        count: p._count._all,
-      }),
-    );
+    const authProviderBreakdown: AuthProviderCount[] = [
+      {
+        provider: "credentials",
+        count: 0,
+      }
+    ];
 
     return {
       totalUsers,

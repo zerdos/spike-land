@@ -68,12 +68,12 @@ export async function POST(request: NextRequest) {
       create: {
         visitorId,
         page,
-        abVariant,
+        ...(abVariant !== undefined ? { abVariant } : {}),
         scrollDepthMax: scrollDepthMax ?? 0,
         timeOnPageMs: timeOnPageMs ?? 0,
         sectionsViewed: sectionsViewed ?? [],
         chatOpened: chatOpened ?? false,
-        ctaClicked,
+        ...(ctaClicked !== undefined ? { ctaClicked } : {}),
         faqExpanded: faqExpanded ?? 0,
       },
       update: {

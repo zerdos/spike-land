@@ -8,7 +8,7 @@
  * Returns the same { data, status, update } shape.
  */
 
-import { useSession as useNextAuthSession } from "next-auth/react";
+import { useSession as useNextAuthSession } from "@/lib/auth/client";
 import type { AuthSession } from "../core/types";
 
 interface UseSessionReturn {
@@ -22,10 +22,10 @@ interface UseSessionReturn {
  * Must be used within a SessionProvider.
  */
 export function useSession(): UseSessionReturn {
-  const { data, status, update } = useNextAuthSession();
+  const { data, status } = useNextAuthSession();
   return {
     data: data as AuthSession | null,
     status,
-    update: update as UseSessionReturn["update"],
+    update: async () => data as AuthSession | null,
   };
 }

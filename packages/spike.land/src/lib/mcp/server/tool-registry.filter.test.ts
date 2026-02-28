@@ -53,10 +53,10 @@ function makeTool(overrides: Partial<ToolDefinition> = {}): ToolDefinition {
     tier: overrides.tier ?? "free",
     handler: overrides.handler
       ?? ((() => ({ content: [] })) as ToolDefinition["handler"]),
-    alwaysEnabled: overrides.alwaysEnabled,
-    inputSchema: overrides.inputSchema,
-    annotations: overrides.annotations,
-    complexity: overrides.complexity,
+    ...(overrides.alwaysEnabled !== undefined ? { alwaysEnabled: overrides.alwaysEnabled } : {}),
+    ...(overrides.inputSchema !== undefined ? { inputSchema: overrides.inputSchema } : {}),
+    ...(overrides.annotations !== undefined ? { annotations: overrides.annotations } : {}),
+    ...(overrides.complexity !== undefined ? { complexity: overrides.complexity } : {}),
   };
 }
 

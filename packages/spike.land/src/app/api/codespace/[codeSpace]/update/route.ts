@@ -74,6 +74,7 @@ export async function POST(
   }
 
   // Build the update data, using current values as fallbacks for optional fields
+  const requiresReRender = currentSession?.requiresReRender;
   const updateData = {
     codeSpace,
     code: body.code,
@@ -81,7 +82,7 @@ export async function POST(
     html: body.html ?? currentSession?.html ?? "",
     css: body.css ?? currentSession?.css ?? "",
     messages: currentSession?.messages || [],
-    requiresReRender: currentSession?.requiresReRender,
+    ...(requiresReRender !== undefined ? { requiresReRender } : {}),
   };
 
   // Attempt optimistic lock update

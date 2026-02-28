@@ -144,8 +144,8 @@ export async function authenticateMcpRequest(
 
   return {
     success: true,
-    userId: validationResult.userId,
-    apiKeyId: validationResult.apiKeyId,
+    ...(validationResult.userId !== undefined ? { userId: validationResult.userId } : {}),
+    ...(validationResult.apiKeyId !== undefined ? { apiKeyId: validationResult.apiKeyId } : {}),
   };
 }
 
@@ -214,8 +214,8 @@ export async function authenticateSseRequest(
 
   return {
     success: true,
-    userId: validationResult.userId,
-    apiKeyId: validationResult.apiKeyId,
+    ...(validationResult.userId !== undefined ? { userId: validationResult.userId } : {}),
+    ...(validationResult.apiKeyId !== undefined ? { apiKeyId: validationResult.apiKeyId } : {}),
   };
 }
 

@@ -63,7 +63,11 @@ export function useCareerNavigatorMcp() {
       if (!result) return { jobs: [] };
       if (Array.isArray((result as JobSearchResult).jobs)) return result as JobSearchResult;
       const typed = result as { jobs?: JobListing[]; total?: number; } | null;
-      return { jobs: typed?.jobs ?? [], total: typed?.total };
+      const totalVal = typed?.total;
+      return {
+        jobs: typed?.jobs ?? [],
+        ...(totalVal !== undefined ? { total: totalVal } : {}),
+      };
     },
     [getJobs],
   );

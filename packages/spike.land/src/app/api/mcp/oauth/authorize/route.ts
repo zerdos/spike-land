@@ -124,15 +124,17 @@ export async function GET(request: NextRequest) {
   // User is authenticated — auto-approve (v1: no consent screen)
   let code: string;
   try {
+    const stateVal = state || undefined;
+    const resourceVal = resource || undefined;
     code = await generateAuthorizationCode({
       clientId,
       userId: session.user.id,
       redirectUri,
       codeChallenge,
-      codeChallengeMethod: codeChallengeMethod || "S256",
-      scope,
-      state: state || undefined,
-      resource: resource || undefined,
+      ...(codeChallengeMethod ? { codeChallengeMethod } : {}),
+      ...(scope !== undefined ? { scope } : {}),
+      ...(stateVal !== undefined ? { state: stateVal } : {}),
+      ...(resourceVal !== undefined ? { resource: resourceVal } : {}),
     });
   } catch (error) {
     logger.error("[oauth/authorize] Code generation error:", error);

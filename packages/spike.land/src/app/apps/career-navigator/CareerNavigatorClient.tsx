@@ -246,7 +246,7 @@ export function CareerNavigatorClient() {
                   <OccupationBrowser
                     onSearch={searchOccupationsAsync}
                     onSelect={handleOccupationSelect}
-                    selectedUri={selectedOccupationUri}
+                    {...(selectedOccupationUri !== undefined ? { selectedUri: selectedOccupationUri } : {})}
                   />
                 </div>
               </div>

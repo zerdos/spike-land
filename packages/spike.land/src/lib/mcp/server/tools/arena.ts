@@ -244,7 +244,7 @@ export function registerArenaTools(
             challengeId: challenge_id,
             userId,
             prompt,
-            systemPrompt: system_prompt,
+            systemPrompt: system_prompt ?? null,
             status: "PROMPTED",
           },
         });
@@ -322,7 +322,7 @@ export function registerArenaTools(
           bugs,
           score,
           approved,
-          comment,
+          ...(comment !== undefined ? { comment } : {}),
         });
 
         let text = `**Review submitted!**\n\n`;

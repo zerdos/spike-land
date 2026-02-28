@@ -217,13 +217,13 @@ export async function safeToolCall(
     if (options?.userId) {
       recordInvocation({
         userId: options.userId,
-        sessionId: options.sessionId,
+        ...(options.sessionId !== undefined ? { sessionId: options.sessionId } : {}),
         tool: toolName,
         input: options.input ?? {},
         output: result.content,
         durationMs: Date.now() - startTime,
         isError: false,
-        parentInvocationId: options.parentInvocationId,
+        ...(options.parentInvocationId !== undefined ? { parentInvocationId: options.parentInvocationId } : {}),
       }).catch((err: unknown) => logger.error("Failed to record tool invocation", { error: err }));
 
       // Fire matching reactions (fire-and-forget)
@@ -242,14 +242,14 @@ export async function safeToolCall(
     if (options?.userId) {
       recordInvocation({
         userId: options.userId,
-        sessionId: options.sessionId,
+        ...(options.sessionId !== undefined ? { sessionId: options.sessionId } : {}),
         tool: toolName,
         input: options.input ?? {},
         output: null,
         durationMs: Date.now() - startTime,
         isError: true,
         error: classified.message,
-        parentInvocationId: options.parentInvocationId,
+        ...(options.parentInvocationId !== undefined ? { parentInvocationId: options.parentInvocationId } : {}),
       }).catch((err: unknown) => logger.error("Failed to record tool invocation", { error: err }));
 
       // Fire matching reactions on error (fire-and-forget)
@@ -279,16 +279,16 @@ async function recordInvocation(data: {
   await prisma.toolInvocation.create({
     data: {
       userId: data.userId,
-      sessionId: data.sessionId,
+      sessionId: data.sessionId ?? null,
       tool: data.tool,
       input: data.input as import("@/generated/prisma").Prisma.InputJsonValue,
-      output: (data.output ?? undefined) as
+      output: (data.output ?? null) as
         | import("@/generated/prisma").Prisma.InputJsonValue
-        | undefined,
+        | null,
       durationMs: data.durationMs,
       isError: data.isError,
-      error: data.error,
-      parentInvocationId: data.parentInvocationId,
+      error: data.error ?? null,
+      parentInvocationId: data.parentInvocationId ?? null,
     },
   });
 }

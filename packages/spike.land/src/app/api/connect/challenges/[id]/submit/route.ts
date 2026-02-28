@@ -81,7 +81,7 @@ export async function POST(
         challengeId: params.id,
         userId: session.user.id,
         prompt: validated.data.prompt,
-        systemPrompt: validated.data.systemPrompt,
+        ...(validated.data.systemPrompt !== undefined ? { systemPrompt: validated.data.systemPrompt } : {}),
         status: "PROMPTED",
       },
     }),

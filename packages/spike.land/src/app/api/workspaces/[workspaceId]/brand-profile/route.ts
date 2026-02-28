@@ -150,8 +150,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             type: g.type,
             name: g.name,
             description: g.description || null,
-            severity: g.severity,
-            ruleConfig: g.ruleConfig as Prisma.InputJsonValue | undefined,
+            ...(g.severity !== undefined ? { severity: g.severity } : {}),
+            ...(g.ruleConfig !== undefined
+              ? { ruleConfig: g.ruleConfig as Prisma.InputJsonValue }
+              : {}),
             isActive: g.isActive ?? true,
           })),
         });
@@ -316,8 +318,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
               type: g.type,
               name: g.name,
               description: g.description || null,
-              severity: g.severity,
-              ruleConfig: g.ruleConfig as Prisma.InputJsonValue | undefined,
+              ...(g.severity !== undefined ? { severity: g.severity } : {}),
+              ...(g.ruleConfig !== undefined
+                ? { ruleConfig: g.ruleConfig as Prisma.InputJsonValue }
+                : {}),
               isActive: g.isActive ?? true,
             })),
           });

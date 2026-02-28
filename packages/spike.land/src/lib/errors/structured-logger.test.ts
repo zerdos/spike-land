@@ -106,11 +106,11 @@ describe("StructuredLogger", () => {
       vi.stubEnv("NODE_ENV", "production");
     });
 
-    it("info() outputs JSON to console.log", () => {
+    it("info() outputs JSON to console.warn", () => {
       const sl = new StructuredLogger();
       sl.info("prod message");
-      expect(consoleLogSpy).toHaveBeenCalledOnce();
-      const raw = consoleLogSpy.mock.calls[0][0] as string;
+      expect(consoleWarnSpy).toHaveBeenCalledOnce();
+      const raw = consoleWarnSpy.mock.calls[0][0] as string;
       const parsed = JSON.parse(raw);
       expect(parsed.level).toBe("info");
       expect(parsed.message).toBe("prod message");
@@ -118,18 +118,18 @@ describe("StructuredLogger", () => {
       expect(parsed.requestId).toBeDefined();
     });
 
-    it("warn() outputs JSON to console.log", () => {
+    it("warn() outputs JSON to console.warn", () => {
       const sl = new StructuredLogger();
       sl.warn("prod warning");
-      const parsed = JSON.parse(consoleLogSpy.mock.calls[0][0] as string);
+      const parsed = JSON.parse(consoleWarnSpy.mock.calls[0][0] as string);
       expect(parsed.level).toBe("warn");
     });
 
-    it("error() outputs JSON with error details to console.log", () => {
+    it("error() outputs JSON with error details to console.warn", () => {
       const sl = new StructuredLogger();
       const err = new Error("prod error");
       sl.error("critical failure", err, { route: "/api/checkout" });
-      const parsed = JSON.parse(consoleLogSpy.mock.calls[0][0] as string);
+      const parsed = JSON.parse(consoleWarnSpy.mock.calls[0][0] as string);
       expect(parsed.level).toBe("error");
       expect(parsed.error.message).toBe("prod error");
       expect(parsed.context?.route).toBe("/api/checkout");
@@ -186,7 +186,7 @@ describe("StructuredLogger", () => {
       const child = sl.child({ userId: "u1" });
       const grandchild = child.child({ route: "/api/v2" });
       grandchild.info("grandchild log");
-      const parsed = JSON.parse(consoleLogSpy.mock.calls[0][0] as string);
+      const parsed = JSON.parse(consoleWarnSpy.mock.calls[0][0] as string);
       expect(parsed.context.userId).toBe("u1");
       expect(parsed.context.route).toBe("/api/v2");
     });

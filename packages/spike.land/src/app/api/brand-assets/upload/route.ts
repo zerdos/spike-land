@@ -168,8 +168,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     success: true,
     url: uploadResult.url,
     r2Key: uploadResult.key,
-    width,
-    height,
+    ...(width !== undefined ? { width } : {}),
+    ...(height !== undefined ? { height } : {}),
     contentType,
     size: buffer.length,
   };

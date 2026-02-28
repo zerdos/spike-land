@@ -188,9 +188,9 @@ async function consumeAgentProxy(
               success: false,
               codeSpace: slug,
               error: String(event.message || "Agent generation failed"),
-              code: event.generatedCode
-                ? String(event.generatedCode)
-                : undefined,
+              ...(event.generatedCode !== undefined && event.generatedCode !== null
+                ? { code: String(event.generatedCode) }
+                : {}),
               buildLog,
             };
             return NextResponse.json(result, { status: 500 });
@@ -427,8 +427,8 @@ async function consumeGenerator(
           result = {
             success: true,
             codeSpace: slug,
-            title: event.title,
-            description: event.description,
+            ...(event.title !== undefined ? { title: event.title } : {}),
+            ...(event.description !== undefined ? { description: event.description } : {}),
             buildLog,
           };
           break;
@@ -437,7 +437,7 @@ async function consumeGenerator(
             success: false,
             codeSpace: slug,
             error: event.message,
-            code: event.generatedCode,
+            ...(event.generatedCode !== undefined ? { code: event.generatedCode } : {}),
             buildLog,
           };
           break;

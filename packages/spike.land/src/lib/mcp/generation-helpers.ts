@@ -140,8 +140,8 @@ export async function processGenerationJob(
     generateImageWithGemini({
       prompt: params.prompt,
       tier: params.tier,
-      negativePrompt: params.negativePrompt,
-      aspectRatio: params.aspectRatio,
+      ...(params.negativePrompt !== undefined ? { negativePrompt: params.negativePrompt } : {}),
+      ...(params.aspectRatio !== undefined ? { aspectRatio: params.aspectRatio } : {}),
     }),
   );
 

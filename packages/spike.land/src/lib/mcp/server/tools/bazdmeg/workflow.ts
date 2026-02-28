@@ -55,9 +55,9 @@ export function registerBazdmegWorkflowTools(
         const session = await prisma.superpowersSession.create({
           data: {
             userId,
-            agentId,
-            projectName,
-            branchName,
+            agentId: agentId ?? null,
+            projectName: projectName ?? null,
+            branchName: branchName ?? null,
             currentPhase: "BRAINSTORMING",
           },
         });

@@ -25,12 +25,12 @@ interface RouteParams {
 const stepSchema: z.ZodType<{
   name: string;
   type: WorkflowStepType;
-  sequence?: number;
+  sequence?: number | undefined;
   config: Record<string, unknown>;
-  dependencies?: string[];
-  parentStepId?: string | null;
-  branchType?: "IF_TRUE" | "IF_FALSE" | "SWITCH_CASE" | "DEFAULT" | null;
-  branchCondition?: string | null;
+  dependencies?: string[] | undefined;
+  parentStepId?: string | null | undefined;
+  branchType?: "IF_TRUE" | "IF_FALSE" | "SWITCH_CASE" | "DEFAULT" | null | undefined;
+  branchCondition?: string | null | undefined;
 }> = z.object({
   name: z.string().min(1, "Step name is required"),
   type: z.enum(["TRIGGER", "ACTION", "CONDITION"]),
@@ -93,9 +93,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   const { status, page, pageSize } = queryValidation.data;
 
   // Fetch workflows
+  const workflowStatus = status as WorkflowStatus | undefined;
   const { data: result, error: fetchError } = await tryCatch(
     listWorkflows(workspaceId, {
-      status: status as WorkflowStatus | undefined,
+      ...(workflowStatus !== undefined ? { status: workflowStatus } : {}),
       page,
       pageSize,
     }),
@@ -158,8 +159,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   }
 
   // Create workflow
+  const { name: wfCreateName, description: wfCreateDesc, steps: wfCreateSteps } = validation.data;
   const { data: workflow, error: createError } = await tryCatch(
-    createWorkflow(workspaceId, membership!.userId, validation.data),
+    createWorkflow(workspaceId, membership!.userId, {
+      name: wfCreateName,
+      ...(wfCreateDesc !== undefined ? { description: wfCreateDesc } : {}),
+      ...(wfCreateSteps !== undefined ? { steps: wfCreateSteps } : {}),
+    }),
   );
 
   if (createError) {

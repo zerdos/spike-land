@@ -135,14 +135,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const trimmedNegativePrompt = negativePrompt?.trim();
   const { data: result, error: jobError } = await tryCatch(
     createGenerationJob({
       userId: userId!,
-      apiKeyId,
+      ...(apiKeyId !== undefined ? { apiKeyId } : {}),
       prompt: prompt.trim(),
       tier: tier as EnhancementTier,
-      negativePrompt: negativePrompt?.trim(),
-      aspectRatio: aspectRatio as AspectRatio | undefined,
+      ...(trimmedNegativePrompt !== undefined ? { negativePrompt: trimmedNegativePrompt } : {}),
+      ...(aspectRatio !== undefined ? { aspectRatio: aspectRatio as AspectRatio } : {}),
     }),
   );
 

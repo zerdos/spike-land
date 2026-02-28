@@ -390,7 +390,7 @@ export function registerSkillStoreTools(
             slug: input.slug,
             displayName: input.displayName,
             description: input.description,
-            longDescription: input.longDescription,
+            longDescription: input.longDescription ?? null,
             category: input.category as SkillCategory,
             status: input.status as SkillStatus,
             version: input.version,

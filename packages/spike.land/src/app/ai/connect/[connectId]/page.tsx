@@ -65,24 +65,28 @@ export default async function ConnectPage({ params }: PageProps) {
 
   if (session?.user?.id) {
     // User is logged in - show auto-connect UI
+    const authDisplayName = request.displayName || undefined;
+    const authProjectPath = request.projectPath || undefined;
     return (
       <ConnectionContent
         connectId={connectId}
         status="authenticated"
-        displayName={request.displayName || undefined}
-        projectPath={request.projectPath || undefined}
+        {...(authDisplayName !== undefined ? { displayName: authDisplayName } : {})}
+        {...(authProjectPath !== undefined ? { projectPath: authProjectPath } : {})}
         expiresAt={request.expiresAt.toISOString()}
       />
     );
   }
 
   // User is not logged in - show QR code and sign in prompt
+  const pendingDisplayName = request.displayName || undefined;
+  const pendingProjectPath = request.projectPath || undefined;
   return (
     <ConnectionContent
       connectId={connectId}
       status="pending"
-      displayName={request.displayName || undefined}
-      projectPath={request.projectPath || undefined}
+      {...(pendingDisplayName !== undefined ? { displayName: pendingDisplayName } : {})}
+      {...(pendingProjectPath !== undefined ? { projectPath: pendingProjectPath } : {})}
       expiresAt={request.expiresAt.toISOString()}
     />
   );

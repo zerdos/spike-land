@@ -70,10 +70,14 @@ export async function POST(
     submitReview({
       submissionId: validated.data.submission_id,
       reviewerId: session.user.id,
-      bugs: validated.data.bugs,
+      bugs: validated.data.bugs.map(b => ({
+        description: b.description,
+        severity: b.severity,
+        ...(b.line !== undefined ? { line: b.line } : {}),
+      })),
       score: validated.data.score,
       approved: validated.data.approved,
-      comment: validated.data.comment,
+      ...(validated.data.comment !== undefined ? { comment: validated.data.comment } : {}),
     }),
   );
 

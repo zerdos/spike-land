@@ -25,9 +25,9 @@ export function ChessArenaClient() {
           onTimeControlChange={game.setTimeControl}
           onStart={game.startGame}
           onJoin={game.joinGame}
-          isConnecting={game.isConnecting}
-          connectionError={game.connectionError}
-          onRetry={game.retryConnection}
+          {...(game.isConnecting !== undefined ? { isConnecting: game.isConnecting } : {})}
+          {...(game.connectionError !== undefined ? { connectionError: game.connectionError } : {})}
+          {...(game.retryConnection !== undefined ? { onRetry: game.retryConnection } : {})}
         />
       </div>
     );

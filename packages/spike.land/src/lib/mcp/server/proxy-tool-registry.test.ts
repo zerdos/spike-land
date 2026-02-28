@@ -12,7 +12,7 @@ function makeDef(
     tier: overrides.tier ?? "free",
     handler: overrides.handler
       ?? (async () => ({ content: [{ type: "text", text: "ok" }] })),
-    inputSchema: overrides.inputSchema,
+    ...(overrides.inputSchema !== undefined ? { inputSchema: overrides.inputSchema } : {}),
   };
 }
 

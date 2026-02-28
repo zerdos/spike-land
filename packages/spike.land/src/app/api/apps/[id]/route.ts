@@ -140,7 +140,7 @@ export async function PATCH(
 
   // Handle codespace linking
   if (codespaceData?.codespaceId || validatedData.codespaceId) {
-    const codespaceId = codespaceData?.codespaceId || validatedData.codespaceId;
+    const codespaceId = (codespaceData?.codespaceId || validatedData.codespaceId) as string;
     updateData.codespaceId = codespaceId;
     updateData.codespaceUrl = `/api/codespace/${codespaceId}/embed`;
     // Also update slug if not already set

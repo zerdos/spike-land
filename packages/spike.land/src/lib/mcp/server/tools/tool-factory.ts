@@ -383,7 +383,7 @@ export function registerToolFactoryTools(
           const response = await fetch(resolvedUrl, {
             method: spec.method,
             headers: resolvedHeaders,
-            body: resolvedBody,
+            body: resolvedBody ?? null,
             signal: controller.signal,
           });
 

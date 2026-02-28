@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
   // In stateless mode (sessionIdGenerator: undefined), always use JSON responses.
   // SSE streams in stateless mode never close properly, causing client timeouts.
   const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined, // Stateless — no session tracking
+    // Stateless — no session tracking (sessionIdGenerator omitted)
     enableJsonResponse: true, // Always JSON in stateless mode to avoid hanging SSE streams
   });
 

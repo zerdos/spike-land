@@ -34,7 +34,7 @@ export async function callTool<T = unknown>(
       },
       id: Math.random().toString(36).substring(7),
     }),
-    signal: options.signal,
+    signal: options.signal ?? null,
   });
 
   if (response.status === 401) {

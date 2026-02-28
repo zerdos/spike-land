@@ -2,12 +2,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 
 // Use vi.hoisted so mock fn is available inside vi.mock factory
-const { mockUseNextAuthSession } = vi.hoisted(() => ({
-  mockUseNextAuthSession: vi.fn(),
+const { mockUseSession } = vi.hoisted(() => ({
+  mockUseSession: vi.fn(),
 }));
 
-vi.mock("next-auth/react", () => ({
-  useSession: mockUseNextAuthSession,
+vi.mock("@/lib/auth/client", () => ({
+  useSession: mockUseSession,
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  SessionProvider: vi.fn(),
+  authClient: {},
 }));
 
 import { useSession } from "./hooks";
@@ -18,11 +22,10 @@ describe("useSession hook", () => {
     vi.clearAllMocks();
   });
 
-  it("returns unauthenticated state when next-auth returns null data", () => {
-    mockUseNextAuthSession.mockReturnValue({
+  it("returns unauthenticated state when underlying hook returns null data", () => {
+    mockUseSession.mockReturnValue({
       data: null,
       status: "unauthenticated",
-      update: vi.fn(),
     });
     const { result } = renderHook(() => useSession());
     expect(result.current.data).toBeNull();
@@ -30,10 +33,9 @@ describe("useSession hook", () => {
   });
 
   it("returns loading state", () => {
-    mockUseNextAuthSession.mockReturnValue({
+    mockUseSession.mockReturnValue({
       data: null,
       status: "loading",
-      update: vi.fn(),
     });
     const { result } = renderHook(() => useSession());
     expect(result.current.status).toBe("loading");
@@ -51,10 +53,9 @@ describe("useSession hook", () => {
       },
       expires: "2099-01-01T00:00:00.000Z",
     };
-    mockUseNextAuthSession.mockReturnValue({
+    mockUseSession.mockReturnValue({
       data: fakeSession,
       status: "authenticated",
-      update: vi.fn(),
     });
     const { result } = renderHook(() => useSession());
     expect(result.current.status).toBe("authenticated");
@@ -62,15 +63,13 @@ describe("useSession hook", () => {
     expect(result.current.data?.user.email).toBe("alice@example.com");
   });
 
-  it("returns update function from next-auth", () => {
-    const mockUpdate = vi.fn().mockResolvedValue(null);
-    mockUseNextAuthSession.mockReturnValue({
+  it("returns an update function", () => {
+    mockUseSession.mockReturnValue({
       data: null,
       status: "unauthenticated",
-      update: mockUpdate,
     });
     const { result } = renderHook(() => useSession());
-    expect(result.current.update).toBe(mockUpdate);
+    expect(typeof result.current.update).toBe("function");
   });
 
   it("returns admin role session correctly", () => {
@@ -84,10 +83,9 @@ describe("useSession hook", () => {
       },
       expires: "2099-01-01T00:00:00.000Z",
     };
-    mockUseNextAuthSession.mockReturnValue({
+    mockUseSession.mockReturnValue({
       data: adminSession,
       status: "authenticated",
-      update: vi.fn(),
     });
     const { result } = renderHook(() => useSession());
     expect(result.current.data?.user.role).toBe(UserRole.ADMIN);

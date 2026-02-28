@@ -51,7 +51,7 @@ export function registerCleanRemindersTools(
             userId,
             time,
             days,
-            message,
+            message: message ?? null,
           },
         });
 

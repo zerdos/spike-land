@@ -91,9 +91,9 @@ export class AuditLogger {
         data: {
           userId: options.userId,
           action: options.action,
-          targetId: options.targetId,
-          metadata: options.metadata as object,
-          ipAddress: options.ipAddress,
+          ...(options.targetId !== undefined ? { targetId: options.targetId } : {}),
+          ...(options.metadata !== undefined ? { metadata: options.metadata as object } : {}),
+          ...(options.ipAddress !== undefined ? { ipAddress: options.ipAddress } : {}),
         },
       }),
     );
@@ -122,7 +122,7 @@ export class AuditLogger {
         oldRole,
         newRole,
       } as RoleChangeMetadata,
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 
@@ -146,7 +146,7 @@ export class AuditLogger {
         balanceAfter,
         reason: reason || "Manual admin adjustment",
       } as TokenAdjustmentMetadata,
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 
@@ -170,7 +170,7 @@ export class AuditLogger {
         voucherType,
         value,
       } as VoucherMetadata,
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 
@@ -192,7 +192,7 @@ export class AuditLogger {
         voucherCode,
         ...changes,
       },
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 
@@ -212,7 +212,7 @@ export class AuditLogger {
       metadata: {
         voucherCode,
       } as VoucherMetadata,
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 
@@ -241,7 +241,7 @@ export class AuditLogger {
         userName,
         deletedData,
       } as UserDeleteMetadata,
-      ipAddress,
+      ...(ipAddress !== undefined ? { ipAddress } : {}),
     });
   }
 

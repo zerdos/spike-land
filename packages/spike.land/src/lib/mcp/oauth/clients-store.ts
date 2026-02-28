@@ -143,7 +143,7 @@ export async function registerClient(
 
   return {
     client_id: client.clientId,
-    client_secret: clientSecret,
+    ...(clientSecret !== undefined ? { client_secret: clientSecret } : {}),
     client_name: client.clientName,
     redirect_uris: client.redirectUris,
     grant_types: client.grantTypes,

@@ -20,23 +20,16 @@
  * - This allows E2E tests to access protected routes securely without real authentication
  */
 
-import { authConfig } from "@/auth.config";
 import { KNOWN_ROUTE_SEGMENTS } from "@/lib/known-routes";
 import { CSP_NONCE_HEADER, generateNonce } from "@/lib/security/csp-nonce";
 import { secureCompare } from "@/lib/security/timing";
-import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Create Edge-compatible auth (no database operations)
-const { auth } = NextAuth(authConfig);
-
 const ONBOARDED_COOKIE = "spike-onboarded";
 const SESSION_COOKIES = [
-  "authjs.session-token",
-  "__Secure-authjs.session-token",
-  "next-auth.session-token",
-  "__Secure-next-auth.session-token",
+  "better-auth.session_token",
+  "__Secure-better-auth.session_token",
 ];
 
 /**
@@ -368,7 +361,12 @@ export async function proxy(request: NextRequest) {
   }
 
   // Check authentication status
-  const session = await auth();
+  const sessionRes = await fetch(`${request.nextUrl.origin}/api/auth/get-session`, {
+    headers: {
+      cookie: request.headers.get("cookie") || "",
+    },
+  }).catch(() => null);
+  const session = sessionRes?.ok ? await sessionRes.json().catch(() => null) : null;
 
   // If user is not authenticated, redirect to sign in page with callback URL
   if (!session?.user) {

@@ -61,7 +61,7 @@ export function registerBazdmegSkillSyncTools(
               slug,
               displayName,
               description: skill.description,
-              longDescription: skill.content,
+              longDescription: skill.content ?? null,
               author: "superpowers",
               repoUrl: "https://github.com/obra/superpowers",
               version: skill.version ?? "1.0.0",
@@ -74,7 +74,7 @@ export function registerBazdmegSkillSyncTools(
             },
             update: {
               description: skill.description,
-              longDescription: skill.content,
+              longDescription: skill.content ?? null,
               version: skill.version ?? "1.0.0",
               status: "PUBLISHED",
             },

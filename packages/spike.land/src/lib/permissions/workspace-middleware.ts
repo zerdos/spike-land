@@ -8,7 +8,7 @@
 import prisma from "@/lib/prisma";
 import { tryCatch } from "@/lib/try-catch";
 import type { WorkspaceRole } from "@prisma/client";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/types";
 import { headers } from "next/headers";
 import { hasPermission, type WorkspaceAction } from "./permissions";
 import { logger } from "@/lib/logger";
@@ -37,7 +37,7 @@ function constantTimeCompare(a: string, b: string): boolean {
 }
 
 function getBypassMembershipRole(session: Session): WorkspaceRole {
-  const role = session.user.role as string | undefined;
+  const role = session.user?.role as string | undefined;
   if (
     role === "OWNER" || role === "ADMIN" || role === "MEMBER"
     || role === "VIEWER"
@@ -80,7 +80,7 @@ async function getE2EBypassMembership(
 
   return {
     workspaceId,
-    userId: session.user.id!,
+    userId: session.user?.id || "",
     role: getBypassMembershipRole(session),
   };
 }

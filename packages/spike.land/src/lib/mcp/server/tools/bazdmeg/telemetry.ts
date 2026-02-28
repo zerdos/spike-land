@@ -43,9 +43,9 @@ export function registerBazdmegTelemetryTools(
           data: {
             userId,
             skillName,
-            sessionId,
-            agentId,
-            category,
+            sessionId: sessionId ?? null,
+            agentId: agentId ?? null,
+            category: category ?? null,
             outcome: "in_progress",
           },
         });

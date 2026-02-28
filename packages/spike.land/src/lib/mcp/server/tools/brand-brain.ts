@@ -299,7 +299,7 @@ export function registerBrandBrainTools(
               | "MESSAGE"
               | "BIO"
               | "STORY",
-            platform: args.platform as
+            platform: (args.platform ?? null) as
               | "TWITTER"
               | "LINKEDIN"
               | "FACEBOOK"
@@ -309,8 +309,7 @@ export function registerBrandBrainTools(
               | "DISCORD"
               | "SNAPCHAT"
               | "PINTEREST"
-              | null
-              | undefined,
+              | null,
             overallResult: result as
               | "PASSED"
               | "PASSED_WITH_WARNINGS"

@@ -460,7 +460,7 @@ export function AlbumDetailClient({ albumId }: AlbumDetailClientProps) {
                       : fileStatus.status === "failed"
                       ? "failed"
                       : "uploading"}
-                    error={fileStatus.error}
+                    {...(fileStatus.error !== undefined ? { error: fileStatus.error } : {})}
                   />
                 ))}
 

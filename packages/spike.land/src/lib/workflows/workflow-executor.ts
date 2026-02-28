@@ -190,7 +190,7 @@ async function executeStep(
     return {
       stepId: step.id!,
       status: "COMPLETED",
-      output: result.output,
+      ...(result.output !== undefined ? { output: result.output } : {}),
       durationMs: Date.now() - startTime,
     };
   } catch (error) {
@@ -328,7 +328,7 @@ export async function executeWorkflow(
         await prisma.workflowRunLog.create({
           data: {
             workflowRunId: run.id,
-            stepId: step.id,
+            ...(step.id !== undefined ? { stepId: step.id } : {}),
             stepStatus: "SKIPPED",
             message: `Step "${step.name}" skipped (branch not taken)`,
           },
@@ -341,18 +341,19 @@ export async function executeWorkflow(
       await prisma.workflowRunLog.create({
         data: {
           workflowRunId: run.id,
-          stepId: step.id,
+          ...(step.id !== undefined ? { stepId: step.id } : {}),
           stepStatus: "RUNNING",
           message: `Executing step "${step.name}"`,
         },
       });
 
       // Execute the step
+      const stepTriggerData = ctx.triggerData ?? ctx.manualParams;
       const result = await executeStep(step, {
         workflowId: ctx.workflowId,
         runId: run.id,
         previousOutputs,
-        triggerData: ctx.triggerData ?? ctx.manualParams,
+        ...(stepTriggerData !== undefined ? { triggerData: stepTriggerData } : {}),
       });
 
       stepResults.push(result);
@@ -366,11 +367,11 @@ export async function executeWorkflow(
       await prisma.workflowRunLog.create({
         data: {
           workflowRunId: run.id,
-          stepId: step.id,
+          ...(step.id !== undefined ? { stepId: step.id } : {}),
           stepStatus: result.status,
           message: result.error
             ?? `Step "${step.name}" ${result.status.toLowerCase()}`,
-          metadata: result.output as Prisma.InputJsonValue | undefined,
+          ...(result.output !== undefined ? { metadata: result.output as Prisma.InputJsonValue } : {}),
         },
       });
 
@@ -411,7 +412,7 @@ export async function executeWorkflow(
           startedAt,
           endedAt: new Date(),
           stepResults,
-          error: result.error,
+          ...(result.error !== undefined ? { error: result.error } : {}),
         };
       }
     }
@@ -510,7 +511,7 @@ export async function triggerWorkflowManually(
     workflowId,
     versionId: "", // Will use published version
     triggerType: "manual",
-    manualParams: params,
+    ...(params !== undefined ? { manualParams: params } : {}),
   });
 }
 
@@ -519,13 +520,14 @@ export async function triggerWorkflowManually(
 // ============================================================================
 
 function mapStepToData(step: WorkflowStep): WorkflowStepData {
+  const deps = step.dependencies as string[] | undefined;
   return {
     id: step.id,
     name: step.name,
     type: step.type,
     sequence: step.sequence,
     config: step.config as Record<string, unknown>,
-    dependencies: step.dependencies as string[] | undefined,
+    ...(deps !== undefined ? { dependencies: deps } : {}),
     parentStepId: step.parentStepId,
     branchType: step.branchType,
     branchCondition: step.branchCondition,

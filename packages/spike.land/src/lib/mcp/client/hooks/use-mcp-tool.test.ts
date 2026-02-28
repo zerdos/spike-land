@@ -482,7 +482,7 @@ describe("useMcpTool", () => {
     it("should handle undefined callbacks", async () => {
       mockCallTool.mockResolvedValue("ok");
       const { result } = renderHook(() =>
-        useMcpTool("tool", {}, { onSuccess: undefined, onError: undefined })
+        useMcpTool("tool", {}, {})
       );
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));

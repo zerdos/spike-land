@@ -67,28 +67,38 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@/components": path.resolve(__dirname, "./src/components"),
-      "@/ui": path.resolve(__dirname, "./src/components/ui"),
-      "@/lib": path.resolve(__dirname, "./src/lib"),
-      "@/utils": path.resolve(__dirname, "./src/lib/utils"),
-      "@/hooks": path.resolve(__dirname, "./src/hooks"),
-      "@apps": path.resolve(__dirname, "./apps"),
-      "@vercel/kv": path.resolve(__dirname, "./vitest.mock-vercel-kv.ts"),
+    alias: [
+      // Map @store-apps/* sub-path imports to packages/store-apps/*
+      {
+        find: /^@store-apps\/(.+)$/,
+        replacement: path.resolve(__dirname, "./packages/store-apps/$1"),
+      },
+      { find: "@/components", replacement: path.resolve(__dirname, "./src/components") },
+      { find: "@/ui", replacement: path.resolve(__dirname, "./src/components/ui") },
+      { find: "@/lib", replacement: path.resolve(__dirname, "./src/lib") },
+      { find: "@/utils", replacement: path.resolve(__dirname, "./src/lib/utils") },
+      { find: "@/hooks", replacement: path.resolve(__dirname, "./src/hooks") },
+      { find: "@/auth", replacement: path.resolve(__dirname, "./src/auth.ts") },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+      { find: "@apps", replacement: path.resolve(__dirname, "./apps") },
+      { find: "@vercel/kv", replacement: path.resolve(__dirname, "./vitest.mock-vercel-kv.ts") },
       // Mock next-view-transitions to avoid ESM import issues
-      "next-view-transitions": path.resolve(
-        __dirname,
-        "./vitest.mock-next-view-transitions.tsx",
-      ),
+      {
+        find: "next-view-transitions",
+        replacement: path.resolve(__dirname, "./vitest.mock-next-view-transitions.tsx"),
+      },
       // Fix ESM module resolution for next-auth imports
       // Using require.resolve for Yarn PnP compatibility
-      "next/link": require.resolve("next/link"),
-      "next/image": require.resolve("next/image"),
-      "@/auth": path.resolve(__dirname, "./src/auth.ts"),
-      "next/server": require.resolve("next/server"),
+      { find: "next/link", replacement: require.resolve("next/link") },
+      { find: "next/image", replacement: require.resolve("next/image") },
+      { find: "next/server", replacement: require.resolve("next/server") },
       // Map @prisma/client to the generated Prisma client location
-      "@prisma/client": path.resolve(__dirname, "./src/generated/prisma"),
-    },
+      { find: "@prisma/client", replacement: path.resolve(__dirname, "./src/generated/prisma") },
+      // Fix: spike-cli exports field references index.mjs but only index.js exists in dist
+      {
+        find: "@spike-land-ai/spike-cli",
+        replacement: path.resolve(__dirname, "../../packages/spike-cli/dist/index.js"),
+      },
+    ],
   },
 });

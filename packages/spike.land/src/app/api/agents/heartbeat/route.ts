@@ -118,14 +118,16 @@ export async function POST(req: NextRequest) {
       workingDirectory,
       toolUsage,
       tokensUsed,
-      activity: activity
+      ...(activity
         ? {
-          type: activity.type,
-          description: activity.description,
-          timestamp: Date.now(),
-          metadata: activity.metadata,
+          activity: {
+            type: activity.type,
+            description: activity.description,
+            timestamp: Date.now(),
+            ...(activity.metadata !== undefined ? { metadata: activity.metadata } : {}),
+          },
         }
-        : undefined,
+        : {}),
     }),
   );
 
@@ -199,20 +201,22 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const mappedTasks = tasks?.map(t => ({
+    id: t.id,
+    prompt: t.prompt,
+    createdAt: t.createdAt,
+  }));
+  const mappedMessages = messages?.map(m => ({
+    id: m.id,
+    role: m.role as "USER" | "AGENT" | "SYSTEM",
+    content: m.content,
+    createdAt: m.createdAt.toISOString(),
+  }));
   const response: AgentHeartbeatResponse = {
     success: true,
     timestamp: new Date().toISOString(),
-    tasks: tasks?.map(t => ({
-      id: t.id,
-      prompt: t.prompt,
-      createdAt: t.createdAt,
-    })),
-    messages: messages?.map(m => ({
-      id: m.id,
-      role: m.role as "USER" | "AGENT" | "SYSTEM",
-      content: m.content,
-      createdAt: m.createdAt.toISOString(),
-    })),
+    ...(mappedTasks !== undefined ? { tasks: mappedTasks } : {}),
+    ...(mappedMessages !== undefined ? { messages: mappedMessages } : {}),
   };
 
   return NextResponse.json(response, { status: 200 });

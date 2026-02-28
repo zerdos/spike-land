@@ -235,7 +235,7 @@ export function useAlbumData(
           description: data.album.description,
           privacy: data.album.privacy,
           pipelineId: data.album.pipelineId,
-          shareToken: data.album.shareToken,
+          ...(data.album.shareToken !== undefined ? { shareToken: data.album.shareToken } : {}),
         }
         : null
     );

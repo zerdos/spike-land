@@ -379,8 +379,8 @@ export class ToolRegistry {
             outcome,
             durationMs,
             input: input as Record<string, unknown>,
-            errorMessage: errorMsg,
-            tokensUsed,
+            ...(errorMsg !== undefined ? { errorMessage: errorMsg } : {}),
+            ...(tokensUsed !== undefined ? { tokensUsed } : {}),
           });
         }
       }
@@ -390,8 +390,8 @@ export class ToolRegistry {
       def.name,
       {
         description: def.description,
-        inputSchema: def.inputSchema,
-        annotations: def.annotations,
+        ...(def.inputSchema !== undefined ? { inputSchema: def.inputSchema } : {}),
+        ...(def.annotations !== undefined ? { annotations: def.annotations } : {}),
         _meta: { category: def.category, tier: def.tier },
       },
       // Handler type is erased in ToolDefinition for heterogeneous storage
@@ -532,9 +532,7 @@ export class ToolRegistry {
             : {}),
           enabled: tracked.registered.enabled ?? false,
           score: Math.round(r.score * 100) / 100,
-          suggestedParams: Object.keys(suggested).length > 0
-            ? suggested
-            : undefined,
+          ...(Object.keys(suggested).length > 0 ? { suggestedParams: suggested } : {}),
         };
       });
   }
@@ -668,9 +666,9 @@ export class ToolRegistry {
       description: definition.description,
       category: definition.category,
       handler: definition.handler,
-      inputSchema: definition.inputSchema,
+      ...(definition.inputSchema !== undefined ? { inputSchema: definition.inputSchema } : {}),
       enabled: registered.enabled ?? false,
-      alwaysEnabled: definition.alwaysEnabled,
+      ...(definition.alwaysEnabled !== undefined ? { alwaysEnabled: definition.alwaysEnabled } : {}),
     }));
   }
 

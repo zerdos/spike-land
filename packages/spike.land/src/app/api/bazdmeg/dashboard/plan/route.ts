@@ -138,8 +138,8 @@ export async function PUT(request: NextRequest) {
       update: {
         githubIssueTitle,
         githubIssueUrl,
-        githubIssueBody: githubIssueBody ?? undefined,
-        planContent: planContent ?? undefined,
+        ...(githubIssueBody !== undefined ? { githubIssueBody } : {}),
+        ...(planContent !== undefined ? { planContent } : {}),
         ...validatedUpdateStatus,
         planVersion: { increment: planContent ? 1 : 0 },
       },

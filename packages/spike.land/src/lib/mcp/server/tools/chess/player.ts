@@ -130,9 +130,9 @@ export function registerChessPlayerTools(
       safeToolCall("chess_update_player", async () => {
         const { updatePlayer } = await import("@/lib/chess/player-manager");
         const player = await updatePlayer(args.player_id, userId, {
-          name: args.name,
-          avatar: args.avatar,
-          soundEnabled: args.sound_enabled,
+          ...(args.name !== undefined ? { name: args.name } : {}),
+          ...(args.avatar !== undefined ? { avatar: args.avatar } : {}),
+          ...(args.sound_enabled !== undefined ? { soundEnabled: args.sound_enabled } : {}),
         });
         return textResult(
           `**Player Updated**\n\n`

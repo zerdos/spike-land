@@ -402,7 +402,7 @@ function createBazdmegMcpServer() {
           const { data: issue, error } = await createIssue({
             title: args.title,
             body: args.body,
-            labels: args.labels,
+            ...(args.labels !== undefined ? { labels: args.labels } : {}),
           });
           if (error || !issue) {
             return {

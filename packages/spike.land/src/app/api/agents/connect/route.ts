@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
       where: { id: agentId },
       update: {
         displayName: finalDisplayName,
-        projectPath,
-        workingDirectory,
+        ...(projectPath !== undefined ? { projectPath } : {}),
+        ...(workingDirectory !== undefined ? { workingDirectory } : {}),
         lastSeenAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null, // Reactivate if previously soft-deleted
@@ -72,8 +72,8 @@ export async function POST(req: NextRequest) {
         machineId,
         sessionId,
         displayName: finalDisplayName,
-        projectPath,
-        workingDirectory,
+        ...(projectPath !== undefined ? { projectPath } : {}),
+        ...(workingDirectory !== undefined ? { workingDirectory } : {}),
         lastSeenAt: new Date(),
       },
     }),
@@ -94,8 +94,8 @@ export async function POST(req: NextRequest) {
     machineId,
     sessionId,
     displayName: finalDisplayName,
-    projectPath,
-    workingDirectory,
+    ...(projectPath !== undefined ? { projectPath } : {}),
+    ...(workingDirectory !== undefined ? { workingDirectory } : {}),
     connectedAt: Date.now(),
     lastHeartbeat: Date.now(),
   };

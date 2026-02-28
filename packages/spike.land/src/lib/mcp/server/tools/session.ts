@@ -89,7 +89,7 @@ export const sessionTools: MCPTool[] = [
           name: a.name,
           description: a.description,
           status: "planning",
-          planId: a.plan_id,
+          ...(a.plan_id !== undefined ? { planId: a.plan_id } : {}),
           roles: [],
           events: [],
           config: {
@@ -229,8 +229,8 @@ export const sessionTools: MCPTool[] = [
           timestamp: new Date().toISOString(),
           type: a.type,
           message: a.message,
-          role: a.agent_id,
-          subtaskId: a.subtask_id,
+          ...(a.agent_id !== undefined ? { role: a.agent_id } : {}),
+          ...(a.subtask_id !== undefined ? { subtaskId: a.subtask_id } : {}),
         };
         session.events.push(event);
         return jsonResult(`Event logged in session ${a.session_id}`, event);

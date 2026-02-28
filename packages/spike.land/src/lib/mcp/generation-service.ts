@@ -87,8 +87,8 @@ export async function createGenerationJob(
   processGenerationJob(job.id, {
     prompt,
     tier: tier.replace("TIER_", "") as "1K" | "2K" | "4K",
-    negativePrompt,
-    aspectRatio,
+    ...(negativePrompt !== undefined ? { negativePrompt } : {}),
+    ...(aspectRatio !== undefined ? { aspectRatio } : {}),
     userId,
   }).catch(error => {
     logger.error(`Generation job ${job.id} failed`, { error });

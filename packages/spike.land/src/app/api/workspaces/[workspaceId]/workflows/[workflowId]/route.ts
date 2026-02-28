@@ -118,8 +118,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 
   // Update workflow
+  const { name: wfName, description: wfDescription, status: wfStatus } = validation.data;
   const { data: workflow, error: updateError } = await tryCatch(
-    updateWorkflow(workflowId, workspaceId, validation.data),
+    updateWorkflow(workflowId, workspaceId, {
+      ...(wfName !== undefined ? { name: wfName } : {}),
+      ...(wfDescription !== undefined ? { description: wfDescription } : {}),
+      ...(wfStatus !== undefined ? { status: wfStatus } : {}),
+    }),
   );
 
   if (updateError) {

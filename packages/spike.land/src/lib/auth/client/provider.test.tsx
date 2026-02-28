@@ -3,14 +3,18 @@ import { render, screen } from "@testing-library/react";
 import React from "react";
 
 // Use vi.hoisted so mock fn is available inside vi.mock factory
-const { mockNextAuthSessionProvider } = vi.hoisted(() => ({
-  mockNextAuthSessionProvider: vi.fn(
-    ({ children }: { children: React.ReactNode; }) => <>{children}</>,
+const { mockSessionProvider } = vi.hoisted(() => ({
+  mockSessionProvider: vi.fn(
+    ({ children }: { children: React.ReactNode }) => <>{children}</>,
   ),
 }));
 
-vi.mock("next-auth/react", () => ({
-  SessionProvider: mockNextAuthSessionProvider,
+vi.mock("@/lib/auth/client", () => ({
+  SessionProvider: mockSessionProvider,
+  useSession: vi.fn(),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  authClient: {},
 }));
 
 import { SessionProvider } from "./provider";
@@ -21,8 +25,8 @@ describe("SessionProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Re-set implementation after clearAllMocks
-    mockNextAuthSessionProvider.mockImplementation(
-      ({ children }: { children: React.ReactNode; }) => <>{children}</>,
+    mockSessionProvider.mockImplementation(
+      ({ children }: { children: React.ReactNode }) => <>{children}</>,
     );
   });
 
@@ -36,7 +40,7 @@ describe("SessionProvider", () => {
     expect(screen.getByText("Hello")).toBeTruthy();
   });
 
-  it("passes session prop to NextAuthSessionProvider", () => {
+  it("passes session prop to underlying SessionProvider", () => {
     const fakeSession: AuthSession = {
       user: {
         id: "user_abc",
@@ -54,7 +58,7 @@ describe("SessionProvider", () => {
       </SessionProvider>,
     );
 
-    const calls = mockNextAuthSessionProvider.mock.calls;
+    const calls = mockSessionProvider.mock.calls;
     expect(calls.length).toBeGreaterThan(0);
     const props = calls[calls.length - 1]![0] as {
       children: React.ReactNode;
@@ -63,14 +67,14 @@ describe("SessionProvider", () => {
     expect(props.session).toEqual(fakeSession);
   });
 
-  it("passes null session to NextAuthSessionProvider", () => {
+  it("passes null session to underlying SessionProvider", () => {
     render(
       <SessionProvider session={null}>
         <span>no session</span>
       </SessionProvider>,
     );
 
-    const calls = mockNextAuthSessionProvider.mock.calls;
+    const calls = mockSessionProvider.mock.calls;
     expect(calls.length).toBeGreaterThan(0);
     const props = calls[calls.length - 1]![0] as {
       children: React.ReactNode;
@@ -86,7 +90,7 @@ describe("SessionProvider", () => {
       </SessionProvider>,
     );
 
-    const calls = mockNextAuthSessionProvider.mock.calls;
+    const calls = mockSessionProvider.mock.calls;
     expect(calls.length).toBeGreaterThan(0);
     const props = calls[calls.length - 1]![0] as {
       children: React.ReactNode;
@@ -95,12 +99,12 @@ describe("SessionProvider", () => {
     expect(props.session).toBeUndefined();
   });
 
-  it("delegates to NextAuthSessionProvider once per render", () => {
+  it("delegates to underlying SessionProvider once per render", () => {
     render(
       <SessionProvider>
         <div>wrapped</div>
       </SessionProvider>,
     );
-    expect(mockNextAuthSessionProvider).toHaveBeenCalledTimes(1);
+    expect(mockSessionProvider).toHaveBeenCalledTimes(1);
   });
 });

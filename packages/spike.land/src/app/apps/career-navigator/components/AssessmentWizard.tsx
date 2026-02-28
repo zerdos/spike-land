@@ -493,7 +493,7 @@ export function AssessmentWizard({
                     <ResultCard
                       key={match.uri}
                       match={match}
-                      onSelect={onSelectOccupation}
+                      {...(onSelectOccupation !== undefined ? { onSelect: onSelectOccupation } : {})}
                     />
                   ))}
                 </div>

@@ -6,11 +6,9 @@
  */
 
 import { createStableUserId } from "@/auth.config";
-import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limiter";
 import { getClientIp } from "@/lib/security/ip";
 import { tryCatch } from "@/lib/try-catch";
-import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -132,68 +130,35 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Find user by email
-  const { data: user, error: dbError } = await tryCatch(
-    prisma.user.findUnique({
-      where: { email: trimmedEmail },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        image: true,
-        passwordHash: true,
-      },
-    }),
+  // Fetch from the new Auth MCP Service
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8787";
+  const { data: authResponse, error: authError } = await tryCatch(
+    fetch(`${authUrl}/api/auth/sign-in/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: trimmedEmail, password }),
+    })
   );
 
-  if (dbError) {
-    logger.error("Mobile signin error:", dbError);
+  if (authError || !authResponse) {
+    logger.error("Mobile signin error:", authError);
     return NextResponse.json(
       { error: "Failed to sign in" },
       { status: 500 },
     );
   }
 
-  if (!user) {
-    // Use generic error to prevent email enumeration
+  if (!authResponse.ok) {
+    const errorData = await authResponse.json().catch(() => ({}));
     return NextResponse.json(
-      { error: "Invalid email or password" },
+      { error: errorData.message || "Invalid email or password" },
       { status: 401 },
     );
   }
 
-  if (!user.passwordHash) {
-    // Run a dummy bcrypt compare to normalise response time and prevent
-    // timing-based enumeration of OAuth-only accounts (OWASP A07).
-    const dummyHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeN9qo8uLOickgx2ZMRZoMy";
-    await tryCatch(bcrypt.compare(password, dummyHash));
-    return NextResponse.json(
-      {
-        error: "This account uses social login. Please sign in with Google, Apple, or GitHub.",
-      },
-      { status: 401 },
-    );
-  }
+  const authData = await authResponse.json() as any;
+  const user = authData.user;
 
-  // Verify password
-  const { data: isValidPassword, error: bcryptError } = await tryCatch(
-    bcrypt.compare(password, user.passwordHash),
-  );
-
-  if (bcryptError) {
-    logger.error("Mobile signin error:", bcryptError);
-    return NextResponse.json(
-      { error: "Failed to sign in" },
-      { status: 500 },
-    );
-  }
-
-  if (!isValidPassword) {
-    return NextResponse.json(
-      { error: "Invalid email or password" },
-      { status: 401 },
-    );
-  }
 
   // Create stable user ID (consistent with NextAuth)
   const stableUserId = createStableUserId(trimmedEmail);

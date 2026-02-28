@@ -85,7 +85,14 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
 
-  const { id, ...updateData } = parsed.data;
+  const { id, question, answer, category, sortOrder, isPublished } = parsed.data;
+  const updateData = {
+    ...(question !== undefined ? { question } : {}),
+    ...(answer !== undefined ? { answer } : {}),
+    ...(category !== undefined ? { category } : {}),
+    ...(sortOrder !== undefined ? { sortOrder } : {}),
+    ...(isPublished !== undefined ? { isPublished } : {}),
+  };
   const prisma = (await import("@/lib/prisma")).default;
 
   const { data: entry, error } = await tryCatch(

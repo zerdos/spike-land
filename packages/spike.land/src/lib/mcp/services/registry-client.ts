@@ -73,7 +73,7 @@ export async function searchSmithery(
     transport: (s.connections?.[0]?.type as "stdio" | "sse" | "streamable-http")
       ?? "stdio",
     envVarsRequired: [],
-    homepage: s.homepage,
+    ...(s.homepage !== undefined ? { homepage: s.homepage } : {}),
   }));
 
   await setCached(key, results);
@@ -155,7 +155,7 @@ export async function searchGlama(
     url: s.url ?? "",
     transport: (s.transport as "stdio" | "sse" | "streamable-http") ?? "stdio",
     envVarsRequired: [],
-    stars: s.stars,
+    ...(s.stars !== undefined ? { stars: s.stars } : {}),
   }));
 
   await setCached(key, results);

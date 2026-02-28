@@ -130,7 +130,7 @@ export function registerGatewayTools(
         const result = await client.createIssue({
           title: params.title,
           body: params.body,
-          labels: params.labels,
+          ...(params.labels !== undefined ? { labels: params.labels } : {}),
         });
 
         if (result.error) return err(`Error: ${result.error}`);

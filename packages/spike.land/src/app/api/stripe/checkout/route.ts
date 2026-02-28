@@ -95,7 +95,7 @@ async function processCheckout(request: NextRequest): Promise<NextResponse> {
       stripe.customers.create(
         {
           email: session.user.email,
-          name: session.user.name || undefined,
+          ...(session.user.name ? { name: session.user.name } : {}),
           metadata: {
             userId: session.user.id,
           },

@@ -8,7 +8,7 @@
  */
 
 import type { AuthSession } from "../core/types";
-import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
+import { SessionProvider as NextAuthSessionProvider } from "@/lib/auth/client";
 
 interface SessionProviderProps {
   children: React.ReactNode;

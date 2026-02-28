@@ -30,14 +30,16 @@ export async function POST(request: NextRequest) {
   // Extract client IP for rate limiting
   const clientIp = getClientIp(request);
 
+  const grantTypes = body.grant_types as string[] | undefined;
+  const tokenEndpointAuthMethod = body.token_endpoint_auth_method as string | undefined;
   const result = await registerClient(
     {
       client_name: body.client_name as string,
       redirect_uris: body.redirect_uris as string[],
-      grant_types: body.grant_types as string[] | undefined,
-      token_endpoint_auth_method: body.token_endpoint_auth_method as
-        | string
-        | undefined,
+      ...(grantTypes !== undefined ? { grant_types: grantTypes } : {}),
+      ...(tokenEndpointAuthMethod !== undefined
+        ? { token_endpoint_auth_method: tokenEndpointAuthMethod }
+        : {}),
     },
     clientIp,
   );

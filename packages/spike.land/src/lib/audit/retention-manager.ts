@@ -23,6 +23,41 @@ import { logger } from "@/lib/logger";
 /**
  * Audit Retention Manager
  */
+/**
+ * Map a Prisma AuditRetentionPolicy record to RetentionPolicy
+ */
+/**
+ * Map a Prisma AuditRetentionPolicy record to RetentionPolicy
+ */
+function mapToRetentionPolicy(policy: {
+  id: string;
+  workspaceId: string | null;
+  name: string;
+  description: string | null;
+  retentionDays: number;
+  archiveAfterDays: number | null;
+  deleteAfterDays: number | null;
+  actionTypes: string[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}): RetentionPolicy {
+  const actionTypes = policy.actionTypes as unknown as import("@prisma/client").AuditAction[];
+  return {
+    id: policy.id,
+    workspaceId: policy.workspaceId,
+    name: policy.name,
+    description: policy.description,
+    retentionDays: policy.retentionDays,
+    archiveAfterDays: policy.archiveAfterDays,
+    deleteAfterDays: policy.deleteAfterDays,
+    actionTypes,
+    isActive: policy.isActive,
+    createdAt: policy.createdAt,
+    updatedAt: policy.updatedAt,
+  };
+}
+
 export class AuditRetentionManager {
   /**
    * Create a retention policy
@@ -36,11 +71,11 @@ export class AuditRetentionManager {
         data: {
           workspaceId,
           name: config.name,
-          description: config.description,
+          ...(config.description !== undefined ? { description: config.description } : {}),
           retentionDays: config.retentionDays,
-          archiveAfterDays: config.archiveAfterDays,
-          deleteAfterDays: config.deleteAfterDays,
-          actionTypes: config.actionTypes?.map(String) || [],
+          ...(config.archiveAfterDays !== undefined ? { archiveAfterDays: config.archiveAfterDays } : {}),
+          ...(config.deleteAfterDays !== undefined ? { deleteAfterDays: config.deleteAfterDays } : {}),
+          actionTypes: config.actionTypes?.map(String) ?? [],
           isActive: config.isActive,
         },
       }),
@@ -51,20 +86,7 @@ export class AuditRetentionManager {
       return null;
     }
 
-    return {
-      id: data.id,
-      workspaceId: data.workspaceId,
-      name: data.name,
-      description: data.description,
-      retentionDays: data.retentionDays,
-      archiveAfterDays: data.archiveAfterDays,
-      deleteAfterDays: data.deleteAfterDays,
-      actionTypes: data
-        .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-      isActive: data.isActive,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+    return mapToRetentionPolicy(data);
   }
 
   /**
@@ -110,20 +132,7 @@ export class AuditRetentionManager {
       return null;
     }
 
-    return {
-      id: data.id,
-      workspaceId: data.workspaceId,
-      name: data.name,
-      description: data.description,
-      retentionDays: data.retentionDays,
-      archiveAfterDays: data.archiveAfterDays,
-      deleteAfterDays: data.deleteAfterDays,
-      actionTypes: data
-        .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-      isActive: data.isActive,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+    return mapToRetentionPolicy(data);
   }
 
   /**
@@ -156,20 +165,7 @@ export class AuditRetentionManager {
       return null;
     }
 
-    return {
-      id: policy.id,
-      workspaceId: policy.workspaceId,
-      name: policy.name,
-      description: policy.description,
-      retentionDays: policy.retentionDays,
-      archiveAfterDays: policy.archiveAfterDays,
-      deleteAfterDays: policy.deleteAfterDays,
-      actionTypes: policy
-        .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-      isActive: policy.isActive,
-      createdAt: policy.createdAt,
-      updatedAt: policy.updatedAt,
-    };
+    return mapToRetentionPolicy(policy);
   }
 
   /**
@@ -183,20 +179,7 @@ export class AuditRetentionManager {
       orderBy: { createdAt: "desc" },
     });
 
-    return policies.map(policy => ({
-      id: policy.id,
-      workspaceId: policy.workspaceId,
-      name: policy.name,
-      description: policy.description,
-      retentionDays: policy.retentionDays,
-      archiveAfterDays: policy.archiveAfterDays,
-      deleteAfterDays: policy.deleteAfterDays,
-      actionTypes: policy
-        .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-      isActive: policy.isActive,
-      createdAt: policy.createdAt,
-      updatedAt: policy.updatedAt,
-    }));
+    return policies.map(mapToRetentionPolicy);
   }
 
   /**
@@ -214,20 +197,7 @@ export class AuditRetentionManager {
     });
 
     if (workspacePolicy) {
-      return {
-        id: workspacePolicy.id,
-        workspaceId: workspacePolicy.workspaceId,
-        name: workspacePolicy.name,
-        description: workspacePolicy.description,
-        retentionDays: workspacePolicy.retentionDays,
-        archiveAfterDays: workspacePolicy.archiveAfterDays,
-        deleteAfterDays: workspacePolicy.deleteAfterDays,
-        actionTypes: workspacePolicy
-          .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-        isActive: workspacePolicy.isActive,
-        createdAt: workspacePolicy.createdAt,
-        updatedAt: workspacePolicy.updatedAt,
-      };
+      return mapToRetentionPolicy(workspacePolicy);
     }
 
     // Fall back to system-wide default policy
@@ -239,20 +209,7 @@ export class AuditRetentionManager {
     });
 
     if (systemPolicy) {
-      return {
-        id: systemPolicy.id,
-        workspaceId: systemPolicy.workspaceId,
-        name: systemPolicy.name,
-        description: systemPolicy.description,
-        retentionDays: systemPolicy.retentionDays,
-        archiveAfterDays: systemPolicy.archiveAfterDays,
-        deleteAfterDays: systemPolicy.deleteAfterDays,
-        actionTypes: systemPolicy
-          .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-        isActive: systemPolicy.isActive,
-        createdAt: systemPolicy.createdAt,
-        updatedAt: systemPolicy.updatedAt,
-      };
+      return mapToRetentionPolicy(systemPolicy);
     }
 
     return null;
@@ -331,9 +288,9 @@ export class AuditRetentionManager {
               targetType: log.targetType,
               resourceId: log.resourceId,
               resourceType: log.resourceType,
-              metadata: log.metadata as object | undefined,
-              ipAddress: log.ipAddress,
-              userAgent: log.userAgent,
+              ...(log.metadata != null ? { metadata: log.metadata as Prisma.InputJsonValue } : {}),
+              ...(log.ipAddress != null ? { ipAddress: log.ipAddress } : {}),
+              ...(log.userAgent != null ? { userAgent: log.userAgent } : {}),
               originalCreatedAt: log.createdAt,
               retentionPolicyId: policyId,
               archiveReason: "scheduled",
@@ -446,9 +403,9 @@ export class AuditRetentionManager {
     return {
       totalActiveLogs,
       totalArchivedLogs,
-      oldestActiveLog: oldestActiveLogResult?.createdAt,
-      oldestArchivedLog: oldestArchivedLogResult?.originalCreatedAt,
-      effectivePolicy,
+      ...(oldestActiveLogResult?.createdAt !== undefined ? { oldestActiveLog: oldestActiveLogResult.createdAt } : {}),
+      ...(oldestArchivedLogResult?.originalCreatedAt !== undefined ? { oldestArchivedLog: oldestArchivedLogResult.originalCreatedAt } : {}),
+      ...(effectivePolicy !== undefined ? { effectivePolicy } : {}),
     };
   }
 
@@ -464,20 +421,7 @@ export class AuditRetentionManager {
     });
 
     if (existingDefault) {
-      return {
-        id: existingDefault.id,
-        workspaceId: existingDefault.workspaceId,
-        name: existingDefault.name,
-        description: existingDefault.description,
-        retentionDays: existingDefault.retentionDays,
-        archiveAfterDays: existingDefault.archiveAfterDays,
-        deleteAfterDays: existingDefault.deleteAfterDays,
-        actionTypes: existingDefault
-          .actionTypes as unknown as RetentionPolicyConfig["actionTypes"],
-        isActive: existingDefault.isActive,
-        createdAt: existingDefault.createdAt,
-        updatedAt: existingDefault.updatedAt,
-      };
+      return mapToRetentionPolicy(existingDefault);
     }
 
     return this.createPolicy(null, {
