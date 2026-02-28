@@ -23,7 +23,7 @@ interface Review {
 interface PipelineTimelineProps {
   currentPhase: Phase;
   message: string;
-  reviews?: Review[];
+  reviews?: Review[] | undefined;
 }
 
 const PHASES: { key: Phase; label: string; }[] = [

@@ -12,7 +12,7 @@ export function ThemeProvider(
   { children, nonce, ...props }: ExtendedThemeProviderProps,
 ) {
   return (
-    <NextThemesProvider attribute="class" nonce={nonce} {...props}>
+    <NextThemesProvider attribute="class" {...(nonce !== undefined ? { nonce } : {})} {...props}>
       {children}
     </NextThemesProvider>
   );

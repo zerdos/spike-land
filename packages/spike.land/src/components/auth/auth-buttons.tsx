@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth/client/actions";
-import { getProviders } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 // Google "G" logo SVG
@@ -83,21 +82,9 @@ export function AuthButtons({ className }: AuthButtonsProps) {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  const [availableProviders, setAvailableProviders] = useState<Set<string> | null>(null);
-  const [isLoadingProviders, setIsLoadingProviders] = useState(true);
-
   useEffect(() => {
-    getProviders()
-      .then(providers => {
-        setAvailableProviders(new Set(Object.keys(providers ?? {})));
-      })
-      .catch(() => {
-        // On error, set null to indicate fallback (show all buttons)
-        setAvailableProviders(null);
-      })
-      .finally(() => {
-        setIsLoadingProviders(false);
-      });
+    // Better Auth doesn't need dynamic provider fetching, 
+    // we use the ones we have configured in auth.ts
   }, []);
 
   useEffect(() => {
@@ -186,7 +173,7 @@ export function AuthButtons({ className }: AuthButtonsProps) {
 
       if (result?.error) {
         setError("Invalid email or password");
-      } else if (result?.ok) {
+      } else if (!result?.error) {
         // Redirect to callback URL or Orbit on success
         const params = new URLSearchParams(window.location.search);
         const callbackUrl = params.get("callbackUrl") || "/";
@@ -233,7 +220,7 @@ export function AuthButtons({ className }: AuthButtonsProps) {
       if (!signupResponse.ok) {
         setError(
           signupData.error
-            || "Unable to create account. Please try signing in with Google or GitHub.",
+          || "Unable to create account. Please try signing in with Google or GitHub.",
         );
         return;
       }
@@ -250,7 +237,7 @@ export function AuthButtons({ className }: AuthButtonsProps) {
         setError(
           "Account created but sign in failed. Please try signing in again.",
         );
-      } else if (result?.ok) {
+      } else if (!result?.error) {
         const params = new URLSearchParams(window.location.search);
         const callbackUrl = params.get("callbackUrl") || "/";
 
@@ -494,64 +481,56 @@ export function AuthButtons({ className }: AuthButtonsProps) {
     }
   };
 
-  const showGoogle = availableProviders === null || availableProviders.has("google");
-  const showGitHub = availableProviders === null || availableProviders.has("github");
-  const showApple = availableProviders === null || availableProviders.has("apple");
+  const showGoogle = true;
+  const showGitHub = true;
+  const showApple = true;
   const hasOAuthButtons = showGoogle || showGitHub || showApple;
 
   return (
     <div className={`flex flex-col gap-4 w-full max-w-sm ${className || ""}`}>
       {/* Social Buttons - Primary Position */}
-      {isLoadingProviders
-        ? (
-          <div className="flex flex-col gap-3">
-            <div className="h-12 w-full animate-pulse rounded-md bg-muted" />
-            <div className="h-12 w-full animate-pulse rounded-md bg-muted" />
-            <div className="h-12 w-full animate-pulse rounded-md bg-muted" />
-          </div>
-        )
-        : hasOAuthButtons && (
-          <div className="flex flex-col gap-3">
-            {showGoogle && (
-              <Button
-                onClick={() => signIn("google", { callbackUrl: getCallbackUrl() })}
-                variant="outline"
-                className="w-full h-12 bg-card hover:bg-card/80 border-border"
-                size="lg"
-              >
-                <GoogleIcon className="mr-2 h-5 w-5" />
-                Continue with Google
-              </Button>
-            )}
+      {hasOAuthButtons && (
+        <div className="flex flex-col gap-3">
+          {showGoogle && (
+            <Button
+              onClick={() => signIn("google", { callbackUrl: getCallbackUrl() })}
+              variant="outline"
+              className="w-full h-12 bg-card hover:bg-card/80 border-border"
+              size="lg"
+            >
+              <GoogleIcon className="mr-2 h-5 w-5" />
+              Continue with Google
+            </Button>
+          )}
 
-            {showGitHub && (
-              <Button
-                onClick={() => signIn("github", { callbackUrl: getCallbackUrl() })}
-                variant="outline"
-                className="w-full h-12 bg-card hover:bg-card/80 border-border"
-                size="lg"
-              >
-                <GitHubIcon className="mr-2 h-5 w-5" />
-                Continue with GitHub
-              </Button>
-            )}
+          {showGitHub && (
+            <Button
+              onClick={() => signIn("github", { callbackUrl: getCallbackUrl() })}
+              variant="outline"
+              className="w-full h-12 bg-card hover:bg-card/80 border-border"
+              size="lg"
+            >
+              <GitHubIcon className="mr-2 h-5 w-5" />
+              Continue with GitHub
+            </Button>
+          )}
 
-            {showApple && (
-              <Button
-                onClick={() => signIn("apple", { callbackUrl: getCallbackUrl() })}
-                variant="outline"
-                className="w-full h-12 bg-black hover:bg-black/90 border-black text-white"
-                size="lg"
-              >
-                <AppleIcon className="mr-2 h-5 w-5" />
-                Continue with Apple
-              </Button>
-            )}
-          </div>
-        )}
+          {showApple && (
+            <Button
+              onClick={() => signIn("apple", { callbackUrl: getCallbackUrl() })}
+              variant="outline"
+              className="w-full h-12 bg-black hover:bg-black/90 border-black text-white"
+              size="lg"
+            >
+              <AppleIcon className="mr-2 h-5 w-5" />
+              Continue with Apple
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Separator - only show when OAuth buttons are present */}
-      {!isLoadingProviders && hasOAuthButtons && (
+      {hasOAuthButtons && (
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />

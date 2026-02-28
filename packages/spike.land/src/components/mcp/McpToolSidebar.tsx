@@ -39,7 +39,7 @@ import { cn } from "@/lib/utils";
 interface McpToolSidebarProps {
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  initialCategory?: string;
+  initialCategory?: string | undefined;
 }
 
 function SearchInput({
@@ -81,7 +81,7 @@ function SearchResults({
   results: ToolSearchResult[];
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  onToolClick?: () => void;
+  onToolClick?: (() => void) | undefined;
 }) {
   return (
     <div className="space-y-0.5">
@@ -195,11 +195,11 @@ function SuperCategoryGroup({
 }: {
   superCategory: McpSuperCategory;
   defaultOpen: boolean;
-  initialSubId?: string;
-  initialCategory?: string;
+  initialSubId?: string | undefined;
+  initialCategory?: string | undefined;
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  onToolClick?: () => void;
+  onToolClick?: (() => void) | undefined;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const Icon: LucideIcon = ICON_MAP[superCategory.icon] ?? ICON_MAP.Compass!;
@@ -253,10 +253,10 @@ function SubcategoryGroup({
 }: {
   subcategory: McpSubcategory;
   defaultOpen: boolean;
-  initialCategory?: string;
+  initialCategory?: string | undefined;
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  onToolClick?: () => void;
+  onToolClick?: (() => void) | undefined;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const Icon: LucideIcon = ICON_MAP[subcategory.icon] ?? ICON_MAP.Compass!;
@@ -326,7 +326,7 @@ function CategoryGroup({
   defaultOpen: boolean;
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  onToolClick?: () => void;
+  onToolClick?: (() => void) | undefined;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const Icon: LucideIcon = ICON_MAP[category.icon] ?? ICON_MAP.Compass!;
@@ -374,7 +374,7 @@ const ToolList = memo(function ToolList({
   categoryId: string;
   selectedTool: McpToolDef | null;
   onSelectTool: (tool: McpToolDef) => void;
-  onToolClick?: () => void;
+  onToolClick?: (() => void) | undefined;
 }) {
   const tools = useMemo(() => getToolsByCategory(categoryId), [categoryId]);
 

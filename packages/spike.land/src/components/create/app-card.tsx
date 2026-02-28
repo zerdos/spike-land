@@ -6,7 +6,7 @@ interface AppCardProps {
   title: string;
   description: string;
   slug: string;
-  viewCount?: number;
+  viewCount?: number | undefined;
 }
 
 export function AppCard({ title, description, slug, viewCount }: AppCardProps) {

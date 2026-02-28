@@ -454,8 +454,8 @@ export function registerStateMachineTemplateTools(
           addState(machineId, {
             id: stateDef.id,
             type: stateDef.type,
-            initial: stateDef.initial,
-            parent: stateDef.parent,
+            ...(stateDef.initial !== undefined ? { initial: stateDef.initial } : {}),
+            ...(stateDef.parent !== undefined ? { parent: stateDef.parent } : {}),
             entryActions: [],
             exitActions: [],
           });

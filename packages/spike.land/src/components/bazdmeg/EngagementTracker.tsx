@@ -19,7 +19,7 @@ export function EngagementTracker({
   abVariant,
   sectionIds,
 }: EngagementTrackerProps) {
-  useEngagement({ visitorId, page, abVariant, sectionIds });
+  useEngagement({ visitorId, page, sectionIds, ...(abVariant !== undefined ? { abVariant } : {}) });
   return null;
 }
 

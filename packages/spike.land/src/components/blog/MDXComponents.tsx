@@ -213,11 +213,14 @@ function CustomLink({
       </a>
     );
   }
+  const filteredProps = Object.fromEntries(
+    Object.entries(props).filter(([, v]) => v !== undefined),
+  );
   return (
     <Link
       href={href || "#"}
       className="text-primary hover:underline transition-colors"
-      {...props}
+      {...filteredProps}
     >
       {children}
     </Link>

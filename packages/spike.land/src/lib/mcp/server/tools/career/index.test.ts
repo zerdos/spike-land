@@ -22,8 +22,8 @@ vi.mock("@/lib/career/services/job-search-client", () => ({
   searchJobs: mockSearchJobs,
 }));
 
-import { createMockRegistry, getText } from "../__test-utils__";
-import { registerCareerTools } from "./career";
+import { createMockRegistry, getText } from "../../__test-utils__";
+import { registerCareerTools } from "./index";
 
 const sampleOccupation = {
   uri: "http://data.europa.eu/esco/occupation/1",

@@ -198,7 +198,7 @@ export function BazdmegFaq({ onFaqExpanded }: BazdmegFaqProps) {
         Frequently Asked Questions
       </motion.h2>
       <div className="mx-auto max-w-3xl">
-        <Tabs defaultValue={categories[0]} className="w-full">
+        <Tabs defaultValue={categories[0] ?? ""} className="w-full">
           <TabsList className="mb-8 w-full justify-start bg-white/5 rounded-xl p-1">
             {categories.map(cat => (
               <TabsTrigger

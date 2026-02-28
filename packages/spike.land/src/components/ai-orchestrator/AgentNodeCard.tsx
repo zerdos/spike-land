@@ -17,8 +17,8 @@ interface AgentNodeCardProps {
   agentName: string;
   agentType: AgentType;
   status: AgentStatus;
-  currentTask?: string;
-  completedTasks?: number;
+  currentTask?: string | undefined;
+  completedTasks?: number | undefined;
 }
 
 const statusDotClass: Record<AgentStatus, string> = {

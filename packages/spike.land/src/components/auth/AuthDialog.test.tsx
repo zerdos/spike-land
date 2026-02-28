@@ -2,23 +2,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AuthDialog } from "./AuthDialog";
 
-// Mock next-auth/react
+// Mock auth client actions (signIn)
 const mockSignIn = vi.fn();
+vi.mock("@/lib/auth/client/actions", () => ({
+  signIn: (...args: unknown[]) => mockSignIn(...args),
+}));
+
+// Mock auth client hooks (useSession)
 const mockUpdate = vi.fn();
-const mockGetProviders = vi.fn();
-vi.mock("next-auth/react", () => ({
+vi.mock("@/lib/auth/client/hooks", () => ({
   useSession: () => ({
     data: null,
     status: "unauthenticated",
     update: mockUpdate,
   }),
-  signIn: (...args: unknown[]) => mockSignIn(...args),
-  getProviders: (...args: unknown[]) => mockGetProviders(...args),
 }));
 
 // Mock qrcode.react
 vi.mock("qrcode.react", () => ({
-  QRCodeSVG: ({ value }: { value: string; }) => (
+  QRCodeSVG: ({ value }: { value: string }) => (
     <div data-testid="qr-code" data-value={value}>
       QR Code
     </div>
@@ -47,12 +49,6 @@ describe("AuthDialog", () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ token: "test-token", hash: "test-hash" }),
-    });
-    // Default: return all three OAuth providers
-    mockGetProviders.mockResolvedValue({
-      google: { id: "google", name: "Google" },
-      github: { id: "github", name: "GitHub" },
-      apple: { id: "apple", name: "Apple" },
     });
   });
 
@@ -175,46 +171,14 @@ describe("AuthDialog", () => {
     ).toBeInTheDocument();
   });
 
-  it("hides More sign-in options when no OAuth providers are configured", async () => {
-    mockGetProviders.mockResolvedValueOnce({
-      email: { id: "email", name: "Email" },
-    });
-
+  it("always shows all OAuth buttons (hardcoded in better-auth)", () => {
     render(<AuthDialog {...defaultProps} />);
-
-    await waitFor(() => {
-      expect(screen.queryByText("More sign-in options")).not.toBeInTheDocument();
-    });
-  });
-
-  it("shows only configured OAuth providers when subset available", async () => {
-    mockGetProviders.mockResolvedValueOnce({
-      google: { id: "google", name: "Google" },
-      email: { id: "email", name: "Email" },
-    });
-
-    render(<AuthDialog {...defaultProps} />);
-    const trigger = await screen.findByText("More sign-in options");
+    const trigger = screen.getByText("More sign-in options");
     fireEvent.click(trigger);
 
-    await waitFor(() => {
-      expect(screen.getByText("Continue with Google")).toBeInTheDocument();
-      expect(screen.queryByText("Continue with GitHub")).not.toBeInTheDocument();
-      expect(screen.queryByText("Continue with Apple")).not.toBeInTheDocument();
-    });
-  });
-
-  it("shows all OAuth buttons as fallback when getProviders fails", async () => {
-    mockGetProviders.mockRejectedValueOnce(new Error("Network error"));
-
-    render(<AuthDialog {...defaultProps} />);
-    const trigger = await screen.findByText("More sign-in options");
-    fireEvent.click(trigger);
-
-    await waitFor(() => {
-      expect(screen.getByText("Continue with Google")).toBeInTheDocument();
-      expect(screen.getByText("Continue with GitHub")).toBeInTheDocument();
-      expect(screen.getByText("Continue with Apple")).toBeInTheDocument();
-    });
+    // In better-auth, providers are hardcoded, not dynamically fetched
+    expect(screen.getByText("Continue with Google")).toBeInTheDocument();
+    expect(screen.getByText("Continue with GitHub")).toBeInTheDocument();
+    expect(screen.getByText("Continue with Apple")).toBeInTheDocument();
   });
 });

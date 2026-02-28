@@ -71,7 +71,7 @@ function AgentNodeBubble({ agent }: { agent: AgentNode; }) {
   );
 }
 
-function ConnectionArrow({ label }: { label?: string; }) {
+function ConnectionArrow({ label }: { label?: string | undefined; }) {
   return (
     <div className="flex flex-col items-center justify-center shrink-0 px-1 min-w-[40px]">
       <div className="flex items-center gap-0">

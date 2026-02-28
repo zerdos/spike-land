@@ -171,11 +171,11 @@ export function registerStateMachineTools(
         const stateNode = addState(machine_id, {
           id: state_id,
           type,
-          parent,
-          initial,
+          ...(parent !== undefined ? { parent } : {}),
+          ...(initial !== undefined ? { initial } : {}),
           entryActions: entry_actions ?? [],
           exitActions: exit_actions ?? [],
-          historyType: history_type,
+          ...(history_type !== undefined ? { historyType: history_type } : {}),
         });
 
         let text = `**State Added**\n\n`;
@@ -294,7 +294,7 @@ export function registerStateMachineTools(
           source,
           target,
           event,
-          guard,
+          ...(guard !== undefined ? { guard } : {}),
           actions: actions ?? [],
           internal: internal ?? false,
         });

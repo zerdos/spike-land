@@ -72,7 +72,7 @@ const JsonNode = memo(function JsonNode({
   value: unknown;
   depth: number;
   maxExpandDepth: number;
-  keyName?: string;
+  keyName?: string | undefined;
   isLast: boolean;
 }) {
   const isObject = value !== null && typeof value === "object"

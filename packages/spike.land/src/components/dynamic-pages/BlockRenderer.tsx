@@ -92,7 +92,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     <Suspense fallback={<BlockSkeleton />}>
       <LazyComponent
         content={block.content}
-        variant={block.variant ?? undefined}
+        {...(block.variant != null ? { variant: block.variant } : {})}
       />
     </Suspense>
   );

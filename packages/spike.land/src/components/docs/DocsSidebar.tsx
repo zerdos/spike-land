@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 interface DocsSidebarProps {
-  onLinkClick?: () => void;
+  onLinkClick?: (() => void) | undefined;
 }
 
 interface NavLinkProps {
@@ -27,7 +27,7 @@ interface NavLinkProps {
   icon: React.ComponentType<{ className?: string; }>;
   label: string;
   pathname: string;
-  onLinkClick?: () => void;
+  onLinkClick?: (() => void) | undefined;
   badge?: React.ReactNode;
 }
 
@@ -39,7 +39,7 @@ function NavLink(
   return (
     <Link
       href={href}
-      onClick={onLinkClick}
+      {...(onLinkClick !== undefined ? { onClick: onLinkClick } : {})}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative group",
         isActive
@@ -65,7 +65,7 @@ function NavLink(
 interface CategoryGroupProps {
   category: DocsCategory;
   pathname: string;
-  onLinkClick?: () => void;
+  onLinkClick?: (() => void) | undefined;
 }
 
 function CategoryGroup(
@@ -117,7 +117,7 @@ function CategoryGroup(
         <div className="ml-3 mt-0.5 pl-3 border-l border-white/5">
           <Link
             href={categoryPath}
-            onClick={onLinkClick}
+            {...(onLinkClick !== undefined ? { onClick: onLinkClick } : {})}
             className={cn(
               "block px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200",
               isActive
@@ -158,7 +158,7 @@ export function DocsSidebar({ onLinkClick }: DocsSidebarProps) {
     <div className="flex flex-col h-full bg-background/40 backdrop-blur-xl">
       {/* Header */}
       <div className="p-4">
-        <Link href="/docs" onClick={onLinkClick} className="group">
+        <Link href="/docs" {...(onLinkClick !== undefined ? { onClick: onLinkClick } : {})} className="group">
           <h1 className="text-xl font-bold font-heading text-gradient-primary group-hover:opacity-80 transition-opacity">
             Documentation
           </h1>

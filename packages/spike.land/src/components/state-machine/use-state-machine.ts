@@ -459,8 +459,8 @@ export function useStateMachine() {
           issues.push({
             level: match[1].toLowerCase() as "error" | "warning",
             message: match[2] || "",
-            stateId: match[3],
-            transitionId: match[4],
+            ...(match[3] !== undefined ? { stateId: match[3] } : {}),
+            ...(match[4] !== undefined ? { transitionId: match[4] } : {}),
           });
         }
       }

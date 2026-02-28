@@ -271,7 +271,7 @@ export function EnhancementSettings({
   // Dialog mode - render with Dialog wrapper
   if (trigger) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog {...(open !== undefined ? { open } : {})} {...(onOpenChange !== undefined ? { onOpenChange } : {})}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>

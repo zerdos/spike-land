@@ -19,7 +19,7 @@ function slugify(text: string): string {
 }
 
 export interface ComposerBoxProps {
-  initialPrompt?: string;
+  initialPrompt?: string | undefined;
 }
 
 export function ComposerBox({ initialPrompt }: ComposerBoxProps) {

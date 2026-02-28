@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { AuthDialog } from "./AuthDialog";
 
 interface AuthDialogOptions {
-  callbackUrl?: string;
+  callbackUrl?: string | undefined;
 }
 
 interface AuthDialogContextValue {

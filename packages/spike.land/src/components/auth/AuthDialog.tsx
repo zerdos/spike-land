@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/collapsible";
 import { signIn } from "@/lib/auth/client/actions";
 import { useSession } from "@/lib/auth/client/hooks";
-import { getProviders } from "next-auth/react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import {
@@ -65,7 +64,7 @@ interface QrPollResponse {
 export interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  callbackUrl?: string;
+  callbackUrl?: string | undefined;
 }
 
 function GoogleIcon({ className }: { className?: string; }) {
@@ -137,18 +136,8 @@ export function AuthDialog({ open, onOpenChange, callbackUrl }: AuthDialogProps)
   // OAuth collapsible
   const [oauthOpen, setOauthOpen] = useState(false);
 
-  // Available OAuth providers (null = not loaded yet)
-  const [availableProviders, setAvailableProviders] = useState<Set<string> | null>(null);
-
   useEffect(() => {
-    getProviders()
-      .then(providers => {
-        setAvailableProviders(new Set(Object.keys(providers ?? {})));
-      })
-      .catch(() => {
-        // On error, show all buttons as fallback
-        setAvailableProviders(null);
-      });
+    // Better Auth doesn't require dynamic fetching of providers
   }, []);
 
   const getCallbackUrl = useCallback((): string => {
@@ -286,7 +275,7 @@ export function AuthDialog({ open, onOpenChange, callbackUrl }: AuthDialogProps)
               redirect: false,
             });
 
-            if (authResult?.ok) {
+            if (!authResult?.error) {
               await updateSession();
               toast.success("Welcome! You're now signed in.");
               onOpenChange(false);
@@ -539,11 +528,10 @@ export function AuthDialog({ open, onOpenChange, callbackUrl }: AuthDialogProps)
             )}
           </Tabs>
 
-          {/* Collapsible OAuth Section */}
           {(() => {
-            const showGoogle = availableProviders === null || availableProviders.has("google");
-            const showGitHub = availableProviders === null || availableProviders.has("github");
-            const showApple = availableProviders === null || availableProviders.has("apple");
+            const showGoogle = true;
+            const showGitHub = true;
+            const showApple = true;
             const hasOAuthOptions = showGoogle || showGitHub || showApple;
 
             if (!hasOAuthOptions) return null;

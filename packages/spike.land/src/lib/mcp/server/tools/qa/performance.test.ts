@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Mock tool-helpers ─────────────────────────────────────────────────────────
 // safeToolCall must just invoke the handler transparently in tests.
-vi.mock("./tool-helpers", () => ({
+vi.mock("../tool-helpers", () => ({
   safeToolCall: async (
     _name: string,
     handler: () => Promise<unknown>,
@@ -15,8 +15,8 @@ const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 // ── Import after mocks ────────────────────────────────────────────────────────
-import { createMockRegistry, getText, isError } from "../__test-utils__";
-import { registerQaPerformanceTools } from "./qa-performance";
+import { createMockRegistry, getText, isError } from "../../__test-utils__";
+import { registerQaPerformanceTools } from "./performance";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

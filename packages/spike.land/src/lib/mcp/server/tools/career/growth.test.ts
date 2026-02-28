@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createMockRegistry, getText } from "../__test-utils__";
-import { registerCareerGrowthTools } from "./career-growth";
+import { createMockRegistry, getText } from "../../__test-utils__";
+import { registerCareerGrowthTools } from "./growth";
 
 describe("career-growth tools", () => {
   const userId = "test-user-456";

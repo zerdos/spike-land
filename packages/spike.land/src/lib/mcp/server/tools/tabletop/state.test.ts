@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createMockRegistry, getText, isError } from "../__test-utils__";
-import { registerTabletopStateTools } from "./tabletop-state";
+import { createMockRegistry, getText, isError } from "../../__test-utils__";
+import { registerTabletopStateTools } from "./state";
 
 describe("Tabletop State MCP Tools", () => {
   let registry: ReturnType<typeof createMockRegistry>;

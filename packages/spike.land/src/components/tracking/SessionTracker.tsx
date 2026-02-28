@@ -47,13 +47,13 @@ function getOrCreateVisitorId(): string | null {
  * Extract UTM parameters from URL
  */
 function extractUtmParams(searchParams: URLSearchParams): {
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-  utmTerm?: string;
-  utmContent?: string;
-  gclid?: string;
-  fbclid?: string;
+  utmSource?: string | undefined;
+  utmMedium?: string | undefined;
+  utmCampaign?: string | undefined;
+  utmTerm?: string | undefined;
+  utmContent?: string | undefined;
+  gclid?: string | undefined;
+  fbclid?: string | undefined;
 } {
   return {
     utmSource: searchParams.get("utm_source") || undefined,

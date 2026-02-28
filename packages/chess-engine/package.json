@@ -1,0 +1,33 @@
+{
+  "name": "@spike-land-ai/chess-engine",
+  "version": "0.1.0",
+  "description": "Chess engine with ELO, game/player/challenge managers for spike.land",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@spike-land-ai/eslint-config": "workspace:*",
+    "@spike-land-ai/tsconfig": "workspace:*",
+    "@types/node": "25.3.2",
+    "@vitest/coverage-v8": "4.0.18",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18"
+  },
+  "peerDependencies": {
+    "chess.js": ">=1.0.0"
+  }
+}

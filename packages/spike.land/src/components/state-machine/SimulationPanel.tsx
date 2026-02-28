@@ -119,7 +119,7 @@ export function SimulationPanel({
       await onSendEvent(eventToSend, payload);
 
       if (isRecording) {
-        setRecordingEvents(prev => [...prev, { event: eventToSend, payload }]);
+        setRecordingEvents(prev => [...prev, { event: eventToSend, ...(payload !== undefined ? { payload } : {}) }]);
       }
 
       if (!evt) setEventName("");

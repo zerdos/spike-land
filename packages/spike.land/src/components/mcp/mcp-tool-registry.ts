@@ -396,7 +396,7 @@ export const MCP_TOOLS: McpToolDef[] = toolsManifest.tools.map((tool: {
   description: tool.description,
   category: tool.category,
   tier: tool.tier as "free" | "workspace",
-  alwaysEnabled: tool.category === "gateway-meta" ? true : undefined,
+  ...(tool.category === "gateway-meta" ? { alwaysEnabled: true as const } : {}),
   responseType: IMAGE_TOOLS.has(tool.name) ? "image" as const : "json" as const,
   params: tool.parameters.map(p => ({
     name: p.name,

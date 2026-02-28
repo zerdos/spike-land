@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
-import { createMockRegistry, getText } from "../__test-utils__";
-import { registerTabletopTools } from "./tabletop";
+import { createMockRegistry, getText } from "../../__test-utils__";
+import { registerTabletopTools } from "./index";
 
 // Helper to build a successful JSON fetch response
 function makeFetchOk(body: unknown): Response {
