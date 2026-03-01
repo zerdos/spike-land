@@ -18,7 +18,7 @@ vi.mock(
 );
 
 import { createMockRegistry, getText, isError } from "../__test-utils__";
-import { registerJobsTools } from "./jobs";
+// import { registerJobsTools } from "./jobs";
 
 describe("jobs tools", () => {
   const userId = "test-user-123";
@@ -27,7 +27,7 @@ describe("jobs tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     registry = createMockRegistry();
-    registerJobsTools(registry, userId);
+//     registerJobsTools(registry, userId);
     mockPrisma.toolInvocation.create.mockResolvedValue({});
   });
 

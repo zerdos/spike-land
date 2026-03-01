@@ -25,7 +25,6 @@ model User {
   role                     UserRole                  @default(USER)
   resolvedHealthEvents     AccountHealthEvent[]      @relation("HealthEventResolver")
   aiDecisionLogs           AIDecisionLog[]           @relation("AIDecisionLogs")
-  albums                   Album[]
   apiKeys                  ApiKey[]
   apps                     App[]
   assetFolders             AssetFolder[]
@@ -49,14 +48,10 @@ model User {
   draftAuditLogs           DraftAuditLog[]
   draftEdits               DraftEditHistory[]
   emailLogs                EmailLog[]
-  enhancedImages           EnhancedImage[]
-  pipelines                EnhancementPipeline[]
   createdGalleryItems      FeaturedGalleryItem[]     @relation("GalleryItemCreator")
   identity                 Identity?
-  enhancementJobs          ImageEnhancementJob[]
   learnItContent           LearnItContent[]
   marketingAccounts        MarketingAccount[]
-  mcpGenerationJobs        McpGenerationJob[]
   merchCart                MerchCart?
   merchOrders              MerchOrder[]
   policyChecks             PolicyCheck[]
@@ -107,11 +102,11 @@ model User {
   skillUsageEvents         SkillUsageEvent[]
   ticketPlans              TicketPlan[]
   stateMachines            StateMachine[]
-  avlProfileAssignment     AvlProfileNode?          @relation("AvlNodeAssignedUser")
+  avlProfileAssignment     AvlProfileNode?           @relation("AvlNodeAssignedUser")
   avlTraversalSessions     AvlTraversalSession[]
   avlProfile               AvlUserProfile?
-  receivedDMs              DirectMessage[]            @relation("ReceivedDMs")
-  sentDMs                  DirectMessage[]            @relation("SentDMs")
+  receivedDMs              DirectMessage[]           @relation("ReceivedDMs")
+  sentDMs                  DirectMessage[]           @relation("SentDMs")
   blogPosts                BlogPost[]
   comments                 Comment[]
   userPreferences          UserPreference[]
@@ -168,23 +163,23 @@ model Verification {
 }
 
 model StateMachine {
-  id               String   @id @default(cuid())
-  userId           String
-  name             String
-  definition       Json
-  currentStates    String[]
-  context          Json
-  history          Json
-  transitionLog    Json
-  initialContext   Json
-  shareToken       String?  @unique
-  isPublic         Boolean  @default(false)
-  forkedFrom       String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parentMachine    StateMachine? @relation("StateMachineForks", fields: [forkedFrom], references: [id])
-  forks            StateMachine[] @relation("StateMachineForks")
+  id             String         @id @default(cuid())
+  userId         String
+  name           String
+  definition     Json
+  currentStates  String[]
+  context        Json
+  history        Json
+  transitionLog  Json
+  initialContext Json
+  shareToken     String?        @unique
+  isPublic       Boolean        @default(false)
+  forkedFrom     String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentMachine  StateMachine?  @relation("StateMachineForks", fields: [forkedFrom], references: [id])
+  forks          StateMachine[] @relation("StateMachineForks")
 
   @@index([userId])
   @@index([shareToken])
@@ -255,8 +250,6 @@ model CampaignObjective {
   @@map("campaign_objectives")
 }
 
-
-
 model MarketingAccount {
   id                    String              @id @default(cuid())
   userId                String
@@ -294,8 +287,6 @@ model GoogleAdsCampaign {
   @@index([marketingAccountId])
   @@map("google_ads_campaigns")
 }
-
-
 
 model App {
   id                 String              @id @default(cuid())
@@ -492,87 +483,6 @@ model CodespaceVersion {
   @@map("codespace_versions")
 }
 
-model EnhancedImage {
-  id                   String                @id @default(cuid())
-  userId               String
-  name                 String
-  description          String?
-  originalUrl          String
-  originalR2Key        String
-  originalWidth        Int
-  originalHeight       Int
-  originalSizeBytes    Int
-  originalFormat       String
-  isPublic             Boolean               @default(false)
-  viewCount            Int                   @default(0)
-  tags                 String[]              @default([])
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  shareToken           String?               @unique
-  albumImages          AlbumImage[]
-  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  featuredGalleryItems FeaturedGalleryItem[]
-  enhancementJobs      ImageEnhancementJob[]
-  blendTargetJobs      ImageEnhancementJob[] @relation("BlendSource")
-  merchCartItems       MerchCartItem[]
-
-  @@index([userId, createdAt])
-  @@index([isPublic, createdAt])
-  @@index([shareToken])
-  @@index([tags])
-  @@map("enhanced_images")
-}
-
-model ImageEnhancementJob {
-  id                    String                @id @default(cuid())
-  imageId               String
-  userId                String
-  tier                  EnhancementTier
-  enhancementType       EnhancementType       @default(STANDARD)
-  creditsCost           Int
-  status                JobStatus
-  currentStage          PipelineStage?
-  enhancedUrl           String?
-  enhancedR2Key         String?
-  enhancedWidth         Int?
-  enhancedHeight        Int?
-  enhancedSizeBytes     Int?
-  errorMessage          String?
-  retryCount            Int                   @default(0)
-  maxRetries            Int                   @default(3)
-  geminiPrompt          String?
-  geminiModel           String?
-  geminiTemp            Float?
-  processingStartedAt   DateTime?
-  processingCompletedAt DateTime?
-  createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
-  workflowRunId         String?
-  analysisResult        Json?
-  analysisSource        String?
-  altText               String?
-  qualityScore          Float?
-  wasCropped            Boolean               @default(false)
-  cropDimensions        Json?
-  pipelineId            String?
-  sourceImageId         String?
-  isBlend               Boolean               @default(false)
-  isAnonymous           Boolean               @default(false)
-  featuredGalleryItems  FeaturedGalleryItem[]
-  image                 EnhancedImage         @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  pipeline              EnhancementPipeline?  @relation(fields: [pipelineId], references: [id])
-  sourceImage           EnhancedImage?        @relation("BlendSource", fields: [sourceImageId], references: [id])
-  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, status, createdAt])
-  @@index([imageId])
-  @@index([status, updatedAt])
-  @@index([workflowRunId])
-  @@index([pipelineId])
-  @@index([status, currentStage])
-  @@map("image_enhancement_jobs")
-}
-
 model Subscription {
   id                   String             @id @default(cuid())
   userId               String             @unique
@@ -610,47 +520,6 @@ model SubscriptionPlan {
 
   @@index([active, sortOrder])
   @@map("subscription_plans")
-}
-
-model Album {
-  id           String               @id @default(cuid())
-  userId       String
-  name         String
-  description  String?
-  coverImageId String?
-  privacy      AlbumPrivacy         @default(PRIVATE)
-  defaultTier  EnhancementTier      @default(TIER_1K)
-  shareToken   String?              @unique
-  sortOrder    Int                  @default(0)
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  pipelineId   String?
-  albumImages  AlbumImage[]
-  pipeline     EnhancementPipeline? @relation(fields: [pipelineId], references: [id])
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, name, privacy])
-  @@index([userId, createdAt])
-  @@index([privacy])
-  @@index([shareToken])
-  @@index([pipelineId])
-  @@map("albums")
-}
-
-model AlbumImage {
-  id        String        @id @default(cuid())
-  albumId   String
-  imageId   String
-  sortOrder Int           @default(0)
-  addedAt   DateTime      @default(now())
-  album     Album         @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  image     EnhancedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-
-  @@unique([albumId, imageId])
-  @@index([albumId, sortOrder])
-  @@index([imageId])
-  @@index([albumId, addedAt])
-  @@map("album_images")
 }
 
 model AuditLog {
@@ -834,24 +703,22 @@ model EscalationEvent {
 }
 
 model FeaturedGalleryItem {
-  id            String               @id @default(cuid())
+  id            String          @id @default(cuid())
   title         String
   description   String?
-  category      GalleryCategory      @default(PORTRAIT)
+  category      GalleryCategory @default(PORTRAIT)
   originalUrl   String
   enhancedUrl   String
-  width         Int                  @default(16)
-  height        Int                  @default(9)
+  width         Int             @default(16)
+  height        Int             @default(9)
   sourceImageId String?
   sourceJobId   String?
-  sortOrder     Int                  @default(0)
-  isActive      Boolean              @default(true)
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  sortOrder     Int             @default(0)
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   createdBy     String
-  creator       User                 @relation("GalleryItemCreator", fields: [createdBy], references: [id])
-  sourceImage   EnhancedImage?       @relation(fields: [sourceImageId], references: [id])
-  sourceJob     ImageEnhancementJob? @relation(fields: [sourceJobId], references: [id])
+  creator       User            @relation("GalleryItemCreator", fields: [createdBy], references: [id])
 
   @@index([isActive, sortOrder])
   @@index([isActive, category, sortOrder])
@@ -911,26 +778,26 @@ model Box {
 }
 
 model ClaudeCodeAgent {
-  id                  String         @id
+  id                  String                 @id
   userId              String
   machineId           String
   sessionId           String
   displayName         String
   projectPath         String?
   workingDirectory    String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
   lastSeenAt          DateTime?
   deletedAt           DateTime?
-  totalTokensUsed     Int            @default(0)
-  totalTasksCompleted Int            @default(0)
-  totalSessionTime    Int            @default(0)
+  totalTokensUsed     Int                    @default(0)
+  totalTasksCompleted Int                    @default(0)
+  totalSessionTime    Int                    @default(0)
   messages            AgentMessage[]
   capabilityTokens    AgentCapabilityToken[]
   permissionRequests  PermissionRequest[]
   auditLogs           AgentAuditLog[]
   trustScore          AgentTrustScore?
-  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, machineId, sessionId])
   @@index([userId, lastSeenAt])
@@ -1059,53 +926,20 @@ model TrackedUrl {
 }
 
 model ApiKey {
-  id                String             @id @default(cuid())
-  userId            String
-  name              String
-  keyHash           String             @unique
-  keyPrefix         String
-  lastUsedAt        DateTime?
-  isActive          Boolean            @default(true)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mcpGenerationJobs McpGenerationJob[]
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  keyHash    String    @unique
+  keyPrefix  String
+  lastUsedAt DateTime?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isActive])
   @@index([keyHash])
   @@map("api_keys")
-}
-
-model McpGenerationJob {
-  id                    String           @id @default(cuid())
-  userId                String
-  apiKeyId              String?
-  type                  McpJobType
-  tier                  EnhancementTier
-  creditsCost           Int
-  status                JobStatus
-  prompt                String
-  inputImageUrl         String?
-  inputImageR2Key       String?
-  outputImageUrl        String?
-  outputImageR2Key      String?
-  outputWidth           Int?
-  outputHeight          Int?
-  outputSizeBytes       Int?
-  errorMessage          String?
-  geminiModel           String?
-  processingStartedAt   DateTime?
-  processingCompletedAt DateTime?
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
-  creativeVariant       CreativeVariant?
-  apiKey                ApiKey?          @relation(fields: [apiKeyId], references: [id])
-  user                  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, status, createdAt])
-  @@index([apiKeyId])
-  @@index([status, updatedAt])
-  @@map("mcp_generation_jobs")
 }
 
 model BoxMessage {
@@ -1118,30 +952,6 @@ model BoxMessage {
 
   @@index([boxId, createdAt])
   @@map("box_messages")
-}
-
-model EnhancementPipeline {
-  id               String                @id @default(cuid())
-  name             String
-  description      String?
-  userId           String?
-  visibility       PipelineVisibility    @default(PRIVATE)
-  shareToken       String?               @unique
-  tier             EnhancementTier       @default(TIER_1K)
-  analysisConfig   Json?
-  autoCropConfig   Json?
-  promptConfig     Json?
-  generationConfig Json?
-  usageCount       Int                   @default(0)
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  albums           Album[]
-  user             User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobs             ImageEnhancementJob[]
-
-  @@index([userId])
-  @@index([visibility])
-  @@map("enhancement_pipelines")
 }
 
 model VisitorSession {
@@ -1378,21 +1188,20 @@ model MerchCart {
 }
 
 model MerchCartItem {
-  id                 String         @id @default(cuid())
+  id                 String        @id @default(cuid())
   cartId             String
   productId          String
   variantId          String?
   imageId            String?
   uploadedImageR2Key String?
   uploadedImageUrl   String?
-  quantity           Int            @default(1)
+  quantity           Int           @default(1)
   customText         String?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  cart               MerchCart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  image              EnhancedImage? @relation(fields: [imageId], references: [id])
-  product            MerchProduct   @relation(fields: [productId], references: [id])
-  variant            MerchVariant?  @relation(fields: [variantId], references: [id])
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  cart               MerchCart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product            MerchProduct  @relation(fields: [productId], references: [id])
+  variant            MerchVariant? @relation(fields: [variantId], references: [id])
 
   @@unique([cartId, productId, variantId, imageId, uploadedImageR2Key])
   @@index([cartId])
@@ -3480,7 +3289,6 @@ model CreativeVariant {
   format                String?
   placement             String?
   assetId               String?
-  imageJobId            String?                       @unique
   variantNumber         Int
   impressions           Int                           @default(0)
   clicks                Int                           @default(0)
@@ -3492,7 +3300,6 @@ model CreativeVariant {
   fatigueAlerts         CreativeFatigueAlert[]
   performanceHistory    CreativePerformance[]
   asset                 Asset?                        @relation(fields: [assetId], references: [id])
-  imageJob              McpGenerationJob?             @relation(fields: [imageJobId], references: [id])
   set                   CreativeSet                   @relation(fields: [setId], references: [id], onDelete: Cascade)
   performancePrediction VariantPerformancePrediction?
 
@@ -3703,7 +3510,7 @@ model AppReview {
   eloSettled      Boolean        @default(false)
   createdAt       DateTime       @default(now())
 
-  app             CreatedApp     @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app CreatedApp @relation(fields: [appId], references: [id], onDelete: Cascade)
 
   @@index([appId])
   @@index([reviewerAgentId])
@@ -4701,15 +4508,15 @@ enum ReviewDecision {
 // ========================================
 
 model OAuthClient {
-  id                     String                  @id @default(cuid())
-  clientId               String                  @unique @default(uuid())
-  clientSecretHash       String?
-  clientName             String
-  redirectUris           String[]
-  grantTypes             String[]                @default(["authorization_code", "refresh_token"])
-  tokenEndpointAuthMethod String                 @default("none")
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
+  id                       String                    @id @default(cuid())
+  clientId                 String                    @unique @default(uuid())
+  clientSecretHash         String?
+  clientName               String
+  redirectUris             String[]
+  grantTypes               String[]                  @default(["authorization_code", "refresh_token"])
+  tokenEndpointAuthMethod  String                    @default("none")
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
   authorizationCodes       OAuthAuthorizationCode[]
   accessTokens             OAuthAccessToken[]
   deviceAuthorizationCodes DeviceAuthorizationCode[]
@@ -4800,7 +4607,7 @@ model AIProvider {
   name           String   @unique // e.g., "anthropic", "google"
   token          String? // Keep temporarily for migration
   tokenEncrypted String? // New encrypted field
-  config         Json?    // For additional settings like model names
+  config         Json? // For additional settings like model names
   isDefault      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -4866,11 +4673,11 @@ model RegisteredTool {
 }
 
 model ToolInstallation {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   userId    String
   toolId    String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   tool      RegisteredTool @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
@@ -4880,14 +4687,14 @@ model ToolInstallation {
 }
 
 model ToolEarning {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   toolId    String
   userId    String
   tokens    Int
   reason    String
-  createdAt DateTime @default(now())
+  createdAt DateTime       @default(now())
   tool      RegisteredTool @relation(fields: [toolId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([toolId])
   @@index([userId])
@@ -4954,30 +4761,30 @@ model ArenaChallenge {
 }
 
 model ArenaSubmission {
-  id              String                @id @default(cuid())
-  challengeId     String
-  userId          String
-  prompt          String                @db.Text
-  systemPrompt    String?               @db.Text
-  status          ArenaSubmissionStatus @default(PROMPTED)
-  generatedCode   String?               @db.Text
-  codespaceId     String?
-  codespaceUrl    String?
+  id               String                @id @default(cuid())
+  challengeId      String
+  userId           String
+  prompt           String                @db.Text
+  systemPrompt     String?               @db.Text
+  status           ArenaSubmissionStatus @default(PROMPTED)
+  generatedCode    String?               @db.Text
+  codespaceId      String?
+  codespaceUrl     String?
   transpileSuccess Boolean?
-  iterations      Int                   @default(0)
-  model           String?
-  inputTokens     Int                   @default(0)
-  outputTokens    Int                   @default(0)
-  cachedTokens    Int                   @default(0)
-  totalDurationMs Int?
-  reviewScore     Float?
-  eloChange       Int?
-  errors          Json                  @default("[]")
-  challenge       ArenaChallenge        @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  user            User                  @relation("ArenaSubmissions", fields: [userId], references: [id], onDelete: Cascade)
-  reviews         ArenaReview[]
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  iterations       Int                   @default(0)
+  model            String?
+  inputTokens      Int                   @default(0)
+  outputTokens     Int                   @default(0)
+  cachedTokens     Int                   @default(0)
+  totalDurationMs  Int?
+  reviewScore      Float?
+  eloChange        Int?
+  errors           Json                  @default("[]")
+  challenge        ArenaChallenge        @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user             User                  @relation("ArenaSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  reviews          ArenaReview[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 
   @@index([challengeId])
   @@index([userId])
@@ -5033,9 +4840,9 @@ model ToolInvocation {
   parentInvocationId String?
   createdAt          DateTime @default(now())
 
-  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent             ToolInvocation?  @relation("InvocationTree", fields: [parentInvocationId], references: [id])
-  children           ToolInvocation[] @relation("InvocationTree")
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   ToolInvocation?  @relation("InvocationTree", fields: [parentInvocationId], references: [id])
+  children ToolInvocation[] @relation("InvocationTree")
 
   @@index([userId, createdAt])
   @@index([tool, createdAt])
@@ -5267,11 +5074,11 @@ model AgentCapabilityToken {
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
 
-  agent              ClaudeCodeAgent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  grantedByUser      User                  @relation("GrantedTokens", fields: [grantedByUserId], references: [id], onDelete: Cascade)
-  parentToken        AgentCapabilityToken? @relation("TokenDelegation", fields: [parentTokenId], references: [id])
+  agent              ClaudeCodeAgent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  grantedByUser      User                   @relation("GrantedTokens", fields: [grantedByUserId], references: [id], onDelete: Cascade)
+  parentToken        AgentCapabilityToken?  @relation("TokenDelegation", fields: [parentTokenId], references: [id])
   childTokens        AgentCapabilityToken[] @relation("TokenDelegation")
-  permissionRequests PermissionRequest[]   @relation("GrantedByToken")
+  permissionRequests PermissionRequest[]    @relation("GrantedByToken")
   auditLogs          AgentAuditLog[]
 
   @@index([agentId])
@@ -5282,19 +5089,19 @@ model AgentCapabilityToken {
 }
 
 model PermissionTemplate {
-  id                String              @id @default(cuid())
-  name              String              @unique
+  id                String   @id @default(cuid())
+  name              String   @unique
   displayName       String
   description       String
   allowedTools      String[]
   allowedCategories String[]
   deniedTools       String[]
-  maxTokenBudget    Int                 @default(100000)
-  maxApiCalls       Int                 @default(1000)
-  maxStorageMb      Int                 @default(0)
-  isSystem          Boolean             @default(false)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  maxTokenBudget    Int      @default(100000)
+  maxApiCalls       Int      @default(1000)
+  maxStorageMb      Int      @default(0)
+  isSystem          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   permissionRequests PermissionRequest[]
 
@@ -5317,10 +5124,10 @@ model PermissionRequest {
   createdAt        DateTime                @default(now())
   updatedAt        DateTime                @updatedAt
 
-  agent            ClaudeCodeAgent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  user             User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template         PermissionTemplate?      @relation(fields: [templateId], references: [id])
-  grantedToken     AgentCapabilityToken?    @relation("GrantedByToken", fields: [grantedTokenId], references: [id])
+  agent        ClaudeCodeAgent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template     PermissionTemplate?   @relation(fields: [templateId], references: [id])
+  grantedToken AgentCapabilityToken? @relation("GrantedByToken", fields: [grantedTokenId], references: [id])
 
   @@index([agentId])
   @@index([userId, status])
@@ -5330,27 +5137,27 @@ model PermissionRequest {
 }
 
 model AgentAuditLog {
-  id                 String                @id @default(cuid())
-  agentId            String
-  userId             String
-  workspaceId        String?
-  action             String
-  actionType         String
-  capabilityTokenId  String?
-  input              Json?
-  output             Json?
-  durationMs         Int                   @default(0)
-  isError            Boolean               @default(false)
-  error              String?
-  delegationChain    String[]
-  delegationDepth    Int                   @default(0)
-  tokensConsumed     Int                   @default(0)
-  budgetRemaining    Int                   @default(0)
-  createdAt          DateTime              @default(now())
+  id                String   @id @default(cuid())
+  agentId           String
+  userId            String
+  workspaceId       String?
+  action            String
+  actionType        String
+  capabilityTokenId String?
+  input             Json?
+  output            Json?
+  durationMs        Int      @default(0)
+  isError           Boolean  @default(false)
+  error             String?
+  delegationChain   String[]
+  delegationDepth   Int      @default(0)
+  tokensConsumed    Int      @default(0)
+  budgetRemaining   Int      @default(0)
+  createdAt         DateTime @default(now())
 
-  agent              ClaudeCodeAgent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  user               User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  capabilityToken    AgentCapabilityToken? @relation(fields: [capabilityTokenId], references: [id])
+  agent           ClaudeCodeAgent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capabilityToken AgentCapabilityToken? @relation(fields: [capabilityTokenId], references: [id])
 
   @@index([agentId, createdAt])
   @@index([userId, createdAt])
@@ -5372,8 +5179,8 @@ model AgentTrustScore {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  agent            ClaudeCodeAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent ClaudeCodeAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([trustLevel])
@@ -5416,32 +5223,32 @@ enum BlockType {
 }
 
 model DynamicPage {
-  id             String      @id @default(cuid())
-  slug           String      @unique
+  id             String     @id @default(cuid())
+  slug           String     @unique
   title          String
   description    String?
-  layout         PageLayout  @default(LANDING)
-  status         PageStatus  @default(DRAFT)
+  layout         PageLayout @default(LANDING)
+  status         PageStatus @default(DRAFT)
   themeData      Json?
   seoTitle       String?
   seoDescription String?
   ogImageUrl     String?
-  viewCount      Int         @default(0)
+  viewCount      Int        @default(0)
   tags           String[]
   customCss      String?
   publishedAt    DateTime?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
-  userId         String
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  parentId       String?
-  parent         DynamicPage?  @relation("PageHierarchy", fields: [parentId], references: [id])
-  children       DynamicPage[] @relation("PageHierarchy")
+  parentId String?
+  parent   DynamicPage?  @relation("PageHierarchy", fields: [parentId], references: [id])
+  children DynamicPage[] @relation("PageHierarchy")
 
-  blocks         PageBlock[]
-  versions       PageVersion[]
+  blocks   PageBlock[]
+  versions PageVersion[]
 
   @@index([userId])
   @@index([status])
@@ -5451,17 +5258,17 @@ model DynamicPage {
 }
 
 model PageBlock {
-  id         String    @id @default(cuid())
-  pageId     String
-  blockType  BlockType
-  variant    String?
-  content    Json
-  sortOrder  Int
-  isVisible  Boolean   @default(true)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        String    @id @default(cuid())
+  pageId    String
+  blockType BlockType
+  variant   String?
+  content   Json
+  sortOrder Int
+  isVisible Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  page       DynamicPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  page DynamicPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@index([pageId, sortOrder])
   @@map("page_blocks")
@@ -5476,39 +5283,39 @@ model PageVersion {
   changeNote String?
   createdAt  DateTime @default(now())
 
-  page       DynamicPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  page DynamicPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@index([pageId, version])
   @@map("page_versions")
 }
 
 model GeneratedRoute {
-  id               String               @id @default(cuid())
-  slug             String               @unique
-  originalUrl      String
-  title            String?
-  description      String?
-  status           GeneratedRouteStatus @default(NEW)
-  category         String?
-  codespaceId      String?
-  codespaceUrl     String?
-  planJson         Json?
-  generatedCode    String?
+  id                String               @id @default(cuid())
+  slug              String               @unique
+  originalUrl       String
+  title             String?
+  description       String?
+  status            GeneratedRouteStatus @default(NEW)
+  category          String?
+  codespaceId       String?
+  codespaceUrl      String?
+  planJson          Json?
+  generatedCode     String?
   githubIssueNumber Int?
-  requestedById    String?
-  creditsCost      Int                  @default(36)
-  plannerAgentId   String?
-  coderAgentId     String?
-  viewCount        Int                  @default(0)
-  generationTimeMs Int?
-  attempts         Int                  @default(0)
-  lastError        String?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
-  publishedAt      DateTime?
+  requestedById     String?
+  creditsCost       Int                  @default(36)
+  plannerAgentId    String?
+  coderAgentId      String?
+  viewCount         Int                  @default(0)
+  generationTimeMs  Int?
+  attempts          Int                  @default(0)
+  lastError         String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  publishedAt       DateTime?
 
-  requestedBy      User?                @relation(fields: [requestedById], references: [id])
-  reviews          RouteReview[]
+  requestedBy User?         @relation(fields: [requestedById], references: [id])
+  reviews     RouteReview[]
 
   @@index([status])
   @@index([slug])
@@ -5528,7 +5335,7 @@ model RouteReview {
   eloSettled      Boolean        @default(false)
   createdAt       DateTime       @default(now())
 
-  route           GeneratedRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  route GeneratedRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
   @@index([routeId])
   @@index([reviewerAgentId])
@@ -5536,16 +5343,16 @@ model RouteReview {
 }
 
 model AgentReviewerElo {
-  id           String @id @default(cuid())
-  agentId      String @unique
-  agentModel   String @default("haiku")
-  elo          Int    @default(1200)
-  wins         Int    @default(0)
-  losses       Int    @default(0)
-  draws        Int    @default(0)
-  streak       Int    @default(0)
-  bestElo      Int    @default(1200)
-  totalReviews Int    @default(0)
+  id           String   @id @default(cuid())
+  agentId      String   @unique
+  agentModel   String   @default("haiku")
+  elo          Int      @default(1200)
+  wins         Int      @default(0)
+  losses       Int      @default(0)
+  draws        Int      @default(0)
+  streak       Int      @default(0)
+  bestElo      Int      @default(1200)
+  totalReviews Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -5640,15 +5447,15 @@ model CleaningSession {
 }
 
 model CleaningTask {
-  id            String                @id @default(cuid())
+  id            String                 @id @default(cuid())
   sessionId     String
   description   String
-  status        CleaningTaskStatus    @default(PENDING)
-  category      CleaningTaskCategory  @default(OTHER)
+  status        CleaningTaskStatus     @default(PENDING)
+  category      CleaningTaskCategory   @default(OTHER)
   difficulty    CleaningTaskDifficulty @default(EASY)
-  orderIndex    Int                   @default(0)
+  orderIndex    Int                    @default(0)
   skippedReason String?
-  pointsValue   Int                   @default(10)
+  pointsValue   Int                    @default(10)
   completedAt   DateTime?
 
   session CleaningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
@@ -5659,14 +5466,14 @@ model CleaningTask {
 }
 
 model CleaningStreak {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  currentStreak   Int      @default(0)
-  bestStreak      Int      @default(0)
-  totalPoints     Int      @default(0)
-  totalSessions   Int      @default(0)
-  totalTasks      Int      @default(0)
-  level           Int      @default(1)
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  currentStreak   Int       @default(0)
+  bestStreak      Int       @default(0)
+  totalPoints     Int       @default(0)
+  totalSessions   Int       @default(0)
+  totalTasks      Int       @default(0)
+  level           Int       @default(1)
   lastSessionDate DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -5689,11 +5496,11 @@ model CleaningAchievement {
 }
 
 model CleaningReminder {
-  id      String               @id @default(cuid())
+  id      String                @id @default(cuid())
   userId  String
-  time    String               // HH:mm format
+  time    String // HH:mm format
   days    CleaningReminderDay[]
-  enabled Boolean              @default(true)
+  enabled Boolean               @default(true)
   message String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -5745,7 +5552,7 @@ model StoreAppListing {
   tags            String[]         @default([])
 
   submittedById String?
-  submittedBy   User?              @relation("StoreAppSubmitter", fields: [submittedById], references: [id])
+  submittedBy   User?   @relation("StoreAppSubmitter", fields: [submittedById], references: [id])
 
   tools       StoreAppTool[]
   features    StoreAppFeature[]
@@ -5823,33 +5630,33 @@ enum ChessChallengeStatus {
 }
 
 model ChessPlayer {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   avatar       String?
-  elo          Int      @default(1200)
-  bestElo      Int      @default(1200)
-  wins         Int      @default(0)
-  losses       Int      @default(0)
-  draws        Int      @default(0)
-  streak       Int      @default(0)
-  soundEnabled Boolean  @default(true)
-  isOnline     Boolean  @default(false)
+  elo          Int       @default(1200)
+  bestElo      Int       @default(1200)
+  wins         Int       @default(0)
+  losses       Int       @default(0)
+  draws        Int       @default(0)
+  streak       Int       @default(0)
+  soundEnabled Boolean   @default(true)
+  isOnline     Boolean   @default(false)
   lastSeenAt   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  whiteGames         ChessGame[]      @relation("WhitePlayer")
-  blackGames         ChessGame[]      @relation("BlackPlayer")
-  wonGames           ChessGame[]      @relation("GameWinner")
-  moves              ChessMove[]
-  sentChallenges          ChessChallenge[]              @relation("ChallengeSender")
-  receivedChallenges      ChessChallenge[]              @relation("ChallengeReceiver")
+  whiteGames               ChessGame[]                  @relation("WhitePlayer")
+  blackGames               ChessGame[]                  @relation("BlackPlayer")
+  wonGames                 ChessGame[]                  @relation("GameWinner")
+  moves                    ChessMove[]
+  sentChallenges           ChessChallenge[]             @relation("ChallengeSender")
+  receivedChallenges       ChessChallenge[]             @relation("ChallengeReceiver")
   tournamentParticipations ChessTournamentParticipant[]
-  pairingsAsWhite         ChessTournamentPairing[]      @relation("PairingWhitePlayer")
-  pairingsAsBlack         ChessTournamentPairing[]      @relation("PairingBlackPlayer")
+  pairingsAsWhite          ChessTournamentPairing[]     @relation("PairingWhitePlayer")
+  pairingsAsBlack          ChessTournamentPairing[]     @relation("PairingBlackPlayer")
 
   @@unique([userId, name])
   @@index([userId])
@@ -5858,22 +5665,22 @@ model ChessPlayer {
 }
 
 model ChessGame {
-  id            String          @id @default(cuid())
+  id            String           @id @default(cuid())
   whitePlayerId String
-  whitePlayer   ChessPlayer     @relation("WhitePlayer", fields: [whitePlayerId], references: [id])
+  whitePlayer   ChessPlayer      @relation("WhitePlayer", fields: [whitePlayerId], references: [id])
   blackPlayerId String?
-  blackPlayer   ChessPlayer?    @relation("BlackPlayer", fields: [blackPlayerId], references: [id])
-  status        ChessGameStatus @default(WAITING)
+  blackPlayer   ChessPlayer?     @relation("BlackPlayer", fields: [blackPlayerId], references: [id])
+  status        ChessGameStatus  @default(WAITING)
   fen           String
-  pgn           String          @default("")
+  pgn           String           @default("")
   timeControl   ChessTimeControl @default(BLITZ_5)
   whiteTimeMs   Int
   blackTimeMs   Int
   winnerId      String?
-  winner        ChessPlayer?    @relation("GameWinner", fields: [winnerId], references: [id])
+  winner        ChessPlayer?     @relation("GameWinner", fields: [winnerId], references: [id])
   result        String?
   eloChanges    Json?
-  moveCount     Int             @default(0)
+  moveCount     Int              @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5940,20 +5747,20 @@ enum WorkflowPhase {
 }
 
 model SuperpowersSession {
-  id            String        @id @default(cuid())
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agentId       String?
-  projectName   String?
-  branchName    String?
-  currentPhase  WorkflowPhase @default(BRAINSTORMING)
-  startedAt     DateTime      @default(now())
-  completedAt   DateTime?
-  metadata      Json?
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentId      String?
+  projectName  String?
+  branchName   String?
+  currentPhase WorkflowPhase @default(BRAINSTORMING)
+  startedAt    DateTime      @default(now())
+  completedAt  DateTime?
+  metadata     Json?
 
-  transitions   WorkflowTransition[]
-  skillEvents   SkillUsageEvent[]
-  gateResults   GateCheckResult[]
+  transitions WorkflowTransition[]
+  skillEvents SkillUsageEvent[]
+  gateResults GateCheckResult[]
 
   @@index([userId])
   @@index([currentPhase])
@@ -5962,7 +5769,7 @@ model SuperpowersSession {
 }
 
 model WorkflowTransition {
-  id         String            @id @default(cuid())
+  id         String             @id @default(cuid())
   sessionId  String
   session    SuperpowersSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   fromPhase  WorkflowPhase
@@ -5970,7 +5777,7 @@ model WorkflowTransition {
   skillName  String?
   durationMs Int?
   metadata   Json?
-  createdAt  DateTime          @default(now())
+  createdAt  DateTime           @default(now())
 
   @@index([sessionId])
   @@index([sessionId, createdAt])
@@ -5978,18 +5785,18 @@ model WorkflowTransition {
 }
 
 model SkillUsageEvent {
-  id         String             @id @default(cuid())
+  id         String              @id @default(cuid())
   sessionId  String?
   session    SuperpowersSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   userId     String
-  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   agentId    String?
   skillName  String
   category   String?
-  outcome    String             @default("in_progress")
+  outcome    String              @default("in_progress")
   durationMs Int?
   metadata   Json?
-  createdAt  DateTime           @default(now())
+  createdAt  DateTime            @default(now())
 
   @@index([sessionId])
   @@index([userId])
@@ -6025,24 +5832,24 @@ enum TicketPlanStatus {
 }
 
 model TicketPlan {
-  id                String             @id @default(cuid())
+  id                String              @id @default(cuid())
   userId            String
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   githubIssueNumber Int
   githubIssueTitle  String
   githubIssueUrl    String
-  githubIssueBody   String?            @db.Text
-  status            TicketPlanStatus   @default(UNPLANNED)
-  planContent       String?            @db.Text
-  planVersion       Int                @default(1)
+  githubIssueBody   String?             @db.Text
+  status            TicketPlanStatus    @default(UNPLANNED)
+  planContent       String?             @db.Text
+  planVersion       Int                 @default(1)
   approvedAt        DateTime?
   julesSessionId    String?
   julesSessionUrl   String?
   julesLastState    String?
   julesLastChecked  DateTime?
   metadata          Json?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
   chatMessages      TicketChatMessage[]
 
   @@unique([userId, githubIssueNumber])
@@ -6134,23 +5941,23 @@ model AvlProfileTree {
 }
 
 model AvlProfileNode {
-  id                String              @id @default(cuid())
+  id                String                @id @default(cuid())
   treeId            String
-  tree              AvlProfileTree      @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  tree              AvlProfileTree        @relation(fields: [treeId], references: [id], onDelete: Cascade)
   nodeType          AvlNodeType
   question          String?
   questionTags      String[]
   parentId          String?
   yesChildId        String?
   noChildId         String?
-  height            Int                 @default(0)
-  balanceFactor     Int                 @default(0)
-  depth             Int                 @default(0)
-  assignedUserId    String?             @unique
-  assignedUser      User?               @relation("AvlNodeAssignedUser", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  height            Int                   @default(0)
+  balanceFactor     Int                   @default(0)
+  depth             Int                   @default(0)
+  assignedUserId    String?               @unique
+  assignedUser      User?                 @relation("AvlNodeAssignedUser", fields: [assignedUserId], references: [id], onDelete: SetNull)
   traversalSessions AvlTraversalSession[]
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
   @@index([treeId])
   @@index([parentId])
@@ -6175,17 +5982,17 @@ model AvlTraversalSession {
 }
 
 model AvlUserProfile {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  treeId       String
-  leafNodeId   String   @unique
-  answerPath   Json
-  derivedTags  String[]
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  treeId        String
+  leafNodeId    String   @unique
+  answerPath    Json
+  derivedTags   String[]
   profileVector Json
-  profileRound Int      @default(0)
-  completedAt  DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  profileRound  Int      @default(0)
+  completedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([treeId])
   @@map("avl_user_profiles")
@@ -6230,18 +6037,18 @@ model StoreAppWishlist {
 }
 
 model ToolReaction {
-  id            String        @id @default(cuid())
-  userId        String
-  sourceTool    String
-  sourceEvent   String
-  targetTool    String
-  targetInput   Json
-  enabled       Boolean       @default(true)
-  description   String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  logs          ReactionLog[]
+  id          String        @id @default(cuid())
+  userId      String
+  sourceTool  String
+  sourceEvent String
+  targetTool  String
+  targetInput Json
+  enabled     Boolean       @default(true)
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs        ReactionLog[]
 
   @@index([userId])
   @@index([sourceTool, sourceEvent])
@@ -6250,20 +6057,20 @@ model ToolReaction {
 }
 
 model ReactionLog {
-  id            String       @id @default(cuid())
-  reactionId    String
-  userId        String
-  sourceTool    String
-  sourceEvent   String
-  targetTool    String
-  targetInput   Json
-  targetOutput  Json?
-  durationMs    Int?
-  isError       Boolean      @default(false)
-  error         String?
-  createdAt     DateTime     @default(now())
-  reaction      ToolReaction @relation(fields: [reactionId], references: [id], onDelete: Cascade)
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String       @id @default(cuid())
+  reactionId   String
+  userId       String
+  sourceTool   String
+  sourceEvent  String
+  targetTool   String
+  targetInput  Json
+  targetOutput Json?
+  durationMs   Int?
+  isError      Boolean      @default(false)
+  error        String?
+  createdAt    DateTime     @default(now())
+  reaction     ToolReaction @relation(fields: [reactionId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([reactionId])
   @@index([userId, createdAt])
@@ -6276,7 +6083,7 @@ model BlogPollVote {
   articleSlug String
   personaSlug String
   question    String
-  answer      String   // "yes" or "no"
+  answer      String // "yes" or "no"
   visitorId   String
   userId      String?
   createdAt   DateTime @default(now())
@@ -6309,7 +6116,7 @@ model BlogPost {
 
 model Comment {
   id          String    @id @default(cuid())
-  contentType String    // "blog" | "app" | "docs"
+  contentType String // "blog" | "app" | "docs"
   contentSlug String
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -6390,13 +6197,13 @@ model ChessTournamentPairing {
 }
 
 model ChessPuzzle {
-  id          String @id @default(cuid())
-  fen         String
-  rating      Int
-  theme       String
+  id           String   @id @default(cuid())
+  fen          String
+  rating       Int
+  theme        String
   movesToSolve Int
-  difficulty  String
-  createdAt   DateTime @default(now())
+  difficulty   String
+  createdAt    DateTime @default(now())
 
   @@index([rating])
   @@index([theme])
@@ -6446,45 +6253,45 @@ enum Vmo2LoaStatus {
 }
 
 model Vmo2Case {
-  id                   String              @id @default(cuid())
-  userId               String
-  status               Vmo2CaseStatus      @default(DRAFT)
+  id     String         @id @default(cuid())
+  userId String
+  status Vmo2CaseStatus @default(DRAFT)
 
   // Contract details
-  serviceType          Vmo2ServiceType?
-  contractSignDate     DateTime?
-  contractEndDate      DateTime?
-  monthlyPrice         Float?
-  priceIncreaseAmount  Float?
-  priceIncreaseDate    DateTime?
-  planName             String?
-  accountNumber        String?
+  serviceType         Vmo2ServiceType?
+  contractSignDate    DateTime?
+  contractEndDate     DateTime?
+  monthlyPrice        Float?
+  priceIncreaseAmount Float?
+  priceIncreaseDate   DateTime?
+  planName            String?
+  accountNumber       String?
 
   // Classification
-  primaryRoute         Vmo2LegalRoute?
-  secondaryRoutes      Vmo2LegalRoute[]
-  routeConfidence      Float?
-  routeReasoning       String?
+  primaryRoute    Vmo2LegalRoute?
+  secondaryRoutes Vmo2LegalRoute[]
+  routeConfidence Float?
+  routeReasoning  String?
 
   // Deadlines
-  coolingOffDeadline   DateTime?
-  priceRiseDeadline    DateTime?
-  adrDeadline          DateTime?
+  coolingOffDeadline DateTime?
+  priceRiseDeadline  DateTime?
+  adrDeadline        DateTime?
 
   // GDPR
-  gdprConsentAt        DateTime?
+  gdprConsentAt           DateTime?
   dataProcessingConsentAt DateTime?
 
   // Metadata
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  resolvedAt           DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
 
   // Relations
-  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  letters              Vmo2CancellationLetter[]
-  letterOfAuthority    Vmo2LetterOfAuthority?
-  events               Vmo2CaseEvent[]
+  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  letters           Vmo2CancellationLetter[]
+  letterOfAuthority Vmo2LetterOfAuthority?
+  events            Vmo2CaseEvent[]
 
   @@index([userId])
   @@index([status])
@@ -6493,48 +6300,48 @@ model Vmo2Case {
 }
 
 model Vmo2CancellationLetter {
-  id            String          @id @default(cuid())
-  caseId        String
-  legalRoute    Vmo2LegalRoute
-  content       String
-  version       Int             @default(1)
-  createdAt     DateTime        @default(now())
+  id         String         @id @default(cuid())
+  caseId     String
+  legalRoute Vmo2LegalRoute
+  content    String
+  version    Int            @default(1)
+  createdAt  DateTime       @default(now())
 
   // Relations
-  case          Vmo2Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  case Vmo2Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@index([caseId])
   @@map("vmo2_cancellation_letters")
 }
 
 model Vmo2LetterOfAuthority {
-  id               String          @id @default(cuid())
-  caseId           String          @unique
-  status           Vmo2LoaStatus   @default(PENDING)
+  id     String        @id @default(cuid())
+  caseId String        @unique
+  status Vmo2LoaStatus @default(PENDING)
 
   // Consumer details (for the LoA document)
-  consumerName     String
-  consumerEmail    String
-  consumerAddress  String?
+  consumerName    String
+  consumerEmail   String
+  consumerAddress String?
 
   // Scope and authority
-  scope            String
-  firmName         String          @default("TBD Partner Firm")
-  firmReference    String?
+  scope         String
+  firmName      String  @default("TBD Partner Firm")
+  firmReference String?
 
   // Signature
-  signatureHash    String?
-  signedAt         DateTime?
-  signerIp         String?
+  signatureHash String?
+  signedAt      DateTime?
+  signerIp      String?
 
   // Timestamps
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
   submittedToFirmAt DateTime?
-  expiresAt        DateTime?
+  expiresAt         DateTime?
 
   // Relations
-  case             Vmo2Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  case Vmo2Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@map("vmo2_letters_of_authority")
@@ -6550,7 +6357,7 @@ model Vmo2CaseEvent {
   createdAt   DateTime        @default(now())
 
   // Relations
-  case        Vmo2Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  case Vmo2Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@index([caseId])
   @@index([createdAt])

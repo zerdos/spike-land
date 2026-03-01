@@ -35,7 +35,6 @@ import { registerGatewayMetaTools } from "./tools/gateway-meta";
 
 // --- Core platform tools (in-tree) ---
 import { registerStorageTools } from "./tools/storage";
-import { registerGalleryTools } from "./tools/gallery";
 import {
   registerEmailTools,
   registerNewsletterTools,
@@ -47,24 +46,16 @@ import {
 } from "./tools/configuration-tools";
 import { architectTools } from "./tools/planning-tools";
 import { registerBoxesTools } from "./tools/boxes";
-import { registerJobsTools } from "./tools/jobs";
 import { registerRemindersTools } from "./tools/reminders";
-import { registerShareTools } from "./tools/share";
 import { registerPermissionsTools } from "./tools/permissions";
-import { registerImageTools } from "./tools/image";
 import { registerVaultTools } from "./tools/vault";
 import { registerToolFactoryTools } from "./tools/tool-factory";
 import { registerMarketplaceTools } from "./tools/marketplace";
 import { registerBootstrapTools } from "./tools/bootstrap";
 import { registerAppsTools } from "./tools/apps";
 import { registerArenaTools } from "./tools/arena";
-import { registerAlbumImagesTools } from "./tools/album-images";
-import { registerAlbumManagementTools } from "./tools/album-management";
-import { registerBatchEnhanceTools } from "./tools/batch-enhance";
-import { registerEnhancementJobsTools } from "./tools/enhancement-jobs";
 import { registerCreateTools } from "./tools/create";
 import { registerLearnItTools } from "./tools/learnit";
-import { registerAdminTools } from "./tools/admin";
 import { registerAuthTools } from "./tools/auth";
 import { registerSkillStoreTools } from "./tools/skill-store";
 import { registerStoreAppsTools } from "./tools/store/apps";
@@ -76,9 +67,6 @@ import { registerAgentManagementTools } from "./tools/agent-management";
 import { registerBillingTools } from "./tools/billing";
 import { registerDirectMessageTools } from "./tools/direct-message";
 import { registerAgentInboxTools } from "./tools/agent-inbox";
-import { registerPipelinesTools } from "./tools/pipelines";
-import { registerPipelineTools } from "./tools/pipeline";
-import { registerReportsTools } from "./tools/reports";
 import { registerChatTools } from "./tools/chat";
 import { registerAiGatewayTools } from "./tools/ai-gateway";
 import { registerTtsTools } from "./tools/tts";
@@ -106,7 +94,6 @@ import { registerCodebaseExplainTools } from "./tools/codebase-explain";
 import { registerDecisionsTools } from "./tools/decisions";
 
 // --- Dashboard ---
-import { registerDashboardTools } from "./tools/dashboard";
 
 // --- MCP Observability ---
 import { registerMcpObservabilityTools } from "./tools/mcp-observability";
@@ -171,26 +158,20 @@ export const TOOL_MODULES: ToolModuleEntry[] = [
 
   // Core platform
   { register: registerStorageTools, categories: ["storage"] },
-  { register: registerGalleryTools, categories: ["gallery"] },
+//
   { register: registerBoxesTools, categories: ["boxes"] },
-  { register: registerJobsTools, categories: ["jobs"] },
+//
   { register: registerRemindersTools, categories: ["reminders"] },
-  { register: registerShareTools, categories: ["share"] },
+//
   { register: registerPermissionsTools, categories: ["permissions"] },
-  { register: registerImageTools, categories: ["image"] },
   { register: registerVaultTools, categories: ["vault"] },
   { register: registerToolFactoryTools, categories: ["tools"] },
   { register: registerMarketplaceTools, categories: ["marketplace"] },
   { register: registerBootstrapTools, categories: ["bootstrap"] },
   { register: registerAppsTools, categories: ["apps"] },
   { register: registerArenaTools, categories: ["arena"] },
-  { register: registerAlbumImagesTools, categories: ["album-images"] },
-  { register: registerAlbumManagementTools, categories: ["album-management"] },
-  { register: registerBatchEnhanceTools, categories: ["batch-enhance"] },
-  { register: registerEnhancementJobsTools, categories: ["enhancement-jobs"] },
   { register: registerCreateTools, categories: ["create"] },
   { register: registerLearnItTools, categories: ["learnit"] },
-  { register: registerAdminTools, categories: ["admin"] },
   { register: registerAuthTools, categories: ["auth"] },
   { register: registerSkillStoreTools, categories: ["skill-store"] },
   { register: registerStoreAppsTools, categories: ["store"] },
@@ -203,9 +184,6 @@ export const TOOL_MODULES: ToolModuleEntry[] = [
   { register: registerBillingTools, categories: ["billing"] },
   { register: registerDirectMessageTools, categories: ["direct-message"] },
   { register: registerAgentInboxTools, categories: ["agent-inbox"] },
-  { register: registerPipelinesTools, categories: ["pipelines"] },
-  { register: registerPipelineTools, categories: ["pipeline"] },
-  { register: registerReportsTools, categories: ["reports"] },
   { register: registerChatTools, categories: ["chat"] },
   { register: registerAiGatewayTools, categories: ["ai-gateway"] },
   { register: registerNewsletterTools, categories: ["newsletter"] },
@@ -254,7 +232,6 @@ export const TOOL_MODULES: ToolModuleEntry[] = [
   { register: fromStandalone(aiOrchestratorTools), categories: ["swarm", "swarm-monitoring"] },
 
   // Dashboard
-  { register: registerDashboardTools, categories: ["dash"] },
   { register: registerEnvironmentTools, categories: ["env"] },
 
   // MCP Observability

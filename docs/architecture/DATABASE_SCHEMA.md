@@ -246,60 +246,6 @@ erDiagram
   String hash
   DateTime createdAt
 }
-"enhanced_images" {
-  String id PK
-  String userId FK
-  String name
-  String description "nullable"
-  String originalUrl
-  String originalR2Key
-  Int originalWidth
-  Int originalHeight
-  Int originalSizeBytes
-  String originalFormat
-  Boolean isPublic
-  Int viewCount
-  String tags
-  DateTime createdAt
-  DateTime updatedAt
-  String shareToken UK "nullable"
-}
-"image_enhancement_jobs" {
-  String id PK
-  String imageId FK
-  String userId FK
-  EnhancementTier tier
-  EnhancementType enhancementType
-  Int creditsCost
-  JobStatus status
-  PipelineStage currentStage "nullable"
-  String enhancedUrl "nullable"
-  String enhancedR2Key "nullable"
-  Int enhancedWidth "nullable"
-  Int enhancedHeight "nullable"
-  Int enhancedSizeBytes "nullable"
-  String errorMessage "nullable"
-  Int retryCount
-  Int maxRetries
-  String geminiPrompt "nullable"
-  String geminiModel "nullable"
-  Float geminiTemp "nullable"
-  DateTime processingStartedAt "nullable"
-  DateTime processingCompletedAt "nullable"
-  DateTime createdAt
-  DateTime updatedAt
-  String workflowRunId "nullable"
-  Json analysisResult "nullable"
-  String analysisSource "nullable"
-  String altText "nullable"
-  Float qualityScore "nullable"
-  Boolean wasCropped
-  Json cropDimensions "nullable"
-  String pipelineId FK "nullable"
-  String sourceImageId FK "nullable"
-  Boolean isBlend
-  Boolean isAnonymous
-}
 "subscriptions" {
   String id PK
   String userId FK,UK
@@ -327,27 +273,6 @@ erDiagram
   Int sortOrder
   DateTime createdAt
   DateTime updatedAt
-}
-"albums" {
-  String id PK
-  String userId FK
-  String name
-  String description "nullable"
-  String coverImageId "nullable"
-  AlbumPrivacy privacy
-  EnhancementTier defaultTier
-  String shareToken UK "nullable"
-  Int sortOrder
-  DateTime createdAt
-  DateTime updatedAt
-  String pipelineId FK "nullable"
-}
-"album_images" {
-  String id PK
-  String albumId FK
-  String imageId FK
-  Int sortOrder
-  DateTime addedAt
 }
 "audit_logs" {
   String id PK
@@ -476,8 +401,8 @@ erDiagram
   String enhancedUrl
   Int width
   Int height
-  String sourceImageId FK "nullable"
-  String sourceJobId FK "nullable"
+  String sourceImageId "nullable"
+  String sourceJobId "nullable"
   Int sortOrder
   Boolean isActive
   DateTime createdAt
@@ -622,51 +547,12 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"mcp_generation_jobs" {
-  String id PK
-  String userId FK
-  String apiKeyId FK "nullable"
-  McpJobType type
-  EnhancementTier tier
-  Int creditsCost
-  JobStatus status
-  String prompt
-  String inputImageUrl "nullable"
-  String inputImageR2Key "nullable"
-  String outputImageUrl "nullable"
-  String outputImageR2Key "nullable"
-  Int outputWidth "nullable"
-  Int outputHeight "nullable"
-  Int outputSizeBytes "nullable"
-  String errorMessage "nullable"
-  String geminiModel "nullable"
-  DateTime processingStartedAt "nullable"
-  DateTime processingCompletedAt "nullable"
-  DateTime createdAt
-  DateTime updatedAt
-}
 "box_messages" {
   String id PK
   String boxId FK
   BoxMessageRole role
   String content
   DateTime createdAt
-}
-"enhancement_pipelines" {
-  String id PK
-  String name
-  String description "nullable"
-  String userId FK "nullable"
-  PipelineVisibility visibility
-  String shareToken UK "nullable"
-  EnhancementTier tier
-  Json analysisConfig "nullable"
-  Json autoCropConfig "nullable"
-  Json promptConfig "nullable"
-  Json generationConfig "nullable"
-  Int usageCount
-  DateTime createdAt
-  DateTime updatedAt
 }
 "visitor_sessions" {
   String id PK
@@ -819,7 +705,7 @@ erDiagram
   String cartId FK
   String productId FK
   String variantId FK "nullable"
-  String imageId FK "nullable"
+  String imageId "nullable"
   String uploadedImageR2Key "nullable"
   String uploadedImageUrl "nullable"
   Int quantity
@@ -2080,7 +1966,6 @@ erDiagram
   String format "nullable"
   String placement "nullable"
   String assetId FK "nullable"
-  String imageJobId FK,UK "nullable"
   Int variantNumber
   Int impressions
   Int clicks
@@ -3244,16 +3129,7 @@ erDiagram
 "app_code_versions" |o--o| "app_messages" : message
 "codespace_sessions" |o--o| "apps" : app
 "codespace_versions" }o--|| "codespace_sessions" : session
-"enhanced_images" }o--|| "users" : user
-"image_enhancement_jobs" }o--|| "enhanced_images" : image
-"image_enhancement_jobs" }o--o| "enhancement_pipelines" : pipeline
-"image_enhancement_jobs" }o--o| "enhanced_images" : sourceImage
-"image_enhancement_jobs" }o--|| "users" : user
 "subscriptions" |o--|| "users" : user
-"albums" }o--o| "enhancement_pipelines" : pipeline
-"albums" }o--|| "users" : user
-"album_images" }o--|| "albums" : album
-"album_images" }o--|| "enhanced_images" : image
 "audit_logs" }o--|| "users" : user
 "workspace_audit_logs" }o--|| "users" : user
 "workspace_audit_logs" }o--|| "workspaces" : workspace
@@ -3263,8 +3139,6 @@ erDiagram
 "inbox_suggested_responses" }o--|| "inbox_items" : inboxItem
 "escalation_events" }o--|| "inbox_items" : inboxItem
 "featured_gallery_items" }o--|| "users" : creator
-"featured_gallery_items" }o--o| "enhanced_images" : sourceImage
-"featured_gallery_items" }o--o| "image_enhancement_jobs" : sourceJob
 "boxes" }o--o| "box_tiers" : tier
 "boxes" }o--|| "users" : user
 "claude_code_agents" }o--|| "users" : user
@@ -3275,10 +3149,7 @@ erDiagram
 "email_logs" }o--|| "users" : user
 "tracked_urls" }o--|| "users" : createdBy
 "api_keys" }o--|| "users" : user
-"mcp_generation_jobs" }o--o| "api_keys" : apiKey
-"mcp_generation_jobs" }o--|| "users" : user
 "box_messages" }o--|| "boxes" : box
-"enhancement_pipelines" }o--o| "users" : user
 "visitor_sessions" }o--o| "users" : user
 "page_views" }o--|| "visitor_sessions" : session
 "analytics_events" }o--|| "visitor_sessions" : session
@@ -3289,7 +3160,6 @@ erDiagram
 "merch_variants" }o--|| "merch_products" : product
 "merch_carts" |o--|| "users" : user
 "merch_cart_items" }o--|| "merch_carts" : cart
-"merch_cart_items" }o--o| "enhanced_images" : image
 "merch_cart_items" }o--|| "merch_products" : product
 "merch_cart_items" }o--o| "merch_variants" : variant
 "merch_orders" }o--|| "users" : user
@@ -3433,7 +3303,6 @@ erDiagram
 "creative_sets" }o--o| "campaign_briefs" : brief
 "creative_sets" }o--|| "users" : generatedBy
 "creative_variants" }o--o| "assets" : asset
-"creative_variants" |o--o| "mcp_generation_jobs" : imageJob
 "creative_variants" }o--|| "creative_sets" : set
 "variant_performance_predictions" |o--|| "creative_variants" : variant
 "creative_performance" }o--|| "creative_variants" : variant
@@ -3837,66 +3706,6 @@ Properties as follows:
 - `hash`:
 - `createdAt`:
 
-### `enhanced_images`
-
-Properties as follows:
-
-- `id`:
-- `userId`:
-- `name`:
-- `description`:
-- `originalUrl`:
-- `originalR2Key`:
-- `originalWidth`:
-- `originalHeight`:
-- `originalSizeBytes`:
-- `originalFormat`:
-- `isPublic`:
-- `viewCount`:
-- `tags`:
-- `createdAt`:
-- `updatedAt`:
-- `shareToken`:
-
-### `image_enhancement_jobs`
-
-Properties as follows:
-
-- `id`:
-- `imageId`:
-- `userId`:
-- `tier`:
-- `enhancementType`:
-- `creditsCost`:
-- `status`:
-- `currentStage`:
-- `enhancedUrl`:
-- `enhancedR2Key`:
-- `enhancedWidth`:
-- `enhancedHeight`:
-- `enhancedSizeBytes`:
-- `errorMessage`:
-- `retryCount`:
-- `maxRetries`:
-- `geminiPrompt`:
-- `geminiModel`:
-- `geminiTemp`:
-- `processingStartedAt`:
-- `processingCompletedAt`:
-- `createdAt`:
-- `updatedAt`:
-- `workflowRunId`:
-- `analysisResult`:
-- `analysisSource`:
-- `altText`:
-- `qualityScore`:
-- `wasCropped`:
-- `cropDimensions`:
-- `pipelineId`:
-- `sourceImageId`:
-- `isBlend`:
-- `isAnonymous`:
-
 ### `subscriptions`
 
 Properties as follows:
@@ -3930,33 +3739,6 @@ Properties as follows:
 - `sortOrder`:
 - `createdAt`:
 - `updatedAt`:
-
-### `albums`
-
-Properties as follows:
-
-- `id`:
-- `userId`:
-- `name`:
-- `description`:
-- `coverImageId`:
-- `privacy`:
-- `defaultTier`:
-- `shareToken`:
-- `sortOrder`:
-- `createdAt`:
-- `updatedAt`:
-- `pipelineId`:
-
-### `album_images`
-
-Properties as follows:
-
-- `id`:
-- `albumId`:
-- `imageId`:
-- `sortOrder`:
-- `addedAt`:
 
 ### `audit_logs`
 
@@ -4291,32 +4073,6 @@ Properties as follows:
 - `createdAt`:
 - `updatedAt`:
 
-### `mcp_generation_jobs`
-
-Properties as follows:
-
-- `id`:
-- `userId`:
-- `apiKeyId`:
-- `type`:
-- `tier`:
-- `creditsCost`:
-- `status`:
-- `prompt`:
-- `inputImageUrl`:
-- `inputImageR2Key`:
-- `outputImageUrl`:
-- `outputImageR2Key`:
-- `outputWidth`:
-- `outputHeight`:
-- `outputSizeBytes`:
-- `errorMessage`:
-- `geminiModel`:
-- `processingStartedAt`:
-- `processingCompletedAt`:
-- `createdAt`:
-- `updatedAt`:
-
 ### `box_messages`
 
 Properties as follows:
@@ -4326,25 +4082,6 @@ Properties as follows:
 - `role`:
 - `content`:
 - `createdAt`:
-
-### `enhancement_pipelines`
-
-Properties as follows:
-
-- `id`:
-- `name`:
-- `description`:
-- `userId`:
-- `visibility`:
-- `shareToken`:
-- `tier`:
-- `analysisConfig`:
-- `autoCropConfig`:
-- `promptConfig`:
-- `generationConfig`:
-- `usageCount`:
-- `createdAt`:
-- `updatedAt`:
 
 ### `visitor_sessions`
 
@@ -6147,7 +5884,6 @@ Properties as follows:
 - `format`:
 - `placement`:
 - `assetId`:
-- `imageJobId`:
 - `variantNumber`:
 - `impressions`:
 - `clicks`:

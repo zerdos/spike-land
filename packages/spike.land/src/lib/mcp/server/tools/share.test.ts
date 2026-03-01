@@ -22,7 +22,7 @@ vi.mock(
 );
 
 import { createMockRegistry, getText, isError } from "../__test-utils__";
-import { registerShareTools } from "./share";
+// import { registerShareTools } from "./share";
 
 describe("share tools", () => {
   const userId = "test-user-123";
@@ -31,7 +31,7 @@ describe("share tools", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     registry = createMockRegistry();
-    registerShareTools(registry, userId);
+//     registerShareTools(registry, userId);
     mockPrisma.toolInvocation.create.mockResolvedValue({});
   });
 

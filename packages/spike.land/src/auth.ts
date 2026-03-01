@@ -9,7 +9,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink, createAuthEndpoint } from "better-auth/plugins";
 import { z } from "zod";
-import { ensureUserAlbums } from "@/lib/albums/ensure-user-albums";
 import { bootstrapAdminIfNeeded } from "@/lib/auth/bootstrap-admin";
 import { completeQRAuth } from "@/lib/auth/qr-auth-service";
 import { logger } from "@/lib/errors/structured-logger";
@@ -171,13 +170,6 @@ export const authInstance = betterAuth({
             logger.error("Failed to bootstrap admin", bootstrapError instanceof Error ? bootstrapError : undefined);
           }
 
-          // Create default albums
-          const { error: albumsError } = await tryCatch(
-            ensureUserAlbums(user.id)
-          );
-          if (albumsError) {
-            logger.error("Failed to default albums", albumsError instanceof Error ? albumsError : undefined);
-          }
 
           // Track signup conversion
           const { error: attributionError } = await tryCatch(
