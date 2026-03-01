@@ -115,6 +115,7 @@
     "@spike-land-ai/chess-engine": "workspace:*",
     "@spike-land-ai/esbuild-wasm": "workspace:*",
     "@spike-land-ai/react-ts-worker": "workspace:*",
+    "@spike-land-ai/shared": "workspace:*",
     "@spike-land-ai/spike-cli": "workspace:*",
     "@spike-land-ai/state-machine": "workspace:*",
     "@tanstack/react-query": "5.90.21",

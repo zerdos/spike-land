@@ -14,6 +14,7 @@ import type {
   ToolAnnotations,
 } from "@modelcontextprotocol/sdk/types.js";
 import type { z } from "zod";
+import type { BuiltTool } from "@spike-land-ai/shared/tool-builder";
 import logger from "@/lib/logger";
 import { suggestParameters, ToolEmbeddingIndex } from "@/lib/mcp/embeddings";
 import { recordSkillUsage } from "./tool-loader";
@@ -404,6 +405,24 @@ export class ToolRegistry {
 
     this.tools.set(def.name, { definition: def, registered, wrappedHandler });
     this.embeddingIndex.embed(def.name, def.category, def.description);
+  }
+
+  /**
+   * Register a tool built with the shared tool-builder.
+   * Adapts BuiltTool to ToolDefinition internally -- zero breaking changes.
+   */
+  registerBuilt(built: BuiltTool): void {
+    this.register({
+      name: built.name,
+      description: built.description,
+      category: built.meta.category ?? "uncategorized",
+      tier: built.meta.tier ?? "free",
+      ...(built.meta.complexity ? { complexity: built.meta.complexity } : {}),
+      ...(built.meta.annotations ? { annotations: built.meta.annotations as ToolAnnotations } : {}),
+      ...(built.meta.alwaysEnabled !== undefined ? { alwaysEnabled: built.meta.alwaysEnabled } : {}),
+      inputSchema: built.inputSchema,
+      handler: built.handler as ToolDefinition["handler"],
+    });
   }
 
   async searchTools(query: string, limit = 10): Promise<SearchResult[]> {

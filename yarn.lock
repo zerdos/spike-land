@@ -8622,13 +8622,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/mcp-nanobanana@workspace:packages/mcp-nanobanana":
+"@spike-land-ai/mcp-image-studio@workspace:packages/mcp-image-studio":
   version: 0.0.0-use.local
-  resolution: "@spike-land-ai/mcp-nanobanana@workspace:packages/mcp-nanobanana"
+  resolution: "@spike-land-ai/mcp-image-studio@workspace:packages/mcp-image-studio"
   dependencies:
     "@changesets/cli": "npm:2.29.8"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
     "@spike-land-ai/eslint-config": "workspace:*"
+    "@spike-land-ai/shared": "workspace:*"
     "@spike-land-ai/tsconfig": "workspace:*"
     "@types/node": "npm:25.3.2"
     "@vitest/coverage-v8": "npm:4.0.18"
@@ -8643,7 +8644,7 @@ __metadata:
     zod: "npm:^4.3.6"
     zod-to-json-schema: "npm:^3.25.1"
   bin:
-    mcp-nanobanana: ./dist/cli-server.js
+    mcp-image-studio: ./dist/cli-server.js
   languageName: unknown
   linkType: soft
 
@@ -8712,7 +8713,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/shared@workspace:packages/shared":
+"@spike-land-ai/shared@workspace:*, @spike-land-ai/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/shared@workspace:packages/shared"
   dependencies:
@@ -23595,6 +23596,7 @@ __metadata:
     "@spike-land-ai/esbuild-wasm": "workspace:*"
     "@spike-land-ai/eslint-config": "workspace:*"
     "@spike-land-ai/react-ts-worker": "workspace:*"
+    "@spike-land-ai/shared": "workspace:*"
     "@spike-land-ai/spike-cli": "workspace:*"
     "@spike-land-ai/state-machine": "workspace:*"
     "@tailwindcss/postcss": "npm:4.2.1"
