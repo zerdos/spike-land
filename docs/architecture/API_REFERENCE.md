@@ -2436,9 +2436,9 @@ async function fetchWithRateLimit(url, options = {}) {
 {
   "apps": [
     {
-      "id": "pixel-studio",
-      "slug": "pixel-studio",
-      "name": "Pixel Studio",
+      "id": "image-studio",
+      "slug": "image-studio",
+      "name": "Image Studio",
       "tagline": "AI-powered image creation & batch processing",
       "category": "creative",
       "toolCount": 15,

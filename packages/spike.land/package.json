@@ -1,6 +1,6 @@
 {
   "name": "spike-land",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "content:sync": "[ -L docs ] || cp -r ../../docs ./docs 2>/dev/null; [ -L content ] || cp -r ../../content ./content 2>/dev/null; true",

@@ -25,9 +25,6 @@
 [submodule "hackernews-mcp"]
 	path = packages/hackernews-mcp
 	url = https://github.com/spike-land-ai/hackernews-mcp.git
-[submodule "mcp-nanobanana"]
-	path = packages/mcp-nanobanana
-	url = https://github.com/spike-land-ai/mcp-nanobanana.git
 [submodule "openclaw-mcp"]
 	path = packages/openclaw-mcp
 	url = https://github.com/spike-land-ai/openclaw-mcp.git
@@ -40,3 +37,6 @@
 [submodule "video"]
 	path = packages/video
 	url = https://github.com/spike-land-ai/video.git
+[submodule "packages/mcp-image-studio"]
+	path = packages/mcp-image-studio
+	url = https://github.com/spike-land-ai/mcp-image-studio.git

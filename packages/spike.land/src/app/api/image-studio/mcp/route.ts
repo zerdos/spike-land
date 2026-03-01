@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
-const PIXEL_STUDIO_MCP_URL = "https://pixel-studio-mcp.spike.land/api/mcp";
+const IMAGE_STUDIO_MCP_URL = "https://image-studio-mcp.spike.land/api/mcp";
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     authResult = await authenticateMcpRequest(request);
   }
   if (!authResult.success || !authResult.userId) {
-    logger.error("[PIXEL_STUDIO_PROXY] authenticateMcpRequest failed", undefined, {
+    logger.error("[IMAGE_STUDIO_PROXY] authenticateMcpRequest failed", undefined, {
       authResult,
       authHeader: authHeader?.substring(0, 20) + "...",
     });
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.text();
 
-    const response = await fetch(PIXEL_STUDIO_MCP_URL, {
+    const response = await fetch(IMAGE_STUDIO_MCP_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-        logger.error("[PIXEL_STUDIO_PROXY] upstream returned error", undefined, {
+        logger.error("[IMAGE_STUDIO_PROXY] upstream returned error", undefined, {
             status: response.status,
             statusText: response.statusText
         });
@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     return NextResponse.json(data);
-    
+
   } catch (error) {
-    logger.error("[PIXEL_STUDIO_PROXY] proxy error", error instanceof Error ? error : new Error(String(error)));
+    logger.error("[IMAGE_STUDIO_PROXY] proxy error", error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

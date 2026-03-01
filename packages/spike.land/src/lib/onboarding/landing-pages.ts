@@ -687,10 +687,10 @@ export const LANDING_PAGES: LandingPageContent[] = [
     ],
     features: [
       {
-        title: "Pixel Studio",
+        title: "Image Studio",
         description:
           "Create and edit images with AI-powered tools. Thumbnails, banners, and social graphics in minutes.",
-        appSlug: "pixel-studio",
+        appSlug: "image-studio",
       },
       {
         title: "Page Builder",
@@ -742,10 +742,10 @@ export const LANDING_PAGES: LandingPageContent[] = [
     ],
     features: [
       {
-        title: "Pixel Studio",
+        title: "Image Studio",
         description:
           "Draw, paint, and generate images with approachable tools. Complex enough to grow with you, simple enough to start now.",
-        appSlug: "pixel-studio",
+        appSlug: "image-studio",
       },
       {
         title: "Music Creator",
@@ -858,10 +858,10 @@ export const LANDING_PAGES: LandingPageContent[] = [
         appSlug: "cleansweep",
       },
       {
-        title: "Pixel Studio",
+        title: "Image Studio",
         description:
           "Try digital art with zero pressure. Draw, paint, or generate images — see what clicks.",
-        appSlug: "pixel-studio",
+        appSlug: "image-studio",
       },
       {
         title: "Music Creator",

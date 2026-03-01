@@ -356,7 +356,7 @@ export const PERSONAS: OnboardingPersona[] = [
     heroText: "Unleash your creativity with image, page, music, and audio tools.",
     cta: { label: "Start Creating", href: "/store" },
     recommendedAppSlugs: [
-      "pixel-studio",
+      "image-studio",
       "page-builder",
       "music-creator",
       "audio-studio",
@@ -371,7 +371,7 @@ export const PERSONAS: OnboardingPersona[] = [
     heroText: "Create for the joy of it — art, music, and design tools at your fingertips.",
     cta: { label: "Start Creating", href: "/store" },
     recommendedAppSlugs: [
-      "pixel-studio",
+      "image-studio",
       "music-creator",
       "audio-studio",
       "page-builder",
@@ -402,7 +402,7 @@ export const PERSONAS: OnboardingPersona[] = [
     cta: { label: "Start Exploring", href: "/store" },
     recommendedAppSlugs: [
       "cleansweep",
-      "pixel-studio",
+      "image-studio",
       "music-creator",
       "career-navigator",
     ],

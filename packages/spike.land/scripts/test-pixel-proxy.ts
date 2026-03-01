@@ -4,7 +4,7 @@ dotenv.config({ path: "../../.env.local" });
 
 const API_KEY = "test_token_123";
 
-const url = "https://pixel-studio-mcp.spike.land/api/mcp";
+const url = "https://image-studio-mcp.spike.land/api/mcp";
 
 async function makeRequest(id: number) {
   console.log(`[Agent ${id}] Starting request...`);
