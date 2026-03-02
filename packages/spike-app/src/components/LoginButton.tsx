@@ -8,16 +8,17 @@ export function LoginButton() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!menuOpen) {
+      return undefined;
+    }
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
       }
     }
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
   if (isLoading) {
