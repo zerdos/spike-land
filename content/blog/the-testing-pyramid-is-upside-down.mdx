@@ -55,6 +55,8 @@ They are brittle. Change a CSS class? Tests break. Move a button from the left s
 
 This is the testing pyramid. Unit tests at the base: fast, cheap, many. Integration tests in the middle: moderate speed, moderate cost, moderate count. E2E tests at the top: slow, expensive, few.
 
+<PyramidReshapeDemo />
+
 Everyone knows the top of the pyramid is painful. We accepted it as the cost of doing business. You need *some* E2E tests because that is the only way to verify the full user flow. API tests are not enough — they test endpoints, not the business logic flows that string those endpoints together into something a user actually does.
 
 Or so we thought.
@@ -219,6 +221,8 @@ But I think there is a third player: the name.
 Consider the MCP tool from earlier: `update_user_email`. That name is not just a label. It is a constraint. It tells you what the tool must do and what it must not do. It does not send notifications. It does not update the password. It updates the user's email.
 
 Good naming has always mattered. A well-named function constrains what a developer writes. But an MCP tool name constrains what a *machine* can discover, invoke, and test. An AI agent browsing your MCP server does not read your source code — it reads tool names, descriptions, and schemas. If `update_user_email` is named properly, an agent knows what to call it for without reading the implementation. The name becomes a discoverable contract.
+
+<TestCodeNameVenn />
 
 Test. Code. Name. Three players, one truth. The name, the input schema, and the handler form a triangle where each vertex constrains the other two. We had the first two for decades. MCP formalized the third into something machines can reason about — and it turns out, when you give the name enough structure to be machine-readable, it becomes machine-testable too.
 

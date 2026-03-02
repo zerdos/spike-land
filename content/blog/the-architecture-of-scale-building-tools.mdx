@@ -23,7 +23,7 @@ featured: true
 
 ## The Catalyst: Nano Banana 2
 
-I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, a massive amount of repositories, and an increasing conviction that the way we wire AI tools together is fundamentally wrong.
+I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, too many repositories, and an increasing conviction that the way we wire AI tools together is fundamentally wrong.
 
 When Google released Nano Banana 2, I found out how right I was — and how wrong my implementation still was.
 
@@ -255,6 +255,8 @@ An agent reading this file sees exactly what it needs to write a new tool: pick 
 
 ## The Cloudflare Workers Convergence
 
+<ConvergenceDemo />
+
 The handler signature `(input, ctx)` is the same pattern Cloudflare Workers, tRPC, Hono, and most modern serverless frameworks converged on independently — because it is the minimal viable abstraction for a request handler.
 
 ```
@@ -295,6 +297,8 @@ expect(data.isAiGenerated).toBe(true);
 No browser. No network. No mocking the framework. The tool is a function. The test calls the function. The function returns a result. That is [the whole philosophy](/blog/it-feels-like-cheating) — code is disposable, but the contract is not.
 
 ## The Infrastructure
+
+<DependencyCascadeDemo />
 
 This builder lives in `@spike-land-ai/shared`, which means every package in my ecosystem gets it for free. The monorepo has 18 repositories under the `@spike-land-ai` GitHub org, each as a separate git submodule:
 

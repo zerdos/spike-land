@@ -12,7 +12,7 @@
  * Returns a new object (does not mutate the input).
  */
 export function optimizeSchema(schema: object): object {
-  return optimizeNode(schema, undefined);
+  return optimizeNode(schema, undefined) as object;
 }
 
 function optimizeNode(node: unknown, propertyName: string | undefined): unknown {

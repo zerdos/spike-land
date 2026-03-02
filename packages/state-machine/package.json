@@ -32,7 +32,7 @@
   "devDependencies": {
     "@spike-land-ai/eslint-config": "*",
     "@spike-land-ai/tsconfig": "*",
-    "@types/node": "25.3.2",
+    "@types/node": "25.3.3",
     "@vitest/coverage-v8": "4.0.18",
     "typescript": "5.9.3",
     "vitest": "4.0.18"

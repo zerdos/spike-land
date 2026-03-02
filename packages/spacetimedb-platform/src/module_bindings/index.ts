@@ -34,19 +34,36 @@ import {
 } from "spacetimedb";
 
 // Import all reducer arg schemas
+import AlbumCreateReducer from "./album_create_reducer";
+import AlbumDeleteReducer from "./album_delete_reducer";
+import AlbumImageAddReducer from "./album_image_add_reducer";
+import AlbumImageRemoveReducer from "./album_image_remove_reducer";
+import AlbumUpdateReducer from "./album_update_reducer";
 import ClaimMcpTaskReducer from "./claim_mcp_task_reducer";
 import CompleteMcpTaskReducer from "./complete_mcp_task_reducer";
 import CreateAppReducer from "./create_app_reducer";
 import CreateAppVersionReducer from "./create_app_version_reducer";
 import CreatePageReducer from "./create_page_reducer";
 import CreatePageBlockReducer from "./create_page_block_reducer";
+import CreditsAddReducer from "./credits_add_reducer";
+import CreditsConsumeReducer from "./credits_consume_reducer";
 import DeleteAppReducer from "./delete_app_reducer";
 import DeletePageReducer from "./delete_page_reducer";
 import DeletePageBlockReducer from "./delete_page_block_reducer";
+import EnhancementJobCreateReducer from "./enhancement_job_create_reducer";
+import EnhancementJobUpdateReducer from "./enhancement_job_update_reducer";
+import GenerationJobCreateReducer from "./generation_job_create_reducer";
+import GenerationJobUpdateReducer from "./generation_job_update_reducer";
+import ImageCreateReducer from "./image_create_reducer";
+import ImageDeleteReducer from "./image_delete_reducer";
+import ImageUpdateReducer from "./image_update_reducer";
 import InvokeToolRequestReducer from "./invoke_tool_request_reducer";
 import LinkOauthReducer from "./link_oauth_reducer";
 import MarkAgentMessageDeliveredReducer from "./mark_agent_message_delivered_reducer";
 import MarkDmReadReducer from "./mark_dm_read_reducer";
+import PipelineCreateReducer from "./pipeline_create_reducer";
+import PipelineDeleteReducer from "./pipeline_delete_reducer";
+import PipelineUpdateReducer from "./pipeline_update_reducer";
 import RecordHealthCheckReducer from "./record_health_check_reducer";
 import RecordPlatformEventReducer from "./record_platform_event_reducer";
 import RegisterAgentReducer from "./register_agent_reducer";
@@ -57,6 +74,8 @@ import RestoreAppReducer from "./restore_app_reducer";
 import SendAgentMessageReducer from "./send_agent_message_reducer";
 import SendAppMessageReducer from "./send_app_message_reducer";
 import SendDmReducer from "./send_dm_reducer";
+import SubjectCreateReducer from "./subject_create_reducer";
+import SubjectDeleteReducer from "./subject_delete_reducer";
 import UnregisterAgentReducer from "./unregister_agent_reducer";
 import UnregisterToolReducer from "./unregister_tool_reducer";
 import UpdateAppReducer from "./update_app_reducer";
@@ -71,18 +90,26 @@ import UpdateProfileReducer from "./update_profile_reducer";
 // Import all table schema definitions
 import AgentRow from "./agent_table";
 import AgentMessageRow from "./agent_message_table";
+import AlbumRow from "./album_table";
+import AlbumImageRow from "./album_image_table";
 import AppRow from "./app_table";
 import AppMessageRow from "./app_message_table";
 import AppVersionRow from "./app_version_table";
 import CodeSessionRow from "./code_session_table";
+import CreditsRow from "./credits_table";
 import DirectMessageRow from "./direct_message_table";
+import EnhancementJobRow from "./enhancement_job_table";
+import GenerationJobRow from "./generation_job_table";
 import HealthCheckRow from "./health_check_table";
+import ImageRow from "./image_table";
 import McpTaskRow from "./mcp_task_table";
 import OauthLinkRow from "./oauth_link_table";
 import PageRow from "./page_table";
 import PageBlockRow from "./page_block_table";
+import PipelineRow from "./pipeline_table";
 import PlatformEventRow from "./platform_event_table";
 import RegisteredToolRow from "./registered_tool_table";
+import SubjectRow from "./subject_table";
 import ToolUsageRow from "./tool_usage_table";
 import UserRow from "./user_table";
 import UserToolPreferenceRow from "./user_tool_preference_table";
@@ -116,6 +143,41 @@ const tablesSchema = __schema({
       { name: 'agent_message_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, AgentMessageRow),
+  album: __table({
+    name: 'album',
+    indexes: [
+      { name: 'handle', algorithm: 'btree', columns: [
+        'handle',
+      ] },
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'album_handle_key', constraint: 'unique', columns: ['handle'] },
+      { name: 'album_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, AlbumRow),
+  album_image: __table({
+    name: 'album_image',
+    indexes: [
+      { name: 'albumId', algorithm: 'btree', columns: [
+        'albumId',
+      ] },
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'imageId', algorithm: 'btree', columns: [
+        'imageId',
+      ] },
+    ],
+    constraints: [
+      { name: 'album_image_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, AlbumImageRow),
   app: __table({
     name: 'app',
     indexes: [
@@ -173,6 +235,17 @@ const tablesSchema = __schema({
       { name: 'code_session_code_space_key', constraint: 'unique', columns: ['codeSpace'] },
     ],
   }, CodeSessionRow),
+  credits: __table({
+    name: 'credits',
+    indexes: [
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'credits_user_identity_key', constraint: 'unique', columns: ['userIdentity'] },
+    ],
+  }, CreditsRow),
   direct_message: __table({
     name: 'direct_message',
     indexes: [
@@ -187,6 +260,37 @@ const tablesSchema = __schema({
       { name: 'direct_message_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, DirectMessageRow),
+  enhancement_job: __table({
+    name: 'enhancement_job',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'imageId', algorithm: 'btree', columns: [
+        'imageId',
+      ] },
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'enhancement_job_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, EnhancementJobRow),
+  generation_job: __table({
+    name: 'generation_job',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'generation_job_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, GenerationJobRow),
   health_check: __table({
     name: 'health_check',
     indexes: [
@@ -198,6 +302,20 @@ const tablesSchema = __schema({
       { name: 'health_check_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, HealthCheckRow),
+  image: __table({
+    name: 'image',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'image_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, ImageRow),
   mcp_task: __table({
     name: 'mcp_task',
     indexes: [
@@ -252,6 +370,17 @@ const tablesSchema = __schema({
       { name: 'page_block_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, PageBlockRow),
+  pipeline: __table({
+    name: 'pipeline',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+    ],
+    constraints: [
+      { name: 'pipeline_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, PipelineRow),
   platform_event: __table({
     name: 'platform_event',
     indexes: [
@@ -280,6 +409,23 @@ const tablesSchema = __schema({
       { name: 'registered_tool_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, RegisteredToolRow),
+  subject: __table({
+    name: 'subject',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'imageId', algorithm: 'btree', columns: [
+        'imageId',
+      ] },
+      { name: 'userIdentity', algorithm: 'btree', columns: [
+        'userIdentity',
+      ] },
+    ],
+    constraints: [
+      { name: 'subject_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, SubjectRow),
   tool_usage: __table({
     name: 'tool_usage',
     indexes: [
@@ -327,19 +473,36 @@ const tablesSchema = __schema({
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
+  __reducerSchema("album_create", AlbumCreateReducer),
+  __reducerSchema("album_delete", AlbumDeleteReducer),
+  __reducerSchema("album_image_add", AlbumImageAddReducer),
+  __reducerSchema("album_image_remove", AlbumImageRemoveReducer),
+  __reducerSchema("album_update", AlbumUpdateReducer),
   __reducerSchema("claim_mcp_task", ClaimMcpTaskReducer),
   __reducerSchema("complete_mcp_task", CompleteMcpTaskReducer),
   __reducerSchema("create_app", CreateAppReducer),
   __reducerSchema("create_app_version", CreateAppVersionReducer),
   __reducerSchema("create_page", CreatePageReducer),
   __reducerSchema("create_page_block", CreatePageBlockReducer),
+  __reducerSchema("credits_add", CreditsAddReducer),
+  __reducerSchema("credits_consume", CreditsConsumeReducer),
   __reducerSchema("delete_app", DeleteAppReducer),
   __reducerSchema("delete_page", DeletePageReducer),
   __reducerSchema("delete_page_block", DeletePageBlockReducer),
+  __reducerSchema("enhancement_job_create", EnhancementJobCreateReducer),
+  __reducerSchema("enhancement_job_update", EnhancementJobUpdateReducer),
+  __reducerSchema("generation_job_create", GenerationJobCreateReducer),
+  __reducerSchema("generation_job_update", GenerationJobUpdateReducer),
+  __reducerSchema("image_create", ImageCreateReducer),
+  __reducerSchema("image_delete", ImageDeleteReducer),
+  __reducerSchema("image_update", ImageUpdateReducer),
   __reducerSchema("invoke_tool_request", InvokeToolRequestReducer),
   __reducerSchema("link_oauth", LinkOauthReducer),
   __reducerSchema("mark_agent_message_delivered", MarkAgentMessageDeliveredReducer),
   __reducerSchema("mark_dm_read", MarkDmReadReducer),
+  __reducerSchema("pipeline_create", PipelineCreateReducer),
+  __reducerSchema("pipeline_delete", PipelineDeleteReducer),
+  __reducerSchema("pipeline_update", PipelineUpdateReducer),
   __reducerSchema("record_health_check", RecordHealthCheckReducer),
   __reducerSchema("record_platform_event", RecordPlatformEventReducer),
   __reducerSchema("register_agent", RegisterAgentReducer),
@@ -350,6 +513,8 @@ const reducersSchema = __reducers(
   __reducerSchema("send_agent_message", SendAgentMessageReducer),
   __reducerSchema("send_app_message", SendAppMessageReducer),
   __reducerSchema("send_dm", SendDmReducer),
+  __reducerSchema("subject_create", SubjectCreateReducer),
+  __reducerSchema("subject_delete", SubjectDeleteReducer),
   __reducerSchema("unregister_agent", UnregisterAgentReducer),
   __reducerSchema("unregister_tool", UnregisterToolReducer),
   __reducerSchema("update_app", UpdateAppReducer),

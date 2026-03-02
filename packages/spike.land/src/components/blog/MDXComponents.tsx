@@ -534,6 +534,86 @@ export const mdxComponents: MDXComponents = {
     ssr: false,
     loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
   }),
+  PyramidReshapeDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.PyramidReshapeDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  TestCodeNameVenn: dynamic(() => import("./interactive").then((mod) => mod.TestCodeNameVenn), {
+    ssr: false,
+    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
+  }),
+  HourglassModelDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.HourglassModelDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  ParadigmGuiltTimeline: dynamic(
+    () => import("./interactive").then((mod) => mod.ParadigmGuiltTimeline),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  EffortInversionDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.EffortInversionDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  ContextLayerBuilderDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.ContextLayerBuilderDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  StackCollapseDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.StackCollapseDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  AgentCoordinationDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.AgentCoordinationDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
+  ConvergenceDemo: dynamic(() => import("./interactive").then((mod) => mod.ConvergenceDemo), {
+    ssr: false,
+    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
+  }),
+  DependencyCascadeDemo: dynamic(
+    () => import("./interactive").then((mod) => mod.DependencyCascadeDemo),
+    {
+      ssr: false,
+      loading: () => (
+        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
+      ),
+    },
+  ),
   BlogPoll: dynamic(() => import("./BlogPoll").then((mod) => mod.BlogPoll), {
     ssr: false,
     loading: () => <div className="w-full h-32 bg-muted animate-pulse rounded-xl my-8" />,

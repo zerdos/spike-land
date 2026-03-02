@@ -53,6 +53,8 @@ Client → Next.js API Routes → NextAuth Middleware → Prisma ORM → Postgre
 
 I had been migrating away from this stack for weeks. spike-app for the frontend. spike-edge for the edge API. mcp-auth for authentication. spike-land-mcp for the MCP registry. Twelve new packages. The migration was underway. But each new package still needed to talk to the others, and the coordination layer was still missing.
 
+<StackCollapseDemo />
+
 The before and after:
 
 | Old Stack | SpacetimeDB Equivalent |
@@ -99,6 +101,8 @@ The old stack had three sources of truth: the Prisma schema (what the database l
 SpacetimeDB has one source of truth: the module. Everything else is derived. That is not an incremental improvement. That is an entire category of bugs that ceases to exist.
 
 ## Agent Coordination as a Primitive
+
+<AgentCoordinationDemo />
 
 This is where SpacetimeDB stops being a "better database" and becomes "the database for agents."
 

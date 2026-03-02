@@ -29,6 +29,32 @@ export const AgentMessage = __t.object("AgentMessage", {
 });
 export type AgentMessage = __Infer<typeof AgentMessage>;
 
+export const Album = __t.object("Album", {
+  id: __t.u64(),
+  handle: __t.string(),
+  userIdentity: __t.identity(),
+  name: __t.string(),
+  description: __t.option(__t.string()),
+  coverImageId: __t.option(__t.string()),
+  privacy: __t.string(),
+  defaultTier: __t.string(),
+  shareToken: __t.option(__t.string()),
+  sortOrder: __t.u32(),
+  pipelineId: __t.option(__t.string()),
+  createdAt: __t.u64(),
+  updatedAt: __t.u64(),
+});
+export type Album = __Infer<typeof Album>;
+
+export const AlbumImage = __t.object("AlbumImage", {
+  id: __t.u64(),
+  albumId: __t.u64(),
+  imageId: __t.string(),
+  sortOrder: __t.u32(),
+  addedAt: __t.u64(),
+});
+export type AlbumImage = __Infer<typeof AlbumImage>;
+
 export const App = __t.object("App", {
   id: __t.u64(),
   slug: __t.string(),
@@ -74,6 +100,13 @@ export const CodeSession = __t.object("CodeSession", {
 });
 export type CodeSession = __Infer<typeof CodeSession>;
 
+export const Credits = __t.object("Credits", {
+  userIdentity: __t.identity(),
+  balance: __t.i64(),
+  updatedAt: __t.u64(),
+});
+export type Credits = __Infer<typeof Credits>;
+
 export const DirectMessage = __t.object("DirectMessage", {
   id: __t.u64(),
   fromIdentity: __t.identity(),
@@ -84,6 +117,47 @@ export const DirectMessage = __t.object("DirectMessage", {
 });
 export type DirectMessage = __Infer<typeof DirectMessage>;
 
+export const EnhancementJob = __t.object("EnhancementJob", {
+  id: __t.string(),
+  imageId: __t.string(),
+  userIdentity: __t.identity(),
+  tier: __t.string(),
+  creditsCost: __t.u32(),
+  status: __t.string(),
+  enhancedUrl: __t.option(__t.string()),
+  enhancedR2Key: __t.option(__t.string()),
+  enhancedWidth: __t.option(__t.u32()),
+  enhancedHeight: __t.option(__t.u32()),
+  enhancedSizeBytes: __t.option(__t.u64()),
+  errorMessage: __t.option(__t.string()),
+  retryCount: __t.u32(),
+  metadataJson: __t.option(__t.string()),
+  processingStartedAt: __t.option(__t.u64()),
+  processingCompletedAt: __t.option(__t.u64()),
+  createdAt: __t.u64(),
+  updatedAt: __t.u64(),
+});
+export type EnhancementJob = __Infer<typeof EnhancementJob>;
+
+export const GenerationJob = __t.object("GenerationJob", {
+  id: __t.string(),
+  userIdentity: __t.identity(),
+  jobType: __t.string(),
+  tier: __t.string(),
+  creditsCost: __t.u32(),
+  status: __t.string(),
+  prompt: __t.string(),
+  inputImageUrl: __t.option(__t.string()),
+  outputImageUrl: __t.option(__t.string()),
+  outputWidth: __t.option(__t.u32()),
+  outputHeight: __t.option(__t.u32()),
+  outputSizeBytes: __t.option(__t.u64()),
+  errorMessage: __t.option(__t.string()),
+  createdAt: __t.u64(),
+  updatedAt: __t.u64(),
+});
+export type GenerationJob = __Infer<typeof GenerationJob>;
+
 export const HealthCheck = __t.object("HealthCheck", {
   id: __t.u64(),
   service: __t.string(),
@@ -92,6 +166,26 @@ export const HealthCheck = __t.object("HealthCheck", {
   checkedAt: __t.u64(),
 });
 export type HealthCheck = __Infer<typeof HealthCheck>;
+
+export const Image = __t.object("Image", {
+  id: __t.string(),
+  userIdentity: __t.identity(),
+  name: __t.string(),
+  description: __t.option(__t.string()),
+  originalUrl: __t.string(),
+  originalR2Key: __t.string(),
+  originalWidth: __t.u32(),
+  originalHeight: __t.u32(),
+  originalSizeBytes: __t.u64(),
+  originalFormat: __t.string(),
+  isPublic: __t.bool(),
+  viewCount: __t.u64(),
+  tags: __t.array(__t.string()),
+  shareToken: __t.option(__t.string()),
+  createdAt: __t.u64(),
+  updatedAt: __t.u64(),
+});
+export type Image = __Infer<typeof Image>;
 
 export const McpTask = __t.object("McpTask", {
   id: __t.u64(),
@@ -136,6 +230,24 @@ export const PageBlock = __t.object("PageBlock", {
 });
 export type PageBlock = __Infer<typeof PageBlock>;
 
+export const Pipeline = __t.object("Pipeline", {
+  id: __t.string(),
+  userIdentity: __t.option(__t.identity()),
+  name: __t.string(),
+  description: __t.option(__t.string()),
+  visibility: __t.string(),
+  shareToken: __t.option(__t.string()),
+  tier: __t.string(),
+  analysisConfigJson: __t.option(__t.string()),
+  autoCropConfigJson: __t.option(__t.string()),
+  promptConfigJson: __t.option(__t.string()),
+  generationConfigJson: __t.option(__t.string()),
+  usageCount: __t.u64(),
+  createdAt: __t.u64(),
+  updatedAt: __t.u64(),
+});
+export type Pipeline = __Infer<typeof Pipeline>;
+
 export const PlatformEvent = __t.object("PlatformEvent", {
   id: __t.u64(),
   source: __t.string(),
@@ -156,6 +268,17 @@ export const RegisteredTool = __t.object("RegisteredTool", {
   createdAt: __t.u64(),
 });
 export type RegisteredTool = __Infer<typeof RegisteredTool>;
+
+export const Subject = __t.object("Subject", {
+  id: __t.u64(),
+  userIdentity: __t.identity(),
+  imageId: __t.string(),
+  label: __t.string(),
+  subjectType: __t.string(),
+  description: __t.option(__t.string()),
+  createdAt: __t.u64(),
+});
+export type Subject = __Infer<typeof Subject>;
 
 export const ToolUsage = __t.object("ToolUsage", {
   id: __t.u64(),

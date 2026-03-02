@@ -16,6 +16,9 @@ import { registerContentTools } from "./tools/content-tools.js";
 import { registerMessageTools } from "./tools/message-tools.js";
 import { registerToolRegistryTools } from "./tools/tool-registry-tools.js";
 import { registerUserTools } from "./tools/user-tools.js";
+export * from "./types.js";
+export { createLivePlatformClient } from "./client-live.js";
+export type { SpacetimePlatformClient } from "./client.js";
 
 const server = new McpServer({
   name: "spacetimedb-platform",

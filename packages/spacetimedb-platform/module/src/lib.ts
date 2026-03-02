@@ -237,6 +237,147 @@ const HealthCheck = table(
   },
 );
 
+// ─── Tables: Image Studio ───
+
+const Image = table(
+  { name: "image", public: true },
+  {
+    id: t.string().primaryKey(),
+    userIdentity: t.identity().index("btree"),
+    name: t.string(),
+    description: t.option(t.string()),
+    originalUrl: t.string(),
+    originalR2Key: t.string(),
+    originalWidth: t.u32(),
+    originalHeight: t.u32(),
+    originalSizeBytes: t.u64(),
+    originalFormat: t.string(),
+    isPublic: t.bool(),
+    viewCount: t.u64(),
+    tags: t.array(t.string()),
+    shareToken: t.option(t.string()),
+    createdAt: t.u64(),
+    updatedAt: t.u64(),
+  },
+);
+
+const EnhancementJob = table(
+  { name: "enhancement_job", public: true },
+  {
+    id: t.string().primaryKey(),
+    imageId: t.string().index("btree"),
+    userIdentity: t.identity().index("btree"),
+    tier: t.string(),
+    creditsCost: t.u32(),
+    status: t.string(),
+    enhancedUrl: t.option(t.string()),
+    enhancedR2Key: t.option(t.string()),
+    enhancedWidth: t.option(t.u32()),
+    enhancedHeight: t.option(t.u32()),
+    enhancedSizeBytes: t.option(t.u64()),
+    errorMessage: t.option(t.string()),
+    retryCount: t.u32(),
+    metadataJson: t.option(t.string()),
+    processingStartedAt: t.option(t.u64()),
+    processingCompletedAt: t.option(t.u64()),
+    createdAt: t.u64(),
+    updatedAt: t.u64(),
+  },
+);
+
+const Album = table(
+  { name: "album", public: true },
+  {
+    id: t.u64().autoInc().primaryKey(),
+    handle: t.string().unique(),
+    userIdentity: t.identity().index("btree"),
+    name: t.string(),
+    description: t.option(t.string()),
+    coverImageId: t.option(t.string()),
+    privacy: t.string(),
+    defaultTier: t.string(),
+    shareToken: t.option(t.string()),
+    sortOrder: t.u32(),
+    pipelineId: t.option(t.string()),
+    createdAt: t.u64(),
+    updatedAt: t.u64(),
+  },
+);
+
+const AlbumImage = table(
+  { name: "album_image", public: true },
+  {
+    id: t.u64().autoInc().primaryKey(),
+    albumId: t.u64().index("btree"),
+    imageId: t.string().index("btree"),
+    sortOrder: t.u32(),
+    addedAt: t.u64(),
+  },
+);
+
+const Pipeline = table(
+  { name: "pipeline", public: true },
+  {
+    id: t.string().primaryKey(),
+    userIdentity: t.option(t.identity()),
+    name: t.string(),
+    description: t.option(t.string()),
+    visibility: t.string(),
+    shareToken: t.option(t.string()),
+    tier: t.string(),
+    analysisConfigJson: t.option(t.string()),
+    autoCropConfigJson: t.option(t.string()),
+    promptConfigJson: t.option(t.string()),
+    generationConfigJson: t.option(t.string()),
+    usageCount: t.u64(),
+    createdAt: t.u64(),
+    updatedAt: t.u64(),
+  },
+);
+
+const GenerationJob = table(
+  { name: "generation_job", public: true },
+  {
+    id: t.string().primaryKey(),
+    userIdentity: t.identity().index("btree"),
+    jobType: t.string(), // "GENERATE" | "MODIFY"
+    tier: t.string(),
+    creditsCost: t.u32(),
+    status: t.string(),
+    prompt: t.string(),
+    inputImageUrl: t.option(t.string()),
+    outputImageUrl: t.option(t.string()),
+    outputWidth: t.option(t.u32()),
+    outputHeight: t.option(t.u32()),
+    outputSizeBytes: t.option(t.u64()),
+    errorMessage: t.option(t.string()),
+    createdAt: t.u64(),
+    updatedAt: t.u64(),
+  },
+);
+
+const Subject = table(
+  { name: "subject", public: true },
+  {
+    id: t.u64().autoInc().primaryKey(),
+    userIdentity: t.identity().index("btree"),
+    imageId: t.string().index("btree"),
+    label: t.string(),
+    subjectType: t.string(),
+    description: t.option(t.string()),
+    createdAt: t.u64(),
+  },
+);
+
+const Credits = table(
+  { name: "credits", public: true },
+  {
+    userIdentity: t.identity().primaryKey(),
+    balance: t.i64(),
+    updatedAt: t.u64(),
+  },
+);
+
 // ─── Schema ───
 
 const spacetimedb = schema({
@@ -257,11 +398,20 @@ const spacetimedb = schema({
   direct_message: DirectMessage,
   platform_event: PlatformEvent,
   health_check: HealthCheck,
+  // Image Studio
+  image: Image,
+  enhancement_job: EnhancementJob,
+  album: Album,
+  album_image: AlbumImage,
+  pipeline: Pipeline,
+  generation_job: GenerationJob,
+  subject: Subject,
+  credits: Credits,
 });
 
 // ─── Lifecycle ───
 
-export const init = spacetimedb.init((_ctx) => {});
+export const init = spacetimedb.init((_ctx) => { });
 
 export const onConnect = spacetimedb.clientConnected((ctx) => {
   const existing = ctx.db.user.identity.find(ctx.sender);
@@ -442,7 +592,7 @@ export const claim_mcp_task = spacetimedb.reducer(
     if (task.status !== "pending") {
       throw new SenderError("Task is not available for claiming");
     }
-    
+
     ctx.db.mcp_task.id.update({
       ...task,
       providerIdentity: ctx.sender,
@@ -465,7 +615,7 @@ export const complete_mcp_task = spacetimedb.reducer(
     if (task.providerIdentity !== ctx.sender) {
       throw new SenderError("Only the claiming provider can complete this task");
     }
-    
+
     ctx.db.mcp_task.id.update({
       ...task,
       status: error ? "failed" : "completed",
@@ -548,38 +698,38 @@ export const update_app_status = spacetimedb.reducer(
 
 export const delete_app = spacetimedb.reducer(
   { appId: t.u64() }, (ctx, { appId }) => {
-  const app = ctx.db.app.id.find(appId);
-  if (!app) {
-    throw new SenderError("App not found");
-  }
-  if (app.ownerIdentity !== ctx.sender) {
-    throw new SenderError("Only the owner can delete this app");
-  }
-  ctx.db.app.id.update({
-    ...app,
-    status: "deleted",
-    updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    const app = ctx.db.app.id.find(appId);
+    if (!app) {
+      throw new SenderError("App not found");
+    }
+    if (app.ownerIdentity !== ctx.sender) {
+      throw new SenderError("Only the owner can delete this app");
+    }
+    ctx.db.app.id.update({
+      ...app,
+      status: "deleted",
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
   });
-});
 
 export const restore_app = spacetimedb.reducer(
   { appId: t.u64() }, (ctx, { appId }) => {
-  const app = ctx.db.app.id.find(appId);
-  if (!app) {
-    throw new SenderError("App not found");
-  }
-  if (app.ownerIdentity !== ctx.sender) {
-    throw new SenderError("Only the owner can restore this app");
-  }
-  if (app.status !== "deleted") {
-    throw new SenderError("App is not deleted");
-  }
-  ctx.db.app.id.update({
-    ...app,
-    status: "prompting",
-    updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    const app = ctx.db.app.id.find(appId);
+    if (!app) {
+      throw new SenderError("App not found");
+    }
+    if (app.ownerIdentity !== ctx.sender) {
+      throw new SenderError("Only the owner can restore this app");
+    }
+    if (app.status !== "deleted") {
+      throw new SenderError("App is not deleted");
+    }
+    ctx.db.app.id.update({
+      ...app,
+      status: "prompting",
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
   });
-});
 
 export const create_app_version = spacetimedb.reducer(
   {
@@ -656,16 +806,16 @@ export const register_agent = spacetimedb.reducer(
 
 export const unregister_agent = spacetimedb.reducer(
   {}, (ctx) => {
-  const existing = ctx.db.agent.identity.find(ctx.sender);
-  if (!existing) {
-    throw new SenderError("Agent not registered");
-  }
-  ctx.db.agent.identity.update({
-    ...existing,
-    online: false,
-    lastSeen: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    const existing = ctx.db.agent.identity.find(ctx.sender);
+    if (!existing) {
+      throw new SenderError("Agent not registered");
+    }
+    ctx.db.agent.identity.update({
+      ...existing,
+      online: false,
+      lastSeen: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
   });
-});
 
 export const send_agent_message = spacetimedb.reducer(
   { toAgent: t.identity(), content: t.string() },
@@ -747,12 +897,12 @@ export const update_page = spacetimedb.reducer(
 
 export const delete_page = spacetimedb.reducer(
   { pageId: t.u64() }, (ctx, { pageId }) => {
-  const page = ctx.db.page.id.find(pageId);
-  if (!page) {
-    throw new SenderError("Page not found");
-  }
-  ctx.db.page.id.delete(pageId);
-});
+    const page = ctx.db.page.id.find(pageId);
+    if (!page) {
+      throw new SenderError("Page not found");
+    }
+    ctx.db.page.id.delete(pageId);
+  });
 
 export const create_page_block = spacetimedb.reducer(
   {
@@ -799,12 +949,12 @@ export const update_page_block = spacetimedb.reducer(
 
 export const delete_page_block = spacetimedb.reducer(
   { blockId: t.u64() }, (ctx, { blockId }) => {
-  const block = ctx.db.page_block.id.find(blockId);
-  if (!block) {
-    throw new SenderError("Page block not found");
-  }
-  ctx.db.page_block.id.delete(blockId);
-});
+    const block = ctx.db.page_block.id.find(blockId);
+    if (!block) {
+      throw new SenderError("Page block not found");
+    }
+    ctx.db.page_block.id.delete(blockId);
+  });
 
 export const reorder_page_blocks = spacetimedb.reducer(
   {
@@ -842,15 +992,15 @@ export const send_dm = spacetimedb.reducer(
 
 export const mark_dm_read = spacetimedb.reducer(
   { messageId: t.u64() }, (ctx, { messageId }) => {
-  const dm = ctx.db.direct_message.id.find(messageId);
-  if (!dm) {
-    throw new SenderError("Message not found");
-  }
-  if (dm.toIdentity !== ctx.sender) {
-    throw new SenderError("Can only mark own messages as read");
-  }
-  ctx.db.direct_message.id.update({ ...dm, readStatus: true });
-});
+    const dm = ctx.db.direct_message.id.find(messageId);
+    if (!dm) {
+      throw new SenderError("Message not found");
+    }
+    if (dm.toIdentity !== ctx.sender) {
+      throw new SenderError("Can only mark own messages as read");
+    }
+    ctx.db.direct_message.id.update({ ...dm, readStatus: true });
+  });
 
 // ─── Monitoring Reducers ───
 
@@ -895,6 +1045,404 @@ export const record_health_check = spacetimedb.reducer(
   },
 );
 
+// ─── Image Studio Reducers ───
+
+export const image_create = spacetimedb.reducer(
+  {
+    id: t.string(),
+    name: t.string(),
+    description: t.option(t.string()),
+    originalUrl: t.string(),
+    originalR2Key: t.string(),
+    originalWidth: t.u32(),
+    originalHeight: t.u32(),
+    originalSizeBytes: t.u64(),
+    originalFormat: t.string(),
+    isPublic: t.bool(),
+    tags: t.array(t.string()),
+  },
+  (ctx, data) => {
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    ctx.db.image.insert({
+      ...data,
+      userIdentity: ctx.sender,
+      viewCount: BigInt(0),
+      shareToken: undefined,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+);
+
+export const image_update = spacetimedb.reducer(
+  {
+    id: t.string(),
+    name: t.option(t.string()),
+    description: t.option(t.string()),
+    tags: t.option(t.array(t.string())),
+    isPublic: t.option(t.bool()),
+    shareToken: t.option(t.string()),
+  },
+  (ctx, { id, ...data }) => {
+    const img = ctx.db.image.id.find(id);
+    if (!img) throw new SenderError("Image not found");
+    if (img.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.image.id.update({
+      ...img,
+      name: data.name ?? img.name,
+      description: data.description !== undefined ? data.description : img.description,
+      tags: data.tags ?? img.tags,
+      isPublic: data.isPublic ?? img.isPublic,
+      shareToken: data.shareToken !== undefined ? data.shareToken : img.shareToken,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const image_delete = spacetimedb.reducer({ id: t.string() }, (ctx, { id }) => {
+  const img = ctx.db.image.id.find(id);
+  if (!img) return; // Idempotent
+  if (img.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+  ctx.db.image.id.delete(id);
+});
+
+export const album_create = spacetimedb.reducer(
+  {
+    handle: t.string(),
+    name: t.string(),
+    description: t.option(t.string()),
+    privacy: t.string(),
+    defaultTier: t.string(),
+    shareToken: t.option(t.string()),
+    sortOrder: t.u32(),
+    pipelineId: t.option(t.string()),
+  },
+  (ctx, data) => {
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    ctx.db.album.insert({
+      id: BigInt(0),
+      ...data,
+      userIdentity: ctx.sender,
+      coverImageId: undefined,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+);
+
+export const album_update = spacetimedb.reducer(
+  {
+    handle: t.string(),
+    name: t.option(t.string()),
+    description: t.option(t.string()),
+    privacy: t.option(t.string()),
+    defaultTier: t.option(t.string()),
+    shareToken: t.option(t.string()),
+    sortOrder: t.option(t.u32()),
+    coverImageId: t.option(t.string()),
+  },
+  (ctx, { handle, ...data }) => {
+    const album = ctx.db.album.handle.find(handle);
+    if (!album) throw new SenderError("Album not found");
+    if (album.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.album.id.update({
+      ...album,
+      name: data.name ?? album.name,
+      description: data.description !== undefined ? data.description : album.description,
+      privacy: data.privacy ?? album.privacy,
+      defaultTier: data.defaultTier ?? album.defaultTier,
+      shareToken: data.shareToken !== undefined ? data.shareToken : album.shareToken,
+      sortOrder: data.sortOrder ?? album.sortOrder,
+      coverImageId: data.coverImageId !== undefined ? data.coverImageId : album.coverImageId,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const album_delete = spacetimedb.reducer({ handle: t.string() }, (ctx, { handle }) => {
+  const album = ctx.db.album.handle.find(handle);
+  if (!album) return;
+  if (album.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+  ctx.db.album.handle.delete(handle);
+  // Cleanup album images
+  for (const ai of ctx.db.album_image.albumId.filter(album.id)) {
+    ctx.db.album_image.id.delete(ai.id);
+  }
+});
+
+export const album_image_add = spacetimedb.reducer(
+  { albumId: t.u64(), imageId: t.string(), sortOrder: t.u32() },
+  (ctx, { albumId, imageId, sortOrder }) => {
+    const album = ctx.db.album.id.find(albumId);
+    if (!album) throw new SenderError("Album not found");
+    if (album.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.album_image.insert({
+      id: BigInt(0),
+      albumId,
+      imageId,
+      sortOrder,
+      addedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const album_image_remove = spacetimedb.reducer(
+  { albumId: t.u64(), imageIds: t.array(t.string()) },
+  (ctx, { albumId, imageIds }) => {
+    const album = ctx.db.album.id.find(albumId);
+    if (!album) throw new SenderError("Album not found");
+    if (album.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    const imageSet = new Set(imageIds);
+    for (const ai of ctx.db.album_image.albumId.filter(albumId)) {
+      if (imageSet.has(ai.imageId)) {
+        ctx.db.album_image.id.delete(ai.id);
+      }
+    }
+  },
+);
+
+export const enhancement_job_create = spacetimedb.reducer(
+  {
+    id: t.string(),
+    imageId: t.string(),
+    tier: t.string(),
+    creditsCost: t.u32(),
+    status: t.string(),
+    metadataJson: t.option(t.string()),
+  },
+  (ctx, data) => {
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    ctx.db.enhancement_job.insert({
+      ...data,
+      userIdentity: ctx.sender,
+      enhancedUrl: undefined,
+      enhancedR2Key: undefined,
+      enhancedWidth: undefined,
+      enhancedHeight: undefined,
+      enhancedSizeBytes: undefined,
+      errorMessage: undefined,
+      retryCount: 0,
+      processingStartedAt: undefined,
+      processingCompletedAt: undefined,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+);
+
+export const enhancement_job_update = spacetimedb.reducer(
+  {
+    id: t.string(),
+    status: t.option(t.string()),
+    enhancedUrl: t.option(t.string()),
+    enhancedR2Key: t.option(t.string()),
+    enhancedWidth: t.option(t.u32()),
+    enhancedHeight: t.option(t.u32()),
+    enhancedSizeBytes: t.option(t.u64()),
+    errorMessage: t.option(t.string()),
+    processingCompletedAt: t.option(t.u64()),
+  },
+  (ctx, { id, ...data }) => {
+    const job = ctx.db.enhancement_job.id.find(id);
+    if (!job) throw new SenderError("Job not found");
+    if (job.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.enhancement_job.id.update({
+      ...job,
+      status: data.status ?? job.status,
+      enhancedUrl: data.enhancedUrl !== undefined ? data.enhancedUrl : job.enhancedUrl,
+      enhancedR2Key: data.enhancedR2Key !== undefined ? data.enhancedR2Key : job.enhancedR2Key,
+      enhancedWidth: data.enhancedWidth !== undefined ? data.enhancedWidth : job.enhancedWidth,
+      enhancedHeight: data.enhancedHeight !== undefined ? data.enhancedHeight : job.enhancedHeight,
+      enhancedSizeBytes: data.enhancedSizeBytes !== undefined ? data.enhancedSizeBytes : job.enhancedSizeBytes,
+      errorMessage: data.errorMessage !== undefined ? data.errorMessage : job.errorMessage,
+      processingCompletedAt: data.processingCompletedAt !== undefined ? data.processingCompletedAt : job.processingCompletedAt,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const pipeline_create = spacetimedb.reducer(
+  {
+    id: t.string(),
+    name: t.string(),
+    description: t.option(t.string()),
+    visibility: t.string(),
+    tier: t.string(),
+    analysisConfigJson: t.option(t.string()),
+    autoCropConfigJson: t.option(t.string()),
+    promptConfigJson: t.option(t.string()),
+    generationConfigJson: t.option(t.string()),
+  },
+  (ctx, data) => {
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    ctx.db.pipeline.insert({
+      ...data,
+      userIdentity: ctx.sender,
+      shareToken: undefined,
+      usageCount: BigInt(0),
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+);
+
+export const pipeline_update = spacetimedb.reducer(
+  {
+    id: t.string(),
+    name: t.option(t.string()),
+    description: t.option(t.string()),
+    visibility: t.option(t.string()),
+    tier: t.option(t.string()),
+    analysisConfigJson: t.option(t.string()),
+    autoCropConfigJson: t.option(t.string()),
+    promptConfigJson: t.option(t.string()),
+    generationConfigJson: t.option(t.string()),
+    shareToken: t.option(t.string()),
+  },
+  (ctx, { id, ...data }) => {
+    const pipe = ctx.db.pipeline.id.find(id);
+    if (!pipe) throw new SenderError("Pipeline not found");
+    // Only allow update if it's public (no owner) or if owner is sender
+    if (pipe.userIdentity && pipe.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.pipeline.id.update({
+      ...pipe,
+      name: data.name ?? pipe.name,
+      description: data.description !== undefined ? data.description : pipe.description,
+      visibility: data.visibility ?? pipe.visibility,
+      tier: data.tier ?? pipe.tier,
+      analysisConfigJson: data.analysisConfigJson !== undefined ? data.analysisConfigJson : pipe.analysisConfigJson,
+      autoCropConfigJson: data.autoCropConfigJson !== undefined ? data.autoCropConfigJson : pipe.autoCropConfigJson,
+      promptConfigJson: data.promptConfigJson !== undefined ? data.promptConfigJson : pipe.promptConfigJson,
+      generationConfigJson: data.generationConfigJson !== undefined ? data.generationConfigJson : pipe.generationConfigJson,
+      shareToken: data.shareToken !== undefined ? data.shareToken : pipe.shareToken,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const pipeline_delete = spacetimedb.reducer({ id: t.string() }, (ctx, { id }) => {
+  const pipe = ctx.db.pipeline.id.find(id);
+  if (!pipe) return;
+  if (pipe.userIdentity && pipe.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+  ctx.db.pipeline.id.delete(id);
+});
+
+export const generation_job_create = spacetimedb.reducer(
+  {
+    id: t.string(),
+    jobType: t.string(),
+    tier: t.string(),
+    creditsCost: t.u32(),
+    status: t.string(),
+    prompt: t.string(),
+  },
+  (ctx, data) => {
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    ctx.db.generation_job.insert({
+      ...data,
+      userIdentity: ctx.sender,
+      inputImageUrl: undefined,
+      outputImageUrl: undefined,
+      outputWidth: undefined,
+      outputHeight: undefined,
+      outputSizeBytes: undefined,
+      errorMessage: undefined,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+);
+
+export const generation_job_update = spacetimedb.reducer(
+  {
+    id: t.string(),
+    status: t.option(t.string()),
+    outputImageUrl: t.option(t.string()),
+    outputWidth: t.option(t.u32()),
+    outputHeight: t.option(t.u32()),
+    outputSizeBytes: t.option(t.u64()),
+    errorMessage: t.option(t.string()),
+  },
+  (ctx, { id, ...data }) => {
+    const job = ctx.db.generation_job.id.find(id);
+    if (!job) throw new SenderError("Job not found");
+    if (job.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+
+    ctx.db.generation_job.id.update({
+      ...job,
+      status: data.status ?? job.status,
+      outputImageUrl: data.outputImageUrl !== undefined ? data.outputImageUrl : job.outputImageUrl,
+      outputWidth: data.outputWidth !== undefined ? data.outputWidth : job.outputWidth,
+      outputHeight: data.outputHeight !== undefined ? data.outputHeight : job.outputHeight,
+      outputSizeBytes: data.outputSizeBytes !== undefined ? data.outputSizeBytes : job.outputSizeBytes,
+      errorMessage: data.errorMessage !== undefined ? data.errorMessage : job.errorMessage,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const subject_create = spacetimedb.reducer(
+  { imageId: t.string(), label: t.string(), subjectType: t.string(), description: t.option(t.string()) },
+  (ctx, data) => {
+    ctx.db.subject.insert({
+      id: BigInt(0),
+      ...data,
+      userIdentity: ctx.sender,
+      createdAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
+export const subject_delete = spacetimedb.reducer({ id: t.u64() }, (ctx, { id }) => {
+  const sub = ctx.db.subject.id.find(id);
+  if (!sub) return;
+  if (sub.userIdentity !== ctx.sender) throw new SenderError("Unauthorized");
+  ctx.db.subject.id.delete(id);
+});
+
+export const credits_add = spacetimedb.reducer(
+  { userIdentity: t.identity(), amount: t.i64() },
+  (ctx, { userIdentity, amount }) => {
+    // Only owner can add credits (or some permission system, but we don't have one yet)
+    // For now, let's assume this is for local dev or admin use.
+    const creds = ctx.db.credits.userIdentity.find(userIdentity);
+    const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
+    if (creds) {
+      ctx.db.credits.userIdentity.update({
+        ...creds,
+        balance: creds.balance + amount,
+        updatedAt: now,
+      });
+    } else {
+      ctx.db.credits.insert({
+        userIdentity,
+        balance: amount,
+        updatedAt: now,
+      });
+    }
+  },
+);
+
+export const credits_consume = spacetimedb.reducer(
+  { amount: t.i64() },
+  (ctx, { amount }) => {
+    const creds = ctx.db.credits.userIdentity.find(ctx.sender);
+    if (!creds) throw new SenderError("No credits found for user");
+    if (creds.balance < amount) throw new SenderError("Insufficient balance");
+    ctx.db.credits.userIdentity.update({
+      ...creds,
+      balance: creds.balance - amount,
+      updatedAt: BigInt(ctx.timestamp.microsSinceUnixEpoch),
+    });
+  },
+);
+
 export default spacetimedb;
 
 
@@ -915,7 +1463,7 @@ export const update_code_session = spacetimedb.reducer(
     }
     const now = BigInt(ctx.timestamp.microsSinceUnixEpoch);
     const existing = ctx.db.code_session.codeSpace.find(codeSpace);
-    
+
     if (existing) {
       ctx.db.code_session.codeSpace.update({
         ...existing,

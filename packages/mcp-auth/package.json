@@ -16,19 +16,19 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.2.0",
-    "better-auth": "^1.1.20",
-    "drizzle-orm": "^0.40.0"
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "better-auth": "^1.5.1",
+    "drizzle-orm": "^0.45.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250224.0",
+    "@cloudflare/workers-types": "4.20260305.0",
     "@spike-land-ai/eslint-config": "*",
     "@spike-land-ai/tsconfig": "*",
-    "@vitest/coverage-v8": "^2.1.9",
-    "drizzle-kit": "^0.30.5",
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0",
-    "wrangler": "^3.111.0"
+    "@vitest/coverage-v8": "^4.0.18",
+    "drizzle-kit": "^0.31.9",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "wrangler": "^4.69.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

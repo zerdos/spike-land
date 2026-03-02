@@ -60,11 +60,11 @@
     "@changesets/cli": "2.29.8",
     "@spike-land-ai/eslint-config": "*",
     "@spike-land-ai/tsconfig": "*",
-    "@types/node": "25.3.2",
+    "@types/node": "25.3.3",
     "@vitest/coverage-v8": "4.0.18",
-    "eslint": "9.27.0",
+    "eslint": "10.0.2",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.32.1",
+    "typescript-eslint": "8.56.1",
     "vitest": "4.0.18"
   },
   "keywords": [
