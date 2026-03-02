@@ -1,7 +1,7 @@
 ---
-title: "The Database for Agents: How SpacetimeDB Replaced My Entire Backend in a Weekend"
+title: "The Database for Agents: How SpacetimeDB Replaced My Coordination Layer in a Weekend"
 slug: "the-database-for-agents"
-description: "Last week I solved tool composition. This week I found the database that makes agent coordination a primitive, not a feature. Here's why SpacetimeDB changes everything."
+description: "Last week I solved tool composition. This week I found the database that makes agent coordination a primitive, not a feature. Here's how SpacetimeDB collapsed my coordination stack."
 date: "2026-03-02"
 author: "Zoltan Erdos"
 category: "Developer Experience"
@@ -53,6 +53,19 @@ Client → Next.js API Routes → NextAuth Middleware → Prisma ORM → Postgre
 
 I had been migrating away from this stack for weeks. spike-app for the frontend. spike-edge for the edge API. mcp-auth for authentication. spike-land-mcp for the MCP registry. Twelve new packages. The migration was underway. But each new package still needed to talk to the others, and the coordination layer was still missing.
 
+The before and after:
+
+| Old Stack | SpacetimeDB Equivalent |
+|-----------|----------------------|
+| Prisma schema + migration | Table definition in module |
+| Express/Hono route handler | Reducer |
+| NextAuth session + JWT | `ctx.sender` (Identity) |
+| Redis pub/sub | Subscription queries |
+| REST API types (manual) | Auto-generated TypeScript bindings |
+| Database + App Server + Auth | One deployed module |
+
+One publish. One binary. One source of truth. The rest of this post is the how.
+
 ## What SpacetimeDB Actually Is
 
 SpacetimeDB is a database that runs your code inside it.
@@ -70,19 +83,6 @@ Here is the mental model:
 - **Subscriptions** are your real-time layer. A client subscribes to a SQL query. When the data matching that query changes, SpacetimeDB pushes the delta. Not the whole result set — the delta. Agents subscribe to `SELECT * FROM mcp_task WHERE status = 'pending'` and get notified the instant a new task appears. No polling. No WebSocket plumbing. No Redis pub/sub.
 
 - **Auto-generated bindings** are your types. Run `spacetime generate --lang=typescript` and you get a complete TypeScript client with typed table accessors and typed reducer callers. No Prisma client. No hand-written types. No drift. The bindings are generated from the module, and the module is the source of truth.
-
-The before and after:
-
-| Old Stack | SpacetimeDB Equivalent |
-|-----------|----------------------|
-| Prisma schema + migration | Table definition in module |
-| Express/Hono route handler | Reducer |
-| NextAuth session + JWT | `ctx.sender` (Identity) |
-| Redis pub/sub | Subscription queries |
-| REST API types (manual) | Auto-generated TypeScript bindings |
-| Database + App Server + Auth | One deployed module |
-
-One publish. One binary. One source of truth.
 
 ## Schema = API = Auth
 
@@ -138,24 +138,16 @@ The old spike.land: one monolithic Next.js application with ~520 routes and ~383
 
 The new stack: 27 packages. But the complexity went down, not up. Each package does one thing. The platform module replaced what used to be scattered across Prisma migrations, Express routes, Redis scripts, and NextAuth callbacks. Infrastructure packages replaced ceremony packages.
 
-## Why This Is a Game Changer
-
-Remember the five-year spike from [yesterday's article](/blog/the-architecture-of-scale-building-tools)? The compound interest keeps paying.
-
-Strict TypeScript everywhere meant the auto-generated SpacetimeDB bindings worked out of the box. No `any` types to accommodate. No loose interfaces to bridge. The bindings dropped in and the compiler verified every call site.
-
-Zod schemas for every MCP tool meant the validation patterns mapped directly to SpacetimeDB reducers. A Zod schema that validates tool input is structurally identical to a reducer's typed arguments. The mental model transfers perfectly.
-
-Dependency injection instead of direct imports meant swapping the Prisma client for SpacetimeDB bindings was a configuration change, not a rewrite. The tools did not care where the data came from. They cared about the interface. The interface stayed the same. The implementation changed.
-
-And the tool-builder from last week? Agents can now write tools that talk to SpacetimeDB directly. The middleware resolves entities from SpacetimeDB tables instead of Prisma queries. The handler calls reducers instead of REST endpoints. The types flow through the same phantom-branded chain. The pattern is identical. The backend is fundamentally different.
-
-What this unlocks:
+## What This Unlocks
 
 - Agents coordinate in real time. Subscriptions push state changes. No polling. No webhooks. No "check back in two seconds."
 - Any MCP server becomes part of the swarm with one transport change. Connect to SpacetimeDB, auto-register tools, start receiving tasks.
 - The database IS the coordination layer. No glue code between the datastore and the message bus and the task queue. They are the same system.
 - Schema changes propagate to all clients automatically. Regenerate bindings. Recompile. The compiler tells you what broke.
+
+## Trade-Offs
+
+SpacetimeDB is not free of costs. Rust compilation means module builds are meaningfully slower than `prisma generate` — expect minutes, not seconds, for a full rebuild. Debugging is different: there is no `console.log` inside reducers; `spacetime logs` is your interface, and it takes getting used to. The data model is vendor-specific — tables and reducers are SpacetimeDB constructs with no standard SQL escape hatch, so if you need to leave, you are rewriting, not migrating. And SpacetimeDB 2.0 is young. The ecosystem is small compared to PostgreSQL's decades of tooling, extensions, and community knowledge. I am betting on the trajectory, not the current state. That bet could be wrong.
 
 ## Closing
 

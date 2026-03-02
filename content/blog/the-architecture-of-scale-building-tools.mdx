@@ -1,7 +1,7 @@
 ---
-title: "The Architecture of Scale: How I Refactored 30+ AI Agents to Build Their Own Tools"
+title: "The Architecture of Scale: How I Made My MCP Tools Agent-Writable"
 slug: "the-architecture-of-scale-building-tools"
-description: "When Google released Nano Banana 2, my image tools became obsolete overnight. Here's how I rebuilt my MCP architecture so autonomous agents could write and deploy their own tools."
+description: "When Google released Nano Banana 2, my image tools became obsolete overnight. Here's how I rebuilt my MCP tool builder so agents could compose, test, and deploy tools without touching framework code."
 date: "2026-03-01"
 author: "Zoltan Erdos"
 category: "Developer Experience"
@@ -23,7 +23,7 @@ featured: true
 
 ## The Catalyst: Nano Banana 2
 
-I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, a mass of repositories, and an increasing conviction that the way we wire AI tools together is fundamentally wrong.
+I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, a massive amount of repositories, and an increasing conviction that the way we wire AI tools together is fundamentally wrong.
 
 When Google released Nano Banana 2, I found out how right I was — and how wrong my implementation still was.
 
@@ -255,7 +255,7 @@ An agent reading this file sees exactly what it needs to write a new tool: pick 
 
 ## The Cloudflare Workers Convergence
 
-Something I did not plan but should have predicted: the handler signature `(input, ctx)` is the same pattern Cloudflare Workers uses. And tRPC. And Hono. And most modern serverless frameworks.
+The handler signature `(input, ctx)` is the same pattern Cloudflare Workers, tRPC, Hono, and most modern serverless frameworks converged on independently — because it is the minimal viable abstraction for a request handler.
 
 ```
 Workers:  (request, env, ctx) => Response
@@ -263,11 +263,7 @@ tRPC:     (input, ctx)        => output
 Builder:  ({ input, ctx })    => CallToolResult
 ```
 
-No globals. No `this`. No ambient state. Pure functions that take input and context and return a result. The function does not know where it runs. It does not know who called it. It does not care.
-
-This is not a coincidence. When you strip away framework ceremony, every request handler in every system does the same thing: receive input, use context, produce output. The only question is how much ceremony the framework wraps around that core operation.
-
-My old `ToolBuilder` class added ceremony. The new builder removes it. What remains is the pattern that Cloudflare, Vercel, and the tRPC community independently converged on — because it is the minimal viable abstraction for a request handler.
+No globals. No `this`. No ambient state. Pure functions that take input and context and return a result. My old `ToolBuilder` class added ceremony. The new builder removes it.
 
 ## Why This Matters for Agents
 
@@ -313,12 +309,6 @@ When I publish a new version of `@spike-land-ai/shared`, a [dependency cascade s
 That infrastructure — the cascade, the submodules, the shared CI — is what five years of spiking on ESM and TypeScript pipelines bought me. Not a single eureka moment, but a compound of hundreds of small decisions that suddenly paid off when I needed to refactor everything in a weekend.
 
 ## The Five-Year Payoff
-
-Five years ago I started building what would become spike.land. I did not know it would become an MCP platform. I did not know Google would release a model that obsoleted half my tools on a Tuesday. I did not know I would need autonomous agents to write their own tools.
-
-What I did know was that [every abstraction I reached for felt wrong](/blog/context-engineering-your-zero-shot-prompt). Too heavy. Too coupled. Too many assumptions about how the code would be used. So I kept spiking. ESM bundling. TypeScript strict mode everywhere. Zod schemas for everything. Dependency injection instead of imports. Pure functions instead of classes.
-
-None of those decisions felt important at the time. They were just preferences. Habits. The kind of thing that makes your codebase slightly annoying to set up but slightly easier to change.
 
 Then Nano Banana 2 dropped and I needed to rewrite my tool framework in a weekend. And every one of those "slightly easier to change" decisions compounded. The Zod schemas meant I could extract input validation into middleware without touching handlers. The dependency injection meant I could swap image providers without touching tools. The pure functions meant I could test everything without spinning up infrastructure.
 
