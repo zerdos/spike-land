@@ -31,7 +31,13 @@ export {
   type GenerationJob,
   type Subject,
   type Credits
-} from "./module_bindings/index.js";
+  } from "./module_bindings/index.js";
+export {
+  typedTables,
+  typedReducers,
+  type TypedTables,
+  type TypedReducers,
+} from "./typed-tables.js";
 
 const server = new McpServer({
   name: "spacetimedb-platform",

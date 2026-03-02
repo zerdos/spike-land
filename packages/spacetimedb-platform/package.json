@@ -12,7 +12,9 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./src/module_bindings/index": "./src/module_bindings/index.ts"
+    "./src/module_bindings/index": "./src/module_bindings/index.ts",
+    "./src/module_bindings/index.js": "./src/module_bindings/index.ts",
+    "./dist/module_bindings/index.js": "./dist/module_bindings/index.js"
   },
   "files": [
     "dist",

@@ -14,7 +14,12 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
   app.use(
     "*",
     cors({
-      origin: ["https://spike.land", "https://staging.spike.land", "http://localhost:3000"],
+      origin: [
+        "https://spike.land",
+        "https://staging.spike.land",
+        "http://localhost:3000",
+        "https://6f02b08d.my-spacetime-app.pages.dev",
+      ],
       allowHeaders: ["Authorization", "Content-Type"],
       allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
     }),
