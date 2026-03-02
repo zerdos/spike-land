@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { Hono } from "hono";
 import type { Env } from "../env.js";
 import { health } from "../routes/health.js";
@@ -73,7 +73,6 @@ describe("r2 route", () => {
     app.route("/", r2);
 
     const env = createMockEnv();
-    const mockHeaders = new Headers();
     (env.R2.get as ReturnType<typeof vi.fn>).mockResolvedValue({
       body: new ReadableStream(),
       httpEtag: '"abc123"',

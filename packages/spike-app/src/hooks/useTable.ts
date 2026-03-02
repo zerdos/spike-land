@@ -1,6 +1,6 @@
 import { useSyncExternalStore, useCallback, useRef } from "react";
 
-type TableRow = Record<string, unknown>;
+type TableRow = object;
 
 interface TableStore<T extends TableRow> {
   rows: T[];

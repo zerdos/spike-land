@@ -25,7 +25,7 @@ function mapProfile(profile: Record<string, unknown>): AppUser {
 
 export function useAuth() {
   const auth = useOidcAuth();
-  const prevTokenRef = useRef<string | undefined>();
+  const prevTokenRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const token = auth.user?.id_token ?? auth.user?.access_token;

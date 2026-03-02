@@ -11,7 +11,7 @@ function isHashedAsset(path: string): boolean {
 }
 
 spa.get("/*", async (c) => {
-  let path = new URL(c.req.url).pathname;
+  const path = new URL(c.req.url).pathname;
 
   // Strip leading slash for R2 key
   let key = path.startsWith("/") ? path.slice(1) : path;
