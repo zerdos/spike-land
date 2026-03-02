@@ -52,3 +52,5 @@ export interface Migration {
   index?: IndexDef;
   tableDefinition?: TableDefinition;
 }
+
+export const MIGRATION_KINDS: MigrationKind[] = ["add_table", "add_column", "add_index"];
