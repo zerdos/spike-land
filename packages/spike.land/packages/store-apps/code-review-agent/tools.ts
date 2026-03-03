@@ -668,8 +668,11 @@ export const codeReviewAgentTools: StandaloneToolDefinition[] = [
         for (const fr of fileResults) {
           if (fr.skipped) {
             text += `- **${fr.path}** — could not read file (skipped)\n`;
-          } else if (fr.vulnCount === 0) text += `- **${fr.path}** — no vulnerabilities found\n`;
-          else text += `- **${fr.path}** — ${fr.vulnCount} vulnerability(s)\n`;
+          } else if (fr.vulnCount === 0) {
+            text += `- **${fr.path}** — no vulnerabilities found\n`;
+          } else {
+            text += `- **${fr.path}** — ${fr.vulnCount} vulnerability(s)\n`;
+          }
         }
         if (allVulns.length > 0) {
           text += "\n**Vulnerability Details:**\n\n";
