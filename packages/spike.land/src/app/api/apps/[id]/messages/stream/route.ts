@@ -1,6 +1,6 @@
 import logger from "@/lib/logger";
 
-export const maxDuration = 300;
+// Workers: wall-clock streaming is unlimited, CPU time is capped at 30s per request.
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
