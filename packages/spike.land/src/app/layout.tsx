@@ -181,7 +181,7 @@ export default async function RootLayout({
                   } else {
                     document.documentElement.classList.add('dark'); // default
                   }
-                } catch { /* Expected: localStorage throws in Safari Private Browsing */ }
+                } catch { document.documentElement.classList.add('dark'); }
               })();
             `,
           }}
@@ -202,12 +202,6 @@ export default async function RootLayout({
               <AnimationPerformanceProvider>
                 <SessionProvider>
                   <AuthDialogProvider>
-                    <a
-                      href="#main-content"
-                      className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-background focus:text-foreground"
-                    >
-                      Skip to content
-                    </a>
                     <SiteNav />
                     <main id="main-content">
                       {children}

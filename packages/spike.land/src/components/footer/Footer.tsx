@@ -45,9 +45,9 @@ export function Footer() {
     <FooterVisibility>
       <footer className="border-t border-border bg-background pb-safe">
         <div className="container mx-auto px-6 py-12 md:py-16">
-          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-6">
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             {/* Brand + Social + Newsletter */}
-            <div className="space-y-5 lg:col-span-2">
+            <div className="space-y-5 sm:col-span-2 md:col-span-1 lg:col-span-2">
               <div>
                 <p className="text-base font-semibold tracking-tight text-foreground font-sans">
                   Spike Land
@@ -63,19 +63,19 @@ export function Footer() {
                   href="https://github.com/spike-land-ai/spike.land"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   aria-label="GitHub"
                 >
-                  <Github className="w-4 h-4" />
+                  <Github className="w-5 h-5" />
                 </a>
                 <a
                   href="https://twitter.com/spikeland"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   aria-label="Twitter / X"
                 >
-                  <Twitter className="w-4 h-4" />
+                  <Twitter className="w-5 h-5" />
                 </a>
               </div>
 
@@ -96,14 +96,14 @@ export function Footer() {
                           href={link.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          className="block py-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {link.label}
                         </a>
                       ) : (
                         <Link
                           href={link.href}
-                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          className="block py-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {link.label}
                         </Link>

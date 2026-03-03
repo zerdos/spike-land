@@ -176,7 +176,7 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
     --accent: 187 100% 42%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 220 39% 11%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     --border: 220 13% 91%;
@@ -185,6 +185,25 @@
     --radius: 0.75rem;
 
     --pixel-cyan: 187 100% 42%;
+
+    /* Semantic colors for light theme */
+    --success: 150 80% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 90% 40%;
+    --warning-foreground: 0 0% 0%;
+
+    /* Chart colors for light theme */
+    --chart-1: 160 84% 30%;
+    --chart-2: 173 80% 32%;
+    --chart-3: 84 81% 35%;
+    --chart-4: 48 89% 40%;
+    --chart-5: 220 14% 20%;
+
+    /* Aurora colors for light theme */
+    --aurora-green: 262 83% 48%;
+    --aurora-teal: 187 100% 35%;
+    --aurora-lime: 322 81% 45%;
+    --aurora-yellow: 230 100% 57%;
 
     /* Modify glass values for light mode visibility */
     --glass-opacity-dark: 0.05;
@@ -206,7 +225,7 @@
     --secondary: 40 20% 90%;
     --secondary-foreground: 24 10% 10%;
     --muted: 40 20% 92%;
-    --muted-foreground: 24 10% 45%;
+    --muted-foreground: 24 10% 35%;
     --accent: 330 81% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
@@ -222,10 +241,56 @@
     --glass-opacity-dark-mobile: 0.1;
     --shadow-opacity-dark: 0.05;
     --grid-inactive: 40 20% 88%;
+
+    /* Semantic colors for soft light theme */
+    --success: 150 80% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 90% 40%;
+    --warning-foreground: 0 0% 0%;
+
+    /* Chart colors for soft light theme */
+    --chart-1: 160 84% 30%;
+    --chart-2: 173 80% 32%;
+    --chart-3: 84 81% 35%;
+    --chart-4: 48 89% 40%;
+    --chart-5: 24 10% 20%;
+
+    /* Aurora colors for soft light theme */
+    --aurora-green: 262 83% 48%;
+    --aurora-teal: 187 100% 35%;
+    --aurora-lime: 322 81% 45%;
+    --aurora-yellow: 230 100% 57%;
   }
 
   /* Dark Theme - inherits :root (no overrides needed) */
   .dark {}
+
+  /* Respect OS color scheme in incognito / no localStorage */
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark):not(.theme-deep-dark):not(.theme-soft-light):not(.light) {
+      --background: 0 0% 100%;
+      --foreground: 224 71% 4%;
+      --card: 0 0% 98%;
+      --card-foreground: 224 71% 4%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 224 71% 4%;
+      --primary: 263 70% 50%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 220 14% 96%;
+      --secondary-foreground: 220 39% 11%;
+      --muted: 220 14% 96%;
+      --muted-foreground: 220 9% 46%;
+      --accent: 187 100% 42%;
+      --accent-foreground: 220 39% 11%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 220 13% 91%;
+      --input: 220 13% 91%;
+      --ring: 263 70% 50%;
+      --glass-opacity-dark: 0.05;
+      --shadow-opacity-dark: 0.05;
+    }
+  }
 
   /* Deep Dark Theme - Absolute black for focus */
   .theme-deep-dark {
@@ -277,11 +342,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 
-    /* Support safe area insets for iPhone */
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-left: env(safe-area-inset-left, 0px);
+    /* Safe area insets handled by component-level utilities (pb-safe, pt-safe etc.) */
   }
 
   /* Body background - Clean stylish dark background (No grid) */

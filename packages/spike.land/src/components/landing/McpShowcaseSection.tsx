@@ -32,17 +32,17 @@ export function McpShowcaseSection() {
     <section className="py-20">
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
+          <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
             80+ MCP Tools
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Connect your AI agents to a curated registry of tools — from code editing
             and image generation to chess engines and app publishing. One endpoint,
             everything your agent needs.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
           {toolCategories.map((cat) => (
             <div
               key={cat.id}

@@ -44,46 +44,47 @@ const posts: BlogPost[] = [
 
 function BlogCard({ post }: { post: BlogPost }) {
   return (
-    <article className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4 h-full">
-      <div className="flex items-start justify-between gap-3">
-        {post.category && (
-          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-            {post.category}
-          </span>
-        )}
-      </div>
-
-      <div className="flex-1 flex flex-col gap-2">
-        <h3 className="font-heading text-lg font-semibold text-foreground leading-snug">
-          {post.title}
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-          {post.description}
-        </p>
-      </div>
-
-      <div className="flex items-center justify-between pt-2 border-t border-border">
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5" />
-            {post.date}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" />
-            {post.readTime}
-          </span>
+    <Link href={post.href} className="block h-full group">
+      <article className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4 h-full group-hover:bg-accent/50 transition-colors">
+        <div className="flex items-start justify-between gap-3">
+          {post.category && (
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+              {post.category}
+            </span>
+          )}
         </div>
 
-        <Link
-          href={post.href}
-          className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:text-primary transition-colors"
-          aria-label={`Read more about ${post.title}`}
-        >
-          Read More
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
-    </article>
+        <div className="flex-1 flex flex-col gap-2">
+          <h3 className="font-heading text-lg font-semibold text-foreground leading-snug">
+            {post.title}
+          </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            {post.description}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              {post.date}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              {post.readTime}
+            </span>
+          </div>
+
+          <span
+            className="inline-flex items-center gap-1 min-h-[44px] py-3 text-sm font-medium text-foreground group-hover:text-primary transition-colors"
+            aria-hidden="true"
+          >
+            Read More
+            <ArrowRight className="w-4 h-4" />
+          </span>
+        </div>
+      </article>
+    </Link>
   );
 }
 
@@ -108,7 +109,7 @@ export function BlogPreviewSection() {
               <p className="text-muted-foreground">No blog posts yet. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
                 <BlogCard key={post.href} post={post} />
               ))}
@@ -118,7 +119,7 @@ export function BlogPreviewSection() {
           <div className="mt-10 flex justify-center">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 min-h-[44px] py-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               View All Posts
               <ArrowRight className="w-4 h-4" />

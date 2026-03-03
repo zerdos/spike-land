@@ -4,6 +4,18 @@ import baseConfig from "../../vitest.base";
 export default mergeConfig(
   baseConfig,
   defineConfig({
+    plugins: [
+      {
+        name: "wasm-stub",
+        enforce: "pre",
+        load(id) {
+          if (id.endsWith(".wasm")) {
+            return 'export default "mock-wasm-url";';
+          }
+          return undefined;
+        },
+      },
+    ],
     test: {
       name: "js.spike.land",
       include: ["../../.tests/transpile/**/*.{test,spec}.ts"],

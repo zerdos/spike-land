@@ -99,7 +99,7 @@ export function SiteChat() {
       {!isOpen ? (
         <motion.div
           layoutId="chat-window"
-          className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-1"
+          className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom,0px))] right-6 z-50 flex flex-col items-center gap-1"
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
         >
           <motion.button
@@ -187,7 +187,7 @@ export function SiteChat() {
                   aria-label="Search"
                 >
                   <Search className="h-5 w-5" />
-                  <span className="absolute -bottom-10 right-0 rounded bg-zinc-800 px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap z-50 pointer-events-none shadow-xl border border-white/5">
+                  <span className="absolute -bottom-10 right-0 rounded bg-zinc-800 px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap z-50 pointer-events-none shadow-xl border border-white/5 hidden sm:block">
                     Cmd + K
                   </span>
                 </button>
@@ -242,7 +242,7 @@ export function SiteChat() {
             )}
 
             {/* Input Section */}
-            <div className="border-t border-white/10 bg-zinc-900/80 p-4 pb-safe-offset-4 backdrop-blur-md sm:bg-zinc-900/50 sm:p-3 sm:pb-3">
+            <div className="border-t border-white/10 bg-zinc-900/80 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:bg-zinc-900/50 sm:p-3 sm:pb-3">
               <div className="flex items-end gap-2 rounded-[24px] border border-white/10 bg-black/40 p-2 focus-within:border-amber-500/50 focus-within:ring-2 focus-within:ring-amber-500/20 transition-all shadow-2xl">
                 <div className="flex shrink-0 gap-1 pb-0.5 pl-1">
                   <input
@@ -433,7 +433,7 @@ const AgentMessageBubble = memo(function AgentMessageBubble({
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-[90%] space-y-2 ${isUser ? "" : ""}`}>
+      <div className={`max-w-[90%] space-y-2 break-words ${isUser ? "" : ""}`}>
         {renderBlocks.map((block, idx) => {
           if (block.type === "text") {
             if (!block.content) return null;

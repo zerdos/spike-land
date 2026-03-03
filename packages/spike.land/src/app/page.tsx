@@ -44,27 +44,27 @@ export default async function Home() {
         <LandingHero />
       </section>
 
-      <section aria-label="Personalized welcome" className="py-4">
+      <section aria-label="Personalized welcome">
         <PersonalizedWelcome />
       </section>
 
-      <section aria-label="Platform pillars" className="py-16">
+      <section aria-label="Platform pillars">
         <ThreePillarsSection />
       </section>
 
-      <section aria-label="App showcase" className="py-16">
+      <section aria-label="App showcase">
         <AppShowcaseSection apps={showcaseApps} />
       </section>
 
-      <section aria-label="MCP tools" className="py-16">
+      <section aria-label="MCP tools">
         <McpShowcaseSection />
       </section>
 
-      <section aria-label="Blog" className="py-16">
+      <section aria-label="Blog">
         <BlogPreviewSection />
       </section>
 
-      <section aria-label="Get started" className="py-20">
+      <section aria-label="Get started">
         <CreateCTASection />
       </section>
 

@@ -73,7 +73,7 @@ export function CookieConsent() {
       className={cn(
         "fixed bottom-0 left-0 right-0 z-40",
         "bg-background/70 backdrop-blur-xl border-t border-white/10",
-        "p-3 md:p-4",
+        "p-3 md:p-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]",
         "animate-in slide-in-from-bottom-4 duration-500 ease-out",
       )}
     >
@@ -106,12 +106,12 @@ export function CookieConsent() {
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <Button variant="ghost" size="sm" className="text-[10px] h-8" onClick={handleDecline}>
+            <Button variant="ghost" size="sm" className="text-xs h-10" onClick={handleDecline}>
               Decline
             </Button>
             <Button
               size="sm"
-              className="text-[10px] h-8 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 hover:opacity-90 transition-opacity"
+              className="text-xs h-10 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 hover:opacity-90 transition-opacity"
               onClick={handleAccept}
             >
               Accept

@@ -157,7 +157,7 @@ export default {
         },
       },
       textColor: {
-        primary: "hsl(var(--primary-text))",
+        primary: "hsl(var(--primary))",
         accent: "hsl(var(--accent))",
       },
     },

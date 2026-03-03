@@ -55,7 +55,7 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {apps.length === 0 ? (
             <EmptyState />
           ) : (
@@ -66,8 +66,8 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
         {apps.length > 0 && (
           <div className="mt-8">
             <Link
-              href="/apps/store"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+              href="/store"
+              className="inline-flex items-center gap-1.5 min-h-[44px] py-3 text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
               View All Apps
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />

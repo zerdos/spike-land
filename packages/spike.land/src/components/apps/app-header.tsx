@@ -2,16 +2,18 @@
 
 import { STORE_APPS } from "@/app/store/data/store-apps";
 import { Button } from "@/components/ui/button";
-import { getStoreIcon } from "@/app/store/components/store-icon-map";
-import { ArrowLeft, Info } from "lucide-react";
+import { icons, ArrowLeft, Info, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+function getStoreIcon(name: string): LucideIcon {
+  return (icons as Record<string, LucideIcon>)[name] ?? icons.Box;
+}
+
 export function AppHeader() {
   const pathname = usePathname();
 
-  // Find the current app based on the URL
   const currentApp = STORE_APPS.find(
     (app) => app.appUrl && pathname.startsWith(app.appUrl) && app.appUrl !== "/apps",
   );
@@ -23,7 +25,7 @@ export function AppHeader() {
   const Icon = getStoreIcon(currentApp.icon);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/60">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/60 pt-[env(safe-area-inset-top)]">
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
           <Button
@@ -32,7 +34,7 @@ export function AppHeader() {
             asChild
             className="gap-2 text-zinc-400 hover:text-white"
           >
-            <Link href="/store">
+            <Link href="/store" aria-label="Back to Store">
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline-block">Store</span>
             </Link>
@@ -48,12 +50,12 @@ export function AppHeader() {
               <div className="flex items-center gap-2">
                 <h1 className="text-sm font-semibold leading-none text-white">{currentApp.name}</h1>
                 {currentApp.isCodespaceNative && (
-                  <span className="text-[8px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-black uppercase tracking-widest border border-emerald-500/20">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-black uppercase tracking-widest border border-emerald-500/20">
                     AI Native
                   </span>
                 )}
               </div>
-              <span className="text-xs text-zinc-400 hidden sm:inline-block line-clamp-1 max-w-[200px] mt-0.5">
+              <span className="text-xs text-zinc-400 line-clamp-1 max-w-[160px] sm:max-w-[200px] md:max-w-xs mt-0.5 truncate">
                 {currentApp.tagline}
               </span>
             </div>
@@ -61,13 +63,13 @@ export function AppHeader() {
 
           <div className="flex items-center gap-2">
             <TooltipProvider>
-              <Tooltip>
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     asChild
-                    className="h-8 w-8 text-zinc-400 hover:text-white"
+                    className="h-10 w-10 text-zinc-400 hover:text-white"
                   >
                     <Link href={`/store/${currentApp.slug}`}>
                       <Info className="h-4 w-4" />

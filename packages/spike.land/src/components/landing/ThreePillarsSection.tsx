@@ -95,8 +95,8 @@ export function ThreePillarsSection() {
               href={pillar.href}
               className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
             >
-              <article className="h-full rounded-xl border border-border bg-card p-6 transition-all duration-200 group-hover:-translate-y-1 group-hover:border-foreground/20">
-                <div className="mb-5 inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted text-foreground">
+              <article className="h-full rounded-xl border border-border bg-card p-6 transition-all duration-200 motion-safe:group-hover:-translate-y-1 group-hover:border-foreground/20">
+                <div className="mb-5 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-muted text-foreground">
                   {pillar.icon}
                 </div>
                 <h3 className="font-heading text-lg font-semibold text-foreground mb-2 tracking-tight">

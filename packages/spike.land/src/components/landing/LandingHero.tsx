@@ -13,7 +13,7 @@ export function LandingHero() {
         </div>
 
         {/* Headline */}
-        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.05] mb-6">
+        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.15] mb-6">
           AI-Powered Development Platform
         </h1>
 
@@ -25,10 +25,10 @@ export function LandingHero() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Button asChild size="lg" className="w-full sm:w-auto px-8">
+          <Button asChild size="lg" className="w-full sm:w-auto px-8 min-h-[48px]">
             <Link href="/create">Get Started</Link>
           </Button>
-          <Button asChild variant="ghost" size="lg" className="w-full sm:w-auto px-8 text-muted-foreground hover:text-foreground">
+          <Button asChild variant="ghost" size="lg" className="w-full sm:w-auto px-8 min-h-[48px] text-muted-foreground hover:text-foreground">
             <Link href="/mcp">View Tools</Link>
           </Button>
         </div>

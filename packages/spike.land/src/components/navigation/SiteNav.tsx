@@ -46,6 +46,16 @@ export function SiteNav() {
     return () => document.removeEventListener("keydown", onKey);
   }, [mobileOpen]);
 
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   const isAuthenticated = status === "authenticated" && session !== null;
   const isLoading = status === "loading";
 
@@ -57,7 +67,7 @@ export function SiteNav() {
       {/* Skip-to-content for keyboard / screen reader users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-2 focus:outline-primary"
       >
         Skip to content
       </a>
@@ -127,7 +137,7 @@ export function SiteNav() {
                 ) : (
                   <button
                     onClick={() => openAuthDialog()}
-                    className="hidden sm:inline-flex px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                    className="hidden md:inline-flex px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                     aria-label="Sign in to spike.land"
                   >
                     Sign In
@@ -144,7 +154,7 @@ export function SiteNav() {
 
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden inline-flex items-center justify-center h-8 w-8 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary touch-manipulation"
               onClick={() => setMobileOpen((prev) => !prev)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -159,6 +169,16 @@ export function SiteNav() {
           </div>
         </nav>
       </header>
+
+      {/* Mobile backdrop */}
+      <div
+        className={cn(
+          "fixed inset-0 z-[39] bg-black/40 md:hidden transition-opacity duration-200",
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+        )}
+        aria-hidden="true"
+        onClick={() => setMobileOpen(false)}
+      />
 
       {/* Mobile slide-in drawer */}
       <div

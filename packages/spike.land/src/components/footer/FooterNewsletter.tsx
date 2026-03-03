@@ -48,13 +48,13 @@ export function FooterNewsletter() {
       </p>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex items-start gap-2"
+        className="flex flex-col sm:flex-row items-start gap-2"
       >
         <div className="flex-1 space-y-1">
           <Input
             placeholder="your@email.com"
             {...form.register("email")}
-            className="h-8 text-sm bg-transparent border-border placeholder:text-muted-foreground/50"
+            className="h-10 text-sm bg-transparent border-border placeholder:text-muted-foreground/50"
           />
           {form.formState.errors.email && (
             <p className="text-xs text-destructive">
@@ -67,7 +67,7 @@ export function FooterNewsletter() {
           size="sm"
           variant="outline"
           disabled={form.formState.isSubmitting}
-          className="h-8 shrink-0"
+          className="h-10 shrink-0"
         >
           {form.formState.isSubmitting ? "..." : "Join"}
         </Button>

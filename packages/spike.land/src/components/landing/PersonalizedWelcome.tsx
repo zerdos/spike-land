@@ -92,7 +92,7 @@ export function PersonalizedWelcome() {
           <div className="flex items-center gap-3">
             <Link
               href={persona.cta.href}
-              className="group/cta inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-6 py-2.5 text-sm font-semibold text-cyan-400 transition-all duration-300 hover:bg-cyan-500/20 hover:text-cyan-300 border border-cyan-500/30 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105"
+              className="group/cta inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-6 py-3 min-h-[44px] text-sm font-semibold text-cyan-400 transition-all duration-300 hover:bg-cyan-500/20 hover:text-cyan-300 border border-cyan-500/30 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105 w-full sm:w-auto justify-center"
             >
               {persona.cta.label}
               <ArrowRight className="h-4 w-4 transition-transform group-hover/cta:translate-x-1" />
@@ -110,7 +110,7 @@ export function PersonalizedWelcome() {
               <Link
                 key={app.id}
                 href={app.appUrl ?? `/store/${app.slug}`}
-                className="group/card flex flex-col gap-1.5 rounded-2xl border border-white/[0.04] bg-white/[0.02] p-5 transition-all duration-300 hover:border-cyan-500/30 hover:bg-white/[0.05] hover:-translate-y-1 hover:shadow-[0_10px_20px_-10px_rgba(6,182,212,0.3)] backdrop-blur-sm relative overflow-hidden"
+                className="group/card flex flex-col gap-1.5 rounded-2xl border border-white/[0.04] bg-white/[0.02] p-5 min-h-[80px] transition-all duration-300 hover:border-cyan-500/30 hover:bg-white/[0.05] motion-safe:hover:-translate-y-1 hover:shadow-[0_10px_20px_-10px_rgba(6,182,212,0.3)] backdrop-blur-sm relative overflow-hidden"
               >
                 <span className="text-2xl mb-1">{getAppEmoji(app.slug)}</span>
                 <div className="flex items-center justify-between">
