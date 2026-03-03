@@ -517,156 +517,194 @@ export const mdxComponents: MDXComponents = {
   YouTubeEmbed,
   PDFViewer,
   LiveDemo,
-  SplitScreenDemo: dynamic(() => import("./interactive").then((mod) => mod.SplitScreenDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  AttentionSpotlightDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.AttentionSpotlightDemo),
-    {
+  // -------------------------------------------------------------------------
+  // Interactive blog components — all wrapped with error boundaries so a crash
+  // in one animation does not break the rest of the post.
+  // All use ssr:false because they rely on browser APIs (IntersectionObserver,
+  // requestAnimationFrame, Framer Motion) that are unavailable during SSR.
+  // -------------------------------------------------------------------------
+  SplitScreenDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.SplitScreenDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "SplitScreenDemo",
   ),
-  FiveLayerStackDemo: dynamic(() => import("./interactive").then((mod) => mod.FiveLayerStackDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  DarwinianTreeDemo: dynamic(() => import("./interactive").then((mod) => mod.DarwinianTreeDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  RecursiveZoomDemo: dynamic(() => import("./interactive").then((mod) => mod.RecursiveZoomDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  ModelCascadeDemo: dynamic(() => import("./interactive").then((mod) => mod.ModelCascadeDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  BayesianConfidenceDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.BayesianConfidenceDemo),
-    {
+  AttentionSpotlightDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.AttentionSpotlightDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "AttentionSpotlightDemo",
   ),
-  MCPTerminalDemo: dynamic(() => import("./interactive").then((mod) => mod.MCPTerminalDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  ScrollStoryCard: dynamic(() => import("./interactive").then((mod) => mod.ScrollStoryCard), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  MCPFlowDiagram: dynamic(() => import("./interactive").then((mod) => mod.MCPFlowDiagram), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  PerspectiveCarousel: dynamic(
-    () => import("./interactive").then((mod) => mod.PerspectiveCarousel),
-    {
+  FiveLayerStackDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.FiveLayerStackDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "FiveLayerStackDemo",
   ),
-  SpikeCliDemo: dynamic(() => import("./interactive").then((mod) => mod.SpikeCliDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  PyramidReshapeDemo: dynamic(() => import("./interactive").then((mod) => mod.PyramidReshapeDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  TestCodeNameVenn: dynamic(() => import("./interactive").then((mod) => mod.TestCodeNameVenn), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  HourglassModelDemo: dynamic(() => import("./interactive").then((mod) => mod.HourglassModelDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  ParadigmGuiltTimeline: dynamic(
-    () => import("./interactive").then((mod) => mod.ParadigmGuiltTimeline),
-    {
+  DarwinianTreeDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.DarwinianTreeDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "DarwinianTreeDemo",
   ),
-  EffortInversionDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.EffortInversionDemo),
-    {
+  RecursiveZoomDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.RecursiveZoomDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "RecursiveZoomDemo",
   ),
-  ContextLayerBuilderDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.ContextLayerBuilderDemo),
-    {
+  ModelCascadeDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.ModelCascadeDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "ModelCascadeDemo",
   ),
-  StackCollapseDemo: dynamic(() => import("./interactive").then((mod) => mod.StackCollapseDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  AgentCoordinationDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.AgentCoordinationDemo),
-    {
+  BayesianConfidenceDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.BayesianConfidenceDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "BayesianConfidenceDemo",
   ),
-  ConvergenceDemo: dynamic(() => import("./interactive").then((mod) => mod.ConvergenceDemo), {
-    ssr: false,
-    loading: () => <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />,
-  }),
-  DependencyCascadeDemo: dynamic(
-    () => import("./interactive").then((mod) => mod.DependencyCascadeDemo),
-    {
+  MCPTerminalDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.MCPTerminalDemo), {
       ssr: false,
-      loading: () => (
-        <div className="w-full aspect-video bg-muted animate-pulse rounded-xl my-16" />
-      ),
-    },
+      loading: InteractiveSkeleton,
+    }),
+    "MCPTerminalDemo",
   ),
-  BlogPoll: dynamic(() => import("./BlogPoll").then((mod) => mod.BlogPoll), {
-    ssr: false,
-    loading: () => <div className="w-full h-32 bg-muted animate-pulse rounded-xl my-8" />,
-  }),
-  PollAnalyticsDashboard: dynamic(
-    () => import("./PollAnalyticsDashboard").then((mod) => mod.PollAnalyticsDashboard),
-    {
+  ScrollStoryCard: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.ScrollStoryCard), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "ScrollStoryCard",
+  ),
+  MCPFlowDiagram: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.MCPFlowDiagram), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "MCPFlowDiagram",
+  ),
+  PerspectiveCarousel: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.PerspectiveCarousel), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "PerspectiveCarousel",
+  ),
+  SpikeCliDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.SpikeCliDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "SpikeCliDemo",
+  ),
+  PyramidReshapeDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.PyramidReshapeDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "PyramidReshapeDemo",
+  ),
+  TestCodeNameVenn: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.TestCodeNameVenn), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "TestCodeNameVenn",
+  ),
+  HourglassModelDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.HourglassModelDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "HourglassModelDemo",
+  ),
+  ParadigmGuiltTimeline: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.ParadigmGuiltTimeline), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "ParadigmGuiltTimeline",
+  ),
+  EffortInversionDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.EffortInversionDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "EffortInversionDemo",
+  ),
+  ContextLayerBuilderDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.ContextLayerBuilderDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "ContextLayerBuilderDemo",
+  ),
+  StackCollapseDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.StackCollapseDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "StackCollapseDemo",
+  ),
+  AgentCoordinationDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.AgentCoordinationDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "AgentCoordinationDemo",
+  ),
+  ConvergenceDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.ConvergenceDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "ConvergenceDemo",
+  ),
+  DependencyCascadeDemo: withInteractiveBoundary(
+    dynamic(() => import("./interactive").then((mod) => mod.DependencyCascadeDemo), {
+      ssr: false,
+      loading: InteractiveSkeleton,
+    }),
+    "DependencyCascadeDemo",
+  ),
+  BlogPoll: withInteractiveBoundary(
+    dynamic(() => import("./BlogPoll").then((mod) => mod.BlogPoll), {
+      ssr: false,
+      loading: () => <div className="w-full h-32 bg-muted animate-pulse rounded-xl my-8" />,
+    }),
+    "BlogPoll",
+  ),
+  PollAnalyticsDashboard: withInteractiveBoundary(
+    dynamic(() => import("./PollAnalyticsDashboard").then((mod) => mod.PollAnalyticsDashboard), {
       ssr: false,
       loading: () => <div className="w-full h-64 bg-muted animate-pulse rounded-xl my-8" />,
-    },
+    }),
+    "PollAnalyticsDashboard",
   ),
-  PersonaLandingPreview: dynamic(
-    () => import("./PersonaLandingPreview").then((mod) => mod.PersonaLandingPreview),
-    {
+  PersonaLandingPreview: withInteractiveBoundary(
+    dynamic(() => import("./PersonaLandingPreview").then((mod) => mod.PersonaLandingPreview), {
       ssr: false,
       loading: () => <div className="w-full h-48 bg-muted animate-pulse rounded-xl my-8" />,
-    },
+    }),
+    "PersonaLandingPreview",
   ),
-  PersonaSwitcher: dynamic(() => import("./PersonaSwitcher").then((mod) => mod.PersonaSwitcher), {
-    ssr: false,
-    loading: () => <div className="w-full h-24 bg-muted animate-pulse rounded-xl my-8" />,
-  }),
+  PersonaSwitcher: withInteractiveBoundary(
+    dynamic(() => import("./PersonaSwitcher").then((mod) => mod.PersonaSwitcher), {
+      ssr: false,
+      loading: () => <div className="w-full h-24 bg-muted animate-pulse rounded-xl my-8" />,
+    }),
+    "PersonaSwitcher",
+  ),
 };
 
 /**

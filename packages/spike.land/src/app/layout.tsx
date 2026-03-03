@@ -7,11 +7,9 @@ import "./globals.css";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { AuthDialogProvider } from "@/components/auth/AuthDialogProvider";
 import { AuthDialogAutoOpen } from "@/components/auth/AuthDialogAutoOpen";
-import { CookieConsent } from "@/components/CookieConsent";
 import { Footer } from "@/components/footer/Footer";
 import { SiteNav } from "@/components/navigation/SiteNav";
 import { SiteChatLazy as SiteChat } from "@/components/chat/SiteChatLazy";
-import { CommandPalette } from "@/components/docs/CommandPalette";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AnimationPerformanceProvider } from "@/components/providers/AnimationPerformanceProvider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -20,6 +18,19 @@ import { SessionTracker } from "@/components/tracking/SessionTracker";
 import { Toaster } from "@/components/ui/sonner";
 import { getNonce } from "@/lib/security/csp-nonce-server";
 import { ViewTransitions } from "next-view-transitions";
+
+// CommandPalette only activates on Cmd+K — no need to hydrate it eagerly
+const CommandPalette = dynamic(
+  () =>
+    import("@/components/docs/CommandPalette").then((m) => ({ default: m.CommandPalette })),
+  { ssr: false },
+);
+
+// CookieConsent renders null until it checks localStorage — skip SSR
+const CookieConsent = dynamic(
+  () => import("@/components/CookieConsent").then((m) => ({ default: m.CookieConsent })),
+  { ssr: false },
+);
 
 // Browser-only error capture utilities — skip SSR entirely to reduce server bundle
 const ConsoleCapture = dynamic(

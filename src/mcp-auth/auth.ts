@@ -37,6 +37,7 @@ export function createAuth(env: Env) {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.APP_URL || "https://auth-mcp.spike.land",
     trustedOrigins: [
+      "https://spike.land",
       "https://image-studio-mcp.spike.land",
       "https://auth-mcp.spike.land",
       "http://localhost:5173",

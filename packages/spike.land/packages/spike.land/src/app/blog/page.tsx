@@ -91,41 +91,34 @@ export default async function BlogPage() {
 
   return (
     <div className="relative">
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl pt-24 pb-24">
+      <div className="container mx-auto px-4 md:px-6 max-w-6xl pt-24 pb-24">
         {/* Header */}
-        <header className="flex flex-col items-center justify-center text-center mb-20 space-y-6 pt-10">
-          {/* Animated eyebrow badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-md shadow-glow-primary text-primary transition-all duration-300 hover:bg-primary/15 hover:border-primary/50">
-            <span className="relative flex h-2 w-2" aria-hidden="true">
+        <header className="flex flex-col items-center justify-center text-center mb-16 space-y-5 pt-8">
+          {/* Eyebrow badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/25 bg-primary/8 text-primary">
+            <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
             </span>
-            <span className="text-sm font-bold tracking-widest uppercase">
+            <span className="text-xs font-bold tracking-widest uppercase">
               Engineering & Design
             </span>
           </div>
 
-          {/* Main title with layered gradient */}
-          <h1 className="font-heading text-6xl md:text-8xl font-extrabold tracking-tighter text-foreground drop-shadow-sm leading-none pb-2">
+          {/* Main title — Montserrat via font-heading */}
+          <h1 className="font-heading text-5xl md:text-7xl font-extrabold tracking-tight text-foreground leading-none">
             Blog
           </h1>
 
-          {/* Decorative divider */}
-          <div className="flex items-center gap-4 w-full max-w-xs" aria-hidden="true">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/40 to-primary/20" />
-            <div className="h-1.5 w-1.5 rounded-full bg-primary/60" />
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-accent/40 to-accent/20" />
-          </div>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Deep dives, tutorials, and updates from the team at{" "}
             <span className="text-foreground font-semibold">Spike Land</span>.
           </p>
 
           {personaName && (
-            <div className="mt-6 px-5 py-2.5 glass-1 rounded-full border border-primary/20 shadow-glow-primary">
-              <p className="text-sm font-medium text-muted-foreground">
-                Personalized collection for{" "}
+            <div className="px-4 py-2 glass-1 rounded-full border border-primary/20">
+              <p className="text-sm text-muted-foreground">
+                Personalized for{" "}
                 <span className="font-bold text-primary">{personaName}</span>
               </p>
             </div>
