@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "vibe-dev",
-      include: ["src/**/*.{test,spec}.{ts,tsx}"],
+      include: ["../../.tests/vibe-dev/**/*.test.ts"],
       coverage: {
         exclude: ["src/**/*.test.ts", "src/cli.ts"],
       },

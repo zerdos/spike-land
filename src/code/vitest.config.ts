@@ -8,8 +8,8 @@ export default mergeConfig(
     test: {
       name: "src-code",
       environment: "jsdom",
-      setupFiles: ["./setupTests.ts"],
-      include: ["**/*.{test,spec}.{ts,tsx}"],
+      setupFiles: ["../../.tests/code/setupTests.ts"],
+      include: ["../../.tests/code/**/*.{test,spec}.{ts,tsx}"],
       exclude: ["node_modules", "dist", ".next"],
       alias: {
         "@": path.resolve(__dirname, "./@"),

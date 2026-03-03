@@ -5,6 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
+    include: ["../../.tests/qa-studio/**/*.test.ts"],
       name: "qa-studio",
       pool: "forks",
       fileParallelism: true,

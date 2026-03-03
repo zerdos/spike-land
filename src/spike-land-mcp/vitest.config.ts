@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "spike-land-mcp",
-      include: ["**/*.test.ts"],
+      include: ["../../.tests/spike-land-mcp/**/*.test.ts"],
       coverage: {
         // Include only infra modules; tool definitions are data-only registrations
         // that require integration tests against the real MCP transport

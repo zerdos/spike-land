@@ -27,8 +27,8 @@ export default mergeConfig(
       reporters: process.env.COVERAGE
         ? ["../../vitest-minimal-reporter.ts"]
         : ["hanging-process", "../../vitest-minimal-reporter.ts"],
-      include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-      setupFiles: ["./vitest.setup.ts"],
+      include: ["../../.tests/spike-land-backend/**/*.{test,spec}.ts"],
+      setupFiles: ["../../.tests/spike-land-backend/vitest.setup.ts"],
       coverage: {
         provider: "istanbul",
         reporter: ["text-summary"],

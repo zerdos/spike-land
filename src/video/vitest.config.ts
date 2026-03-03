@@ -10,7 +10,7 @@ export default mergeConfig(
       pool: "forks",
       fileParallelism: true,
       silent: true,
-      include: ["**/*.test.ts", "**/*.test.tsx"],
+      include: ["../../.tests/video/**/*.{test,spec}.{ts,tsx}"],
       coverage: {
         include: ["**/*.ts", "**/*.tsx"],
         exclude: ["**/*.test.ts", "**/*.test.tsx", "__test-utils__/**", "index.ts"],

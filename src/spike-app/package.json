@@ -15,6 +15,7 @@
     "deploy:force": "FORCE_DEPLOY=1 bash deploy.sh"
   },
   "dependencies": {
+    "@spike-land-ai/block-website": "workspace:*",
     "@tanstack/react-router": "^1.163.3",
     "better-auth": "^1.5.2",
     "react": "^19.2.4",
@@ -33,6 +34,7 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "^4.69.0"
   }
 }

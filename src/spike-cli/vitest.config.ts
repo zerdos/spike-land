@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "spike-cli",
-      include: ["__tests__/**/*.{test,spec}.ts", "src/**/*.{test,spec}.ts"],
+      include: ["../../.tests/spike-cli/**/*.test.ts"],
     },
   }),
 );

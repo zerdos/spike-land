@@ -5,6 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
+    include: ["../../.tests/bazdmeg-mcp/**/*.test.ts"],
       name: "bazdmeg-mcp",
       pool: "forks",
       fileParallelism: true,

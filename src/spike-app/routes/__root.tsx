@@ -42,6 +42,10 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
     title: "Sign In - spike.land",
     description: "Sign in to spike.land to access your AI development platform",
   },
+  "/version": {
+    title: "Version - spike.land",
+    description: "View build version, deployed assets, and download links for spike.land",
+  },
 };
 
 const navItems = [

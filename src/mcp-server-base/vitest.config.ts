@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "mcp-server-base",
-      include: ["**/*.test.ts"],
+      include: ["../../.tests/mcp-server-base/**/*.test.ts"],
     },
   }),
 );

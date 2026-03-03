@@ -7,7 +7,7 @@ export default mergeConfig(
     test: {
       name: "react-ts-worker",
       environment: "jsdom",
-      include: ["tests/**/*.test.ts"],
+      include: ["../../.tests/react-ts-worker/**/*.test.ts"],
       coverage: {
         include: ["src/**/*.ts", "src/**/*.tsx"],
       },

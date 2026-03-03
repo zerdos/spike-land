@@ -50,7 +50,7 @@ npm run db:migrate
 
 # ── 5. Deploy worker ──
 echo "Deploying worker..."
-wrangler deploy \
+yarn wrangler deploy \
   --define "__BUILD_SHA__:\"'${HEAD_SHA}'\"" \
   --define "__BUILD_TIME__:\"'${COMMIT_TIME}'\""
 

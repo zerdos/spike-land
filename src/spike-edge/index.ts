@@ -8,6 +8,7 @@ import { proxy } from "./routes/proxy.js";
 import { live } from "./routes/live.js";
 import { analytics } from "./routes/analytics.js";
 import { quizBadge } from "./routes/quiz-badge.js";
+import { version } from "./routes/version.js";
 import { spa } from "./routes/spa.js";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -49,6 +50,7 @@ app.route("/", proxy);
 app.route("/", live);
 app.route("/", analytics);
 app.route("/", quizBadge);
+app.route("/", version);
 app.route("/", spa);
 
 export { RateLimiter };

@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "shared",
-      include: ["src/**/*.{test,spec}.ts"],
+      include: ["../../.tests/shared/**/*.test.ts"],
       coverage: {
         reporter: ["text-summary"],
         include: ["src/constants/**/*.ts", "src/validations/**/*.ts", "src/utils/**/*.ts"],

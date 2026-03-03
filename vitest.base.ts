@@ -17,17 +17,24 @@ export default defineConfig({
     alias: {
       "@spike-land-ai/shared/tool-builder": path.join(root, "src/shared/tool-builder/index.ts"),
       "@spike-land-ai/shared": path.join(root, "src/shared/index.ts"),
+      "@spike-land-ai/block-sdk/storage": path.join(root, "src/block-sdk/storage/index.ts"),
+      "@spike-land-ai/block-sdk/adapters/d1": path.join(root, "src/block-sdk/adapters/d1.ts"),
+      "@spike-land-ai/block-sdk/adapters/idb": path.join(root, "src/block-sdk/adapters/idb.ts"),
+      "@spike-land-ai/block-sdk/react": path.join(root, "src/block-sdk/react/index.ts"),
+      "@spike-land-ai/block-sdk/mcp": path.join(root, "src/block-sdk/mcp/index.ts"),
+      "@spike-land-ai/block-sdk": path.join(root, "src/block-sdk/index.ts"),
+      "@spike-land-ai/mcp-server-base": path.join(root, "src/mcp-server-base/index.ts"),
     },
   },
   test: {
     reporters: ["../../vitest-minimal-reporter.ts"],
     globals: true,
     environment: "node",
-    include: ["src/**/*.test.ts", "**/*.test.ts"],
+    include: [],
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts", "**/*.ts"],
-      exclude: ["src/**/*.test.ts", "**/*.test.ts", "vitest.config.ts"],
+      exclude: ["../../.tests/**", "vitest.config.ts"],
       thresholds: {
         lines: 96,
         functions: 96,

@@ -5,6 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
+    include: ["../../.tests/spacetimedb-mcp/**/*.test.ts"],
       name: "spacetimedb-mcp",
       pool: "forks",
       fileParallelism: true,

@@ -12,7 +12,7 @@ export default mergeConfig(
     },
     test: {
       name: "src-spike-edge",
-      include: ["**/*.test.ts"],
+      include: ["../../.tests/spike-edge/**/*.test.ts"],
       exclude: ["node_modules", "dist"],
     },
   }),

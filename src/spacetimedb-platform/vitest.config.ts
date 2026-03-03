@@ -5,6 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
+    include: ["../../.tests/spacetimedb-platform/**/*.test.ts"],
       name: "spacetimedb-platform",
     },
   }),

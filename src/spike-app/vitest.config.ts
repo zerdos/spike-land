@@ -8,8 +8,8 @@ export default mergeConfig(
     test: {
       name: "src-spike-app",
       environment: "jsdom",
-      setupFiles: ["./test-setup.ts"],
-      include: ["**/*.test.{ts,tsx}"],
+      setupFiles: ["../../.tests/spike-app/test-setup.ts"],
+      include: ["../../.tests/spike-app/**/*.{test,spec}.{ts,tsx}"],
       exclude: ["node_modules", "dist", ".next"],
       alias: {
         "@": path.resolve(__dirname, "."),

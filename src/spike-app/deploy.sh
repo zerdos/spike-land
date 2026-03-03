@@ -76,10 +76,10 @@ upload_file() {
     *)      content_type="application/octet-stream" ;;
   esac
 
-  wrangler r2 object put "${R2_BUCKET}/${key}" \
+  yarn wrangler r2 object put "${R2_BUCKET}/${key}" \
     --file "$file" \
     --content-type "$content_type" \
-    --pipe
+    --remote
 }
 
 export -f upload_file

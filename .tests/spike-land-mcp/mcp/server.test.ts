@@ -1,0 +1,26 @@
+import { describe, expect, it, vi } from "vitest";
+import { createMcpServer } from "../../../src/spike-land-mcp/mcp/server.js";
+import type { DrizzleDB } from "../../../src/spike-land-mcp/db/index.js";
+
+vi.mock("./manifest", () => ({
+  registerAllTools: vi.fn().mockResolvedValue(undefined),
+}));
+
+describe("createMcpServer", () => {
+  it("creates an MCP server and registers tools", async () => {
+    const mockDb = {} as DrizzleDB;
+    const server = await createMcpServer("user-123", mockDb);
+
+    console.log("Server keys:", Object.keys(server));
+    expect(server).toBeDefined();
+  });
+
+  it("handles enabledCategories", async () => {
+    const mockDb = {} as DrizzleDB;
+    const server = await createMcpServer("user-123", mockDb, {
+      enabledCategories: ["core"],
+    });
+
+    expect(server).toBeDefined();
+  });
+});

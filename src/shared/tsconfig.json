@@ -2,9 +2,9 @@
   "extends": "@spike-land-ai/tsconfig/tsconfig.bundler.json",
   "compilerOptions": {
     "lib": ["ES2022"],
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["src/**/*"],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

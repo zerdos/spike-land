@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       name: "openclaw-mcp",
-      include: ["src/**/*.{test,spec}.ts"],
+      include: ["../../.tests/openclaw-mcp/**/*.test.ts"],
       coverage: {
         reporter: ["text-summary"],
         exclude: ["src/**/*.d.ts", "src/**/*.test.ts", "src/index.ts"],

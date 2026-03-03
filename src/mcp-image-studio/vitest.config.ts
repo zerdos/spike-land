@@ -5,6 +5,7 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
+    include: ["../../.tests/mcp-image-studio/**/*.test.ts"],
       name: "mcp-image-studio",
       pool: "forks",
       fileParallelism: true,

@@ -36,6 +36,55 @@ packages:
     mirror: spike-land-ai/tsconfig
 
   # ─── Libraries ──────────────────────────────────────────────────────────────
+  block-website:
+    kind: library
+    version: 1.0.0
+    description: Isomorphic Hyper-Block for spike.land marketing and blog
+    entry: index.ts
+    exports:
+      "./core": ./core/index.ts
+      "./ui": ./ui/index.ts
+      "./mcp": ./mcp/index.ts
+    deps: [shared]
+    publish:
+      registries: [github]
+    mirror: spike-land-ai/block-website
+
+  block-sdk:
+    kind: library
+    version: 0.1.0
+    description: Full-stack block SDK — defineBlock(), StorageAdapter, React bindings, MCP integration
+    entry: index.ts
+    exports:
+      ".": ./index.ts
+      "./storage": ./storage/index.ts
+      "./adapters/d1": ./adapters/d1.ts
+      "./adapters/idb": ./adapters/idb.ts
+      "./react": ./react/index.ts
+      "./mcp": ./mcp/index.ts
+    deps: [shared, mcp-server-base]
+    publish:
+      registries: [github]
+    mirror: spike-land-ai/block-sdk
+
+  block-tasks:
+    kind: block
+    version: 0.1.0
+    description: Proof-of-concept full-stack block — task queue with CRUD, claim workflow, and React UI
+    entry: index.ts
+    exports:
+      ".": ./index.ts
+      "./worker": ./worker.ts
+      "./browser": ./browser.ts
+    deps: [block-sdk, shared]
+    publish:
+      registries: [github]
+    mirror: spike-land-ai/block-tasks
+    block:
+      storage: d1
+      ui: true
+      tools: auto
+
   shared:
     kind: library
     version: 2.0.0

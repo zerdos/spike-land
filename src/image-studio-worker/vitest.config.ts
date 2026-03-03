@@ -7,7 +7,7 @@ export default mergeConfig(
     test: {
       name: "image-studio-worker",
       environment: "node",
-      include: ["*.test.ts", "**/*.test.ts"],
+      include: ["../../.tests/image-studio-worker/**/*.test.ts"],
       exclude: ["node_modules", "frontend", ".wrangler/**"],
       coverage: {
         exclude: [

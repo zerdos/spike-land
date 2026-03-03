@@ -1,6 +1,9 @@
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 import { RootLayout } from "./routes/__root";
-import { DashboardPage } from "./routes/index";
+import { IndexPage } from "./routes/index";
+import { DashboardPage } from "./routes/dashboard/index";
+import { BlogIndexPage } from "./routes/blog/index";
+import { BlogPostPage } from "./routes/blog/$slug";
 import { ToolsIndexPage } from "./routes/tools/index";
 import { ToolsCategoryPage } from "./routes/tools/$category";
 import { AppsIndexPage } from "./routes/apps/index";
@@ -20,6 +23,7 @@ import { BadgePage } from "./routes/learn/badge/$token";
 import { AboutPage } from "./routes/about";
 import { PrivacyPage } from "./routes/privacy";
 import { TermsPage } from "./routes/terms";
+import { VersionPage } from "./routes/version";
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -28,7 +32,25 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
+  component: IndexPage,
+});
+
+const dashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard",
   component: DashboardPage,
+});
+
+const blogIndexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/blog",
+  component: BlogIndexPage,
+});
+
+const blogPostRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/blog/$slug",
+  component: BlogPostPage,
 });
 
 const toolsIndexRoute = createRoute({
@@ -145,8 +167,17 @@ const termsRoute = createRoute({
   component: TermsPage,
 });
 
+const versionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/version",
+  component: VersionPage,
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
+  dashboardRoute,
+  blogIndexRoute,
+  blogPostRoute,
   toolsIndexRoute,
   toolsCategoryRoute,
   appsIndexRoute,
@@ -166,6 +197,7 @@ export const routeTree = rootRoute.addChildren([
   aboutRoute,
   privacyRoute,
   termsRoute,
+  versionRoute,
 ]);
 
 export const router = createRouter({ routeTree });

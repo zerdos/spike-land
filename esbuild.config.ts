@@ -17,7 +17,7 @@ import YAML from "yaml";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type PackageKind = "library" | "mcp-server" | "worker" | "cli" | "browser" | "config";
+type PackageKind = "library" | "mcp-server" | "worker" | "cli" | "browser" | "config" | "block";
 
 interface BuildProfile {
   platform: esbuild.Platform;
@@ -97,6 +97,14 @@ const profiles: Record<PackageKind, BuildProfile> = {
     minify: false,
     format: "esm",
   },
+  block: {
+    platform: "browser",
+    bundle: true,
+    external: "none",
+    splitting: false,
+    minify: true,
+    format: "esm",
+  },
 };
 
 // ─── Manifest Loader ─────────────────────────────────────────────────────────
@@ -164,11 +172,61 @@ export function createBuildConfig(opts: BuildOptions): esbuild.BuildOptions {
 }
 
 export async function buildPackage(opts: BuildOptions): Promise<esbuild.BuildResult> {
+  if (opts.kind === "block") {
+    return buildBlock(opts);
+  }
   const config = createBuildConfig(opts);
   console.log(`Building ${opts.packageName} (${opts.kind})...`);
   const result = await esbuild.build(config);
   console.log(`  ✓ ${opts.packageName} built to dist/${opts.packageName}/`);
   return result;
+}
+
+/**
+ * Build a full-stack block with dual outputs:
+ *   1. worker/ — bundled for Cloudflare Workers (D1 storage adapter)
+ *   2. browser/ — self-contained ESM for browser (IndexedDB adapter)
+ */
+async function buildBlock(opts: BuildOptions): Promise<esbuild.BuildResult> {
+  const srcDir = resolve("src", opts.packageName);
+  const outDir = resolve("dist", opts.packageName);
+
+  console.log(`Building ${opts.packageName} (block — dual target)...`);
+
+  // Worker target — fully bundled for CF Workers
+  const workerResult = await esbuild.build({
+    entryPoints: [join(srcDir, "worker.ts")],
+    outdir: join(outDir, "worker"),
+    platform: "browser",
+    bundle: true,
+    splitting: false,
+    minify: true,
+    format: "esm",
+    sourcemap: true,
+    target: "es2022",
+    tsconfig: resolve("tsconfig.json"),
+    logLevel: "info",
+  });
+
+  // Browser target — self-contained ESM with IDB adapter
+  const browserResult = await esbuild.build({
+    entryPoints: [join(srcDir, "browser.ts")],
+    outdir: join(outDir, "browser"),
+    platform: "browser",
+    bundle: true,
+    splitting: false,
+    minify: true,
+    format: "esm",
+    sourcemap: true,
+    target: "es2022",
+    tsconfig: resolve("tsconfig.json"),
+    logLevel: "info",
+  });
+
+  console.log(`  ✓ ${opts.packageName} built (worker + browser) to dist/${opts.packageName}/`);
+
+  // Return the worker result (primary target); both are built
+  return workerResult.errors.length > 0 ? workerResult : browserResult;
 }
 
 // ─── Topological Sort ────────────────────────────────────────────────────────
