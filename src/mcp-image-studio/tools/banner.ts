@@ -53,14 +53,10 @@ export const bannerTool = imageProcedure
       subtitle: z.string().describe("Subtitle text to overlay on the banner").optional(),
     },
   )
-  // TODO: validate -> refine
-  /* .validate((input) => {
-  if (input.preset === "custom" && !input.custom_aspect_ratio) {
-    return errorResult("INVALID_INPUT", "custom_aspect_ratio is required when preset is 'custom'");
-  }
-  return;
-}) */
   .handler(async ({ input: input, ctx: ctx }) => {
+    if (input.preset === "custom" && !input.custom_aspect_ratio) {
+      return errorResult("INVALID_INPUT", "custom_aspect_ratio is required when preset is 'custom'");
+    }
     const { userId, deps } = ctx;
     const tier = input.tier ?? "TIER_1K";
     const cost = deps.credits.calculateGenerationCost({
@@ -71,7 +67,6 @@ export const bannerTool = imageProcedure
     let aspectRatio: AspectRatio;
     let recommendedSize: string | undefined;
     if (input.preset === "custom") {
-      // Guaranteed by validation
       aspectRatio = input.custom_aspect_ratio as AspectRatio;
     } else {
       const presetInfo = PRESET_ASPECT_RATIOS[input.preset];

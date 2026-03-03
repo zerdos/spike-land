@@ -54,13 +54,6 @@ export const iconTool = imageProcedure
         .optional(),
     },
   )
-  // TODO: validate -> refine
-  /* .validate((data) => {
-    if (!data.prompt && !data.source_image_id) {
-      return errorResult("INVALID_INPUT", "Either prompt or source_image_id is required");
-    }
-    return;
-  }) */
   .handler(async ({ input, ctx }) => {
     if (!input.prompt && !input.source_image_id) {
       return errorResult("INVALID_INPUT", "Either prompt or source_image_id is required");

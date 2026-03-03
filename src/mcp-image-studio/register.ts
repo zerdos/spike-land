@@ -8,11 +8,11 @@
  */
 
 import type {
-  AnyToolSpec,
   CallToolResult,
   ImageStudioDeps,
   ImageStudioToolRegistry,
   ToolContext,
+  ToolDefinition,
   ToolEvent,
 } from "./types.js";
 
@@ -130,7 +130,7 @@ function isToolExport(obj: unknown): obj is BuiltTool<unknown, unknown> {
 function createToolFromExport(
   toolExport: BuiltTool<unknown, unknown>,
   ctx: ToolContext,
-): AnyToolSpec {
+): ToolDefinition<unknown> {
   // zodToJsonSchema expects zod's ZodType — our structural type is compatible at runtime
   const jsonSchema = zodToJsonSchema(
     z.object(toolExport.inputSchema as Record<string, z.ZodTypeAny>) as unknown as Parameters<
@@ -192,7 +192,7 @@ function createToolFromExport(
         };
       }
     },
-  } as unknown as AnyToolSpec;
+  } as ToolDefinition<unknown>;
 }
 
 /** @deprecated Use registerImageStudioTools */

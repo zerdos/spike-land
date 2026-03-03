@@ -4,7 +4,6 @@ import { SpacetimeServerTransport } from "@spike-land-ai/spacetimedb-mcp/transpo
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { registerImageStudioTools } from "./register.js";
 import type {
-  AnyToolSpec,
   ImageStudioDeps,
   ImageStudioToolRegistry,
   ToolDefinition,
@@ -253,10 +252,10 @@ const server = new Server(
   { capabilities: { tools: {} } },
 );
 
-const tools: (ToolDefinition<unknown> | AnyToolSpec)[] = [];
+const tools: ToolDefinition<unknown>[] = [];
 const registry: ImageStudioToolRegistry = {
-  register: <T = unknown>(def: ToolDefinition<T> | AnyToolSpec) => {
-    tools.push(def as unknown as AnyToolSpec | ToolDefinition<unknown>);
+  register: <T = unknown>(def: ToolDefinition<T>) => {
+    tools.push(def as ToolDefinition<unknown>);
   },
 };
 

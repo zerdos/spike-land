@@ -78,7 +78,6 @@ export function asPercentage(n: number): Percentage {
 
 // ─── Enums (mirror Prisma enums without importing Prisma) ───
 
-import { z } from "zod";
 import {
   textResult,
   jsonResult,
@@ -94,7 +93,6 @@ export const ENHANCEMENT_TIER_VALUES = [
   "TIER_4K",
 ] as const;
 export type EnhancementTier = (typeof ENHANCEMENT_TIER_VALUES)[number];
-export const EnhancementTierSchema = z.enum(ENHANCEMENT_TIER_VALUES);
 
 export const JOB_STATUS_VALUES = [
   "PENDING",
@@ -737,7 +735,7 @@ export interface JsonSchema {
 
 /**
  * Registration type for custom tools using old definition format
- * @deprecated Use new `ToolSpec` and `defineTool` instead.
+ * @deprecated Use `defineTool` instead.
  */
 export interface ToolDefinition<TInput = unknown> {
   name: string;
@@ -749,25 +747,6 @@ export interface ToolDefinition<TInput = unknown> {
   handler: (input: TInput) => Promise<CallToolResult> | CallToolResult;
   alwaysEnabled?: boolean;
 }
-
-export type AnyToolSpec = ToolDefinition<unknown>;
-
-/**
- * Registration type for tools using the new defineTool format
- */
-export interface NewToolExport<TInput = unknown> {
-  name: string;
-  description: string;
-  fields: Record<string, z.ZodTypeAny>;
-  schema: {
-    safeParse: (
-      data: unknown,
-    ) => { success: true; data: TInput } | { success: false; error: { message: string } };
-  };
-  handler: (input: unknown, ctx: ToolContext) => Promise<CallToolResult> | CallToolResult;
-}
-
-export type ToolSpec = AnyToolSpec | NewToolExport<unknown>;
 
 export const TOOL_EVENT_TYPES = [
   "image:created",
@@ -822,7 +801,7 @@ export interface ToolContext {
 }
 
 export interface ImageStudioToolRegistry {
-  register: <T = unknown>(def: ToolDefinition<T> | AnyToolSpec) => void;
+  register: <T = unknown>(def: ToolDefinition<T>) => void;
 }
 
 // ─── Helper Functions ───

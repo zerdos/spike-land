@@ -4,7 +4,6 @@
 
 import { vi } from "vitest";
 import type {
-  AnyToolSpec,
   CallToolResult,
   ImageStudioToolRegistry,
   ToolDefinition,
@@ -25,7 +24,7 @@ export function createMockRegistry(): MockRegistry {
   >();
 
   const registry = {
-    register: vi.fn(<T = unknown>(specOrDef: ToolDefinition<T> | AnyToolSpec) => {
+    register: vi.fn(<T = unknown>(specOrDef: ToolDefinition<T>) => {
       const def = specOrDef as ToolDefinition<unknown>;
       handlers.set(
         def.name,

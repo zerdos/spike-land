@@ -8,13 +8,6 @@ export const subjectDeleteTool = imageProcedure
     subject_id: z.string().describe("ID of the subject to delete"),
     confirm: z.boolean().describe("Must be true to confirm deletion"),
   })
-  // TODO: validate -> refine
-  /* .validate((input) => {
-  if (!input.confirm) {
-    return errorResult("CONFIRMATION_REQUIRED", "Set confirm to true to delete this subject");
-  }
-  return;
-}) */
   .handler(async ({ input: input, ctx: ctx }) => {
     if (!input.confirm) {
       return errorResult("CONFIRMATION_REQUIRED", "Set confirm to true to delete this subject");

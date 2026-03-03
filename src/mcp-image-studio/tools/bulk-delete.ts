@@ -14,13 +14,6 @@ export const bulkDeleteTool = imageProcedure
       .describe("IDs of images to delete"),
     confirm: z.boolean().describe("Must be true to confirm permanent deletion"),
   })
-  // TODO: validate -> refine
-  /* .validate((input) => {
-    if (!input.confirm) {
-      return errorResult("INVALID_INPUT", "Set confirm=true to delete the images permanently");
-    }
-    return;
-  }) */
   .handler(async ({ input: input, ctx: ctx }) => {
     if (!input.confirm) {
       return errorResult("INVALID_INPUT", "Set confirm=true to delete the images permanently");
