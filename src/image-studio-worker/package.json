@@ -6,8 +6,11 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "npm run build:frontend && wrangler dev",
+    "dev:all": "npm run build:frontend & wrangler dev",
+    "build": "npm run build:frontend && echo 'Worker uses [assets] directive — frontend/dist is ready'",
+    "build:frontend": "cd frontend && npm run build",
+    "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint --quiet ."

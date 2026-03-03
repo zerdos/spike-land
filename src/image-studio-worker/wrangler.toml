@@ -7,6 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 binding = "IMAGE_DB"
 database_name = "pixel-studio"
 database_id = "74991261-c270-45d2-ab40-e8955e43f93f"
+migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "IMAGE_R2"
