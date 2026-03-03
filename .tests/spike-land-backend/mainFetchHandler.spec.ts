@@ -24,15 +24,15 @@ describe("MainFetchHandler", () => {
     } as unknown as ExecutionContext;
 
     // Mock imported functions
-    vi.mock("./fetchHandler", () => ({
+    vi.mock("../../src/spike-land-backend/fetchHandler", () => ({
       handleFetchApi: vi.fn(),
     }));
 
-    vi.mock("./handleErrors", () => ({
+    vi.mock("../../src/spike-land-backend/handleErrors", () => ({
       handleErrors: vi.fn(),
     }));
 
-    vi.mock("./utils", () => ({
+    vi.mock("../../src/spike-land-backend/utils", () => ({
       handleUnauthorizedRequest: vi.fn(),
     }));
   });

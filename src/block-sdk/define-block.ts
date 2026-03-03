@@ -19,6 +19,7 @@ type AnyBuiltTool = BuiltTool<never, CallToolResult>;
 
 /** Context available to all block procedures */
 export interface BlockContext {
+  [key: string]: unknown;
   /** The storage adapter (D1, IDB, or memory) */
   storage: StorageAdapter;
   /** Current user ID (injected by auth middleware) */
@@ -41,7 +42,7 @@ export type BlockComponents = Record<string, unknown>;
 /** Block definition input (what the user writes) */
 export interface BlockDefinition<
   TStorage extends Record<string, TableDef>,
-  TProcedures extends Record<string, BuiltTool>,
+  TProcedures extends Record<string, AnyBuiltTool>,
   TComponents extends BlockComponents,
 > {
   /** Block name (kebab-case identifier) */
@@ -61,7 +62,7 @@ export interface BlockDefinition<
 /** Resolved block — the output of defineBlock() */
 export interface Block<
   _TStorage extends Record<string, TableDef>,
-  TProcedures extends Record<string, BuiltTool>,
+  TProcedures extends Record<string, AnyBuiltTool>,
   TComponents extends BlockComponents,
 > {
   /** Block name */
@@ -128,7 +129,7 @@ function nanoid(length = 21): string {
  */
 export function defineBlock<
   TStorage extends Record<string, TableDef>,
-  TProcedures extends Record<string, BuiltTool>,
+  TProcedures extends Record<string, AnyBuiltTool>,
   TComponents extends BlockComponents = Record<string, never>,
 >(
   definition: BlockDefinition<TStorage, TProcedures, TComponents>,

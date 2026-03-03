@@ -28,13 +28,13 @@ const mockEngine = vi.hoisted(() => ({
   getGameState: vi.fn(),
 }));
 
-vi.mock("./engine", () => mockEngine);
+vi.mock("../../src/chess-engine/engine", () => mockEngine);
 
 const mockElo = vi.hoisted(() => ({
   calculateEloChange: vi.fn(),
 }));
 
-vi.mock("./elo", () => mockElo);
+vi.mock("../../src/chess-engine/elo", () => mockElo);
 
 import {
   acceptDraw,

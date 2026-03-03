@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { createMemoryAdapter, defineBlock, defineTable, t } from "@spike-land-ai/block-sdk";
 import { createBlockClient, createBlockHooks } from "@spike-land-ai/block-sdk/react";
@@ -215,6 +216,7 @@ describe("createBlockHooks", () => {
   });
 
   it("useSubscription returns snapshot", async () => {
+    const { renderHook } = await import("@testing-library/react");
     const storage = createMemoryAdapter();
     await testBlock.initialize(storage);
 
@@ -222,7 +224,7 @@ describe("createBlockHooks", () => {
     const { useSubscription } = createBlockHooks(client);
 
     // Initially empty
-    const items = useSubscription("items");
-    expect(items).toEqual([]);
+    const { result } = renderHook(() => useSubscription("items"));
+    expect(result.current).toEqual([]);
   });
 });

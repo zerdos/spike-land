@@ -53,7 +53,7 @@ const mockGetPRDetails = vi.hoisted(() => vi.fn());
 const mockGetPRDiff = vi.hoisted(() => vi.fn());
 const mockGetPRFiles = vi.hoisted(() => vi.fn());
 
-vi.mock("../github/client.js", () => ({
+vi.mock("../../../src/spike-review/github/client.js", () => ({
   GitHubClient: class MockGitHubClient {
     getPRDetails = mockGetPRDetails;
     getPRDiff = mockGetPRDiff;

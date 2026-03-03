@@ -74,7 +74,7 @@ export function BlogPostView({ slug }: { slug: string }) {
       </header>
       
       <div className="prose prose-lg dark:prose-invert max-w-none prose-img:rounded-xl prose-img:shadow-lg">
-        <Markdown rehypePlugins={[rehypeRaw]} components={COMPONENT_MAP}>
+        <Markdown rehypePlugins={[rehypeRaw]} components={COMPONENT_MAP as unknown as Record<string, React.ComponentType>}>
           {post.content}
         </Markdown>
       </div>

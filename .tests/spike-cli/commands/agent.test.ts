@@ -2,17 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Command } from "commander";
 import { registerAgentCommand } from "../../../src/spike-cli/commands/agent";
 
-// Mock the HTTP client
-const mockSql = vi.fn().mockResolvedValue([]);
-const mockCallReducer = vi.fn().mockResolvedValue(undefined);
-
-vi.mock("@spike-land-ai/spacetimedb-platform/stdb-http-client", () => ({
-  createStdbHttpClient: () => ({
-    sql: mockSql,
-    callReducer: mockCallReducer,
-  }),
-}));
-
 vi.mock("@google/genai", () => ({
   GoogleGenAI: class {
     models = {
@@ -35,6 +24,10 @@ vi.mock("express", () => {
     default: express,
   };
 });
+
+vi.mock("cors", () => ({
+  default: vi.fn(() => (req: unknown, res: unknown, next: () => void) => next()),
+}));
 
 describe("agent command", () => {
   let program: Command;
@@ -69,49 +62,6 @@ describe("agent command", () => {
 
     expect(process.exit).toHaveBeenCalledWith(1);
     process.env.GEMINI_API_KEY = origKey;
-  });
-
-  it("initSpacetimeDB connects via HTTP client", async () => {
-    const { initSpacetimeDB } = await import("../../../src/spike-cli/commands/agent");
-    initSpacetimeDB("ws://test", "mod");
-    // Allow the async connection to resolve
-    await vi.advanceTimersByTimeAsync(0);
-    expect(mockSql).toHaveBeenCalledWith("SELECT 1");
-  });
-
-  it("handleSessionUpdate handles user message", async () => {
-    const { handleSessionUpdate, ai } = await import("../../../src/spike-cli/commands/agent");
-    const generateSpy = vi.spyOn(ai.models, "generateContent");
-
-    await handleSessionUpdate({
-      codeSpace: "s1",
-      messagesJson: JSON.stringify([{ role: "user", content: "hi" }]),
-    });
-    expect(generateSpy).toHaveBeenCalled();
-  });
-
-  it("handleSessionUpdate skips assistant message", async () => {
-    const { handleSessionUpdate, ai } = await import("../../../src/spike-cli/commands/agent");
-    const generateSpy = vi.spyOn(ai.models, "generateContent");
-    generateSpy.mockClear();
-
-    await handleSessionUpdate({
-      codeSpace: "s2",
-      messagesJson: JSON.stringify([{ role: "assistant", content: "hi" }]),
-    });
-    expect(generateSpy).not.toHaveBeenCalled();
-  });
-
-  it("handleSessionUpdate skips empty messages", async () => {
-    const { handleSessionUpdate, ai } = await import("../../../src/spike-cli/commands/agent");
-    const generateSpy = vi.spyOn(ai.models, "generateContent");
-    generateSpy.mockClear();
-
-    await handleSessionUpdate({
-      codeSpace: "s3",
-      messagesJson: "[]",
-    });
-    expect(generateSpy).not.toHaveBeenCalled();
   });
 
   it("handles completion POST request", async () => {

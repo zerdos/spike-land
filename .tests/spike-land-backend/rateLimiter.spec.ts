@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CodeRateLimiter } from "../../src/spike-land-backend/rateLimiter";
 
 // Mock handleErrors to pass through the handler
-vi.mock("./handleErrors", () => ({
+vi.mock("../../src/spike-land-backend/handleErrors", () => ({
   handleErrors: vi.fn((_request, handler) => handler()),
 }));
 

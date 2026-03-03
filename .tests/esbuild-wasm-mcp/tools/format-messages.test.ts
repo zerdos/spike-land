@@ -6,7 +6,7 @@ const mockEsbuild = vi.hoisted(() => ({
   formatMessages: vi.fn(),
 }));
 
-vi.mock("../wasm-api.js", () => ({
+vi.mock("../../../src/esbuild-wasm-mcp/wasm-api.js", () => ({
   getEsbuildWasm: vi.fn().mockResolvedValue(mockEsbuild),
 }));
 

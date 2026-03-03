@@ -28,7 +28,7 @@ const {
   mockFetch: vi.fn(),
 }));
 
-vi.mock("../github/client.js", () => ({
+vi.mock("../../../src/spike-review/github/client.js", () => ({
   GitHubClient: class MockGitHubClient {
     getPRDetails = mockGetPRDetails;
     getPRDiff = mockGetPRDiff;

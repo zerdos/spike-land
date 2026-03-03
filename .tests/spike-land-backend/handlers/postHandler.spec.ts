@@ -27,7 +27,7 @@ type MockStepResult = StepResult<Record<string, never>>;
 // Mock all external dependencies
 vi.mock("@ai-sdk/anthropic");
 vi.mock("ai");
-vi.mock("../services/storageService");
+vi.mock("../../../src/spike-land-backend/services/storageService");
 
 // Setup crypto mock
 setupCrypto();

@@ -8,9 +8,9 @@ import {
   handleSlashCommand,
   isEntryPointTool,
   parseSlashInput,
-  SessionState,
   trackToolCallForSession,
 } from "../../../../src/spike-cli/chat/slash-commands.js";
+import { SessionState } from "../../../../src/spike-cli/chat/session-state.js";
 import type { SlashCommandContext } from "../../../../src/spike-cli/chat/slash-commands.js";
 import type { NamespacedTool, ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
 import type { ChatClient, Message } from "../../../../src/spike-cli/chat/client.js";

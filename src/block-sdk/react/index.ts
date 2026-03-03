@@ -14,7 +14,7 @@ import type { TableDef } from "../schema/types.js";
 // ─── Block Client ──────────────────────────────────────────────────────────
 
 /** A client for interacting with a block from React components */
-export interface BlockClient<TProcedures extends Record<string, BuiltTool>> {
+export interface BlockClient<TProcedures extends Record<string, BuiltTool<never, CallToolResult>>> {
   /** Call a block procedure by name */
   call<K extends keyof TProcedures>(
     name: K,
@@ -59,7 +59,7 @@ export interface BlockClientOptions {
  */
 export function createBlockClient<
   TStorage extends Record<string, TableDef>,
-  TProcedures extends Record<string, BuiltTool>,
+  TProcedures extends Record<string, BuiltTool<never, CallToolResult>>,
   TComponents extends BlockComponents,
 >(
   block: Block<TStorage, TProcedures, TComponents>,
@@ -179,7 +179,7 @@ export function createBlockClient<
  * }
  * ```
  */
-export function createBlockHooks<TProcedures extends Record<string, BuiltTool>>(
+export function createBlockHooks<TProcedures extends Record<string, BuiltTool<never, CallToolResult>>>(
   client: BlockClient<TProcedures>,
 ): {
   /** Get the block client for calling procedures */

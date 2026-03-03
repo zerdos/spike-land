@@ -66,7 +66,7 @@ describe("FetchHandler", () => {
       props: {},
     } as unknown as ExecutionContext;
 
-    vi.mock("./utils", () => ({
+    vi.mock("../../src/spike-land-backend/utils", () => ({
       handleCORS: vi.fn(),
     }));
   });

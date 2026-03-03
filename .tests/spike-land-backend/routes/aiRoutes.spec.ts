@@ -5,9 +5,9 @@ import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandle
 import { StorageService } from "../../../src/spike-land-backend/services/storageService";
 import { AiRoutes } from "../../../src/spike-land-backend/routes/aiRoutes";
 
-vi.mock("../services/storageService");
-vi.mock("../handlers/getHandler");
-vi.mock("../handlers/postHandler");
+vi.mock("../../../src/spike-land-backend/services/storageService");
+vi.mock("../../../src/spike-land-backend/handlers/getHandler");
+vi.mock("../../../src/spike-land-backend/handlers/postHandler");
 
 describe("AiRoutes", () => {
   let aiRoutes: AiRoutes;

@@ -10,7 +10,7 @@ import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandle
 // Mock dependencies
 vi.mock("@ai-sdk/anthropic");
 vi.mock("ai");
-vi.mock("../services/storageService");
+vi.mock("../../../src/spike-land-backend/services/storageService");
 
 describe("PostHandler - Tool Schema Validation", () => {
   let postHandler: PostHandler;

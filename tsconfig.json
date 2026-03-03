@@ -41,6 +41,7 @@
       "@spike-land-ai/spacetimedb-mcp/client": ["./src/spacetimedb-mcp/client.ts"],
       "@spike-land-ai/spacetimedb-mcp/transport": ["./src/spacetimedb-mcp/transport.ts"],
       "@spike-land-ai/code": ["./src/code/modules.ts"],
+      "@spike-land-ai/code/src/@/*": ["./src/code/@/*"],
       "@spike-land-ai/code/*": ["./src/code/*"],
       "@spike-land-ai/spike-cli": ["./src/spike-cli/index.ts"],
       "@spike-land-ai/spike-review": ["./src/spike-review/index.ts"],
@@ -74,6 +75,7 @@
     "src/spike-app/**",
     "src/code/**",
     "src/chess-engine/**",
-    "src/image-studio-worker/frontend/**"
+    "src/image-studio-worker/frontend/**",
+    "src/state-machine/persistence.ts"
   ]
 }

@@ -8,7 +8,7 @@ const mockEsbuild = vi.hoisted(() => ({
   context: vi.fn(),
 }));
 
-vi.mock("../wasm-api.js", () => ({
+vi.mock("../../../src/esbuild-wasm-mcp/wasm-api.js", () => ({
   getEsbuildWasm: vi.fn().mockResolvedValue(mockEsbuild),
 }));
 

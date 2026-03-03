@@ -3,24 +3,24 @@ import type Env from "../../../src/spike-land-backend/env.js";
 import { createMockEnv } from "../../../src/spike-land-backend/test-utils.js";
 
 // Mock external modules - must be before any imports that use them
-vi.mock("../anthropicHandler.js", () => ({
+vi.mock("../../../src/spike-land-backend/anthropicHandler.js", () => ({
   handleAnthropicRequest: vi.fn(),
 }));
 
-vi.mock("../openaiHandler.js", () => ({
+vi.mock("../../../src/spike-land-backend/openaiHandler.js", () => ({
   handleGPT4Request: vi.fn(),
 }));
 
-vi.mock("../replicateHandler.js", () => ({
+vi.mock("../../../src/spike-land-backend/replicateHandler.js", () => ({
   handleReplicateRequest: vi.fn(),
 }));
 
-vi.mock("../mainFetchHandler.js", () => ({
+vi.mock("../../../src/spike-land-backend/mainFetchHandler.js", () => ({
   handleMainFetch: vi.fn(),
 }));
 
 // Use a class mock for KVLogger
-vi.mock("../Logs.js", () => {
+vi.mock("../../../src/spike-land-backend/Logs.js", () => {
   const mockLog = vi.fn().mockResolvedValue(undefined);
   return {
     KVLogger: class MockKVLogger {
@@ -44,7 +44,7 @@ vi.mock("@spike-land-ai/code", () => ({
   serveWithCache: vi.fn(() => mockKvServer),
 }));
 
-vi.mock("../staticContent.mjs", () => ({
+vi.mock("../../../src/spike-land-backend/staticContent.mjs", () => ({
   ASSET_HASH: "test-hash-12345",
   ASSET_MANIFEST: "{}",
   files: { "test.js": "test.js" },

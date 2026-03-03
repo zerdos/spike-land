@@ -90,17 +90,17 @@ const mod = await import(process.env['NODE_ENV'] === 'production' ? 'prod' : 'de
 
 exports[`importMapReplace > Dynamic imports: dynamic imports with relative paths 1`] = `
 {
-  "code": "const mod = await import('./relative/path/module');",
+  "code": "const mod = await import('../../../src/code/__tests__/relative/path/module');",
   "result": "/** importMapReplace */
-const mod = await import("./relative/path/module.mjs");",
+const mod = await import("../../../src/code/__tests__/relative/path/module.mjs");",
 }
 `;
 
 exports[`importMapReplace > Dynamic imports: dynamic imports with string concatenation 1`] = `
 {
-  "code": "const mod = await import('./modules/' + name + '/index');",
+  "code": "const mod = await import('../../../src/code/__tests__/modules' + name + '/index');",
   "result": "/** importMapReplace */
-const mod = await import('./modules/' + name + '/index');",
+const mod = await import('../../../src/code/__tests__/modules' + name + '/index');",
 }
 `;
 
@@ -198,9 +198,9 @@ export * from "https://esm.sh/module?bundle=true&external=react,react/jsx-runtim
 
 exports[`importMapReplace > Export variations: export all from relative module 1`] = `
 {
-  "code": "export * from "./utils/helpers";",
+  "code": "export * from "../../../src/code/__tests__/utils/helpers";",
   "result": "/** importMapReplace */
-export * from "./utils/helpers.mjs";",
+export * from "../../../src/code/__tests__/utils/helpers.mjs";",
 }
 `;
 
@@ -270,41 +270,41 @@ import "https://esm.sh/polyfill?bundle=true&external=react,react/jsx-runtime,rea
 
 exports[`importMapReplace > Module types: CSS modules 1`] = `
 {
-  "code": "import styles from "./styles.module.css";",
+  "code": "import styles from "../../../src/code/__tests__/styles.module.css";",
   "result": "/** importMapReplace */
-import styles from "./styles.module.css";",
+import styles from "../../../src/code/__tests__/styles.module.css";",
 }
 `;
 
 exports[`importMapReplace > Module types: JSON modules 1`] = `
 {
-  "code": "import data from "./data.json";",
+  "code": "import data from "../../../src/code/__tests__/data.json";",
   "result": "/** importMapReplace */
-import data from "./data.json";",
+import data from "../../../src/code/__tests__/data.json";",
 }
 `;
 
 exports[`importMapReplace > Module types: SVG modules 1`] = `
 {
-  "code": "import logo from "./logo.svg";",
+  "code": "import logo from "../../../src/code/__tests__/logo.svg";",
   "result": "/** importMapReplace */
-import logo from "./logo.svg";",
+import logo from "../../../src/code/__tests__/logo.svg";",
 }
 `;
 
 exports[`importMapReplace > Module types: WASM modules 1`] = `
 {
-  "code": "import * as wasm from "./module.wasm";",
+  "code": "import * as wasm from "../../../src/code/__tests__/module.wasm";",
   "result": "/** importMapReplace */
-import * as wasm from "./module.wasm";",
+import * as wasm from "../../../src/code/__tests__/module.wasm";",
 }
 `;
 
 exports[`importMapReplace > Module types: text file imports 1`] = `
 {
-  "code": "import text from "./file.txt";",
+  "code": "import text from "../../../src/code/__tests__/file.txt";",
   "result": "/** importMapReplace */
-import text from "./file.txt";",
+import text from "../../../src/code/__tests__/file.txt";",
 }
 `;
 
@@ -350,9 +350,9 @@ import { button } from "https://esm.sh/~components/Button?bundle=true&external=r
 
 exports[`importMapReplace > Path imports: current directory marker 1`] = `
 {
-  "code": "import { tool } from "./././current/path";",
+  "code": "import { tool } from "../../../src/code/__tests__/current/path";",
   "result": "/** importMapReplace */
-import { tool } from "./././current/path.mjs";",
+import { tool } from "../../../src/code/__tests__/current/path.mjs";",
 }
 `;
 
@@ -374,41 +374,41 @@ import "./components/index.mjs";",
 
 exports[`importMapReplace > Path imports: existing .js extensions 1`] = `
 {
-  "code": "import { func } from "./lib.js";",
+  "code": "import { func } from "./lib";",
   "result": "/** importMapReplace */
-import { func } from "./lib.js";",
+import { func } from "./lib.mjs";",
 }
 `;
 
 exports[`importMapReplace > Path imports: parent directory relative imports 1`] = `
 {
-  "code": "import { shared } from "../shared/utils";",
+  "code": "import { shared } from "../../../src/code/shared/utils";",
   "result": "/** importMapReplace */
-import { shared } from "../shared/utils.mjs";",
+import { shared } from "../../../src/code/shared/utils.mjs";",
 }
 `;
 
 exports[`importMapReplace > Path imports: relative imports with trailing slash 1`] = `
 {
-  "code": "import module from "./folder/";",
+  "code": "import module from "../../../src/code/__tests__/folder";",
   "result": "/** importMapReplace */
-import module from "./folder/index.mjs";",
+import module from "../../../src/code/__tests__/folder.mjs";",
 }
 `;
 
 exports[`importMapReplace > Path imports: relative imports without extension 1`] = `
 {
-  "code": "import { helper } from "./utils/helper";",
+  "code": "import { helper } from "../../../src/code/__tests__/utils/helper";",
   "result": "/** importMapReplace */
-import { helper } from "./utils/helper.mjs";",
+import { helper } from "../../../src/code/__tests__/utils/helper.mjs";",
 }
 `;
 
 exports[`importMapReplace > Path imports: should preserve existing extensions in relative imports 1`] = `
 {
-  "code": "import { component } from "./components/Button";",
+  "code": "import { component } from "../../../src/code/__tests__/components/Button";",
   "result": "/** importMapReplace */
-import { component } from "./components/Button.mjs";",
+import { component } from "../../../src/code/__tests__/components/Button.mjs";",
 }
 `;
 
@@ -577,17 +577,17 @@ import { Component } from "/live/components/Button";",
 
 exports[`importMapReplace > URL imports: query and hash in imports 1`] = `
 {
-  "code": "import { lib } from "./module?foo=bar#section";",
+  "code": "import { lib } from "../../../src/code/__tests__/module?foo=bar#section";",
   "result": "/** importMapReplace */
-import { lib } from "./module.mjs?foo=bar#section";",
+import { lib } from "../../../src/code/__tests__/module.mjs?foo=bar#section";",
 }
 `;
 
 exports[`importMapReplace > URL imports: relative imports with query parameters 1`] = `
 {
-  "code": "import { util } from "./utils?foo=bar";",
+  "code": "import { util } from "../../../src/code/__tests__/utils?foo=bar";",
   "result": "/** importMapReplace */
-import { util } from "./utils.mjs?foo=bar";",
+import { util } from "../../../src/code/__tests__/utils.mjs?foo=bar";",
 }
 `;
 

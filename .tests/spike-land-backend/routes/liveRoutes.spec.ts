@@ -16,7 +16,7 @@ const mockHandleMessagesRoute = vi.fn().mockResolvedValue(
   }),
 );
 
-vi.mock("./aiRoutes", () => {
+vi.mock("../../../src/spike-land-backend/routes/aiRoutes", () => {
   class AiRoutes {
     handleMessagesRoute = mockHandleMessagesRoute;
     constructor(_code: unknown) {}

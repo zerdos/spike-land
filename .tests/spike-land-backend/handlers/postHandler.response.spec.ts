@@ -24,7 +24,7 @@ vi.mock("@ai-sdk/google", () => ({
   createGoogleGenerativeAI: vi.fn(),
 }));
 vi.mock("ai");
-vi.mock("../services/storageService");
+vi.mock("../../../src/spike-land-backend/services/storageService");
 
 // Setup crypto mock
 setupCrypto();

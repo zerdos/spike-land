@@ -1,8 +1,8 @@
 vi.mock("@/services/editorUtils", () => ({
   initializeMonaco: vi.fn(),
 }));
-vi.mock("../hooks/use-editor-state");
-vi.mock("../hooks/useErrorHandling");
+vi.mock("../../../src/code/hooks/use-editor-state");
+vi.mock("../../../src/code/hooks/useErrorHandling");
 
 import type { ICode, ICodeSession } from "@/lib/interfaces";
 import { sanitizeSession } from "@/lib/make-sess";

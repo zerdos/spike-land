@@ -38,7 +38,7 @@ export interface BlockToolsOptions {
  * ```
  */
 export function blockToTools(
-  block: Block<Record<string, TableDef>, Record<string, BuiltTool>, BlockComponents>,
+  block: Block<Record<string, TableDef>, Record<string, BuiltTool<never, CallToolResult>>, BlockComponents>,
   storage: StorageAdapter,
   userId: string,
   options?: BlockToolsOptions,
@@ -59,7 +59,7 @@ export function blockToTools(
  * Register all block tools with an MCP server/registry.
  */
 export function registerBlockTools(
-  block: Block<Record<string, TableDef>, Record<string, BuiltTool>, BlockComponents>,
+  block: Block<Record<string, TableDef>, Record<string, BuiltTool<never, CallToolResult>>, BlockComponents>,
   registry: McpToolRegistry,
   storage: StorageAdapter,
   userId: string,

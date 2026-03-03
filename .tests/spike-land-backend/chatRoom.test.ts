@@ -6,13 +6,13 @@ import { RouteHandler } from "../../src/spike-land-backend/routeHandler";
 import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler";
 
 // Mock external dependencies - use function expression for Vitest 4 constructor mocking
-vi.mock("./routeHandler", () => ({
+vi.mock("../../src/spike-land-backend/routeHandler", () => ({
   RouteHandler: vi.fn().mockImplementation(function () {
     return { handleRoute: vi.fn() };
   }),
 }));
 
-vi.mock("./websocketHandler", () => ({
+vi.mock("../../src/spike-land-backend/websocketHandler", () => ({
   WebSocketHandler: vi.fn().mockImplementation(function () {
     return {
       broadcast: vi.fn(),

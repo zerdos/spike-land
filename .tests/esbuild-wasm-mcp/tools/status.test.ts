@@ -4,7 +4,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockGetState = vi.hoisted(() => vi.fn());
 
-vi.mock("../wasm-api.js", () => ({
+vi.mock("../../../src/esbuild-wasm-mcp/wasm-api.js", () => ({
   getState: mockGetState,
 }));
 

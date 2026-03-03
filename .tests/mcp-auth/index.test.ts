@@ -65,7 +65,7 @@ vi.mock("drizzle-orm/d1", () => ({
 
 // Mock auth module
 let mockGetSession = vi.fn(async (..._args: unknown[]) => null);
-vi.mock("./auth", () => ({
+vi.mock("../../src/mcp-auth/auth", () => ({
   createAuth: vi.fn(() => ({
     handler: vi.fn(async (_req: Request) => new Response("auth response", { status: 200 })),
     api: {
@@ -117,7 +117,7 @@ describe("worker fetch handler", () => {
       const res = await worker.fetch(req, makeEnv());
       // No Origin header → falls back to first allowed origin
       expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://image-studio-mcp.spike.land",
+        "https://spike.land",
       );
     });
 
@@ -182,7 +182,7 @@ describe("worker fetch handler", () => {
       const req = makeRequest("GET", "/unknown");
       const res = await worker.fetch(req, makeEnv());
       expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://image-studio-mcp.spike.land",
+        "https://spike.land",
       );
     });
 
@@ -206,7 +206,7 @@ describe("worker fetch handler", () => {
       const res = await worker.fetch(req, makeEnv());
       // No Origin header → falls back to first allowed origin
       expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://image-studio-mcp.spike.land",
+        "https://spike.land",
       );
     });
 

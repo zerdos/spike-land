@@ -7,7 +7,7 @@ vi.mock("@spike-land-ai/code", () => ({
   md5: vi.fn().mockImplementation((input: string) => `md5-${input.substring(0, 20)}`),
 }));
 
-vi.mock("../utils/cache", () => ({
+vi.mock("../../../src/spike-land-backend/utils/cache", () => ({
   getCacheDefault: vi.fn().mockReturnValue({
     match: vi.fn().mockResolvedValue(null),
     put: vi.fn().mockResolvedValue(undefined),
