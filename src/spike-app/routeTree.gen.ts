@@ -17,6 +17,9 @@ import { CallbackPage } from "./routes/callback";
 import { LearnIndexPage } from "./routes/learn/index";
 import { LearnSessionPage } from "./routes/learn/$sessionId";
 import { BadgePage } from "./routes/learn/badge/$token";
+import { AboutPage } from "./routes/about";
+import { PrivacyPage } from "./routes/privacy";
+import { TermsPage } from "./routes/terms";
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -124,6 +127,24 @@ const learnBadgeRoute = createRoute({
   component: BadgePage,
 });
 
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+  component: AboutPage,
+});
+
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy",
+  component: PrivacyPage,
+});
+
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms",
+  component: TermsPage,
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   toolsIndexRoute,
@@ -142,6 +163,9 @@ export const routeTree = rootRoute.addChildren([
   learnBadgeRoute,
   learnSessionRoute,
   learnIndexRoute,
+  aboutRoute,
+  privacyRoute,
+  termsRoute,
 ]);
 
 export const router = createRouter({ routeTree });

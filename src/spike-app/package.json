@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint --quiet src/",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "deploy": "bash deploy.sh",
+    "deploy:force": "FORCE_DEPLOY=1 bash deploy.sh"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.163.3",

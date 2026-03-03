@@ -215,6 +215,10 @@ export function Gallery() {
                   </span>
                 ) : undefined
               }
+              onEdit={() => {
+                sessionStorage.setItem("studio_initial_image", JSON.stringify({ url: img.originalUrl, name: img.name }));
+                window.location.hash = "#/studio";
+              }}
               onClick={() => {
                 const slides = images.map((i) => ({ src: i.originalUrl, alt: i.name }));
                 openLightbox(index, slides);

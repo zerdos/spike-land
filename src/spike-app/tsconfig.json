@@ -12,16 +12,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "outDir": "dist",
+    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
@@ -29,5 +26,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "vitest.config.ts", "vite.config.ts"]
 }

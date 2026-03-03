@@ -14,7 +14,14 @@ import { createToolRegistry } from "./tool-registry.ts";
 import { validateSession } from "./auth.ts";
 import { handleChatStream } from "./agent/chat-handler.ts";
 
+declare const __BUILD_SHA__: string;
+declare const __BUILD_TIME__: string;
+
 const app = new Hono<{ Bindings: Env }>();
+
+app.get("/version", (c) =>
+  c.json({ sha: __BUILD_SHA__, built: __BUILD_TIME__ }),
+);
 
 app.use(
   "*",
