@@ -12,7 +12,9 @@
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import type { ZodRawShapeCompat } from "@modelcontextprotocol/sdk/server/zod-compat.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -249,8 +251,10 @@ export async function startMcpServer(server: McpServer): Promise<void> {
  * The `handler` receives the already-validated arguments and must return
  * a `CallToolResult`.  Any thrown value is caught and converted to an error
  * result automatically.
+ *
+ * @template TSchema - Zod raw shape type, constrained to `ZodRawShapeCompat`
  */
-export interface ZodToolOptions {
+export interface ZodToolOptions<TSchema extends ZodRawShapeCompat = ZodRawShapeCompat> {
   /** Tool name as registered with the MCP server. */
   name: string;
   /** Human-readable description shown to the LLM. */
@@ -262,7 +266,7 @@ export interface ZodToolOptions {
    * { query: z.string().describe("Search query"), limit: z.number().default(10) }
    * ```
    */
-  schema: Record<string, unknown>;
+  schema: TSchema;
   /**
    * Tool handler. Receives the validated arguments as a plain object.
    * Return a `CallToolResult` or throw an `McpError` / any `Error`.
@@ -290,27 +294,24 @@ export interface ZodToolOptions {
  * });
  * ```
  */
-export function createZodTool(server: McpServer, options: ZodToolOptions): void {
+export function createZodTool<TSchema extends ZodRawShapeCompat = ZodRawShapeCompat>(
+  server: McpServer,
+  options: ZodToolOptions<TSchema>,
+): void {
   const { name, description, schema, handler } = options;
 
-  // server.tool() is overloaded; cast through unknown to satisfy tsc while
-  // keeping the runtime call identical to all existing packages.
-  (
-    server as unknown as {
-      tool: (
-        name: string,
-        description: string,
-        schema: Record<string, unknown>,
-        handler: (args: Record<string, unknown>) => Promise<CallToolResult>,
-      ) => void;
-    }
-  ).tool(name, description, schema, async (args) => {
+  // server.tool() uses complex conditional types (ToolCallback<TSchema>) that
+  // cannot be directly satisfied by our simplified handler signature. At runtime
+  // the callback receives a plain object for args; the two-step cast through
+  // unknown is safe and semantically correct.
+  const wrappedHandler = async (args: Record<string, unknown>) => {
     try {
       return await handler(args);
     } catch (err: unknown) {
       return formatError(err);
     }
-  });
+  };
+  server.tool(name, description, schema, wrappedHandler as unknown as ToolCallback<TSchema>);
 }
 
 // ─── Test Helpers ─────────────────────────────────────────────────────────────
@@ -332,7 +333,7 @@ export interface MockMcpServer {
   tool: (
     name: string,
     description: string,
-    schema: Record<string, unknown>,
+    schema: ZodRawShapeCompat,
     handler: ToolHandler,
   ) => void;
   /** Map of tool name → handler, populated by `tool()` calls. */
@@ -364,7 +365,7 @@ export function createMockServer(): MockMcpServer {
   const tool = (
     name: string,
     _description: string,
-    _schema: Record<string, unknown>,
+    _schema: ZodRawShapeCompat,
     handler: ToolHandler,
   ): void => {
     handlers.set(name, handler);
