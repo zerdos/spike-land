@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useState } from "react";
 import { Wand2, Layers } from "lucide-react";
-import { Button, Input, Select, CreditBadge, JobPoller, Badge, ImagePicker } from "@/components/ui";
+import { Button, Input, Select, CreditBadge, JobPoller, ImagePicker } from "@/components/ui";
 import { callTool, parseToolResult } from "@/api/client";
 import { ENHANCEMENT_TIERS, ENHANCEMENT_COSTS } from "@/constants/enums";
 

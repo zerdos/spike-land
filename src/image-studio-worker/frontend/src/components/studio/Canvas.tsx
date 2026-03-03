@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useCanvas } from "../../hooks/useCanvas";
-import { Sparkles, MousePointer2, ZoomIn, ZoomOut, Search, Loader2, Plus, Minus, X, Trash2 } from "lucide-react";
+import { Sparkles, MousePointer2, Loader2, Plus, Minus, X, Trash2 } from "lucide-react";
 import { ToolOrb } from "./ToolOrb";
 import { UploadZone } from "./UploadZone";
 import { DetailsPanel } from "./DetailsPanel";
@@ -55,8 +55,8 @@ export function Canvas() {
       });
       setPrompt("");
       toast.success("Vision captured on canvas", { id: toastId });
-    } catch (err: any) {
-      toast.error(err.message, { id: toastId });
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err), { id: toastId });
     } finally {
       setIsGenerating(false);
     }
@@ -86,8 +86,8 @@ export function Canvas() {
         await StudioEngine.createSocialPack(asset.id);
         toast.success("Social pack appearing on canvas");
       }
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   };
 

@@ -17,7 +17,7 @@ interface ImageCardProps {
 }
 
 export function ImageCard({
-  id,
+  id: _id,
   name,
   url,
   width,

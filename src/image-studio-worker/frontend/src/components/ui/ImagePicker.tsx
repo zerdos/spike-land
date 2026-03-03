@@ -24,7 +24,7 @@ export function ImagePicker({
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useLibrary(searchQuery);
 
-  const images = data?.pages.flat() ?? [];
+  const images = useMemo(() => data?.pages.flat() ?? [], [data?.pages]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);

@@ -4,7 +4,6 @@ import { useTools } from "@/hooks/useTools";
 import { callTool, parseToolResult, type ToolInfo } from "@/api/client";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
 import { CreditBadge } from "@/components/ui/CreditBadge";

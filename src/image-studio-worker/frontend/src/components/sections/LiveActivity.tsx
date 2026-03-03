@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Terminal, CheckCircle2, Clock, Activity } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Terminal, CheckCircle2, Activity } from "lucide-react";
 
 interface ToolCallLog {
   id: string;
@@ -29,7 +29,7 @@ export function LiveActivity() {
 
         if (data.calls && Array.isArray(data.calls)) {
           const fetchedLogs: ToolCallLog[] = data.calls
-            .map((c: any) => ({
+            .map((c: Record<string, unknown>) => ({
               id: c.id,
               timestamp: new Date(c.createdAt),
               toolName: c.toolName,

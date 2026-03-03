@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Sparkles, Wand2, MousePointer2 } from "lucide-react";
+import { Sparkles, MousePointer2 } from "lucide-react";
 
 interface GeneratedImage {
   id: string;
@@ -38,11 +38,11 @@ export function AnimatedGenerations() {
 
           try {
             const parsedResult = JSON.parse(call.result);
-            let resultData: any = parsedResult;
+            let resultData: unknown = parsedResult;
             if (parsedResult.content?.[0]?.text) {
               try {
                 resultData = JSON.parse(parsedResult.content[0].text);
-              } catch (e) {}
+              } catch (_e) {}
             }
 
             const imgUrl = resultData.url || resultData.outputImageUrl || resultData.enhancedUrl;
@@ -57,12 +57,12 @@ export function AnimatedGenerations() {
                 timestamp: new Date(call.createdAt).getTime(),
               });
             }
-          } catch (e) {}
+          } catch (_e) {}
         }
 
         const unique = generated.filter((v, i, a) => a.findIndex((t) => t.url === v.url) === i);
         setImages(unique.slice(0, 15));
-      } catch (err) {}
+      } catch (_err) {}
     }
 
     fetchCalls();

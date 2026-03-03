@@ -22,8 +22,8 @@ type TerminalEntry =
 // ---------------------------------------------------------------------------
 
 function JsonNode({ value, indent = 0 }: { value: unknown; indent?: number }) {
-  const pad = "  ".repeat(indent);
-  const innerPad = "  ".repeat(indent + 1);
+  const _pad = "  ".repeat(indent);
+  const _innerPad = "  ".repeat(indent + 1);
 
   if (value === null) {
     return <span className="text-gray-500">null</span>;

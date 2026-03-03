@@ -97,7 +97,10 @@ async function main() {
   await bridge.serve();
 }
 
-main().catch((err: unknown) => {
-  process.stderr.write(`Fatal: ${err}\n`);
-  process.exit(1);
-});
+const isDirectRun = process.argv[1]?.endsWith("/cli.ts") || process.argv[1]?.endsWith("/cli.js");
+if (isDirectRun) {
+  main().catch((err: unknown) => {
+    process.stderr.write(`Fatal: ${err}\n`);
+    process.exit(1);
+  });
+}

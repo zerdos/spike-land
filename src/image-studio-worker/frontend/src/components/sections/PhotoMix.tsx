@@ -1,7 +1,8 @@
 import { toast } from "sonner";
 import { useState, useCallback } from "react";
 import { Blend, History, GripVertical, Trash2, Plus } from "lucide-react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import {
   Button,
   Input,

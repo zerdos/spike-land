@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { useState } from "react";
-import { Film, Play, Download } from "lucide-react";
+import { Film, Download } from "lucide-react";
 import { Button, Input, TextArea, Select, CreditBadge, JobPoller } from "@/components/ui";
 import { callTool, parseToolResult } from "@/api/client";
 import { ENHANCEMENT_TIERS, ENHANCEMENT_COSTS } from "@/constants/enums";

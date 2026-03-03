@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Info, Tag, Palette, Zap, Clock, ExternalLink } from "lucide-react";
+import { X, Tag, Palette, Zap, Clock, ExternalLink } from "lucide-react";
 import type { StudioAsset } from "../../services/studio-engine";
 
 interface DetailsPanelProps {

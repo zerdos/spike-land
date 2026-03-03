@@ -33,7 +33,7 @@ interface SidebarUser {
 
 interface SidebarProps {
   active: Workspace;
-  onNavigate: (workspace: any) => void;
+  onNavigate: (workspace: unknown) => void;
   user?: SidebarUser | null;
   onLogout?: () => void;
 }

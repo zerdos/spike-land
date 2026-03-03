@@ -4,7 +4,7 @@ import { MainContent } from "./components/layout/MainContent";
 import { useCredits } from "./hooks/useCredits";
 import { useAuth } from "./contexts/AuthContext";
 import { ChatWidget } from "./components/ui/ChatWidget";
-import { Sparkles, Github, Activity, Zap, Shield, Zap as ZapIcon, Layout, Cpu, Image as ImageIcon, MousePointer2, LogOut } from "lucide-react";
+import { Sparkles, Github, Activity, Zap, Shield, Zap as ZapIcon, Layout, Cpu, Image as ImageIcon, LogOut } from "lucide-react";
 
 import { LiveActivity } from "./components/sections/LiveActivity";
 import { AnimatedGenerations } from "./components/sections/AnimatedGenerations";

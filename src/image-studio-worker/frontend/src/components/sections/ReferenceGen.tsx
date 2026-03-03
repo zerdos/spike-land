@@ -3,7 +3,6 @@ import { useState } from "react";
 import { ImagePlus, Blend, Sparkles } from "lucide-react";
 import {
   Button,
-  Input,
   Select,
   TextArea,
   CreditBadge,

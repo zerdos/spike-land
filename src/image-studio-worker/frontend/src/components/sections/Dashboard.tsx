@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { Zap, TrendingUp, Image, FolderOpen } from "lucide-react";
-import { Button, Badge, CreditBadge } from "@/components/ui";
+import { Zap, TrendingUp, Image } from "lucide-react";
+import { CreditBadge } from "@/components/ui";
 import { callTool, parseToolResult } from "@/api/client";
 import { ENHANCEMENT_COSTS, ENHANCEMENT_TIERS, ADVANCED_FEATURE_COSTS } from "@/constants/enums";
 

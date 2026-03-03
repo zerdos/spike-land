@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
-import { Upload, FolderPlus, Loader2 } from "lucide-react";
-import { useDropzone } from "react-dropzone"; // Assuming available, if not I'll use native
+import { Upload, FolderPlus } from "lucide-react";
 import { toast } from "sonner";
 import { StudioEngine } from "../../services/studio-engine";
 
 interface UploadZoneProps {
-  onUploadComplete: (asset: any) => void;
+  onUploadComplete: (asset: unknown) => void;
 }
 
 export function UploadZone({ onUploadComplete }: UploadZoneProps) {
@@ -20,7 +19,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
           
           // Use MCP upload tool via StudioEngine (needs implementation or direct call)
           // For now, let's simulate the asset creation on canvas
-          const result = await StudioEngine.generateAsset(`Local: ${file.name}`, { 
+          const _result = await StudioEngine.generateAsset(`Local: ${file.name}`, {
             data_base64: base64,
             content_type: file.type
           });
@@ -35,7 +34,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
           toast.success(`${file.name} manifested`, { id: toastId });
         };
         reader.readAsDataURL(file);
-      } catch (err: any) {
+      } catch (_err) {
         toast.error(`Failed to upload ${file.name}`, { id: toastId });
       }
     }

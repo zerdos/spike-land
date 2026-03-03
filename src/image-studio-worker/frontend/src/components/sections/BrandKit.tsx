@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
-import { Button, Input, TextArea, Select, CreditBadge, JobPoller } from "@/components/ui";
+import { Button, Input, Select, CreditBadge, JobPoller } from "@/components/ui";
 import { callTool, parseToolResult } from "@/api/client";
 import { BRAND_ASSETS, ENHANCEMENT_TIERS, ENHANCEMENT_COSTS } from "@/constants/enums";
 

@@ -1,8 +1,9 @@
 import { toast } from "sonner";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FolderOpen, Plus, Trash2, GripVertical } from "lucide-react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import { Button, Input, Select, TextArea, Modal, Badge, ImagePicker } from "@/components/ui";
 import { useLightbox } from "@/contexts/LightboxContext";
 import { callTool, parseToolResult } from "@/api/client";

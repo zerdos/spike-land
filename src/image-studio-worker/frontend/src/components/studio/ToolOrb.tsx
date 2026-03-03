@@ -1,10 +1,9 @@
 import React from "react";
-import { 
-  Wand2, 
-  Layers, 
-  Monitor, 
-  Tag, 
-  Trash2, 
+import {
+  Wand2,
+  Monitor,
+  Tag,
+  Trash2,
   Maximize,
   Share2
 } from "lucide-react";
