@@ -299,6 +299,9 @@ const main = {
   },
 };
 
+export { Code } from "./chatRoom.js";
+export { CodeRateLimiter } from "./rateLimiter.js";
+
 export default main;
 
 async function generateTURNCredentials(turnToken: string): Promise<Response> {
