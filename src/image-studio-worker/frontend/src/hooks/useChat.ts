@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { eventBus } from "../services/event-bus";
 
 export interface ChatMessage {
   id: string;
@@ -29,17 +30,56 @@ interface UseChatReturn {
   submitBrowserResult: (requestId: string, result: unknown) => void;
 }
 
+const STORAGE_KEY = "pixel-studio-chat-history";
+
+function loadHistory(): ChatMessage[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as ChatMessage[];
+    // Keep only recent messages (last 50)
+    return parsed.slice(-50);
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(messages: ChatMessage[]) {
+  try {
+    // Store only last 50 messages
+    const toStore = messages.slice(-50).map((m) => ({
+      ...m,
+      // Strip large tool results to save space
+      toolCalls: m.toolCalls?.map((tc) => ({
+        ...tc,
+        result: tc.result && tc.result.length > 500 ? tc.result.slice(0, 500) + "..." : tc.result,
+      })),
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+  } catch {
+    // Storage full — clear and retry
+    localStorage.removeItem(STORAGE_KEY);
+  }
+}
+
 let nextId = 0;
 function makeId() {
   return `msg-${Date.now()}-${++nextId}`;
 }
 
 export function useChat(): UseChatReturn {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(loadHistory);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const pendingBrowserRef = useRef<Map<string, (result: unknown) => void>>(new Map());
+
+  // Persist messages to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveHistory(messages);
+    }
+  }, [messages]);
 
   const submitBrowserResult = useCallback((requestId: string, result: unknown) => {
     const resolve = pendingBrowserRef.current.get(requestId);
@@ -88,7 +128,7 @@ export function useChat(): UseChatReturn {
 
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           ...(geminiKey ? { "X-Gemini-Key": geminiKey } : {}),
           ...(textModel ? { "X-Text-Model": textModel } : {}),
@@ -132,6 +172,8 @@ export function useChat(): UseChatReturn {
               requestId?: string;
               tool?: string;
               error?: string;
+              action?: string;
+              imageId?: string;
             };
 
             if (event.type === "text_delta" && event.text) {
@@ -171,6 +213,19 @@ export function useChat(): UseChatReturn {
                     : m,
                 ),
               );
+            } else if (event.type === "gallery_update") {
+              // Emit event bus event so gallery refreshes reactively
+              const reason = event.action === "image_deleted" ? "delete" :
+                            event.action === "image_enhanced" ? "enhance" :
+                            "generate";
+              eventBus.emit("gallery:updated", { reason: reason as "generate" | "enhance" | "delete" });
+              if (event.imageId && event.action !== "image_deleted") {
+                eventBus.emit("image:generated", {
+                  imageId: event.imageId,
+                  url: "",
+                  prompt: "",
+                });
+              }
             } else if (event.type === "browser_command" && event.tool && event.requestId) {
               setMessages((prev) =>
                 prev.map((m) =>
@@ -218,6 +273,7 @@ export function useChat(): UseChatReturn {
   const clearMessages = useCallback(() => {
     setMessages([]);
     setError(null);
+    localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   return { messages, sendMessage, isStreaming, error, clearError, clearMessages, submitBrowserResult };

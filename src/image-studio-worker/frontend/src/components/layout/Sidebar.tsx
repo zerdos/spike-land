@@ -7,10 +7,11 @@ import {
   Settings,
   Activity,
   Zap,
-  LogOut
+  LogOut,
+  Grid,
 } from "lucide-react";
 
-export type Workspace = "studio" | "archive" | "intelligence" | "showcase" | "settings";
+export type Workspace = "studio" | "gallery" | "archive" | "intelligence" | "showcase" | "settings";
 
 interface NavItem {
   id: Workspace;
@@ -20,6 +21,7 @@ interface NavItem {
 
 const WORKSPACES: NavItem[] = [
   { id: "studio", label: "Studio", icon: Zap },
+  { id: "gallery", label: "Gallery", icon: Grid },
   { id: "archive", label: "Archive", icon: Archive },
   { id: "intelligence", label: "Intelligence", icon: Cpu },
   { id: "showcase", label: "Showcase", icon: Share2 },
@@ -90,11 +92,13 @@ export function Sidebar({ active, onNavigate, user, onLogout }: SidebarProps) {
                 key={id}
                 onClick={() => onNavigate(id)}
                 className={`group relative p-3 rounded-xl transition-all duration-300 ${
-                  isActive 
-                    ? "bg-amber-neon/10 text-amber-neon" 
+                  isActive
+                    ? "bg-amber-neon/10 text-amber-neon"
                     : "text-gray-500 hover:text-gray-200 hover:bg-white/5"
                 }`}
                 title={label}
+                aria-label={label}
+                aria-current={isActive ? "page" : undefined}
               >
                 <Icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_rgba(255,184,0,0.5)]" : ""}`} />
                 {isActive && (
@@ -111,7 +115,10 @@ export function Sidebar({ active, onNavigate, user, onLogout }: SidebarProps) {
         </nav>
 
         <div className="space-y-3">
-          <button className="p-3 rounded-xl text-gray-500 hover:text-emerald-neon hover:bg-white/5 transition-all">
+          <button
+            className="p-3 rounded-xl text-gray-500 hover:text-emerald-neon hover:bg-white/5 transition-all"
+            aria-label="Activity"
+          >
             <Activity className="w-5 h-5" />
           </button>
           <button
@@ -119,6 +126,8 @@ export function Sidebar({ active, onNavigate, user, onLogout }: SidebarProps) {
             className={`p-3 rounded-xl transition-all ${
               active === "settings" ? "bg-white/10 text-white" : "text-gray-500 hover:text-white hover:bg-white/5"
             }`}
+            aria-label="Settings"
+            aria-current={active === "settings" ? "page" : undefined}
           >
             <Settings className="w-5 h-5" />
           </button>
@@ -156,6 +165,8 @@ export function Sidebar({ active, onNavigate, user, onLogout }: SidebarProps) {
               className={`flex flex-col items-center gap-1 transition-all duration-300 ${
                 isActive ? "text-amber-neon scale-105" : "text-gray-600 hover:text-gray-400"
               }`}
+              aria-label={label}
+              aria-current={isActive ? "page" : undefined}
             >
               <div className={`p-2 rounded-xl transition-all ${isActive ? "bg-amber-neon/5" : ""}`}>
                 <Icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_rgba(255,184,0,0.5)]" : ""}`} />
@@ -164,11 +175,13 @@ export function Sidebar({ active, onNavigate, user, onLogout }: SidebarProps) {
             </button>
           );
         })}
-        <button 
+        <button
           onClick={() => onNavigate("settings")}
           className={`flex flex-col items-center gap-1 transition-all ${
             active === "settings" ? "text-white scale-105" : "text-gray-600 hover:text-gray-400"
           }`}
+          aria-label="Settings"
+          aria-current={active === "settings" ? "page" : undefined}
         >
           <div className={`p-2 rounded-xl transition-all ${active === "settings" ? "bg-white/5" : ""}`}>
             <Settings className="w-5 h-5" />

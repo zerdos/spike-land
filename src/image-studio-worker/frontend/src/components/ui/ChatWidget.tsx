@@ -1,26 +1,36 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { MessageCircle, X, Send, Trash2, Sparkles } from "lucide-react";
+import { useState, useRef, useEffect, useCallback, type KeyboardEvent } from "react";
+import { MessageCircle, X, Send, Trash2, Sparkles, Maximize2, Minimize2 } from "lucide-react";
 import { useChat } from "../../hooks/useChat";
 import { ChatMessage } from "./ChatMessage";
+import { useEventBus } from "../../hooks/useEventBus";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState("");
   const { messages, sendMessage, isStreaming, error, clearError, clearMessages } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Auto-scroll on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
+  // Focus input when opened
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
   }, [open]);
+
+  // Listen for attached images from DnD
+  useEventBus("chat:image-attached", useCallback((data: { file: File }) => {
+    setOpen(true);
+    setInput((prev) => prev + (prev ? " " : "") + `[Attached: ${data.file.name}]`);
+  }, []));
 
   const handleSend = () => {
     if (!input.trim() || isStreaming) return;
@@ -35,6 +45,22 @@ export function ChatWidget() {
     }
   };
 
+  // Keyboard shortcut: Cmd+K to open chat
+  useEffect(() => {
+    const handler = (e: globalThis.KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const panelClasses = expanded
+    ? "fixed inset-4 md:inset-8 z-[120] flex flex-col glass-panel rounded-[2rem] border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
+    : "fixed bottom-[calc(8rem+env(safe-area-inset-bottom))] md:bottom-24 right-4 md:right-8 z-[120] w-[calc(100vw-2rem)] sm:w-[400px] h-[550px] md:h-[600px] max-h-[60dvh] md:max-h-[80dvh] flex flex-col glass-panel rounded-[2rem] border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)]";
+
   return (
     <>
       {/* Floating button */}
@@ -45,7 +71,7 @@ export function ChatWidget() {
             ? "bg-obsidian-800 hover:bg-obsidian-700 rotate-90 scale-90"
             : "bg-amber-neon hover:bg-amber-neon shadow-[0_0_30px_rgba(255,170,0,0.4)] scale-100 hover:scale-110 active:scale-95"
         }`}
-        aria-label={open ? "Close chat" : "Open chat"}
+        aria-label={open ? "Close chat" : "Open chat (Cmd+K)"}
       >
         {open ? (
           <X className="w-5 h-5 md:w-6 md:h-6 text-gray-300" />
@@ -56,7 +82,7 @@ export function ChatWidget() {
 
       {/* Chat panel */}
       <div
-        className={`fixed bottom-[calc(8rem+env(safe-area-inset-bottom))] md:bottom-24 right-4 md:right-8 z-[120] w-[calc(100vw-2rem)] sm:w-[400px] h-[550px] md:h-[600px] max-h-[60dvh] md:max-h-[80dvh] flex flex-col glass-panel rounded-[2rem] border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] transition-all duration-500 origin-bottom-right ${
+        className={`${panelClasses} transition-all duration-500 origin-bottom-right ${
           open
             ? "opacity-100 scale-100 translate-y-0"
             : "opacity-0 scale-95 translate-y-10 pointer-events-none"
@@ -79,13 +105,20 @@ export function ChatWidget() {
               <button
                 onClick={clearMessages}
                 className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-red-400 transition-all active:scale-90"
-                title="Wipe Memory"
+                title="Clear History"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
             <button
-              onClick={() => setOpen(false)}
+              onClick={() => setExpanded(!expanded)}
+              className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-all active:scale-90"
+              title={expanded ? "Collapse" : "Expand"}
+            >
+              {expanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+            <button
+              onClick={() => { setOpen(false); setExpanded(false); }}
               className="p-2 rounded-lg hover:bg-white/5 text-gray-500 hover:text-white transition-all active:scale-90"
             >
               <X className="w-4 h-4" />
@@ -101,10 +134,24 @@ export function ChatWidget() {
                 <Sparkles className="w-6 h-6 text-amber-neon" />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-bold text-white tracking-tight uppercase">How shall we evolve?</p>
-                <p className="text-[10px] font-medium text-gray-500 leading-relaxed max-w-[180px]">
-                  I can manifest assets and orchestrate canvas workflows.
+                <p className="text-xs font-bold text-white tracking-tight uppercase">How shall we create?</p>
+                <p className="text-[10px] font-medium text-gray-500 leading-relaxed max-w-[200px]">
+                  Generate images, enhance photos, or manage your gallery. Results appear automatically.
                 </p>
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center mt-4">
+                {["Generate a sunset", "Enhance my photo", "Create an album"].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => {
+                      setInput(suggestion);
+                      inputRef.current?.focus();
+                    }}
+                    className="text-[9px] font-bold px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -112,6 +159,15 @@ export function ChatWidget() {
             {messages.map((msg) => (
               <ChatMessage key={msg.id} message={msg} />
             ))}
+            {isStreaming && (
+              <div className="flex items-center gap-2 text-amber-neon/50">
+                <div className="flex gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-neon animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-neon animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-neon animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -149,6 +205,14 @@ export function ChatWidget() {
                 <Send className="w-3.5 h-3.5 stroke-[3]" />
               )}
             </button>
+          </div>
+          <div className="flex items-center justify-between mt-2 px-1">
+            <span className="text-[8px] text-gray-600 font-medium">
+              {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
+            </span>
+            <span className="text-[8px] text-gray-700 font-mono">
+              {expanded ? "Esc" : "Cmd+K"}
+            </span>
           </div>
         </div>
       </div>

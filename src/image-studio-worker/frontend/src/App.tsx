@@ -5,6 +5,8 @@ import { useCredits } from "./hooks/useCredits";
 import { useAuth } from "./contexts/AuthContext";
 import { ChatWidget } from "./components/ui/ChatWidget";
 import { Sparkles, Github, Activity, Zap, Shield, Zap as ZapIcon, Layout, Cpu, Image as ImageIcon, LogOut } from "lucide-react";
+import { DragDropProvider } from "./contexts/DragDropContext";
+import { eventBus } from "./services/event-bus";
 
 import { LiveActivity } from "./components/sections/LiveActivity";
 import { AnimatedGenerations } from "./components/sections/AnimatedGenerations";
@@ -12,8 +14,8 @@ import { AnimatedGenerations } from "./components/sections/AnimatedGenerations";
 export function App() {
   const [workspace, setWorkspace] = useState<Workspace>(() => {
     const hash = window.location.hash.replace("#/", "");
-    return ["studio", "archive", "intelligence", "showcase", "settings"].includes(hash) 
-      ? (hash as Workspace) 
+    return ["studio", "gallery", "archive", "intelligence", "showcase", "settings"].includes(hash)
+      ? (hash as Workspace)
       : "studio";
   });
 
@@ -42,12 +44,47 @@ export function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#/", "");
-      if (["studio", "archive", "intelligence", "showcase", "settings"].includes(hash)) {
+      if (["studio", "gallery", "archive", "intelligence", "showcase", "settings"].includes(hash)) {
         setWorkspace(hash as Workspace);
       }
     };
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Global paste-to-upload handler (authenticated/demo app)
+  useEffect(() => {
+    const handlePaste = async (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith("image/")) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (!file) continue;
+
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("name", `Pasted-${new Date().toISOString().slice(0, 19)}`);
+
+          try {
+            const res = await fetch("/api/gallery/upload", {
+              method: "POST",
+              body: formData,
+            });
+            if (res.ok) {
+              eventBus.emit("gallery:updated", { reason: "upload" });
+            }
+          } catch {
+            // silently fail
+          }
+        }
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
   }, []);
 
   if (authLoading) {
@@ -63,6 +100,7 @@ export function App() {
 
   if (!isLoggedIn && !isDemo) {
     return (
+      <DragDropProvider>
       <div className="min-h-screen bg-obsidian-950 text-gray-200 overflow-x-hidden relative selection:bg-amber-neon/30 selection:text-white font-sans antialiased">
         {/* Cinematic Neural Background */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -197,10 +235,12 @@ export function App() {
 
         <ChatWidget />
       </div>
+      </DragDropProvider>
     );
   }
 
   return (
+    <DragDropProvider>
     <div className="h-[100dvh] flex flex-col md:flex-row bg-obsidian-950 text-gray-200 overflow-hidden font-sans antialiased selection:bg-amber-neon/20">
       <Sidebar active={workspace} onNavigate={setWorkspace} user={user} onLogout={logout} />
       
@@ -271,5 +311,6 @@ export function App() {
       
       <ChatWidget />
     </div>
+    </DragDropProvider>
   );
 }
