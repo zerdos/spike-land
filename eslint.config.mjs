@@ -50,6 +50,7 @@ export default tseslint.config(
       "packages/**",
       "src/esbuild-wasm/**",
       "**/*.d.ts",
+      ".yarn/**",
     ],
   },
 
@@ -107,7 +108,18 @@ export default tseslint.config(
   // Config files at root
   {
     files: ["*.config.ts", "*.config.mjs"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+    },
     rules: {
+      ...sharedRules,
       "@typescript-eslint/no-unused-vars": "off",
     },
   },

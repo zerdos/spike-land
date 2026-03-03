@@ -759,7 +759,7 @@ describe("RateLimiter", () => {
   let limiter: RateLimiter;
 
   beforeEach(() => {
-    limiter = new RateLimiter();
+    limiter = new RateLimiter({} as DurableObjectState, {} as Env);
   });
 
   it("allows requests within grace limit and returns 0 cooldown", async () => {
@@ -810,7 +810,7 @@ describe("RateLimiter", () => {
         }
       }
     }
-    const badLimiter = new BadLimiter();
+    const badLimiter = new BadLimiter({} as DurableObjectState, {} as Env);
     const res = await badLimiter.fetch(new Request("https://dummy/", { method: "POST" }));
     expect(res.status).toBe(500);
     expect(await res.text()).toBe("Rate limiter error");
@@ -823,7 +823,7 @@ describe("RateLimiter", () => {
       await limiter.fetch(request);
     }
     // Create a fresh limiter to simulate time reset
-    const freshLimiter = new RateLimiter();
+    const freshLimiter = new RateLimiter({} as DurableObjectState, {} as Env);
     for (let i = 0; i < 4; i++) {
       const res = await freshLimiter.fetch(request);
       expect(await res.text()).toBe("0");
