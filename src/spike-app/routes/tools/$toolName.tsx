@@ -60,7 +60,7 @@ export function ToolsCategoryPage() {
             <h2 className="text-lg font-semibold mb-2 text-foreground">Description</h2>
             <p className="text-muted-foreground text-sm mb-6">{tool.description}</p>
 
-            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-zinc-100">Arguments</h2>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Arguments</h2>
             <JsonSchemaForm
               schema={tool.inputSchema as any}
               onChange={setFormData}
@@ -82,9 +82,9 @@ export function ToolsCategoryPage() {
           <div className="border-b border-border bg-muted px-4 py-3">
             <h2 className="text-sm font-semibold text-foreground">Execution Result</h2>
           </div>
-          <div className="flex-1 bg-gray-900 p-4 text-sm text-green-400 overflow-x-auto font-mono">
+          <div className="flex-1 bg-foreground p-4 text-sm text-success-foreground overflow-x-auto font-mono">
             {!result && !executeTool.isPending && (
-              <span className="text-zinc-500">Waiting for execution...</span>
+              <span className="text-muted-foreground">Waiting for execution...</span>
             )}
 
             {executeTool.isPending && (
