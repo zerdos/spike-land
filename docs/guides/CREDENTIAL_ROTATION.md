@@ -24,7 +24,7 @@ security incident occurs or as part of regular security hygiene.
 | Service           | Variables                                        | Priority | Rotation URL                                         |
 | ----------------- | ------------------------------------------------ | -------- | ---------------------------------------------------- |
 | Stripe            | STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET         | CRITICAL | https://dashboard.stripe.com/apikeys                 |
-| Database (Legacy) | DATABASE_URL, DATABASE_URL_UNPOOLED              | Legacy   | (legacy spike.land only)                             |
+| Database (Legacy) | DATABASE_URL, DATABASE_URL_UNPOOLED              | Removed  | (was legacy spike.land, now deleted)                 |
 | Cloudflare API    | CLOUDFLARE_API_TOKEN                             | HIGH     | https://dash.cloudflare.com/profile/api-tokens       |
 | Auth Secret       | AUTH_SECRET                                      | HIGH     | Generate locally                                     |
 | GitHub PAT        | GH_PAT_TOKEN                                     | HIGH     | https://github.com/settings/tokens                   |
@@ -70,11 +70,7 @@ security incident occurs or as part of regular security hygiene.
 4. Update STRIPE_WEBHOOK_SECRET in all environments
 5. Verify webhook delivery in Stripe dashboard
 
-### 2. Database Credentials (Legacy)
-
-> **Note:** The platform now uses Cloudflare D1 (no connection strings needed). This section applies only to the legacy `packages/spike.land` PostgreSQL database.
-
-### 3. AUTH_SECRET (HIGH)
+### 2. AUTH_SECRET (HIGH)
 
 **Impact**: All existing sessions will be invalidated; users must re-login
 

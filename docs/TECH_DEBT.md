@@ -11,15 +11,6 @@ are prioritized P0 (critical) through P3 (minor/nice-to-have).
 
 ### P0 - Critical
 
-#### TD-P0-1: next-auth on beta.30
-
-- **Status**: Superseded
-- **Impact**: Production running on pre-release version
-- **Details**: `next-auth` is pinned to `5.0.0-beta.30` in root `package.json`.
-  Beta releases may contain breaking changes, missing fixes, or undocumented
-  behavior. Superseded by migration to Better Auth on Cloudflare Workers (March 2026). NextAuth is legacy-only (packages/spike.land).
-- **Action**: Monitor next-auth releases; upgrade when stable v5 is available.
-
 #### TD-P0-2: Test coverage below targets
 
 - **Status**: Open

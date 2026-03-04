@@ -1,1 +1,0 @@
-export { QRCodePanel } from "./QRCodePanel";

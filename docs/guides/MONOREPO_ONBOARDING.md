@@ -4,8 +4,7 @@
 
 The **spike-land-ai** monorepo contains 29 packages under the `src/` directory,
 managed as a single Yarn workspace. The root `package.json` declares workspaces
-as `["src/*", "packages/spike.land"]`, where `packages/spike.land` is a legacy
-entry being phased out.
+as `["src/*"]`.
 
 All packages are published to GitHub Packages (`npm.pkg.github.com`) under the
 `@spike-land-ai` scope. Versioning and publishing are handled by Changesets.
@@ -228,22 +227,6 @@ npm test          # Run Vitest
    ```bash
    yarn changeset
    ```
-
----
-
-## Legacy Note
-
-The `packages/spike.land` directory contains the legacy Next.js 16 platform. It
-is included in the workspace config but is being replaced by the `spike-app` +
-`spike-edge` stack.
-
-Key differences from `src/` packages:
-- Uses Yarn directly (not npm scripts)
-- Has its own extensive CI pipeline (ESLint, TypeScript, Vitest with 4 shards)
-- Contains ~520 routes and ~383 API endpoints
-- Uses PostgreSQL + Prisma and Stripe for payments
-
-When working on new features, build them in the `src/` packages instead.
 
 ---
 

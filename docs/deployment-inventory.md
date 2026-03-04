@@ -56,10 +56,6 @@
    - Config: `src/spike-review/wrangler.toml`
    - Deploy: `npm run w:deploy:prod`
 
-### Legacy (spike.land)
-
-> **Note:** AWS ECS infrastructure was decommissioned on 2026-03-02. spike.land (Next.js 16) is now legacy-only and not actively deployed. See `packages/spike.land/` for the legacy codebase.
-
 ### MCP stdio Servers (local process, not deployed)
 
 These packages are consumed as npm dependencies or run as stdio processes, not
@@ -177,10 +173,6 @@ All secrets are set via `wrangler secret put <NAME>` per worker.
 - **Steps**: Lint (ESLint), type check (TypeScript), tests (Vitest)
 - **Publishing**: Changesets on main branch push to GitHub Packages npm registry
 - **Registry**: npm.pkg.github.com/@spike-land-ai
-
-### spike.land (legacy)
-
-> **Note:** AWS ECS deploy pipeline was decommissioned on 2026-03-02. spike.land is legacy-only.
 
 ### Cloudflare Workers (spike-land-backend, transpile, spike-land-mcp, etc.)
 

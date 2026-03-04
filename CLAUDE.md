@@ -67,12 +67,6 @@ All packages live under `src/`:
 | `src/eslint-config` | `@spike-land-ai/eslint-config` | —       | Shared ESLint configuration     |
 | `src/tsconfig`      | `@spike-land-ai/tsconfig`      | —       | Shared TypeScript configuration |
 
-### Legacy
-
-| Directory             | Package      | Runtime    | Purpose                                                                                         |
-| --------------------- | ------------ | ---------- | ----------------------------------------------------------------------------------------------- |
-| `packages/spike.land` | `spike-land` | Next.js 16 | Legacy platform — MCP registry, app store, auth, payments (being replaced by spike-app + spike-edge stack) |
-
 ## Common Commands
 
 Each package has its own scripts. The most common patterns:
@@ -111,14 +105,6 @@ yarn build            # Build to dist/
 yarn test             # Vitest with jsdom
 yarn typecheck        # Type check only
 
-# spike.land (legacy, being replaced)
-cd packages/spike.land
-yarn dev              # Dev server (localhost:3000)
-yarn build            # Production build
-yarn lint             # ESLint
-yarn typecheck        # TypeScript check
-yarn test:coverage    # Vitest with enforced coverage thresholds
-yarn depot:ci         # Preferred CI — fast remote builds via Depot
 ```
 
 ## Architecture
@@ -154,21 +140,12 @@ servers: esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, openclaw-mcp.
 - `qa-studio` — Browser automation utilities (Playwright)
 - `state-machine` — Statechart engine with guard parser and CLI
 
-### Legacy Platform (spike.land)
-
-Next.js 16 App Router application with ~520 routes, ~383 API endpoints,
-PostgreSQL + Prisma, Stripe payments. Being replaced by the spike-app +
-spike-edge stack. Has its own detailed
-`packages/spike.land/CLAUDE.md` with ticket-driven workflow requirements.
-
 ## CI/CD
 
 - Shared workflow: `.github/.github/workflows/ci-publish.yml` (reusable across
   all repos)
 - Node 24, GitHub Packages npm registry
 - Changesets for versioning and publishing on main branch push
-- spike.land has its own extensive CI (legacy): ESLint, TypeScript, Vitest (4
-  shards), Next.js build
 
 ## Dependency Cascade System
 
@@ -187,14 +164,12 @@ receive a PR bumping the version.
 
 | Source package                    | Consuming repos                                                                                                                                                                                                                 |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@spike-land-ai/esbuild-wasm`     | esbuild-wasm-mcp, code, transpile, spike-land-backend, spike.land                                                                                                                                                               |
-| `@spike-land-ai/esbuild-wasm-mcp` | code, spike-land-backend                                                                                                                                                                                                        |
-| `@spike-land-ai/code`             | transpile, spike-land-backend                                                                                                                                                                                                   |
-| `@spike-land-ai/shared`           | mcp-image-studio, spike-land-mcp, spike.land                                                                                                                                                                                    |
-| `@spike-land-ai/react-ts-worker`  | spike.land                                                                                                                                                                                                                      |
-| `@spike-land-ai/spike-cli`        | spike.land                                                                                                                                                                                                                      |
-| `@spike-land-ai/eslint-config`    | chess-engine, code, esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, mcp-server-base, openclaw-mcp, react-ts-worker, shared, spike-app, spike-cli, spike-edge, spike-review, state-machine, spike.land |
-| `@spike-land-ai/tsconfig`         | chess-engine, code, esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, mcp-server-base, openclaw-mcp, react-ts-worker, shared, spike-cli, spike-review, state-machine, spike.land                                              |
+| `@spike-land-ai/esbuild-wasm`     | esbuild-wasm-mcp, code, transpile, spike-land-backend                                                                    |
+| `@spike-land-ai/esbuild-wasm-mcp` | code, spike-land-backend                                                                                                 |
+| `@spike-land-ai/code`             | transpile, spike-land-backend                                                                                            |
+| `@spike-land-ai/shared`           | mcp-image-studio, spike-land-mcp                                                                                         |
+| `@spike-land-ai/eslint-config`    | chess-engine, code, esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, mcp-server-base, openclaw-mcp, react-ts-worker, shared, spike-app, spike-cli, spike-edge, spike-review, state-machine |
+| `@spike-land-ai/tsconfig`         | chess-engine, code, esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, mcp-server-base, openclaw-mcp, react-ts-worker, shared, spike-cli, spike-review, state-machine                        |
 
 ### Key files
 
@@ -226,9 +201,6 @@ User-facing documentation and blog posts live at the umbrella repo root:
 - `docs/` — architecture, guides, API docs, best practices (~140 files)
 - `content/blog/` — published MDX blog posts (18 files)
 
-These are symlinked into `packages/spike.land/` for local dev (legacy setup). CI
-copies them.
-
 ## Key Conventions
 
 - TypeScript strict mode across all packages
@@ -237,4 +209,4 @@ copies them.
 - MCP servers follow: SDK + Zod schema + tool handler pattern
 - Never use `any` type — use `unknown` or proper types
 - Never use `eslint-disable`, `@ts-ignore`, or `@ts-nocheck`
-- Most packages use npm. spike.land (legacy) uses Yarn.
+- All packages use npm scripts within the Yarn workspace.
