@@ -35,7 +35,7 @@ export interface UserElo {
   eventCount: number;
   dailyGains: number;
   dailyResetAt: number;
-  tier: "free" | "pro" | "elite";
+  tier: "free" | "pro" | "business";
 }
 
 /** In-memory cache for hot-path ELO lookups (60s TTL per isolate). */
@@ -120,7 +120,7 @@ function shouldResetDaily(dailyResetAt: number, now: number): boolean {
 export interface EloEventResult {
   newElo: number;
   delta: number;
-  tier: "free" | "pro" | "elite";
+  tier: "free" | "pro" | "business";
   capped: boolean;
 }
 

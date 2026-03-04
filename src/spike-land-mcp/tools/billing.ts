@@ -23,7 +23,7 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         "billing_create_checkout",
         "Create a Stripe checkout session URL for subscribing to a paid plan.",
         {
-          tier: z.enum(["pro", "elite"]).describe("Subscription tier to purchase: pro or elite."),
+          tier: z.enum(["pro", "business"]).describe("Subscription tier to purchase: pro or business."),
           success_url: z
             .string()
             .url()

@@ -17,6 +17,12 @@ import { blogComments } from "./routes/blog-comments.js";
 import { whatsapp } from "./routes/whatsapp.js";
 import { stripeWebhook } from "./routes/stripe-webhook.js";
 import { checkout } from "./routes/checkout.js";
+import { userProfile } from "./routes/user-profile.js";
+import { billing } from "./routes/billing.js";
+import { apiKeys } from "./routes/api-keys.js";
+import { cockpit } from "./routes/cockpit.js";
+import { credits } from "./routes/credits.js";
+import { creditMeterMiddleware } from "./middleware/credit-meter.js";
 import { spa } from "./routes/spa.js";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -88,6 +94,9 @@ app.use("*", async (c, next) => {
 // Auth middleware for proxy routes (S1: CRITICAL — protect API keys)
 app.use("/proxy/*", authMiddleware);
 
+// Credit metering for AI proxy (runs after auth, before handler)
+app.use("/proxy/ai", creditMeterMiddleware);
+
 // Auth middleware for R2 mutation routes (S2: protect object storage)
 app.post("/r2/upload", authMiddleware);
 app.delete("/r2/*", authMiddleware);
@@ -97,6 +106,16 @@ app.use("/whatsapp/link/*", authMiddleware);
 
 // Auth middleware for checkout
 app.use("/api/checkout", authMiddleware);
+
+// Auth middleware for credits routes
+app.use("/api/credits/*", authMiddleware);
+
+// Auth middleware for new user/billing/keys/cockpit routes
+app.use("/api/user/*", authMiddleware);
+app.use("/api/billing/*", authMiddleware);
+app.use("/api/keys", authMiddleware);
+app.use("/api/keys/*", authMiddleware);
+app.use("/api/cockpit/*", authMiddleware);
 
 // Error handling middleware
 app.onError((err, c) => {
@@ -125,6 +144,11 @@ app.route("/", blogComments);
 app.route("/", whatsapp);
 app.route("/", stripeWebhook);
 app.route("/", checkout);
+app.route("/", userProfile);
+app.route("/", billing);
+app.route("/", apiKeys);
+app.route("/", cockpit);
+app.route("/", credits);
 
 // MCP tools listing proxy (public, no auth required)
 app.get("/mcp/tools", async (c) => {
@@ -135,6 +159,44 @@ app.get("/mcp/tools", async (c) => {
     statusText: response.statusText,
     headers: new Headers(response.headers),
   });
+});
+
+// Store tools endpoint — groups MCP registry tools by category for the store UI
+app.get("/api/store/tools", async (c) => {
+  const response = await c.env.MCP_SERVICE.fetch(
+    new Request("https://mcp.spike.land/tools"),
+  );
+  if (!response.ok) {
+    return c.json({ error: "Failed to fetch tools" }, 502);
+  }
+  const data = await response.json<{ tools: Array<{ name: string; description: string; category?: string; version?: string; stability?: string }> }>();
+  const tools = data.tools ?? [];
+
+  // Group by category
+  const categoryMap = new Map<string, typeof tools>();
+  for (const tool of tools) {
+    const cat = tool.category ?? "other";
+    const existing = categoryMap.get(cat) ?? [];
+    existing.push(tool);
+    categoryMap.set(cat, existing);
+  }
+
+  const categories = Array.from(categoryMap.entries()).map(([name, items]) => ({
+    name,
+    tools: items,
+  }));
+
+  // Featured: first 6 tools across all categories (stable tools first)
+  const featured = [...tools]
+    .sort((a, b) => {
+      const aStable = a.stability === "stable" ? 0 : 1;
+      const bStable = b.stability === "stable" ? 0 : 1;
+      return aStable - bStable;
+    })
+    .slice(0, 6);
+
+  c.header("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+  return c.json({ categories, featured, total: tools.length });
 });
 
 // MCP JSON-RPC proxy via service binding (requires auth)

@@ -5,7 +5,7 @@
 
 import type { Env } from "../env.js";
 
-export type Tier = "free" | "pro" | "elite";
+export type Tier = "free" | "pro" | "business";
 
 export interface CommandContext {
   db: D1Database;
@@ -198,7 +198,7 @@ async function handleTools(query: string, ctx: CommandContext): Promise<string> 
 
 async function handleUse(args: string, ctx: CommandContext): Promise<string> {
   if (ctx.tier === "free") {
-    return "Tool execution requires a pro or elite plan. Use /subscribe to upgrade.";
+    return "Tool execution requires a pro or business plan. Use /subscribe to upgrade.";
   }
 
   const spaceIdx = args.indexOf(" ");
@@ -322,7 +322,7 @@ async function handleStatus(ctx: CommandContext): Promise<string> {
 
 async function handleChat(message: string, ctx: CommandContext): Promise<string> {
   if (ctx.tier === "free") {
-    return "Natural language chat requires a pro or elite plan. Use /subscribe to upgrade, or try /help for available commands.";
+    return "Natural language chat requires a pro or business plan. Use /subscribe to upgrade, or try /help for available commands.";
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ctx.env.GEMINI_API_KEY}`;

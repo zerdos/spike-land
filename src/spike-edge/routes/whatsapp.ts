@@ -44,7 +44,7 @@ function generateOtp(): string {
 const RATE_LIMITS: Record<Tier, number> = {
   free: 50,
   pro: 500,
-  elite: 5000,
+  business: 5000,
 };
 
 async function checkRateLimit(

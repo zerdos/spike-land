@@ -2,8 +2,8 @@
  * One-time Stripe product + price setup script.
  *
  * Creates:
- *   - "spike.land Pro"   → $19/mo USD (lookup_key: pro_monthly)
- *   - "spike.land Elite" → £90/mo GBP (lookup_key: elite_monthly)
+ *   - "spike.land Pro"      → $29/mo USD (lookup_key: pro_monthly)
+ *   - "spike.land Business" → $99/mo USD (lookup_key: business_monthly)
  *
  * Usage: npx tsx scripts/stripe-setup.ts
  */
@@ -50,31 +50,31 @@ async function main() {
   const proPrice = await stripePost("/v1/prices", {
     product: proProduct.id as string,
     currency: "usd",
-    unit_amount: "1900",
+    unit_amount: "2900",
     "recurring[interval]": "month",
     lookup_key: "pro_monthly",
   });
-  console.log(`Price created: $19/mo USD → ${proPrice.id}`);
+  console.log(`Price created: $29/mo USD → ${proPrice.id}`);
 
-  // --- Elite ---
-  const eliteProduct = await stripePost("/v1/products", {
-    name: "spike.land Elite",
+  // --- Business ---
+  const businessProduct = await stripePost("/v1/products", {
+    name: "spike.land Business",
     description: "Unlimited access, priority support, bug bounty eligibility",
   });
-  console.log(`\nProduct created: ${eliteProduct.name} (${eliteProduct.id})`);
+  console.log(`\nProduct created: ${businessProduct.name} (${businessProduct.id})`);
 
-  const elitePrice = await stripePost("/v1/prices", {
-    product: eliteProduct.id as string,
-    currency: "gbp",
-    unit_amount: "9000",
+  const businessPrice = await stripePost("/v1/prices", {
+    product: businessProduct.id as string,
+    currency: "usd",
+    unit_amount: "9900",
     "recurring[interval]": "month",
-    lookup_key: "elite_monthly",
+    lookup_key: "business_monthly",
   });
-  console.log(`Price created: £90/mo GBP → ${elitePrice.id}`);
+  console.log(`Price created: $99/mo USD → ${businessPrice.id}`);
 
   console.log("\nDone! Save these price IDs if needed:");
-  console.log(`  Pro:   ${proPrice.id}`);
-  console.log(`  Elite: ${elitePrice.id}`);
+  console.log(`  Pro:      ${proPrice.id}`);
+  console.log(`  Business: ${businessPrice.id}`);
 }
 
 main();

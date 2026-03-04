@@ -1,0 +1,367 @@
+---
+title: "Getting Started with spike.land: From Signup to Your First AI Tool Call"
+slug: "getting-started-spike-land"
+description: "A step-by-step guide to setting up spike.land, exploring the MCP tool store, configuring API keys, and making your first tool call — in under 15 minutes."
+date: "2026-03-04"
+author: "Zoltan Erdos"
+category: "Tutorial"
+tags: ["mcp", "getting-started", "tutorial", "spike-cli", "api-keys", "byok", "tools", "beginner"]
+featured: false
+primer: "Zero to first tool call in 15 minutes."
+heroImage: "/blog/getting-started-spike-land/hero.png"
+---
+
+![A clean dashboard interface showing MCP tool cards lit up in sequence, a developer's hand hovering over a keyboard, soft terminal glow in the background](/blog/getting-started-spike-land/hero.png)
+
+<Tldr>
+
+- Sign up at spike.land — free tier, no credit card required
+- Browse 74 tools in the store, organized by category and tier
+- Connect via `npx @spike-land-ai/spike-cli shell` in under 60 seconds
+- Add your API keys (BYOK) or use proxy credits for model-backed tools
+- Upgrade to Pro ($29/mo) or Business ($99/mo) when you need more credits or team features
+
+</Tldr>
+
+## Before You Start
+
+You need two things:
+
+1. **Node.js 18+** — check with `node -v`
+2. **A spike.land account** — [sign up here](https://spike.land/signup), free, no credit card
+
+That is it. spike-cli is the main interface. Everything else — auth, tool discovery, routing across servers — happens through it.
+
+---
+
+## Step 1: Create Your Account
+
+Go to [spike.land/signup](https://spike.land/signup).
+
+You can sign up with:
+- GitHub (recommended for developers)
+- Google
+- Email + password
+
+After signup you land in the dashboard. Your free-tier account is active immediately.
+
+**What the free tier includes:**
+- 50 credits/day
+- Access to all free-tier tools (a subset of the full 74)
+- Community support
+- BYOK (bring your own API keys) for model-backed tools
+
+No time limit. The free tier does not expire.
+
+---
+
+## Step 2: Explore the Dashboard
+
+The dashboard has four main sections.
+
+### Tools Store
+
+Browse all 74 tools organized by category: Chess, Image Studio, Codespace, QA Studio, Utilities. Each tool card shows:
+
+- Tool name and description
+- Tier (Free / Pro / Business)
+- Credit cost per call
+- Input/output schema
+
+Click any tool to see its full documentation, example inputs, and sample responses. You can test tools directly in the browser before installing anything.
+
+### Credits
+
+Your current credit balance, daily usage, and transaction history. On the free tier, your 50 daily credits reset at midnight UTC.
+
+### API Keys
+
+Where you add external API keys (OpenAI, Anthropic, Replicate) and manage your spike.land proxy credit settings. More on this in Step 4.
+
+### Team (Business only)
+
+Invite team members, assign roles, share API key pools, and manage tool access by member.
+
+---
+
+## Step 3: Install spike-cli and Connect
+
+spike-cli is an MCP multiplexer — one shell that connects your AI agent to spike.land and any other MCP server you configure.
+
+### Quick start (no install)
+
+```bash
+npx @spike-land-ai/spike-cli shell
+```
+
+This downloads and runs spike-cli, authenticates you, and opens an interactive shell. You are connected to all spike.land tools immediately.
+
+### Global install (recommended)
+
+```bash
+npm install -g @spike-land-ai/spike-cli
+spike auth login
+spike shell
+```
+
+`spike auth login` opens a browser for OAuth. Approve, and your credentials are stored locally. You only do this once.
+
+### Verify the connection
+
+Inside the shell:
+
+```
+spike> servers
+  SERVER        STATUS    TOOLS
+  spike-land    online    74
+
+spike> toolsets
+  TOOLSET      TOOLS   STATUS
+  chess           6    available
+  codespace       5    available
+  image-studio   42    available
+  qa-studio       8    available
+  utilities      13    available
+```
+
+You are connected. The toolsets are not loaded yet — spike-cli uses lazy loading to keep context small. Load what you need.
+
+```
+spike> load chess
+  ✓ Loaded toolset "chess" (6 tools from spike-land)
+
+spike> tools chess
+  spike-land__chess_new_game
+  spike-land__chess_send_challenge
+  spike-land__chess_make_move
+  spike-land__chess_get_board
+  spike-land__chess_get_elo
+  spike-land__chess_resign
+```
+
+### Make your first tool call
+
+```
+spike> call spike-land__chess_new_game {"timeControl": "5+0"}
+  game created (g_3k9xm1), playing as white, waiting for opponent
+  time control: 5 minutes + 0 increment
+  game URL: https://spike.land/chess/g_3k9xm1
+```
+
+You just called your first MCP tool.
+
+---
+
+## Step 4: Configure API Keys
+
+Some tools call AI models internally — image analysis, code explanation, content generation. You can either bring your own API keys or use spike.land proxy credits.
+
+### Bring Your Own Keys (BYOK)
+
+Go to **Dashboard > API Keys** and add your keys:
+
+| Provider | Key format | Used by |
+|---|---|---|
+| OpenAI | `sk-...` | Image generation, embeddings |
+| Anthropic | `sk-ant-...` | Code analysis, content tools |
+| Replicate | `r8_...` | Image enhancement, upscaling |
+
+Once added, tool calls route through your keys automatically. You pay the provider directly. spike.land does not see your API costs.
+
+**Why BYOK?**
+- Full control over your model spend
+- Use your existing provider credits and rate limits
+- No markup — you pay the provider's published rates
+
+### Spike.land Proxy Credits
+
+Prefer consolidated billing? Use proxy credits instead.
+
+1. Go to **Dashboard > Credits**
+2. Click **Buy Credits** — $0.10 per credit, minimum 100 credits ($10)
+3. Select **Use Proxy** in the API Keys section
+
+Model calls deduct from your credit balance instead of hitting a provider key. One line item on your spike.land invoice covers everything.
+
+**Free and Pro tier users**: credits roll over monthly, up to a 2× cap. Business users have unlimited credits — no cap, no rollover needed.
+
+---
+
+## Step 5: Explore Tools in the Store
+
+The store is the best way to discover what spike.land can do.
+
+### Browsing by category
+
+```
+spike> toolsets
+  TOOLSET        TOOLS   STATUS
+  chess              6   available
+  image-studio      42   available
+  codespace          5   available
+  qa-studio          8   available
+  utilities         13   available
+```
+
+Load a category, list its tools, read the descriptions. The tool descriptions are written for AI agents to understand — but they read well for humans too.
+
+### Testing a tool in the browser
+
+Every tool card in the dashboard has a **Try it** panel. Enter input values, click Run, and see the raw response. Good for understanding what a tool returns before building a workflow around it.
+
+### Finding tools by capability
+
+Not sure which tool does what you need? Use the search bar in the store. Search for "image" and you get 42 results. Search for "chess elo" and you get `chess_get_elo`. Search for "screenshot" and you get the QA Studio capture tools.
+
+### Reading a tool's schema
+
+Click any tool to see:
+
+```
+Tool: chess_make_move
+Tier: Free
+Credits: 0 (no model call)
+
+Input:
+  game_id: string  — ID of the game to move in
+  move: string     — Move in UCI notation (e.g. "e2e4")
+
+Output:
+  move: string     — The move played
+  fen: string      — Board state after move
+  result: string   — "ongoing" | "white_wins" | "black_wins" | "draw"
+  narrative: string — Plain English description of the position
+```
+
+The schema is the source of truth. What you see here is exactly what spike-cli sends to the tool and what comes back.
+
+---
+
+## Step 6: Connect to Your AI Agent
+
+spike-cli works with any MCP-compatible AI client. The most common setups:
+
+### Claude Code
+
+Add spike-land to your `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "spike-land": {
+      "type": "url",
+      "url": "https://spike.land/api/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Find your API key at **Dashboard > API Keys > MCP Access Token**.
+
+### spike-cli as a bridge
+
+If you want spike-cli's lazy toolset loading and multiplexing on top of Claude Code:
+
+```json
+{
+  "mcpServers": {
+    "spike": {
+      "type": "stdio",
+      "command": "spike",
+      "args": ["mcp", "--servers", "spike-land"]
+    }
+  }
+}
+```
+
+spike-cli handles auth, namespacing, and routing. Your AI client sees a single, flat tool list with `spike-land__` prefixes.
+
+### Custom agents
+
+For agents built with the Anthropic SDK, OpenAI Assistants, or any framework that supports tool calling, use the HTTP endpoint directly:
+
+```
+POST https://spike.land/api/mcp
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "chess_new_game",
+    "arguments": { "timeControl": "5+0" }
+  }
+}
+```
+
+Full API reference at [spike.land/docs/api](https://spike.land/docs/api).
+
+---
+
+## Step 7: Upgrade to Pro or Business
+
+The free tier is real — it does not expire and it covers the full free-tier tool catalog. But if you hit the 50 credits/day ceiling or need premium tools, upgrading takes 30 seconds.
+
+### When to upgrade to Pro ($29/mo)
+
+- You are hitting the daily credit limit
+- You need image studio tools (most are Pro-tier)
+- You want priority support
+- You are building something you plan to ship
+
+### When to upgrade to Business ($99/mo)
+
+- You have a team sharing API keys or tool access
+- You need unlimited credits for production workloads
+- You need audit logs for compliance
+- You are building a product on top of spike.land
+
+### How to upgrade
+
+1. Go to **Dashboard > Billing**
+2. Click **Upgrade**
+3. Choose Pro or Business
+4. Enter payment details (card or invoice for Business)
+
+Upgrades are immediate. Credits apply to your account the same minute.
+
+**Annual discount**: both plans are available at a 20% discount with annual billing — Pro at $278/year ($23.17/mo effective), Business at $950/year ($79.17/mo effective).
+
+---
+
+## What's Next
+
+You are set up. Here is where to go from here:
+
+**Read the MCP explainer** — [MCP Explained: The Universal Adapter for AI Tools](/blog/mcp-explained-universal-adapter-for-ai-tools) covers how the protocol works and why we built on it.
+
+**Browse the full tool catalog** — [spike.land/store](https://spike.land/store) has every tool with live documentation.
+
+**Build your first workflow** — The [developer docs](https://spike.land/docs) have worked examples for common use cases: image pipelines, code analysis agents, chess bots.
+
+**Publish a tool** — If you have an MCP tool you want to monetize, [apply for the marketplace](https://spike.land/marketplace/apply). We take 30%, you keep 70%.
+
+**Join the community** — [Discord](https://spike.land/discord) for questions, feedback, and early previews of what's coming next.
+
+---
+
+## Troubleshooting
+
+**`spike auth login` opens a browser but nothing happens**
+Make sure port 9876 is not blocked by a firewall. spike-cli uses a local redirect for OAuth. If blocked, run `spike auth login --manual` and paste the token directly.
+
+**Tool call returns "insufficient credits"**
+You have hit your daily limit. Credits reset at midnight UTC. Upgrade to Pro for 500/day or Business for unlimited.
+
+**BYOK key not being used**
+Check that the key is active in **Dashboard > API Keys** and that the toggle next to it is enabled. Inactive keys are stored but not used.
+
+**`npx` is slow on first run**
+The first `npx @spike-land-ai/spike-cli` download takes 10-20 seconds. Subsequent runs use the cache. Install globally to skip this: `npm install -g @spike-land-ai/spike-cli`.
+
+---
+
+*Questions? [Discord](https://spike.land/discord) is the fastest way to reach the team. Issues can be filed at [github.com/spike-land-ai](https://github.com/spike-land-ai).*

@@ -11,7 +11,7 @@
 
 import { eloToTier } from "./elo.js";
 
-type Tier = "free" | "pro" | "elite";
+type Tier = "free" | "pro" | "business";
 
 export async function resolveEffectiveTier(
   db: D1Database,
@@ -29,20 +29,20 @@ export async function resolveEffectiveTier(
 
   if (sub) {
     const plan = sub.plan as Tier;
-    if (plan === "pro" || plan === "elite") return plan;
+    if (plan === "pro" || plan === "business") return plan;
   }
 
   // 2. Check active access grants (highest tier wins)
   const grant = await db
     .prepare(
-      "SELECT tier FROM access_grants WHERE user_id = ? AND expires_at > ? ORDER BY CASE tier WHEN 'elite' THEN 2 WHEN 'pro' THEN 1 ELSE 0 END DESC LIMIT 1",
+      "SELECT tier FROM access_grants WHERE user_id = ? AND expires_at > ? ORDER BY CASE tier WHEN 'business' THEN 2 WHEN 'pro' THEN 1 ELSE 0 END DESC LIMIT 1",
     )
     .bind(userId, now)
     .first<{ tier: string }>();
 
   if (grant) {
     const grantTier = grant.tier as Tier;
-    if (grantTier === "pro" || grantTier === "elite") return grantTier;
+    if (grantTier === "pro" || grantTier === "business") return grantTier;
   }
 
   // 3. Check BYOK key stored

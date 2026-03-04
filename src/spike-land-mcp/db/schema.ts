@@ -342,12 +342,39 @@ export const registeredTools = sqliteTable(
     endpoint: text("endpoint"),
     status: text("status").notNull().default("draft"), // "draft" | "published"
     installCount: integer("install_count").notNull().default(0),
+    priceCents: integer("price_cents").notNull().default(0),
     createdAt: integer("created_at", { mode: "number" }).notNull(),
     updatedAt: integer("updated_at", { mode: "number" }).notNull(),
   },
   (t) => ({
     userIdx: index("registered_tools_user_id_idx").on(t.userId),
     nameIdx: index("registered_tools_name_idx").on(t.name),
+  }),
+);
+
+// ─── Tool Purchases (marketplace revenue) ───────────────────────────────────
+
+export const toolPurchases = sqliteTable(
+  "tool_purchases",
+  {
+    id: text("id").primaryKey(),
+    toolId: text("tool_id").notNull(),
+    buyerUserId: text("buyer_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    sellerUserId: text("seller_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    priceCents: integer("price_cents").notNull(),
+    platformFeeCents: integer("platform_fee_cents").notNull(),
+    sellerEarningsCents: integer("seller_earnings_cents").notNull(),
+    status: text("status").notNull().default("completed"),
+    createdAt: text("created_at"),
+  },
+  (t) => ({
+    buyerIdx: index("idx_tool_purchases_buyer").on(t.buyerUserId),
+    sellerIdx: index("idx_tool_purchases_seller").on(t.sellerUserId),
+    toolIdx: index("idx_tool_purchases_tool").on(t.toolId),
   }),
 );
 
@@ -401,7 +428,7 @@ export const accessGrants = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     grantType: text("grant_type").notNull(), // "bug_bounty" | "referral" | "admin"
-    tier: text("tier").notNull(), // "pro" | "elite"
+    tier: text("tier").notNull(), // "pro" | "business"
     reason: text("reason").notNull(),
     referenceId: text("reference_id"),
     expiresAt: integer("expires_at", { mode: "number" }).notNull(),
@@ -449,6 +476,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   receivedMessages: many(directMessages, { relationName: "recipient" }),
   reminders: many(reminders),
   registeredTools: many(registeredTools),
+  toolPurchases: many(toolPurchases),
   whatsappLinks: many(whatsappLinks),
   userApiKeys: many(userApiKeyVault),
   accessGrants: many(accessGrants),
@@ -517,10 +545,28 @@ export const vaultSecretsRelations = relations(vaultSecrets, ({ one }) => ({
   }),
 }));
 
-export const registeredToolsRelations = relations(registeredTools, ({ one }) => ({
+export const registeredToolsRelations = relations(registeredTools, ({ one, many }) => ({
   user: one(users, {
     fields: [registeredTools.userId],
     references: [users.id],
+  }),
+  purchases: many(toolPurchases),
+}));
+
+export const toolPurchasesRelations = relations(toolPurchases, ({ one }) => ({
+  tool: one(registeredTools, {
+    fields: [toolPurchases.toolId],
+    references: [registeredTools.id],
+  }),
+  buyer: one(users, {
+    fields: [toolPurchases.buyerUserId],
+    references: [users.id],
+    relationName: "buyer",
+  }),
+  seller: one(users, {
+    fields: [toolPurchases.sellerUserId],
+    references: [users.id],
+    relationName: "seller",
   }),
 }));
 

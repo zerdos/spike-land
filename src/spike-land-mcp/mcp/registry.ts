@@ -55,9 +55,9 @@ export interface ToolExample {
   description: string;
 }
 
-export type EloTier = "free" | "pro" | "elite";
+export type EloTier = "free" | "pro" | "business";
 
-const TIER_RANK: Record<EloTier, number> = { free: 0, pro: 1, elite: 2 };
+const TIER_RANK: Record<EloTier, number> = { free: 0, pro: 1, business: 2 };
 
 export interface ToolDefinition {
   name: string;

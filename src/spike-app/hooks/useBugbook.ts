@@ -30,7 +30,7 @@ export interface BugReport {
 export interface UserEloEntry {
   user_id: string;
   elo: number;
-  tier: "free" | "pro" | "elite";
+  tier: "free" | "pro" | "business";
   event_count: number;
 }
 

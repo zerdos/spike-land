@@ -12,7 +12,7 @@ const checkout = new Hono<{ Bindings: Env }>();
 
 const LOOKUP_KEYS: Record<string, string> = {
   pro: "pro_monthly",
-  elite: "elite_monthly",
+  business: "business_monthly",
 };
 
 async function stripePost(
@@ -51,8 +51,8 @@ checkout.post("/api/checkout", async (c) => {
     return c.json({ error: "Stripe not configured" }, 503);
   }
 
-  // userId is set by auth middleware
-  const userId = c.req.header("x-user-id");
+  // userId is set by auth middleware via c.set("userId", ...)
+  const userId = c.get("userId" as never) as string | undefined;
   if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
@@ -65,8 +65,8 @@ checkout.post("/api/checkout", async (c) => {
   }
 
   const tier = body.tier;
-  if (tier !== "pro" && tier !== "elite") {
-    return c.json({ error: "Invalid tier. Must be 'pro' or 'elite'." }, 400);
+  if (tier !== "pro" && tier !== "business") {
+    return c.json({ error: "Invalid tier. Must be 'pro' or 'business'." }, 400);
   }
 
   const lookupKey = LOOKUP_KEYS[tier] as string;
@@ -99,6 +99,7 @@ checkout.post("/api/checkout", async (c) => {
     cancel_url: "https://spike.land/pricing",
     client_reference_id: userId,
     "metadata[userId]": userId,
+    "metadata[tier]": tier,
   });
 
   if (!sessionRes.ok) {

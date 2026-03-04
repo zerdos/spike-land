@@ -2,60 +2,139 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { useAuth } from "@/hooks/useAuth";
 import { LoginButton } from "@/components/LoginButton";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { WelcomeModal } from "@/components/WelcomeModal";
 
-const DEFAULT_TITLE = "spike.land - AI Development Platform";
+const FOUNDER_EMAIL = "zoltan.erdos@spike.land";
+
+const DEFAULT_TITLE = "spike.land - MCP-First AI Development Platform";
 const DEFAULT_DESCRIPTION =
-  "Build, deploy, and manage AI-powered applications with real-time collaboration";
+  "Build, deploy, and manage AI-powered applications with 80+ MCP tools, real-time collaboration, and edge deployment on Cloudflare Workers.";
+const DEFAULT_OG_IMAGE = "https://spike.land/og-image.png";
+const SITE_URL = "https://spike.land";
 
-const ROUTE_META: Record<string, { title: string; description: string }> = {
-  "/": { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION },
+const ROUTE_META: Record<string, { title: string; description: string; ogImage?: string }> = {
+  "/": {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
   "/tools": {
-    title: "Tools - spike.land",
-    description: "Browse and manage AI tools on the spike.land platform",
+    title: "AI Tools Registry - spike.land",
+    description: "Browse 80+ MCP tools on spike.land. Find tools for code review, image generation, data analysis, and more.",
   },
   "/apps": {
     title: "MCP Tools - spike.land",
-    description: "Browse and interact with MCP tools on the spike.land platform",
+    description: "Browse and interact with Model Context Protocol tools on spike.land. Connect AI agents to real-world data and actions.",
   },
   "/store": {
-    title: "Store - spike.land",
-    description: "Discover and install AI tools and applications from the spike.land store",
+    title: "App Store - spike.land",
+    description: "Discover and install AI-powered applications from the spike.land store. Chess engines, QA studio, data visualization, and more.",
   },
   "/messages": {
     title: "Messages - spike.land",
-    description: "Real-time messaging and collaboration on spike.land",
+    description: "Real-time messaging and collaboration on spike.land. Chat with teammates, share code, and coordinate AI workflows.",
   },
   "/analytics": {
     title: "Analytics - spike.land",
-    description: "View usage analytics and insights for your spike.land apps",
+    description: "View usage analytics and insights for your spike.land apps. Track tool invocations, message volume, and performance metrics.",
   },
   "/learn": {
     title: "Learn & Verify - spike.land",
-    description: "Learn from any content and prove your understanding through interactive quizzes",
+    description: "Learn from any content and prove your understanding through interactive AI-powered quizzes. Earn verifiable badges.",
   },
   "/bugbook": {
     title: "Bugbook - spike.land",
-    description: "Public bug tracker with ELO ranking - report, track, and fix bugs",
+    description: "Public bug tracker with ELO ranking on spike.land. Report, track, and fix bugs with community-driven prioritization.",
   },
   "/pricing": {
-    title: "Pricing - spike.land",
-    description: "Simple, transparent pricing for spike.land — Free, Pro, and Elite plans",
+    title: "Pricing - spike.land | Free, Pro $29, Business $99",
+    description: "Simple, transparent pricing for spike.land. Free plan for individuals, Pro at $29/mo, Business at $99/mo with unlimited access and priority support.",
+  },
+  "/about": {
+    title: "About spike.land - MCP-First AI Platform",
+    description: "Learn about spike.land, the MCP-first AI development platform. Our mission, team, and the technology powering 80+ AI tools on Cloudflare Workers.",
+  },
+  "/terms": {
+    title: "Terms of Service - spike.land",
+    description: "Read the spike.land Terms of Service. Learn about acceptable use, subscription billing, intellectual property rights, and our SaaS agreement.",
+  },
+  "/privacy": {
+    title: "Privacy Policy - spike.land",
+    description: "spike.land Privacy Policy. GDPR-aware data handling, cookies, third-party services (Stripe, Cloudflare), and your rights as a user.",
+  },
+  "/blog": {
+    title: "Blog - spike.land",
+    description: "Articles, tutorials, and engineering insights from the spike.land team. Learn about MCP, AI development, and edge computing.",
   },
   "/settings": {
     title: "Settings - spike.land",
-    description: "Configure your spike.land account and preferences",
+    description: "Configure your spike.land account, billing, API keys, and preferences.",
   },
   "/login": {
     title: "Sign In - spike.land",
-    description: "Sign in to spike.land to access your AI development platform",
+    description: "Sign in to spike.land with GitHub or Google to access your AI development platform.",
   },
   "/version": {
     title: "Version - spike.land",
-    description: "View build version, deployed assets, and download links for spike.land",
+    description: "View build version, deployed assets, and download links for spike.land.",
   },
 };
+
+const ORGANIZATION_JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "spike.land",
+  url: SITE_URL,
+  logo: `${SITE_URL}/og-image.png`,
+  description: DEFAULT_DESCRIPTION,
+  sameAs: ["https://github.com/spike-land-ai"],
+});
+
+const WEB_APP_JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "spike.land",
+  url: SITE_URL,
+  description: DEFAULT_DESCRIPTION,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Any",
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "USD",
+      description: "50 messages per day, free-tier tools, bug reporting, community support",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro",
+      price: "29",
+      priceCurrency: "USD",
+      description: "500 messages per day, pro tools, BYOK support, natural language chat, priority bug reporting",
+    },
+    {
+      "@type": "Offer",
+      name: "Business",
+      price: "99",
+      priceCurrency: "USD",
+      description: "Unlimited messages, all tools, priority support, early access, bug bounty eligibility",
+    },
+  ],
+});
+
+function injectJsonLd(id: string, content: string) {
+  let el = document.getElementById(id) as HTMLScriptElement | null;
+  if (!el) {
+    el = document.createElement("script");
+    el.id = id;
+    el.type = "application/ld+json";
+    document.head.appendChild(el);
+  }
+  el.textContent = content;
+}
 
 const navItems = [
   { to: "/blog", label: "Blog" },
@@ -75,9 +154,17 @@ export function RootLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   useAnalytics();
   const { theme, setTheme } = useDarkMode();
+  const { user } = useAuth();
+  const isFounder = user?.email === FOUNDER_EMAIL;
 
   const location = useRouterState({ select: (s) => s.location });
   const { pathname, searchStr } = location;
+
+  // Inject JSON-LD structured data once on mount
+  useEffect(() => {
+    injectJsonLd("jsonld-organization", ORGANIZATION_JSON_LD);
+    injectJsonLd("jsonld-webapp", WEB_APP_JSON_LD);
+  }, []);
 
   useEffect(() => {
     // Match exact path first, then strip dynamic segments for a best-effort match
@@ -95,9 +182,12 @@ export function RootLayout() {
       const appName = appId ? appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Tool";
       meta = {
         title: `${appName} (${tab}) — spike.land`,
-        description: `Explore ${appName} on spike.land — the AI multi-agent operating system.`,
+        description: `Explore ${appName} on spike.land — the MCP-first AI development platform.`,
       };
     }
+
+    const ogImage = meta.ogImage ?? DEFAULT_OG_IMAGE;
+    const canonicalUrl = `${SITE_URL}${pathname === "/" ? "" : pathname}${searchStr}`;
 
     document.title = meta.title;
 
@@ -110,25 +200,28 @@ export function RootLayout() {
     const ogDesc = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
     if (ogDesc) ogDesc.content = meta.description;
 
+    const ogImg = document.querySelector<HTMLMetaElement>('meta[property="og:image"]');
+    if (ogImg) ogImg.content = ogImage;
+
     const twTitle = document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]');
     if (twTitle) twTitle.content = meta.title;
 
     const twDesc = document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]');
     if (twDesc) twDesc.content = meta.description;
 
+    const twImg = document.querySelector<HTMLMetaElement>('meta[name="twitter:image"]');
+    if (twImg) twImg.content = ogImage;
+
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (canonical) {
-      canonical.href = `https://spike.land${pathname === "/" ? "" : pathname}${searchStr}`;
-    }
+    if (canonical) canonical.href = canonicalUrl;
 
     const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
-    if (ogUrl) {
-      ogUrl.content = `https://spike.land${pathname === "/" ? "" : pathname}${searchStr}`;
-    }
+    if (ogUrl) ogUrl.content = canonicalUrl;
   }, [pathname, searchStr]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex min-h-screen bg-background text-foreground">
+      <WelcomeModal userName={user?.name} />
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -137,73 +230,92 @@ export function RootLayout() {
         />
       )}
 
-      {/* Mobile sidebar drawer */}
+      {/* Sidebar — Persistent on Desktop, Drawer on Mobile */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-card shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-border bg-card shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0 lg:shadow-none ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } border-r border-border`}
+        }`}
       >
-        <div className="flex h-16 items-center justify-between border-b border-border px-6 bg-card sticky top-0">
-          <Link to="/" className="text-xl font-bold hover:opacity-80" onClick={() => setSidebarOpen(false)}>spike.land</Link>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher theme={theme} setTheme={setTheme} />
-            <button onClick={() => setSidebarOpen(false)} className="p-2 -mr-2 rounded-full hover:bg-muted text-muted-foreground" aria-label="Close menu">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        <div className="flex h-16 items-center justify-between border-b border-border px-6">
+          <Link to="/" className="text-xl font-bold hover:opacity-80" onClick={() => setSidebarOpen(false)}>
+            spike.land
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 rounded-full hover:bg-muted lg:hidden"
+            aria-label="Close menu"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <nav className="flex flex-col gap-1 p-4 overflow-y-auto max-h-[calc(100vh-8rem)]">
+
+        <nav className="flex flex-col gap-1 p-4 overflow-y-auto h-[calc(100vh-8rem)]">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="flex items-center rounded-xl px-4 py-3 text-base font-medium transition-all hover:bg-muted active:scale-[0.98] [&.active]:bg-primary/10 [&.active]:text-primary"
+              className="flex items-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all hover:bg-muted [&.active]:bg-primary/10 [&.active]:text-primary"
               onClick={() => setSidebarOpen(false)}
             >
               {item.label}
             </Link>
           ))}
+          {isFounder && (
+            <Link
+              to="/cockpit"
+              className="flex items-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all hover:bg-muted [&.active]:bg-primary/10 [&.active]:text-primary mt-2 border-t border-border pt-4"
+              onClick={() => setSidebarOpen(false)}
+            >
+              Cockpit
+            </Link>
+          )}
         </nav>
-        <div className="mt-auto border-t border-border p-6 bg-card sticky bottom-0">
+
+        <div className="mt-auto border-t border-border p-4 bg-card">
+          <div className="flex items-center justify-between mb-4 lg:hidden">
+            <span className="text-xs text-muted-foreground uppercase font-bold">Theme</span>
+            <ThemeSwitcher theme={theme} setTheme={setTheme} />
+          </div>
           <LoginButton />
         </div>
       </aside>
 
-      {/* Top header — always visible */}
-      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-border bg-card px-6">
-        {/* Mobile hamburger */}
-        <button onClick={() => setSidebarOpen(true)} className="rounded p-2 hover:bg-muted lg:hidden" aria-label="Open navigation menu">
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <Link to="/" className="text-xl font-bold hover:opacity-80 lg:mr-8">spike.land</Link>
+      {/* Main content area */}
+      <div className="flex flex-1 flex-col min-w-0">
+        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-card/80 backdrop-blur-md px-6">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="mr-4 rounded-lg p-2 hover:bg-muted lg:hidden"
+            aria-label="Open navigation menu"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
 
-        {/* Desktop nav links */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-muted [&.active]:bg-accent [&.active]:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <div className="flex flex-1 items-center justify-between">
+            <div className="lg:hidden">
+               <Link to="/" className="text-xl font-bold">spike.land</Link>
+            </div>
+            <div className="hidden lg:block" />
 
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeSwitcher theme={theme} setTheme={setTheme} />
-          <LoginButton />
-        </div>
-      </header>
+            <div className="flex items-center gap-4">
+              <div className="hidden lg:block">
+                <ThemeSwitcher theme={theme} setTheme={setTheme} />
+              </div>
+              <div className="lg:hidden">
+                {/* Auth status or small profile could go here */}
+              </div>
+            </div>
+          </div>
+        </header>
 
-      {/* Main content */}
-      <main className="flex-1 p-6">
-        <Outlet />
-      </main>
+        <main className="flex-1 overflow-x-hidden">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

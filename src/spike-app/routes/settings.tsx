@@ -1,6 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/components/Toast";
 
 type SettingsTab = "profile" | "whatsapp" | "keys" | "billing" | "access";
 
@@ -17,7 +18,8 @@ type Provider = "openai" | "anthropic" | "google" | "mistral";
 interface ApiKey {
   id: string;
   provider: Provider;
-  maskedKey: string;
+  key: string;
+  createdAt?: string;
 }
 
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google", "mistral"];
@@ -201,9 +203,26 @@ function ApiKeysTab() {
   const [selectedProvider, setSelectedProvider] = useState<Provider>("openai");
   const [newKeyValue, setNewKeyValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const [loadingKeys, setLoadingKeys] = useState(true);
   const [testingId, setTestingId] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchKeys() {
+      try {
+        const res = await fetch("/api/keys");
+        if (!res.ok) return;
+        const data = await res.json() as { keys: ApiKey[] };
+        setKeys(data.keys);
+      } catch {
+        // silently ignore
+      } finally {
+        setLoadingKeys(false);
+      }
+    }
+    void fetchKeys();
+  }, []);
 
   async function handleSaveKey() {
     if (!newKeyValue.trim()) return;
@@ -213,13 +232,13 @@ function ApiKeysTab() {
       const res = await fetch("/api/keys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: selectedProvider, key: newKeyValue }),
+        body: JSON.stringify({ provider: selectedProvider, encryptedKey: newKeyValue }),
       });
       if (!res.ok) throw new Error(`Failed to save: ${res.status}`);
-      const data = await res.json() as { id: string; maskedKey: string };
+      const data = await res.json() as { id: string; provider: string; createdAt: string };
       setKeys((prev) => [
+        { id: data.id, provider: selectedProvider, key: "****", createdAt: data.createdAt },
         ...prev,
-        { id: data.id, provider: selectedProvider, maskedKey: data.maskedKey },
       ]);
       setNewKeyValue("");
     } catch (err) {
@@ -233,10 +252,10 @@ function ApiKeysTab() {
     setTestingId(key.id);
     try {
       const res = await fetch(`/api/keys/${key.id}/test`, { method: "POST" });
-      const data = await res.json() as { success: boolean; message?: string };
+      const data = await res.json() as { valid: boolean; status?: number };
       setTestResults((prev) => ({
         ...prev,
-        [key.id]: data.success ? "OK" : (data.message ?? "Failed"),
+        [key.id]: data.valid ? "OK" : `Failed (${data.status ?? "unknown"})`,
       }));
     } catch {
       setTestResults((prev) => ({ ...prev, [key.id]: "Error" }));
@@ -262,7 +281,9 @@ function ApiKeysTab() {
   return (
     <div className="space-y-6">
       {/* Existing keys */}
-      {keys.length === 0 ? (
+      {loadingKeys ? (
+        <p className="text-sm text-muted-foreground">Loading keys...</p>
+      ) : keys.length === 0 ? (
         <p className="text-sm text-muted-foreground">No API keys stored yet.</p>
       ) : (
         <div className="space-y-2">
@@ -273,7 +294,12 @@ function ApiKeysTab() {
             >
               <div>
                 <p className="text-sm font-medium capitalize text-foreground">{key.provider}</p>
-                <p className="font-mono text-xs text-muted-foreground">{key.maskedKey}</p>
+                <p className="font-mono text-xs text-muted-foreground">{key.key}</p>
+                {key.createdAt && (
+                  <p className="text-xs text-muted-foreground">
+                    Added {new Date(key.createdAt).toLocaleDateString()}
+                  </p>
+                )}
                 {testResults[key.id] && (
                   <p
                     className={`text-xs ${
@@ -342,20 +368,66 @@ function ApiKeysTab() {
 
 // ---------- Billing Tab ----------
 
-type Plan = "free" | "pro" | "elite";
+type Plan = "free" | "pro" | "business";
+type SubscriptionStatus = "active" | "canceled" | "past_due";
 
-interface Grant {
-  id: string;
+interface BillingStatus {
   plan: Plan;
-  expiresAt: string;
+  status: SubscriptionStatus;
+  currentPeriodEnd: number | null;
+  usage: number;
 }
 
-function BillingTab() {
-  const [currentPlan] = useState<Plan>("free");
-  const [upgrading, setUpgrading] = useState(false);
-  const grants: Grant[] = [];
+const USAGE_LIMITS: Record<Plan, number> = {
+  free: 50,
+  pro: 500,
+  business: 5000,
+};
 
-  async function handleUpgrade(tier: "pro" | "elite") {
+const planColors: Record<Plan, string> = {
+  free: "bg-muted text-muted-foreground",
+  pro: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  business: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+};
+
+function BillingTab() {
+  const { showToast } = useToast();
+  const search = useSearch({ strict: false }) as { success?: string; canceled?: string };
+
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [loadingBilling, setLoadingBilling] = useState(true);
+  const [upgrading, setUpgrading] = useState(false);
+  const [managingPortal, setManagingPortal] = useState(false);
+  const toastShownRef = useRef(false);
+
+  useEffect(() => {
+    async function fetchBilling() {
+      try {
+        const res = await fetch("/api/billing/status");
+        if (!res.ok) return;
+        const data = await res.json() as BillingStatus;
+        setBilling(data);
+      } catch {
+        // silently ignore
+      } finally {
+        setLoadingBilling(false);
+      }
+    }
+    void fetchBilling();
+  }, []);
+
+  useEffect(() => {
+    if (toastShownRef.current) return;
+    if (search.success === "1") {
+      toastShownRef.current = true;
+      showToast("Subscription activated!", "success");
+    } else if (search.canceled === "1") {
+      toastShownRef.current = true;
+      showToast("Checkout canceled", "info");
+    }
+  }, [search.success, search.canceled, showToast]);
+
+  async function handleUpgrade(tier: "pro" | "business") {
     setUpgrading(true);
     try {
       const res = await fetch("/api/checkout", {
@@ -365,7 +437,7 @@ function BillingTab() {
       });
       if (!res.ok) {
         const err = (await res.json()) as { error?: string };
-        alert(err.error ?? "Checkout failed");
+        showToast(err.error ?? "Checkout failed", "error");
         return;
       }
       const data = (await res.json()) as { url: string };
@@ -375,29 +447,80 @@ function BillingTab() {
     }
   }
 
-  const usageStats = {
-    messagesUsed: 42,
-    messagesLimit: 50,
-    periodEnd: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-  };
+  async function handleManageSubscription() {
+    setManagingPortal(true);
+    try {
+      const res = await fetch("/api/billing/cancel", { method: "POST" });
+      if (!res.ok) {
+        const err = (await res.json()) as { error?: string };
+        showToast(err.error ?? "Failed to open billing portal", "error");
+        return;
+      }
+      const data = (await res.json()) as { url: string };
+      window.location.href = data.url;
+    } finally {
+      setManagingPortal(false);
+    }
+  }
 
-  const planColors: Record<Plan, string> = {
-    free: "bg-muted text-muted-foreground",
-    pro: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-    elite: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-  };
+  if (loadingBilling) {
+    return <p className="text-sm text-muted-foreground">Loading billing info...</p>;
+  }
+
+  const plan = billing?.plan ?? "free";
+  const status = billing?.status ?? "active";
+  const usage = billing?.usage ?? 0;
+  const usageLimit = USAGE_LIMITS[plan];
+  const usagePct = Math.min((usage / usageLimit) * 100, 100);
+  const periodEnd = billing?.currentPeriodEnd
+    ? new Date(billing.currentPeriodEnd * 1000).toLocaleDateString()
+    : null;
 
   return (
     <div className="space-y-6">
+      {/* Past due warning */}
+      {status === "past_due" && (
+        <div className="rounded-lg border border-yellow-500/40 bg-yellow-50 px-4 py-3 dark:bg-yellow-900/10">
+          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+            Payment past due — please update your payment method to avoid service interruption.
+          </p>
+        </div>
+      )}
+
+      {/* Canceled notice */}
+      {status === "canceled" && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <p className="text-sm font-medium text-destructive">
+            Your subscription has been canceled. Resubscribe below to regain access.
+          </p>
+        </div>
+      )}
+
       {/* Current plan */}
       <div className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-4">
         <div>
           <p className="text-sm text-muted-foreground">Current Plan</p>
-          <p className="mt-1 text-lg font-semibold capitalize text-foreground">{currentPlan}</p>
+          <p className="mt-1 text-lg font-semibold capitalize text-foreground">{plan}</p>
+          {periodEnd && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {status === "canceled" ? "Access until" : "Renews"} {periodEnd}
+            </p>
+          )}
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${planColors[currentPlan]}`}>
-          {currentPlan}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${planColors[plan]}`}>
+            {plan}
+          </span>
+          <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
+            status === "active"
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              : status === "past_due"
+              ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+              : "bg-muted text-muted-foreground"
+          }`}>
+            {status.replace("_", " ")}
+          </span>
+        </div>
       </div>
 
       {/* Usage stats */}
@@ -406,60 +529,56 @@ function BillingTab() {
         <div className="flex items-center gap-3">
           <div className="flex-1 rounded-full bg-muted h-2 overflow-hidden">
             <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${(usageStats.messagesUsed / usageStats.messagesLimit) * 100}%` }}
+              className={`h-full rounded-full transition-all ${usagePct >= 90 ? "bg-destructive" : "bg-primary"}`}
+              style={{ width: `${usagePct}%` }}
             />
           </div>
           <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {usageStats.messagesUsed} / {usageStats.messagesLimit} messages
+            {usage} / {usageLimit} messages
           </span>
         </div>
-        <p className="text-xs text-muted-foreground">Resets {usageStats.periodEnd}</p>
-      </div>
-
-      {/* Active grants */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-foreground">Active Grants</p>
-        {grants.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No active grants.</p>
-        ) : (
-          grants.map((grant) => (
-            <div
-              key={grant.id}
-              className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3"
-            >
-              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${planColors[grant.plan]}`}>
-                {grant.plan}
-              </span>
-              <span className="text-xs text-muted-foreground">Expires {new Date(grant.expiresAt).toLocaleDateString()}</span>
-            </div>
-          ))
+        {periodEnd && (
+          <p className="text-xs text-muted-foreground">Resets {periodEnd}</p>
         )}
       </div>
+
+      {/* Manage subscription (paid plans) */}
+      {plan !== "free" && (
+        <button
+          type="button"
+          onClick={handleManageSubscription}
+          disabled={managingPortal}
+          className="w-full rounded-lg border border-border px-6 py-2.5 text-center text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
+        >
+          {managingPortal ? "Opening portal..." : "Manage Subscription"}
+        </button>
+      )}
 
       {/* Upgrade buttons */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        {currentPlan === "free" && (
-          <button
-            type="button"
-            onClick={() => handleUpgrade("pro")}
-            disabled={upgrading}
-            className="flex-1 rounded-lg bg-blue-600 px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            {upgrading ? "Redirecting..." : "Upgrade to Pro — $19/mo"}
-          </button>
-        )}
-        {currentPlan !== "elite" && (
-          <button
-            type="button"
-            onClick={() => handleUpgrade("elite")}
-            disabled={upgrading}
-            className="flex-1 rounded-lg bg-purple-600 px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
-          >
-            {upgrading ? "Redirecting..." : "Upgrade to Elite — £90/mo"}
-          </button>
-        )}
-      </div>
+      {(plan === "free" || status === "canceled") && (
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {plan !== "pro" && (
+            <button
+              type="button"
+              onClick={() => handleUpgrade("pro")}
+              disabled={upgrading}
+              className="flex-1 rounded-lg bg-blue-600 px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {upgrading ? "Redirecting..." : "Upgrade to Pro — $29/mo"}
+            </button>
+          )}
+          {plan !== "business" && (
+            <button
+              type="button"
+              onClick={() => handleUpgrade("business")}
+              disabled={upgrading}
+              className="flex-1 rounded-lg bg-purple-600 px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+            >
+              {upgrading ? "Redirecting..." : "Upgrade to Business — $99/mo"}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

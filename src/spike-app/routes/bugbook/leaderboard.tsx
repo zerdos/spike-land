@@ -4,7 +4,7 @@ import { useBugbookLeaderboard } from "../../hooks/useBugbook";
 const tierColor: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
   pro: "bg-info text-info-foreground",
-  elite: "bg-warning text-warning-foreground",
+  business: "bg-warning text-warning-foreground",
 };
 
 export function BugbookLeaderboardPage() {

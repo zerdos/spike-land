@@ -1,4 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
+import { BuyCredits } from "@/components/BuyCredits";
+import { CreditWidget } from "@/components/CreditWidget";
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -13,7 +15,7 @@ export function DashboardPage() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h1 className="text-2xl font-bold text-foreground">
         {isAuthenticated ? `Welcome, ${user?.name ?? "User"}` : "Welcome to Spike"}
       </h1>
@@ -41,6 +43,16 @@ export function DashboardPage() {
           </div>
         </Card>
       </div>
+
+      {/* Credit balance widget — spans 1 column on large screens */}
+      {isAuthenticated && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <CreditWidget />
+        </div>
+      )}
+
+      {/* Buy credits section */}
+      {isAuthenticated && <BuyCredits />}
     </div>
   );
 }

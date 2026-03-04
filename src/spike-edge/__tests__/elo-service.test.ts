@@ -87,12 +87,12 @@ describe("elo-service", () => {
         event_count: 50,
         daily_gains: 30,
         daily_reset_at: Date.now(),
-        tier: "elite",
+        tier: "business",
       });
 
       const result = await ensureUserElo(db, "user-2");
       expect(result.elo).toBe(1800);
-      expect(result.tier).toBe("elite");
+      expect(result.tier).toBe("business");
       expect(result.eventCount).toBe(50);
     });
 

@@ -50,10 +50,10 @@ export function calculateBugEloChange(
 }
 
 /** Derive tier from ELO. */
-export function eloToTier(elo: number): "free" | "pro" | "elite" {
+export function eloToTier(elo: number): "free" | "pro" | "business" {
   if (elo < 1000) return "free";
   if (elo < 1500) return "pro";
-  return "elite";
+  return "business";
 }
 
 /** Rate limit multiplier based on ELO (lower ELO = stricter limits). */

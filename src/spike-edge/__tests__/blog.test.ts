@@ -193,7 +193,7 @@ describe("GET /api/blog", () => {
   });
 });
 
-function app(db: D1Database) {
+function app(_db: D1Database) {
   const testApp = new Hono<{ Bindings: Env }>();
   testApp.route("/", blog);
   return testApp;

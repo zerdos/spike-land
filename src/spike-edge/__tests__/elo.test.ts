@@ -43,7 +43,7 @@ describe("getKFactor", () => {
     expect(getKFactor(2400, 100)).toBe(32);
   });
 
-  it("returns 16 for elite users (>2400)", () => {
+  it("returns 16 for high-ELO users (>2400)", () => {
     expect(getKFactor(2401, 100)).toBe(16);
     expect(getKFactor(3000, 500)).toBe(16);
   });
@@ -110,9 +110,9 @@ describe("eloToTier", () => {
     expect(eloToTier(1499)).toBe("pro");
   });
 
-  it("returns elite for ELO >= 1500", () => {
-    expect(eloToTier(1500)).toBe("elite");
-    expect(eloToTier(3000)).toBe("elite");
+  it("returns business for ELO >= 1500", () => {
+    expect(eloToTier(1500)).toBe("business");
+    expect(eloToTier(3000)).toBe("business");
   });
 });
 

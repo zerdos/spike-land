@@ -41,11 +41,21 @@ async function verifyStripeSignature(
     ["sign"],
   );
   const signed = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
-  const expected = Array.from(new Uint8Array(signed))
+
+  // HIGH-01: Use constant-time comparison to prevent timing attacks.
+  // crypto.subtle.timingSafeEqual is Node-only; implement manually for CF Workers.
+  const expectedHex = Array.from(new Uint8Array(signed))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  return expected === v1Signature;
+  if (expectedHex.length !== v1Signature.length) return false;
+
+  // XOR each character code and accumulate — never short-circuit
+  let diff = 0;
+  for (let i = 0; i < expectedHex.length; i++) {
+    diff |= expectedHex.charCodeAt(i) ^ v1Signature.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 // ─── Event Types ────────────────────────────────────────────────────────────
@@ -76,15 +86,21 @@ interface StripeSubscription {
   metadata?: Record<string, string>;
 }
 
+interface StripeInvoice {
+  customer?: string;
+  subscription?: string;
+  period_end?: number;
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function mapStripePlanToTier(subscription: StripeSubscription): string {
   const lookupKey = subscription.items?.data?.[0]?.price?.lookup_key;
-  if (lookupKey?.includes("elite")) return "elite";
+  if (lookupKey?.includes("business")) return "business";
   if (lookupKey?.includes("pro")) return "pro";
   // Check metadata fallback
   const metaTier = subscription.metadata?.tier;
-  if (metaTier === "elite" || metaTier === "pro") return metaTier;
+  if (metaTier === "business" || metaTier === "pro") return metaTier;
   return "pro"; // default paid tier
 }
 
@@ -117,9 +133,30 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
 
   const db = c.env.DB;
 
+  // ── Idempotency: skip events already processed ───────────────────────────
   try {
-    switch (event.type) {
-      case "checkout.session.completed": {
+    const already = await db.prepare(
+      "SELECT id FROM webhook_events WHERE id = ? LIMIT 1",
+    ).bind(event.id).first<{ id: string }>();
+
+    if (already) {
+      return c.json({ received: true, duplicate: true });
+    }
+
+    await db.prepare(
+      "INSERT INTO webhook_events (id, processed_at) VALUES (?, ?)",
+    ).bind(event.id, Date.now()).run();
+  } catch (idempotencyError) {
+    const msg = idempotencyError instanceof Error ? idempotencyError.message : "Unknown error";
+    console.error("[stripe-webhook] Idempotency check failed:", msg);
+    // Continue processing — the webhook_events table may not exist yet in dev
+  }
+
+  // ── Event handlers ───────────────────────────────────────────────────────
+
+  switch (event.type) {
+    case "checkout.session.completed": {
+      try {
         const session = event.data.object as unknown as StripeSession;
         const userId = session.metadata?.userId;
         if (!userId) {
@@ -131,6 +168,10 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
         const stripeSubscriptionId = typeof session.subscription === "string" ? session.subscription : null;
         const now = Date.now();
 
+        // Derive tier from session metadata (set by checkout endpoint)
+        const rawTier = session.metadata?.tier;
+        const plan = rawTier === "business" || rawTier === "pro" ? rawTier : "pro";
+
         // Check if user already has a subscription
         const existing = await db.prepare(
           "SELECT id FROM subscriptions WHERE user_id = ? LIMIT 1",
@@ -138,19 +179,32 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
 
         if (existing) {
           await db.prepare(
-            `UPDATE subscriptions SET stripe_customer_id = ?, stripe_subscription_id = ?, status = 'active', plan = 'pro', updated_at = ?
+            `UPDATE subscriptions SET stripe_customer_id = ?, stripe_subscription_id = ?, status = 'active', plan = ?, updated_at = ?
              WHERE id = ?`,
-          ).bind(stripeCustomerId, stripeSubscriptionId, now, existing.id).run();
+          ).bind(stripeCustomerId, stripeSubscriptionId, plan, now, existing.id).run();
         } else {
           await db.prepare(
             `INSERT INTO subscriptions (id, user_id, stripe_customer_id, stripe_subscription_id, status, plan, created_at, updated_at)
-             VALUES (?, ?, ?, ?, 'active', 'pro', ?, ?)`,
-          ).bind(crypto.randomUUID(), userId, stripeCustomerId, stripeSubscriptionId, now, now).run();
+             VALUES (?, ?, ?, ?, 'active', ?, ?, ?)`,
+          ).bind(crypto.randomUUID(), userId, stripeCustomerId, stripeSubscriptionId, plan, now, now).run();
         }
-        break;
-      }
 
-      case "customer.subscription.updated": {
+        // Sync customer email if present in session
+        const customerEmail = session.customer_email;
+        if (customerEmail && customerEmail.length > 0) {
+          await db.prepare(
+            "UPDATE users SET email = ?, updated_at = ? WHERE id = ? AND email != ?",
+          ).bind(customerEmail, now, userId, customerEmail).run();
+        }
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[stripe-webhook] Error handling checkout.session.completed:", msg);
+      }
+      break;
+    }
+
+    case "customer.subscription.updated": {
+      try {
         const sub = event.data.object as unknown as StripeSubscription;
         const tier = mapStripePlanToTier(sub);
         const status = sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : sub.status;
@@ -161,20 +215,49 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
           `UPDATE subscriptions SET status = ?, plan = ?, current_period_end = ?, updated_at = ?
            WHERE stripe_subscription_id = ?`,
         ).bind(status, tier, periodEnd, now, sub.id).run();
-        break;
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[stripe-webhook] Error handling customer.subscription.updated:", msg);
       }
+      break;
+    }
 
-      case "customer.subscription.deleted": {
+    case "customer.subscription.deleted": {
+      try {
         const sub = event.data.object as unknown as StripeSubscription;
         const now = Date.now();
         await db.prepare(
           `UPDATE subscriptions SET status = 'canceled', plan = 'free', updated_at = ?
            WHERE stripe_subscription_id = ?`,
         ).bind(now, sub.id).run();
-        break;
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[stripe-webhook] Error handling customer.subscription.deleted:", msg);
       }
+      break;
+    }
 
-      case "invoice.payment_failed": {
+    case "invoice.paid": {
+      try {
+        const invoice = event.data.object as unknown as StripeInvoice;
+        const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
+        if (subId) {
+          const periodEnd = typeof invoice.period_end === "number" ? invoice.period_end * 1000 : null;
+          const now = Date.now();
+          await db.prepare(
+            `UPDATE subscriptions SET current_period_end = ?, status = 'active', updated_at = ?
+             WHERE stripe_subscription_id = ?`,
+          ).bind(periodEnd, now, subId).run();
+        }
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[stripe-webhook] Error handling invoice.paid:", msg);
+      }
+      break;
+    }
+
+    case "invoice.payment_failed": {
+      try {
         const invoice = event.data.object as Record<string, unknown>;
         const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
         if (subId) {
@@ -184,17 +267,16 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
              WHERE stripe_subscription_id = ?`,
           ).bind(now, subId).run();
         }
-        break;
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[stripe-webhook] Error handling invoice.payment_failed:", msg);
       }
-
-      default:
-        // Unhandled event type — acknowledge receipt
-        break;
+      break;
     }
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    console.error(`[stripe-webhook] Error handling ${event.type}:`, msg);
-    // Still return 200 to prevent Stripe retries for processing errors
+
+    default:
+      // Unhandled event type — acknowledge receipt
+      break;
   }
 
   return c.json({ received: true });

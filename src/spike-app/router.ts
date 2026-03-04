@@ -240,9 +240,16 @@ const toolsCategoryRoute = createRoute({
   component: withSuspense(() => import("./routes/tools/$toolName"), "ToolsCategoryPage"),
 });
 
+const cockpitRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/cockpit",
+  component: withSuspense(() => import("./routes/cockpit"), "CockpitPage"),
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  cockpitRoute,
   aboutRoute,
   analyticsRoute,
   callbackRoute,
