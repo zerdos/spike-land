@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface JsonSchemaProperty {
   type: string;
   description?: string;
   enum?: string[];
-  default?: any;
+  default?: unknown;
   items?: JsonSchemaProperty; // For arrays
 }
 
@@ -16,13 +16,13 @@ interface JsonSchema {
 
 interface JsonSchemaFormProps {
   schema: JsonSchema;
-  onChange: (data: Record<string, any>) => void;
+  onChange: (data: Record<string, unknown>) => void;
   onSubmit: () => void;
   isPending?: boolean;
 }
 
 export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSchemaFormProps) {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [urlOptions, setUrlOptions] = useState<{url: string, label: string}[]>([]);
 
   useEffect(() => {
@@ -33,19 +33,21 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
       ]).then(([blogs, learnits]) => {
          const options: {url: string, label: string}[] = [];
          if (Array.isArray(blogs)) {
-           blogs.forEach((b: any) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
+           blogs.forEach((b: { slug: string; title: string }) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
          }
          if (Array.isArray(learnits)) {
-           learnits.forEach((l: any) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
+           learnits.forEach((l: { slug: string; title: string }) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
          }
          setUrlOptions(options);
       });
     }
   }, [schema]);
 
+  const stableOnChange = useCallback(onChange, [onChange]);
+
   useEffect(() => {
     // Initialize defaults
-    const initialData: Record<string, any> = {};
+    const initialData: Record<string, unknown> = {};
     if (schema.properties) {
       Object.entries(schema.properties).forEach(([key, prop]) => {
         if (prop.default !== undefined) {
@@ -64,10 +66,10 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
       });
     }
     setFormData(initialData);
-    onChange(initialData);
-  }, [schema]);
+    stableOnChange(initialData);
+  }, [schema, stableOnChange]);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: unknown) => {
     const newData = { ...formData, [key]: value };
     setFormData(newData);
     onChange(newData);
@@ -125,7 +127,7 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
               ) : prop.enum ? (
                 <select
                   id={key}
-                  value={formData[key] || ""}
+                  value={(formData[key] as string) || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   required={isRequired}
                   className="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-foreground bg-card ring-1 ring-inset ring-border focus:ring-2 focus:ring-inset focus:ring-ring sm:text-sm sm:leading-6"
@@ -140,7 +142,7 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
                 <input
                   id={key}
                   type="number"
-                  value={formData[key] ?? ""}
+                  value={(formData[key] as number) ?? ""}
                   onChange={(e) => handleChange(key, e.target.value === "" ? "" : Number(e.target.value))}
                   required={isRequired}
                   className="block w-full rounded-md border-0 py-1.5 text-foreground bg-card shadow-sm ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-ring sm:text-sm sm:leading-6"
@@ -149,7 +151,7 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
                 <textarea
                   id={key}
                   rows={3}
-                  value={formData[key] || ""}
+                  value={(formData[key] as string) || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   required={isRequired}
                   className="block w-full rounded-md border-0 py-1.5 text-foreground bg-card shadow-sm ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-ring sm:text-sm sm:leading-6"
@@ -161,7 +163,7 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
                     type="text"
                     list={key === "content_url" ? "content-url-options" : undefined}
                     placeholder={key === "content_url" ? "e.g., https://spike.land/blog/... or type to search" : ""}
-                    value={formData[key] || ""}
+                    value={(formData[key] as string) || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                     required={isRequired}
                     className="block w-full rounded-md border-0 py-1.5 text-foreground bg-card shadow-sm ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-ring sm:text-sm sm:leading-6"

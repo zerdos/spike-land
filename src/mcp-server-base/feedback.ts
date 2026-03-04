@@ -70,7 +70,7 @@ export function registerFeedbackTool(server: McpServer, options: FeedbackToolOpt
     schema: feedbackSchema,
     async handler(rawArgs) {
       try {
-        const args = rawArgs as Record<string, any>;
+        const args = rawArgs as unknown as FeedbackReport;
         const report: FeedbackReport = {
           title: args.title,
           description: args.description,

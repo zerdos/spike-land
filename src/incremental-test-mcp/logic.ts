@@ -31,8 +31,8 @@ export async function loadCache(cachePath: string): Promise<Cache> {
   try {
     const data = await fs.readFile(cachePath, 'utf8');
     return JSON.parse(data);
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
       return {};
     }
     throw error;
@@ -54,7 +54,7 @@ export async function execPromise(command: string): Promise<{ stdout: string; st
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        const enhancedError = error as any;
+        const enhancedError = error as Error & { stdout: string; stderr: string };
         enhancedError.stdout = stdout;
         enhancedError.stderr = stderr;
         reject(enhancedError);
@@ -79,13 +79,14 @@ export async function runVitestWithCoverage(testPath: string, srcPath: string): 
       output: stdout,
       stderr
     };
-  } catch (error: any) {
-    const coverage = parseCoverage(error.stdout || '');
+  } catch (error: unknown) {
+    const execErr = error as Error & { stdout?: string; stderr?: string };
+    const coverage = parseCoverage(execErr.stdout || '');
     return {
       success: false,
       coverage,
-      output: error.stdout || '',
-      stderr: error.stderr || error.message
+      output: execErr.stdout || '',
+      stderr: execErr.stderr || execErr.message
     };
   }
 }
@@ -100,7 +101,7 @@ function parseCoverage(stdout: string): number {
       // The table has: File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
       // Index 4 is % Lines
       if (parts.length >= 5) {
-        const linesPercent = parts[4].trim();
+        const linesPercent = parts[4]?.trim() ?? "";
         const percent = parseFloat(linesPercent);
         if (!isNaN(percent)) {
           return percent;

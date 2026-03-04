@@ -214,7 +214,7 @@ async function handleIpfsRequest(request: Request): Promise<Response> {
     if (resp.ok) {
       return resp;
     }
-  } catch (err) {
+  } catch (_err) {
     // Ignore error and fall back to ipfs.io
   }
 

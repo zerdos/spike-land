@@ -76,7 +76,7 @@ const handlePostRequest = async (request: Request, ctx?: ExecutionContext) => {
     // Content-addressed cache: same input always produces same output
     const hash = await hashCode(code + origin);
     const cacheKey = new Request(`https://transpile.internal/${hash}`, { method: "GET" });
-    const cache = caches.default;
+    const cache = (caches as unknown as { default: Cache }).default;
 
     const cached = await cache.match(cacheKey);
     if (cached) return cached;

@@ -30,7 +30,7 @@ export function useMcpTools() {
 
 export function useMcpToolCall() {
   return useMutation({
-    mutationFn: async ({ name, args }: { name: string; args: Record<string, any> }) => {
+    mutationFn: async ({ name, args }: { name: string; args: Record<string, unknown> }) => {
       const res = await fetch("/mcp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

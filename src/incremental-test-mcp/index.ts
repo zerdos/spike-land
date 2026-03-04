@@ -98,12 +98,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       ],
       isError: !result.success,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       content: [
         {
           type: "text",
-          text: `ERROR: ${error.message}`,
+          text: `ERROR: ${error instanceof Error ? error.message : String(error)}`,
         },
       ],
       isError: true,

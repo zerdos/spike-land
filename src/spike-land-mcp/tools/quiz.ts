@@ -155,7 +155,7 @@ Generate the output in strict JSON format:
       });
 
       if (response.ok) {
-        const data = await response.json() as any;
+        const data = await response.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text) {
           const parsed = JSON.parse(text);
@@ -630,8 +630,8 @@ export function registerQuizTools(registry: ToolRegistry, userId: string, db: Dr
               const html = await directRes.text();
               articleContent = html.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ");
             }
-          } catch (err: any) {
-            throw new Error(`Error fetching URL content: ${err.message}`);
+          } catch (err: unknown) {
+            throw new Error(`Error fetching URL content: ${err instanceof Error ? err.message : String(err)}`);
           }
         }
 

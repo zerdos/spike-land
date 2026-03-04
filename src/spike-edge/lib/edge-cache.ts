@@ -50,7 +50,7 @@ export async function withEdgeCache(
   let cache: Cache | undefined;
   let cacheReq: Request | undefined;
   try {
-    cache = caches.default;
+    cache = (caches as unknown as { default: Cache }).default;
     cacheReq = options.cacheKey
       ? new Request(options.cacheKey, { method: "GET" })
       : request;

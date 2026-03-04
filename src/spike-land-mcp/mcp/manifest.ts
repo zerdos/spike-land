@@ -90,6 +90,22 @@ import { registerQuizTools } from "../tools/quiz";
 import { registerBugbookFeedbackTools } from "../tools/bugbook-feedback";
 
 /**
+ * Safely call a register function, catching and logging errors.
+ * Uses a generic call signature to avoid `as any` on each invocation.
+ */
+function safeRegister(
+  fn: (...args: never[]) => void,
+  label: string,
+  ...args: unknown[]
+): void {
+  try {
+    (fn as (...a: unknown[]) => void)(...args);
+  } catch (err) {
+    console.error(`[MCP] Failed to register ${label}:`, err);
+  }
+}
+
+/**
  * Register all tool modules.
  */
 export async function registerAllTools(
@@ -98,369 +114,77 @@ export async function registerAllTools(
   db: DrizzleDB,
   env?: ToolRegistrationEnv,
 ): Promise<void> {
-  try {
-    (registerGatewayMetaTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerGatewayMetaTools:", err);
-  }
-  try {
-    (registerAuthTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAuthTools:", err);
-  }
-  try {
-    (registerWorkspacesTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerWorkspacesTools:", err);
-  }
-  try {
-    (registerBillingTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBillingTools:", err);
-  }
-  try {
-    (registerVaultTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerVaultTools:", err);
-  }
-  try {
-    (registerStorageTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStorageTools:", err);
-  }
-  try {
-    (registerBoxesTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBoxesTools:", err);
-  }
-  try {
-    (registerRemindersTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerRemindersTools:", err);
-  }
-  try {
-    (registerPermissionsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerPermissionsTools:", err);
-  }
-  try {
-    (registerMarketplaceTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerMarketplaceTools:", err);
-  }
-  try {
-    (registerBootstrapTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBootstrapTools:", err);
-  }
-  try {
-    (registerAppsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAppsTools:", err);
-  }
-  try {
-    (registerArenaTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerArenaTools:", err);
-  }
-  try {
-    (registerCreateTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCreateTools:", err);
-  }
-  try {
-    (registerLearnItTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerLearnItTools:", err);
-  }
-  try {
-    (registerSkillStoreTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSkillStoreTools:", err);
-  }
-  try {
-    (registerToolFactoryTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerToolFactoryTools:", err);
-  }
-  try {
-    (registerMcpRegistryTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerMcpRegistryTools:", err);
-  }
-  try {
-    (registerStoreAppsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStoreAppsTools:", err);
-  }
-  try {
-    (registerStoreInstallTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStoreInstallTools:", err);
-  }
-  try {
-    (registerStoreSearchTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStoreSearchTools:", err);
-  }
-  try {
-    (registerStoreSkillsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStoreSkillsTools:", err);
-  }
-  try {
-    (registerStoreAbTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerStoreAbTools:", err);
-  }
-  try {
-    (registerAgentManagementTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAgentManagementTools:", err);
-  }
-  try {
-    (registerAgentInboxTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAgentInboxTools:", err);
-  }
-  try {
-    (registerCapabilitiesTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCapabilitiesTools:", err);
-  }
-  try {
-    (registerChatTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerChatTools:", err);
-  }
-  try {
-    (registerDirectMessageTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerDirectMessageTools:", err);
-  }
-  try {
-    (registerAiGatewayTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAiGatewayTools:", err);
-  }
-  try {
-    (registerTtsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerTtsTools:", err);
-  }
-  try {
-    (registerEmailTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerEmailTools:", err);
-  }
-  try {
-    (registerNewsletterTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerNewsletterTools:", err);
-  }
-  try {
-    (registerNotificationsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerNotificationsTools:", err);
-  }
-  try {
-    (registerEnvironmentTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerEnvironmentTools:", err);
-  }
-  try {
-    (registerSettingsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSettingsTools:", err);
-  }
-  try {
-    (registerBlogTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBlogTools:", err);
-  }
-  try {
-    (registerBazdmegFaqTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegFaqTools:", err);
-  }
-  try {
-    (registerBazdmegTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegTools:", err);
-  }
-  try {
-    (registerBazdmegMemoryTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegMemoryTools:", err);
-  }
-  try {
-    (registerBazdmegWorkflowTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegWorkflowTools:", err);
-  }
-  try {
-    (registerBazdmegTelemetryTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegTelemetryTools:", err);
-  }
-  try {
-    (registerBazdmegGatesTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegGatesTools:", err);
-  }
-  try {
-    (registerBazdmegSkillSyncTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBazdmegSkillSyncTools:", err);
-  }
-  try {
-    (registerReactionsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerReactionsTools:", err);
-  }
-  try {
-    (registerContextArchitectTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerContextArchitectTools:", err);
-  }
-  try {
-    (registerSandboxTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSandboxTools:", err);
-  }
-  try {
-    (registerOrchestratorTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerOrchestratorTools:", err);
-  }
-  try {
-    (registerLieDetectorTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerLieDetectorTools:", err);
-  }
-  try {
-    (registerReqInterviewTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerReqInterviewTools:", err);
-  }
-  try {
-    (registerCodebaseExplainTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCodebaseExplainTools:", err);
-  }
-  try {
-    (registerDecisionsTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerDecisionsTools:", err);
-  }
-  try {
-    (registerSwarmTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSwarmTools:", err);
-  }
-  try {
-    (registerSwarmMonitoringTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSwarmMonitoringTools:", err);
-  }
-  try {
-    (registerMcpObservabilityTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerMcpObservabilityTools:", err);
-  }
-  try {
-    (registerSentryBridgeTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSentryBridgeTools:", err);
-  }
-  try {
-    (registerGitHubAdminTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerGitHubAdminTools:", err);
-  }
-  try {
-    (registerGitHubIssueSearchTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerGitHubIssueSearchTools:", err);
-  }
-  try {
-    (registerAuditTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerAuditTools:", err);
-  }
-  try {
-    (registerCrdtTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCrdtTools:", err);
-  }
-  try {
-    (registerNetsimTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerNetsimTools:", err);
-  }
-  try {
-    (registerCausalityTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCausalityTools:", err);
-  }
-  try {
-    (registerBftTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBftTools:", err);
-  }
-  try {
-    (registerSessionTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerSessionTools:", err);
-  }
-  try {
-    (registerCodegenTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCodegenTools:", err);
-  }
-  try {
-    (registerDiffTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerDiffTools:", err);
-  }
-  try {
-    (registerTestgenTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerTestgenTools:", err);
-  }
-  try {
-    (registerRetroTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerRetroTools:", err);
-  }
-  try {
-    (registerCareerTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCareerTools:", err);
-  }
-  try {
-    (registerCareerGrowthTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerCareerGrowthTools:", err);
-  }
-  try {
-    (registerEsbuildTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerEsbuildTools:", err);
-  }
-  try {
-    (registerBuildFromGithubTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBuildFromGithubTools:", err);
-  }
-  try {
-    (registerQuizTools as any)(registry, userId, db, env);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerQuizTools:", err);
-  }
-  try {
-    (registerBugbookFeedbackTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
-  } catch (err) {
-    console.error("[MCP] Failed to register registerBugbookFeedbackTools:", err);
-  }
+  safeRegister(registerGatewayMetaTools, "registerGatewayMetaTools", registry, userId, db);
+  safeRegister(registerAuthTools, "registerAuthTools", registry, userId, db);
+  safeRegister(registerWorkspacesTools, "registerWorkspacesTools", registry, userId, db);
+  safeRegister(registerBillingTools, "registerBillingTools", registry, userId, db);
+  safeRegister(registerVaultTools, "registerVaultTools", registry, userId, db, env?.kv, env?.vaultSecret);
+  safeRegister(registerStorageTools, "registerStorageTools", registry, userId, db);
+  safeRegister(registerBoxesTools, "registerBoxesTools", registry, userId, db);
+  safeRegister(registerRemindersTools, "registerRemindersTools", registry, userId, db);
+  safeRegister(registerPermissionsTools, "registerPermissionsTools", registry, userId, db);
+  safeRegister(registerMarketplaceTools, "registerMarketplaceTools", registry, userId, db);
+  safeRegister(registerBootstrapTools, "registerBootstrapTools", registry, userId, db);
+  safeRegister(registerAppsTools, "registerAppsTools", registry, userId, db);
+  safeRegister(registerArenaTools, "registerArenaTools", registry, userId, db);
+  safeRegister(registerCreateTools, "registerCreateTools", registry, userId, db);
+  safeRegister(registerLearnItTools, "registerLearnItTools", registry, userId, db);
+  safeRegister(registerSkillStoreTools, "registerSkillStoreTools", registry, userId, db);
+  safeRegister(registerToolFactoryTools, "registerToolFactoryTools", registry, userId, db);
+  safeRegister(registerMcpRegistryTools, "registerMcpRegistryTools", registry, userId, db);
+  safeRegister(registerStoreAppsTools, "registerStoreAppsTools", registry, userId, db);
+  safeRegister(registerStoreInstallTools, "registerStoreInstallTools", registry, userId, db);
+  safeRegister(registerStoreSearchTools, "registerStoreSearchTools", registry, userId, db);
+  safeRegister(registerStoreSkillsTools, "registerStoreSkillsTools", registry, userId, db);
+  safeRegister(registerStoreAbTools, "registerStoreAbTools", registry, userId, db);
+  safeRegister(registerAgentManagementTools, "registerAgentManagementTools", registry, userId, db);
+  safeRegister(registerAgentInboxTools, "registerAgentInboxTools", registry, userId, db);
+  safeRegister(registerCapabilitiesTools, "registerCapabilitiesTools", registry, userId, db);
+  safeRegister(registerChatTools, "registerChatTools", registry, userId, db);
+  safeRegister(registerDirectMessageTools, "registerDirectMessageTools", registry, userId, db);
+  safeRegister(registerAiGatewayTools, "registerAiGatewayTools", registry, userId, db);
+  safeRegister(registerTtsTools, "registerTtsTools", registry, userId, db);
+  safeRegister(registerEmailTools, "registerEmailTools", registry, userId, db);
+  safeRegister(registerNewsletterTools, "registerNewsletterTools", registry, userId, db);
+  safeRegister(registerNotificationsTools, "registerNotificationsTools", registry, userId, db);
+  safeRegister(registerEnvironmentTools, "registerEnvironmentTools", registry, userId, db);
+  safeRegister(registerSettingsTools, "registerSettingsTools", registry, userId, db);
+  safeRegister(registerBlogTools, "registerBlogTools", registry, userId, db);
+  safeRegister(registerBazdmegFaqTools, "registerBazdmegFaqTools", registry, userId, db);
+  safeRegister(registerBazdmegTools, "registerBazdmegTools", registry, userId, db);
+  safeRegister(registerBazdmegMemoryTools, "registerBazdmegMemoryTools", registry, userId, db);
+  safeRegister(registerBazdmegWorkflowTools, "registerBazdmegWorkflowTools", registry, userId, db);
+  safeRegister(registerBazdmegTelemetryTools, "registerBazdmegTelemetryTools", registry, userId, db);
+  safeRegister(registerBazdmegGatesTools, "registerBazdmegGatesTools", registry, userId, db);
+  safeRegister(registerBazdmegSkillSyncTools, "registerBazdmegSkillSyncTools", registry, userId, db);
+  safeRegister(registerReactionsTools, "registerReactionsTools", registry, userId, db);
+  safeRegister(registerContextArchitectTools, "registerContextArchitectTools", registry, userId, db);
+  safeRegister(registerSandboxTools, "registerSandboxTools", registry, userId, db);
+  safeRegister(registerOrchestratorTools, "registerOrchestratorTools", registry, userId, db);
+  safeRegister(registerLieDetectorTools, "registerLieDetectorTools", registry, userId, db);
+  safeRegister(registerReqInterviewTools, "registerReqInterviewTools", registry, userId, db);
+  safeRegister(registerCodebaseExplainTools, "registerCodebaseExplainTools", registry, userId, db);
+  safeRegister(registerDecisionsTools, "registerDecisionsTools", registry, userId, db);
+  safeRegister(registerSwarmTools, "registerSwarmTools", registry, userId, db);
+  safeRegister(registerSwarmMonitoringTools, "registerSwarmMonitoringTools", registry, userId, db);
+  safeRegister(registerMcpObservabilityTools, "registerMcpObservabilityTools", registry, userId, db);
+  safeRegister(registerSentryBridgeTools, "registerSentryBridgeTools", registry, userId, db);
+  safeRegister(registerGitHubAdminTools, "registerGitHubAdminTools", registry, userId, db);
+  safeRegister(registerGitHubIssueSearchTools, "registerGitHubIssueSearchTools", registry, userId, db);
+  safeRegister(registerAuditTools, "registerAuditTools", registry, userId, db);
+  safeRegister(registerCrdtTools, "registerCrdtTools", registry, userId, db);
+  safeRegister(registerNetsimTools, "registerNetsimTools", registry, userId, db);
+  safeRegister(registerCausalityTools, "registerCausalityTools", registry, userId, db);
+  safeRegister(registerBftTools, "registerBftTools", registry, userId, db);
+  safeRegister(registerSessionTools, "registerSessionTools", registry, userId, db);
+  safeRegister(registerCodegenTools, "registerCodegenTools", registry, userId, db);
+  safeRegister(registerDiffTools, "registerDiffTools", registry, userId, db);
+  safeRegister(registerTestgenTools, "registerTestgenTools", registry, userId, db);
+  safeRegister(registerRetroTools, "registerRetroTools", registry, userId, db);
+  safeRegister(registerCareerTools, "registerCareerTools", registry, userId, db);
+  safeRegister(registerCareerGrowthTools, "registerCareerGrowthTools", registry, userId, db);
+  safeRegister(registerEsbuildTools, "registerEsbuildTools", registry, userId, db);
+  safeRegister(registerBuildFromGithubTools, "registerBuildFromGithubTools", registry, userId, db);
+  safeRegister(registerQuizTools, "registerQuizTools", registry, userId, db, env);
+  safeRegister(registerBugbookFeedbackTools, "registerBugbookFeedbackTools", registry, userId, db);
 }

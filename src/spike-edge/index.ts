@@ -37,6 +37,19 @@ app.use("*", async (c, next) => {
 // Security headers middleware
 app.use("*", async (c, next) => {
   await next();
+
+  // Clone response if headers are immutable (e.g. from Cache API)
+  try {
+    c.res.headers.set("X-Test-Mutable", "1");
+    c.res.headers.delete("X-Test-Mutable");
+  } catch {
+    c.res = new Response(c.res.body, {
+      status: c.res.status,
+      statusText: c.res.statusText,
+      headers: new Headers(c.res.headers),
+    });
+  }
+
   const isLive = c.req.path.startsWith("/live/");
 
   c.res.headers.set("X-Content-Type-Options", "nosniff");

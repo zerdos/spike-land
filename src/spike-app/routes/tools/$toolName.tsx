@@ -62,7 +62,7 @@ export function ToolsCategoryPage() {
 
             <h2 className="text-lg font-semibold mb-4 text-foreground">Arguments</h2>
             <JsonSchemaForm
-              schema={tool.inputSchema as any}
+              schema={tool.inputSchema as { type: "object"; properties?: Record<string, unknown>; required?: string[] }}
               onChange={setFormData}
               onSubmit={handleExecute}
               isPending={executeTool.isPending}
