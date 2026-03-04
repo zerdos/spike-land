@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { AppCard } from "@/components/AppCard";
 import type { AppStatus } from "@/components/StatusBadge";
 
-interface PlaceholderApp {
+interface McpToolEntry {
   id: string;
   name: string;
   description: string;
@@ -10,35 +10,39 @@ interface PlaceholderApp {
   category: string;
   ownerName: string;
   createdAt: string;
+  toolCount: number;
 }
 
-const placeholderApps: PlaceholderApp[] = [
+const mcpTools: McpToolEntry[] = [
   {
     id: "chess-engine",
     name: "Chess Engine",
-    description: "Play chess against an AI opponent with adjustable difficulty",
+    description: "ELO-rated chess with game, player, and challenge management via MCP tools",
     status: "live",
-    category: "game",
+    category: "mcp",
     ownerName: "spike-team",
     createdAt: "2025-12-01T00:00:00Z",
+    toolCount: 5,
   },
   {
     id: "qa-studio",
     name: "QA Studio",
-    description: "Automated QA testing with visual regression detection",
+    description: "Browser automation and testing utilities powered by Playwright via MCP",
     status: "live",
-    category: "tool",
+    category: "mcp",
     ownerName: "spike-team",
     createdAt: "2025-11-15T00:00:00Z",
+    toolCount: 3,
   },
   {
     id: "audio-mixer",
     name: "Audio Mixer",
-    description: "Mix and master audio tracks in the browser",
+    description: "Audio track creation, effects processing, and mixing via MCP tools",
     status: "drafting",
-    category: "utility",
+    category: "mcp",
     ownerName: "community",
     createdAt: "2026-01-10T00:00:00Z",
+    toolCount: 4,
   },
 ];
 
@@ -46,26 +50,32 @@ export function AppsIndexPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Apps</h1>
+        <div>
+          <h1 className="text-2xl font-bold">MCP Tools</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Model Context Protocol tools you can use via terminal or API
+          </p>
+        </div>
         <Link
           to="/apps/new"
           search={{ prompt: "" }}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
         >
-          Create App
+          Create Tool
         </Link>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {placeholderApps.map((app) => (
+        {mcpTools.map((tool) => (
           <AppCard
-            key={app.id}
-            id={app.id}
-            name={app.name}
-            description={app.description}
-            status={app.status}
-            category={app.category}
-            ownerName={app.ownerName}
-            createdAt={app.createdAt}
+            key={tool.id}
+            id={tool.id}
+            name={tool.name}
+            description={tool.description}
+            status={tool.status}
+            category={tool.category}
+            ownerName={tool.ownerName}
+            createdAt={tool.createdAt}
+            toolCount={tool.toolCount}
           />
         ))}
       </div>

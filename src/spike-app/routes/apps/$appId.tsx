@@ -1,12 +1,15 @@
 import { Link, useParams, useSearch, useNavigate } from "@tanstack/react-router";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, lazy, Suspense } from "react";
 import { type AppStatus, StatusBadge } from "@/components/StatusBadge";
 import { ChatThread, type Message } from "@/components/ChatThread";
 import { type AppVersion, VersionHistory } from "@/components/VersionHistory";
-import { LivePreview } from "@/components/LivePreview";
 import { AppProductPage } from "@/components/AppProductPage";
 
-const tabs = ["App", "Chat", "Versions", "Preview"] as const;
+const McpTerminal = lazy(() =>
+  import("@/components/McpTerminal").then((m) => ({ default: m.McpTerminal })),
+);
+
+const tabs = ["Overview", "Terminal", "Chat", "Versions"] as const;
 type Tab = (typeof tabs)[number];
 
 // Placeholder data until real-time subscriptions are wired
@@ -30,7 +33,7 @@ export function AppDetailPage() {
   const search = useSearch({ from: "/apps/$appId" }) as { tab?: Tab };
   const navigate = useNavigate();
 
-  const activeTab = search.tab || "App";
+  const activeTab = tabs.includes(search.tab as Tab) ? (search.tab as Tab) : "Overview";
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [appStatus] = useState<AppStatus>("live");
@@ -45,9 +48,9 @@ export function AppDetailPage() {
 
   useEffect(() => {
     const handleTabChange = (e: Event) => {
-      const customEvent = e as CustomEvent<Tab>;
-      if (tabs.includes(customEvent.detail)) {
-        setActiveTab(customEvent.detail);
+      const customEvent = e as CustomEvent<string>;
+      if (tabs.includes(customEvent.detail as Tab)) {
+        setActiveTab(customEvent.detail as Tab);
       }
     };
     window.addEventListener("change-tab", handleTabChange);
@@ -93,11 +96,14 @@ export function AppDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/apps" className="text-blue-600 hover:underline">
-            Apps
+            MCP Tools
           </Link>
           <span className="text-gray-400">/</span>
           <h1 className="text-2xl font-bold">{appId}</h1>
           <StatusBadge status={appStatus} />
+          <span className="rounded bg-cyan-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-600">
+            MCP
+          </span>
         </div>
         <div className="flex gap-2">
           {appStatus === "live" && (
@@ -144,7 +150,18 @@ export function AppDetailPage() {
 
       {/* Tab content */}
       <div className="min-h-0 flex-1 rounded-xl border bg-white overflow-y-auto">
-        {activeTab === "App" && <AppProductPage appId={appId ?? ""} />}
+        {activeTab === "Overview" && <AppProductPage appId={appId ?? ""} />}
+        {activeTab === "Terminal" && (
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center bg-slate-900 text-slate-400">
+                Loading terminal...
+              </div>
+            }
+          >
+            <McpTerminal appId={appId} />
+          </Suspense>
+        )}
         {activeTab === "Chat" && (
           <ChatThread messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading} />
         )}
@@ -153,7 +170,6 @@ export function AppDetailPage() {
             <VersionHistory versions={placeholderVersions} />
           </div>
         )}
-        {activeTab === "Preview" && <LivePreview appId={appId ?? ""} />}
       </div>
     </div>
   );

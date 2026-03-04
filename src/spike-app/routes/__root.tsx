@@ -14,8 +14,8 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
     description: "Browse and manage AI tools on the spike.land platform",
   },
   "/apps": {
-    title: "Apps - spike.land",
-    description: "Build and deploy AI-powered applications on spike.land",
+    title: "MCP Tools - spike.land",
+    description: "Browse and interact with MCP tools on the spike.land platform",
   },
   "/store": {
     title: "Store - spike.land",
@@ -54,7 +54,7 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
 const navItems = [
   { to: "/blog", label: "Blog" },
   { to: "/tools", label: "Tools" },
-  { to: "/apps", label: "Apps" },
+  { to: "/apps", label: "MCP Tools" },
   { to: "/store", label: "Store" },
   { to: "/learn", label: "Learn" },
   { to: "/messages", label: "Messages" },
@@ -83,8 +83,8 @@ export function RootLayout() {
     if (pathname.startsWith("/apps/") && pathname !== "/apps/new") {
       const appId = pathname.split("/")[2];
       const search = new URLSearchParams(searchStr);
-      const tab = search.get("tab") || "App";
-      const appName = appId ? appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "App";
+      const tab = search.get("tab") || "Overview";
+      const appName = appId ? appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Tool";
       meta = {
         title: `${appName} (${tab}) — spike.land`,
         description: `Explore ${appName} on spike.land — the AI multi-agent operating system.`,
@@ -158,8 +158,8 @@ export function RootLayout() {
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 items-center border-b bg-white px-6 lg:hidden">
-          <button onClick={() => setSidebarOpen(true)} className="rounded p-2 hover:bg-gray-100">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button onClick={() => setSidebarOpen(true)} className="rounded p-2 hover:bg-gray-100" aria-label="Open navigation menu">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

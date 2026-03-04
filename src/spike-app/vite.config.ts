@@ -53,10 +53,23 @@ export default defineConfig({
     alias: { "@": resolve(import.meta.dirname, ".") },
   },
   server: {
-    proxy: { "/api": "http://localhost:8787" },
+    proxy: {
+      "/api": "http://localhost:8787",
+      "/mcp": "http://localhost:8787",
+    },
   },
   build: {
     outDir: "dist",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "scheduler"],
+          "vendor-tanstack": ["@tanstack/react-router", "@tanstack/react-store", "@tanstack/history"],
+          "vendor-framer": ["framer-motion"],
+          "vendor-markdown": ["react-markdown", "rehype-raw"],
+        },
+      },
+    },
   },
 });
