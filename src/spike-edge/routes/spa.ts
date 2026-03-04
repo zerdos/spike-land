@@ -38,7 +38,12 @@ spa.get("/*", async (c) => {
       const appId = path.split("/")[2];
       const url = new URL(c.req.url);
       const tab = url.searchParams.get("tab") || "App";
-      const appName = appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      
+      // Better capitalization for known apps
+      let appName = appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      if (appId === "qa-studio") appName = "QA Studio";
+      if (appId === "mcp-auth") appName = "MCP Auth";
+      
       const title = `${appName} (${tab}) — spike.land`;
       const description = `Explore ${appName} on spike.land — the AI multi-agent operating system.`;
 
@@ -67,10 +72,20 @@ spa.get("/*", async (c) => {
       },
     });
 
+    const clientId = await getClientId(c.req.raw);
+    const existingCookie = c.req.header("cookie") ?? "";
+    if (!existingCookie.includes("spike_client_id=")) {
+      // Set a persistent cookie for 1 year
+      response.headers.append(
+        "set-cookie",
+        `spike_client_id=${clientId}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`,
+      );
+    }
+
     try {
       c.executionCtx.waitUntil(
-        getClientId(c.req.raw).then((clientId) =>
-          sendGA4Events(c.env, clientId, [{
+        Promise.resolve(clientId).then((cid) =>
+          sendGA4Events(c.env, cid, [{
             name: "page_view",
             params: {
               page_path: path,

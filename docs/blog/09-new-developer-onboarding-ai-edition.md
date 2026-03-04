@@ -1,169 +1,74 @@
 # The New Developer Onboarding: AI Edition
 
+![A new junior developer confidently stepping into a futuristic, AI-powered office space, guided by floating digital documentation and helpful AI agents.](https://placehold.co/800x400)
+
 _By Zoltan Erdos | Brighton, UK | January 2026_
 
-Your first day at a new company used to feel like drowning. Now it feels like
-flying. Both are dangerous.
+Starting a new job used to feel like learning to swim in the shallow end. Today, with AI, it feels like being handed the keys to a jet plane on day one. Both are dangerous if you aren't prepared.
 
-Let me tell you about the strange problem facing new developers in 2026. And why
-your team needs to think about it now.
+If you are a junior developer, or a senior dev onboarding someone new, the rules of starting a new project have completely changed. Here is why your team needs to rethink onboarding right now.
 
 ## How Onboarding Used to Work
 
-When I started my first real developer job, the process was slow. Almost
-painfully slow.
+When I started my first real developer job, the process was intentionally slow.
 
-Week one: Read the README. Set up your machine. Break something. Fix it. Ask for
-help.
+*   **Week One:** Read the README. Set up your machine. Break something. Ask for help.
+*   **Week Two:** Read code. Attend meetings. Start recognizing architectural patterns.
+*   **Week Three:** Get your first small task—a simple bug fix. Submit a PR. Learn from the review.
 
-Week two: Read more code. Attend meetings. Start to recognize names. Still
-confused.
+It was slow, but it was safe. You built understanding layer by layer.
 
-Week three: Get your first small task. A bug fix. Something simple. You submit a
-PR. It gets reviewed. You learn what you did wrong.
+## The Danger Zone: Speed Without Context
 
-Month two: You start to feel useful. You know where things are. You understand
-some patterns. You can answer basic questions from the next new person.
+Now, consider the new reality. With AI tools, a new developer can read the entire codebase in seconds, write complex features, and refactor architecture immediately.
 
-This was not fast. But it was safe. You built understanding layer by layer. Like
-learning to walk before you run.
+On day one, a new hire can ship code.
 
-Now think about what happens with AI.
+![A comparison chart showing the slow, traditional onboarding process versus the fast but risky AI-assisted onboarding, highlighting the 'Danger Zone' of missing context.](https://placehold.co/600x300)
 
-## The New Reality
+This feels like a superpower. Productivity numbers soar. PRs look clean. But there is a massive problem: **AI gives you superpowers, but not super-understanding.**
 
-I joined a new team in 2025. I had powerful AI tools at my disposal. Claude Code
-could read the entire codebase in seconds. It could write features. It could
-refactor code. It could do things that would take me days.
+The AI makes smart guesses based on patterns it sees in the codebase. As a new developer, you have no idea what assumptions the AI made.
 
-On day one, I was shipping code.
+*   The AI might use an old convention the team abandoned months ago.
+*   The AI might ignore a subtle edge case only documented in an old Jira ticket.
+*   The AI might write perfectly syntactically correct code that breaks the actual business logic.
 
-Day one.
+You are trusting the AI because the code looks right. This is the **Danger Zone: AI plus no context equals slop.** Speed without understanding. Fire without control.
 
-Think about that. A new developer. No context. No understanding. Shipping code
-on the first day.
+## The Solution: A New Approach to Onboarding
 
-It felt amazing. I felt like a superhero. My productivity numbers looked
-incredible. My PRs were clean and professional.
+After learning this the hard way, I changed my approach. I stopped using AI to skip learning and started using it to accelerate learning.
 
-But there was a problem. A big one.
+Here is the framework that works:
 
-## The Danger Zone
+**1. Documentation First.**
+Before writing any feature code, use AI to create documentation about what you are learning. Note patterns, ask questions, and summarize architecture. This forces you to understand before you generate.
 
-Here is what I learned the hard way: AI gives you superpowers but not
-super-understanding.
+**2. Scripts Second.**
+Build small tools to check your assumptions. Write quick scripts to validate that the codebase behaves the way you (and the AI) think it does.
 
-The AI looked at the codebase and made assumptions. Smart assumptions.
-Reasonable guesses based on patterns it found. Then it wrote code based on those
-guesses.
+**3. Tests Third.**
+Write tests before asking the AI for the implementation. If you cannot write a test, you do not understand the problem well enough. The test becomes your proof of understanding.
 
-As a new developer on the project, I had no idea what assumptions the agent
-made.
+**4. AI Last.**
+Only after you have documentation, scripts, and tests should you let the AI write the main code. By then, you can verify its work and catch wrong assumptions.
 
-The AI might see an old pattern and think it is the current standard. Wrong.
+This method feels slower at first. But the code produced is actually good. The PRs get approved, and the senior developers trust you.
 
-The AI might miss a comment explaining why something works a certain way. Wrong
-again.
+![A flowchart showing the new onboarding steps: Documentation -> Scripts -> Tests -> AI Implementation.](https://placehold.co/600x300)
 
-The AI might follow a convention that the team abandoned six months ago. Still
-wrong.
+## How Teams Must Prepare
 
-And I could not catch these mistakes. I did not have enough context. I did not
-know what questions to ask. I trusted the AI because its code looked right.
+If you lead a team, your next new hire will arrive with AI superpowers. You must be ready.
 
-My PRs were pure AI slop. Not because the code was bad. Not because the AI was
-stupid. But because I had power without knowledge. Speed without understanding.
-Fire without control.
+*   **Write down assumptions:** The patterns, conventions, and history that seem obvious to you are unknown to new developers and their AI tools. Document them (e.g., in a `GEMINI.md` file).
+*   **Design safe first tasks:** Don't just give them easy tasks; give them tasks where AI assumptions cannot cause damage. Let new developers build context before they build features.
+*   **Review differently:** When reviewing code from new developers, ask: "Did you write this, or did AI write this?" Use reviews to teach missing context, not just to catch bugs.
+*   **Pair programming:** Sitting with a new developer shares the tribal wisdom that AI cannot access.
 
-This is the danger zone: AI plus no context equals slop.
-
-## The Solution I Found
-
-After some embarrassing code reviews, I changed my approach. I stopped using AI
-to skip the learning. I started using it to accelerate the learning.
-
-Here is what worked for me:
-
-**Documentation first.** Before I wrote any feature code, I created
-documentation about what I learned. Notes about patterns. Questions I had.
-Answers I found. This forced me to understand before I generated.
-
-**Scripts second.** I built small tools to check my assumptions. Quick tests.
-Simple validations. Ways to prove that the code did what I thought it did. Not
-what the AI assumed.
-
-**Tests third.** I wrote tests before asking AI for implementation. Not because
-TDD is trendy. Because if I could not write the test, I did not understand the
-problem. The test became proof of understanding.
-
-**AI last.** Only after I had documentation, scripts, and tests did I let AI
-write the main code. By then, I could verify its work. I could catch wrong
-assumptions. I could say "no, that pattern is old" or "wait, that function does
-something different."
-
-This felt slower at first. It was slower at first. But the code was actually
-good. The PRs got approved. The senior developers stopped looking worried.
-
-## For Teams: How to Prepare
-
-If you lead a team, you need to think about this now. Your next new hire will
-arrive with AI superpowers. Are you ready?
-
-**Write down your assumptions.** The things that seem obvious to you. The
-patterns you follow. The conventions you use. The history that explains why. New
-developers will not know these. Their AI tools will not know either. Write it
-down.
-
-**Create a context package.** A collection of documents that explain how things
-work. Not just what the code does. Why it does it. What you tried before. What
-failed. What succeeded. Give this to new developers on day one.
-
-**Design safe first tasks.** Not just easy tasks. Safe tasks. Work where AI
-assumptions cannot cause damage. Tasks that teach more than they produce. Let
-new developers build context before they build features.
-
-**Review differently.** When you review code from new developers, ask: "Did you
-write this or did AI write this?" Not to judge. To teach. Help them see where AI
-made wrong assumptions. Show them what context they were missing.
-
-**Pair program more.** Sitting with a new developer for an hour teaches more
-than ten documents. You can share the hidden knowledge. The things that are not
-written anywhere. The tribal wisdom that AI cannot access.
-
-## The Future We Are Building
-
-AI is not going away. It is getting better. New developers will have more power,
-not less.
-
-This is not bad. It is actually wonderful. Developers can contribute faster.
-Teams can move quicker. Products can improve sooner.
-
-But only if we handle the context problem.
-
-The old onboarding was slow because understanding takes time. That has not
-changed. Understanding still takes time. What changed is that we can now write
-code before we understand.
-
-That is a superpower and a trap.
-
-My advice to new developers: be humble about your knowledge, even when your code
-looks great. Spend the time to understand. Documentation first. Context before
-code. Learning before shipping.
-
-My advice to teams: prepare for AI-powered new hires. Write things down. Share
-context generously. Design onboarding that builds understanding, not just
-productivity.
-
-The future belongs to developers who combine AI power with deep understanding.
-Not one or the other. Both.
-
-I learned this lesson through embarrassment. You can learn it from this post
-instead.
-
-That is a much better way.
+The future belongs to developers who combine AI power with deep understanding. By focusing on context first, you can turn a dangerous jet plane into a safe, incredible ride.
 
 ---
 
-_Zoltan Erdos is a developer based in Brighton, UK, building spike.land. He
-believes onboarding is changing forever and wants to help both sides get it
-right._
+_Zoltan Erdos is a developer based in Brighton, UK, building spike.land. He believes onboarding is changing forever and wants to help both sides get it right._

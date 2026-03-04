@@ -38,7 +38,18 @@ function truncateStringParams(
 
 /** Extract a stable anonymous client ID from the request. */
 export async function getClientId(request: Request): Promise<string> {
-  const ip = request.headers.get("cf-connecting-ip") ?? crypto.randomUUID();
+  // 1. Try to get from cookie
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const match = cookieHeader.match(/spike_client_id=([^;]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  // 2. Fallback to hashed IP
+  const ip = request.headers.get("cf-connecting-ip") || 
+             request.headers.get("x-real-ip") || 
+             "127.0.0.1";
+             
   return hashClientId(ip);
 }
 

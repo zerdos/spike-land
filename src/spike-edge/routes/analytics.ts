@@ -77,7 +77,29 @@ analytics.post("/analytics/ingest", async (c) => {
     return c.json({ error: "No valid events in batch" }, 400);
   }
 
-  const clientId = await getClientId(c.req.raw);
+  // 1. Try to get stable ID (Cookie or IP)
+  let clientId = await getClientId(c.req.raw);
+
+  // 2. Try to get authenticated User ID (optional)
+  const cookie = c.req.header("cookie");
+  if (cookie?.includes("auth_session")) {
+    try {
+      const sessionReq = new Request("https://auth-mcp.spike.land/api/auth/get-session", {
+        headers: {
+          cookie,
+          "X-Forwarded-Host": "spike.land",
+          "X-Forwarded-Proto": "https",
+        },
+      });
+      const sessionRes = await c.env.AUTH_MCP.fetch(sessionReq);
+      if (sessionRes.ok) {
+        const session = await sessionRes.json<{ user?: { id: string } }>();
+        if (session?.user?.id) {
+          clientId = `user_${session.user.id}`;
+        }
+      }
+    } catch { /* auth-mcp might be down — fallback to anonymous clientId */ }
+  }
 
   // Store events in D1
   const d1Promise = (async () => {
