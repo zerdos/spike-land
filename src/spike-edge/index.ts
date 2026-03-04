@@ -46,9 +46,9 @@ app.use("*", async (c, next) => {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:",
+      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://avatars.githubusercontent.com data: blob:",
+      "img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://avatars.githubusercontent.com https://*.googleusercontent.com data: blob:",
       "font-src 'self' data:",
       "connect-src 'self' https://edge.spike.land https://auth-mcp.spike.land https://mcp.spike.land wss://spike.land blob: data:",
       "worker-src 'self' blob:",

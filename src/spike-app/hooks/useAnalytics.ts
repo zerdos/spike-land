@@ -30,9 +30,9 @@ function flushEvents() {
 
   try {
     if (typeof document !== "undefined" && document.visibilityState === "hidden" && navigator.sendBeacon) {
-      navigator.sendBeacon("/api/analytics/ingest", new Blob([body], { type: "application/json" }));
+      navigator.sendBeacon("/analytics/ingest", new Blob([body], { type: "application/json" }));
     } else {
-      fetch("/api/analytics/ingest", {
+      fetch("/analytics/ingest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body,

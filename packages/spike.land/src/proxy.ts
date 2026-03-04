@@ -218,7 +218,7 @@ export async function proxy(request: NextRequest) {
   const cspHeader = `
     default-src 'self';
     img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://images.unsplash.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://www.facebook.com https://platform-lookaside.fbsbx.com https://vercel.live https://vercel.com data: blob:;
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' 'nonce-${nonce}' blob: https://va.vercel-scripts.com https://connect.facebook.net https://vercel.live https://www.googletagmanager.com;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' 'nonce-${nonce}' blob: https://va.vercel-scripts.com https://connect.facebook.net https://vercel.live https://www.googletagmanager.com https://static.cloudflareinsights.com;
     style-src 'self' 'unsafe-inline' https://vercel.live;
     object-src 'none';
     font-src 'self' https://vercel.live https://assets.vercel.com https://fonts.gstatic.com data:;
