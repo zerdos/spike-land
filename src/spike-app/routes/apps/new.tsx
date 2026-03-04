@@ -1,5 +1,5 @@
-import { type ChangeEvent, type FormEvent, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { type ChangeEvent, type FormEvent, useState, useEffect } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { type AppStatus, StatusBadge } from "@/components/StatusBadge";
 
 const steps = ["Details", "Prompt", "Review"] as const;
@@ -47,15 +47,23 @@ export function AppsNewPage() {
   const [submitting, setSubmitting] = useState(false);
   const [buildStatus, setBuildStatus] = useState<AppStatus | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
+  
+  const search = useSearch({ from: "/apps/new" }) as { prompt?: string };
+  const navigate = useNavigate();
+
   const [data, setData] = useState<FormData>({
     name: "",
     slug: "",
     description: "",
     category: "utility",
-    prompt: "",
+    prompt: search.prompt || "",
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (search.prompt) {
+      setData((prev) => ({ ...prev, prompt: search.prompt || "" }));
+    }
+  }, [search.prompt]);
 
   function update(field: keyof FormData, value: string) {
     setData((prev) => {
@@ -102,7 +110,11 @@ export function AppsNewPage() {
       setBuildStatus("live");
 
       await new Promise((r) => setTimeout(r, 500));
-      navigate({ to: "/apps/$appId", params: { appId: data.slug } });
+      navigate({
+        to: "/apps/$appId",
+        params: { appId: data.slug },
+        search: { tab: "App" },
+      });
     } catch {
       setSubmitting(false);
       setBuildStatus(null);

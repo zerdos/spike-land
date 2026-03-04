@@ -54,12 +54,22 @@ const appsNewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/apps/new",
   component: lazyRouteComponent(() => import("./routes/apps/new"), "AppsNewPage"),
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      prompt: (search.prompt as string) || "",
+    };
+  },
 });
 
 const appDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/apps/$appId",
   component: lazyRouteComponent(() => import("./routes/apps/$appId"), "AppDetailPage"),
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      tab: (search.tab as string | undefined),
+    };
+  },
 });
 
 const storeRoute = createRoute({

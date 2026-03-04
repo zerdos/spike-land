@@ -3,6 +3,7 @@
 export interface Env {
   R2: R2Bucket;
   SPA_ASSETS: R2Bucket;
+  DB: D1Database;
   LIMITERS: DurableObjectNamespace;
   AUTH_MCP: Fetcher;
   STRIPE_SECRET_KEY: string;

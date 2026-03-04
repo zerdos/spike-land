@@ -49,6 +49,7 @@ export function AppsIndexPage() {
         <h1 className="text-2xl font-bold">My Apps</h1>
         <Link
           to="/apps/new"
+          search={{ prompt: "" }}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
         >
           Create App

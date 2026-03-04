@@ -24,6 +24,12 @@ new_classes = ["RateLimiter"]
 # Custom domain — Cloudflare manages DNS automatically
 # QUIZ_BADGE_SECRET moved to wrangler secrets (run: wrangler secret put QUIZ_BADGE_SECRET)
 # GA_API_SECRET must be set via: wrangler secret put GA_API_SECRET
+[[d1_databases]]
+binding = "DB"
+database_name = "spike-edge-analytics"
+database_id = "placeholder-create-with-wrangler"
+migrations_dir = "db/migrations"
+
 [vars]
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"
 

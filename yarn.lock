@@ -8220,7 +8220,9 @@ __metadata:
     "@spike-land-ai/eslint-config": "npm:*"
     "@tailwindcss/typography": "npm:^0.5.19"
     "@tailwindcss/vite": "npm:^4.2.1"
+    "@tanstack/react-query": "npm:^5.90.21"
     "@tanstack/react-router": "npm:^1.163.3"
+    "@tanstack/router-cli": "npm:^1.164.0"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@vitejs/plugin-react-swc": "npm:^4.2.3"
@@ -8853,7 +8855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.90.21":
+"@tanstack/react-query@npm:5.90.21, @tanstack/react-query@npm:^5.90.21":
   version: 5.90.21
   resolution: "@tanstack/react-query@npm:5.90.21"
   dependencies:
@@ -8891,6 +8893,19 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/8d03641c8619c2c92b5f05ea6a0c6060fe3efcab6bc2fb0990351f083263ed78fd220df62a427728f11137cba1cc2d0ca80175893a52d62a2e7057a4396e484a
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-cli@npm:^1.164.0":
+  version: 1.164.0
+  resolution: "@tanstack/router-cli@npm:1.164.0"
+  dependencies:
+    "@tanstack/router-generator": "npm:1.164.0"
+    chokidar: "npm:^3.6.0"
+    yargs: "npm:^17.7.2"
+  bin:
+    tsr: bin/tsr.cjs
+  checksum: 10c0/caa16f58a079eeb4f0c3a4a026879eb7b23617b2e051e2fd26094c8c0efc09dcfc7f6f01fa69dbce4abdd6db81cfb9229a7d99517f7f8f1fb542a847204ffbc4
   languageName: node
   linkType: hard
 
@@ -25636,7 +25651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.2":
+"yargs@npm:17.7.2, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:

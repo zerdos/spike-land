@@ -32,6 +32,7 @@ export function AppCard({
     <Link
       to="/apps/$appId"
       params={{ appId: id }}
+      search={{ tab: "App" }}
       className="block rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2">

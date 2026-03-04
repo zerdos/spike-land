@@ -1,22 +1,33 @@
-import { Link, useParams, useSearch, useNavigate, createRoute } from "@tanstack/react-router";
+import { Link, useParams, useSearch, useNavigate } from "@tanstack/react-router";
 import { useCallback, useState, useEffect } from "react";
 import { type AppStatus, StatusBadge } from "@/components/StatusBadge";
 import { ChatThread, type Message } from "@/components/ChatThread";
 import { type AppVersion, VersionHistory } from "@/components/VersionHistory";
 import { LivePreview } from "@/components/LivePreview";
 import { AppProductPage } from "@/components/AppProductPage";
-import { z } from "zod";
 
 const tabs = ["App", "Chat", "Versions", "Preview"] as const;
 type Tab = (typeof tabs)[number];
 
-const appSearchSchema = z.object({
-  tab: z.enum(tabs).optional().catch("App"),
-});
+// Placeholder data until real-time subscriptions are wired
+const placeholderVersions: AppVersion[] = [
+  {
+    version: 1,
+    changeDescription: "Initial version - scaffolded from prompt",
+    author: "agent",
+    timestamp: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    version: 2,
+    changeDescription: "Added responsive layout and dark mode support",
+    author: "agent",
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+  },
+];
 
 export function AppDetailPage() {
   const { appId } = useParams({ strict: false });
-  const search = useSearch({ from: "/apps/$appId" });
+  const search = useSearch({ from: "/apps/$appId" }) as { tab?: Tab };
   const navigate = useNavigate();
 
   const activeTab = search.tab || "App";
@@ -31,7 +42,6 @@ export function AppDetailPage() {
       search: (prev) => ({ ...prev, tab }),
     });
   }, [navigate, appId]);
-
 
   useEffect(() => {
     const handleTabChange = (e: Event) => {

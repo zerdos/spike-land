@@ -52,6 +52,12 @@ function isValidEvent(event: unknown): event is AnalyticsEvent {
   return typeof e.source === "string" && typeof e.eventType === "string";
 }
 
+const VALID_RANGES: Record<string, number> = {
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
+};
+
 analytics.post("/analytics/ingest", async (c) => {
   const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
 
@@ -71,6 +77,24 @@ analytics.post("/analytics/ingest", async (c) => {
     return c.json({ error: "No valid events in batch" }, 400);
   }
 
+  const clientId = await getClientId(c.req.raw);
+
+  // Store events in D1
+  const d1Promise = (async () => {
+    const stmt = c.env.DB.prepare(
+      "INSERT INTO analytics_events (source, event_type, metadata, client_id) VALUES (?, ?, ?, ?)",
+    );
+    const batch = events.map((event) =>
+      stmt.bind(
+        event.source,
+        event.eventType,
+        event.metadata ? JSON.stringify(event.metadata) : null,
+        clientId,
+      ),
+    );
+    await c.env.DB.batch(batch);
+  })();
+
   // Convert to GA4 events and forward in background
   const ga4Events: GA4Event[] = events.map((event) => {
     const params: Record<string, string | number | boolean> = {
@@ -86,14 +110,81 @@ analytics.post("/analytics/ingest", async (c) => {
     return { name: event.eventType, params };
   });
 
-  const ga4Promise = getClientId(c.req.raw).then((clientId) =>
-    sendGA4Events(c.env, clientId, ga4Events)
-  );
+  const ga4Promise = sendGA4Events(c.env, clientId, ga4Events);
+
   try {
-    c.executionCtx.waitUntil(ga4Promise);
-  } catch { /* no ExecutionContext in test environment */ }
+    c.executionCtx.waitUntil(Promise.all([d1Promise, ga4Promise]));
+  } catch { /* no ExecutionContext in test environment — await instead */
+    await d1Promise;
+    await ga4Promise;
+  }
 
   return c.json({ accepted: events.length });
+});
+
+analytics.get("/analytics/events", async (c) => {
+  const range = c.req.query("range") ?? "24h";
+  const type = c.req.query("type");
+  const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
+
+  const rangeMs = VALID_RANGES[range];
+  if (!rangeMs) {
+    return c.json({ error: "Invalid range. Use 24h, 7d, or 30d" }, 400);
+  }
+
+  const cutoff = Date.now() - rangeMs;
+
+  let query = "SELECT id, source, event_type, metadata, client_id, created_at FROM analytics_events WHERE created_at >= ?";
+  const params: (string | number)[] = [cutoff];
+
+  if (type) {
+    query += " AND event_type = ?";
+    params.push(type);
+  }
+
+  query += " ORDER BY created_at DESC LIMIT ?";
+  params.push(limit);
+
+  const stmt = c.env.DB.prepare(query);
+  const result = await stmt.bind(...params).all();
+
+  return c.json(result.results);
+});
+
+analytics.get("/analytics/summary", async (c) => {
+  const range = c.req.query("range") ?? "24h";
+
+  const rangeMs = VALID_RANGES[range];
+  if (!rangeMs) {
+    return c.json({ error: "Invalid range. Use 24h, 7d, or 30d" }, 400);
+  }
+
+  const cutoff = Date.now() - rangeMs;
+
+  const [totalResult, uniqueUsersResult, byTypeResult, toolUsageResult] = await c.env.DB.batch([
+    c.env.DB.prepare(
+      "SELECT COUNT(*) as total FROM analytics_events WHERE created_at >= ?",
+    ).bind(cutoff),
+    c.env.DB.prepare(
+      "SELECT COUNT(DISTINCT client_id) as unique_users FROM analytics_events WHERE created_at >= ?",
+    ).bind(cutoff),
+    c.env.DB.prepare(
+      "SELECT event_type, COUNT(*) as count FROM analytics_events WHERE created_at >= ? GROUP BY event_type ORDER BY count DESC",
+    ).bind(cutoff),
+    c.env.DB.prepare(
+      "SELECT json_extract(metadata, '$.toolName') as tool_name, COUNT(*) as count FROM analytics_events WHERE created_at >= ? AND event_type = 'tool_use' AND metadata IS NOT NULL GROUP BY tool_name ORDER BY count DESC LIMIT 20",
+    ).bind(cutoff),
+  ]);
+
+  const total = (totalResult.results[0] as Record<string, unknown>)?.total ?? 0;
+  const uniqueUsers = (uniqueUsersResult.results[0] as Record<string, unknown>)?.unique_users ?? 0;
+
+  return c.json({
+    totalEvents: total,
+    uniqueUsers,
+    eventsByType: byTypeResult.results,
+    toolUsage: toolUsageResult.results,
+  });
 });
 
 export { analytics };
