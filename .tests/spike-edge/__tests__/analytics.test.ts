@@ -3,10 +3,27 @@ import { Hono } from "hono";
 import type { Env } from "../../../src/spike-edge/env.js";
 import { analytics } from "../../../src/spike-edge/routes/analytics.js";
 
+function createMockD1(): D1Database {
+  const mockStmt = {
+    bind: vi.fn().mockReturnThis(),
+    all: vi.fn().mockResolvedValue({ results: [] }),
+    run: vi.fn().mockResolvedValue({ success: true }),
+    first: vi.fn().mockResolvedValue(null),
+    raw: vi.fn().mockResolvedValue([]),
+  };
+  return {
+    prepare: vi.fn().mockReturnValue(mockStmt),
+    batch: vi.fn().mockResolvedValue([]),
+    dump: vi.fn(),
+    exec: vi.fn(),
+  } as unknown as D1Database;
+}
+
 function createMockEnv(): Env {
   return {
     R2: {} as unknown as R2Bucket,
     SPA_ASSETS: {} as unknown as R2Bucket,
+    DB: createMockD1(),
     LIMITERS: {} as unknown as DurableObjectNamespace,
     AUTH_MCP: {} as unknown as Fetcher,
     STRIPE_SECRET_KEY: "",

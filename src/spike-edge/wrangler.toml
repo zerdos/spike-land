@@ -27,7 +27,7 @@ new_classes = ["RateLimiter"]
 [[d1_databases]]
 binding = "DB"
 database_name = "spike-edge-analytics"
-database_id = "placeholder-create-with-wrangler"
+database_id = "f7219e86-7dc6-4627-92ad-17fce49ae35a"
 migrations_dir = "db/migrations"
 
 [vars]

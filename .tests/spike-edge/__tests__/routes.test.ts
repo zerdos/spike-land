@@ -20,6 +20,14 @@ function createMockEnv(): Env {
     SPA_ASSETS: {
       get: vi.fn().mockResolvedValue(null),
     } as unknown as R2Bucket,
+    DB: {
+      prepare: vi.fn().mockReturnValue({
+        bind: vi.fn().mockReturnThis(),
+        all: vi.fn().mockResolvedValue({ results: [] }),
+        run: vi.fn().mockResolvedValue({ success: true }),
+      }),
+      batch: vi.fn().mockResolvedValue([]),
+    } as unknown as D1Database,
     LIMITERS: {
       idFromName: vi.fn().mockReturnValue("limiter-id"),
       get: vi.fn().mockReturnValue({

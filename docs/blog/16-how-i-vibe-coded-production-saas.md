@@ -1,231 +1,81 @@
 # How I Vibe-Coded a Production SaaS in Two Months
 
+![A single developer standing at a futuristic command center with multiple floating screens showing different parts of a SaaS platform, orchestrated by glowing AI agents, cyberpunk style](https://placehold.co/800x400)
+
 _By Zoltan Erdos | Brighton, UK | February 2026_
 
-I built an entire SaaS platform. Six core features. Full test coverage. CI/CD
-pipeline. Stripe payments. MCP server. Live preview infrastructure. Production
-deployed.
+I built an entire SaaS platform. Six core features. Full test coverage. CI/CD pipeline. Stripe payments. MCP server. Live preview infrastructure. Production deployed.
 
-I did it alone. In about two months.
+I did it alone. In about two months. And I did it by vibe coding.
 
-And I did it by vibe coding.
-
-Before you roll your eyes, let me explain what I mean. Because vibe coding does
-not mean what most people think it means.
+Before you roll your eyes, let me explain what I mean. Because vibe coding does not mean what most people think it means. For any junior developer looking to leverage AI to build massive projects, pay attention to the methodology behind the magic.
 
 ## What Vibe Coding Actually Is
 
-Most people hear "vibe coding" and think it means typing a prompt, hitting
-enter, and hoping for the best. Copy-paste from ChatGPT into your editor. Ship
-it. Pray.
+Most people hear "vibe coding" and think it means typing a vague prompt, hitting enter, and hoping for the best. Copy-pasting from ChatGPT into your editor. That is not vibe coding; that is generating AI slop.
 
-That is not vibe coding. That is AI slop.
-
-Real vibe coding is a methodology. It is how you work with AI as a partner, not
-a slot machine. It is context engineering, requirement clarity, and systematic
-validation. It is the hardest easy thing I have ever done.
-
-Here is what it looks like in practice.
+Real vibe coding is a rigorous methodology. It is how you work with AI as a partner, relying on context engineering, requirement clarity, and systematic validation. It is the hardest easy thing I have ever done.
 
 ## The Platform I Built
 
-Let me describe what I actually built, so you understand the scope.
+To understand the scope, here is what **spike.land** actually is: a managed deployment platform with multiple feature modules, including an AI social media command center (Orbit), image enhancement (Pixel), a zero-shot app builder (My-Apps), and a real-time code execution MCP server. 
 
-**spike.land** is a managed deployment platform with an MCP registry. It has
-multiple feature modules:
-
-- **Orbit**: An AI-powered social media command center with real-time health
-  monitoring, unified inbox, smart budget allocation, competitive intelligence,
-  brand voice management, and AI-generated draft posts
-- **Pixel**: AI image enhancement with a token economy
-- **My-Apps**: A zero-shot app builder with live preview
-- **MCP server**: Lets AI agents create and preview code in real time
-- **spike-cli**: An MCP multiplexer CLI for orchestrating AI tool servers
-
-This is not a prototype. This is not a demo. This is a production platform with
-workspace management, team roles, subscription tiers, Stripe billing, OAuth
-authentication, and a real database schema.
-
-One person. Two months.
+This is not a prototype. It features workspace management, team roles, subscription tiers, Stripe billing, and OAuth authentication. One person. Two months.
 
 ## How I Actually Did It
 
+![A detailed workflow diagram showing the 'Vibe Coding' methodology: Requirements -> CLAUDE.md Context -> Test-Driven AI Generation -> CI/CD Validation, clean technical diagram](https://placehold.co/600x300)
+
 ### Step 1: Requirements Before Code
 
-I wrote no code for the first week.
+I wrote no code for the first week. Instead, I wrote detailed requirements: user flows, edge cases, database schemas, and API contracts. 
 
-Instead, I wrote requirements. Detailed requirements. User flows. Edge cases.
-Database schemas. API contracts. Subscription tier matrices. Every decision
-documented before a single line of code existed.
-
-This sounds slow. It is not. It is the fastest thing you can do.
-
-When I eventually asked my AI agent to build the Unified Inbox, I did not say
-"build me an inbox." I said: "Here are the message types. Here are the priority
-scoring rules. Here is how sentiment analysis works. Here are the keyboard
-shortcuts. Here is how team assignment works. Here are the subscription tier
-limits. Here is the database schema. Build it."
-
-The AI built it correctly on the first attempt. Because I gave it everything it
-needed.
+When I asked my AI agent to build a feature, I didn't just ask for the feature. I provided the priority scoring rules, team assignment logic, and subscription tier limits. The AI built it correctly on the first attempt because I gave it everything it needed. Clear requirements are your fastest path to production code.
 
 ### Step 2: The CLAUDE.md File
 
-Every project has a file called CLAUDE.md. It contains everything the AI needs
-to know about the project.
+Every project needs a system prompt file, like a `CLAUDE.md`. It contains the directory structure, tech stack, testing rules, and coding conventions. 
 
-My CLAUDE.md is extensive. It describes the directory structure. The tech stack.
-The testing requirements. The CI/CD pipeline. The git workflow. The coding
-conventions.
-
-When my AI agent reads this file, it stops guessing. It follows the playbook. It
-writes code that fits the codebase. It runs the right tests. It commits with the
-right format.
-
-This is context engineering. You build the context once, and every interaction
-with the AI benefits from it.
+When the AI reads this file, it stops guessing and follows your playbook. This is context engineering: build the context once, and every interaction benefits from it.
 
 ### Step 3: Test-Driven Everything
 
-I require 100% test coverage. Not because I am a purist. Because AI-generated
-code needs validation more than human-written code.
+I require 100% test coverage because AI-generated code needs validation more than human-written code. AI lacks intuition; it relies on patterns, and patterns can be wrong.
 
-Here is why. When a human writes code, they have intuition. They know the
-codebase. They feel when something is wrong. AI does not have intuition. AI has
-patterns. And patterns can be wrong.
-
-Tests catch wrong patterns. Tests do not care if the code looks clean. Tests
-check if the code actually works.
-
-My workflow: write the test first. Then have the AI write the code to pass the
-test. Then have the AI write more tests to find edge cases. Then fix those edge
-cases.
-
-This cycle is fast. Much faster than debugging AI-generated code after the fact.
+Tests catch bad patterns. My workflow: write the test, have AI write the code to pass it, then have AI write edge-case tests, and finally fix the edge cases. It is a rapid, bulletproof cycle.
 
 ### Step 4: CI/CD as Safety Net
 
-Every push triggers the full pipeline. Lint. Type check. Unit tests. Build. E2E
-tests. Vercel preview deployment.
+Every push triggers linting, type checks, unit tests, E2E tests, and preview deployments. I do not merge anything until all checks are green. 
 
-I do not merge anything until all checks are green. No exceptions.
-
-This might seem paranoid. It is not. It is what makes solo development possible.
-The CI pipeline is my second pair of eyes. It catches what I miss. It catches
-what the AI misses.
-
-When an AI agent makes a change that breaks something three files away, the CI
-catches it. I fix it before it compounds.
+When working solo with AI, the CI pipeline is your second pair of eyes. It catches the cascading failures that AI might introduce.
 
 ### Step 5: Parallel Agent Orchestration
 
-The real speed comes from parallelism.
+![Multiple AI robotic avatars working in parallel on a glowing holographic codebase, symbolizing parallel agent orchestration, sci-fi illustration](https://placehold.co/600x300)
 
-I do not use one AI agent. I use many. One explores the codebase. Another reads
-documentation. Another checks for similar patterns. Another writes the code.
-Another writes tests. Another reviews the result.
+The real speed comes from parallelism. I use multiple AI subagents. One explores the codebase, another reads documentation, one writes code, and another writes tests. They work simultaneously and report back. 
 
-They work simultaneously. They report back. I synthesize their findings. Then we
-proceed.
-
-This is not science fiction. This is how I work every day. Claude Code with
-subagents. Multiple agents running in parallel. Each one focused on a specific
-aspect of the problem.
-
-The key is giving each agent the right context. Each one needs to know what to
-focus on. What questions to answer. What to look for.
+Giving each agent the precise context it needs to focus on a specific aspect of the problem is the key to orchestration.
 
 ## The Hard Parts
 
-I want to be honest. It was not all smooth.
+It was not all smooth sailing. Early on, I produced "AI slop"—code that looked clean but made wrong assumptions. The fix was always the same: better context and tighter requirements. 
 
-### The Slop Problem
+Solo development is also incredibly lonely. To compensate, I had the AI interview me during planning, acting as a thinking partner to catch blind spots. 
 
-Early on, I produced AI slop. I know because I have written about it before.
-Code that looked clean but made wrong assumptions. Code that followed deprecated
-patterns. Code that worked in isolation but broke the system.
-
-The fix was always the same: better context. Better requirements. Better
-documentation. Every failure was a documentation gap.
-
-### The Loneliness
-
-Solo development is lonely. There is nobody to bounce ideas off. Nobody to catch
-your blind spots in a casual conversation. Nobody to tell you when you are going
-down the wrong path.
-
-I compensated by having the AI interview me during planning. "What happens if
-this fails?" "What data already exists?" "Why did you choose this approach?"
-
-The AI became my thinking partner. Not a replacement for a team, but close
-enough.
-
-### The ADHD Factor
-
-I have ADHD. My brain does not do sustained focus naturally. It does not do
-schedules. It does not do "just push through."
-
-Building a SaaS requires all of those things.
-
-My solution: ruthless structure. Same routine every day. Gym at 6:30. Dog walks
-at set times. Work in focused blocks. AI handles the parts my brain drops.
-
-AI is particularly good for ADHD developers. When I lose focus and come back
-hours later, the AI remembers the context. It picks up where we left off. It
-does not judge. It does not ask "where were we?"
+Finally, navigating this with ADHD required ruthless structure. Gym at 6:30am, dog walks at set times, and focused work blocks. AI helped bridge the gap, picking up context immediately when my focus faltered.
 
 ## What I Learned
 
-### The Triangle Is Broken
+For decades, we had the impossible triangle: quality, speed, and cost. Pick two. AI broke that triangle. I built a production SaaS with high quality, high speed, and low cost.
 
-For decades, we had the impossible triangle: quality, speed, and cost. Pick two.
+If you learn one thing, learn this: **the quality of your AI output is strictly proportional to the quality of your context input.** I spend 30% of my time on context engineering, and it pays for itself a hundred times over.
 
-AI broke that triangle. I built a production SaaS with high quality (100% test
-coverage, CI/CD, proper architecture), high speed (two months), and low cost
-(one person).
+The tools exist. The methodology works. The future belongs to developers who know how to amplify themselves with AI. 
 
-This was genuinely impossible two years ago. It is routine now.
-
-### Requirements Are the Product
-
-The most important thing I build every day is not code. It is requirements.
-
-Clear, detailed, unambiguous requirements are the product. The code is just the
-output. When the requirements are right, the code writes itself. Literally.
-
-### Context Engineering Is the Skill
-
-If you learn one thing from my experience, learn this: the quality of your AI
-output is proportional to the quality of your context input.
-
-Bad context in, bad code out. Good context in, production code out.
-
-I spend 30% of my time on context engineering. Writing CLAUDE.md files.
-Documenting decisions. Creating clear requirements. Setting up MCP tools. This
-investment pays for itself a hundred times over.
-
-## Where It Goes From Here
-
-spike.land is live. The platform works. The infrastructure is solid.
-
-But I am one person. I have technical depth and production tools. What I do not
-have is community and distribution.
-
-That is the next chapter. Finding the right partnerships. Getting the platform
-in front of the people who need it. Proving that vibe coding is not just a
-buzzword but a legitimate way to build real software.
-
-I believe the future of software belongs to small teams and solo founders who
-know how to work with AI. Not replacing developers. Amplifying them. One person
-doing the work of ten. Not because they are ten times smarter, but because they
-have ten times the tools.
-
-The tools exist. The methodology works. I am living proof.
-
-Now I need to find the others.
+Now go build something incredible.
 
 ---
 
-_Zoltan Erdos is a developer based in Brighton, UK, building spike.land. He
-believes the future of software belongs to solo founders who master context
-engineering._
+_Zoltan Erdos is a developer based in Brighton, UK, building spike.land. He believes the future of software belongs to solo founders who master context engineering._

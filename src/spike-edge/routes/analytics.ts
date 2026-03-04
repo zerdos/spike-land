@@ -112,11 +112,14 @@ analytics.post("/analytics/ingest", async (c) => {
 
   const ga4Promise = sendGA4Events(c.env, clientId, ga4Events);
 
+  const allWork = Promise.all([d1Promise, ga4Promise]).catch(() => {
+    /* best-effort — failures are logged by individual handlers */
+  });
+
   try {
-    c.executionCtx.waitUntil(Promise.all([d1Promise, ga4Promise]));
+    c.executionCtx.waitUntil(allWork);
   } catch { /* no ExecutionContext in test environment — await instead */
-    await d1Promise;
-    await ga4Promise;
+    await allWork;
   }
 
   return c.json({ accepted: events.length });
@@ -161,7 +164,7 @@ analytics.get("/analytics/summary", async (c) => {
 
   const cutoff = Date.now() - rangeMs;
 
-  const [totalResult, uniqueUsersResult, byTypeResult, toolUsageResult] = await c.env.DB.batch([
+  const results = await c.env.DB.batch([
     c.env.DB.prepare(
       "SELECT COUNT(*) as total FROM analytics_events WHERE created_at >= ?",
     ).bind(cutoff),
@@ -176,14 +179,14 @@ analytics.get("/analytics/summary", async (c) => {
     ).bind(cutoff),
   ]);
 
-  const total = (totalResult.results[0] as Record<string, unknown>)?.total ?? 0;
-  const uniqueUsers = (uniqueUsersResult.results[0] as Record<string, unknown>)?.unique_users ?? 0;
+  const totalRow = results[0]?.results[0] as Record<string, unknown> | undefined;
+  const usersRow = results[1]?.results[0] as Record<string, unknown> | undefined;
 
   return c.json({
-    totalEvents: total,
-    uniqueUsers,
-    eventsByType: byTypeResult.results,
-    toolUsage: toolUsageResult.results,
+    totalEvents: totalRow?.total ?? 0,
+    uniqueUsers: usersRow?.unique_users ?? 0,
+    eventsByType: results[2]?.results ?? [],
+    toolUsage: results[3]?.results ?? [],
   });
 });
 

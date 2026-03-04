@@ -1,189 +1,88 @@
-# Interview Notes: Zoltan Erdos on the Developer Identity Crisis of 2026
+# The Developer Identity Crisis of 2026
 
-**Date:** January 2026 **Subject:** Zoltan Erdos **Location:** Brighton, UK
-**Role:** Developer & Founder of Spike.land
+![A developer looking at a glowing, complex AI orchestration dashboard with a mix of awe and uncertainty](https://placehold.co/800x400)
 
----
+_By Zoltan Erdos | Brighton, UK | January 2026_
 
-## Key Memorable Quotes
+_How AI broke the speed-quality-price tradeoff, generated an era of "slop," and forced me to entirely rethink what it means to be a software engineer._
 
-### On Uncertainty
+## The Productivity Paradox
 
-> "2026 will be such a ride - but I never felt so uncertain. The profession is
-> under a big refactor."
+2026 has been an incredible ride so far, but I have never felt so uncertain about my profession. Software engineering is undergoing a massive refactor, and honestly, I'm not sure that traditional "developers" will even be employed in two years.
 
-> "I'm not sure that in 2026 people are still employing developers. Being a
-> developer will be obsolete in two years, for sure."
+On a personal level, I have become the most productive I have ever been in my life. Armed with the latest AI agents, I can build complex systems in days that used to take months. 
 
-> "Earning less than I earned five years ago. The career progression kind of
-> stopped."
+Unfortunately, at a traditional job, this speed is actually a problem.
 
-### On the Productivity Paradox
+If I submit a Pull Request (PR) in an hour, it won't be reviewed until the end of the two-week sprint. When the team finally looks at it at the last minute, they suddenly decide everything about the architecture is wrong. The speed of AI generation clashes violently with the slow, human pace of agile rituals and code reviews. 
 
-> "I became the most productive that I ever been in my life... unfortunately, at
-> work it's not that easy."
+## The "AI Slop" Confession
 
-> "If I do a PR fast, it won't even be looked at until the end of the sprint."
+I have a confession to make: for a brief period when I joined a new team, my PRs were pure AI slop. And this happened despite my absolute best efforts to prevent it.
 
-> "The PR won't be looked at until the end of the sprint. And last moment, they
-> decide everything is wrong with it."
+The issue is that AI agents make assumptions. When working in a legacy codebase, an AI will confidently assume certain architectural patterns. As a new developer on the team, you have no idea what assumptions the agent just baked into your code. 
 
-### On the "AI Slop" Confession
+![A diagram showing a messy AI slop PR being rejected by a senior developer](https://placehold.co/600x300)
 
-> "For a brief period, when I started in a new team, my PRs were pure AI slop -
-> even with my very best effort to avoid that."
+### The Basket API Incident
 
-> "The AI takes assumptions on legacy codebase, and as a new developer, you have
-> no idea what assumptions the agent made."
+Let me give you a concrete example. I was working across a Next.js cancellation flow and a legacy Angular e-commerce store. The ticket was simple: "Track analytics when users accept a retention offer."
 
-### On Trust & Team Dynamics
+The flow was that a user would try to cancel, see a retention offer with an ID in the URL, click it, land on the Angular app, and check out. I just needed to track that specific checkout event.
 
-> "Everything coming from me, from AI - those PRs take 3-4x longer to review. My
-> productivity at work because of this is really bad."
+I assumed the frontend held the shopping basket in memory until checkout. It made logical sense. What I didn't know was that the basket was actually server-side. The backend was the single source of truth, and the ID in the URL was just a secondary check.
 
-> "Colleagues would rather redo the whole PR and trash your work than feedback
-> your PR in time - even when you asked for early feedback."
+At the time, the AI model I was using was experiencing internal context-routing issues. But I didn't know that. It confidently generated code that called a "Basket API" that shouldn't have been called at all. It looked right. It felt right. So, I submitted the PR.
 
-> "They are not trusting anything coming from me. If it's not working the first
-> try... maybe not the first try but the second, the task will be done much
-> faster."
+During review, a senior developer was direct: my PR was essentially garbage. The basket was already on the server—why was I calling the Basket API from the client? I had no answer, because I didn't make that architectural decision. The AI did.
 
-### On the Quality Triangle Breaking
+## The Trust Gap
 
-> "Previously: Quality, Speed, Price - choose two. Now with AI, all three are
-> possible. High quality, fast, AND cheap. This is changing the industry
-> completely."
+Incidents like the Basket API break trust. 
 
-### On Model Evolution
+Now, my colleagues assume anything coming from me is generated by AI, and those PRs take three to four times longer to review. My productivity at work plummeted. I found that colleagues would rather scrap my entire PR and rewrite it themselves than give me early feedback. 
 
-> "The first really good model that surprised me was Claude Sonnet 3.7"
+They simply don't trust the code. If it doesn't work perfectly on the first try, they assume it's faster to do it themselves manually. 
 
-> "Opus 4.0 - I could solve an issue that I couldn't technically solve before"
+## The Quality Triangle is Broken
 
-> "Opus 4.6 - from 10 tasks with proper planning, it can execute 8-9"
+We used to have a golden rule in software: **Quality, Speed, Price — choose two.**
 
-### On What Developers Get Wrong
+AI broke the triangle. Today, you can have high quality, incredible speed, and low cost all at once. This completely changes the industry dynamics. 
 
-> "If coding agents are making mistakes, the requirements weren't specified well
-> enough."
+But it only works if you understand how to use the tools.
 
-> "The issue in the first place was that the ticket wasn't created properly. The
-> requirement wasn't clear."
+What most developers get wrong is blaming the AI for bad code. If a coding agent makes a mistake, it's almost always because the requirements weren't specified well enough. The real issue is that the Jira ticket was poorly written.
 
-### On Identity & ADHD
+## The New Workflow
 
-> "I have ADHD which makes my communication style harder. I was always afraid of
-> hearing feedback because my mind thinks you're judging me, not my work."
+After the Basket API incident, I realized I had to change how I worked.
 
-> "I want to be seen as a guy who really loves tech, really passionate about
-> programming."
+![A structured process showing planning, agent orchestration, and automated QA testing replacing manual coding](https://placehold.co/600x300)
 
-### On Economic Reality
+My workflow today looks nothing like it did in 2024. My effort is now distributed like this:
+*   **30% Planning and Requirements Mapping**
+*   **50% Writing Tests and Validation Rules**
+*   **20% Reviewing and Quality Improvement**
 
-> "It's borderline impossible to buy a flat if you are on payroll. You have to
-> be a contractor. Being a contractor comes with extra uncertainty."
+During planning, the AI agent actually interviews *me*. It asks me questions about the architecture until we both have a complete picture. If I can't answer a question, I go read the documentation or run an exploratory agent to find out.
 
-> "Private equity is behind everything. It feels like the economy is about to
-> collapse."
+Once the code is generated, a separate QA agent spins up a browser, logs in with test credentials, and tries to break the feature just like a human tester would. It takes screenshots and compares them against Figma designs. 
 
-### On What He Wants
+I don't just have an AI copilot anymore; I have an entire automated engineering team.
 
-> "I would like to work with clients that are open-minded for AI. I don't want
-> those fights about 'it's generated with AI, there's something wrong with it.'"
+## A New Identity
 
-> "My dream is to have my own company, be big, have an office in Brighton, nice
-> people to work with."
+As someone with ADHD, I've always been sensitive to code reviews. I wanted to be seen as the guy who loves tech and is passionate about programming. Having my code torn apart felt like a personal judgment.
+
+But AI has forced me to detach my ego from the code I produce.
+
+It is borderline impossible to thrive in this new economy if you view yourself strictly as a "code typist." The value isn't in typing syntax anymore. The value is in systems thinking, context engineering, and writing bulletproof requirements.
+
+I stopped producing slop, but rebuilding my reputation at work is taking time. 
+
+My dream now is to work with teams that are truly open-minded about AI orchestration—teams that understand the code is disposable, the tests are the truth, and our real job is solving human problems as fast as the machines will let us.
 
 ---
 
-## The Basket API Incident: A Case Study
-
-_This specific example illustrates the "AI slop" problem in concrete detail._
-
-### The Setup
-
-> "I was working on two apps - a Next.js cancellation flow and an Angular
-> e-commerce store. The ticket was about tracking analytics when users accept a
-> retention offer. Simple, right?"
-
-> "The flow was: user goes to cancel, sees a retention offer with an ID in the
-> URL, clicks it, goes to the Angular app, and checks out. I needed to track
-> that checkout event."
-
-### The Misunderstanding
-
-> "I assumed the frontend holds the basket in memory until checkout. That's what
-> made sense to me. But the basket was server-side - the backend was the single
-> source of truth. The ID in the URL was just for double-checking."
-
-> "I didn't know what I didn't know. The ticket requirements weren't clear, but
-> I didn't know enough to ask the right questions."
-
-### The Perfect Storm
-
-> "Claude was having technical issues at that time. There's actually a
-> [postmortem from Anthropic](https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues)
-> about it. Context window routing errors affected 30% of Claude Code users. The
-> tool I trusted was producing good-looking but low-quality output."
-
-> "When the AI hallucinates confidently, it makes you hallucinate too. Claude
-> generated code that called the Basket API when it shouldn't have. It looked
-> right. It felt right. So I submitted the PR."
-
-### The Review
-
-> "One colleague kept asking questions I couldn't answer. A more senior
-> developer was more direct - she said the PR was essentially garbage. Only tiny
-> parts were useful."
-
-> "The basket was already there on the server. Why was I calling the Basket API?
-> I had no answer. Because I didn't make that decision. Claude did."
-
-### The Solution
-
-> "After that incident, I created a comprehensive developer guide. I used
-> NotebookLM to generate learning tutorials, system diagrams, flashcards,
-> quizzes. In one weekend, I mastered all of it."
-
-> "But the biggest change is how I plan now. During planning, the agent
-> interviews me. It asks questions until I have a full picture. If I can't
-> answer something, I go back to the documentation or run another agent to find
-> out."
-
-> "Then Opus 4.6 came out in December. It can orchestrate multiple agents as a
-> coordinated team. You don't just have a copilot anymore - you have a whole dev
-> team. Or a flock of dev teams."
-
-### The New Process
-
-> "My effort now is 30% planning, 50% testing, 20% quality improvement. The
-> agent spins up a browser, logs in with test credentials, tries to pass the
-> feature like a human tester would. It takes screenshots, compares with Figma."
-
-> "I stopped producing slop. But my reputation at work is still damaged. My PRs
-> still take longer to review than others. That will take time to rebuild."
-
----
-
-## Context & Background
-
-- **Personal:** Hungarian developer living in Brighton, UK. Has two dogs.
-  Practices daily routine (gym at 6:30am, dog walks, structured work schedule).
-- **Professional:** Works remotely full-time while building Spike.land as a side
-  project/startup.
-- **Technical:** Passionate about JavaScript/TypeScript, Docker, distributed
-  systems, mathematics.
-- **Spike.land:** Managed deployment platform with MCP registry - code editing,
-  live preview, AI tool orchestration, and managed deployments.
-
----
-
-## Key Themes for Blog Posts
-
-1. **The Productivity Paradox** - Being too fast for your team
-2. **The AI Slop Problem** - When AI makes assumptions you can't verify
-3. **The Trust Gap** - Why teams reject AI-generated code
-4. **The Economic Squeeze** - Earning less, career stalled, uncertain future
-5. **The Identity Crisis** - What does "developer" mean when AI codes better?
-6. **The Quality Triangle** - AI broke the speed/quality/price tradeoff
-7. **The New Skills** - Context engineering, MCP, requirements writing
+_Zoltan Erdos is a developer based in Brighton, UK, building [spike.land](https://spike.land)._

@@ -31,7 +31,36 @@ spa.get("/*", async (c) => {
       return c.text("Not Found", 404);
     }
 
-    const response = new Response(fallback.body, {
+    let html = await fallback.text();
+
+    // Inject dynamic metadata for /apps/:appId routes
+    if (path.startsWith("/apps/") && path !== "/apps/new") {
+      const appId = path.split("/")[2];
+      const url = new URL(c.req.url);
+      const tab = url.searchParams.get("tab") || "App";
+      const appName = appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      const title = `${appName} (${tab}) — spike.land`;
+      const description = `Explore ${appName} on spike.land — the AI multi-agent operating system.`;
+
+      // Replace title and inject meta tags
+      html = html.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+      html = html.replace(
+        /<meta name="description" content="[^"]*" \/>/,
+        `<meta name="description" content="${description}" />`,
+      );
+      
+      // Inject OG and Twitter tags if not present or update them
+      const metaTags = `
+        <meta property="og:title" content="${title}" />
+        <meta property="og:description" content="${description}" />
+        <meta name="twitter:title" content="${title}" />
+        <meta name="twitter:description" content="${description}" />
+        <link rel="canonical" href="https://spike.land${path}${url.search}" />
+      `;
+      html = html.replace("</head>", `${metaTags}</head>`);
+    }
+
+    const response = new Response(html, {
       headers: {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "no-cache",
