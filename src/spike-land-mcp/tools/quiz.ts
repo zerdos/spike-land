@@ -541,13 +541,40 @@ export function registerQuizTools(registry: ToolRegistry, userId: string, db: Dr
       )
       .meta({ category: "learn", tier: "free" })
       .handler(async ({ input }) => {
-        const content = input.content_text ?? input.content_url ?? "";
-        if (!content) {
-          throw new Error("Provide either content_url or content_text");
+        let articleContent = input.content_text ?? "";
+
+        if (!articleContent && input.content_url) {
+          try {
+            const jinaUrl = `https://r.jina.ai/${input.content_url}`;
+            const res = await fetch(jinaUrl, {
+              headers: {
+                Accept: "text/plain",
+                "X-Return-Format": "text",
+              },
+            });
+            
+            if (!res.ok) {
+              throw new Error(`Failed to fetch URL content (Status: ${res.status} ${res.statusText})`);
+            }
+            articleContent = await res.text();
+            
+            // If Jina reader fails or returns mostly HTML, fallback to direct fetch
+            if (!articleContent || articleContent.trim().toLowerCase().startsWith("<!doctype html>")) {
+              const directRes = await fetch(input.content_url);
+              if (!directRes.ok) {
+                throw new Error(`Failed to fetch URL directly (Status: ${directRes.status} ${directRes.statusText})`);
+              }
+              const html = await directRes.text();
+              articleContent = html.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ");
+            }
+          } catch (err: any) {
+            throw new Error(`Error fetching URL content: ${err.message}`);
+          }
         }
 
-        // For URLs, we'd fetch content in production. For now, use the URL as content.
-        const articleContent = input.content_text ?? `Content from: ${input.content_url}`;
+        if (!articleContent || articleContent.trim().length === 0) {
+          throw new Error("Provide either content_url or content_text, and URL must be accessible and contain text.");
+        }
 
         const concepts = generateConceptsFromContent(articleContent);
         const id = crypto.randomUUID();

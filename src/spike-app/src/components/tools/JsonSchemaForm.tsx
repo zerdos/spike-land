@@ -23,6 +23,25 @@ interface JsonSchemaFormProps {
 
 export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSchemaFormProps) {
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [urlOptions, setUrlOptions] = useState<{url: string, label: string}[]>([]);
+
+  useEffect(() => {
+    if (schema.properties?.content_url) {
+      Promise.all([
+        fetch("/api/blog").then(res => res.ok ? res.json() : []).catch(() => []),
+        fetch("/api/learnit/recent?limit=20").then(res => res.ok ? res.json() : []).catch(() => [])
+      ]).then(([blogs, learnits]) => {
+         const options: {url: string, label: string}[] = [];
+         if (Array.isArray(blogs)) {
+           blogs.forEach((b: any) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
+         }
+         if (Array.isArray(learnits)) {
+           learnits.forEach((l: any) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
+         }
+         setUrlOptions(options);
+      });
+    }
+  }, [schema]);
 
   useEffect(() => {
     // Initialize defaults
@@ -136,14 +155,25 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:placeholder:text-zinc-500"
                 />
               ) : (
-                <input
-                  id={key}
-                  type="text"
-                  value={formData[key] || ""}
-                  onChange={(e) => handleChange(key, e.target.value)}
-                  required={isRequired}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:placeholder:text-zinc-500"
-                />
+                <div className="relative">
+                  <input
+                    id={key}
+                    type="text"
+                    list={key === "content_url" ? "content-url-options" : undefined}
+                    placeholder={key === "content_url" ? "e.g., https://spike.land/blog/... or type to search" : ""}
+                    value={formData[key] || ""}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                    required={isRequired}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:placeholder:text-zinc-500"
+                  />
+                  {key === "content_url" && urlOptions.length > 0 && (
+                    <datalist id="content-url-options">
+                      {urlOptions.map(opt => (
+                        <option key={opt.url} value={opt.url}>{opt.label}</option>
+                      ))}
+                    </datalist>
+                  )}
+                </div>
               )}
             </div>
           );
