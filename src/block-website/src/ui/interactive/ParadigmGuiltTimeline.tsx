@@ -94,7 +94,7 @@ function NodeDot({ node, phase, phaseProgress, isLast }: NodeDotProps) {
   const isGuilt = phase === "guilt";
   const isAcceptance = phase === "acceptance";
 
-  const dotColor = isAcceptance ? node.acceptColor : isGuilt ? node.guiltColor : "rgba(51,65,85,1)";
+  const dotColor = isAcceptance ? node.acceptColor : isGuilt ? node.guiltColor : "hsl(var(--muted-foreground))";
 
   const glowShadow =
     isAcceptance && isLast
@@ -121,7 +121,7 @@ function NodeDot({ node, phase, phaseProgress, isLast }: NodeDotProps) {
           className="w-12 h-12 rounded-full flex items-center justify-center text-xl border-2 transition-colors duration-500"
           style={{
             background: isHidden
-              ? "rgba(30,41,59,1)"
+              ? "hsl(var(--muted))"
               : isGuilt
                 ? `${node.guiltColor}22`
                 : `${node.acceptColor}22`,
@@ -180,7 +180,7 @@ type NodeLabelProps = {
 function NodeLabel({ node, phase, phaseProgress }: NodeLabelProps) {
   const isHidden = phase === "hidden";
   const isAcceptance = phase === "acceptance";
-  const color = isAcceptance ? node.acceptColor : phase === "guilt" ? node.guiltColor : "#64748b";
+  const color = isAcceptance ? node.acceptColor : phase === "guilt" ? node.guiltColor : "hsl(var(--muted-foreground))";
 
   return (
     <motion.div
@@ -201,7 +201,7 @@ function NodeLabel({ node, phase, phaseProgress }: NodeLabelProps) {
         {node.era}
       </span>
       {/* Label */}
-      <span className="text-xs font-mono font-semibold text-slate-300 leading-tight">
+      <span className="text-xs font-mono font-semibold text-muted-foreground leading-tight">
         {node.label}
       </span>
       {/* Quote */}
@@ -233,7 +233,7 @@ function ConnectorLine({ fromAccepted, progress }: ConnectorLineProps) {
     <div className="flex-1 flex items-center h-12 px-1">
       <div
         className="relative h-px w-full overflow-hidden"
-        style={{ background: "rgba(51,65,85,0.6)" }}
+        style={{ background: "hsl(var(--muted) / 0.6)" }}
       >
         <motion.div
           className="absolute inset-y-0 left-0 h-full"
@@ -259,7 +259,7 @@ export function ParadigmGuiltTimeline() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Ambient glow layers */}
       <div className="absolute top-0 right-0 w-72 h-72 bg-orange-500/6 blur-3xl pointer-events-none" />
@@ -269,11 +269,11 @@ export function ParadigmGuiltTimeline() {
 
       {/* Header */}
       <div className="text-center mb-12 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-orange-950/50 border border-orange-800/50 text-orange-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(251,146,60,0.12)]">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-orange-500/10 border border-orange-500/30 text-orange-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(251,146,60,0.12)]">
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
           PARADIGM SHIFT TIMELINE
         </div>
-        <p className="text-sm font-light text-slate-300 max-w-lg mx-auto leading-relaxed">
+        <p className="text-sm font-light text-muted-foreground max-w-lg mx-auto leading-relaxed">
           Every generation of programmers faced a tool that felt like cheating. Every generation was
           wrong.
         </p>
@@ -441,7 +441,7 @@ export function ParadigmGuiltTimeline() {
       </div>
 
       {/* Caption */}
-      <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase text-center mt-6 relative z-10">
+      <p className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase text-center mt-6 relative z-10">
         {progress < 0.1
           ? "Scroll to witness the guilt"
           : progress < 0.5

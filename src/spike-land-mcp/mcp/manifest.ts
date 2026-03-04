@@ -454,7 +454,7 @@ export async function registerAllTools(
     console.error("[MCP] Failed to register registerBuildFromGithubTools:", err);
   }
   try {
-    (registerQuizTools as any)(registry, userId, db, env?.kv, env?.vaultSecret);
+    (registerQuizTools as any)(registry, userId, db, env);
   } catch (err) {
     console.error("[MCP] Failed to register registerQuizTools:", err);
   }

@@ -1,3 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @source "../block-website/src/**/*.{ts,tsx}";
+
+@theme {
+  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+}
+

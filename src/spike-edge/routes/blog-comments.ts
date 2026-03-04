@@ -102,7 +102,8 @@ blogComments.post("/blog/comments/:commentId/vote", authMiddleware, async (c) =>
 
     // Change vote direction
     const upDelta = body.vote === 1 ? 2 : -2; // Swinging from -1 to +1 or vice versa
-    const downDelta = -upDelta;
+    // Calculate delta for downvotes: upDelta means +1 upvote, so downvote delta is opposite
+    // Not currently tracked in stats but included for completeness of the calculation.
 
     await c.env.DB.batch([
       c.env.DB.prepare(

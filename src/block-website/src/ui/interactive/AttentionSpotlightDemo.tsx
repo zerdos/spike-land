@@ -158,7 +158,7 @@ function SoftmaxBars({
 
   return (
     <div className="space-y-1.5">
-      <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
+      <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-2">
         <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
         Softmax distribution — query: &quot;{tokens[activeQueryIdx]?.label ?? "..."}&quot;
       </div>
@@ -167,10 +167,10 @@ function SoftmaxBars({
         const isQuery = toIdx === activeQueryIdx;
         return (
           <div key={toIdx} className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-slate-400 w-20 flex-shrink-0 truncate text-right">
+            <span className="text-[10px] font-mono text-muted-foreground w-20 flex-shrink-0 truncate text-right">
               {tokens[toIdx]?.label ?? ""}
             </span>
-            <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
+            <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className="h-full rounded-full"
                 style={{
@@ -224,8 +224,8 @@ function AttentionArcVisualizer({
   const queryX = tokenX(activeQueryIdx);
 
   return (
-    <div className="relative bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
-      <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500 px-4 pt-3 pb-1 flex items-center gap-2">
+    <div className="relative bg-muted/50 border border-border rounded-xl overflow-hidden">
+      <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground px-4 pt-3 pb-1 flex items-center gap-2">
         <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
         Attention arcs — select a query token above
       </div>
@@ -242,7 +242,8 @@ function AttentionArcVisualizer({
           y1={baselineY}
           x2={svgWidth - tokenSpacing * 0.5}
           y2={baselineY}
-          stroke="rgba(100,116,139,0.3)"
+          stroke="hsl(var(--border))"
+          opacity={0.5}
           strokeWidth={1}
         />
 
@@ -320,13 +321,13 @@ function ContextWindowBar({ tokenCount, maxTokens }: ContextWindowBarProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-[10px] font-mono">
-        <span className="text-slate-400 uppercase tracking-widest">Context window</span>
+        <span className="text-muted-foreground uppercase tracking-widest">Context window</span>
         <span className="font-bold" style={{ color: barColor }}>
           {tokenCount} / {maxTokens} tokens
         </span>
       </div>
 
-      <div className="h-3 bg-slate-800 rounded-full overflow-hidden relative">
+      <div className="h-3 bg-muted rounded-full overflow-hidden relative">
         <motion.div
           className="h-full rounded-full"
           style={{
@@ -342,9 +343,9 @@ function ContextWindowBar({ tokenCount, maxTokens }: ContextWindowBarProps) {
         />
       </div>
 
-      <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+      <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground">
         <span>Attention per token: {(signalStrength * 100).toFixed(1)}%</span>
-        <span className={fillPercent > 70 ? "text-red-400" : "text-slate-500"}>
+        <span className={fillPercent > 70 ? "text-red-400" : "text-muted-foreground"}>
           {fillPercent > 70
             ? "attention diluted"
             : fillPercent > 40
@@ -401,12 +402,12 @@ export function AttentionSpotlightDemo() {
   return (
     <div className="my-8 flex flex-col gap-4">
       {/* Context window saturation bar */}
-      <div className="rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800 px-5 py-4">
+      <div className="rounded-xl bg-card/80 backdrop-blur-xl border border-border px-5 py-4">
         <ContextWindowBar tokenCount={tokenCount} maxTokens={MAX_CONTEXT_TOKENS} />
       </div>
 
       {/* Token bar + arc visualizer */}
-      <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl shadow-cyan-900/10 bg-slate-950 relative">
+      <div className="rounded-xl overflow-hidden border border-border shadow-2xl shadow-cyan-900/10 bg-card relative">
         <div className="absolute top-0 left-0 w-48 h-48 bg-cyan-500/5 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-amber-500/5 blur-3xl pointer-events-none" />
 
@@ -415,7 +416,7 @@ export function AttentionSpotlightDemo() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                 Click a token to set query position
               </span>
             </div>
@@ -424,7 +425,7 @@ export function AttentionSpotlightDemo() {
               className={`text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded border transition-all ${
                 isAutoCycling
                   ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
-                  : "text-slate-500 border-slate-700 bg-slate-900"
+                  : "text-muted-foreground border-border bg-muted"
               }`}
             >
               {isAutoCycling ? "auto" : "manual"}
@@ -451,7 +452,7 @@ export function AttentionSpotlightDemo() {
       </div>
 
       {/* Controls + softmax breakdown */}
-      <div className="rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800 relative overflow-hidden">
+      <div className="rounded-xl bg-card/80 backdrop-blur-xl border border-border relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none">
           <svg width="32" height="32" viewBox="0 0 100 100" className="stroke-cyan-500">
             <path d="M90,10 L70,10 M90,10 L90,30" fill="none" strokeWidth="3" />
@@ -465,7 +466,7 @@ export function AttentionSpotlightDemo() {
             <div className="flex items-center justify-between mb-3">
               <label
                 htmlFor="attention-token-count"
-                className="text-[10px] font-mono uppercase tracking-widest text-slate-400 flex items-center gap-2"
+                className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground flex items-center gap-2"
               >
                 <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(0,229,255,0.8)]" />
                 Context window size
@@ -474,7 +475,7 @@ export function AttentionSpotlightDemo() {
             </div>
 
             <div className="relative h-5 flex items-center">
-              <div className="absolute left-0 w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="absolute left-0 w-full h-1 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-cyan-500 to-cyan-300 transition-all duration-300"
                   style={{
@@ -491,14 +492,14 @@ export function AttentionSpotlightDemo() {
                 onChange={(e) => setTokenCount(parseInt(e.target.value, 10))}
                 className="w-full h-5 appearance-none bg-transparent cursor-pointer z-10
                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
-                  [&::-webkit-slider-thumb]:bg-slate-950 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-cyan-400
+                  [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-cyan-400
                   [&::-webkit-slider-thumb]:rounded-md [&::-webkit-slider-thumb]:rotate-45 [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(0,229,255,0.5)]"
                 aria-label="Adjust context window token count to see attention dilution"
               />
             </div>
           </div>
 
-          <div className="border-t border-slate-800" />
+          <div className="border-t border-border" />
 
           {/* Softmax probability breakdown */}
           <SoftmaxBars
@@ -509,8 +510,8 @@ export function AttentionSpotlightDemo() {
           />
 
           {/* Explanation */}
-          <p className="text-sm text-slate-400 font-mono leading-relaxed border-l-2 border-slate-800 pl-4">
-            <span className="text-white font-medium">Attention is zero-sum.</span> The softmax
+          <p className="text-sm text-muted-foreground font-mono leading-relaxed border-l-2 border-border pl-4">
+            <span className="text-foreground font-medium">Attention is zero-sum.</span> The softmax
             function normalizes scores across all tokens — adding more tokens flattens the
             distribution, diluting signal from any single position. This is the fundamental limit of
             the context window.

@@ -54,9 +54,9 @@ app.use("*", async (c, next) => {
     [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com",
-      "style-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://avatars.githubusercontent.com https://*.googleusercontent.com data: blob:",
-      "font-src 'self' data:",
+      "font-src 'self' https://fonts.gstatic.com data:",
       "connect-src 'self' https://edge.spike.land https://auth-mcp.spike.land https://mcp.spike.land wss://spike.land blob: data:",
       "worker-src 'self' blob:",
       "frame-src 'self' https://edge.spike.land",

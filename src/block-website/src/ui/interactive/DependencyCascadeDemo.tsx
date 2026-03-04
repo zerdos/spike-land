@@ -140,7 +140,7 @@ function Defs({ id }: { id: string }) {
         </feMerge>
       </filter>
       <pattern id={`${id}-dots`} width="20" height="20" patternUnits="userSpaceOnUse">
-        <circle cx="10" cy="10" r="0.8" fill="rgba(148,163,184,0.06)" />
+        <circle cx="10" cy="10" r="0.8" fill="hsl(var(--foreground) / 0.06)" />
       </pattern>
       <marker id={`${id}-arrow`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
         <path d="M0,0 L0,6 L6,3 z" fill="rgba(34,211,238,0.7)" />
@@ -153,7 +153,7 @@ function Defs({ id }: { id: string }) {
         refY="3"
         orient="auto"
       >
-        <path d="M0,0 L0,6 L6,3 z" fill="rgba(51,65,85,0.6)" />
+        <path d="M0,0 L0,6 L6,3 z" fill="hsl(var(--muted-foreground) / 0.6)" />
       </marker>
     </defs>
   );
@@ -203,7 +203,7 @@ function Edge({
       <path
         d={pathD}
         fill="none"
-        stroke="rgba(30,41,59,0.8)"
+        stroke="hsl(var(--muted) / 0.8)"
         strokeWidth={1.5}
         markerEnd={`url(#${filterId}-arrow-dim)`}
       />
@@ -271,31 +271,31 @@ function Node({ node, progress, filterId }: { node: NodeDef; progress: number; f
   const nodeColor = node.isRoot
     ? progress >= 0.2
       ? "#22d3ee"
-      : "rgba(51,65,85,0.5)"
+      : "hsl(var(--muted-foreground) / 0.5)"
     : isLit
       ? "#22d3ee"
-      : "rgba(51,65,85,0.5)";
+      : "hsl(var(--muted-foreground) / 0.5)";
 
   const strokeColor = node.isRoot
     ? progress >= 0.2
       ? "#22d3ee"
-      : "rgba(30,41,59,0.9)"
+      : "hsl(var(--muted) / 0.9)"
     : isLit
       ? "#22d3ee"
-      : "rgba(30,41,59,0.9)";
+      : "hsl(var(--muted) / 0.9)";
 
   const fillColor = node.isRoot
     ? progress >= 0.2
       ? "rgba(34,211,238,0.12)"
-      : "rgba(15,23,42,0.8)"
+      : "hsl(var(--muted) / 0.8)"
     : isLit
       ? "rgba(34,211,238,0.1)"
-      : "rgba(15,23,42,0.8)";
+      : "hsl(var(--muted) / 0.8)";
 
   const labelColor =
-    isLit || (node.isRoot && progress >= 0.2) ? "rgba(226,232,240,0.9)" : "rgba(71,85,105,0.8)";
+    isLit || (node.isRoot && progress >= 0.2) ? "hsl(var(--foreground) / 0.9)" : "hsl(var(--muted-foreground) / 0.8)";
   const sublabelColor =
-    isLit || (node.isRoot && progress >= 0.2) ? "rgba(34,211,238,0.7)" : "rgba(51,65,85,0.7)";
+    isLit || (node.isRoot && progress >= 0.2) ? "rgba(34,211,238,0.7)" : "hsl(var(--muted-foreground) / 0.7)";
 
   return (
     <g transform={`translate(${node.x}, ${node.y})`} opacity={appearPhase}>
@@ -465,7 +465,7 @@ export function DependencyCascadeDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Hover gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
@@ -481,16 +481,16 @@ export function DependencyCascadeDemo() {
           transition={{ duration: 0.4 }}
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm border font-mono text-[10px] font-bold uppercase tracking-[0.2em]"
           style={{
-            background: publishPhase > 0.5 ? "rgba(34,211,238,0.08)" : "rgba(30,41,59,0.5)",
-            borderColor: publishPhase > 0.5 ? "rgba(34,211,238,0.3)" : "rgba(51,65,85,0.6)",
-            color: publishPhase > 0.5 ? "#22d3ee" : "rgba(100,116,139,0.7)",
+            background: publishPhase > 0.5 ? "rgba(34,211,238,0.08)" : "hsl(var(--muted) / 0.5)",
+            borderColor: publishPhase > 0.5 ? "rgba(34,211,238,0.3)" : "hsl(var(--border) / 0.6)",
+            color: publishPhase > 0.5 ? "#22d3ee" : "hsl(var(--muted-foreground) / 0.7)",
             transition: "all 0.5s ease",
           }}
         >
           <span
             className="w-1.5 h-1.5 rounded-full"
             style={{
-              background: publishPhase > 0.5 ? "#22d3ee" : "rgba(100,116,139,0.4)",
+              background: publishPhase > 0.5 ? "#22d3ee" : "hsl(var(--muted-foreground) / 0.4)",
               boxShadow: publishPhase > 0.5 ? "0 0 6px #22d3ee" : "none",
               animation: publishPhase > 0.5 ? "pulse 1.5s ease-in-out infinite" : "none",
             }}
@@ -658,8 +658,8 @@ export function DependencyCascadeDemo() {
 
       {/* Caption */}
       <div className="flex flex-col items-center gap-3 mt-10">
-        <div className="h-px w-32 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-        <p className="text-center text-[10px] font-mono text-slate-500 tracking-[0.2em] uppercase max-w-md leading-relaxed">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <p className="text-center text-[10px] font-mono text-muted-foreground tracking-[0.2em] uppercase max-w-md leading-relaxed">
           One publish triggers a repository_dispatch cascade — every consumer receives an auto-merge
           PR
         </p>

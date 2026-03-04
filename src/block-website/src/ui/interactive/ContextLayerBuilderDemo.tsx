@@ -198,7 +198,7 @@ function LayerRow({ layer, index, isVisible, layerProgress }: LayerRowProps) {
         </div>
         <div
           style={{
-            color: "rgba(148,163,184,0.75)",
+            color: "hsl(var(--muted-foreground) / 0.75)",
             fontSize: 11,
             fontFamily: "ui-monospace, monospace",
             marginTop: 3,
@@ -302,7 +302,7 @@ function QualityMeter({ qualityPct }: QualityMeterProps) {
       {/* Label */}
       <span
         className="text-[9px] font-mono font-bold tracking-widest uppercase"
-        style={{ color: "rgba(148,163,184,0.5)" }}
+        style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}
       >
         Quality
       </span>
@@ -413,7 +413,7 @@ export function ContextLayerBuilderDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Ambient glows */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-purple-500/5 blur-3xl pointer-events-none" />
@@ -424,17 +424,17 @@ export function ContextLayerBuilderDemo() {
 
       {/* Header badge */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-purple-950/50 border border-purple-800/60 text-purple-400 text-[10px] font-bold font-mono tracking-[0.2em] shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] font-bold font-mono tracking-[0.2em] shadow-[0_0_15px_rgba(168,85,247,0.1)]">
           <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
           CONTEXT STACK BUILDER
         </div>
       </div>
 
       {/* Title */}
-      <h3 className="text-center text-slate-200 font-semibold text-lg mb-2 leading-snug">
+      <h3 className="text-center text-foreground font-semibold text-lg mb-2 leading-snug">
         The 5-Layer Context Stack
       </h3>
-      <p className="text-center text-slate-500 text-xs font-mono mb-10 leading-relaxed max-w-sm mx-auto">
+      <p className="text-center text-muted-foreground text-xs font-mono mb-10 leading-relaxed max-w-sm mx-auto">
         Every zero-shot prompt is a layered architecture. Stack all five layers to maximise response
         quality while minimising cost via KV cache reuse.
       </p>
@@ -537,7 +537,7 @@ export function ContextLayerBuilderDemo() {
       </div>
 
       {/* Caption */}
-      <p className="text-center text-[10px] font-mono text-slate-600 tracking-widest uppercase mt-6">
+      <p className="text-center text-[10px] font-mono text-muted-foreground tracking-widest uppercase mt-6">
         Scroll-driven · Sequential reveal · KV cache boundary · Quality meter
       </p>
     </div>

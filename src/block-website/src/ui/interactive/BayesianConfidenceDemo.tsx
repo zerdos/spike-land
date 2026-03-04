@@ -83,7 +83,7 @@ export function BayesianConfidenceDemo() {
 
   return (
     <div ref={ref} className="my-8 flex flex-col gap-6 group">
-      <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl shadow-emerald-900/10 aspect-[16/10] sm:aspect-video bg-slate-950 relative">
+      <div className="rounded-xl overflow-hidden border border-border shadow-2xl shadow-emerald-900/10 aspect-[16/10] sm:aspect-video bg-card relative">
         <BayesianConfidenceCore
           successes={successes}
           failures={failures}
@@ -99,7 +99,7 @@ export function BayesianConfidenceDemo() {
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 blur-3xl pointer-events-none" />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800 relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-card/80 backdrop-blur-xl border border-border relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
           <svg width="40" height="40" viewBox="0 0 100 100" className="stroke-emerald-500">
             <circle cx="50" cy="50" r="40" fill="none" strokeWidth="2" strokeDasharray="4 8" />
@@ -130,22 +130,22 @@ export function BayesianConfidenceDemo() {
             </button>
             <button
               onClick={addNeutral}
-              className="flex-1 py-3 px-4 text-sm font-mono rounded-md border transition-all bg-slate-700/20 text-slate-400 border-slate-700 hover:border-slate-500 hover:bg-slate-700/40"
+              className="flex-1 py-3 px-4 text-sm font-mono rounded-md border transition-all bg-muted text-muted-foreground border-border hover:border-muted-foreground/50"
             >
               + Neutral Evidence
             </button>
           </div>
-          <p className="text-sm text-slate-400 font-mono leading-relaxed border-l-2 border-slate-800 pl-4 mt-6">
+          <p className="text-sm text-muted-foreground font-mono leading-relaxed border-l-2 border-border pl-4 mt-6">
             The prior belief (a wide bell curve) shifts physically as real evidence is gathered. The
             peak moves to reflect the highest probability, and it gets taller and narrower as
             certainty increases.
           </p>
         </div>
 
-        <div className="flex items-center justify-center sm:pl-6 sm:border-l border-slate-800 z-10 w-full sm:w-auto mt-4 sm:mt-0">
+        <div className="flex items-center justify-center sm:pl-6 sm:border-l border-border z-10 w-full sm:w-auto mt-4 sm:mt-0">
           <button
             onClick={reset}
-            className="flex items-center justify-center gap-2 px-6 w-full sm:w-32 py-4 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-slate-500 rounded-lg font-mono text-sm uppercase tracking-widest transition-all text-slate-400"
+            className="flex items-center justify-center gap-2 px-6 w-full sm:w-32 py-4 bg-muted hover:bg-muted/80 border border-border hover:border-muted-foreground/50 rounded-lg font-mono text-sm uppercase tracking-widest transition-all text-muted-foreground"
           >
             Reset
           </button>

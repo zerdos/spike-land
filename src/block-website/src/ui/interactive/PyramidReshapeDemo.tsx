@@ -239,7 +239,7 @@ function StageLabel({ progress }: StageLabelProps) {
       ? "Reshaping..."
       : "MCP Hourglass";
 
-  const color = isModern ? "#22d3ee" : isMorphing ? "#94a3b8" : "#fbbf24";
+  const color = isModern ? "#22d3ee" : isMorphing ? "hsl(var(--muted-foreground))" : "#fbbf24";
 
   return (
     <g>
@@ -249,7 +249,7 @@ function StageLabel({ progress }: StageLabelProps) {
         width={200}
         height={22}
         rx={4}
-        fill="rgba(15,23,42,0.9)"
+        fill="hsl(var(--muted) / 0.9)"
         stroke={color}
         strokeWidth={0.75}
         strokeOpacity={0.5}
@@ -294,7 +294,7 @@ function PyramidReshapeSvg({ progress, reducedMotion }: PyramidReshapeSvgProps) 
     >
       <defs>
         <pattern id={dotPatternId} width="20" height="20" patternUnits="userSpaceOnUse">
-          <circle cx="10" cy="10" r="0.8" fill="rgba(148,163,184,0.06)" />
+          <circle cx="10" cy="10" r="0.8" fill="hsl(var(--foreground) / 0.06)" />
         </pattern>
         <filter id={glowId} x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="5" result="blur" />
@@ -306,7 +306,7 @@ function PyramidReshapeSvg({ progress, reducedMotion }: PyramidReshapeSvgProps) 
       </defs>
 
       {/* Background */}
-      <rect width="400" height="300" fill="#020817" />
+      <rect width="400" height="300" fill="hsl(var(--card))" />
       <rect width="400" height="300" fill={`url(#${dotPatternId})`} />
 
       {/* Glow blobs */}
@@ -364,19 +364,19 @@ export function PyramidReshapeDemo() {
 
       {/* Header */}
       <div className="relative z-10 text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-amber-950/50 border border-amber-800/60 text-amber-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
           TESTING STRATEGY
         </div>
-        <h3 className="text-lg font-semibold text-slate-200 mb-1">Pyramid to Hourglass</h3>
-        <p className="text-sm text-slate-400 font-mono">
+        <h3 className="text-lg font-semibold text-foreground mb-1">Pyramid to Hourglass</h3>
+        <p className="text-sm text-muted-foreground font-mono">
           How MCP tooling inverts the classic testing hierarchy
         </p>
       </div>
 
       {/* SVG visualization */}
       <motion.div
-        className="relative z-10 w-full max-w-md mx-auto aspect-[4/3] rounded-xl overflow-hidden border border-slate-800 shadow-2xl shadow-cyan-900/10 bg-[#020817]"
+        className="relative z-10 w-full max-w-md mx-auto aspect-[4/3] rounded-xl overflow-hidden border border-border shadow-2xl shadow-cyan-900/10 bg-card"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}

@@ -43,20 +43,20 @@ function AppBox({ active }: { active: boolean }) {
       <motion.div
         animate={{
           scale: active ? 1.05 : 1,
-          backgroundColor: active ? "rgba(6, 182, 212, 0.1)" : "rgba(30, 41, 59, 0.5)",
-          borderColor: active ? "rgb(6, 182, 212)" : "rgb(51, 65, 85)",
+          backgroundColor: active ? "rgba(6, 182, 212, 0.1)" : "hsl(var(--muted) / 0.5)",
+          borderColor: active ? "rgb(6, 182, 212)" : "hsl(var(--border))",
           boxShadow: active ? "0 0 24px rgba(6, 182, 212, 0.3)" : "none",
           opacity: active ? 1 : 0.4,
         }}
         transition={{ duration: 0.5, ease: "circOut" }}
-        className="w-28 h-20 md:w-32 md:h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 bg-slate-800/50"
+        className="w-28 h-20 md:w-32 md:h-24 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 bg-muted/50"
       >
         <span className="text-3xl md:text-4xl leading-none">💻</span>
       </motion.div>
-      <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+      <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
         React SPA
       </span>
-      <p className="text-xs font-semibold text-slate-300">Your App</p>
+      <p className="text-xs font-semibold text-muted-foreground">Your App</p>
     </motion.div>
   );
 }
@@ -67,20 +67,20 @@ function HubBox({ active }: { active: boolean }) {
       <motion.div
         animate={{
           scale: active ? 1.05 : 1,
-          backgroundColor: active ? "rgba(139, 92, 246, 0.1)" : "rgba(30, 41, 59, 0.5)",
-          borderColor: active ? "rgb(167, 139, 250)" : "rgb(51, 65, 85)",
+          backgroundColor: active ? "rgba(139, 92, 246, 0.1)" : "hsl(var(--muted) / 0.5)",
+          borderColor: active ? "rgb(167, 139, 250)" : "hsl(var(--border))",
           boxShadow: active ? "0 0 30px rgba(139, 92, 246, 0.35)" : "none",
           opacity: active ? 1 : 0.4,
         }}
         transition={{ duration: 0.5, ease: "circOut" }}
-        className="w-32 h-20 md:w-40 md:h-28 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 bg-slate-800/50"
+        className="w-32 h-20 md:w-40 md:h-28 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 bg-muted/50"
       >
         <span className="text-3xl md:text-4xl leading-none">🔀</span>
       </motion.div>
       <span className="text-[10px] font-mono text-violet-300 font-bold uppercase tracking-widest">
         spike-cli
       </span>
-      <p className="text-xs font-mono text-slate-400 opacity-60">Multiplexer</p>
+      <p className="text-xs font-mono text-muted-foreground opacity-60">Multiplexer</p>
     </motion.div>
   );
 }
@@ -92,16 +92,16 @@ function ServerBox({ server, active }: { server: ServerNode; active: boolean }) 
         animate={{
           scale: active ? 1.05 : 0.95,
           opacity: active ? 1 : 0.2,
-          borderColor: active ? "rgb(100, 116, 139)" : "rgb(51, 65, 85)",
+          borderColor: active ? "rgb(100, 116, 139)" : "hsl(var(--border))",
           boxShadow: active ? `0 0 20px ${server.glowColor}` : "none",
         }}
         transition={{ duration: 0.5, ease: "circOut" }}
-        className="w-28 h-16 md:w-32 md:h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 bg-slate-800/80"
+        className="w-28 h-16 md:w-32 md:h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-0.5 bg-muted/80"
       >
-        <span className="text-xs font-mono text-slate-200 font-bold tracking-tight">
+        <span className="text-xs font-mono text-foreground font-bold tracking-tight">
           {server.label}
         </span>
-        <span className="text-[9px] font-mono text-slate-500 uppercase">{server.sublabel}</span>
+        <span className="text-[9px] font-mono text-muted-foreground uppercase">{server.sublabel}</span>
       </motion.div>
       <AnimatePresence>
         {active && (
@@ -109,7 +109,7 @@ function ServerBox({ server, active }: { server: ServerNode; active: boolean }) 
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${server.color}/20 text-slate-200 border border-slate-600/50`}
+            className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${server.color}/20 text-foreground border border-border/50`}
           >
             {server.tools} tools
           </motion.span>
@@ -129,7 +129,7 @@ function MobileConnectors({ progress }: { progress: number }) {
     <div className="flex md:hidden flex-col items-center w-full">
       <div style={{ height: HEIGHT }} className="relative w-full flex justify-center">
         <svg width={2} height={HEIGHT} className="overflow-visible">
-          <line x1={0} y1={0} x2={0} y2={HEIGHT} stroke="rgb(51 65 85)" strokeWidth={1} />
+          <line x1={0} y1={0} x2={0} y2={HEIGHT} stroke="hsl(var(--border))" strokeWidth={1} />
           <motion.line
             x1={0}
             y1={0}
@@ -145,7 +145,7 @@ function MobileConnectors({ progress }: { progress: number }) {
       <div className="h-[2px]" />
       <div style={{ height: HEIGHT }} className="relative w-full flex justify-center">
         <svg width={2} height={HEIGHT} className="overflow-visible">
-          <line x1={0} y1={0} x2={0} y2={HEIGHT} stroke="rgb(51 65 85)" strokeWidth={1} />
+          <line x1={0} y1={0} x2={0} y2={HEIGHT} stroke="hsl(var(--border))" strokeWidth={1} />
           <motion.line
             x1={0}
             y1={0}
@@ -175,7 +175,7 @@ export function SpikeCliDemo() {
 
   return (
     <div ref={ref} className="my-16">
-      <div className="bg-slate-900/40 border border-slate-800/60 rounded-[2rem] p-8 md:p-12 backdrop-blur-md relative overflow-hidden group">
+      <div className="bg-card/40 border border-border/60 rounded-[2rem] p-8 md:p-12 backdrop-blur-md relative overflow-hidden group">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
         {/* Desktop: horizontal three-column layout */}
@@ -190,7 +190,7 @@ export function SpikeCliDemo() {
 
           {/* Connector 1 */}
           <div className="flex-1 h-[2px] relative z-10 mx-2">
-            <div className="absolute inset-0 bg-slate-800" />
+            <div className="absolute inset-0 bg-muted" />
             <motion.div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500 to-violet-500"
               initial={{ width: "0%" }}
@@ -231,21 +231,21 @@ export function SpikeCliDemo() {
               {/* Background paths */}
               <path
                 d="M 0 50 C 50 50, 50 16.67, 100 16.67"
-                stroke="rgb(30, 41, 59)"
+                stroke="hsl(var(--muted))"
                 strokeWidth="3"
                 fill="none"
                 vectorEffect="non-scaling-stroke"
               />
               <path
                 d="M 0 50 C 50 50, 50 50, 100 50"
-                stroke="rgb(30, 41, 59)"
+                stroke="hsl(var(--muted))"
                 strokeWidth="3"
                 fill="none"
                 vectorEffect="non-scaling-stroke"
               />
               <path
                 d="M 0 50 C 50 50, 50 83.33, 100 83.33"
-                stroke="rgb(30, 41, 59)"
+                stroke="hsl(var(--muted))"
                 strokeWidth="3"
                 fill="none"
                 vectorEffect="non-scaling-stroke"
@@ -302,7 +302,7 @@ export function SpikeCliDemo() {
               <div key={s.label} className="flex flex-col items-center">
                 <div style={{ height: 12 }} className="w-full flex justify-center">
                   <svg width={2} height={12} className="overflow-visible">
-                    <line x1={0} y1={0} x2={0} y2={12} stroke="rgb(51 65 85)" strokeWidth={1} />
+                    <line x1={0} y1={0} x2={0} y2={12} stroke="hsl(var(--border))" strokeWidth={1} />
                     <motion.line
                       x1={0}
                       y1={0}
@@ -322,10 +322,10 @@ export function SpikeCliDemo() {
         </div>
 
         <div className="flex flex-col items-center gap-2 mt-12">
-          <p className="text-center text-[10px] font-mono text-slate-500 tracking-[0.3em] uppercase opacity-70">
+          <p className="text-center text-[10px] font-mono text-muted-foreground tracking-[0.3em] uppercase opacity-70">
             One frontend • One multiplexer • All your tools
           </p>
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+          <div className="h-px w-24 bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
       </div>
     </div>

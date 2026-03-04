@@ -153,12 +153,14 @@ export type Result<T> =
   | {
       ok: true;
       data: T;
+      error?: never;
       unwrap(): T;
       map<U>(fn: (val: T) => U): Result<U>;
       flatMap<U>(fn: (val: T) => Result<U>): Result<U>;
     }
   | {
       ok: false;
+      data?: never;
       error: Error;
       unwrap(): never;
       map<U>(fn: (val: T) => U): Result<U>;

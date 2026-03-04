@@ -167,7 +167,7 @@ function VibeCodingPanel({ shouldReduceMotion }: { shouldReduceMotion: boolean }
   }, [shouldReduceMotion]);
 
   return (
-    <div className="relative w-full h-full bg-slate-950 overflow-hidden select-none">
+    <div className="relative w-full h-full bg-card overflow-hidden select-none">
       {/* Noisy red glow background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(239,68,68,0.18),transparent_65%)] pointer-events-none" />
 
@@ -177,7 +177,7 @@ function VibeCodingPanel({ shouldReduceMotion }: { shouldReduceMotion: boolean }
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px)",
+              "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground) / 0.05) 2px, hsl(var(--foreground) / 0.05) 4px)",
           }}
         />
       )}
@@ -208,7 +208,7 @@ function VibeCodingPanel({ shouldReduceMotion }: { shouldReduceMotion: boolean }
       </div>
 
       {/* Percentage label */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pt-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-card via-card/80 to-transparent pt-10">
         <div className="flex items-end gap-1">
           <span
             className="text-red-400 font-black font-mono leading-none"
@@ -238,7 +238,7 @@ function ContextEngineeringPanel({ shouldReduceMotion }: { shouldReduceMotion: b
   const percentage = useCountUp(60, 1400);
 
   return (
-    <div className="relative w-full h-full bg-slate-950 overflow-hidden">
+    <div className="relative w-full h-full bg-card overflow-hidden">
       {/* Clean cyan glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,rgba(0,229,255,0.12),transparent_60%)] pointer-events-none" />
 
@@ -252,7 +252,7 @@ function ContextEngineeringPanel({ shouldReduceMotion }: { shouldReduceMotion: b
             transition={{ delay: i * 0.12, duration: 0.4, ease: "easeOut" }}
             className="flex items-center gap-2"
           >
-            <div className="flex-1 bg-slate-900/80 border border-slate-800 rounded-md px-2.5 py-1.5 flex items-center gap-2 min-w-0">
+            <div className="flex-1 bg-muted/80 border border-border rounded-md px-2.5 py-1.5 flex items-center gap-2 min-w-0">
               <div
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                 style={{
@@ -260,10 +260,10 @@ function ContextEngineeringPanel({ shouldReduceMotion }: { shouldReduceMotion: b
                   boxShadow: `0 0 6px ${item.color}`,
                 }}
               />
-              <span className="text-slate-400 text-[10px] font-mono uppercase tracking-wider flex-shrink-0 w-24 truncate">
+              <span className="text-muted-foreground text-[10px] font-mono uppercase tracking-wider flex-shrink-0 w-24 truncate">
                 {item.label}
               </span>
-              <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden mx-1">
+              <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden mx-1">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: item.color }}
@@ -276,7 +276,7 @@ function ContextEngineeringPanel({ shouldReduceMotion }: { shouldReduceMotion: b
                   }}
                 />
               </div>
-              <span className="text-slate-300 text-[10px] font-mono flex-shrink-0 truncate max-w-[100px]">
+              <span className="text-muted-foreground text-[10px] font-mono flex-shrink-0 truncate max-w-[100px]">
                 {item.value}
               </span>
             </div>
@@ -298,7 +298,7 @@ function ContextEngineeringPanel({ shouldReduceMotion }: { shouldReduceMotion: b
       </div>
 
       {/* Percentage label */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pt-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-card via-card/80 to-transparent pt-10">
         <div className="flex items-end justify-end gap-1">
           <span
             className="text-cyan-400 font-black font-mono leading-none"
@@ -341,7 +341,7 @@ function SplitDivider({ shouldReduceMotion }: { shouldReduceMotion: boolean }) {
         transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       >
         <div
-          className="bg-slate-950 border border-cyan-400/80 rounded-sm px-2 py-0.5 text-[9px] font-black font-mono text-cyan-400 whitespace-nowrap shadow-[0_0_16px_rgba(0,229,255,0.4)]"
+          className="bg-card border border-cyan-400/80 rounded-sm px-2 py-0.5 text-[9px] font-black font-mono text-cyan-400 whitespace-nowrap shadow-[0_0_16px_rgba(0,229,255,0.4)]"
           style={{
             writingMode: "vertical-rl",
             textOrientation: "mixed",
@@ -362,20 +362,20 @@ export function SplitScreenDemo() {
   const shouldReduceMotion = useReducedMotion() ?? false;
 
   return (
-    <div className="my-8 rounded-xl overflow-hidden shadow-2xl shadow-cyan-900/20 border border-slate-800 relative">
+    <div className="my-8 rounded-xl overflow-hidden shadow-2xl shadow-cyan-900/20 border border-border relative">
       {/* Header */}
-      <div className="bg-slate-900/90 border-b border-slate-800 px-5 py-3 flex items-center gap-3">
+      <div className="bg-muted/90 border-b border-border px-5 py-3 flex items-center gap-3">
         <div className="flex gap-1.5">
           <div className="w-3 h-3 rounded-full bg-red-500/70" />
           <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
           <div className="w-3 h-3 rounded-full bg-green-500/70" />
         </div>
-        <span className="text-slate-400 text-xs font-mono uppercase tracking-widest">
+        <span className="text-muted-foreground text-xs font-mono uppercase tracking-widest">
           effort-allocation.viz
         </span>
-        <div className="ml-auto flex items-center gap-2 text-[10px] font-mono text-slate-500">
+        <div className="ml-auto flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
           <span className="text-red-400/80">vibe coding</span>
-          <span className="text-slate-600">vs</span>
+          <span className="text-muted-foreground/40">vs</span>
           <span className="text-cyan-400/80">context engineering</span>
         </div>
       </div>
@@ -397,9 +397,9 @@ export function SplitScreenDemo() {
       </div>
 
       {/* Footer insight bar */}
-      <div className="bg-slate-900/90 border-t border-slate-800 px-5 py-2.5 flex items-center justify-between">
-        <p className="text-[11px] font-mono text-slate-500">
-          <span className="text-white">Key insight:</span> the 60% spent on context engineering
+      <div className="bg-muted/90 border-t border-border px-5 py-2.5 flex items-center justify-between">
+        <p className="text-[11px] font-mono text-muted-foreground">
+          <span className="text-foreground">Key insight:</span> the 60% spent on context engineering
           determines the quality of the remaining 40%.
         </p>
         <div className="flex items-center gap-1.5 flex-shrink-0">

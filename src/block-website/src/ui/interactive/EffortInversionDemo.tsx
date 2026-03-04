@@ -113,7 +113,7 @@ function BarChart({ morph, progress }: BarChartProps) {
               <span
                 className="text-[11px] font-mono tracking-wide transition-colors duration-500 truncate"
                 style={{
-                  color: i === 1 && morph > 0.5 ? "#22c55e" : "rgba(148,163,184,0.9)",
+                  color: i === 1 && morph > 0.5 ? "#22c55e" : "hsl(var(--muted-foreground) / 0.9)",
                 }}
               >
                 {displayLabel}
@@ -126,8 +126,8 @@ function BarChart({ morph, progress }: BarChartProps) {
               className="relative w-full rounded-full overflow-hidden"
               style={{
                 height: 22,
-                background: "rgba(15,23,42,0.8)",
-                border: "1px solid rgba(51,65,85,0.6)",
+                background: "hsl(var(--muted) / 0.8)",
+                border: "1px solid hsl(var(--border) / 0.6)",
               }}
             >
               {/* Filled portion */}
@@ -232,7 +232,7 @@ export function EffortInversionDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Ambient glows */}
       <div className="absolute top-0 left-1/4 w-64 h-64 bg-cyan-500/5 blur-3xl pointer-events-none transition-opacity duration-500 group-hover:opacity-150" />
@@ -243,17 +243,17 @@ export function EffortInversionDemo() {
 
       {/* Header badge */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-950/50 border border-cyan-800/60 text-cyan-400 text-[10px] font-bold font-mono tracking-[0.2em] shadow-[0_0_15px_rgba(34,211,238,0.1)]">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold font-mono tracking-[0.2em] shadow-[0_0_15px_rgba(34,211,238,0.1)]">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
           EFFORT DISTRIBUTION
         </div>
       </div>
 
       {/* Title */}
-      <h3 className="text-center text-slate-200 font-semibold text-lg mb-2 leading-snug">
+      <h3 className="text-center text-foreground font-semibold text-lg mb-2 leading-snug">
         The Prompt Effort Inversion
       </h3>
-      <p className="text-center text-slate-500 text-xs font-mono mb-10 leading-relaxed max-w-sm mx-auto">
+      <p className="text-center text-muted-foreground text-xs font-mono mb-10 leading-relaxed max-w-sm mx-auto">
         Where you spend effort determines output quality — not how hard you push at execution.
       </p>
 
@@ -262,7 +262,7 @@ export function EffortInversionDemo() {
         <div className="absolute inset-0 flex items-end justify-center gap-4">
           <YearLabel year="2023" opacity={year2023Opacity} color="#f59e0b" />
           <div
-            className="text-slate-700 font-mono text-2xl font-light mb-px"
+            className="text-muted-foreground font-mono text-2xl font-light mb-px"
             style={{ opacity: 0.3 + easedMorph * 0.4 }}
           >
             →
@@ -337,7 +337,7 @@ export function EffortInversionDemo() {
       </div>
 
       {/* Caption */}
-      <p className="text-center text-[10px] font-mono text-slate-600 tracking-widest uppercase mt-8">
+      <p className="text-center text-[10px] font-mono text-muted-foreground tracking-widest uppercase mt-8">
         Scroll-driven · Morphing bar chart · Zero-shot prompt architecture
       </p>
     </div>

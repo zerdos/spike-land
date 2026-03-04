@@ -160,7 +160,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
 
       {/* ── Background grid dots ── */}
       <pattern id="hg-dots" width="20" height="20" patternUnits="userSpaceOnUse">
-        <circle cx="10" cy="10" r="0.8" fill="rgba(148,163,184,0.06)" />
+        <circle cx="10" cy="10" r="0.8" fill="hsl(var(--foreground) / 0.06)" />
       </pattern>
       <rect width="400" height="430" fill="transparent" />
       <rect width="400" height="430" fill="url(#hg-dots)" />
@@ -306,7 +306,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
           x={cx - midHalf - 12}
           y={(midY0 + midY1) / 2 + 5}
           textAnchor="end"
-          fill="#94a3b8"
+          fill="hsl(var(--muted-foreground))"
           fontSize="16"
           fontFamily="JetBrains Mono, monospace"
           fontWeight="bold"
@@ -364,7 +364,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
           x={cx + midHalf + 14}
           y={(midY0 + midY1) / 2 - 7}
           textAnchor="start"
-          fill="#94a3b8"
+          fill="hsl(var(--muted-foreground))"
           fontSize="10"
           fontFamily="JetBrains Mono, monospace"
           fontWeight="bold"
@@ -376,7 +376,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
           x={cx + midHalf + 14}
           y={(midY0 + midY1) / 2 + 7}
           textAnchor="start"
-          fill="rgba(148,163,184,0.55)"
+          fill="hsl(var(--muted-foreground) / 0.55)"
           fontSize="8.5"
           fontFamily="JetBrains Mono, monospace"
         >
@@ -417,7 +417,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
         y1={topY1}
         x2={cx}
         y2={midY0}
-        stroke="rgba(148,163,184,0.1)"
+        stroke="hsl(var(--border) / 0.5)"
         strokeWidth="1"
         opacity={topLabelOpacity}
       />
@@ -426,7 +426,7 @@ function HourglassSvg({ progress }: HourglassSvgProps) {
         y1={midY1}
         x2={cx}
         y2={botY0}
-        stroke="rgba(148,163,184,0.1)"
+        stroke="hsl(var(--border) / 0.5)"
         strokeWidth="1"
         opacity={midLabelOpacity}
       />
@@ -446,7 +446,7 @@ export function HourglassModelDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Ambient glows */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-amber-500/8 blur-3xl pointer-events-none" />
@@ -456,11 +456,11 @@ export function HourglassModelDemo() {
 
       {/* Header */}
       <div className="text-center mb-10 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-950/60 border border-cyan-800/60 text-cyan-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(34,211,238,0.12)]">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold mb-4 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(34,211,238,0.12)]">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
           HOURGLASS TESTING MODEL
         </div>
-        <p className="text-sm font-light text-slate-300 max-w-md mx-auto leading-relaxed">
+        <p className="text-sm font-light text-muted-foreground max-w-md mx-auto leading-relaxed">
           Wide at both ends — narrow only where it doesn&apos;t matter. Scroll to reveal the layers.
         </p>
       </div>
@@ -498,14 +498,14 @@ export function HourglassModelDemo() {
               >
                 {zone.percentage} — {zone.label}
               </div>
-              <div className="font-mono text-[11px] text-slate-400">{zone.sublabel}</div>
+              <div className="font-mono text-[11px] text-muted-foreground">{zone.sublabel}</div>
             </motion.div>
           );
         })}
       </div>
 
       {/* Caption */}
-      <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase text-center mt-8 relative z-10">
+      <p className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase text-center mt-8 relative z-10">
         {progress < 0.15
           ? "Scroll to reveal the model"
           : progress < 0.4

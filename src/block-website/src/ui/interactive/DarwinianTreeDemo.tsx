@@ -392,11 +392,11 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
           </feMerge>
         </filter>
         <pattern id={dotsId} width="24" height="24" patternUnits="userSpaceOnUse">
-          <circle cx="12" cy="12" r="1" fill="rgba(148,163,184,0.07)" />
+          <circle cx="12" cy="12" r="1" fill="hsl(var(--foreground) / 0.07)" />
         </pattern>
       </defs>
 
-      <rect width="800" height="560" fill="#020817" />
+      <rect width="800" height="560" fill="hsl(var(--card))" />
       <rect width="800" height="560" fill={`url(#${dotsId})`} />
 
       {([0, 1, 2, 3] as const).slice(0, generations + 1).map((gen) => {
@@ -410,7 +410,8 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
               x={760}
               y={yPos}
               textAnchor="end"
-              fill="rgba(100,116,139,0.65)"
+              fill="hsl(var(--muted-foreground))"
+              opacity={0.65}
               fontSize={10}
               fontFamily="JetBrains Mono, monospace"
               letterSpacing={1}
@@ -422,7 +423,8 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
               y1={yPos}
               x2={730}
               y2={yPos}
-              stroke="rgba(100,116,139,0.1)"
+              stroke="hsl(var(--border))"
+              opacity={0.5}
               strokeWidth={1}
               strokeDasharray="4 8"
             />
@@ -465,7 +467,7 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
           width={320}
           height={28}
           rx={4}
-          fill="rgba(10,20,30,0.9)"
+          fill="hsl(var(--muted) / 0.9)"
           stroke="rgba(16,185,129,0.35)"
           strokeWidth={1}
         />
@@ -497,7 +499,8 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
         <text
           x={20}
           y={4}
-          fill="rgba(148,163,184,0.7)"
+          fill="hsl(var(--muted-foreground))"
+          opacity={0.7}
           fontSize={9}
           fontFamily="JetBrains Mono, monospace"
         >
@@ -507,7 +510,8 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
         <text
           x={120}
           y={4}
-          fill="rgba(148,163,184,0.7)"
+          fill="hsl(var(--muted-foreground))"
+          opacity={0.7}
           fontSize={9}
           fontFamily="JetBrains Mono, monospace"
         >
@@ -517,7 +521,8 @@ function DarwinianTreeSvg({ generations, progress, instanceKey }: DarwinianTreeS
         <text
           x={206}
           y={4}
-          fill="rgba(148,163,184,0.7)"
+          fill="hsl(var(--muted-foreground))"
+          opacity={0.7}
           fontSize={9}
           fontFamily="JetBrains Mono, monospace"
         >
@@ -586,7 +591,7 @@ export function DarwinianTreeDemo() {
 
   return (
     <div ref={ref} className="my-8 flex flex-col gap-6 group">
-      <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl shadow-emerald-900/10 aspect-[16/10] sm:aspect-video bg-[#020817] relative">
+      <div className="rounded-xl overflow-hidden border border-border shadow-2xl shadow-emerald-900/10 aspect-[16/10] sm:aspect-video bg-card relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={instanceKey}
@@ -610,19 +615,19 @@ export function DarwinianTreeDemo() {
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <div
             className={`w-2 h-2 rounded-full ${
-              isAutoPlaying ? "bg-emerald-400 animate-pulse" : "bg-slate-600"
+              isAutoPlaying ? "bg-emerald-400 animate-pulse" : "bg-muted"
             }`}
             style={{
               boxShadow: isAutoPlaying ? "0 0 8px rgba(52,211,153,0.8)" : "none",
             }}
           />
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
             {isAutoPlaying ? "Simulating..." : "Natural Selection"}
           </span>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800 relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-card/80 backdrop-blur-xl border border-border relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
           <svg width="40" height="40" viewBox="0 0 100 100" className="stroke-emerald-500">
             <circle cx="50" cy="50" r="40" fill="none" strokeWidth="2" strokeDasharray="4 8" />
@@ -650,14 +655,14 @@ export function DarwinianTreeDemo() {
                 className={`flex-1 py-2 text-sm font-mono rounded-md border transition-all ${
                   generations === gen
                     ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                    : "bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700"
+                    : "bg-muted text-muted-foreground border-border hover:border-slate-700"
                 }`}
               >
                 Gen {gen}
               </button>
             ))}
           </div>
-          <p className="text-sm text-slate-400 font-mono leading-relaxed border-l-2 border-slate-800 pl-4 mt-6">
+          <p className="text-sm text-muted-foreground font-mono leading-relaxed border-l-2 border-border pl-4 mt-6">
             Code writes code testing code. Failed syntaxes are aggressively pruned, but their delta
             is extracted as learning notes.
           </p>
@@ -665,23 +670,23 @@ export function DarwinianTreeDemo() {
           <div className="flex gap-4 flex-wrap mt-2">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
-              <span className="text-[11px] font-mono text-slate-500">High fitness survives</span>
+              <span className="text-[11px] font-mono text-muted-foreground">High fitness survives</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-              <span className="text-[11px] font-mono text-slate-500">Low fitness pruned</span>
+              <span className="text-[11px] font-mono text-muted-foreground">Low fitness pruned</span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col justify-center sm:pl-6 sm:border-l border-slate-800 z-10 w-full sm:w-auto">
+        <div className="flex flex-col justify-center sm:pl-6 sm:border-l border-border z-10 w-full sm:w-auto">
           <button
             onClick={handleResimulate}
             disabled={isAutoPlaying}
             className={`flex items-center justify-center gap-2 px-6 py-4 border rounded-lg font-mono text-sm uppercase tracking-widest transition-all ${
               isAutoPlaying
-                ? "bg-slate-900/50 text-slate-600 border-slate-800 cursor-not-allowed"
-                : "bg-slate-900 hover:bg-slate-800 text-emerald-400 border-emerald-900/50 hover:border-emerald-500/50 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                ? "bg-muted/50 text-muted-foreground border-border cursor-not-allowed"
+                : "bg-muted hover:bg-muted/80 text-emerald-400 border-emerald-900/50 hover:border-emerald-500/50 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
             }`}
           >
             <svg

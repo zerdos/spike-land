@@ -235,7 +235,7 @@ function LayerCard({
           backdropFilter: "blur(8px)",
           boxShadow: isHovered
             ? `0 20px 40px ${layer.color}25, 0 0 0 1px ${layer.color}50, inset 0 1px 0 ${layer.color}30`
-            : `0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 ${layer.color}15`,
+            : `0 4px 12px hsl(var(--foreground) / 0.1), inset 0 1px 0 ${layer.color}15`,
           transition: "box-shadow 0.2s ease",
           position: "relative",
           overflow: "hidden",
@@ -317,7 +317,7 @@ function LayerCard({
           </div>
           <div
             style={{
-              color: "rgba(148,163,184,0.85)",
+              color: "hsl(var(--muted-foreground))",
               fontSize: 12,
               fontFamily: "JetBrains Mono, monospace",
               marginTop: 3,
@@ -353,12 +353,12 @@ function LayerCard({
               top: "50%",
               transform: "translateY(-50%)",
               width: 210,
-              background: "rgba(8,12,22,0.96)",
+              background: "hsl(var(--card) / 0.96)",
               border: `1px solid ${layer.color}45`,
               borderRadius: 10,
               padding: "11px 14px",
               zIndex: 100,
-              boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px ${layer.color}25`,
+              boxShadow: `0 8px 32px hsl(var(--foreground) / 0.2), 0 0 0 1px ${layer.color}25`,
               backdropFilter: "blur(12px)",
               pointerEvents: "none",
             }}
@@ -371,7 +371,7 @@ function LayerCard({
                 transform: "translateY(-50%) rotate(45deg)",
                 width: 12,
                 height: 12,
-                background: "rgba(8,12,22,0.96)",
+                background: "hsl(var(--card) / 0.96)",
                 border: `1px solid ${layer.color}45`,
                 borderRight: "none",
                 borderTop: "none",
@@ -392,7 +392,7 @@ function LayerCard({
             </div>
             <div
               style={{
-                color: "rgba(148,163,184,0.9)",
+                color: "hsl(var(--muted-foreground))",
                 fontSize: 12,
                 lineHeight: 1.6,
                 fontFamily: "Inter, sans-serif",
@@ -529,7 +529,7 @@ export function FiveLayerStackDemo() {
   return (
     <div
       ref={ref}
-      className="my-8 flex flex-col items-center py-12 px-4 rounded-xl shadow-2xl shadow-cyan-900/10 border border-slate-800 bg-slate-950 relative overflow-hidden group"
+      className="my-8 flex flex-col items-center py-12 px-4 rounded-xl shadow-2xl shadow-cyan-900/10 border border-border bg-card relative overflow-hidden group"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -538,11 +538,11 @@ export function FiveLayerStackDemo() {
       <div className="absolute bottom-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-3xl pointer-events-none" />
 
       <div className="text-center relative z-10 mb-8 max-w-lg w-full">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-950/50 border border-cyan-800 text-cyan-400 text-[10px] font-bold mb-5 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(34,211,238,0.15)]">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold mb-5 tracking-[0.2em] font-mono shadow-[0_0_15px_rgba(34,211,238,0.15)]">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
           SYSTEM ARCHITECTURE
         </div>
-        <p className="text-sm font-light text-slate-300 mx-auto leading-relaxed">
+        <p className="text-sm font-light text-muted-foreground mx-auto leading-relaxed">
           The 5-layer context stack structures the agent&apos;s attention. Conserved layers form the
           cached identity. Dynamic layers inject the reality of the current request.
         </p>
@@ -652,7 +652,7 @@ export function FiveLayerStackDemo() {
                     </div>
                     <div
                       style={{
-                        color: "rgba(148,163,184,0.8)",
+                        color: "hsl(var(--muted-foreground))",
                         fontSize: 11,
                         fontFamily: "JetBrains Mono, monospace",
                         marginTop: 2,
@@ -668,7 +668,7 @@ export function FiveLayerStackDemo() {
         </div>
       </motion.div>
 
-      <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-6 relative z-10">
+      <p className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase mt-6 relative z-10">
         {progress < 0.3 ? "Scroll to initialize layers" : "Hover layers to inspect"}
       </p>
     </div>

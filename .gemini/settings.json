@@ -1,8 +1,20 @@
 {
   "mcpServers": {
-    "mcp-nanobanana": {
+    "image-studio": {
       "command": "node",
-      "args": ["packages/mcp-nanobanana/dist/cli-server.js"],
+      "args": ["src/mcp-image-studio/dist/cli-server.js"],
+      "cwd": "/Users/z/Developer/spike-land-ai",
+      "trust": true
+    },
+    "hackernews": {
+      "command": "node",
+      "args": ["src/hackernews-mcp/dist/index.js"],
+      "cwd": "/Users/z/Developer/spike-land-ai",
+      "trust": true
+    },
+    "esbuild": {
+      "command": "node",
+      "args": ["src/esbuild-wasm-mcp/dist/index.js"],
       "cwd": "/Users/z/Developer/spike-land-ai",
       "trust": true
     }

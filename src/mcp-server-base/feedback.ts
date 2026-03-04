@@ -43,7 +43,7 @@ const feedbackSchema = {
     .optional()
     .describe("Error code if applicable"),
   metadata: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .optional()
     .describe("Additional context or metadata"),
 } as const;
@@ -68,8 +68,9 @@ export function registerFeedbackTool(server: McpServer, options: FeedbackToolOpt
     name: `${options.prefix}_feedback`,
     description: `Report a bug or provide feedback for the ${options.serviceName} service. Reports are tracked in the public Bugbook at spike.land/bugbook.`,
     schema: feedbackSchema,
-    async handler(args) {
+    async handler(rawArgs) {
       try {
+        const args = rawArgs as Record<string, any>;
         const report: FeedbackReport = {
           title: args.title,
           description: args.description,
@@ -77,7 +78,7 @@ export function registerFeedbackTool(server: McpServer, options: FeedbackToolOpt
           severity: args.severity,
           reproduction_steps: args.reproduction_steps,
           error_code: args.error_code,
-          metadata: args.metadata as Record<string, unknown> | undefined,
+          metadata: args.metadata,
         };
 
         const result = await options.reportFn(report);

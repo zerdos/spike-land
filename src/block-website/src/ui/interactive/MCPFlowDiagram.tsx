@@ -30,8 +30,8 @@ function NodeBox({
       <motion.div
         animate={{
           scale: active ? 1.05 : 1,
-          backgroundColor: active ? "rgba(6, 182, 212, 0.1)" : "rgba(30, 41, 59, 0.5)",
-          borderColor: active ? "rgb(6, 182, 212)" : "rgb(51, 65, 85)",
+          backgroundColor: active ? "rgba(6, 182, 212, 0.1)" : "hsl(var(--muted) / 0.5)",
+          borderColor: active ? "rgb(6, 182, 212)" : "hsl(var(--border))",
           boxShadow: active ? "0 0 20px rgba(6, 182, 212, 0.2)" : "none",
           opacity: active ? 1 : 0.4,
         }}
@@ -42,14 +42,14 @@ function NodeBox({
       <div className="text-center">
         <p
           className={`text-xs font-bold font-mono tracking-tight transition-colors duration-500 ${
-            active ? "text-slate-100" : "text-slate-500"
+            active ? "text-foreground" : "text-muted-foreground"
           }`}
         >
           {label}
         </p>
         <p
           className={`text-[10px] font-mono uppercase tracking-widest transition-colors duration-500 ${
-            active ? "text-cyan-500" : "text-slate-600"
+            active ? "text-cyan-500" : "text-muted-foreground/60"
           }`}
         >
           {sublabel}
@@ -73,7 +73,7 @@ function Connector({ vertical, progress }: { vertical?: boolean; progress: numbe
           y1={vertical ? 0 : 6}
           x2={vertical ? 6 : size}
           y2={vertical ? size : 6}
-          className="stroke-slate-800"
+          className="stroke-muted"
           strokeWidth={3}
           strokeLinecap="round"
         />
@@ -122,7 +122,7 @@ export function MCPFlowDiagram() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
@@ -151,8 +151,8 @@ export function MCPFlowDiagram() {
       </div>
 
       <div className="flex flex-col items-center gap-3 mt-12">
-        <div className="h-px w-32 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-        <p className="text-center text-[10px] font-mono text-slate-500 tracking-[0.2em] uppercase max-w-md leading-relaxed">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <p className="text-center text-[10px] font-mono text-muted-foreground tracking-[0.2em] uppercase max-w-md leading-relaxed">
           The MCP request lifecycle: standardizing every step of the agent-tool dialogue
         </p>
       </div>

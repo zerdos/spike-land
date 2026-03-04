@@ -126,7 +126,7 @@ function MetricBars({ count, max, color }: MetricBarsProps) {
           key={i}
           className="block w-3 h-2 rounded-sm transition-all duration-300"
           style={{
-            backgroundColor: i < count ? color : "rgba(51,65,85,0.6)",
+            backgroundColor: i < count ? color : "hsl(var(--muted))",
             boxShadow: i < count ? `0 0 4px ${color}` : "none",
           }}
         />
@@ -156,7 +156,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         width={CARD_W}
         height={CARD_H}
         rx={6}
-        fill="rgba(8,12,18,0.92)"
+        fill="hsl(var(--card) / 0.9)"
         stroke={cfg.color}
         strokeWidth={active ? 2 : 1}
         strokeOpacity={active ? 1 : 0.3}
@@ -181,7 +181,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         y={y - 6}
         fontSize={12}
         fontWeight={700}
-        fill={active ? "#fff" : "#94a3b8"}
+        fill={active ? "currentColor" : "hsl(var(--muted-foreground))"}
         fontFamily="ui-monospace, monospace"
         letterSpacing={0.5}
       >
@@ -193,7 +193,8 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         x={CARD_X + 18}
         y={y + 10}
         fontSize={9}
-        fill={active ? cfg.color : "#475569"}
+        fill={active ? cfg.color : "hsl(var(--muted-foreground))"}
+        opacity={0.8}
         fontFamily="ui-monospace, monospace"
       >
         {cfg.tagline}
@@ -215,7 +216,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         x={CARD_X + CARD_W - 110 + 5}
         y={y - 6}
         fontSize={8}
-        fill="#64748b"
+        fill="hsl(var(--muted-foreground))"
         fontFamily="ui-monospace, monospace"
       >
         COST
@@ -225,7 +226,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         y={y - 6}
         fontSize={10}
         fontWeight={700}
-        fill={active ? cfg.color : "#334155"}
+        fill={active ? cfg.color : "hsl(var(--muted-foreground))"}
         fontFamily="ui-monospace, monospace"
         textAnchor="middle"
       >
@@ -248,7 +249,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         x={CARD_X + CARD_W - 56 + 5}
         y={y - 6}
         fontSize={8}
-        fill="#64748b"
+        fill="hsl(var(--muted-foreground))"
         fontFamily="ui-monospace, monospace"
       >
         SPD
@@ -258,7 +259,7 @@ function TierCard({ tier, active, filterId, tasks, now }: TierCardProps) {
         y={y - 6}
         fontSize={10}
         fontWeight={700}
-        fill={active ? cfg.color : "#334155"}
+        fill={active ? cfg.color : "hsl(var(--muted-foreground))"}
         fontFamily="ui-monospace, monospace"
         textAnchor="middle"
       >
@@ -394,7 +395,7 @@ export function ModelCascadeDemo() {
                   refY="3"
                   orient="auto"
                 >
-                  <polygon points="0 0, 8 3, 0 6" fill="#334155" />
+                  <polygon points="0 0, 8 3, 0 6" fill="hsl(var(--muted-foreground))" />
                 </marker>
               </defs>
 
@@ -403,8 +404,8 @@ export function ModelCascadeDemo() {
                 transform={`translate(${DISPATCHER_X}, ${DISPATCHER_Y})`}
                 opacity={Math.min(1, progress * 3)}
               >
-                <circle r={18} fill="rgba(8,12,18,0.95)" stroke="#475569" strokeWidth={1.5} />
-                <circle r={24} fill="none" stroke="#334155" strokeWidth={1} strokeDasharray="3 6">
+                <circle r={18} fill="hsl(var(--card))" stroke="hsl(var(--border))" strokeWidth={1.5} />
+                <circle r={24} fill="none" stroke="hsl(var(--border))" strokeWidth={1} strokeDasharray="3 6">
                   <animateTransform
                     attributeName="transform"
                     type="rotate"
@@ -419,7 +420,7 @@ export function ModelCascadeDemo() {
                   textAnchor="middle"
                   fontSize={7}
                   fontWeight={700}
-                  fill="#94a3b8"
+                  fill="hsl(var(--muted-foreground))"
                   fontFamily="ui-monospace, monospace"
                   letterSpacing={0.5}
                 >
@@ -429,7 +430,8 @@ export function ModelCascadeDemo() {
                   y={7}
                   textAnchor="middle"
                   fontSize={7}
-                  fill="#64748b"
+                  fill="hsl(var(--muted-foreground))"
+                  opacity={0.7}
                   fontFamily="ui-monospace, monospace"
                 >
                   R
@@ -452,7 +454,7 @@ export function ModelCascadeDemo() {
                       y1={DISPATCHER_Y}
                       x2={CARD_X - 2}
                       y2={y}
-                      stroke={isActive ? cfg.color : "#1e293b"}
+                      stroke={isActive ? cfg.color : "hsl(var(--border))"}
                       strokeWidth={isActive ? 2 : 1}
                       strokeDasharray={isActive ? "none" : "4 6"}
                       opacity={isActive ? 0.9 : 0.4}
@@ -492,7 +494,7 @@ export function ModelCascadeDemo() {
                 textAnchor="middle"
                 fontSize={10}
                 fontWeight={600}
-                fill="#475569"
+                fill="hsl(var(--muted-foreground))"
                 fontFamily="ui-monospace, monospace"
                 letterSpacing={2}
               >
@@ -517,11 +519,11 @@ export function ModelCascadeDemo() {
               >
                 {displayedConfig.label}
               </p>
-              <p className="text-[10px] text-slate-500 font-mono mb-3">{displayedConfig.tagline}</p>
+              <p className="text-[10px] text-muted-foreground font-mono mb-3">{displayedConfig.tagline}</p>
 
               <div className="flex flex-col gap-2 text-[10px] font-mono">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 uppercase tracking-wider">Quality</span>
+                  <span className="text-muted-foreground uppercase tracking-wider">Quality</span>
                   <MetricBars
                     count={displayedConfig.qualityBars}
                     max={5}
@@ -529,7 +531,7 @@ export function ModelCascadeDemo() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 uppercase tracking-wider">Speed</span>
+                  <span className="text-muted-foreground uppercase tracking-wider">Speed</span>
                   <MetricBars
                     count={displayedConfig.speedBars}
                     max={5}
@@ -537,21 +539,21 @@ export function ModelCascadeDemo() {
                   />
                 </div>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-slate-500 uppercase tracking-wider">Cost</span>
+                  <span className="text-muted-foreground uppercase tracking-wider">Cost</span>
                   <span className="text-sm font-bold" style={{ color: displayedConfig.color }}>
                     {displayedConfig.costLabel}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 uppercase tracking-wider">Throughput</span>
+                  <span className="text-muted-foreground uppercase tracking-wider">Throughput</span>
                   <span style={{ color: displayedConfig.color }}>{displayedConfig.speedLabel}</span>
                 </div>
               </div>
             </div>
 
             {/* Example tasks */}
-            <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-              <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-2">
+            <div className="rounded-lg border border-border bg-muted/60 p-3">
+              <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2">
                 Task examples
               </p>
               <div className="flex flex-col gap-1">
@@ -561,7 +563,7 @@ export function ModelCascadeDemo() {
                       className="w-1 h-1 rounded-full flex-shrink-0"
                       style={{ backgroundColor: displayedConfig.color }}
                     />
-                    <span className="text-[10px] font-mono text-slate-400">{ex}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground opacity-80">{ex}</span>
                   </div>
                 ))}
               </div>
@@ -571,7 +573,7 @@ export function ModelCascadeDemo() {
       </div>
 
       {/* Controls + description bar */}
-      <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800">
+      <div className="flex flex-col gap-4 p-5 rounded-xl bg-card/80 backdrop-blur-xl border border-border">
         <div className="flex items-center gap-3">
           <span
             className="w-2 h-2 bg-violet-500 rounded-full animate-pulse flex-shrink-0"
@@ -594,28 +596,28 @@ export function ModelCascadeDemo() {
                 onClick={() => setActiveTier(isActive ? null : tier)}
                 className="flex-1 flex flex-col gap-1 py-3 px-4 rounded-md border text-left transition-all duration-200"
                 style={{
-                  borderColor: isActive ? `${cfg.color}60` : "#1e293b",
-                  backgroundColor: isActive ? `${cfg.color}10` : "rgba(15,23,42,0.6)",
+                  borderColor: isActive ? `${cfg.color}60` : "hsl(var(--border))",
+                  backgroundColor: isActive ? `${cfg.color}10` : "hsl(var(--muted) / 0.6)",
                   boxShadow: isActive ? `0 0 16px ${cfg.glow}` : "none",
                 }}
               >
                 <span
                   className="text-xs font-bold font-mono"
-                  style={{ color: isActive ? cfg.color : "#64748b" }}
+                  style={{ color: isActive ? cfg.color : "hsl(var(--muted-foreground))" }}
                 >
                   {cfg.label}
                 </span>
                 <div className="flex items-center gap-2">
                   <span
                     className="text-[10px] font-mono"
-                    style={{ color: isActive ? "#94a3b8" : "#475569" }}
+                    style={{ color: isActive ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground) / 0.7)" }}
                   >
                     {cfg.costLabel}
                   </span>
-                  <span className="text-[10px] text-slate-700 font-mono">/</span>
+                  <span className="text-[10px] text-muted-foreground opacity-30 font-mono">/</span>
                   <span
                     className="text-[10px] font-mono"
-                    style={{ color: isActive ? "#94a3b8" : "#475569" }}
+                    style={{ color: isActive ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground) / 0.7)" }}
                   >
                     {cfg.speedLabel}
                   </span>
@@ -625,7 +627,7 @@ export function ModelCascadeDemo() {
           })}
         </div>
 
-        <p className="text-xs text-slate-500 font-mono leading-relaxed border-l-2 border-slate-800 pl-4">
+        <p className="text-xs text-muted-foreground font-mono leading-relaxed border-l-2 border-border pl-4">
           The router dispatches incoming tasks by complexity. Opus handles deep reasoning (100%
           cost, 1x speed), Sonnet writes code (50% cost, 4x speed), Haiku fixes syntax (5% cost, 20x
           speed). Hover a model to highlight its lane.

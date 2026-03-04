@@ -134,7 +134,7 @@ function LevelCard({ level, depth, currentDepth, autoPlaying }: CardProps) {
         {level.label}
       </h3>
 
-      <p className="text-sm text-slate-400 font-mono leading-relaxed flex-1">{level.sublabel}</p>
+      <p className="text-sm text-muted-foreground font-mono leading-relaxed flex-1">{level.sublabel}</p>
 
       {depth < TOTAL - 1 && nextLevel !== undefined && (
         <div
@@ -144,12 +144,12 @@ function LevelCard({ level, depth, currentDepth, autoPlaying }: CardProps) {
             background: nextLevel.bgColor,
           }}
         >
-          <span className="text-xs font-mono text-slate-500">zooming into</span>
+          <span className="text-xs font-mono text-muted-foreground opacity-70">zooming into</span>
           <span className="text-xs font-mono font-bold" style={{ color: nextLevel.color }}>
             {nextLevel.label}
           </span>
           <motion.span
-            className="ml-auto text-slate-600 text-xs"
+            className="ml-auto text-muted-foreground opacity-50 text-xs"
             animate={{ x: [0, 4, 0] }}
             transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -166,12 +166,12 @@ function LevelCard({ level, depth, currentDepth, autoPlaying }: CardProps) {
             background: firstLevel.bgColor,
           }}
         >
-          <span className="text-xs font-mono text-slate-500">loops back to</span>
+          <span className="text-xs font-mono text-muted-foreground opacity-70">loops back to</span>
           <span className="text-xs font-mono font-bold" style={{ color: firstLevel.color }}>
             {firstLevel.label}
           </span>
           <motion.span
-            className="ml-auto text-slate-600 text-xs"
+            className="ml-auto text-muted-foreground opacity-50 text-xs"
             animate={{ rotate: [0, 360] }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           >
@@ -229,7 +229,7 @@ export function RecursiveZoomDemo() {
 
   return (
     <div ref={ref} className="my-8 flex flex-col gap-6 group">
-      <div className="rounded-xl overflow-hidden border border-slate-800 shadow-2xl shadow-cyan-900/10 aspect-[16/10] sm:aspect-video bg-slate-950 relative">
+      <div className="rounded-xl overflow-hidden border border-border shadow-2xl shadow-cyan-900/10 aspect-[16/10] sm:aspect-video bg-card relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl pointer-events-none z-10" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/10 blur-3xl pointer-events-none z-10" />
 
@@ -241,14 +241,14 @@ export function RecursiveZoomDemo() {
                   onClick={() => goToDepth(idx)}
                   className="text-xs font-mono px-2 py-0.5 rounded transition-all"
                   style={{
-                    color: idx <= currentDepth ? lvl.color : "#4b5563",
+                    color: idx <= currentDepth ? lvl.color : "hsl(var(--muted-foreground))",
                     background: idx === currentDepth ? lvl.bgColor : "transparent",
                     border: `1px solid ${idx <= currentDepth ? lvl.borderColor : "transparent"}`,
                   }}
                 >
                   {lvl.label}
                 </button>
-                {idx < ZOOM_LEVELS.length - 1 && <span className="text-slate-700 text-xs">/</span>}
+                {idx < ZOOM_LEVELS.length - 1 && <span className="text-muted-foreground opacity-30 text-xs">/</span>}
               </span>
             ))}
           </div>
@@ -269,7 +269,7 @@ export function RecursiveZoomDemo() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-slate-950/80 backdrop-blur-xl border border-slate-800 relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 rounded-xl bg-card/80 backdrop-blur-xl border border-border relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
           <svg width="40" height="40" viewBox="0 0 100 100" className="stroke-cyan-500">
             <circle cx="50" cy="50" r="40" fill="none" strokeWidth="2" strokeDasharray="4 8" />
@@ -301,8 +301,8 @@ export function RecursiveZoomDemo() {
                       }
                     : {
                         background: "transparent",
-                        color: "#6b7280",
-                        borderColor: "#1e293b",
+                        color: "hsl(var(--muted-foreground))",
+                        borderColor: "hsl(var(--border))",
                       }
                 }
               >
@@ -311,14 +311,14 @@ export function RecursiveZoomDemo() {
             ))}
           </div>
 
-          <p className="text-sm text-slate-400 font-mono leading-relaxed border-l-2 border-slate-800 pl-4 mt-4">
+          <p className="text-sm text-muted-foreground font-mono leading-relaxed border-l-2 border-border pl-4 mt-4">
             Claude Code plan mode feeds directly into agent design. Each agent issues tool calls
             whose results loop back into a new planning phase. The recursion terminates when
             acceptance criteria are met.
           </p>
         </div>
 
-        <div className="flex items-center justify-center sm:pl-6 sm:border-l border-slate-800 z-10 w-full sm:w-auto mt-4 sm:mt-0 gap-3 sm:flex-col">
+        <div className="flex items-center justify-center sm:pl-6 sm:border-l border-border z-10 w-full sm:w-auto mt-4 sm:mt-0 gap-3 sm:flex-col">
           <button
             onClick={autoPlaying ? stopAuto : startAuto}
             className="flex items-center justify-center gap-2 px-4 w-full sm:w-28 py-3 bg-cyan-900/20 hover:bg-cyan-900/40 border border-cyan-900 hover:border-cyan-700 rounded-lg font-mono text-xs uppercase tracking-widest transition-all text-cyan-400"
@@ -327,7 +327,7 @@ export function RecursiveZoomDemo() {
           </button>
           <button
             onClick={() => goToDepth(0)}
-            className="flex items-center justify-center gap-2 px-4 w-full sm:w-28 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-slate-500 rounded-lg font-mono text-xs uppercase tracking-widest transition-all text-slate-400"
+            className="flex items-center justify-center gap-2 px-4 w-full sm:w-28 py-3 bg-muted hover:bg-muted/80 border border-border hover:border-muted-foreground/50 rounded-lg font-mono text-xs uppercase tracking-widest transition-all text-muted-foreground"
           >
             Reset
           </button>

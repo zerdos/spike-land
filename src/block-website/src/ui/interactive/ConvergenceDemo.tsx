@@ -102,7 +102,7 @@ function TokenSpan({
   // During merge phase: everything converges toward golden
   const goldenColor = "#f59e0b";
   const cyanColor = "#22d3ee";
-  const dimColor = "rgba(100,116,139,0.45)";
+  const dimColor = "hsl(var(--muted-foreground) / 0.45)";
 
   let color: string;
   let opacity = 1;
@@ -137,7 +137,7 @@ function TokenSpan({
       keyword: "#60a5fa",
       param: "#a5b4fc",
       common: "#22d3ee",
-      punct: "rgba(148,163,184,0.75)",
+      punct: "hsl(var(--muted-foreground) / 0.75)",
       type: "#86efac",
       dim: dimColor,
     };
@@ -243,7 +243,7 @@ function PatternCard({
             >
               {pattern.label}
             </p>
-            <p className="text-[9px] font-mono text-slate-600 uppercase tracking-wider mt-0.5">
+            <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mt-0.5">
               {pattern.sublabel}
             </p>
           </div>
@@ -265,8 +265,8 @@ function PatternCard({
         <div
           className="rounded-lg px-3 py-2.5 flex flex-wrap items-center gap-0"
           style={{
-            background: "rgba(2,6,23,0.6)",
-            border: "1px solid rgba(30,41,59,0.8)",
+            background: "hsl(var(--card) / 0.6)",
+            border: "1px solid hsl(var(--border) / 0.8)",
           }}
         >
           {pattern.tokens.map((token, ti) => (
@@ -422,7 +422,7 @@ export function ConvergenceDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Hover gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
@@ -440,19 +440,19 @@ export function ConvergenceDemo() {
                 ? "rgba(245,158,11,0.08)"
                 : highlightPhase > 0
                   ? "rgba(34,211,238,0.08)"
-                  : "rgba(30,41,59,0.5)",
+                  : "hsl(var(--muted) / 0.5)",
             borderColor:
               mergePhase > 0.3
                 ? "rgba(245,158,11,0.3)"
                 : highlightPhase > 0
                   ? "rgba(34,211,238,0.3)"
-                  : "rgba(51,65,85,0.8)",
+                  : "hsl(var(--border) / 0.8)",
             color:
               mergePhase > 0.3
                 ? "rgba(245,158,11,0.9)"
                 : highlightPhase > 0
                   ? "#22d3ee"
-                  : "rgba(100,116,139,0.8)",
+                  : "hsl(var(--muted-foreground) / 0.8)",
             transition: "all 0.5s ease",
           }}
         >
@@ -464,7 +464,7 @@ export function ConvergenceDemo() {
                   ? "#f59e0b"
                   : highlightPhase > 0
                     ? "#22d3ee"
-                    : "rgba(100,116,139,0.5)",
+                    : "hsl(var(--muted-foreground) / 0.5)",
             }}
           />
           {mergePhase > 0.3
@@ -515,16 +515,16 @@ export function ConvergenceDemo() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-px bg-slate-700" />
-            <span className="text-[10px] font-mono text-slate-600">implementation detail</span>
+            <div className="w-3 h-px bg-border" />
+            <span className="text-[10px] font-mono text-muted-foreground">implementation detail</span>
           </div>
         </motion.div>
       )}
 
       {/* Caption */}
       <div className="flex flex-col items-center gap-3 mt-12">
-        <div className="h-px w-32 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-        <p className="text-center text-[10px] font-mono text-slate-500 tracking-[0.2em] uppercase max-w-md leading-relaxed">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <p className="text-center text-[10px] font-mono text-muted-foreground tracking-[0.2em] uppercase max-w-md leading-relaxed">
           Workers, tRPC, and MCP tools all collapse to the same request-handler shape
         </p>
       </div>

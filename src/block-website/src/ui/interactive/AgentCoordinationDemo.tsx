@@ -134,7 +134,7 @@ function OldWayPanel({ opacity }: OldWayPanelProps) {
           style={{
             fontSize: 8,
             fontFamily: "JetBrains Mono, monospace",
-            color: "rgba(148,163,184,0.4)",
+            color: "hsl(var(--muted-foreground) / 0.4)",
             marginLeft: 8,
           }}
         >
@@ -196,7 +196,7 @@ function OldWayPanel({ opacity }: OldWayPanelProps) {
                 <div
                   style={{
                     fontSize: 8.5,
-                    color: "rgba(148,163,184,0.55)",
+                    color: "hsl(var(--muted-foreground) / 0.7)",
                     fontFamily: "JetBrains Mono, monospace",
                   }}
                 >
@@ -243,13 +243,13 @@ function OldWayPanel({ opacity }: OldWayPanelProps) {
                     refY="2"
                     orient="auto"
                   >
-                    <polygon points="0 0, 5 2, 0 4" fill="rgba(148,163,184,0.4)" />
+                    <polygon points="0 0, 5 2, 0 4" fill="hsl(var(--muted-foreground) / 0.4)" />
                   </marker>
                 </defs>
                 <path
                   d="M 21 2 L 21 20"
-                  stroke="rgba(148,163,184,0.3)"
-                  strokeWidth="1.5"
+                  stroke="hsl(var(--muted-foreground) / 0.3)"
+                  strokeWidth={1.5}
                   strokeDasharray="3 2"
                   markerEnd={`url(#arr-${i})`}
                   fill="none"
@@ -259,7 +259,7 @@ function OldWayPanel({ opacity }: OldWayPanelProps) {
                 style={{
                   fontSize: 7.5,
                   fontFamily: "JetBrains Mono, monospace",
-                  color: "rgba(148,163,184,0.35)",
+                  color: "hsl(var(--muted-foreground) / 0.5)",
                   letterSpacing: "0.06em",
                   textAlign: "center",
                 }}
@@ -341,7 +341,7 @@ function SpacetimePanel({ opacity, glowLevel }: SpacetimePanelProps) {
           style={{
             fontSize: 8,
             fontFamily: "JetBrains Mono, monospace",
-            color: "rgba(148,163,184,0.4)",
+            color: "hsl(var(--muted-foreground) / 0.4)",
             marginLeft: 8,
           }}
         >
@@ -424,7 +424,7 @@ function SpacetimePanel({ opacity, glowLevel }: SpacetimePanelProps) {
               <div
                 style={{
                   fontSize: 8.5,
-                  color: "rgba(148,163,184,0.5)",
+                  color: "hsl(var(--muted-foreground) / 0.7)",
                   fontFamily: "JetBrains Mono, monospace",
                 }}
               >
@@ -657,7 +657,7 @@ export function AgentCoordinationDemo() {
   return (
     <div
       ref={ref}
-      className="bg-slate-900/40 border border-slate-800/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
+      className="bg-card/40 border border-border/80 rounded-[2.5rem] p-10 md:p-16 my-20 backdrop-blur-md relative overflow-hidden group"
     >
       {/* Hover gradient overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgba(6,182,212,0.06),transparent_55%)] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -672,14 +672,14 @@ export function AgentCoordinationDemo() {
 
       {/* Header */}
       <div className="text-center mb-10 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-slate-800/60 border border-slate-700 text-slate-400 text-[10px] font-bold mb-4 tracking-[0.18em] font-mono">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm bg-muted/60 border border-border text-muted-foreground text-[10px] font-bold mb-4 tracking-[0.18em] font-mono">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
           AGENT COORDINATION
         </div>
-        <h3 className="text-slate-100 text-xl font-semibold tracking-tight">
+        <h3 className="text-foreground text-xl font-semibold tracking-tight">
           Four services become four tables
         </h3>
-        <p className="text-slate-500 text-sm font-mono mt-1">
+        <p className="text-muted-foreground text-sm font-mono mt-1">
           Scroll to see the infrastructure simplify
         </p>
       </div>

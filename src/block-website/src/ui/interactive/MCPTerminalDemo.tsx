@@ -177,7 +177,7 @@ export function MCPTerminalDemo() {
   return (
     <div ref={ref} className="my-8 flex flex-col gap-3">
       <div
-        className="rounded-xl overflow-hidden border border-slate-700 bg-slate-900 font-mono text-sm shadow-2xl"
+        className="rounded-xl overflow-hidden border border-border bg-slate-900 font-mono text-sm shadow-2xl"
         onMouseEnter={() => {
           if (playing) setPaused(true);
         }}
@@ -186,15 +186,15 @@ export function MCPTerminalDemo() {
         }}
       >
         {/* Chrome bar */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
+        <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border">
           <span className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
           <span className="w-3 h-3 rounded-full bg-yellow-400" aria-hidden="true" />
           <span className="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
-          <span className="ml-3 text-xs text-slate-400 tracking-wide">MCP JSON-RPC</span>
+          <span className="ml-3 text-xs text-muted-foreground tracking-wide">MCP JSON-RPC</span>
         </div>
 
         {/* Tab bar */}
-        <div className="flex border-b border-slate-700">
+        <div className="flex border-b border-border">
           {TABS.map((t, i) => (
             <button
               key={t.label}
@@ -204,7 +204,7 @@ export function MCPTerminalDemo() {
                 "px-4 py-2 text-xs tracking-wide transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-cyan-500",
                 i === activeTab
                   ? "text-cyan-400 border-cyan-400 bg-slate-900"
-                  : "text-slate-500 border-transparent hover:text-slate-300 hover:bg-slate-800",
+                  : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/30",
               ].join(" ")}
             >
               {t.label}
@@ -251,7 +251,7 @@ export function MCPTerminalDemo() {
               type="button"
               onClick={startAnimation}
               aria-label={isDone ? "Replay animation" : "Play animation"}
-              className="px-4 py-1.5 rounded-full bg-slate-800 border border-slate-600 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-cyan-400 hover:border-cyan-600 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="px-4 py-1.5 rounded-full bg-muted/50 border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest hover:text-cyan-400 hover:border-cyan-600 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
               {isDone ? "Replay" : "Play"}
             </button>

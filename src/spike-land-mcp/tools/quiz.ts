@@ -18,6 +18,7 @@ import { z } from "zod";
 import type { ToolRegistry } from "../mcp/registry";
 import { freeTool, jsonResult } from "../procedures/index";
 import type { DrizzleDB } from "../db/index";
+import type { Env } from "../env";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -110,10 +111,72 @@ export function getSession(id: string): QuizSession | undefined {
 // ─── Engine Functions ────────────────────────────────────────────────────────
 
 /**
- * Generate sample concepts from content. In production this would call an AI model.
- * For now, generates deterministic concepts from content structure.
+ * Generate sample concepts from content using Gemini for high quality.
  */
-export function generateConceptsFromContent(content: string): ConceptDefinition[] {
+export async function generateConceptsFromContent(content: string, env: Env): Promise<ConceptDefinition[]> {
+  // If we have an API key, use Gemini for high-quality generation
+  if (env.GEMINI_API_KEY) {
+    try {
+      const systemPrompt = `You are an expert educator. Extract exactly 6 key concepts from the following content and generate 3 multiple-choice questions for each. 
+Each concept should be a distinct, important idea from the text.
+Each question must have 4 options and exactly one correct answer.
+Generate the output in strict JSON format:
+{
+  "concepts": [
+    {
+      "name": "Concept Name",
+      "variants": [
+        {
+          "question": "Question text?",
+          "options": ["Option A", "Option B", "Option C", "Option D"],
+          "correctIndex": 0
+        }
+      ]
+    }
+  ]
+}`;
+      const userPrompt = `Content to process:\n\n${content.slice(0, 15000)}`;
+      
+      const body = {
+        contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+        generationConfig: {
+          maxOutputTokens: 8192,
+          temperature: 0.2,
+          response_mime_type: "application/json"
+        },
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        const data = await response.json() as any;
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          const parsed = JSON.parse(text);
+          if (parsed.concepts && Array.isArray(parsed.concepts)) {
+            return parsed.concepts;
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[Quiz] Gemini generation failed, falling back to heuristic:", err);
+    }
+  }
+
+  // Fallback to heuristic logic if Gemini fails or key is missing
+  return generateConceptsHeuristic(content);
+}
+
+/**
+ * Heuristic fallback for concept extraction.
+ */
+function generateConceptsHeuristic(content: string): ConceptDefinition[] {
   // Split content into paragraphs/sections and extract key concepts
   const paragraphs = content
     .split(/\n\n+/)
@@ -527,7 +590,7 @@ function computeScore(session: QuizSession): number {
 
 // ─── Registration ────────────────────────────────────────────────────────────
 
-export function registerQuizTools(registry: ToolRegistry, userId: string, db: DrizzleDB): void {
+export function registerQuizTools(registry: ToolRegistry, userId: string, db: DrizzleDB, env: Env): void {
   // ── quiz_create_session ──────────────────────────────────────────────────
   registry.registerBuilt(
     freeTool(userId, db)
@@ -576,7 +639,7 @@ export function registerQuizTools(registry: ToolRegistry, userId: string, db: Dr
           throw new Error("Provide either content_url or content_text, and URL must be accessible and contain text.");
         }
 
-        const concepts = generateConceptsFromContent(articleContent);
+        const concepts = await generateConceptsFromContent(articleContent, env);
         const id = crypto.randomUUID();
 
         const conceptStates: ConceptState[] = concepts.map((c) => ({

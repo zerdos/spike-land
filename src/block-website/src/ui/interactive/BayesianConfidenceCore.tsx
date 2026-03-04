@@ -4,11 +4,11 @@ const clamp = (val: number, min: number, max: number): number => Math.min(Math.m
 
 const COLORS = {
   cyan: "#00E5FF",
-  darkBg: "#0a0a0f",
-  darkBorder: "#2a2a3e",
-  textPrimary: "#ffffff",
-  textSecondary: "#a0a0a0",
-  textMuted: "#6b7280",
+  darkBg: "transparent",
+  darkBorder: "hsl(var(--border))",
+  textPrimary: "hsl(var(--foreground))",
+  textSecondary: "hsl(var(--muted-foreground))",
+  textMuted: "hsl(var(--muted-foreground))",
 } as const;
 
 export type EvidenceType = "positive" | "negative" | "neutral";
@@ -200,7 +200,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
               width={120}
               height={40}
               rx={4}
-              fill="rgba(10,15,20,0.8)"
+              fill="hsl(var(--muted) / 0.8)"
               stroke={themeColor}
               strokeWidth={1}
               filter={`url(#glow-${id})`}
@@ -238,7 +238,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             width={300}
             height={160}
             rx={8}
-            fill="rgba(10,15,20,0.7)"
+            fill="hsl(var(--muted) / 0.7)"
             stroke={COLORS.darkBorder}
             strokeWidth={1}
           />

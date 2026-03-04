@@ -123,20 +123,20 @@ function PerspectiveCard({ emoji, title, quote, body, index, visible }: Perspect
         ease: "easeOut",
       }}
       className="min-w-[280px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink
-                 bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6
+                 bg-card/40 border border-border/50 rounded-2xl p-6
                  cursor-default select-none group
-                 hover:bg-slate-800/60 hover:border-cyan-500/30 transition-colors"
+                 hover:bg-muted/60 hover:border-cyan-500/30 transition-colors"
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="text-3xl leading-none group-hover:scale-110 transition-transform duration-300">
           {emoji}
         </span>
-        <span className="font-bold text-slate-100 text-base">{title}</span>
+        <span className="font-bold text-foreground text-base">{title}</span>
       </div>
       <p className="text-cyan-400 italic text-sm mb-3 leading-snug font-medium">
         &ldquo;{quote}&rdquo;
       </p>
-      <p className="text-slate-400 text-sm leading-relaxed opacity-90">{body}</p>
+      <p className="text-muted-foreground text-sm leading-relaxed opacity-90">{body}</p>
     </motion.div>
   );
 }
@@ -159,7 +159,7 @@ export function PerspectiveCarousel() {
   return (
     <div ref={ref} className="my-20">
       <div className="flex items-center justify-between mb-8 px-2">
-        <h3 className="text-lg font-mono text-slate-400 uppercase tracking-widest text-sm">
+        <h3 className="text-lg font-mono text-muted-foreground uppercase tracking-widest text-sm">
           Perspectives on MCP
         </h3>
         <div className="hidden md:flex gap-1">
@@ -198,7 +198,7 @@ export function PerspectiveCarousel() {
               className={`rounded-full transition-all duration-300 ${
                 i === activeDot
                   ? "w-6 h-1.5 bg-cyan-400"
-                  : "w-1.5 h-1.5 bg-slate-700 hover:bg-slate-600"
+                  : "w-1.5 h-1.5 bg-muted hover:bg-muted-foreground/50"
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />

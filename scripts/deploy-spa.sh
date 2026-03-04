@@ -45,21 +45,18 @@ get_content_type() {
 }
 
 # Upload all files from dist/
-cd "$DIST_DIR"
-find . -type f | while read -r file; do
-  # Strip leading ./
-  key="${file#./}"
+find "$DIST_DIR" -type f | while read -r file; do
+  # Get relative path for key
+  key="${file#$DIST_DIR/}"
   content_type=$(get_content_type "$file")
 
   echo "  Uploading: $key ($content_type)"
   npx wrangler r2 object put "$BUCKET/$key" \
     --file "$file" \
     --content-type "$content_type" \
-    --pipe 2>/dev/null || {
-      # Fallback without --pipe if it's not supported
-      npx wrangler r2 object put "$BUCKET/$key" \
-        --file "$file" \
-        --content-type "$content_type"
+    --remote || {
+      echo "ERROR: Failed to upload $key"
+      exit 1
     }
 done
 
