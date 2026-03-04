@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 import type { BlogPost } from "../../core/types";
 
 /**
@@ -214,9 +215,13 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
         prose-code:text-primary prose-code:bg-muted/50 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none
         prose-pre:bg-muted prose-pre:border prose-pre:border-border
         prose-img:rounded-2xl prose-img:shadow-2xl prose-img:border prose-img:border-border
+        prose-table:w-full prose-table:border-collapse
+        prose-thead:bg-muted/50
+        prose-th:border prose-th:border-border prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:text-foreground prose-th:font-semibold
+        prose-td:border prose-td:border-border prose-td:px-4 prose-td:py-2 prose-td:text-muted-foreground
         prose-ul:text-muted-foreground prose-ol:text-muted-foreground
         prose-li:marker:text-primary">
-        <Markdown rehypePlugins={[rehypeRaw]} components={COMPONENT_MAP as unknown as Record<string, React.ComponentType>}>
+        <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={COMPONENT_MAP as unknown as Record<string, React.ComponentType>}>
           {fixSelfClosingTags(cleanContent)}
         </Markdown>
       </div>
