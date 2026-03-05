@@ -5,6 +5,8 @@ cd "$(dirname "$0")"
 
 R2_BUCKET="spike-app-assets"
 VERSION_URL="https://spike.land/version"
+WRANGLER="./node_modules/.bin/wrangler"
+VITE="./node_modules/.bin/vite"
 
 # ── 1. Current HEAD info ──
 HEAD_SHA="$(git rev-parse HEAD)"
@@ -18,7 +20,7 @@ DEPLOYED_SHA=""
 if [ "${FORCE_DEPLOY:-}" != "1" ]; then
   DEPLOYED_SHA="$(
     curl -sf --max-time 5 "$VERSION_URL" \
-      | python3 -c "import sys,json; print(json.load(sys.stdin).get('sha',''))" 2>/dev/null
+      | jq -r '.sha // ""' 2>/dev/null
   )" || DEPLOYED_SHA=""
 
   if [ "$DEPLOYED_SHA" = "$HEAD_SHA" ]; then
@@ -47,7 +49,7 @@ fi
 
 if [ "$NEED_BUILD" = true ]; then
   echo "Building spike-app..."
-  npx vite build
+  "$VITE" build
   echo "$TREE_HASH" > "$CACHE_DIR/app.treehash"
 else
   echo "Source unchanged (tree hash: ${TREE_HASH:0:12}) — skipping build."
@@ -61,49 +63,40 @@ rm -f dist/index.html.bak
 if [ -n "$DEPLOYED_SHA" ] && [ "$DEPLOYED_SHA" != "unknown" ]; then
   echo "Archiving current build (${DEPLOYED_SHA:0:12}) to builds/${DEPLOYED_SHA}/..."
   # Copy root assets to builds/{sha}/ prefix
-  LIST_OUTPUT="$(yarn wrangler r2 object list "${R2_BUCKET}" --remote 2>/dev/null || echo "")"
+  LIST_OUTPUT="$($WRANGLER r2 object list "${R2_BUCKET}" --remote 2>/dev/null || echo "")"
   if [ -n "$LIST_OUTPUT" ]; then
-    echo "$LIST_OUTPUT" | python3 -c "
-import sys, json
-try:
-  data = json.load(sys.stdin)
-  for obj in data.get('objects', data) if isinstance(data, dict) else data:
-    key = obj.get('key', '') if isinstance(obj, dict) else ''
-    if key and not key.startswith('builds/') and not key.startswith('blog/'):
-      print(key)
-except: pass
-" | while read -r key; do
-      yarn wrangler r2 object copy "${R2_BUCKET}/${key}" "${R2_BUCKET}/builds/${DEPLOYED_SHA}/${key}" --remote 2>/dev/null || true
+    echo "$LIST_OUTPUT" | jq -r '
+      (if type == "array" then . else (.objects // []) end)[]
+      | .key // empty
+      | select(startswith("builds/") or startswith("blog/") | not)
+    ' 2>/dev/null | while read -r key; do
+      $WRANGLER r2 object copy "${R2_BUCKET}/${key}" "${R2_BUCKET}/builds/${DEPLOYED_SHA}/${key}" --remote 2>/dev/null || true
     done
   fi
 
   # Prune old builds — keep only the 5 most recent
-  EXISTING_BUILDS="$(yarn wrangler r2 object list "${R2_BUCKET}" --prefix "builds/" --remote 2>/dev/null || echo "")"
+  EXISTING_BUILDS="$($WRANGLER r2 object list "${R2_BUCKET}" --prefix "builds/" --remote 2>/dev/null || echo "")"
   if [ -n "$EXISTING_BUILDS" ]; then
-    OLD_SHAS="$(echo "$EXISTING_BUILDS" | python3 -c "
-import sys, json
-try:
-  data = json.load(sys.stdin)
-  objs = data.get('objects', data) if isinstance(data, dict) else data
-  shas = sorted(set(
-    obj.get('key','').split('/')[1]
-    for obj in (objs if isinstance(objs, list) else [])
-    if isinstance(obj, dict) and obj.get('key','').startswith('builds/') and len(obj['key'].split('/')) > 2
-  ))
-  # Print SHAs to delete (all except last 5)
-  for sha in shas[:-5]:
-    print(sha)
-except: pass
-")"
+    OLD_SHAS="$(echo "$EXISTING_BUILDS" | jq -r '
+      [ (if type == "array" then . else (.objects // []) end)[]
+        | .key // empty
+        | select(startswith("builds/"))
+        | split("/")[1]
+      ] | unique | sort | .[:-5][]
+    ' 2>/dev/null || echo "")"
     for old_sha in $OLD_SHAS; do
       echo "Pruning old build: ${old_sha:0:12}..."
-      yarn wrangler r2 object delete "${R2_BUCKET}/builds/${old_sha}/" --remote 2>/dev/null || true
+      $WRANGLER r2 object delete "${R2_BUCKET}/builds/${old_sha}/" --remote 2>/dev/null || true
     done
   fi
 fi
 
 # ── 6. Upload new dist/ to R2 ──
 echo "Uploading to R2 bucket: ${R2_BUCKET}..."
+
+# Load previously uploaded keys for content-hash diffing
+UPLOADED_KEYS_FILE="$CACHE_DIR/uploaded-keys.txt"
+touch "$UPLOADED_KEYS_FILE"
 
 upload_file() {
   local file="$1"
@@ -126,19 +119,56 @@ upload_file() {
     *)      content_type="application/octet-stream" ;;
   esac
 
-  yarn wrangler r2 object put "${R2_BUCKET}/${key}" \
+  $WRANGLER r2 object put "${R2_BUCKET}/${key}" \
     --file "$file" \
     --content-type "$content_type" \
     --remote
 }
 
 export -f upload_file
-export R2_BUCKET
+export R2_BUCKET WRANGLER
 
-find dist -type f -print0 | xargs -0 -P 1 -I {} bash -c 'upload_file "$@"' _ {}
+# Build list of files to upload, skipping hashed assets already uploaded
+FILES_TO_UPLOAD=()
+NEW_KEYS=()
+while IFS= read -r -d '' file; do
+  key="${file#dist/}"
+  # Hashed assets (contain content hash in filename) can be skipped if already uploaded
+  if [[ "$key" =~ \.[0-9a-f]{8,}\. ]] && grep -qxF "$key" "$UPLOADED_KEYS_FILE" 2>/dev/null; then
+    continue
+  fi
+  FILES_TO_UPLOAD+=("$file")
+  NEW_KEYS+=("$key")
+done < <(find dist -type f -print0)
+
+echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped $(( $(find dist -type f | wc -l) - ${#FILES_TO_UPLOAD[@]} )) cached)..."
+
+# Upload in parallel (16 concurrent)
+printf '%s\0' "${FILES_TO_UPLOAD[@]}" | xargs -0 -P 16 -I {} bash -c 'upload_file "$@"' _ {}
+
+# Update uploaded keys cache
+printf '%s\n' "${NEW_KEYS[@]}" >> "$UPLOADED_KEYS_FILE"
+sort -u -o "$UPLOADED_KEYS_FILE" "$UPLOADED_KEYS_FILE"
 
 # ── 7. Seed blog posts to D1 and upload images to R2 ──
-echo "Seeding blog content to D1 + R2..."
-(cd ../.. && npx tsx scripts/seed-blog.ts --remote)
+BLOG_DIR="../../content/blog"
+BLOG_HASH=""
+if [ -d "$BLOG_DIR" ]; then
+  BLOG_HASH="$(git ls-tree -r HEAD -- "$BLOG_DIR" 2>/dev/null | git hash-object --stdin 2>/dev/null || echo "")"
+fi
+CACHED_BLOG_HASH=""
+if [ -f "$CACHE_DIR/blog.treehash" ]; then
+  CACHED_BLOG_HASH="$(cat "$CACHE_DIR/blog.treehash")"
+fi
+
+if [ "$BLOG_HASH" != "$CACHED_BLOG_HASH" ] || [ -z "$BLOG_HASH" ]; then
+  echo "Seeding blog content to D1 + R2..."
+  (cd ../.. && ./node_modules/.bin/tsx scripts/seed-blog.ts --remote)
+  if [ -n "$BLOG_HASH" ]; then
+    echo "$BLOG_HASH" > "$CACHE_DIR/blog.treehash"
+  fi
+else
+  echo "Blog content unchanged — skipping seed."
+fi
 
 echo "Deployed ${HEAD_SHA:0:12} @ ${COMMIT_TIME}"
