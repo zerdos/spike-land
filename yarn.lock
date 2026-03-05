@@ -394,6 +394,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@better-auth/drizzle-adapter@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "@better-auth/drizzle-adapter@npm:1.5.3"
+  peerDependencies:
+    "@better-auth/core": 1.5.3
+    "@better-auth/utils": ^0.3.0
+    drizzle-orm: ">=0.41.0"
+  checksum: 10c0/bef041a83e32d8ed25caf0f6b84a299cff81316c7af220c4d34140333ea4091f5e9055310c18e09fe93268ff0e1d92a08f5cd7d22f056dea932a68aad67a823c
+  languageName: node
+  linkType: hard
+
 "@better-auth/kysely-adapter@npm:1.5.3":
   version: 1.5.3
   resolution: "@better-auth/kysely-adapter@npm:1.5.3"
@@ -4842,6 +4853,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/mcp-auth@workspace:packages/mcp-auth"
   dependencies:
+    "@better-auth/drizzle-adapter": "npm:^1.5.3"
     "@cloudflare/workers-types": "npm:4.20260305.1"
     "@modelcontextprotocol/sdk": "npm:^1.27.1"
     "@vitest/coverage-v8": "npm:^4.0.18"

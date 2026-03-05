@@ -3,6 +3,8 @@ import type { Env } from "../env.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { calculateBugEloChange } from "../lib/elo.js";
 import { ensureUserElo, getUserElo, recordEloEvent } from "../lib/elo-service.js";
+import { ensureAgentElo, getAgentElo, recordAgentEloEvent } from "../lib/agent-elo-service.js";
+import { eloThrottleMiddleware } from "../middleware/elo-throttle.js";
 
 const bugbook = new Hono<{ Bindings: Env }>();
 
@@ -112,7 +114,7 @@ bugbook.get("/bugbook/:id", async (c) => {
 // ── Authenticated Endpoints ──
 
 /** POST /bugbook/report — submit a bug report. */
-bugbook.post("/bugbook/report", authMiddleware, async (c) => {
+bugbook.post("/bugbook/report", authMiddleware, eloThrottleMiddleware, async (c) => {
   const userId = c.get("userId" as never) as string;
 
   const body = await c.req.json<{
@@ -235,7 +237,7 @@ bugbook.post("/bugbook/report", authMiddleware, async (c) => {
 });
 
 /** POST /bugbook/:id/confirm — confirm an existing bug. */
-bugbook.post("/bugbook/:id/confirm", authMiddleware, async (c) => {
+bugbook.post("/bugbook/:id/confirm", authMiddleware, eloThrottleMiddleware, async (c) => {
   const userId = c.get("userId" as never) as string;
   const bugId = c.req.param("id");
 
@@ -355,6 +357,76 @@ bugbook.post("/internal/elo/event", async (c) => {
   );
 
   return c.json(result);
+});
+
+/** GET /internal/agent-elo/:agentId — get agent ELO + tier. */
+bugbook.get("/internal/agent-elo/:agentId", async (c) => {
+  const secret = c.req.header("x-internal-secret");
+  if (!secret || !c.env.INTERNAL_SERVICE_SECRET || secret !== c.env.INTERNAL_SERVICE_SECRET) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const agentId = c.req.param("agentId");
+  const agent = await getAgentElo(c.env.DB, agentId);
+  if (!agent) {
+    return c.json({ error: "Agent not found" }, 404);
+  }
+  return c.json({ elo: agent.elo, tier: agent.tier, eventCount: agent.eventCount });
+});
+
+/** POST /internal/agent-elo/event — record an agent ELO event. */
+bugbook.post("/internal/agent-elo/event", async (c) => {
+  const secret = c.req.header("x-internal-secret");
+  if (!secret || !c.env.INTERNAL_SERVICE_SECRET || secret !== c.env.INTERNAL_SERVICE_SECRET) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const body = await c.req.json<{
+    agentId: string;
+    ownerUserId: string;
+    eventType: string;
+    referenceId?: string;
+  }>();
+
+  if (!body.agentId || !body.ownerUserId || !body.eventType) {
+    return c.json({ error: "agentId, ownerUserId and eventType are required" }, 400);
+  }
+
+  const validTypes = new Set([
+    "report_valid_bug", "bug_confirmed", "successful_tool_use",
+    "false_bug_report", "rate_limit_hit", "abuse_flag",
+  ]);
+
+  if (!validTypes.has(body.eventType)) {
+    return c.json({ error: "Invalid event type" }, 400);
+  }
+
+  const result = await recordAgentEloEvent(
+    c.env.DB,
+    body.agentId,
+    body.ownerUserId,
+    body.eventType as any,
+    body.referenceId,
+  );
+
+  return c.json(result);
+});
+
+/** POST /internal/agent-elo/ensure — creates agent ELO if not exists. */
+bugbook.post("/internal/agent-elo/ensure", async (c) => {
+  const secret = c.req.header("x-internal-secret");
+  if (!secret || !c.env.INTERNAL_SERVICE_SECRET || secret !== c.env.INTERNAL_SERVICE_SECRET) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const body = await c.req.json<{
+    agentId: string;
+    ownerUserId: string;
+  }>();
+
+  if (!body.agentId || !body.ownerUserId) {
+    return c.json({ error: "agentId and ownerUserId are required" }, 400);
+  }
+
+  const agent = await ensureAgentElo(c.env.DB, body.agentId, body.ownerUserId);
+  return c.json({ elo: agent.elo, tier: agent.tier, eventCount: agent.eventCount });
 });
 
 export { bugbook };

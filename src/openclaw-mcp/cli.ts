@@ -3,6 +3,11 @@
 import { execFile } from "node:child_process";
 import { createMcpBridge } from "./bridge.js";
 import type { GatewayTransport } from "./types.js";
+import { createErrorShipper } from "@spike-land-ai/mcp-server-base";
+
+const shipper = createErrorShipper();
+process.on('uncaughtException', (err) => shipper.shipError({ service_name: "openclaw-mcp", message: err.message, stack_trace: err.stack, severity: "high" }));
+process.on('unhandledRejection', (err: any) => shipper.shipError({ service_name: "openclaw-mcp", message: err?.message || String(err), stack_trace: err?.stack, severity: "high" }));
 
 type CliPayload = { text?: string };
 

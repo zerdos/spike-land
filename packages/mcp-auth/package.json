@@ -17,6 +17,7 @@
     "lint": "eslint --quiet ."
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.5.3",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "better-auth": "^1.5.3",
     "drizzle-orm": "^0.45.1"

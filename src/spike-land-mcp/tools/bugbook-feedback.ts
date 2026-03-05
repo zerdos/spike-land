@@ -21,14 +21,14 @@ export function registerBugbookFeedbackTools(
 
   registry.registerBuilt(
     t
-      .tool("mcp_feedback", "Report a bug or provide feedback. Reports are tracked in the public Bugbook at spike.land/bugbook.", {
+      .tool("report_bug", "Report a bug or provide feedback. Reports are tracked in the public Bugbook at spike.land/bugbook.", {
         title: z.string().min(5).max(200).describe("Short bug title"),
         description: z.string().min(10).max(2000).describe("Detailed bug description"),
         severity: z.enum(["low", "medium", "high", "critical"]).describe("Bug severity"),
         reproduction_steps: z.string().max(2000).optional().describe("Steps to reproduce"),
         error_code: z.string().max(100).optional().describe("Error code if applicable"),
       })
-      .meta({ category: "bugbook", tier: "free", alwaysEnabled: true })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async ({ input }) => {
         if (!spikeEdge) {
           return {

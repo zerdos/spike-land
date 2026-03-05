@@ -7,7 +7,6 @@ import { fuzzyFilter } from "../util/fuzzy";
 
 /** Duck-typed interface for alias resolution (optional dependency). */
 export interface AliasResolver {
-  resolveCommand?(input: string): string | undefined;
   getAliasNames?(): string[];
 }
 

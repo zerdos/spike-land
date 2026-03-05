@@ -13,7 +13,8 @@ export type EloEventType =
   | "rate_limit_hit"
   | "abuse_flag"
   | "whatsapp_productive_use"
-  | "bug_bounty_granted";
+  | "bug_bounty_granted"
+  | "agent_abuse_penalty";
 
 const ELO_DELTAS: Record<EloEventType, number> = {
   report_valid_bug: 25,
@@ -24,6 +25,7 @@ const ELO_DELTAS: Record<EloEventType, number> = {
   abuse_flag: -50,
   whatsapp_productive_use: 2,
   bug_bounty_granted: 50,
+  agent_abuse_penalty: -25,
 };
 
 const DAILY_GAIN_CAP = 100;

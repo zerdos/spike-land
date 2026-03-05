@@ -96,6 +96,29 @@ export function useBugbookLeaderboard() {
   });
 }
 
+export function useMyBugReports() {
+  return useQuery({
+    queryKey: ["bugbook", "my-reports"],
+    queryFn: async (): Promise<{
+      reports: Array<{
+        id: string;
+        bug_id: string;
+        description: string;
+        severity: string;
+        created_at: number;
+        bug_title: string;
+        bug_status: string;
+        bug_elo: number;
+      }>;
+      userElo: { elo: number; tier: string };
+    }> => {
+      const res = await fetch(`${API}/my-reports`);
+      if (!res.ok) throw new Error("Failed to fetch my reports");
+      return res.json();
+    },
+  });
+}
+
 export function useReportBug() {
   const queryClient = useQueryClient();
   return useMutation({

@@ -6,7 +6,7 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createMcpServer, startMcpServer } from "@spike-land-ai/mcp-server-base";
+import { createMcpServer, startMcpServer, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
 import { GitHubClient } from "./github/client.js";
 import type { DiffSide } from "./types.js";
 import {
@@ -265,12 +265,18 @@ export function createServer(githubToken: string): McpServer {
     },
   );
 
+  registerFeedbackTool(server, { serviceName: "spike-review", toolName: "review_feedback" });
+
   return server;
 }
 
 // ── Server startup ───────────────────────────────────────────────────────────
 
 export async function startServer(): Promise<void> {
+  const shipper = createErrorShipper();
+  process.on('uncaughtException', (err) => shipper.shipError({ service_name: "spike-review", message: err.message, stack_trace: err.stack, severity: "high" }));
+  process.on('unhandledRejection', (err: any) => shipper.shipError({ service_name: "spike-review", message: err?.message || String(err), stack_trace: err?.stack, severity: "high" }));
+
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     console.error(

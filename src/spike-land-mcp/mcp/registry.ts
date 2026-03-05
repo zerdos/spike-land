@@ -109,6 +109,9 @@ export class ToolRegistry {
   protected userId: string;
   private toolSearch = new ToolSearch();
 
+  private callerElo: number | undefined;
+  private callerTier: EloTier | undefined;
+
   constructor(mcpServer: McpServer, userId: string) {
     this.mcpServer = mcpServer;
     this.userId = userId;
@@ -116,6 +119,11 @@ export class ToolRegistry {
 
   getUserId(): string {
     return this.userId;
+  }
+
+  setCallerElo(elo: number, tier: EloTier, _isAgent = false): void {
+    this.callerElo = elo;
+    this.callerTier = tier;
   }
 
   register(def: ToolDefinition): void {
@@ -138,6 +146,22 @@ export class ToolRegistry {
       ? optimizeSchema(def.inputSchema) as z.ZodRawShape
       : undefined;
 
+    const wrappedHandler = async (input: never) => {
+      const required = def.requiredTier;
+      if (required && this.callerTier) {
+        if ((TIER_RANK[this.callerTier] ?? 0) < (TIER_RANK[required] ?? 0)) {
+          return {
+            content: [{
+              type: "text",
+              text: `Insufficient ELO: This tool requires ${required} tier (current tier: ${this.callerTier}, elo: ${this.callerElo ?? 'unknown'}).`,
+            }],
+            isError: true,
+          };
+        }
+      }
+      return def.handler(input);
+    };
+
     const registered = this.mcpServer.registerTool(
       def.name,
       {
@@ -147,7 +171,7 @@ export class ToolRegistry {
         ...(def.examples !== undefined ? { examples: def.examples } : {}),
         _meta: { category: def.category, tier: def.tier, version, stability },
       },
-      def.handler as unknown as Parameters<McpServer["registerTool"]>[2],
+      wrappedHandler as unknown as Parameters<McpServer["registerTool"]>[2],
     );
 
     if (!def.alwaysEnabled) {

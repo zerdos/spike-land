@@ -41,5 +41,30 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
   app.use("/mcp/*", authMiddleware);
   app.route("/mcp", mcpRoute);
 
+  app.onError((err, c) => {
+    console.error("[spike-land-mcp] Unhandled error:", err);
+    if (c.env.SPIKE_EDGE) {
+      c.executionCtx.waitUntil(
+        c.env.SPIKE_EDGE.fetch("https://edge.spike.land/errors/ingest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            errors: [
+              {
+                service_name: "spike-land-mcp",
+                message: err.message || String(err),
+                stack_trace: err.stack,
+                severity: "high",
+              },
+            ],
+          }),
+        }).catch((e) => console.error("Failed to ship error to SPIKE_EDGE:", e))
+      );
+    }
+    return c.json({ error: "Internal Server Error" }, 500);
+  });
+
   return app;
 }

@@ -82,12 +82,18 @@ export function BugbookIndexPage() {
         </div>
         <div className="flex gap-2">
           <Link
+            to="/bugbook/my-reports"
+            className="rounded-lg bg-info text-info-foreground px-3 py-1.5 text-sm font-medium hover:bg-info/80"
+          >
+            My Reports
+          </Link>
+          <Link
             to="/bugbook/leaderboard"
             className="rounded-lg bg-info text-info-foreground px-3 py-1.5 text-sm font-medium hover:bg-info/80"
           >
             Leaderboard
           </Link>
-          <span className="rounded-lg bg-success text-success-foreground px-3 py-1.5 text-xs font-medium">
+          <span className="rounded-lg bg-success text-success-foreground px-3 py-1.5 text-xs font-medium flex items-center">
             {data?.total ?? 0} bugs
           </span>
         </div>

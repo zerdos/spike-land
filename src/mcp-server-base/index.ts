@@ -550,3 +550,8 @@ export function getText(result: CallToolResult): string {
 export function isErrorResult(result: CallToolResult): boolean {
   return result.isError === true;
 }
+
+// ─── Feedback & Error Shipper ────────────────────────────────────────────────
+export * from "./feedback.js";
+export * from "./error-shipper.js";
+

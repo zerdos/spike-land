@@ -60,6 +60,21 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
     sessionKey: defaultSessionKey,
   });
 
+  toolRegistry.set("openclaw_feedback", {
+    name: "openclaw_feedback",
+    description: "Report a bug or provide feedback for openclaw-mcp",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "Short title of the bug or feedback" },
+        description: { type: "string", description: "Detailed description" },
+        severity: { type: "string", enum: ["low", "medium", "high", "critical"] },
+      },
+      required: ["title", "description"],
+    },
+    sessionKey: defaultSessionKey,
+  });
+
   function listTools(): McpToolDef[] {
     return [...toolRegistry.values()].map((t) => ({
       name: t.name,
@@ -179,6 +194,26 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
         const result = await executeChatTool(args);
         if (result.isError) outcome = "error";
         return result;
+      }
+      if (name === "openclaw_feedback") {
+        try {
+          const response = await fetch("https://spike.land/api/bugbook/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              service_name: "openclaw-mcp",
+              title: args.title,
+              description: args.description,
+              severity: args.severity,
+            }),
+          });
+          if (!response.ok) throw new Error(await response.text());
+          const data = await response.json();
+          return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+        } catch (err: any) {
+          outcome = "error";
+          return { content: [{ type: "text", text: `Error: ${err.message}` }], isError: true };
+        }
       }
       const entry = toolRegistry.get(name);
       if (!entry) {

@@ -17,15 +17,52 @@ import type { GA4Event } from "../lib/ga4";
 import { trackPlatformEvents } from "../lib/analytics";
 import type { AnalyticsEvent } from "../lib/analytics";
 import { recordSkillCall } from "../lib/skill-tracker";
+import { detectAbuse } from "../middleware/abuse-detector";
+
+function eloRateMultiplier(elo: number): number {
+  if (elo < 500) return 4;
+  if (elo < 800) return 2;
+  return 1;
+}
 
 export const mcpRoute = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
 mcpRoute.post("/", async (c) => {
   const userId = c.var.userId;
   const db = c.var.db;
+  const agentId = c.req.header("X-Agent-Id");
+
+  let callerElo = 1200;
+  let callerTier: "free" | "pro" | "business" = "free";
+  let isAgent = false;
+
+  try {
+    if (agentId) {
+      const res = await c.env.SPIKE_EDGE.fetch(\`https://edge.spike.land/internal/agent-elo/\${agentId}\`, {
+        headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
+      });
+      if (res.ok) {
+        const data = await res.json() as any;
+        callerElo = data.elo;
+        callerTier = data.tier;
+        isAgent = true;
+      }
+    } else {
+      const res = await c.env.SPIKE_EDGE.fetch(\`https://edge.spike.land/internal/elo/\${userId}\`, {
+        headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
+      });
+      if (res.ok) {
+        const data = await res.json() as any;
+        callerElo = data.elo;
+        callerTier = data.tier;
+      }
+    }
+  } catch (err) {
+    console.error("[mcp] Failed to fetch ELO:", err);
+  }
 
   // Rate limit by userId (120 req/60s)
-  const { isLimited, resetAt } = await checkRateLimit(`mcp-rpc:${userId}`, c.env.KV);
+  const { isLimited, resetAt } = await checkRateLimit(\`mcp-rpc:\${userId}\`, c.env.KV, 120, 60000, eloRateMultiplier(callerElo));
   if (isLimited) {
     return c.json(
       {
@@ -64,6 +101,11 @@ mcpRoute.post("/", async (c) => {
     kv: c.env.KV,
     vaultSecret: c.env.VAULT_SECRET,
   });
+  
+  // Set caller ELO for tool gating
+  if ((mcpServer as any).registry) {
+    (mcpServer as any).registry.setCallerElo(callerElo, callerTier, isAgent);
+  }
 
   // Normalize Accept header for MCP spec compliance
   const headers = new Headers(c.req.raw.headers);
@@ -127,6 +169,23 @@ mcpRoute.post("/", async (c) => {
           // JSON parse failed — keep outcome as success
         }
       }
+    }
+
+    // Determine if flagged for abuse
+    const isFlagged = await detectAbuse(c.env.KV, agentId ?? userId, outcome);
+    if (isFlagged) {
+      const endpoint = isAgent ? "/internal/agent-elo/event" : "/internal/elo/event";
+      const payload = isAgent ? { agentId, ownerUserId: userId, eventType: "abuse_flag" } : { userId, eventType: "abuse_flag" };
+      c.executionCtx.waitUntil(
+        c.env.SPIKE_EDGE.fetch(\`https://edge.spike.land\${endpoint}\`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-secret": c.env.MCP_INTERNAL_SECRET,
+          },
+          body: JSON.stringify(payload),
+        }).catch((err) => console.error("[mcp] Failed to report abuse:", err))
+      );
     }
 
     // 1. Send to GA4

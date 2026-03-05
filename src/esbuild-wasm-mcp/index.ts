@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createMcpServer, startMcpServer, wrapServerWithLogging } from "@spike-land-ai/mcp-server-base";
+import { createMcpServer, startMcpServer, wrapServerWithLogging, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
 import { registerInitializeTool } from "./tools/initialize.js";
 import { registerStatusTool } from "./tools/status.js";
 import { registerTransformTool } from "./tools/transform.js";
@@ -13,6 +13,10 @@ const server = createMcpServer({
   version: "0.27.4",
 });
 
+const shipper = createErrorShipper();
+process.on('uncaughtException', (err) => shipper.shipError({ service_name: "esbuild-wasm-mcp", message: err.message, stack_trace: err.stack, severity: "high" }));
+process.on('unhandledRejection', (err: any) => shipper.shipError({ service_name: "esbuild-wasm-mcp", message: err?.message || String(err), stack_trace: err?.stack, severity: "high" }));
+
 wrapServerWithLogging(server, "esbuild-wasm-mcp");
 
 registerInitializeTool(server);
@@ -22,5 +26,6 @@ registerBuildTool(server);
 registerAnalyzeTool(server);
 registerFormatMessagesTool(server);
 registerContextTool(server);
+registerFeedbackTool(server, { serviceName: "esbuild-wasm-mcp", toolName: "esbuild_feedback" });
 
 await startMcpServer(server);

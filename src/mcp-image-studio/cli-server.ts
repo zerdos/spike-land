@@ -4,6 +4,11 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import { registerImageStudioTools } from "./register.js";
 import type { ImageStudioDeps, ImageStudioToolRegistry, ToolDefinition } from "./types.js";
 import { asAlbumHandle, asImageId, asJobId, asPipelineId } from "./types.js";
+import { createErrorShipper } from "@spike-land-ai/mcp-server-base";
+
+const shipper = createErrorShipper();
+process.on('uncaughtException', (err) => shipper.shipError({ service_name: "mcp-image-studio", message: err.message, stack_trace: err.stack, severity: "high" }));
+process.on('unhandledRejection', (err: any) => shipper.shipError({ service_name: "mcp-image-studio", message: err?.message || String(err), stack_trace: err?.stack, severity: "high" }));
 
 // --- 1. Mock the Dependencies so the tools can run without a real DB ---
 
@@ -232,6 +237,41 @@ const registry: ImageStudioToolRegistry = {
 
 // Register all tools
 registerImageStudioTools(registry, DEFAULT_USER_ID, deps);
+
+tools.push({
+  name: "image_studio_feedback",
+  description: "Report a bug or provide feedback for mcp-image-studio",
+  category: "feedback",
+  tier: "free",
+  inputSchema: {
+    type: "object",
+    properties: {
+      title: { type: "string", description: "Short title of the bug or feedback" },
+      description: { type: "string", description: "Detailed description" },
+      severity: { type: "string", enum: ["low", "medium", "high", "critical"] },
+    },
+    required: ["title", "description"],
+  },
+  handler: async (args: any) => {
+    try {
+      const response = await fetch("https://spike.land/api/bugbook/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service_name: "mcp-image-studio",
+          title: args.title,
+          description: args.description,
+          severity: args.severity,
+        }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
+      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+    } catch (err: any) {
+      return { content: [{ type: "text", text: `Error: ${err.message}` }], isError: true };
+    }
+  },
+});
 
 // --- 4. Wire tools to Server ---
 

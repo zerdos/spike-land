@@ -8,7 +8,7 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { wrapServerWithLogging } from "@spike-land-ai/mcp-server-base";
+import { wrapServerWithLogging, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
 import { SessionManager } from "./session/session-manager.js";
 import { HNReadClient } from "./clients/hn-read-client.js";
 import { HNWriteClient } from "./clients/hn-write-client.js";
@@ -26,6 +26,10 @@ const server = new McpServer({
   version: "0.1.0",
 });
 
+const shipper = createErrorShipper();
+process.on('uncaughtException', (err) => shipper.shipError({ service_name: "hackernews-mcp", message: err.message, stack_trace: err.stack, severity: "high" }));
+process.on('unhandledRejection', (err: any) => shipper.shipError({ service_name: "hackernews-mcp", message: err?.message || String(err), stack_trace: err?.stack, severity: "high" }));
+
 wrapServerWithLogging(server, "hackernews-mcp");
 
 // Shared state
@@ -42,6 +46,7 @@ registerAuthTools(server, writeClient, session);
 registerSubmitTools(server, writeClient);
 registerVoteTools(server, writeClient);
 registerCommentTools(server, writeClient);
+registerFeedbackTool(server, { serviceName: "hackernews-mcp", toolName: "hackernews_feedback" });
 
 // Start server on stdio
 const transport = new StdioServerTransport();
