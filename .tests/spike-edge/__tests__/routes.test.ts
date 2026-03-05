@@ -1228,7 +1228,7 @@ describe("app middleware (index.ts)", () => {
     ).fetch(new Request("https://spike.land/health"), env);
 
     expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
-    expect(res.headers.get("X-XSS-Protection")).toBe("1; mode=block");
+    expect(res.headers.get("Permissions-Policy")).toBe("camera=(), microphone=(), geolocation=(), payment=()");
     expect(res.headers.get("X-Frame-Options")).toBe("DENY");
   });
 

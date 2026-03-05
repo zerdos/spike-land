@@ -73,6 +73,12 @@ sitemap.get("/sitemap.xml", async (c) => {
     });
   }
 
+  if (!response) {
+    // Fallback if everything failed
+    const xml = buildSitemapXml(STATIC_ROUTES, []);
+    return c.body(xml, 200, { "Content-Type": "application/xml; charset=utf-8" });
+  }
+
   return response;
 });
 
