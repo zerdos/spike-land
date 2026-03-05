@@ -1,16 +1,16 @@
 {
   "src/spike-review/types.ts": {
-    "sourceHash": "8f188a734898fcbe892d55315d6b167dca67d864fad42442fb4e038e01875f1c",
+    "sourceHash": "b70cdb84fc0ef869dbb0a8d7fe57eb0add56ecd68ac67be9b37e4a11987f309d",
     "testHash": "",
-    "combinedTestHash": "f0e303a1d99a16ea24e1916c8728087b080618191609910bc4ec7e8b57a44446",
+    "combinedTestHash": "447056ec11e509b92f20184c70bc7761c80e63f53afb55de08b228647126e1b1",
     "coverage": 100,
     "success": true
   },
   "src/spike-review/index.ts": {
-    "sourceHash": "49a67300f5815b907993526fb03adf1917a81f1acd15c4d6dc0f10f0db786740",
+    "sourceHash": "a54d6568b6c3fe6362c6165ead2ce3ca33b2c3ca4582be79f7885bf71875bba9",
     "testHash": "",
     "combinedTestHash": "c1743d99c9abd65abd573d1cdc6930418f327ecb1da42ae00ac4e27399179b67",
-    "coverage": 18.96,
+    "coverage": 18.46,
     "success": true
   },
   "src/spike-review/cli.ts": {
@@ -21,25 +21,25 @@
     "success": true
   },
   "src/spike-land-mcp/app.ts": {
-    "sourceHash": "9aaf8b6ff0b45157b7a9e95907ac2efa435b6fea4b22a8ba2c3d69925aac9e4c",
+    "sourceHash": "cae4e5f3f51fbddf7fc857381af4da6c84936a1b209f4f44c1527bf1fd635f92",
     "testHash": "",
     "combinedTestHash": "5e41f7d67b9fcb131953a0b46513b83334d7e4598ec11c6033947d3131914cb2",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-backend/largeValueStorage.ts": {
-    "sourceHash": "f6c27c672189e1cca613f60615a5f0c6f90fd1ad5239f8bcce68e2bd9f2e1b19",
+    "sourceHash": "98db49a0470ec8002bbcbf4fdd7327d473eabe57308280ee37f062c90ffb308b",
     "testHash": "",
-    "combinedTestHash": "637b5e14e9392e0e1d6f072b6335801f2b7a0000361ea166520d9ca80849fb48",
-    "coverage": 97.22,
-    "success": true
+    "combinedTestHash": "cd2c67326adb13792c99c41035bb4de01f409da32f3f6cfd21d56caaa1af1543",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-backend/chatRoom.ts": {
-    "sourceHash": "ea36717d03c195aab02cdb629ac55c110bc4ad9f926a7f7d03900412dc68e737",
+    "sourceHash": "7222e0b3acc0cd70112c6588943af94026b1f0eaa08be488e166b818bb4d1c04",
     "testHash": "",
     "combinedTestHash": "49f568c4971d86b3bc7375f4a1026aa921b7766c44df733d9a5617e5bd3f064b",
-    "coverage": 62.75,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/state-machine/visualizer-template.ts": {
     "sourceHash": "0ea1d95fce55feab0954a7e5a8964270a0b44f575900baf59e4be484fc4b3c82",
@@ -70,11 +70,11 @@
     "success": true
   },
   "src/state-machine/engine.ts": {
-    "sourceHash": "69e9fdc56dacb4a3d788f29c386624a8bb02b7f332d1eae15654aebbb3d44ba7",
+    "sourceHash": "db0ec87fdc424a46719baedaca0fe1c907d751f793668f9f75434982dd555545",
     "testHash": "",
     "combinedTestHash": "cd6e020822fc79411220c71f0c84e9ce30a7ec6cfda8aa38bf29751062b8dc5d,31d8a3b68a4bdca3bebff0572bb6afb3ea3267a626d1b73aa8a24885d44af06b",
-    "coverage": 91.09,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/state-machine/cli.ts": {
     "sourceHash": "9694c18b72749c7f85621f58c8e0b68b35cc074c29193d09df3df6fbf3895b08",
@@ -86,15 +86,15 @@
   "src/spike-cli/index.ts": {
     "sourceHash": "5726ce90cd7e360211851b36eb2fba650e2e142398a0ea0b309de6f53ad6dc54",
     "testHash": "",
-    "combinedTestHash": "e6cacc877735535e808e0ba362fdd8cb579a3662ff78d10567cebf310c5a5d0a",
+    "combinedTestHash": "e3028a1e40539c8006582a89931889ee83850f54a999ca492745ffae61e1117f",
     "coverage": 0,
     "success": true
   },
   "src/spike-cli/cli.ts": {
-    "sourceHash": "3e6ffb178afb80f1376dc96f07a8550e0dc6719308e226dea52513cb4e61c4f5",
+    "sourceHash": "38cbfd5a03b8620f33907b9d0ebbc7561cbd527d5a1d53e7b6d7d2e0dbcbb9f8",
     "testHash": "",
-    "combinedTestHash": "a12fa63284cfd687399123f2ec6853f58b388fe28448ecd8496bb3f30de7f292",
-    "coverage": 81.81,
+    "combinedTestHash": "13799438c12d5ec02c5180cca9add2238aee0b331caccff2d08658c912fa6b03",
+    "coverage": 91.42,
     "success": true
   },
   "src/openclaw-mcp/translator.ts": {
@@ -112,46 +112,46 @@
     "success": true
   },
   "src/openclaw-mcp/cli.ts": {
-    "sourceHash": "4a91e932922c7218a30a2fcf28b75cf96651f65764d05eb463f7f182108ef078",
+    "sourceHash": "7db76a21f5f2ea58f30b7e09da6f2cb6b708e66ab23ef303f37192e695ead81a",
     "testHash": "",
-    "combinedTestHash": "a3c60baeb98a3098227c2b7b3838b8be7d30455783eeadcdc48fb6196a68291c",
-    "coverage": 91.42,
-    "success": true
-  },
-  "src/openclaw-mcp/bridge.ts": {
-    "sourceHash": "d61bf703b50cc6bb3175bcced85b8a1f6f2a12d3b3b217a1b4e4c3305fd857c4",
-    "testHash": "",
-    "combinedTestHash": "7e9f9f69b70b141d75c68dfb341838eb97b2e19709d468d1521ed51899d45fc0",
-    "coverage": 96.82,
-    "success": true
-  },
-  "src/qa-studio/types.ts": {
-    "sourceHash": "aa71ea0fe12e0561758d1764c5f5444cf70b0f0aff3f7888a99b8ab35b2e001c",
-    "testHash": "",
-    "combinedTestHash": "29f1e5251767b3e7c84dc77aa9a25f9b3408c7612bfc26986ecf075dde72ba87",
+    "combinedTestHash": "8b1cfcd54a5758a5607e30f729f0f5dd225c9cc7e6d0a2c0369ec8b85b69f9d7",
     "coverage": 100,
     "success": true
   },
-  "src/qa-studio/tools.ts": {
-    "sourceHash": "bb8c7f53eed942e9099f305476c516437c31015e043ad7512e0cc3d0d8abf34b",
+  "src/openclaw-mcp/bridge.ts": {
+    "sourceHash": "15cee763228d5e1ca52d07efb9b6ee6ab8452a407b8557911286706608b7f4b2",
     "testHash": "",
-    "combinedTestHash": "f12f59c1e017d724c26cbeb60801631c26e47e085909d9e77247182b3f01df5c",
-    "coverage": 99.34,
+    "combinedTestHash": "7e9f9f69b70b141d75c68dfb341838eb97b2e19709d468d1521ed51899d45fc0",
+    "coverage": 91.02,
     "success": true
+  },
+  "src/qa-studio/types.ts": {
+    "sourceHash": "d55183ea8b6425275f7d3e620e65fd4e52d169f50f9c86f66b4820520416496a",
+    "testHash": "",
+    "combinedTestHash": "29f1e5251767b3e7c84dc77aa9a25f9b3408c7612bfc26986ecf075dde72ba87",
+    "coverage": 0,
+    "success": false
+  },
+  "src/qa-studio/tools.ts": {
+    "sourceHash": "fce5a19bdc5b89b4be8e9758be3cabda1fa85990b7819b3982b31d3e4fe80f61",
+    "testHash": "",
+    "combinedTestHash": "103e95d1e3f104d7ede02c2075ea345e3bc0c1fa21e4993b9d23ed2bba5c4c03",
+    "coverage": 0,
+    "success": false
   },
   "src/qa-studio/narrate.ts": {
-    "sourceHash": "261d6884396e59a9ad389aedef1829a350a471f97a1cea692c2e8f1b5eb0470d",
+    "sourceHash": "9ebf3994ae82471869667d8c7e7949d2371df6f7d0a7fb9c06220b2fb1a526b3",
     "testHash": "",
-    "combinedTestHash": "5191904660def8ed18213b9b7c074fe7674d835f3616ef1c6d247d9d0d0ce379",
-    "coverage": 95.34,
-    "success": true
+    "combinedTestHash": "6591102789b3823e7fd43dfc78ede1e71c766dcefabbbdbffe3cdfb274043231",
+    "coverage": 0,
+    "success": false
   },
   "src/qa-studio/browser-session.ts": {
-    "sourceHash": "ac5d548b669805e4275ba98327e2ad5847cbab0774d085700543cf669d77ac67",
+    "sourceHash": "69bc38252b8995148d43c0103addfbce26c70e46c8a46d2aa4f3811d891d906e",
     "testHash": "",
     "combinedTestHash": "5691b5285f7d7096ef303a43d0e2c191223cfa806c004cf3afd7d497a55af196",
-    "coverage": 90.58,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/mcp-image-studio/validate.ts": {
     "sourceHash": "15e61392a72f4db2e60807db03813e5c045b7291fb72c3f7a599a11272287fad",
@@ -161,7 +161,7 @@
     "success": true
   },
   "src/mcp-image-studio/types.ts": {
-    "sourceHash": "2d7f6aadbdd055fb9a18866d694987ef3d48d253676dff079933b1f12833b3a7",
+    "sourceHash": "9ad658b4f65a16000ae827ea7d9ebffc8900a540fa74408d97f0a71500b8410b",
     "testHash": "",
     "combinedTestHash": "434679afde0c7932d45f731d2e7d6eb28d5236548ce37ea4edf6c637d8ee371b",
     "coverage": 100,
@@ -175,49 +175,49 @@
     "success": true
   },
   "src/mcp-image-studio/register.ts": {
-    "sourceHash": "4aa9ceb63a5607439c5577aa55e88f1ce7206183729dd59916c5cf7fbc0b4369",
+    "sourceHash": "2c6b8ea8b632051f4651f13ff8a71ef9c71cb419a5f988a437b8e305ef8571fb",
     "testHash": "",
-    "combinedTestHash": "d56e1ba2a415e335de38397a89d41e172fd3c51dc142e132de7d98e2fa1448ef",
-    "coverage": 78.37,
+    "combinedTestHash": "fe6cc8519dc36a341d2799664e3965639a41e99d5bef6a2efa1906f38ee768d7",
+    "coverage": 100,
     "success": true
   },
   "src/mcp-image-studio/define-tool.ts": {
-    "sourceHash": "5c1fb7b669b0968411b52bd6f76c26d74eb2c7e4b62d690eb47e2488c73cc407",
+    "sourceHash": "d48754640373e4cdebf20a110f68b3e84105052f438b9e4d856a8113075e8b44",
     "testHash": "",
     "combinedTestHash": "222bfe44b3774b8ed1e5f8679941c7b9af5c054d41ca81d3725f95f7dc8c2234",
     "coverage": 85.71,
     "success": true
   },
   "src/mcp-server-base/index.ts": {
-    "sourceHash": "18edbe579f870f52af06761317a9fc1ca98c4244028de653bffa32853ced4a21",
+    "sourceHash": "58adaf6a7f0b92a3c28c287d70e2da11be5623143001516a2d1769a046c2f2ee",
     "testHash": "",
-    "combinedTestHash": "7fb5a1e569ea90dfe30ca5c4f0caec7a7762044eb7f84f7318eafa07e549f12d",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "9aa155b1172995902eb89f48d25df69d159ca50ea6c683b4e348b67c87cb81c8",
+    "coverage": 0,
+    "success": false
   },
   "src/incremental-test-mcp/logic.ts": {
-    "sourceHash": "976b8df02578e7bca24ad764ab013ddfa260a34d6ee5bccb8f0722d665259712",
+    "sourceHash": "eb69b03a3ecfd0b7f87a18de4ac77fcde531c8ceca5b734d9de8950048a1ec76",
     "testHash": "",
-    "combinedTestHash": "8e277e36d329cabe757977468ef81280ecdead951559d5ecf3aeae001fe89acb",
-    "coverage": 76.31,
-    "success": true
+    "combinedTestHash": "fbe808c80eb3cf057ee20485a9f7ec7d8ef02c7139da67c4a5cfe0fd3c14cd54",
+    "coverage": 0,
+    "success": false
   },
   "src/mcp-auth/index.ts": {
-    "sourceHash": "46767e3fa07e8fdc672a4e3ff24fb3317bc64f53bbbca9142569094f0dac043e",
+    "sourceHash": "fa27b34a0236fee8868951410c4e4f3ae8b576b79bd99518ab7eb13d13f30a13",
     "testHash": "",
-    "combinedTestHash": "ba884163403a918f7768933968ca40b57b53d202e0dc50a59faa666726148590",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "3bb3672ae0acd53ccf41cea3eea625a2e171bbe254566115b600a0b5d4076d2a",
+    "coverage": 0,
+    "success": false
   },
   "src/mcp-auth/auth.ts": {
-    "sourceHash": "314006d00706c9d3987c04e7ec60c353d3d5da6297b3b201bde13308179cf9f8",
+    "sourceHash": "8d24d2e6e6c47b7bbbf987a25639140489eefd06c927797b15c15968623fe8dc",
     "testHash": "",
     "combinedTestHash": "705521d3f69b5e6b0311901b0e172ffdade115ad244ab518c23e42d1ecfb1195",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/esbuild-wasm-mcp/wasm-api.ts": {
-    "sourceHash": "771b3264e16d0eedd3f292388a084dad0edb836ae2116fd9f49c9ef8c1b90fa8",
+    "sourceHash": "8b6a021598705d3562647bb2aecd8678089a0634b831fea84db34161d028042a",
     "testHash": "",
     "combinedTestHash": "040c402fae1ae29c18d25c8d589e84e38b74c7d03fd94c2782707a9a6e9e0a5b",
     "coverage": 100,
@@ -226,7 +226,7 @@
   "src/esbuild-wasm-mcp/errors.ts": {
     "sourceHash": "bbd7a2532df184b844df113d2a8bee20599c4db79c123b0b0318e6c755ab0c07",
     "testHash": "",
-    "combinedTestHash": "7d9f02f9ec2a870ee26bd5a7213b1d21ba5f191df98424da436ec860e1056079",
+    "combinedTestHash": "45cc07f5a9a2c961aea4bd920c1a31bb37cdf3aeb367b954ece902a7799f0a58",
     "coverage": 100,
     "success": true
   },
@@ -247,9 +247,9 @@
   "src/chess-engine/game-manager.ts": {
     "sourceHash": "fadbce187e9360496f17408d9b7a67f2208aba7f30cb93f43113a2f641bf01e8",
     "testHash": "",
-    "combinedTestHash": "65657e8ce25f521f41e31fd86015f9c9f4b792c4b5a59e7bc799c5e627ef084b",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "dc61a039ce003e9efc91b1207313035356909be83b904f6888e915a455cd19c3",
+    "coverage": 0,
+    "success": false
   },
   "src/chess-engine/engine.ts": {
     "sourceHash": "557638ac5d9838f7ffbfef65ab9d7cbc61fb6eb6bb40e91bbe17c92fb9fa9e31",
@@ -259,11 +259,11 @@
     "success": true
   },
   "src/chess-engine/elo.ts": {
-    "sourceHash": "cd9d78a2b945f20b2bab8191484341bc8a97b3bbe34e3f96d1de6d564508faa6",
+    "sourceHash": "ebeb276453e667326a0226f8eba82a750c75bbb64a0e5fe97334f11adc352068",
     "testHash": "",
     "combinedTestHash": "a9a5cd236b1b23abfb0a220fc725ab845be3063e6b172778246d83debff2993c",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/chess-engine/challenge-manager.ts": {
     "sourceHash": "2b60e7dff941352092a696638f3e32511ede682c2cf9d1e38d239040d093a024",
@@ -294,11 +294,11 @@
     "success": true
   },
   "src/bazdmeg-mcp/telemetry.ts": {
-    "sourceHash": "5cf9addf93c3549e8123eefbd1315a8e21a5e5552fe0ddbecc12485eda1f4caf",
+    "sourceHash": "a00af3d12aaadf58ce4307f0b3b94bd44e82ba016c356d100460cecd7d8a6bf7",
     "testHash": "",
     "combinedTestHash": "cf1cd8c9c423558cdbcb812954c5e518d669b7238a40c9f3602e6435116828fe",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/bazdmeg-mcp/shell.ts": {
     "sourceHash": "e9d2b44168bb9ff2c883a029abfb46f903a95a82a62b455d466f1d856617f0bc",
@@ -322,10 +322,10 @@
     "success": true
   },
   "src/spike-review/worker/webhook-handler.ts": {
-    "sourceHash": "6e1944243bb4ed20aa5a769c0879f75769d9ea1a54a9e9ab1eb64fb3d0562333",
+    "sourceHash": "6dba6302a91ba32d8040a569ece8285e39e91917a4d6b8f26ddabfee37532e83",
     "testHash": "",
-    "combinedTestHash": "e1201dd79604cbb91f9a3e1c5b0a1656399d19c7b0a4987e060aba46f82d38d9",
-    "coverage": 97.67,
+    "combinedTestHash": "13226b37789d69689a1d34fd056de0fc5fb85bd8aec9346d5e0822fe93fba79a",
+    "coverage": 100,
     "success": true
   },
   "src/spike-review/worker/review-job.ts": {
@@ -371,9 +371,9 @@
     "success": true
   },
   "src/spike-review/github/client.ts": {
-    "sourceHash": "ba3cb0cb6022f51ae475911f93e03374bd8d7a7de7ffe2a7534c55d667e32097",
+    "sourceHash": "ed5f09d46857630b0ff28434e8eb37b1ccf0ac7e7060bc3e4af52fc4585f726c",
     "testHash": "",
-    "combinedTestHash": "0462ce9a03cf3b2c6d0b1799d32cf39265a42e51e1f45664711554e37712c657",
+    "combinedTestHash": "f73f97268a46064caffa29f40c706d150e309f08d517dae0d25075acc01abdd1",
     "coverage": 100,
     "success": true
   },
@@ -399,67 +399,67 @@
     "success": true
   },
   "src/spike-land-mcp/tools/quiz.ts": {
-    "sourceHash": "9a787779c32b153bbfd465b7506c3f55c0cfd6eecf076335ae1f4dbdb11610cc",
+    "sourceHash": "9e0693e778d414e1b1412cee01dba6c4a7b1b738ec34a9fc1cc889e6dc5a228d",
     "testHash": "",
-    "combinedTestHash": "1b860218db15e4de72454aca79e26dca7958db67355125c97435b30845a36737",
+    "combinedTestHash": "c7c171fa59cc648b4c9f771ddf0401d18de1ba23187b9f260fe2cf4ef714199b",
     "coverage": 0,
     "success": false
   },
   "src/spike-land-mcp/routes/well-known.ts": {
-    "sourceHash": "7d2d3d9bf57cbdd2270f54b671763345563f7c28ee0c31805d0257aa8d7342c6",
+    "sourceHash": "d8bce6ebba4593f5bc67dce3637936c57800f0ffa134aee5db7fb3c6e3e14767",
     "testHash": "",
     "combinedTestHash": "f8e9e3ef9788b2b20347b71d58d505c24be8d96b79b6bc954d8e04e76f7e593d",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/routes/oauth.ts": {
-    "sourceHash": "57ff917cd161607612ddeb610978f81312d9ad3bd6ecf94fe6371dfe8e0aa607",
+    "sourceHash": "4158b51524b76721e51baebe6bb6e4251760961cb9a578df4ad00cfe81824c61",
     "testHash": "",
     "combinedTestHash": "d42c3c74047ad5691ce805b1c085282425dc8dd59a017bb7d862ff92981e5a28",
-    "coverage": 94.28,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/routes/mcp.ts": {
-    "sourceHash": "4c7867f27b3f2ab74b32b7047bc2288c779e396c881cca18062aed7a9c10063e",
+    "sourceHash": "7af0691397746bad7367f4376b2e40f0ea3850c4d973b798a6ae11dce40b8b0f",
     "testHash": "",
-    "combinedTestHash": "f68454ddcc967c583e81407fe734203aa0b80a82e8a7b3886befed350e04d964",
-    "coverage": 82.22,
-    "success": true
+    "combinedTestHash": "9d18da90f72583ab281d3b1942fa4ac33c10169ebefb2c0c866563ad20f38684",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/server.ts": {
-    "sourceHash": "996197a96a862026b2013c9c6553244baf71b8b21297122c203d66f2b156a365",
+    "sourceHash": "5be98d21a7edf5a3917face224a6c44225e4ac59cf3ce029f2748a2fcc83a719",
     "testHash": "",
     "combinedTestHash": "332439afc651e0d9b163253ef90e6a0e1ee7e4508d741842b5a5788c6fe72c33",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/search.ts": {
-    "sourceHash": "ec2d0803e1901324d4a093f0555dc27d5e56af2275fb6f215e7844f67897dfe2",
+    "sourceHash": "d4bca9c162a96d2466c9d00a4aba4453d03045730483cad6f2310c92023d1311",
     "testHash": "",
     "combinedTestHash": "8abdf9e97449da7fd16e333e64333c9859a88445b251ec0eb20a54464a653ac9",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/schema-optimizer.ts": {
-    "sourceHash": "73012b4cdc6736288ef54f0f3ced793da23e6232deefa5d9e48fdfec015a24b5",
+    "sourceHash": "a549523cbef402c0b1b43e9a80cae0803f4ba942bc1290b454abc768cb09dea8",
     "testHash": "",
-    "combinedTestHash": "f4f78488b0a0d6299965dac3f25271a0a3da13098346bb3e5df0d4ece02bdff3",
-    "coverage": 94.73,
-    "success": true
+    "combinedTestHash": "0a5799ad66bfbda0a0eadeb281ebddafc55932f505d0351519d311ddad56a008",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/registry.ts": {
-    "sourceHash": "a0395d2cb3f27cc112477f342f250eef250ad8aa8b37f52b505d0e69923b78c7",
+    "sourceHash": "5e177f675916edc0b52a9e4f738169042a145b27ee9cadf3b2c49aa4feda2692",
     "testHash": "",
-    "combinedTestHash": "6bff729b34b7b197afb8d1dc3048493ca0d14321d479b82afb52d48b337fd54e",
-    "coverage": 68.31,
-    "success": true
+    "combinedTestHash": "659955d80340193f4a3a46bcebdc302bcc56b96af16aed79fe6a69b94f02eb25",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/manifest.ts": {
-    "sourceHash": "c55c044e11327063dad1facd47ddb23a61c434ba87e7380082d1a37b4aaf056b",
+    "sourceHash": "cd5af8a9eb6a7341c5605a82d0f7bc979750a1e9b42dd26283eb9e6cc70a2fa4",
     "testHash": "",
     "combinedTestHash": "a8ab33cf160205eae97ee14913bf4eb5471c2dbe38da2adba916d519b33053e4",
-    "coverage": 91.78,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/mcp/embeddings.ts": {
     "sourceHash": "5679d366b959e88259d40820bca2066e4138172e7598951c3216e0e7b0308a40",
@@ -469,32 +469,32 @@
     "success": true
   },
   "src/spike-land-mcp/auth/oauth-device.ts": {
-    "sourceHash": "f5c46f5813285c16d722a9dad4262495aa468ccf888f5530284a6cc81345b16c",
+    "sourceHash": "aa0a1aad958e2024b5232b18ec7225109d9d153cc2376a1b1147eb952ca210b9",
     "testHash": "",
-    "combinedTestHash": "dfe91d22b95ddf90360f6d03cbd8afd2ef7a24901dfb1085f5e6d9377cd4f8af",
-    "coverage": 74.41,
-    "success": true
+    "combinedTestHash": "ee9f22743e408d530cc00d0545b1ecfd82b158a72563f4fffbcfc3a9eb0d8dac",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/auth/middleware.ts": {
-    "sourceHash": "328deb2c75916f96642fe97862b4ac3baed5f8d5285bf6cf9a0fa0623f1d8235",
+    "sourceHash": "9f8abb4511c732b1f6ddb73f747e42ebab18a3d840aa96da0ca39a42f0c46396",
     "testHash": "",
-    "combinedTestHash": "ba6a920aea0341a86f63d0ac465b66e0170ad2ef0dacd88768e9f8950661e7a0",
-    "coverage": 87.5,
-    "success": true
+    "combinedTestHash": "86e532bab05fcc511dc571a0368608731a433d5d9b05e7963bd600fd8d5ff45a",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/auth/jwt.ts": {
     "sourceHash": "5f57e42baa8e5dafb109533928d09dec96206092ff4bddae803b1821d6010e65",
     "testHash": "",
-    "combinedTestHash": "655c0bd1d666c5373074ef299a275bdb58cbcd3f7bb1a1ca3ab8070ea55adb5e",
-    "coverage": 96.87,
-    "success": true
+    "combinedTestHash": "4853d87b20b4167f10205242efd342f933449d64098048c3a712b596ab223965",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/auth/api-key.ts": {
     "sourceHash": "d97c2907bbd4a79520a904b816ae37c46330dfa67bcfa7e9789ac08d137882c1",
     "testHash": "",
-    "combinedTestHash": "a7d5a80b2726d9d26d4bb1680b645a7b8b7054c111e31282a0cbaac096321589",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "7036b18e13017ac57f3e582ca6b2dcfd5c2f7542699f9b2c47f32ad2eaca15c8",
+    "coverage": 0,
+    "success": false
   },
   "src/spike-land-mcp/kv/rate-limit.ts": {
     "sourceHash": "8624e87fd67e738d64a925a6778d73bfd62cb1eaad7b0528657b384fe7e26da5",
@@ -532,11 +532,11 @@
     "success": true
   },
   "src/shared/validations/index.ts": {
-    "sourceHash": "e76548581c0a4d9e84b6159d62d34ef2889279b6bb087c213af5ee05cf3b3c23",
+    "sourceHash": "832327d9999cdcea7ebc0ed084c56420dcee00e98232d626f5e44e1f82aabe61",
     "testHash": "",
     "combinedTestHash": "2c068b877f49eae8dc3275d3222ed24ef86f1c1ffc21f6c1ff8b86d05ca4f0f9",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/shared/types/social-api-guards.ts": {
     "sourceHash": "0eca9ae52c0d245008ffa115735e383741aa442c102ab2d43078d658131c12ae",
@@ -548,19 +548,19 @@
   "src/shared/tool-builder/index.ts": {
     "sourceHash": "5fe4a983d93130929d8226cac60b8ff1887093d022276feb5a39a5bebc264251",
     "testHash": "",
-    "combinedTestHash": "9cb856620d86eefde13a26e4c82f3ea2dcf06e6b85c38135eaa5bc03ef5400e5",
+    "combinedTestHash": "0f9d320f1fe8fb425c40c2aaf5baab3b21556f9dbb0d88bd1791668d20b1c2f4",
     "coverage": 0,
-    "success": true
+    "success": false
   },
   "src/shared/constants/index.ts": {
-    "sourceHash": "b820265ccf9f7764dee14abd33c0474591cee02a5e56373f51b6964bbe80dabd",
+    "sourceHash": "54d37f51250469ed13a1de11af94094914ee4cb3c4a8ab4ce9215556adc0578e",
     "testHash": "",
     "combinedTestHash": "b1d5554380a7ad0fd49ad7b18b46c7a05b3da3cd69ab2c777da858b4ccc896cf",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/spike-cli/config/types.ts": {
-    "sourceHash": "95652486ffefb2358296064da43fae1aed9b8308e1c44eb01de22f454b55f623",
+    "sourceHash": "aadd6ce786e403ec8476eb97d43f44ea31c02e3a2a61a28d727a62c4d18f770d",
     "testHash": "",
     "combinedTestHash": "71847550a4814d128f494f8f77af7053cbe1da6818f49b8dbf683c1761f81c4f",
     "coverage": 33.33,
@@ -576,8 +576,8 @@
   "src/spike-cli/commands/common.ts": {
     "sourceHash": "53a8055034a2e92a3f57101ae39ef7814e1f922bde3a66b74ad10228146076b3",
     "testHash": "",
-    "combinedTestHash": "88fb41a0c1b0f6f2ebab47f46fb7839898618b206a282a8c075137c8580b1512",
-    "coverage": 94.59,
+    "combinedTestHash": "ee7798ca811ff42e4ff7490c26a8a22f4ca8eb958c2a09925ac4bba0875c0897",
+    "coverage": 100,
     "success": true
   },
   "src/spike-cli/commands/auth.ts": {
@@ -590,12 +590,12 @@
   "src/spike-cli/commands/agent.ts": {
     "sourceHash": "417fe084e8f3ab834b1b990efb7953ca7532186285ed160eedf107c0fb9d4ef0",
     "testHash": "",
-    "combinedTestHash": "6099d0ae28f7b2e60dae2e4f15b7abb98a4408eb4e1550cbae95adc171c148a6",
+    "combinedTestHash": "926e4314891cfb80eea82fbb483ee9369a415550fe7a740a69438b5958dfb9c9",
     "coverage": 100,
     "success": true
   },
   "src/spike-cli/alias/types.ts": {
-    "sourceHash": "652c42246f8bc44278baa313138f14c00172890f6578d1361233c6b1035efa7a",
+    "sourceHash": "f104269e4dadea509d570ab35d8f334c571e902f9b81e274a5a485c33d51bcc9",
     "testHash": "",
     "combinedTestHash": "c83c10987162655aa8c331bb97be8a5aa86498fa7e961173aa750068542d16ac",
     "coverage": 100,
@@ -609,18 +609,18 @@
     "success": true
   },
   "src/image-studio-worker/deps/generation.ts": {
-    "sourceHash": "4999cf1847154ff58c1757c9ef6a8969971fc3c52484f6b33e8f86e68cd83867",
+    "sourceHash": "c38ab2df0b913a8ac05f010685dfdace4d24b9b9c4cab7bdc3b992f26a13c8e2",
     "testHash": "",
     "combinedTestHash": "48c374673252a716cd3334dd0448b1d7a7f2e0ab20b9d2a23acaae52afe31700",
-    "coverage": 79.1,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/image-studio-worker/deps/db.ts": {
-    "sourceHash": "a4d8f3f836e4fc9466d98c1490c7d32b1ea0580a7478415c944985bcd5b78f5e",
+    "sourceHash": "0f2fada73cdcb697977b065d466f3f5c3a4a10518467a7aa4db97cd1ffb28d3c",
     "testHash": "",
     "combinedTestHash": "61313ce20f283950f328c1ff736779fb4351ab60ce77e545af17b21d2d30b04f",
-    "coverage": 88.47,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/image-studio-worker/deps/credits.ts": {
     "sourceHash": "33b450a84504e17b905aafeebc760de7043a7e3d908df81d2ef45ccaf7969da1",
@@ -812,7 +812,7 @@
     "success": true
   },
   "src/mcp-image-studio/tools/delete.ts": {
-    "sourceHash": "7e292102ac23137098b07e60e1dd3de1a985c742d19aad829f8e9edf4a842be2",
+    "sourceHash": "5eff76a083ad239d725ecac31946671194ff795191860cd09921646553058840",
     "testHash": "",
     "combinedTestHash": "06c6f5214204376d8680f54d93a84492d03c3678773575095e6a318dc0b2266a",
     "coverage": 100,
@@ -931,11 +931,11 @@
     "success": true
   },
   "src/mcp-auth/db/schema.ts": {
-    "sourceHash": "28593b0223439640ec4214677de3a84c04d9df856121ff18ecb3536a437a7692",
+    "sourceHash": "bfb08861d39982ef5d47c7e139b6c20e7b8674eec733d9423e82779937dfcc3c",
     "testHash": "",
-    "combinedTestHash": "3d26f31d1ea0ea523a0ae687c15abda7c850546cdd325053577e8bf5102a1f7d",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "4e571c599ccbae2b5785adead539b2abcc650a230e75ef2e0e9fe06b0139b87a",
+    "coverage": 0,
+    "success": false
   },
   "src/image-studio-worker/agent/system-prompt.ts": {
     "sourceHash": "de76b614160dc5a39e5f0d8cf2faa199d4f1ec159de933c437dd538bb96cd1f9",
@@ -1017,16 +1017,16 @@
   "src/hackernews-mcp/clients/hn-write-client.ts": {
     "sourceHash": "e85fdcf9387f754fdae580f146f87f57b57b72ea9338002493be2112f467560b",
     "testHash": "",
-    "combinedTestHash": "37c1cf6d2c563d5b2c0fac452b42497902d2fa759cf8a6b77fb7c3cacf3a8d9b",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "6265c24e0672a2fc30f7c5c3d27828aefb5a6210b874768a2dee4384ed466fab",
+    "coverage": 0,
+    "success": false
   },
   "src/hackernews-mcp/clients/hn-read-client.ts": {
     "sourceHash": "9536ff32c20ebbf6abed89db8baa56e13b9b2dcdcf2881f956a9d56f31a1c8e7",
     "testHash": "",
-    "combinedTestHash": "960900f7019672975f0d435ca7a06173faaf563d3ff015e71bb2b98ec1cf2cef",
-    "coverage": 100,
-    "success": true
+    "combinedTestHash": "baaed7fa47a7136216b509f431b8e2fe203ef05e0019abbf7c52d2453e322ef9",
+    "coverage": 0,
+    "success": false
   },
   "src/esbuild-wasm-mcp/tools/transform.ts": {
     "sourceHash": "7d3774bb8157bef97a381918221fc56ebfb6ce4f630559fd813efe5b158a86ec",
@@ -1071,7 +1071,7 @@
     "success": true
   },
   "src/esbuild-wasm-mcp/tools/analyze.ts": {
-    "sourceHash": "ad9ff36a7f73340489feff46cd216c284091e0115aa473b637e028ace9b77a41",
+    "sourceHash": "0e61b3475bccbb0f32d109f29db72c040153ca7a11ba239df873fb76f2045461",
     "testHash": "",
     "combinedTestHash": "190ebecc5f353b77acd2c333f6f05cc885e308511309a9fb52becda672cdc3f8",
     "coverage": 100,
@@ -1155,11 +1155,11 @@
     "success": true
   },
   "src/bazdmeg-mcp/tools/build.ts": {
-    "sourceHash": "f63ee84bbaa61cea68d18fbc6f33eed04ab4df3cda7b29da6d6d3366fff55ec2",
+    "sourceHash": "7e5006a12ea8cf2f91ce00f3ad7e3ccf538c9c827942da0a64e9cc0e48a49ac0",
     "testHash": "",
     "combinedTestHash": "a36da6a7a532e3ae27f9272cc6cb8cfed5e84d7533cdd0fe099b6fa638e61c13",
-    "coverage": 100,
-    "success": true
+    "coverage": 0,
+    "success": false
   },
   "src/bazdmeg-mcp/gates/engine.ts": {
     "sourceHash": "21a93b154873a644859acd8f54471ea441b2d7cbb8217ac8d303d3de22cd7f52",
@@ -1174,5 +1174,61 @@
     "combinedTestHash": "ee9b2b0a6c4a5d47bbd4c00b7cc998a0ee5d6914eb2d88f10ee8e1a84e6c3890",
     "coverage": 100,
     "success": true
+  },
+  "src/spike-land-mcp/middleware/internal-auth.ts": {
+    "sourceHash": "6e1f17bac11eb542e1d8654589b1b4a9e479ff9e1240a41c8e514b3b85e59239",
+    "testHash": "",
+    "combinedTestHash": "12cf0bcb583e0ad611016fffaace23f9c34300609c7c08a7859c16a344ff5623",
+    "coverage": 0,
+    "success": false
+  },
+  "src/spike-land-mcp/routes/public-tools.ts": {
+    "sourceHash": "84bc026b95f40cfa8d0ada218297fbb67743287cabfd9914e2cdee81eb4c5846",
+    "testHash": "",
+    "combinedTestHash": "debede902c412a8ec9d0a0d6dfe56a166276d804143b02806fa92df42b5eac68",
+    "coverage": 0,
+    "success": false
+  },
+  "src/spike-land-mcp/routes/internal-byok.ts": {
+    "sourceHash": "6b64876e06ed5e02042497cf5c9981fb326d151bdc386b161987129c3b5bccf3",
+    "testHash": "",
+    "combinedTestHash": "7ba48f89745e2cf282588cda5c2f5574933ba85ea35d5a76ba753b28923ada70",
+    "coverage": 0,
+    "success": false
+  },
+  "src/spike-land-mcp/routes/internal-analytics.ts": {
+    "sourceHash": "b961981a658018bbea6bda82c44827a45543df2cb65fc68b6d111accacfcac88",
+    "testHash": "",
+    "combinedTestHash": "fea9e2d72b6667d0aecf0cacce222ad42c072b3c3845eb010e8185422b1b0c6b",
+    "coverage": 0,
+    "success": false
+  },
+  "src/spike-land-mcp/lib/skill-tracker.ts": {
+    "sourceHash": "1cce7fb0e3d92ff713c07edbbf7fa68d5f1a0619dc19795fef6ad186e9e3c6ab",
+    "testHash": "",
+    "combinedTestHash": "58800190d7cbc208b1448b96f9fef9df456cfc74635482e272bd815785347d63",
+    "coverage": 0,
+    "success": false
+  },
+  "src/spike-land-mcp/lib/ga4.ts": {
+    "sourceHash": "7a51236348999268b412ecb397898f76d31084fd1434ef78b78ef67ec2aa97e7",
+    "testHash": "",
+    "combinedTestHash": "b8cdd0117b20da4cdedefaeb8b5b44acc28778bb6f471c7a94c90561e78a7458",
+    "coverage": 0,
+    "success": false
+  },
+  "src/shared/utils/logger.ts": {
+    "sourceHash": "387e8de0092d8dacd6bd07cda6a42f3f6a5d2494032bea1e635ec7b6f4e5dd9c",
+    "testHash": "",
+    "combinedTestHash": "0f69ddab34eabed1cab34de3707427c9e1a74bc14a3d6eeca37c1a1c77fc5eb9",
+    "coverage": 0,
+    "success": false
+  },
+  "src/shared/utils/error-reporter.ts": {
+    "sourceHash": "0522eec0d1c33986efc925f7ab1b6b2d659706d99c7d9b6f5292e3d337e70769",
+    "testHash": "",
+    "combinedTestHash": "3bfef9baa1602bbacf4fa8049c04caddef5d6ccd525d8ef299efd7e11a08b6f3",
+    "coverage": 0,
+    "success": false
   }
 }

@@ -17,9 +17,11 @@ describe("createMcpBridge", () => {
     });
 
     const tools = bridge.listTools();
-    expect(tools).toHaveLength(1);
-    expect(tools[0].name).toBe("chat");
-    expect(tools[0].description).toContain("OpenClaw");
+    expect(tools).toHaveLength(2);
+    expect(tools.map(t => t.name)).toContain("chat");
+    expect(tools.map(t => t.name)).toContain("openclaw_feedback");
+    const chatTool = tools.find(t => t.name === "chat")!;
+    expect(chatTool.description).toContain("OpenClaw");
   });
 
   it("loadGatewayTools() registers tools from tools.list RPC response", async () => {
@@ -44,7 +46,7 @@ describe("createMcpBridge", () => {
     await bridge.loadGatewayTools();
     const tools = bridge.listTools();
 
-    expect(tools).toHaveLength(3); // chat + search + calc
+    expect(tools).toHaveLength(4); // chat + openclaw_feedback + search + calc
     expect(tools.map((t) => t.name)).toContain("search");
     expect(tools.map((t) => t.name)).toContain("calc");
   });
@@ -61,8 +63,9 @@ describe("createMcpBridge", () => {
     await bridge.loadGatewayTools();
     const tools = bridge.listTools();
 
-    expect(tools).toHaveLength(1);
-    expect(tools[0].name).toBe("chat");
+    expect(tools).toHaveLength(2);
+    expect(tools.map(t => t.name)).toContain("chat");
+    expect(tools.map(t => t.name)).toContain("openclaw_feedback");
   });
 
   it("loadGatewayTools() is idempotent", async () => {
