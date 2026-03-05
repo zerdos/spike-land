@@ -1,0 +1,15 @@
+name = "spike-agent"
+main = "../../src/spike-agent/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+logpush = true
+
+[durable_objects]
+bindings = [
+  { name = "AI_AGENT", class_name = "CodeReviewAgent" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["CodeReviewAgent"]

@@ -123,6 +123,26 @@ oauthRoute.post("/device/approve", async (c) => {
   return c.json({ ok: true });
 });
 
+// POST /oauth/device/test-approve — auto-approve for non-production environments
+oauthRoute.post("/device/test-approve", async (c) => {
+  if (c.env.APP_ENV === "production") {
+    return c.json({ error: "Not available in production" }, 403);
+  }
+
+  const body = await parseOAuthBody(c);
+  const userCode = typeof body.user_code === "string" ? body.user_code : null;
+  if (!userCode) {
+    return c.json({ error: "user_code required" }, 400);
+  }
+
+  const db = createDb(c.env.DB);
+  const result = await approveDeviceCode(db, userCode, "test-user-system");
+  if (!result.ok) {
+    return c.json({ error: result.error }, 400);
+  }
+  return c.json({ ok: true });
+});
+
 // POST /oauth/revoke — revoke an access token (RFC 7009)
 oauthRoute.post("/revoke", async (c) => {
   const body = await parseOAuthBody(c);

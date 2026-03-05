@@ -82,7 +82,7 @@ packages:
     entry: index.ts
     deps: []
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/mcp-server-base
 
   esbuild-wasm:
@@ -113,6 +113,36 @@ packages:
     mirror: spike-land-ai/react-ts-worker
 
   # ─── MCP Servers ────────────────────────────────────────────────────────────
+  google-analytics-mcp:
+    kind: mcp-server
+    version: 0.1.0
+    description: MCP server for Google Analytics 4 read access
+    entry: index.ts
+    bin: index.js
+    deps: [mcp-server-base]
+    publish:
+      registries: [github]
+
+  google-ads-mcp:
+    kind: mcp-server
+    version: 0.1.0
+    description: MCP server for Google Ads campaign management and reporting
+    entry: index.ts
+    bin: index.js
+    deps: [mcp-server-base]
+    publish:
+      registries: [github]
+
+  stripe-analytics-mcp:
+    kind: mcp-server
+    version: 0.1.0
+    description: MCP server for Stripe revenue analytics and reporting
+    entry: index.ts
+    bin: index.js
+    deps: [mcp-server-base]
+    publish:
+      registries: [github]
+
   bazdmeg-mcp:
     kind: mcp-server
     version: 1.0.0
@@ -131,7 +161,7 @@ packages:
     bin: index.js
     deps: [esbuild-wasm, mcp-server-base]
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/esbuild-wasm-mcp
 
   hackernews-mcp:
@@ -142,7 +172,7 @@ packages:
     bin: index.js
     deps: [mcp-server-base]
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/hackernews-mcp
 
   mcp-image-studio:
@@ -153,7 +183,7 @@ packages:
     bin: cli-server.js
     deps: [mcp-server-base, shared]
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/mcp-image-studio
 
   openclaw-mcp:
@@ -163,7 +193,7 @@ packages:
     entry: index.ts
     bin: cli.js
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/openclaw-mcp
 
   spike-review:
@@ -194,7 +224,7 @@ packages:
     binName: spike
     deps: []
     publish:
-      registries: [github]
+      registries: [github, npm]
     mirror: spike-land-ai/spike-cli
 
   vibe-dev:
@@ -215,7 +245,7 @@ packages:
     description: Chess engine with ELO, game/player/challenge managers
     entry: index.ts
     publish:
-      registries: [github]
+      registries: [github, npm]
 
   qa-studio:
     kind: library
@@ -236,7 +266,7 @@ packages:
       ".": ./index.ts
       "./persistence": ./persistence/index.ts
     publish:
-      registries: [github]
+      registries: [github, npm]
 
   # ─── Cloudflare Workers ─────────────────────────────────────────────────────
   spike-edge:

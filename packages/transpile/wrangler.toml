@@ -8,6 +8,9 @@ compatibility_flags = ["nodejs_compat"]
 main = "index.ts"
 logpush = true
 
+[env.production]
+routes = [{ pattern = "js.spike.land", custom_domain = true }]
+
 [[rules]]
 type = "CompiledWasm"
 globs = ["**/*.wasm"]

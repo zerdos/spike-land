@@ -10,7 +10,7 @@
     "deploy": "wrangler deploy --minify",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --quiet .",
-    "test": "vitest run",
+    "test": "vitest run --config ../../.tests/vitest.config.ts --project spike-edge",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {

@@ -1,0 +1,63 @@
+# Cache rules
+resource "cloudflare_ruleset" "cache_rules" {
+  zone_id     = var.zone_id
+  name        = "spike.land cache rules"
+  description = "Cache settings for static assets, JS/CSS/fonts, and HTML routes"
+  kind        = "zone"
+  phase       = "http_request_cache_settings"
+
+  rules = [
+    {
+      # Rule 1: Hashed assets — long-lived cache
+      action = "set_cache_settings"
+      action_parameters = {
+        cache = true
+        edge_ttl = {
+          mode    = "override_origin"
+          default = 31536000
+        }
+        browser_ttl = {
+          mode    = "override_origin"
+          default = 31536000
+        }
+      }
+      expression  = "(http.request.uri.path matches \"^/assets/.*\\.[0-9a-f]{8,}\\.(js|css|woff2|png|jpg|svg|webp)$\")"
+      description = "/assets/* with hashed filenames — 1 year cache"
+      enabled     = true
+    },
+    {
+      # Rule 2: JS, CSS, WOFF2 — medium cache
+      action = "set_cache_settings"
+      action_parameters = {
+        cache = true
+        edge_ttl = {
+          mode    = "override_origin"
+          default = 86400
+        }
+        browser_ttl = {
+          mode    = "override_origin"
+          default = 3600
+        }
+      }
+      expression  = "(http.request.uri.path.extension in {\"js\" \"css\" \"woff2\"})"
+      description = "*.js, *.css, *.woff2 — 24h edge / 1h browser"
+      enabled     = true
+    },
+    {
+      # Rule 3: HTML routes — bypass cache
+      action = "set_cache_settings"
+      action_parameters = {
+        cache = false
+      }
+      expression  = "(http.request.uri.path.extension eq \"html\" or not http.request.uri.path contains \".\")"
+      description = "HTML routes — bypass cache"
+      enabled     = true
+    }
+  ]
+}
+
+# Tiered caching (smart topology)
+resource "cloudflare_tiered_cache" "spike_land" {
+  zone_id = var.zone_id
+  value   = "on"
+}

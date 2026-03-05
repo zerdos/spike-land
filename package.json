@@ -26,6 +26,7 @@
     "seed:blog:remote": "npx tsx scripts/seed-blog.ts --remote"
   },
   "dependencies": {
+    "agents": "^0.0.95",
     "rehype-raw": "^7.0.0",
     "yaml": "^2.8.2"
   },

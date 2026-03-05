@@ -3,6 +3,7 @@ main = "../../src/spike-edge/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
+logpush = true
 
 [[r2_buckets]]
 binding = "R2"
@@ -52,6 +53,10 @@ zone_name = "spike.land"
 [[routes]]
 pattern = "www.spike.land/*"
 zone_name = "spike.land"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "spike_analytics"
 
 [env.staging]
 name = "spike-edge-staging"

@@ -21,7 +21,7 @@ export function AboutPage() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Our Story</h2>
         <p className="leading-relaxed text-foreground">
-          spike.land began when our team of engineers realized how difficult it was to build robust, scalable AI applications that could actually <em>do</em> things. Connecting LLMs to APIs was brittle and time-consuming. We saw the potential of standardizing tool access and decided to build the infrastructure we wished we had: a fast, edge-native platform that makes building AI-powered tools as easy as writing a function.
+          spike.land began when our team of engineers realized how difficult it was to build robust, scalable AI applications that could actually <em>do</em> things. Connecting LLMs to APIs was brittle and time-consuming. We saw the potential for standardizing tool access and decided to build the infrastructure we wished we had: a fast, edge-native platform that makes building AI-powered tools as easy as writing a function.
         </p>
       </section>
 
@@ -29,7 +29,7 @@ export function AboutPage() {
         <h2 className="text-2xl font-semibold">Our Team</h2>
         <p className="leading-relaxed text-foreground">
           spike.land is built by a small, distributed team of engineers and founders passionate about
-          making AI tools accessible to everyone. We believe the best software is built in
+          making AI-powered tools accessible to everyone. We believe the best software is built in
           the open, with real users shaping the product.
         </p>
         <div className="rounded-xl border border-border bg-card p-6 space-y-3">
@@ -88,7 +88,7 @@ export function AboutPage() {
         <h2 className="text-2xl font-semibold">Built for Speed</h2>
         <p className="leading-relaxed text-foreground">
           spike.land runs on Cloudflare's global edge network, meaning every request is
-          handled by a server close to you. Our stack is designed for speed, reliability,
+          handled by a server close to you. The platform is built for speed, reliability,
           and developer experience — from React on the frontend to Hono and Durable Objects
           on the edge.
         </p>

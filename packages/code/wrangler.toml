@@ -1,6 +1,7 @@
 name = "spike-land-frontend"
 main = "worker.ts"
 compatibility_date = "2025-11-11"
+logpush = true
 
 route = { pattern = "testing.spike.land", custom_domain = true }
 

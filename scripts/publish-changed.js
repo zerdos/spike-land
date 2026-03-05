@@ -129,9 +129,17 @@ async function main() {
     const packageJson = generatePackageJson(name, pkg, defaults);
     writeFileSync(join(pkgDist, "package.json"), JSON.stringify(packageJson, null, 2));
 
-    // Publish
+    // Write local .npmrc so auth works regardless of setup-node registry-url
     const registryUrl =
       targetRegistry === "npm" ? "https://registry.npmjs.org" : "https://npm.pkg.github.com";
+    const tokenEnv = targetRegistry === "npm" ? "NPM_TOKEN" : "NODE_AUTH_TOKEN";
+    const token = process.env[tokenEnv];
+    if (token) {
+      writeFileSync(
+        join(pkgDist, ".npmrc"),
+        `//${new URL(registryUrl).host}/:_authToken=\${${tokenEnv}}\n`,
+      );
+    }
 
     try {
       execSync(`npm publish --access public --registry=${registryUrl}`, {

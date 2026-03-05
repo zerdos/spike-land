@@ -271,9 +271,8 @@ export function RootLayout() {
                     key={to}
                     to={to}
                     aria-current={pathname === to ? "page" : undefined}
-                    className={`text-sm font-medium transition-colors hover:text-foreground ${
-                      pathname === to ? "text-foreground underline underline-offset-4 decoration-primary/50" : "text-muted-foreground"
-                    }`}
+                    className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === to ? "text-foreground underline underline-offset-4 decoration-primary/50" : "text-muted-foreground"
+                      }`}
                   >
                     {label}
                   </Link>
@@ -326,7 +325,7 @@ export function RootLayout() {
           <div
             ref={mobileNavRef}
             id="mobile-nav"
-            className="md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm flex flex-col pt-20 px-6 gap-4"
+            className="md:hidden fixed inset-0 z-40 bg-background/98 backdrop-blur-md flex flex-col pt-20 px-6 gap-4"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
@@ -336,9 +335,8 @@ export function RootLayout() {
                 <Link
                   key={to}
                   to={to}
-                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${
-                    pathname === to ? "text-foreground" : "text-muted-foreground"
-                  }`}
+                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${pathname === to ? "text-foreground" : "text-muted-foreground"
+                    }`}
                   onClick={() => setMobileNavOpen(false)}
                 >
                   {label}

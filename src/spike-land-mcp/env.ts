@@ -26,6 +26,9 @@ export interface Env {
   // Service bindings
   SPIKE_EDGE: Fetcher; // Bugbook + ELO service
 
+  // Analytics Engine
+  ANALYTICS: AnalyticsEngineDataset;
+
   // App config
   APP_ENV: string;
   SPIKE_LAND_URL: string; // https://spike.land

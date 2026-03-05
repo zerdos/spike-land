@@ -5,8 +5,8 @@ main = "../../src/spike-review/worker/index.ts"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-07-12"
 
-# Route: spike-review.spike.land/webhook
-# workers_dev = true  # Enable for testing, disable when custom domain is set
+workers_dev = true
+logpush = true
 
 # Secrets (set via `wrangler secret put`):
 # - GITHUB_TOKEN

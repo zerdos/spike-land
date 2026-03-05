@@ -31,7 +31,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run",
+    "test": "vitest run --config ../../.tests/vitest.config.ts --project mcp-server-base",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --quiet ."

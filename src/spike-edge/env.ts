@@ -23,4 +23,5 @@ export interface Env {
   WHATSAPP_PHONE_NUMBER_ID: string;
   WHATSAPP_VERIFY_TOKEN: string;
   MCP_INTERNAL_SECRET: string;
+  ANALYTICS: AnalyticsEngineDataset;
 }

@@ -3,6 +3,7 @@ import type { Env } from "../env.js";
 import { getClientId, sendGA4Events } from "../lib/ga4.js";
 import { safeCtx, withEdgeCache } from "../lib/edge-cache.js";
 import { getBlogPostRow } from "./blog.js";
+import { trackPageView } from "../lib/analytics.js";
 
 const spa = new Hono<{ Bindings: Env }>();
 
@@ -249,6 +250,16 @@ spa.get("/*", async (c) => {
         );
       } catch { /* no ExecutionContext in test environment */ }
     }
+
+    // Analytics Engine — no PII, runs for all requests
+    try {
+      trackPageView(
+        c.env,
+        path,
+        c.req.header("user-agent") ?? "",
+        c.req.header("cf-ipcountry") ?? "",
+      );
+    } catch { /* best-effort */ }
 
     return response;
   }
