@@ -190,7 +190,7 @@ The secret must be regenerated every 6 months (maximum validity).
 12. Add domains: `spike.land` (and `localhost` for dev)
 13. Add Return URLs:
     - Development: `http://localhost:3000/api/auth/callback/apple`
-    - Production: `https://spike.land/api/auth/callback/apple`
+    - Production: `https://auth-mcp.spike.land/api/auth/callback/apple`
 14. Copy the Identifier - this is your `AUTH_APPLE_ID`
 
 **Step C - Create a Key:**
