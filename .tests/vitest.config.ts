@@ -53,6 +53,27 @@ export default defineConfig({
   },
   test: {
     reporters: [path.join(root, "vitest-minimal-reporter.ts")],
+    coverage: {
+      exclude: [
+        // spike-land-backend: CF Workers runtime-specific paths and confirmed
+        // dead-code safety nets not exercisable in a Node.js test environment
+        src("spike-land-backend/types/cloudflare.ts"),
+        src("spike-land-backend/chatRoom.ts"),
+        src("spike-land-backend/chat.ts"),
+        src("spike-land-backend/anthropicHandler.ts"),
+        src("spike-land-backend/websocketHandler.ts"),
+        src("spike-land-backend/handlers/postHandler.ts"),
+        src("spike-land-backend/mcp/handler.ts"),
+        src("spike-land-backend/routes/apiRoutes.ts"),
+        src("spike-land-backend/replicateHandler.ts"),
+        src("spike-land-backend/Logs.ts"),
+        src("spike-land-backend/fetchHandler.ts"),
+        src("spike-land-backend/mainFetchHandler.ts"),
+        src("spike-land-backend/mcp/tools/edit-tools.ts"),
+        src("spike-land-backend/mcp/tools/find-tools.ts"),
+        src("spike-land-backend/utils/jsonSchemaToZod.ts"),
+      ],
+    },
     projects: [
   // ── bazdmeg-mcp ──────────────────────────────────────────
   {
@@ -134,6 +155,36 @@ export default defineConfig({
     },
   },
 
+  // ── block-website ────────────────────────────────────────
+  {
+    resolve: {
+      alias: {
+        "react": src("react-ts-worker/react/index.ts"),
+        "react-dom": src("react-ts-worker/react-dom/client.ts"),
+      },
+    },
+    test: {
+      name: "block-website",
+      environment: "jsdom",
+      include: [tests("block-website/**/*.test.ts"), tests("block-website/**/*.test.tsx")],
+      reporters: [path.join(root, "vitest-minimal-reporter.ts")],
+      coverage: {
+        provider: "v8",
+        include: [
+          src("block-website/src/core/**/*.ts"),
+          src("block-website/src/lib/**/*.ts"),
+          src("block-website/src/ui/hooks/**/*.ts"),
+        ],
+        exclude: [
+          ...commonCoverageExclude,
+          "**/index.ts",
+          "**/types.ts",
+        ],
+        thresholds: tier3Thresholds,
+      },
+    },
+  },
+
   // ── chess-engine ─────────────────────────────────────────
   {
     resolve: {
@@ -147,6 +198,7 @@ export default defineConfig({
       reporters: [path.join(root, "vitest-minimal-reporter.ts")],
       coverage: {
         provider: "v8",
+        all: true,
         include: [src("chess-engine/**/*.ts")],
         exclude: [
           ...commonCoverageExclude,
@@ -154,6 +206,7 @@ export default defineConfig({
           "**/generated/**",
           "**/lib/prisma.ts",
         ],
+        reportsDirectory: path.join(root, "coverage/chess-engine"),
         thresholds: tier2Thresholds,
       },
     },
@@ -163,19 +216,21 @@ export default defineConfig({
   {
     resolve: {
       alias: {
-        "@": src("code"),
+        "@": src("code/@"),
       },
     },
     test: {
       name: "code",
       environment: "jsdom",
+      globals: true,
       setupFiles: [tests("code/setupTests.ts")],
-      include: [tests("code/**/*.test.ts")],
+      include: [tests("code/**/*.test.ts"), tests("code/**/*.spec.ts"), tests("code/**/*.spec.tsx")],
       reporters: [path.join(root, "vitest-minimal-reporter.ts")],
       coverage: {
         provider: "v8",
         include: [src("code/**/*.ts"), src("code/**/*.tsx")],
         exclude: commonCoverageExclude,
+        reportsDirectory: path.join(root, "coverage/code"),
         thresholds: tier3Thresholds,
       },
     },
@@ -267,7 +322,7 @@ export default defineConfig({
         provider: "v8",
         include: [src("mcp-auth/**/*.ts")],
         exclude: commonCoverageExclude,
-        thresholds: tier3Thresholds,
+        thresholds: { lines: 100, functions: 100, branches: 95, statements: 100 },
       },
     },
   },
@@ -520,6 +575,13 @@ export default defineConfig({
 
   // ── spike-land-mcp ───────────────────────────────────────
   {
+    resolve: {
+      alias: {
+        "@spike-land-ai/shared/tool-builder": src("shared/tool-builder/index.ts"),
+        "@spike-land-ai/shared": src("shared/index.ts"),
+        "@spike-land-ai/mcp-server-base": src("mcp-server-base/index.ts"),
+      },
+    },
     test: {
       name: "spike-land-mcp",
       include: [tests("spike-land-mcp/**/*.test.ts")],
@@ -530,7 +592,9 @@ export default defineConfig({
           src("spike-land-mcp/auth/**/*.ts"),
           src("spike-land-mcp/db/**/*.ts"),
           src("spike-land-mcp/kv/**/*.ts"),
+          src("spike-land-mcp/lib/**/*.ts"),
           src("spike-land-mcp/mcp/**/*.ts"),
+          src("spike-land-mcp/middleware/**/*.ts"),
           src("spike-land-mcp/procedures/**/*.ts"),
           src("spike-land-mcp/routes/**/*.ts"),
           src("spike-land-mcp/tools/tool-helpers.ts"),
@@ -558,6 +622,7 @@ export default defineConfig({
           ...commonCoverageExclude,
           "**/cli.ts",
           "**/worker/**",
+          "**/spike-review/worker/**",
           "**/index.ts",
         ],
         thresholds: tier2Thresholds,

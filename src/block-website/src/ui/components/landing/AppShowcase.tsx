@@ -2,38 +2,28 @@ import { Link } from "../ui/link";
 
 const categories = [
     {
-        name: "For Builders & Ops",
-        description: "Orchestrate workflows and run your infrastructure.",
+        name: "Developer Tools",
+        description: "Build, test, and deploy with confidence.",
         apps: [
-            { name: "ai-orchestrator", desc: "Multi-agent workflows", icon: "🤖" },
-            { name: "codespace", desc: "Cloud development environments", icon: "💻" },
-            { name: "ops-dashboard", desc: "Infrastructure monitoring", icon: "📊" },
-            { name: "qa-studio", desc: "Automated test generation", icon: "🧪" },
-            { name: "state-machine", desc: "Complex logic flows", icon: "⚙️" }
+            { name: "qa-studio", label: "QA Studio", desc: "Automated browser testing", icon: "🧪" },
+            { name: "spike-review", label: "Code Review", desc: "AI-powered code review", icon: "🔍" },
+            { name: "esbuild-wasm", label: "Build Tools", desc: "Browser-based compilation", icon: "⚡" },
+            { name: "state-machine", label: "State Machine", desc: "Visual workflow builder", icon: "⚙️" },
         ]
     },
     {
-        name: "For Founders & Growth",
-        description: "Scale your business and manage your brand.",
+        name: "Creative & Media",
+        description: "Create images, content, and more with AI.",
         apps: [
-            { name: "brand-command", desc: "Brand voice adherence", icon: "📣" },
-            { name: "social-autopilot", desc: "Automated social presence", icon: "📱" },
-            { name: "content-hub", desc: "Omnichannel distribution", icon: "📦" },
-            { name: "career-navigator", desc: "Team growth and hiring", icon: "🚀" },
-            { name: "app-creator", desc: "No-code app generation", icon: "✨" },
-            { name: "page-builder", desc: "Instant landing pages", icon: "📄" }
+            { name: "mcp-image-studio", label: "Image Studio", desc: "AI image generation & editing", icon: "🎨" },
+            { name: "hackernews-mcp", label: "HackerNews", desc: "Read & discuss tech news", icon: "📰" },
         ]
     },
     {
-        name: "For Creators & Gamers",
-        description: "Unleash creativity and have fun.",
+        name: "Games & Fun",
+        description: "Play and compete.",
         apps: [
-            { name: "image-studio", desc: "Advanced image generation", icon: "🎨" },
-            { name: "music-creator", desc: "AI music composition", icon: "🎵" },
-            { name: "audio-studio", desc: "Professional voice synthesis", icon: "🎙️" },
-            { name: "chess-arena", desc: "Play against AI or humans", icon: "♟️" },
-            { name: "tabletop-sim", desc: "Virtual tabletop sessions", icon: "🎲" },
-            { name: "cleansweep", desc: "Digital organization", icon: "🧹" }
+            { name: "chess-engine", label: "Chess Arena", desc: "Play chess against AI or friends", icon: "♟️" },
         ]
     }
 ];
@@ -75,7 +65,7 @@ export function AppShowcase() {
                                                 <span className="text-2xl" role="img" aria-label={app.name}>{app.icon}</span>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="font-medium text-foreground group-hover:underline underline-offset-4 decoration-muted-foreground/50">
-                                                        {app.name}
+                                                        {app.label}
                                                     </div>
                                                     <div className="text-sm text-muted-foreground mt-0.5 truncate">
                                                         {app.desc}
@@ -96,7 +86,7 @@ export function AppShowcase() {
                         href="/tools"
                         className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground text-sm font-medium rounded-xl hover:bg-muted/50 transition-colors"
                     >
-                        View all 80+ apps &rarr;
+                        Browse all tools &rarr;
                     </Link>
                 </div>
             </div>

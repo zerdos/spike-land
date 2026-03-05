@@ -28,16 +28,43 @@ export function ToolsIndexPage() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading tools from edge...</div>
+        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">Loading tools...</div>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
-        <h3 className="font-bold">Error loading tools</h3>
-        <p className="text-sm">{error instanceof Error ? error.message : "Unknown error"}</p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Tool Registry</h1>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
+          <p className="text-muted-foreground">
+            Unable to load live tool data. Here are some of our popular tools:
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-left">
+            {[
+              { name: "QA Studio", desc: "Automated browser testing" },
+              { name: "Code Review", desc: "AI-powered code review" },
+              { name: "Image Studio", desc: "AI image generation" },
+              { name: "Chess Arena", desc: "Play chess against AI" },
+              { name: "State Machine", desc: "Visual workflow builder" },
+              { name: "HackerNews", desc: "Tech news reader" },
+            ].map((tool) => (
+              <div key={tool.name} className="rounded-xl border border-border p-4">
+                <h3 className="font-semibold text-foreground">{tool.name}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{tool.desc}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -45,7 +72,10 @@ export function ToolsIndexPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Tool Registry</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Tools Registry</h1>
+          <p className="text-sm text-muted-foreground mt-1">Explore developer tools, MCP schemas, and endpoints.</p>
+        </div>
         <span className="inline-flex items-center rounded-md bg-success/10 px-2 py-1 text-xs font-medium text-success-foreground ring-1 ring-inset ring-success/20">
           {data?.tools?.length || 0} Live Tools
         </span>
@@ -56,6 +86,7 @@ export function ToolsIndexPage() {
         placeholder="Search tools by name or description..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        aria-label="Search tools"
         className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
       />
 
@@ -64,6 +95,7 @@ export function ToolsIndexPage() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
+            aria-pressed={activeCategory === cat}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               activeCategory === cat
                 ? "bg-primary text-primary-foreground"

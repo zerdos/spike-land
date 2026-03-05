@@ -1,9 +1,12 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginButton } from "@/components/LoginButton";
+import { AppFooter } from "@/components/AppFooter";
+import { CookieConsent } from "@/components/CookieConsent";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 const DEFAULT_TITLE = "spike.land - MCP-First AI Development Platform";
 const DEFAULT_DESCRIPTION =
@@ -50,7 +53,7 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/about": {
     title: "About spike.land - MCP-First AI Platform",
-    description: "Learn about spike.land, the MCP-first AI development platform. Our mission, team, and the technology powering 80+ AI tools on Cloudflare Workers.",
+    description: "Learn about spike.land — who we are, our mission, and how we're building an open platform for AI tools.",
   },
   "/terms": {
     title: "Terms of Service - spike.land",
@@ -63,6 +66,10 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   "/blog": {
     title: "Blog - spike.land",
     description: "Articles, tutorials, and engineering insights from the spike.land team. Learn about MCP, AI development, and edge computing.",
+  },
+  "/docs": {
+    title: "Documentation - spike.land",
+    description: "Technical documentation, API reference, MCP tools guide, and architecture overview for spike.land.",
   },
   "/settings": {
     title: "Settings - spike.land",
@@ -102,21 +109,21 @@ const WEB_APP_JSON_LD = JSON.stringify({
       name: "Free",
       price: "0",
       priceCurrency: "USD",
-      description: "50 messages per day, free-tier tools, bug reporting, community support",
+      description: "50 requests per day, free-tier tools, bug reporting, community support",
     },
     {
       "@type": "Offer",
       name: "Pro",
       price: "29",
       priceCurrency: "USD",
-      description: "500 messages per day, pro tools, BYOK support, natural language chat, priority bug reporting",
+      description: "500 requests per day, pro tools, BYOK support, natural language chat, priority bug reporting",
     },
     {
       "@type": "Offer",
       name: "Business",
       price: "99",
       priceCurrency: "USD",
-      description: "Unlimited messages, all tools, priority support, early access, bug bounty eligibility",
+      description: "Unlimited requests, all tools, priority support, early access, bug bounty eligibility",
     },
   ],
 });
@@ -132,13 +139,28 @@ function injectJsonLd(id: string, content: string) {
   el.textContent = content;
 }
 
+const NAV_LINKS = [
+  { to: "/tools", label: "Tools" },
+  { to: "/store", label: "Store" },
+  { to: "/pricing", label: "Pricing" },
+  { to: "/docs", label: "Docs" },
+  { to: "/blog", label: "Blog" },
+  { to: "/about", label: "About" },
+] as const;
+
 export function RootLayout() {
   useAnalytics();
-  useDarkMode();
+  const { theme, setTheme } = useDarkMode();
   useAuth();
 
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useRouterState({ select: (s) => s.location });
   const { pathname, searchStr } = location;
+
+  // Close mobile nav on route change
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   // Inject JSON-LD structured data once on mount
   useEffect(() => {
@@ -201,25 +223,110 @@ export function RootLayout() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
+      {/* Skip to main content link for keyboard/screen reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-primary focus:text-primary-foreground focus:p-2 focus:m-2 focus:rounded"
+      >
+        Skip to main content
+      </a>
+
       <div className="flex flex-1 flex-col min-w-0">
         <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-card/80 backdrop-blur-md px-6">
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center gap-8">
               <Link to="/" className="text-xl font-bold">spike.land</Link>
-              <nav className="hidden md:flex items-center gap-6">
-                <Link to="/tools" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</Link>
-                <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-                <Link to="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
-                <a href="https://github.com/spike-land-ai/spike-land-ai/tree/main/docs" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs</a>
+              <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+                {NAV_LINKS.map(({ to, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    aria-current={pathname === to ? "page" : undefined}
+                    className={`text-sm font-medium transition-colors hover:text-foreground ${
+                      pathname === to ? "text-foreground underline underline-offset-4 decoration-primary/50" : "text-muted-foreground"
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
               </nav>
+              <button
+                type="button"
+                className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:text-foreground transition-colors"
+                aria-label="Search site"
+                onClick={() => alert("Search coming soon!")}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <span>Search...</span>
+                <kbd className="hidden lg:inline-flex items-center gap-1 font-sans text-[10px] bg-background border border-border rounded px-1.5 py-0.5 opacity-70">
+                  ⌘K
+                </kbd>
+              </button>
             </div>
-            <LoginButton />
+            <div className="flex items-center gap-3">
+              <ThemeSwitcher theme={theme} setTheme={setTheme} />
+              <LoginButton />
+              {/* Mobile hamburger */}
+              <button
+                type="button"
+                className="md:hidden flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileNavOpen}
+                aria-controls="mobile-nav"
+                onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              >
+                {mobileNavOpen ? (
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden">
+        {/* Mobile nav drawer */}
+        {mobileNavOpen && (
+          <div
+            id="mobile-nav"
+            className="md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm flex flex-col pt-20 px-6 gap-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+          >
+            <nav aria-label="Mobile navigation links">
+              {NAV_LINKS.map(({ to, label }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${
+                    pathname === to ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileNavOpen(false)}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
+
+        <main id="main-content" className="flex-1 overflow-x-hidden">
+          <noscript>
+            <div className="p-8 text-center">
+              <h1>JavaScript Required</h1>
+              <p>spike.land requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+            </div>
+          </noscript>
           <Outlet />
         </main>
+
+        <AppFooter />
+        <CookieConsent />
       </div>
     </div>
   );

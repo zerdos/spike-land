@@ -25,7 +25,7 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
       <div className={`overflow-hidden ${className}`}>
         <img
           src={post.heroImage}
-          alt={post.title}
+          alt=""
           loading="lazy"
           decoding="async"
           className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
@@ -45,8 +45,8 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
 }
 
 function FeaturedCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.ComponentType<{ to: string; className?: string; children?: React.ReactNode }> | "a" }) {
-  return (
-    <article className="group relative bg-card rounded-2xl border border-border shadow-sm hover:border-primary/40 hover:shadow-lg transition-all duration-200 overflow-hidden mb-6">
+  const content = (
+    <>
       <CardImage post={post} className={post.heroImage ? "rounded-t-2xl" : "aspect-[21/9] rounded-t-2xl"} />
       <div className="p-5 sm:p-6">
         <div className="flex items-center gap-x-3 text-xs font-medium tracking-wider uppercase mb-2">
@@ -57,29 +57,29 @@ function FeaturedCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Comp
           </time>
         </div>
         <h3 className="text-xl sm:text-2xl font-display font-bold leading-snug text-foreground group-hover:text-primary transition-colors mb-2">
-          {LinkComp === "a" ? (
-            <a href={`/blog/${post.slug}`}>
-              <span className="absolute inset-0" />
-              {post.title}
-            </a>
-          ) : (
-            <LinkComp to={`/blog/${post.slug}`}>
-              <span className="absolute inset-0" />
-              {post.title}
-            </LinkComp>
-          )}
+          {post.title}
         </h3>
         {post.primer && (
           <p className="text-sm text-muted-foreground italic">{post.primer}</p>
         )}
       </div>
+    </>
+  );
+
+  return (
+    <article className="group relative bg-card rounded-2xl border border-border shadow-sm hover:border-primary/40 hover:shadow-lg transition-all duration-200 overflow-hidden mb-6">
+      {LinkComp === "a" ? (
+        <a href={`/blog/${post.slug}`} className="block h-full w-full">{content}</a>
+      ) : (
+        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full">{content}</LinkComp>
+      )}
     </article>
   );
 }
 
 function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.ComponentType<{ to: string; className?: string; children?: React.ReactNode }> | "a" }) {
-  return (
-    <article className="group relative bg-card rounded-2xl border border-border shadow-sm hover:border-primary/40 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col">
+  const content = (
+    <>
       <CardImage post={post} className={post.heroImage ? "rounded-t-2xl" : "aspect-[16/9] rounded-t-2xl"} />
       <div className="p-4 sm:p-5 flex flex-col flex-1">
         <div className="flex items-center gap-x-3 text-xs font-medium tracking-wider uppercase mb-2">
@@ -90,22 +90,22 @@ function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Componen
           </time>
         </div>
         <h3 className="text-lg font-display font-bold leading-snug text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-          {LinkComp === "a" ? (
-            <a href={`/blog/${post.slug}`}>
-              <span className="absolute inset-0" />
-              {post.title}
-            </a>
-          ) : (
-            <LinkComp to={`/blog/${post.slug}`}>
-              <span className="absolute inset-0" />
-              {post.title}
-            </LinkComp>
-          )}
+          {post.title}
         </h3>
         {post.primer && (
           <p className="text-sm text-muted-foreground italic line-clamp-2">{post.primer}</p>
         )}
       </div>
+    </>
+  );
+
+  return (
+    <article className="group relative bg-card rounded-2xl border border-border shadow-sm hover:border-primary/40 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col">
+      {LinkComp === "a" ? (
+        <a href={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">{content}</a>
+      ) : (
+        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">{content}</LinkComp>
+      )}
     </article>
   );
 }
@@ -113,6 +113,7 @@ function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Componen
 export function BlogListView({ linkComponent, limit, showHeader = true }: { linkComponent?: React.ComponentType<{ to: string; className?: string; children?: React.ReactNode }>; limit?: number; showHeader?: boolean }) {
   const [posts, setPosts] = useState<BlogMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch("/api/blog")
@@ -126,7 +127,7 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
           setPosts(data);
         }
       })
-      .catch(() => setPosts([]))
+      .catch(() => { setPosts([]); setError(true); })
       .finally(() => setLoading(false));
   }, [limit]);
 
@@ -139,12 +140,12 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
               The Spike.land Blog
             </h1>
             <p className="text-lg text-muted-foreground font-light">
-              Thoughts on AI agents, Cloudflare Workers, and the future of coding.
+              Thoughts on AI agents, Cloudflare Workers, and the future of technology.
             </p>
           </div>
         )}
         {/* Skeleton: featured card */}
-        <div className="animate-pulse bg-card rounded-2xl border border-border overflow-hidden mb-8">
+        <div aria-busy="true" className="animate-pulse bg-card rounded-2xl border border-border overflow-hidden mb-8">
           <div className="aspect-[21/9] bg-muted" />
           <div className="p-6">
             <div className="h-4 bg-muted rounded w-1/4 mb-4" />
@@ -164,6 +165,19 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error && posts.length === 0) {
+    return (
+      <div className={showHeader ? "max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 font-sans" : "font-sans"}>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Unable to load blog posts right now.</p>
+          <button onClick={() => window.location.reload()} className="mt-4 text-sm text-primary hover:underline">
+            Try again
+          </button>
         </div>
       </div>
     );

@@ -22,4 +22,5 @@ export interface Env {
   WHATSAPP_ACCESS_TOKEN: string;
   WHATSAPP_PHONE_NUMBER_ID: string;
   WHATSAPP_VERIFY_TOKEN: string;
+  MCP_INTERNAL_SECRET: string;
 }

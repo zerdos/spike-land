@@ -4,8 +4,7 @@ export function AboutPage() {
       <div className="space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">About spike.land</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          spike.land is an MCP-first AI development platform — built on Cloudflare Workers for
-          global, sub-100ms latency from day one.
+          spike.land is an open platform where AI agents connect to real-world tools. We provide the infrastructure for developers to build, run, and scale AI-native applications globally.
         </p>
       </div>
 
@@ -20,9 +19,39 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Our Story</h2>
+        <p className="leading-relaxed text-foreground">
+          spike.land began when our team of engineers realized how difficult it was to build robust, scalable AI applications that could actually <em>do</em> things. Connecting LLMs to APIs was brittle and time-consuming. We saw the potential of standardizing tool access and decided to build the infrastructure we wished we had: a fast, edge-native platform that makes building AI-powered tools as easy as writing a function.
+        </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Our Team</h2>
+        <p className="leading-relaxed text-foreground">
+          spike.land is built by a small, distributed team of engineers and founders passionate about
+          making AI tools accessible to everyone. We believe the best software is built in
+          the open, with real users shaping the product.
+        </p>
+        <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+          <h3 className="font-semibold text-foreground">Get in touch</h3>
+          <p className="text-sm text-muted-foreground">
+            Have questions, feedback, or partnership ideas? We'd love to hear from you.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a href="mailto:hello@spike.land" className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Email us
+            </a>
+            <a href="https://github.com/spike-land-ai" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
         <h2 className="text-2xl font-semibold">The Platform</h2>
         <p className="leading-relaxed text-foreground">
-          spike.land is built around the{" "}
+          At the core of spike.land is the{" "}
           <a
             href="https://modelcontextprotocol.io"
             className="text-primary underline hover:text-primary/80"
@@ -31,8 +60,7 @@ export function AboutPage() {
           >
             Model Context Protocol (MCP)
           </a>
-          {" "}— the open standard for connecting AI agents to real-world data sources and actions.
-          Our registry exposes 80+ tools that any compatible agent can discover and invoke.
+          . Think of it as a universal plug-and-play system for AI. Instead of writing custom integrations, developers use MCP to instantly give their AI apps access to databases, web browsers, code editors, and over 80 other tools.
         </p>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
           <li>
@@ -57,25 +85,13 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Technology Stack</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Frontend</h3>
-            <p className="text-sm text-foreground">React 19, Vite, TanStack Router, Tailwind CSS v4</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Edge API</h3>
-            <p className="text-sm text-foreground">Cloudflare Workers, Hono, Durable Objects</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Auth</h3>
-            <p className="text-sm text-foreground">Better Auth, GitHub &amp; Google OAuth, Drizzle ORM</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">MCP Registry</h3>
-            <p className="text-sm text-foreground">Cloudflare Workers + D1, @modelcontextprotocol/sdk</p>
-          </div>
-        </div>
+        <h2 className="text-2xl font-semibold">Built for Speed</h2>
+        <p className="leading-relaxed text-foreground">
+          spike.land runs on Cloudflare's global edge network, meaning every request is
+          handled by a server close to you. Our stack is designed for speed, reliability,
+          and developer experience — from React on the frontend to Hono and Durable Objects
+          on the edge.
+        </p>
       </section>
 
       <section className="space-y-4">
@@ -85,14 +101,22 @@ export function AboutPage() {
           <span className="font-medium">@spike-land-ai</span> GitHub organization. All packages are
           published to GitHub Packages. We welcome contributions, bug reports, and feedback.
         </p>
-        <a
-          href="https://github.com/spike-land-ai"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View on GitHub
-        </a>
+        <div className="flex flex-wrap gap-4 mt-2">
+          <a
+            href="https://github.com/spike-land-ai"
+            className="inline-flex items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground hover:bg-secondary/90 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on GitHub
+          </a>
+          <a
+            href="/login"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
       </section>
     </div>
   );

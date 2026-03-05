@@ -12,6 +12,7 @@ interface QuizQuestion {
   conceptIndex: number;
   question: string;
   options: [string, string, string, string];
+  correctIndex: number;
 }
 
 interface RoundData {
@@ -120,16 +121,24 @@ function generateMockSession(content: string): SessionState {
     concepts.push(raw.slice(0, 80));
   }
 
-  const questions: QuizQuestion[] = concepts.slice(0, 3).map((name, idx) => ({
-    conceptIndex: idx,
-    question: `Which statement about "${name.slice(0, 60)}" is correct?`,
-    options: [
-      `This accurately reflects the concept`,
-      `This contradicts the concept`,
-      `This is unrelated to the concept`,
-      `This oversimplifies the concept`,
-    ] as [string, string, string, string],
-  }));
+  const questions: QuizQuestion[] = concepts.slice(0, 3).map((name, idx) => {
+    const correctIndex = Math.floor(Math.random() * 4);
+    const opts: [string, string, string, string] = [
+      "This accurately reflects the concept",
+      "This contradicts the concept",
+      "This is unrelated to the concept",
+      "This oversimplifies the concept",
+    ];
+    if (correctIndex !== 0) {
+      [opts[0], opts[correctIndex]] = [opts[correctIndex]!, opts[0]!];
+    }
+    return {
+      conceptIndex: idx,
+      question: `Which statement about "${name.slice(0, 60)}" is correct?`,
+      options: opts,
+      correctIndex,
+    };
+  });
 
   return {
     article: content,
@@ -158,11 +167,10 @@ function evaluateMockAnswers(
   nextRound: RoundData | null;
   badge: BadgeData | null;
 } {
-  // In the mock, option 0 is always correct
   const results: AnswerResult[] = answers.map((answer, idx) => ({
     questionIndex: idx,
     concept: state.currentRound.questions[idx]?.question.slice(0, 40) ?? "",
-    correct: answer === 0,
+    correct: answer === state.currentRound.questions[idx]?.correctIndex,
     conflict: false,
   }));
 
@@ -219,15 +227,21 @@ function evaluateMockAnswers(
   for (let i = 0; i < 3; i++) {
     const idx = unmasteredIndices[i % unmasteredIndices.length] ?? i;
     const name = state.concepts[idx] ?? `Concept ${idx}`;
+    const correctIndex = Math.floor(Math.random() * 4);
+    const opts: [string, string, string, string] = [
+      "This accurately reflects the concept",
+      "This contradicts the concept",
+      "This is unrelated to the concept",
+      "This oversimplifies the concept",
+    ];
+    if (correctIndex !== 0) {
+      [opts[0], opts[correctIndex]] = [opts[correctIndex]!, opts[0]!];
+    }
     nextQuestions.push({
       conceptIndex: idx,
       question: `Regarding "${name.slice(0, 60)}", which is true?`,
-      options: [
-        `This accurately reflects the concept`,
-        `This contradicts the concept`,
-        `This is unrelated to the concept`,
-        `This oversimplifies the concept`,
-      ] as [string, string, string, string],
+      options: opts,
+      correctIndex,
     });
   }
 

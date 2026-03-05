@@ -120,6 +120,24 @@ const appDetailRoute = createRoute({
   component: withSuspense(() => import("./routes/apps/$appId"), "AppDetailPage"),
 });
 
+// Docs routes
+const docsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs",
+});
+
+const docsIndexRoute = createRoute({
+  getParentRoute: () => docsRoute,
+  path: "/",
+  component: withSuspense(() => import("./routes/docs/index"), "DocsIndexPage"),
+});
+
+const docsSlugRoute = createRoute({
+  getParentRoute: () => docsRoute,
+  path: "/$slug",
+  component: withSuspense(() => import("./routes/docs/$slug"), "DocPage"),
+});
+
 // Blog routes
 const blogRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -240,6 +258,12 @@ const toolsCategoryRoute = createRoute({
   component: withSuspense(() => import("./routes/tools/$toolName"), "ToolsCategoryPage"),
 });
 
+const mcpAuthorizeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/mcp/authorize",
+  component: withSuspense(() => import("./routes/mcp/authorize"), "McpAuthorizePage"),
+});
+
 const cockpitRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/cockpit",
@@ -261,6 +285,7 @@ const routeTree = rootRoute.addChildren([
   storeRoute,
   versionRoute,
   appsRoute.addChildren([appsIndexRoute, appsNewRoute, appDetailRoute]),
+  docsRoute.addChildren([docsIndexRoute, docsSlugRoute]),
   blogRoute.addChildren([blogIndexRoute, blogPostRoute]),
   bugbookRoute.addChildren([
     bugbookIndexRoute,
@@ -271,6 +296,7 @@ const routeTree = rootRoute.addChildren([
   learnRoute.addChildren([learnIndexRoute, learnSessionRoute, learnBadgeRoute]),
   messagesRoute.addChildren([messagesIndexRoute, messageThreadRoute]),
   toolsRoute.addChildren([toolsIndexRoute, toolsCategoryRoute]),
+  mcpAuthorizeRoute,
 ]);
 
 export const router = createRouter({

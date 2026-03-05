@@ -60,8 +60,15 @@ else
 fi
 
 # ── 4. Inject build metadata into index.html ──
-sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" dist/index.html
-rm -f dist/index.html.bak
+# Only inject build metadata if not already present
+if ! grep -q 'name="build-sha"' dist/index.html; then
+  sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" dist/index.html
+  rm -f dist/index.html.bak
+else
+  # Update existing metadata
+  sed -i.bak "s|content=\"[a-f0-9]*\" /><meta name=\"build-time\" content=\"[^\"]*\"|content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\"|" dist/index.html
+  rm -f dist/index.html.bak
+fi
 
 # ── 5. Archive current build in R2 for rollback ──
 if [ -n "$DEPLOYED_SHA" ] && [ "$DEPLOYED_SHA" != "unknown" ]; then

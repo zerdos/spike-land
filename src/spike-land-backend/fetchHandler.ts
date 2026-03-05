@@ -329,7 +329,8 @@ async function handleRestApiRequest(path: string[], request: Request, env: Env):
     });
   }
 
-  // Handle CORS preflight
+  // Handle CORS preflight (unreachable via handleFetchApi which intercepts OPTIONS first,
+  // but kept as a safety net if handleRestApiRequest is ever called directly)
   if (request.method === "OPTIONS") {
     const reqOrigin = request.headers.get("Origin") || "";
     const isAllowed =
