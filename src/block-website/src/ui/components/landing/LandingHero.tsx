@@ -21,22 +21,23 @@ export function LandingHero() {
         >
             <div
                 className="mb-8 inline-block px-4 py-1.5 border border-border rounded-full text-xs font-semibold text-muted-foreground tracking-widest bg-muted/50"
-                aria-label="Features: Open App Ecosystem for AI, Instant Deploys"
+                aria-label="Features: Open-Source AI App Ecosystem, Instant Deploys"
             >
-                OPEN APP ECOSYSTEM FOR AI · INSTANT DEPLOYS
+                OPEN-SOURCE AI APP ECOSYSTEM · INSTANT DEPLOYS
             </div>
 
             <h1
                 id="hero-heading"
                 className="text-5xl sm:text-7xl font-bold tracking-tight mb-8 leading-[1.1] text-balance"
             >
-                <span className="text-muted-foreground font-medium">Build, run, and share</span> <br />
-                <span className="text-foreground">AI apps instantly.</span>
+                <span className="text-muted-foreground font-medium">Give your AI agents</span> <br />
+                <span className="text-foreground">the power to act.</span>
             </h1>
 
             <p className="text-xl sm:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed text-balance">
-                Connect your AI agent to the real world using the <strong>Model Context Protocol (MCP)</strong>. 
-                spike.land gives your AI the tools it needs to act—from building code to scaling your business.
+                spike.land connects your AI assistant to real-world tools using the Model Context Protocol (MCP).
+                <br /><br />
+                <span className="text-lg">MCP lets AI assistants use databases, APIs, and code editors through a single standard interface.</span>
             </p>
 
             <div
