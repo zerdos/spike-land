@@ -20,6 +20,29 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Who We Are</h2>
+        <p className="leading-relaxed text-foreground">
+          spike.land is built by a small, distributed team of engineers passionate about
+          making AI tools accessible to everyone. We believe the best software is built in
+          the open, with real users shaping the product.
+        </p>
+        <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+          <h3 className="font-semibold text-foreground">Get in touch</h3>
+          <p className="text-sm text-muted-foreground">
+            Have questions, feedback, or partnership ideas? We'd love to hear from you.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a href="mailto:hello@spike.land" className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Email us
+            </a>
+            <a href="https://github.com/spike-land-ai" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
         <h2 className="text-2xl font-semibold">The Platform</h2>
         <p className="leading-relaxed text-foreground">
           spike.land is built around the{" "}
@@ -57,25 +80,13 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Technology Stack</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Frontend</h3>
-            <p className="text-sm text-foreground">React 19, Vite, TanStack Router, Tailwind CSS v4</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Edge API</h3>
-            <p className="text-sm text-foreground">Cloudflare Workers, Hono, Durable Objects</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">Auth</h3>
-            <p className="text-sm text-foreground">Better Auth, GitHub &amp; Google OAuth, Drizzle ORM</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <h3 className="font-semibold text-sm uppercase text-muted-foreground tracking-wide">MCP Registry</h3>
-            <p className="text-sm text-foreground">Cloudflare Workers + D1, @modelcontextprotocol/sdk</p>
-          </div>
-        </div>
+        <h2 className="text-2xl font-semibold">Built for Speed</h2>
+        <p className="leading-relaxed text-foreground">
+          spike.land runs on Cloudflare's global edge network, meaning every request is
+          handled by a server close to you. Our stack is designed for speed, reliability,
+          and developer experience — from React on the frontend to Hono and Durable Objects
+          on the edge.
+        </p>
       </section>
 
       <section className="space-y-4">

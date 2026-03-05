@@ -16,16 +16,16 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Platform</h3>
+            <p className="font-semibold text-foreground mb-4">Platform</p>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/tools" className="text-muted-foreground hover:text-foreground transition-colors">App Registry</Link></li>
+              <li><Link href="/tools" className="text-muted-foreground hover:text-foreground transition-colors">Tools</Link></li>
               <li><Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
-              <li><Link href="/apps/new" className="text-muted-foreground hover:text-foreground transition-colors">Build an App</Link></li>
-              <li><Link href="/store" className="text-muted-foreground hover:text-foreground transition-colors">App Store</Link></li>
+              <li><Link href="/apps/new" className="text-muted-foreground hover:text-foreground transition-colors">Create a Tool</Link></li>
+              <li><Link href="/store" className="text-muted-foreground hover:text-foreground transition-colors">Store</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
+            <p className="font-semibold text-foreground mb-4">Resources</p>
             <ul className="space-y-2 text-sm">
               <li><a href="https://github.com/spike-land-ai/spike-land-ai/tree/main/docs" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">Documentation</a></li>
               <li><Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
@@ -34,7 +34,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Legal & Social</h3>
+            <p className="font-semibold text-foreground mb-4">Legal & Social</p>
             <ul className="space-y-2 text-sm">
               <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
@@ -50,7 +50,7 @@ export function Footer() {
           <div className="flex gap-6">
             <span className="text-xs text-muted-foreground flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              All systems operational
+              <span role="status">All systems operational</span>
             </span>
           </div>
         </div>

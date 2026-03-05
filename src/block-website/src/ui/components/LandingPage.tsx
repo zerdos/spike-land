@@ -2,11 +2,10 @@ import { LandingHero } from "./landing/LandingHero";
 import { AppShowcase } from "./landing/AppShowcase";
 import { BlogListView } from "./BlogList";
 import { Link } from "./ui/link";
-import { Footer } from "./Footer";
 
 export function LandingPage() {
   return (
-    <main className="text-foreground font-sans">
+    <div className="text-foreground font-sans">
       <LandingHero />
       
       <section className="py-12 bg-background border-y border-border">
@@ -18,22 +17,24 @@ export function LandingPage() {
             <div className="relative z-10">
               <h2 className="text-2xl font-bold mb-4">Get started in 60 seconds</h2>
               <p className="text-muted-foreground mb-6 max-w-2xl">
-                Ready to connect your AI agent? Install the spike-cli and launch into a world of 80+ MCP tools. No registration required for free-tier tools.
+                Try our tools right from the browser — no installation needed.
+                Or connect your AI assistant using the CLI.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <Link href="/tools" className="w-full sm:w-auto px-6 py-3 bg-foreground text-background text-sm font-medium rounded-xl hover:opacity-90 transition-opacity text-center">
+                  Browse tools
+                </Link>
                 <div className="w-full sm:w-auto bg-muted rounded-lg px-4 py-3 font-mono text-sm border border-border flex items-center justify-between gap-4 group">
                   <span className="text-foreground">npx @spike-land-ai/spike-cli shell</span>
-                  <button 
+                  <button
                     onClick={() => navigator.clipboard.writeText("npx @spike-land-ai/spike-cli shell")}
                     className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-background"
                     title="Copy to clipboard"
+                    aria-label="Copy CLI command"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                   </button>
                 </div>
-                <Link href="/blog/getting-started-spike-land" className="text-sm font-semibold text-primary hover:underline">
-                  Read the guide &rarr;
-                </Link>
               </div>
             </div>
           </div>
@@ -47,29 +48,31 @@ export function LandingPage() {
         className="py-20 sm:py-24 border-t border-border bg-muted/50"
       >
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2
-            id="features-heading"
-            className="text-3xl font-bold tracking-tight text-foreground mb-10 text-balance"
-          >
+          <h2 id="features-heading" className="text-3xl font-bold tracking-tight text-foreground mb-4 text-balance">
             How it works
           </h2>
+          <p className="text-muted-foreground mb-10 max-w-2xl leading-relaxed">
+            spike.land connects your AI assistant to real-world tools using the{" "}
+            <strong>Model Context Protocol (MCP)</strong> — an open standard that lets AI apps
+            discover and use tools automatically. Think of it as a universal plug for AI.
+          </p>
           <dl className="divide-y divide-border">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 py-6 first:pt-0">
-              <dt className="sm:w-32 shrink-0 font-semibold text-foreground">Ready to use</dt>
+              <dt className="sm:w-36 shrink-0 font-semibold text-foreground">Browse &amp; connect</dt>
               <dd className="text-muted-foreground leading-relaxed">
-                Choose from 80+ pre-built apps covering everything from team operations to creative studios. Connect them instantly to your AI agent.
+                Pick from our library of ready-made tools. Each one connects to your AI assistant in seconds — no coding required.
               </dd>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 py-6">
-              <dt className="sm:w-32 shrink-0 font-semibold text-foreground">MCP Standard</dt>
+              <dt className="sm:w-36 shrink-0 font-semibold text-foreground">Works everywhere</dt>
               <dd className="text-muted-foreground leading-relaxed">
-                Built on the <strong>Model Context Protocol (MCP)</strong>, these tools work natively with Claude Desktop, Cursor, and any other MCP-compatible AI client.
+                Built on the Model Context Protocol, an open standard supported by Claude, ChatGPT, Cursor, and other AI assistants. Connect once, use anywhere.
               </dd>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 py-6 last:pb-0">
-              <dt className="sm:w-32 shrink-0 font-semibold text-foreground">Build your own</dt>
+              <dt className="sm:w-36 shrink-0 font-semibold text-foreground">Build your own</dt>
               <dd className="text-muted-foreground leading-relaxed">
-                Can't find what you need? Use our browser-based creator to build a custom tool. We handle the servers, auth, and global deployment automatically.
+                Need something custom? Describe what you want, and our builder creates it for you. We handle hosting, security, and updates.
               </dd>
             </div>
           </dl>
@@ -100,8 +103,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <Footer />
-    </main>
+    </div>
   );
 }
 
