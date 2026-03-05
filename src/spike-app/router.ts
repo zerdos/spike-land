@@ -114,6 +114,12 @@ const appsNewRoute = createRoute({
   component: withSuspense(() => import("./routes/apps/new"), "AppsNewPage"),
 });
 
+const appsQaStudioRoute = createRoute({
+  getParentRoute: () => appsRoute,
+  path: "/qa-studio",
+  component: withSuspense(() => import("./routes/apps/qa-studio"), "QaStudioPage"),
+});
+
 const appDetailRoute = createRoute({
   getParentRoute: () => appsRoute,
   path: "/$appId",
@@ -284,7 +290,7 @@ const routeTree = rootRoute.addChildren([
   pricingRoute,
   storeRoute,
   versionRoute,
-  appsRoute.addChildren([appsIndexRoute, appsNewRoute, appDetailRoute]),
+  appsRoute.addChildren([appsIndexRoute, appsNewRoute, appsQaStudioRoute, appDetailRoute]),
   docsRoute.addChildren([docsIndexRoute, docsSlugRoute]),
   blogRoute.addChildren([blogIndexRoute, blogPostRoute]),
   bugbookRoute.addChildren([

@@ -4,8 +4,9 @@
     "outDir": "./dist",
     "noEmit": false,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "allowImportingTsExtensions": false
   },
-  "include": ["index.ts"],
+  "include": ["index.ts", "../../src/qa-studio/mcp-server.ts"],
   "references": []
 }

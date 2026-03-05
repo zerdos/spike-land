@@ -278,4 +278,75 @@ export function registerVaultTools(registry: ToolRegistry, userId: string, db: D
         }
       }),
   );
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "vault_rotate_secret",
+        "Rotate an existing secret by replacing its encrypted value atomically. " +
+          "The secret must already exist. Returns success/fail — NEVER returns the value.",
+        {
+          name: z
+            .string()
+            .min(1)
+            .max(100)
+            .regex(
+              /^[a-zA-Z][a-zA-Z0-9_]*$/,
+              "Name must start with a letter and contain only letters, numbers, and underscores",
+            )
+            .describe("Secret name to rotate (e.g. OPENAI_API_KEY)."),
+          value: z.string().min(1).max(10000).describe("The new secret value to encrypt and store."),
+        },
+      )
+      .meta({ category: "vault", tier: "free" })
+      .handler(async ({ input, ctx }) => {
+        try {
+          // Check if secret exists
+          const existing = await ctx.db
+            .select({ id: vaultSecrets.id })
+            .from(vaultSecrets)
+            .where(and(eq(vaultSecrets.userId, ctx.userId), eq(vaultSecrets.key, input.name)))
+            .limit(1);
+
+          if (existing.length === 0 || !existing[0]) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `**Error:** Secret "${input.name}" not found. Use \`vault_store_secret\` to create it first.`,
+                },
+              ],
+              isError: true,
+            };
+          }
+
+          const encryptedValue = await encryptValue(ctx.userId, input.value, vaultSecret ?? "");
+          const now = Date.now();
+
+          await ctx.db
+            .update(vaultSecrets)
+            .set({ encryptedValue, updatedAt: now })
+            .where(eq(vaultSecrets.id, existing[0].id));
+
+          return {
+            content: [
+              {
+                type: "text",
+                text:
+                  `**Secret Rotated!**\n\n` +
+                  `**Name:** ${input.name}\n` +
+                  `**Updated:** ${new Date(now).toISOString()}\n\n` +
+                  `The old value has been replaced. The new value is encrypted and cannot be read back.`,
+              },
+            ],
+          };
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : "Unknown error";
+          return {
+            content: [{ type: "text", text: `Error rotating secret: ${msg}` }],
+            isError: true,
+          };
+        }
+      }),
+  );
 }

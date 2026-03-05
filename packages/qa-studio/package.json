@@ -34,11 +34,16 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint --quiet src/",
     "mcp": "node dist/mcp-server.js",
-    "mcp:visible": "node dist/mcp-server.js --visible"
+    "mcp:visible": "node dist/mcp-server.js --visible",
+    "mcp:http": "node dist/mcp-server.js --http --port 3100"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.27.1",
     "@spike-land-ai/mcp-server-base": "*",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "zod": "4.3.6"
   },
   "devDependencies": {

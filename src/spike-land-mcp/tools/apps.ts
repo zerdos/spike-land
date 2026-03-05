@@ -25,7 +25,8 @@ export function registerAppsTools(
     t
       .tool(
         "apps_create",
-        "Create a new app from a text prompt. This is the STARTING POINT for new apps. " +
+        "Use this when you have a workspace and want to create a personal app from a prompt. " +
+          "Create a new app from a text prompt. This is the STARTING POINT for new apps. " +
           "The AI will generate code based on your prompt.",
         {
           prompt: z
@@ -215,6 +216,46 @@ export function registerAppsTools(
   registry.registerBuilt(
     t
       .tool(
+        "apps_preview",
+        "Get the live preview URL for an app. Use this to quickly check your app in the browser.",
+        {
+          app_id: z.string().min(1).describe("App identifier: codespace ID, slug, or database ID."),
+        },
+      )
+      .meta({ category: "apps", tier: "free" })
+      .handler(async ({ input }) => {
+        const { app_id } = input;
+
+        const app = await apiRequest<{
+          id: string;
+          name: string;
+          codespaceId: string | null;
+          codespaceUrl: string | null;
+          status: string;
+        }>(`/api/apps/${encodeURIComponent(app_id)}`);
+
+        if (!app.codespaceId) {
+          return textResult(
+            `**No Preview Available**\n\nApp "${app.name}" does not have a codespace yet. ` +
+              `Current status: ${app.status}. The app may still be building.`,
+          );
+        }
+
+        const previewUrl = `https://testing.spike.land/live/${app.codespaceId}`;
+
+        return textResult(
+          `**Live Preview**\n\n` +
+            `**App:** ${app.name}\n` +
+            `**Status:** ${app.status}\n` +
+            `**Preview URL:** ${previewUrl}\n\n` +
+            `Open this URL in a browser to see your app running live.`,
+        );
+      }),
+  );
+
+  registry.registerBuilt(
+    t
+      .tool(
         "apps_chat",
         "Send a message to iterate on an existing app. PREFERRED over direct code edits.",
         {
@@ -319,8 +360,8 @@ export function registerAppsTools(
       .tool("apps_set_status", "Change app status. WARNING: ARCHIVED stops the live app.", {
         app_id: z.string().min(1).describe("App identifier."),
         status: z
-          .enum(["ARCHIVED", "PROMPTING"])
-          .describe("ARCHIVED stops the live app. PROMPTING resets to draft state."),
+          .enum(["ARCHIVED", "PROMPTING", "LIVE", "TEST"])
+          .describe("LIVE publishes the app. TEST marks it for testing. ARCHIVED stops the live app. PROMPTING resets to draft state."),
       })
       .meta({ category: "apps", tier: "free" })
       .handler(async ({ input }) => {
@@ -457,7 +498,7 @@ export function registerAppsTools(
     t
       .tool("apps_batch_status", "Set status on multiple apps at once.", {
         app_ids: z.array(z.string().min(1)).min(1).max(20).describe("List of app identifiers."),
-        status: z.enum(["ARCHIVED", "PROMPTING"]).describe("Target status for all apps."),
+        status: z.enum(["ARCHIVED", "PROMPTING", "LIVE", "TEST"]).describe("Target status for all apps."),
       })
       .meta({ category: "apps", tier: "free" })
       .handler(async ({ input }) => {
@@ -599,6 +640,33 @@ export function registerAppsTools(
         return textResult(
           `**Generated Codespace ID:** \`${id}\`\n\nUse this with \`apps_create\` by setting \`codespace_id\`.`,
         );
+      }),
+  );
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "apps_list_templates",
+        "List available starter templates for app creation. Use a template_id with apps_create to start from a template instead of a blank prompt.",
+        {},
+      )
+      .meta({ category: "apps", tier: "free" })
+      .handler(async () => {
+        const templates = [
+          { id: "blank", name: "Blank Canvas", description: "Start from scratch with an empty React app" },
+          { id: "dashboard", name: "Dashboard", description: "Admin dashboard with charts, tables, and sidebar navigation" },
+          { id: "landing-page", name: "Landing Page", description: "Marketing landing page with hero, features, and CTA sections" },
+          { id: "portfolio", name: "Portfolio", description: "Personal portfolio with project gallery and about section" },
+          { id: "chat-app", name: "Chat App", description: "Real-time chat interface with message history and user list" },
+        ];
+
+        let text = `**Available App Templates (${templates.length})**\n\n`;
+        for (const tmpl of templates) {
+          text += `- **${tmpl.name}** (ID: \`${tmpl.id}\`)\n  ${tmpl.description}\n\n`;
+        }
+        text += `Use \`apps_create\` with \`template_id\` to start from a template.`;
+
+        return textResult(text);
       }),
   );
 }

@@ -155,7 +155,7 @@ export function registerCodegenTools(registry: ToolRegistry, userId: string, db:
         bundle_id: z.string().describe("Bundle ID."),
         model: z.string().optional().describe("Model to use."),
       })
-      .meta({ category: "codegen", tier: "free" })
+      .meta({ category: "codegen", tier: "free", stability: "not-implemented" })
       .handler(async ({ input }) => {
         const resultId = crypto.randomUUID();
         const result: CodeGenResult = {

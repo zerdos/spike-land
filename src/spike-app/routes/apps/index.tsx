@@ -32,7 +32,7 @@ const mcpTools: McpToolEntry[] = [
     category: "mcp",
     ownerName: "spike-team",
     createdAt: "2025-11-15T00:00:00Z",
-    toolCount: 3,
+    toolCount: 10,
   },
   {
     id: "audio-mixer",

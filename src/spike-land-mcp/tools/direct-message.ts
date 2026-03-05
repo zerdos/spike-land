@@ -19,18 +19,17 @@ export function registerDirectMessageTools(
 ): void {
   registry.registerBuilt(
     freeTool(userId, db)
-      .tool("dm_send", "Send a private message to a user (defaults to site owner Zoltan).", {
+      .tool("dm_send", "Send a private message to a user by email address.", {
         content: z.string().min(1).describe("Body of the message."),
         toEmail: z
           .string()
           .email()
-          .optional()
-          .describe("Recipient email address. Defaults to site owner (zoltan@spike.land)."),
+          .describe("Recipient email address (required)."),
       })
       .meta({ category: "direct-message", tier: "free" })
       .handler(async ({ input, ctx }) => {
         const { content, toEmail } = input;
-        const targetEmail = toEmail || "zoltan@spike.land";
+        const targetEmail = toEmail;
 
         // Look up recipient by email
         const targetRows = await ctx.db

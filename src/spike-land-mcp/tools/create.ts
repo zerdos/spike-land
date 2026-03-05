@@ -129,7 +129,8 @@ export function registerCreateTools(
     t
       .tool(
         "create_classify_idea",
-        "Classify an app idea into a URL slug and category. " +
+        "Use this for the public /create flow — classifies your idea, returns category + template suggestion, not a live app. " +
+          "Classify an app idea into a URL slug and category. " +
           "Delegates to the spike.land classification API.",
         {
           text: z.string().min(1).max(2000).describe("App idea text to classify."),

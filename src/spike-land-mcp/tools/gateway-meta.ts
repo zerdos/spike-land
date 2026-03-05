@@ -9,6 +9,7 @@
 import { z } from "zod";
 import { and, desc, eq, like, or } from "drizzle-orm";
 import type { ToolRegistry } from "../mcp/registry";
+import { CATEGORY_AUDIENCES } from "../mcp/categories";
 import type { DrizzleDB } from "../db/index";
 import { registeredTools, users } from "../db/schema";
 import { saveEnabledCategories } from "../kv/categories";
@@ -194,26 +195,47 @@ export function registerGatewayMetaTools(
       .handler(async () => {
         const categories = registry.listCategories();
 
-        let text = `**spike.land Tool Categories (${registry.getToolCount()} total tools):**\n\n`;
+        let text = `**spike.land Tool Categories (${registry.getToolCount()} total tools)**\n\n`;
+        text += `_Tip: The "Labs" group is for distributed systems simulation — skip if building apps._\n\n`;
 
-        const freeCategories = categories.filter((c) => c.tier === "free");
-        const workspaceCategories = categories.filter((c) => c.tier === "workspace");
+        // Group by audience
+        const audienceLabels: Record<string, string> = {
+          "app-building": "App Building",
+          "ai-automation": "AI & Automation",
+          "labs": "Labs (Distributed Systems)",
+          "learning": "Learning",
+          "platform": "Platform",
+          "domain": "Domain",
+          "infrastructure": "Infrastructure",
+        };
 
-        if (freeCategories.length > 0) {
-          text += `### Free\n\n`;
-          for (const cat of freeCategories) {
-            if (cat.name === "gateway-meta") continue;
-            const status =
-              cat.enabledCount > 0 ? ` (${cat.enabledCount}/${cat.toolCount} active)` : "";
+        const grouped = new Map<string, typeof categories>();
+        const ungrouped: typeof categories = [];
+
+        for (const cat of categories) {
+          if (cat.name === "gateway-meta") continue;
+          const audience = CATEGORY_AUDIENCES[cat.name];
+          if (audience) {
+            if (!grouped.has(audience)) grouped.set(audience, []);
+            grouped.get(audience)!.push(cat);
+          } else {
+            ungrouped.push(cat);
+          }
+        }
+
+        for (const [audience, cats] of grouped) {
+          const label = audienceLabels[audience] ?? audience;
+          text += `### ${label}\n\n`;
+          for (const cat of cats) {
+            const status = cat.enabledCount > 0 ? ` (${cat.enabledCount}/${cat.toolCount} active)` : "";
             text += `- **${cat.name}** (${cat.toolCount} tools)${status}\n  ${cat.description}\n\n`;
           }
         }
 
-        if (workspaceCategories.length > 0) {
-          text += `### Workspace Required\n\n`;
-          for (const cat of workspaceCategories) {
-            const status =
-              cat.enabledCount > 0 ? ` (${cat.enabledCount}/${cat.toolCount} active)` : "";
+        if (ungrouped.length > 0) {
+          text += `### Other\n\n`;
+          for (const cat of ungrouped) {
+            const status = cat.enabledCount > 0 ? ` (${cat.enabledCount}/${cat.toolCount} active)` : "";
             text += `- **${cat.name}** (${cat.toolCount} tools)${status}\n  ${cat.description}\n\n`;
           }
         }
@@ -282,14 +304,20 @@ export function registerGatewayMetaTools(
   // get_balance
   registry.registerBuilt(
     t
-      .tool("get_balance", "Get the current token balance for AI operations.", {})
+      .tool("get_balance", "Get current AI credit balance. Returns balance in credits with USD approximation.", {})
       .meta({ category: "gateway-meta", tier: "free" })
       .handler(async () => {
         return {
           content: [
             {
               type: "text",
-              text: `Balance checking not available in edge mode. Visit https://spike.land/settings?tab=billing to view your balance.`,
+              text:
+                `**AI Credit Balance**\n\n` +
+                `**Amount:** N/A (edge mode)\n` +
+                `**Currency:** credits\n` +
+                `**Approximate USD:** N/A\n\n` +
+                `Balance details are available at https://spike.land/settings?tab=billing\n` +
+                `Use \`billing_status\` to check your subscription tier.`,
             },
           ],
         };
@@ -301,7 +329,7 @@ export function registerGatewayMetaTools(
     t
       .tool(
         "get_status",
-        "Get platform status including available features, tool counts, and active categories.",
+        "START HERE. Get a guided overview of spike.land capabilities, active tools, and recommended next steps.",
         {},
       )
       .meta({ category: "gateway-meta", tier: "free" })
@@ -336,7 +364,15 @@ export function registerGatewayMetaTools(
           text += "\n";
         }
 
-        text += "Use `search_tools` or `enable_category` to activate tools.";
+        text += `**Getting Started:**\n`;
+        text += `1. Use \`search_tools\` to find tools by keyword (e.g., "create app", "image generation")\n`;
+        text += `2. Use \`list_categories\` to browse all tool categories grouped by audience\n`;
+        text += `3. Use \`enable_category\` to activate a whole category at once\n\n`;
+        text += `**Quick Start Paths:**\n`;
+        text += `- **Build an app →** \`apps_create\` (or \`bootstrap_create_app\` for first-time setup)\n`;
+        text += `- **Generate images →** enable "image" category\n`;
+        text += `- **AI chat →** enable "ai-gateway" category\n`;
+        text += `- **Manage secrets →** enable "vault" category\n`;
         return { content: [{ type: "text", text }] };
       }),
   );

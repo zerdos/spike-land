@@ -33,6 +33,18 @@ npm run lint          # ESLint
 - TypeScript strict mode
 - All business logic must have test coverage
 
+## MCP Server & HTTP Transport
+
+The package provides an MCP server which can run in two modes:
+1. **STDIO Transport**: Default behavior.
+2. **HTTP Transport**: Run with `--http` flag to expose a local web server (defaults to port 3100). This enables visual Web UI connections from `spike-app`.
+
+```bash
+npm run mcp           # STDIO mode
+npm run mcp:visible   # STDIO mode with visible browser
+npm run mcp:http      # HTTP mode for Web UI
+```
+
 ## CI/CD
 
 - Shared workflow: `.github/.github/workflows/ci-publish.yml`

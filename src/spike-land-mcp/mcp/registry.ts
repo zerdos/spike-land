@@ -37,7 +37,7 @@ export function validateSchemaDescriptions(inputSchema: z.ZodRawShape | undefine
 
 export type ToolComplexity = "primitive" | "composed" | "workflow";
 
-export type ToolStability = "stable" | "beta" | "experimental" | "deprecated";
+export type ToolStability = "stable" | "beta" | "experimental" | "deprecated" | "not-implemented";
 
 /**
  * Tool dependency declarations for progressive tool activation.
@@ -73,6 +73,8 @@ export interface ToolDefinition {
   inputSchema?: z.ZodRawShape | undefined;
   annotations?: ToolAnnotations | undefined;
   dependencies?: ToolDependencies | undefined;
+  /** Minimum user role required to access this tool. Undefined = no role gating. */
+  requiredRole?: "admin" | "super_admin" | undefined;
   handler: (input: never) => Promise<CallToolResult> | CallToolResult;
   alwaysEnabled?: boolean | undefined;
 }
@@ -111,6 +113,7 @@ export class ToolRegistry {
 
   private callerElo: number | undefined;
   private callerTier: EloTier | undefined;
+  private callerRole: string | undefined;
 
   constructor(mcpServer: McpServer, userId: string) {
     this.mcpServer = mcpServer;
@@ -124,6 +127,10 @@ export class ToolRegistry {
   setCallerElo(elo: number, tier: EloTier, _isAgent = false): void {
     this.callerElo = elo;
     this.callerTier = tier;
+  }
+
+  setCallerRole(role: string): void {
+    this.callerRole = role;
   }
 
   register(def: ToolDefinition): void {
@@ -141,6 +148,11 @@ export class ToolRegistry {
     const version = def.version ?? "1.0.0";
     const stability = def.stability ?? "stable";
 
+    // Skip registration of not-implemented tools — they stay in code but are invisible
+    if (stability === "not-implemented") {
+      return;
+    }
+
     // Optimize inputSchema to reduce token usage in LLM tool selection
     const optimizedInputSchema = def.inputSchema !== undefined
       ? optimizeSchema(def.inputSchema) as z.ZodRawShape
@@ -154,6 +166,20 @@ export class ToolRegistry {
             content: [{
               type: "text",
               text: `Insufficient ELO: This tool requires ${required} tier (current tier: ${this.callerTier}, elo: ${this.callerElo ?? 'unknown'}).`,
+            }],
+            isError: true,
+          };
+        }
+      }
+      // RBAC role check
+      const requiredRole = def.requiredRole;
+      if (requiredRole && this.callerRole) {
+        const ROLE_RANK: Record<string, number> = { user: 0, admin: 1, super_admin: 2 };
+        if ((ROLE_RANK[this.callerRole] ?? 0) < (ROLE_RANK[requiredRole] ?? 0)) {
+          return {
+            content: [{
+              type: "text",
+              text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
             }],
             isError: true,
           };
@@ -188,6 +214,10 @@ export class ToolRegistry {
    * Adapts BuiltTool to ToolDefinition internally -- zero breaking changes.
    */
   registerBuilt<TInput, TOutput>(built: BuiltTool<TInput, TOutput>): void {
+    const stability = built.meta.stability ?? "stable";
+    if (stability === "not-implemented") {
+      return;
+    }
     this.register({
       name: built.name,
       description: built.description,
@@ -383,6 +413,21 @@ export class ToolRegistry {
           content: [{
             type: "text",
             text: `This tool requires ${required} tier (your tier: ${userTier}). Improve your ELO rating to unlock it.`,
+          }],
+          isError: true,
+        };
+      }
+    }
+
+    // RBAC role gating
+    const requiredRole = tracked.definition.requiredRole;
+    if (requiredRole && this.callerRole) {
+      const ROLE_RANK: Record<string, number> = { user: 0, admin: 1, super_admin: 2 };
+      if ((ROLE_RANK[this.callerRole] ?? 0) < (ROLE_RANK[requiredRole] ?? 0)) {
+        return {
+          content: [{
+            type: "text",
+            text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
           }],
           isError: true,
         };

@@ -30,7 +30,7 @@ export function registerStorageTools(
           purpose: z.enum(["image", "audio", "asset", "brand"]).describe("Purpose of the upload"),
         },
       )
-      .meta({ category: "storage", tier: "workspace" })
+      .meta({ category: "storage", tier: "workspace", stability: "not-implemented" })
       .handler(async () => {
         return textResult(
           "**Storage operations are managed at spike.land**\n\n" +
@@ -54,7 +54,7 @@ export function registerStorageTools(
           metadata: z.record(z.string(), z.unknown()).optional().describe("Additional metadata"),
         },
       )
-      .meta({ category: "storage", tier: "workspace" })
+      .meta({ category: "storage", tier: "workspace", stability: "not-implemented" })
       .handler(async () => {
         return textResult(
           "**Storage operations are managed at spike.land**\n\n" +

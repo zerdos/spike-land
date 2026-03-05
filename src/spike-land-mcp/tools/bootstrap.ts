@@ -198,7 +198,8 @@ export function registerBootstrapTools(
     t
       .tool(
         "bootstrap_create_app",
-        "Create a live app. Delegates codespace creation and app linking to the spike.land API.",
+        "Use this for first-time setup — creates workspace + secrets + app in one flow. " +
+          "Create a live app. Delegates codespace creation and app linking to the spike.land API.",
         {
           app_name: z.string().min(3).max(50),
           description: z.string().min(10).max(500).optional(),

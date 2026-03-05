@@ -132,8 +132,7 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
     t
       .tool(
         "sandbox_exec",
-        "Execute code in a sandbox. Returns stdout, stderr, and exit code. " +
-          "Note: execution is simulated in edge mode.",
+        "SIMULATED EXECUTION ONLY — no code actually runs. Returns synthetic stdout/stderr for prototyping tool invocation patterns. For real execution, use spike.land platform directly.",
         {
           sandbox_id: z.string().min(1).describe("The sandbox ID"),
           code: z.string().min(1).describe("Code to execute"),

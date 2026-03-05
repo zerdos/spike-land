@@ -2,7 +2,7 @@ import { createMiddleware } from "hono/factory";
 import type { Env } from "../env";
 import { createDb } from "../db/index";
 import { lookupApiKey } from "./api-key";
-import { oauthAccessTokens } from "../db/schema";
+import { oauthAccessTokens, users } from "../db/schema";
 import { and, eq, gt } from "drizzle-orm";
 
 async function hashToken(token: string): Promise<string> {
@@ -22,7 +22,9 @@ const ANONYMOUS_TOOLS = new Set([
   "get_tool_info",
 ]);
 
-export type AuthVariables = { userId: string; db: DrizzleDB };
+export type UserRole = "user" | "admin" | "super_admin";
+
+export type AuthVariables = { userId: string; db: DrizzleDB; userRole: UserRole };
 
 export const authMiddleware = createMiddleware<{
   Bindings: Env;
@@ -42,6 +44,7 @@ export const authMiddleware = createMiddleware<{
     ) {
       c.set("userId", "anonymous");
       c.set("db", createDb(c.env.DB));
+      c.set("userRole", "user" as UserRole);
       return next();
     }
   } catch (e) {
@@ -102,7 +105,23 @@ export const authMiddleware = createMiddleware<{
     );
   }
 
+  // Resolve user role for RBAC
+  let userRole: UserRole = "user";
+  try {
+    const userRow = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    if (userRow[0]?.role) {
+      userRole = userRow[0].role as UserRole;
+    }
+  } catch {
+    // Default to "user" if role lookup fails
+  }
+
   c.set("userId", userId);
   c.set("db", db);
+  c.set("userRole", userRole);
   return next();
 });

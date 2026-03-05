@@ -41,6 +41,14 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         const successUrl = input.success_url ?? "https://spike.land/settings?tab=billing&success=1";
         const cancelUrl = input.cancel_url ?? "https://spike.land/pricing";
 
+        const ALLOWED_URL_PATTERN = /^https:\/\/(spike\.land|edge\.spike\.land|testing\.spike\.land)(\/|$)/;
+        if (input.success_url && !ALLOWED_URL_PATTERN.test(input.success_url)) {
+          return textResult("**Error:** success_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).");
+        }
+        if (input.cancel_url && !ALLOWED_URL_PATTERN.test(input.cancel_url)) {
+          return textResult("**Error:** cancel_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).");
+        }
+
         // Return a checkout intent — actual Stripe session creation is handled
         // by the edge proxy to keep the Stripe secret key out of MCP tools.
         return textResult(
@@ -124,10 +132,12 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
       .tool(
         "billing_cancel_subscription",
         "Cancel your active subscription. Your access continues until the end of the current billing period.",
-        {},
+        {
+          confirm: z.boolean().default(false).describe("Set to true to execute cancellation. When false (default), returns a preview of what will happen."),
+        },
       )
       .meta({ category: "billing", tier: "free" })
-      .handler(async ({ ctx }) => {
+      .handler(async ({ input, ctx }) => {
         const sub = await ctx.db
           .select({
             id: subscriptions.id,
@@ -150,6 +160,17 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
 
         const s = sub[0];
 
+        if (!input.confirm) {
+          const endDate = s.currentPeriodEnd
+            ? new Date(s.currentPeriodEnd).toISOString().split("T")[0]
+            : "end of current period";
+          return textResult(
+            `**Cancellation Preview**\n\n` +
+              `Your subscription will be canceled. Access continues until **${endDate}**.\n\n` +
+              `To proceed, call again with \`confirm: true\`.`,
+          );
+        }
+
         if (!s.stripeSubscriptionId) {
           return textResult(
             "**Cannot Cancel**\n\nYour subscription has no associated Stripe subscription. Contact support.",
@@ -171,6 +192,39 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
           `**Subscription Canceled**\n\n` +
             `Your subscription has been canceled. You'll retain access until **${endDate}**.\n\n` +
             `To resubscribe, use \`billing_create_checkout\`.`,
+        );
+      }),
+  );
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "billing_list_plans",
+        "List available subscription plans with pricing and feature details. Call this before billing_create_checkout to understand what each tier includes.",
+        {},
+      )
+      .meta({ category: "billing", tier: "free" })
+      .handler(async () => {
+        return textResult(
+          `**spike.land Plans**\n\n` +
+            `### Free\n` +
+            `- Up to 5 apps\n` +
+            `- 25 vault secrets\n` +
+            `- Basic AI tools\n` +
+            `- Community support\n\n` +
+            `### Pro — $19/month\n` +
+            `- Unlimited apps\n` +
+            `- 500 vault secrets\n` +
+            `- Priority AI models\n` +
+            `- Advanced analytics\n` +
+            `- Email support\n\n` +
+            `### Business — $49/month\n` +
+            `- Everything in Pro\n` +
+            `- Team workspaces with RBAC\n` +
+            `- Full audit logs (90-day retention)\n` +
+            `- Dedicated support\n` +
+            `- Custom integrations\n\n` +
+            `Use \`billing_create_checkout\` with tier "pro" or "business" to subscribe.`,
         );
       }),
   );

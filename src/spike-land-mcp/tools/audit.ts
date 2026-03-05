@@ -17,7 +17,7 @@ export function registerAuditTools(registry: ToolRegistry, userId: string, db: D
     freeTool(userId, db)
       .tool(
         "audit_query_logs",
-        "Query audit logs with optional filters for action and resource type.",
+        "Query audit logs with optional filters for action and resource type. Logs are retained for 90 days.",
         {
           action: z.string().optional().describe("Filter by action type."),
           resource_type: z.string().optional().describe("Filter by resource type."),
@@ -119,7 +119,7 @@ export function registerAuditTools(registry: ToolRegistry, userId: string, db: D
         resource_id: z.string().optional().describe("ID of the affected resource."),
         metadata: z.string().optional().describe("JSON metadata string."),
       })
-      .meta({ category: "audit", tier: "free" })
+      .meta({ category: "audit", tier: "free", stability: "not-implemented" })
       .handler(async ({ input, ctx }) => {
         const { action, resource_type, resource_id, metadata } = input;
 

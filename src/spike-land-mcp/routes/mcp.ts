@@ -105,6 +105,11 @@ mcpRoute.post("/", async (c) => {
   // Set caller ELO for tool gating
   if ((mcpServer as any).registry) {
     (mcpServer as any).registry.setCallerElo(callerElo, callerTier, isAgent);
+    // Set caller role for RBAC
+    const userRole = (c.var as Record<string, unknown>).userRole as string | undefined;
+    if (userRole) {
+      (mcpServer as any).registry.setCallerRole(userRole);
+    }
   }
 
   // Normalize Accept header for MCP spec compliance

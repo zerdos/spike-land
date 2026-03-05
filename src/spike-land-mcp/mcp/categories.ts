@@ -249,3 +249,62 @@ export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   "qa-studio":
     "Browser automation and test execution with screenshots, accessibility audits, and network analysis",
 };
+
+export type CategoryAudience = "app-building" | "ai-automation" | "labs" | "learning" | "platform" | "domain" | "infrastructure";
+
+export const CATEGORY_AUDIENCES: Record<string, CategoryAudience> = {
+  // App Building
+  apps: "app-building",
+  bootstrap: "app-building",
+  create: "app-building",
+  codespace: "app-building",
+  filesystem: "app-building",
+  "store-search": "app-building",
+  "store-install": "app-building",
+  store: "app-building",
+  pages: "app-building",
+  blocks: "app-building",
+  "page-ai": "app-building",
+  "codespace-templates": "app-building",
+
+  // AI & Automation
+  "ai-gateway": "ai-automation",
+  swarm: "ai-automation",
+  "swarm-monitoring": "ai-automation",
+  orchestration: "ai-automation",
+  orchestrator: "ai-automation",
+  codegen: "ai-automation",
+  session: "ai-automation",
+  reactions: "ai-automation",
+  chat: "ai-automation",
+  agents: "ai-automation",
+  pipeline: "ai-automation",
+
+  // Labs (Distributed Systems)
+  crdt: "labs",
+  netsim: "labs",
+  bft: "labs",
+  causality: "labs",
+  raft: "labs",
+  "state-machine": "labs",
+
+  // Learning
+  learnit: "learning",
+  career: "learning",
+  "career-growth": "learning",
+
+  // Platform
+  billing: "platform",
+  settings: "platform",
+  auth: "platform",
+  credits: "platform",
+  vault: "platform",
+  permissions: "platform",
+  audit: "platform",
+  "mcp-registry": "platform",
+  "mcp-observability": "platform",
+  "gateway-meta": "platform",
+  admin: "platform",
+  workspaces: "platform",
+  notifications: "platform",
+};

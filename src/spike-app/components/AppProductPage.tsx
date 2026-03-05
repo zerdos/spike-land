@@ -26,15 +26,15 @@ const toolMetadata: Record<string, {
   },
   "qa-studio": {
     name: "QA Studio",
-    description: "Browser automation utilities powered by Playwright. Run end-to-end tests, capture screenshots, and automate browser workflows through MCP tool calls.",
+    description: "Browser automation utilities powered by Playwright. Navigate, click, type, capture screenshots, and automate browser workflows visually or through MCP tool calls.",
     capabilities: [
-      "Multi-browser test execution (Chromium, Firefox, WebKit)",
-      "Screenshot capture and visual comparison",
+      "Visual Web UI without registration",
+      "Screen-reader style narration of web pages",
       "Page interaction automation (click, type, navigate)",
-      "Network request interception and mocking",
-      "Accessibility auditing",
+      "Screenshot capture and element inspection",
+      "Form extraction and tab management",
     ],
-    toolNames: ["run_test", "capture_screenshot", "automate_workflow"],
+    toolNames: ["web_navigate", "web_read", "web_click", "web_type", "web_select", "web_press", "web_scroll", "web_tabs", "web_screenshot", "web_forms"],
     packagePath: "src/qa-studio",
   },
   "audio-mixer": {
@@ -90,6 +90,15 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             <Terminal className="h-5 w-5" />
             Open Terminal
           </button>
+          {appId === "qa-studio" && (
+            <a
+              href="/apps/qa-studio"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground shadow-lg transition hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Layout className="h-5 w-5" />
+              Launch UI
+            </a>
+          )}
         </div>
       </div>
 
