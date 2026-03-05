@@ -50,7 +50,7 @@ export function AppFooter() {
               </li>
               <li>
                 <a
-                  href="https://x.com/spikelandai"
+                  href="https://x.com/ai_spike_land"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"

@@ -109,6 +109,7 @@ spa.get("/*", async (c) => {
         <meta property="og:description" content="${description}" />
         <meta name="twitter:title" content="${title}" />
         <meta name="twitter:description" content="${description}" />
+        <meta name="twitter:site" content="@ai_spike_land" />
         <link rel="canonical" href="https://spike.land${canonicalPath}${canonicalSearch}" />
       `;
       html = html.replace("</head>", `${metaTags}</head>`);
@@ -147,6 +148,7 @@ spa.get("/*", async (c) => {
         <meta name="twitter:title" content="${postTitle}" />
         <meta name="twitter:description" content="${postDesc}" />
         <meta name="twitter:image" content="${escapeHtml(postImage)}" />
+        <meta name="twitter:site" content="@ai_spike_land" />
         <link rel="canonical" href="${postUrl}" />
         <script type="application/ld+json">${JSON.stringify({
             "@context": "https://schema.org",
@@ -201,7 +203,8 @@ spa.get("/*", async (c) => {
         <meta property="og:description" content="${escapeHtml(meta.description)}" />
         <meta property="og:url" content="https://spike.land${path}" />
         <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
-        <meta name="twitter:description" content="${escapeHtml(meta.description)}" />`;
+        <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
+        <meta name="twitter:site" content="@ai_spike_land" />`;
         html = html.replace("</head>", `${ogTags}\n</head>`);
         
         if (meta.ssrContent) {

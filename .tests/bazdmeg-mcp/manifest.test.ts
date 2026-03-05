@@ -634,4 +634,143 @@ packages:
     // The simple YAML parser parses nested maps - exports should be defined
     expect(manifest.packages["test-pkg"]!.exports).toBeDefined();
   });
+
+  it("handles non-key lines by skipping them", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+not a key line
+packages:
+  test-pkg:
+    kind: library
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect(manifest.packages["test-pkg"]).toBeDefined();
+  });
+
+  it("handles keys with empty values and same indent next line", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+packages:
+  test-pkg:
+    kind: library
+    deps:
+    other: value
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect(manifest.packages["test-pkg"]!.deps).toBeNull();
+    // Use any casting since 'other' is not in the type
+    expect((manifest.packages["test-pkg"] as any).other).toBe("value");
+  });
+
+  it("handles irregular indentation in objects", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+packages:
+  test-pkg:
+    kind: library
+    obj:
+      key1: val1
+        irregular: val2
+      key2: val3
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect((manifest.packages["test-pkg"] as any).obj.key1).toBe("val1");
+  });
+
+  it("handles list ending with a key at same indent", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+packages:
+  test-pkg:
+    kind: library
+    list:
+      - item1
+      not-a-list-item: value
+    key: value
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect((manifest.packages["test-pkg"] as any).list).toEqual(["item1"]);
+    // 'key' is missing because the irregular indent of 'not-a-list-item' broke the object parser
+    expect((manifest.packages["test-pkg"] as any).key).toBeUndefined();
+  });
+
+  it("handles empty values in inline list maps", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+packages:
+  test-pkg:
+    kind: library
+    list:
+      - key: 
+      - other: value
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect((manifest.packages["test-pkg"] as any).list).toEqual([{ key: null }, { other: "value" }]);
+  });
+
+  it("handles real numeric values in YAML", async () => {
+    const yaml = `
+defaults:
+  scope: "@spike-land-ai"
+  registry: npm.pkg.github.com
+  license: MIT
+  type: module
+
+packages:
+  test-pkg:
+    kind: library
+    max_tokens: 100
+`;
+    const tmp = await createTempManifest(yaml);
+    root = tmp.root;
+    cleanup = tmp.cleanup;
+
+    const manifest = await readManifest(root);
+    expect((manifest.packages["test-pkg"] as any).max_tokens).toBe(100);
+  });
 });

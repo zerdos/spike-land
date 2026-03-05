@@ -466,4 +466,73 @@ describe("createMcpBridge", () => {
     });
     expect(result.content[0].text).toBe("hi");
   });
+
+  it("openclaw_feedback tool sends report to API", async () => {
+    const transport = mockTransport();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: "bug-123" }),
+    }));
+
+    const bridge = createMcpBridge({
+      transport,
+      serverInfo: { name: "test", version: "0.0.1" },
+    });
+
+    const result = await bridge.callTool("openclaw_feedback", {
+      title: "Something broke",
+      description: "It doesn't work",
+      severity: "high",
+    });
+
+    expect(fetch).toHaveBeenCalledWith(
+      "https://spike.land/api/bugbook/report",
+      expect.objectContaining({
+        method: "POST",
+        body: expect.stringContaining("Something broke"),
+      }),
+    );
+    expect(result.content[0].text).toContain("bug-123");
+    vi.unstubAllGlobals();
+  });
+
+  it("openclaw_feedback returns error on fetch failure", async () => {
+    const transport = mockTransport();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      text: async () => "API Error",
+    }));
+
+    const bridge = createMcpBridge({
+      transport,
+      serverInfo: { name: "test", version: "0.0.1" },
+    });
+
+    const result = await bridge.callTool("openclaw_feedback", {
+      title: "Fail",
+      description: "Fail",
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("API Error");
+    vi.unstubAllGlobals();
+  });
+
+  it("loadGatewayTools handles missing tools property in response", async () => {
+    const transport = mockTransport();
+    transport.request.mockResolvedValue({
+      // missing tools property
+      sessionKey: "agent:test:test",
+    });
+
+    const bridge = createMcpBridge({
+      transport,
+      serverInfo: { name: "test", version: "0.0.1" },
+    });
+
+    await bridge.loadGatewayTools();
+    const tools = bridge.listTools();
+    // Should only have built-in tools
+    expect(tools).toHaveLength(2);
+  });
 });

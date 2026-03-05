@@ -259,6 +259,38 @@ export default defineConfig({
     },
   },
 
+  // ── google-analytics-mcp ────────────────────────────────
+  {
+    test: {
+      name: "google-analytics-mcp",
+      ...forksPoolConfig,
+      include: [tests("google-analytics-mcp/**/*.test.ts")],
+      reporters: [path.join(root, "vitest-minimal-reporter.ts")],
+      coverage: {
+        provider: "v8",
+        include: [src("google-analytics-mcp/**/*.ts")],
+        exclude: [...commonCoverageExclude, "**/index.ts"],
+        thresholds: tier2Thresholds,
+      },
+    },
+  },
+
+  // ── google-ads-mcp ──────────────────────────────────────
+  {
+    test: {
+      name: "google-ads-mcp",
+      ...forksPoolConfig,
+      include: [tests("google-ads-mcp/**/*.test.ts")],
+      reporters: [path.join(root, "vitest-minimal-reporter.ts")],
+      coverage: {
+        provider: "v8",
+        include: [src("google-ads-mcp/**/*.ts")],
+        exclude: [...commonCoverageExclude, "**/index.ts"],
+        thresholds: tier2Thresholds,
+      },
+    },
+  },
+
   // ── hackernews-mcp ───────────────────────────────────────
   {
     test: {
@@ -635,6 +667,22 @@ export default defineConfig({
           "**/spike-review/worker/**",
           "**/index.ts",
         ],
+        thresholds: tier2Thresholds,
+      },
+    },
+  },
+
+  // ── stripe-analytics-mcp ────────────────────────────────
+  {
+    test: {
+      name: "stripe-analytics-mcp",
+      ...forksPoolConfig,
+      include: [tests("stripe-analytics-mcp/**/*.test.ts")],
+      reporters: [path.join(root, "vitest-minimal-reporter.ts")],
+      coverage: {
+        provider: "v8",
+        include: [src("stripe-analytics-mcp/**/*.ts")],
+        exclude: [...commonCoverageExclude, "**/index.ts"],
         thresholds: tier2Thresholds,
       },
     },

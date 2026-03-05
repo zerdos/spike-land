@@ -98,15 +98,17 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
     }
 
     const sessionKey = toolList.sessionKey ?? defaultSessionKey;
-    for (const tool of toolList.tools) {
-      toolRegistry.set(tool.name, {
-        name: tool.name,
-        description: tool.description ?? "",
-        inputSchema: tool.parameters ?? { type: "object", properties: {} },
-        sessionKey,
-      });
+    if (toolList.tools) {
+      for (const tool of toolList.tools) {
+        toolRegistry.set(tool.name, {
+          name: tool.name,
+          description: tool.description ?? "",
+          inputSchema: tool.parameters ?? { type: "object", properties: {} },
+          sessionKey,
+        });
+      }
+      log(`loaded ${toolList.tools.length} tools from gateway (session: ${sessionKey})`);
     }
-    log(`loaded ${toolList.tools.length} tools from gateway (session: ${sessionKey})`);
   }
 
   async function executeChatTool(args: Record<string, unknown>): Promise<McpCallResult> {

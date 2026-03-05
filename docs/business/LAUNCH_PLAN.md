@@ -596,7 +596,7 @@ Support Email (support@spike.land)
 
 | Channel                | Use For                 | Owner         |
 | ---------------------- | ----------------------- | ------------- |
-| Twitter (@spike_land)  | Status updates, outages | Marketing/Ops |
+| Twitter (@ai_spike_land) | Status updates, outages | Marketing/Ops |
 | Status Page (optional) | Real-time status        | DevOps        |
 | Support Email          | User inquiries          | Support team  |
 | Blog                   | Post-mortems, updates   | Team lead     |

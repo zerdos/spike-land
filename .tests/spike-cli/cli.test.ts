@@ -90,4 +90,44 @@ describe("cli", () => {
     logger.setVerbose(false);
   });
 
+  it("handles alias loading failure silently", async () => {
+    const store = await import("../../src/spike-cli/alias/store");
+    vi.mocked(store.loadAliases).mockRejectedValue(new Error("load failed"));
+
+    process.argv = ["node", "spike", "status"];
+    // Should not throw
+    await main();
+    expect(process.argv[2]).toBe("status");
+  });
+
+  it("handles non-alias command", async () => {
+    const store = await import("../../src/spike-cli/alias/store");
+    vi.mocked(store.loadAliases).mockResolvedValue({
+      commands: { st: "status" },
+    } as any);
+
+    process.argv = ["node", "spike", "not-an-alias"];
+    await main();
+    expect(process.argv[2]).toBe("not-an-alias");
+  });
+
+  it("preAction hook does not set verbose when --verbose is missing", async () => {
+    const logger = await import("../../src/spike-cli/util/logger");
+    const setVerboseSpy = vi.spyOn(logger, "setVerbose");
+
+    vi.spyOn(program, "parse").mockImplementation(() => {
+      const hooks = (program as any)._lifeCycleHooks;
+      if (hooks?.["preAction"]) {
+        for (const hook of hooks["preAction"]) {
+          hook({ opts: () => ({ verbose: false }) });
+        }
+      }
+      return program;
+    });
+
+    process.argv = ["node", "spike", "status"];
+    await main();
+
+    expect(setVerboseSpy).not.toHaveBeenCalledWith(true);
+  });
 });

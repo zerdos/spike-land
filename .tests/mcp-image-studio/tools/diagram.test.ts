@@ -270,4 +270,36 @@ describe("diagram", () => {
     expect(result.content[0].text).toContain("GENERATION_FAILED");
     expect(result.content[0].text).toContain("Failed to create diagram job");
   });
+
+  it("should return GENERATION_FAILED when fallback createGenerationJob throws", async () => {
+    const ctx: ToolContext = { userId, deps };
+    delete (deps.generation as any).createAdvancedGenerationJob;
+    mocks.generation.createGenerationJob.mockRejectedValue(new Error("Network fail"));
+
+    const result = await diagram({ prompt: "Diagram" }, ctx);
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("Network fail");
+  });
+
+  it("should return GENERATION_FAILED when advanced createAdvancedGenerationJob throws", async () => {
+    const ctx: ToolContext = { userId, deps };
+    mocks.generation.createAdvancedGenerationJob.mockRejectedValue(new Error("Advanced fail"));
+
+    const result = await diagram({ prompt: "Diagram" }, ctx);
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("Advanced fail");
+  });
+
+  it("should return GENERATION_FAILED with fallback string when advanced job fails without error msg", async () => {
+    const ctx: ToolContext = { userId, deps };
+    mocks.generation.createAdvancedGenerationJob.mockResolvedValue({
+      success: false,
+    });
+
+    const result = await diagram({ prompt: "Any prompt" }, ctx);
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("GENERATION_FAILED");
+    expect(result.content[0].text).toContain("Failed to create diagram job");
+  });
 });

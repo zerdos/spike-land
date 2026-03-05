@@ -5,12 +5,22 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   extractInternalDeps,
+  findMonorepoRoot,
   getAlwaysAllowedPaths,
   isPathAllowed,
   packageNameToPath,
   resolveWorkspacePaths,
 } from "../../src/bazdmeg-mcp/workspace-resolver.js";
 import { createFakeMonorepo } from "./__test-utils__/fixtures.js";
+import { resolve } from "node:path";
+
+describe("findMonorepoRoot", () => {
+  it("resolves the provided path", () => {
+    const startPath = "./some/path";
+    const expected = resolve(startPath);
+    expect(findMonorepoRoot(startPath)).toBe(expected);
+  });
+});
 
 describe("extractInternalDeps", () => {
   it("extracts @spike-land-ai deps from dependencies", () => {

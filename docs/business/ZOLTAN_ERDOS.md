@@ -24,7 +24,7 @@
 | Email     | zoltan.erdos@spike.land                                      |
 | GitHub    | [github.com/zerdos](https://github.com/zerdos)               |
 | LinkedIn  | [linkedin.com/in/zerdos](https://www.linkedin.com/in/zerdos) |
-| Twitter/X | [@ZoltanErdos](https://x.com/ZoltanErdos)                    |
+| Twitter/X | [@ai_spike_land](https://x.com/ai_spike_land)                |
 | Website   | [spike.land](https://spike.land)                             |
 
 ---

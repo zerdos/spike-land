@@ -281,5 +281,65 @@ describe("formatGateResults", () => {
     expect(text).toContain("Test Gate");
     expect(text).toContain("All good");
     expect(text).toContain("Overall: GREEN");
+    expect(text).toContain("All quality gates passing");
+  });
+
+  it("formats reports with RED status correctly", () => {
+    const gates: GateResult[] = [
+      { name: "Tests", status: "RED", detail: "Missing" },
+    ];
+    const output = formatGateResults(gates);
+    expect(output).toContain("Overall: RED");
+    expect(output).toContain("Issues must be addressed");
+  });
+
+  it("formats reports with YELLOW status correctly", () => {
+    const gates: GateResult[] = [
+      { name: "Size", status: "YELLOW", detail: "Large" },
+    ];
+    const output = formatGateResults(gates);
+    expect(output).toContain("Overall: YELLOW");
+    expect(output).toContain("Minor concerns noted");
+  });
+});
+
+describe("Diff parsing edge cases", () => {
+  it("getChangedFiles handles non-git diff headers", () => {
+    const diff = "+++ b/src/only-plus.ts\n+ new line";
+    const files = getChangedFiles(diff);
+    expect(files).toEqual(["src/only-plus.ts"]);
+  });
+
+  it("detects @ts-nocheck and various security patterns", () => {
+    const diff = [
+      "+// @ts-nocheck",
+      "+const password = '123';",
+      "+const token = 'test-fake-value';",
+    ].join("\n");
+    const ctx = makeContext({ diff });
+    const rules = getBuiltinRules();
+    
+    const complianceRule = rules.find(r => r.name === "TypeScript Strict Compliance")!;
+    expect(complianceRule.check(ctx).status).toBe("RED");
+    expect(complianceRule.check(ctx).detail).toContain("@ts-nocheck");
+
+    const securityRule = rules.find(r => r.name === "Security Patterns")!;
+    const res = securityRule.check(ctx);
+    expect(res.status).toBe("RED");
+    expect(res.detail).toContain("Hardcoded password");
+    expect(res.detail).toContain("Potential secret/token");
+  });
+});
+
+describe("Workspace scope edge cases", () => {
+  it("Workspace Scope Compliance uses ellipsis for many files", () => {
+    const ctx = makeContext({
+      files: ["a.ts", "b.ts", "c.ts", "d.ts", "e.ts"],
+      allowedPaths: ["src/"],
+    });
+    const rule = getBuiltinRules().find(r => r.name === "Workspace Scope Compliance")!;
+    const res = rule.check(ctx);
+    expect(res.status).toBe("RED");
+    expect(res.detail).toContain("...");
   });
 });

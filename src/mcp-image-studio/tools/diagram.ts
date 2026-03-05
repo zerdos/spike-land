@@ -58,7 +58,6 @@ export const diagramTool = imageProcedure
       if (!jobRes.ok) {
         return errorResult("GENERATION_FAILED", jobRes.error.message, true);
       }
-      /* v8 ignore next */
       if (!jobRes.data?.success) {
         return errorResult(
           "GENERATION_FAILED",

@@ -90,4 +90,41 @@ describe("checkRateLimit", () => {
     expect(result.resetAt).toBeGreaterThanOrEqual(before + windowMs);
     expect(result.resetAt).toBeLessThanOrEqual(after + windowMs);
   });
+
+  it("handles corrupted JSON in KV by resetting", async () => {
+    // Manually put invalid JSON into KV
+    await kv.put("rl:corrupted", "invalid-json");
+
+    // Should not throw, should treat as a new window
+    const result = await checkRateLimit("corrupted", kv);
+    expect(result.isLimited).toBe(false);
+    expect(result.remaining).toBeGreaterThan(0);
+  });
+
+  it("applies eloMultiplier to reduce the limit", async () => {
+    const maxRequests = 10;
+    const eloMultiplier = 2;
+    // effectiveMax = floor(10 / 2) = 5
+
+    // Exhaust the reduced limit
+    for (let i = 0; i < 5; i++) {
+      const res = await checkRateLimit("elo-key", kv, maxRequests, 60_000, eloMultiplier);
+      expect(res.isLimited).toBe(false);
+    }
+
+    const result = await checkRateLimit("elo-key", kv, maxRequests, 60_000, eloMultiplier);
+    expect(result.isLimited).toBe(true);
+  });
+
+  it("ensures minimum effective limit of 1", async () => {
+    const maxRequests = 10;
+    const eloMultiplier = 100; // 10 / 100 = 0.1 -> should be 1
+
+    const result = await checkRateLimit("min-key", kv, maxRequests, 60_000, eloMultiplier);
+    expect(result.isLimited).toBe(false);
+    expect(result.remaining).toBe(0); // 1 request allowed, 1st request makes remaining 0
+
+    const limited = await checkRateLimit("min-key", kv, maxRequests, 60_000, eloMultiplier);
+    expect(limited.isLimited).toBe(true);
+  });
 });

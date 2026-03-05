@@ -63,12 +63,24 @@ export function createMockD1(
         return stmt;
       },
       first: async () => {
+        console.log('D1 first:', sql, boundValues);
         const result = handler(sql, boundValues);
         return result.results[0] ?? null;
       },
-      all: async () => handler(sql, boundValues),
-      run: async () => handler(sql, boundValues),
-      raw: async () => handler(sql, boundValues).results,
+      all: async () => {
+        console.log('D1 all:', sql, boundValues);
+        return handler(sql, boundValues);
+      },
+      run: async () => {
+        console.log('D1 run:', sql, boundValues);
+        return handler(sql, boundValues);
+      },
+      raw: async () => {
+        console.log('D1 raw:', sql, boundValues);
+        const result = handler(sql, boundValues);
+        // D1 raw() returns array of arrays (rows)
+        return result.results.map((row) => Object.values(row));
+      },
     };
 
     return stmt;

@@ -73,7 +73,7 @@ interface ParseResult {
 
 function getIndent(line: string): number {
   const match = line.match(/^(\s*)/);
-  return match ? match[1]!.length : 0;
+  return match![1].length;
 }
 
 function isComment(line: string): boolean {
@@ -167,11 +167,8 @@ function parseList(lines: string[], start: number, baseIndent: number): ParseRes
     if (itemContent.includes(":")) {
       // Collect the inline map + any continuation lines
       const mapObj: Record<string, unknown> = {};
-      const firstPair = itemContent.match(/^([^:]+?):\s*(.*)/);
-      if (firstPair) {
-        mapObj[firstPair[1]!.trim()] = parseScalar(firstPair[2]!.trim());
-      }
-
+      const firstPair = itemContent.match(/^([^:]+?):\s*(.*)/)!;
+      mapObj[firstPair[1]!.trim()] = parseScalar(firstPair[2]!.trim());
       // Check for continuation lines at deeper indent
       let j = i + 1;
       const itemIndent = indent + 2;
@@ -220,7 +217,7 @@ function parseScalar(value: string): string | number | boolean | null {
 
   // Try number
   const num = Number(clean);
-  if (!isNaN(num) && clean !== "") return num;
+  if (!isNaN(num)) return num;
 
   return clean;
 }

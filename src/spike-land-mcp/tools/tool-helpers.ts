@@ -111,7 +111,7 @@ export interface ClassifiedToolError {
   retryable: boolean;
 }
 
-function classifyError(error: unknown, toolName: string): ClassifiedToolError {
+export function classifyError(error: unknown, toolName: string): ClassifiedToolError {
   if (error instanceof McpError) {
     return {
       code: error.code,

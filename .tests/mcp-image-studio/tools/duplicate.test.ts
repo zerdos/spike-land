@@ -168,4 +168,27 @@ describe("duplicate", () => {
     // Ensure tags are a copy, not same reference
     expect(createCall.tags).not.toBe(image.tags);
   });
+
+  it("should return DOWNLOAD_FAILED when storage download fails", async () => {
+    const ctx: ToolContext = { userId, deps };
+    mocks.resolverMocks.resolveImage.mockResolvedValue(mockImageRow({ userId }));
+    mocks.storage.download.mockRejectedValue(new Error("Download fail"));
+
+    const result = await duplicate({ image_id: "img-1" }, ctx);
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("DOWNLOAD_FAILED");
+  });
+
+  it("should return UPLOAD_FAILED when storage upload fails", async () => {
+    const ctx: ToolContext = { userId, deps };
+    mocks.resolverMocks.resolveImage.mockResolvedValue(mockImageRow({ userId }));
+    mocks.storage.download.mockResolvedValue(Buffer.from("data"));
+    mocks.storage.upload.mockRejectedValue(new Error("Upload fail"));
+
+    const result = await duplicate({ image_id: "img-1" }, ctx);
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("UPLOAD_FAILED");
+  });
 });

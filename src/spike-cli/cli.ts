@@ -98,9 +98,11 @@ export async function main(): Promise<void> {
   program.parse();
 }
 
+/* v8 ignore start */
 if (process.env.NODE_ENV !== "test") {
   main().catch((err) => {
     console.error(`spike: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   });
 }
+/* v8 ignore stop */
