@@ -14,19 +14,30 @@ import {
 import { z } from "zod";
 
 import { closeTab, getActiveTab, getOrCreateTab, getPageSnapshot, listTabs } from "./browser-session.js";
-import { narrate, narrateSection, findElementByRef } from "./narrate.js";
+import { narrate, narrateSection, narrateCompact, narrateCompactSection, findElementByRef } from "./narrate.js";
 import type { AccessibilityNode } from "./types.js";
 
-async function narrateCurrentPage(landmark?: string): Promise<string> {
+async function narrateCurrentPage(
+  landmark?: string,
+  detail: "compact" | "full" | "landmark" = "compact",
+): Promise<string> {
   const snapshot = await getPageSnapshot();
   if (!snapshot) return "No active browser tab. Use web_navigate first.";
   if (!snapshot.tree) return `[Page: "${snapshot.title}" - ${snapshot.url}]\n[Empty page - no accessibility tree]`;
 
-  if (landmark) {
-    const result = narrateSection(snapshot.tree, landmark, snapshot.title, snapshot.url);
+  if (detail === "landmark" && landmark) {
+    const result = narrateCompactSection(snapshot.tree, landmark, snapshot.title, snapshot.url);
     return result.text;
   }
-  const result = narrate(snapshot.tree, snapshot.title, snapshot.url);
+
+  if (landmark) {
+    const fn = detail === "compact" ? narrateCompactSection : narrateSection;
+    const result = fn(snapshot.tree, landmark, snapshot.title, snapshot.url);
+    return result.text;
+  }
+
+  const fn = detail === "compact" ? narrateCompact : narrate;
+  const result = fn(snapshot.tree, snapshot.title, snapshot.url);
   return result.text;
 }
 
@@ -69,10 +80,13 @@ export function registerWebTools(server: McpServer): void {
     schema: {
       landmark: z.string().optional()
         .describe("Landmark to read (e.g. 'main', 'banner', 'navigation', 'contentinfo')"),
+      detail: z.enum(["compact", "full", "landmark"]).optional()
+        .describe("compact (default, token-efficient) | full (verbose) | landmark (single section)"),
     },
     async handler(args) {
       const landmark = args.landmark as string | undefined;
-      const text = await narrateCurrentPage(landmark);
+      const detail = (args.detail as "compact" | "full" | "landmark" | undefined) ?? "compact";
+      const text = await narrateCurrentPage(landmark, detail);
       return textResult(text);
     },
   });

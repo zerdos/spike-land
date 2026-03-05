@@ -19,7 +19,11 @@ packages/my-spacetime-app/
 *.log
 out/
 generate-images.ts
+# Terraform
 .terraform/
-terraform.tfstate
-terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
 terraform.tfvars
+
+# Local dev certs
+.dev-certs/

@@ -1,5 +1,13 @@
 # Incremental Coverage Report
 
+## Infrastructure Status
+
+Cloudflare Pro plan with Terraform-managed WAF, cache rules, rate limiting, and
+speed optimizations. See [infrastructure/CLOUDFLARE_SETUP.md](infrastructure/CLOUDFLARE_SETUP.md)
+for details. 8/9 resources active (bot_management requires Enterprise). 8 workers
+deployed via CI/CD (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend,
+transpile, spike-review, image-studio-worker, spike-agent).
+
 ## 100% Coverage ✅ (147)
 
 - [ ] src/state-machine/visualizer-template.ts (via .tests/state-machine/visualizer-template.test.ts)

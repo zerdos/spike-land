@@ -30,7 +30,7 @@ export interface ToolInfo {
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const geminiKey = localStorage.getItem("gemini_api_key");
+  const geminiKey = sessionStorage.getItem("gemini_api_key");
   const imageModel = localStorage.getItem("pref_image_model");
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -132,7 +132,7 @@ export async function uploadToGallery(
   if (opts?.tags?.length) formData.append("tags", JSON.stringify(opts.tags));
   if (opts?.albumId) formData.append("albumId", opts.albumId);
 
-  const geminiKey = localStorage.getItem("gemini_api_key");
+  const geminiKey = sessionStorage.getItem("gemini_api_key");
   const res = await fetch(`${API_BASE}/api/gallery/upload`, {
     method: "POST",
     headers: {

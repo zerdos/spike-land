@@ -531,6 +531,52 @@ export const whatsappMessageLog = sqliteTable(
   }),
 );
 
+// ─── Persona Audit Batches ────────────────────────────────────────────────────
+
+export const personaAuditBatches = sqliteTable(
+  "persona_audit_batches",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    status: text("status").notNull().default("pending"), // "pending" | "in_progress" | "completed"
+    totalPersonas: integer("total_personas").notNull().default(16),
+    completedCount: integer("completed_count").notNull().default(0),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    completedAt: integer("completed_at", { mode: "number" }),
+  },
+  (t) => ({
+    userIdx: index("idx_pab_user").on(t.userId),
+  }),
+);
+
+// ─── Persona Audit Results ───────────────────────────────────────────────────
+
+export const personaAuditResults = sqliteTable(
+  "persona_audit_results",
+  {
+    id: text("id").primaryKey(),
+    batchId: text("batch_id").notNull(),
+    personaSlug: text("persona_slug").notNull(),
+    agentId: text("agent_id"),
+    uxScore: integer("ux_score").notNull(),
+    contentRelevance: integer("content_relevance").notNull(),
+    ctaCompelling: integer("cta_compelling").notNull(),
+    recommendedAppsRelevant: integer("recommended_apps_relevant").notNull(),
+    wouldSignUp: integer("would_sign_up").notNull(),
+    blockers: text("blockers").notNull().default(""),
+    highlights: text("highlights").notNull().default(""),
+    accessibilityIssues: text("accessibility_issues").notNull().default("[]"),
+    brokenLinks: text("broken_links").notNull().default("[]"),
+    performanceNotes: text("performance_notes").notNull().default(""),
+    rawPlanId: text("raw_plan_id"),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    batchIdx: index("idx_par_batch").on(t.batchId),
+    personaIdx: index("idx_par_persona").on(t.personaSlug),
+  }),
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ many }) => ({

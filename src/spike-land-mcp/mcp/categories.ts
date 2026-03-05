@@ -244,6 +244,10 @@ export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   "tabletop-state":
     "Game state persistence, chat messaging, and custom asset uploading for tabletop simulator",
 
+  // Persona Audit
+  persona:
+    "beUniq persona quiz, site audit plan generation, and cross-persona evaluation questionnaire",
+
   // Dev-only (localhost)
   dev: "Local dev workflow: server logs, git/CI status, file guard, agent notifications",
   "qa-studio":
@@ -307,4 +311,7 @@ export const CATEGORY_AUDIENCES: Record<string, CategoryAudience> = {
   admin: "platform",
   workspaces: "platform",
   notifications: "platform",
+
+  // Persona
+  persona: "domain",
 };

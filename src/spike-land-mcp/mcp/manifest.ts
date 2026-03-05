@@ -91,6 +91,9 @@ import { registerBuildFromGithubTools } from "../tools/build-from-github";
 import { registerQuizTools } from "../tools/quiz";
 import { registerBugbookFeedbackTools } from "../tools/bugbook-feedback";
 import { registerByokTools } from "../tools/byok";
+import { registerBeUniqTools } from "../tools/persona/beuniq";
+import { registerPlanGeneratorTools } from "../tools/persona/plan-generator";
+import { registerAuditQuestionnaireTools } from "../tools/persona/audit-questionnaire";
 
 /**
  * Safely call a register function, catching and logging errors.
@@ -191,4 +194,7 @@ export async function registerAllTools(
   safeRegister(registerQuizTools, "registerQuizTools", registry, userId, db, env);
   safeRegister(registerBugbookFeedbackTools, "registerBugbookFeedbackTools", registry, userId, db, env?.spikeEdge, env?.mcpInternalSecret);
   safeRegister(registerByokTools, "registerByokTools", registry, userId, db, env?.kv, env?.vaultSecret);
+  safeRegister(registerBeUniqTools, "registerBeUniqTools", registry, userId, db);
+  safeRegister(registerPlanGeneratorTools, "registerPlanGeneratorTools", registry, userId, db);
+  safeRegister(registerAuditQuestionnaireTools, "registerAuditQuestionnaireTools", registry, userId, db);
 }

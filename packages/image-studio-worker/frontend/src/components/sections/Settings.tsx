@@ -24,14 +24,15 @@ export function Settings() {
   const [thinkingBudget, setThinkingBudget] = useState("off");
 
   useEffect(() => {
-    setApiKey(localStorage.getItem("gemini_api_key") || "");
+    // sessionStorage: API key cleared on tab close to limit exposure window
+    setApiKey(sessionStorage.getItem("gemini_api_key") || "");
     setTextModel(localStorage.getItem("pref_text_model") || "gemini-3-flash-preview");
     setImageModel(localStorage.getItem("pref_image_model") || "gemini-3.1-flash-image-preview");
     setThinkingBudget(localStorage.getItem("pref_thinking_budget") || "off");
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem("gemini_api_key", apiKey);
+    sessionStorage.setItem("gemini_api_key", apiKey);
     localStorage.setItem("pref_text_model", textModel);
     localStorage.setItem("pref_image_model", imageModel);
     localStorage.setItem("pref_thinking_budget", thinkingBudget);
@@ -64,7 +65,7 @@ export function Settings() {
   };
 
   const handleClear = () => {
-    localStorage.removeItem("gemini_api_key");
+    sessionStorage.removeItem("gemini_api_key");
     setApiKey("");
     setIsValidatingStatus("idle");
   };

@@ -2,8 +2,11 @@
 
 ## Overview
 
-QA Studio browser automation utilities for spike.land, built on Playwright.
-Published as `@spike-land-ai/qa-studio`, runs in Node.js.
+QA Studio browser automation utilities for spike.land. Dual runtime:
+- **Node.js CLI**: Playwright adapter (local dev, CI)
+- **Cloudflare Workers**: Puppeteer adapter (Browser Rendering API, production)
+
+Published as `@spike-land-ai/qa-studio`.
 
 ## Commands
 
@@ -19,34 +22,60 @@ npm run lint          # ESLint
 ## Architecture
 
 ```
-├── index.ts           # Main entry (re-exports)
-├── types.ts           # TypeScript type definitions
-└── browser-session.ts # Playwright browser session management
+src/qa-studio/
+  adapter.ts              # BrowserAdapter + BrowserPage interfaces, shared rebuildTree()
+  adapter-playwright.ts   # Playwright impl (Node.js)
+  adapter-puppeteer.ts    # @cloudflare/puppeteer impl (CF Workers)
+  browser-session.ts      # Thin facade: tab management, idle timeout, snapshots
+  narrate.ts              # Full + compact narration engines
+  tools.ts                # 10 MCP tools (web_navigate, web_read, etc.)
+  types.ts                # TypeScript type definitions
+  session-do.ts           # BrowserSessionDO Durable Object
+  worker-entry.ts         # Hono app (CF Workers entry)
+  env.ts                  # Workers Env bindings type
+  mcp-server.ts           # Node.js MCP server entry (STDIO/HTTP)
+  http-server.ts          # Express SSE transport (legacy, to be removed)
+  index.ts                # Re-exports
+
+packages/qa-studio/
+  wrangler.toml           # Deploy config for CF Workers
+  package.json            # npm package config
 ```
 
-**Peer dependency**: `playwright` (>=1.0.0).
+### Adapter Pattern
+
+`BrowserAdapter` + `BrowserPage` interfaces in `adapter.ts` abstract away the
+browser backend. Both adapters use CDP `Accessibility.getFullAXTree` via the
+shared `rebuildTree()` function to produce identical `AccessibilityNode` trees.
+
+### Narration Modes
+
+- **compact** (default): Token-efficient, ~40-60% smaller. Short landmark names,
+  collapsed interactive siblings, truncated text.
+- **full**: Verbose, screen-reader style. All details.
+- **landmark**: Compact narration of a single landmark section.
+
+### MCP Server Modes
+
+1. **STDIO Transport**: `npm run mcp` (default, local dev)
+2. **HTTP Transport**: `npm run mcp:http` (Express SSE, local web UI)
+3. **CF Workers**: `cd packages/qa-studio && npx wrangler deploy`
+
+## Peer Dependencies
+
+- `playwright` (optional, for Node.js CLI mode)
+- `@cloudflare/puppeteer` (for Workers mode, bundled)
 
 ## Code Quality Rules
 
-- Never use `any` type — use `unknown` or proper types
+- Never use `any` type - use `unknown` or proper types
 - Never add `eslint-disable` or `@ts-ignore` comments
 - TypeScript strict mode
 - All business logic must have test coverage
-
-## MCP Server & HTTP Transport
-
-The package provides an MCP server which can run in two modes:
-1. **STDIO Transport**: Default behavior.
-2. **HTTP Transport**: Run with `--http` flag to expose a local web server (defaults to port 3100). This enables visual Web UI connections from `spike-app`.
-
-```bash
-npm run mcp           # STDIO mode
-npm run mcp:visible   # STDIO mode with visible browser
-npm run mcp:http      # HTTP mode for Web UI
-```
 
 ## CI/CD
 
 - Shared workflow: `.github/.github/workflows/ci-publish.yml`
 - Changesets for versioning
 - Publishes to GitHub Packages (`@spike-land-ai/*`)
+- Workers deploy: `cd packages/qa-studio && npx wrangler deploy`

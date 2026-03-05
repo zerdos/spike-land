@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   readFileSync,
@@ -119,8 +119,14 @@ function injectBuildMeta(distDir: string, sha: string, time: string): void {
 
 function uploadFile(filePath: string, key: string): void {
   const contentType = getContentType(filePath);
-  execSync(
-    `yarn wrangler r2 object put "${R2_BUCKET}/${key}" --file "${filePath}" --content-type "${contentType}" --remote`,
+  execFileSync(
+    "yarn",
+    [
+      "wrangler", "r2", "object", "put", `${R2_BUCKET}/${key}`,
+      "--file", filePath,
+      "--content-type", contentType,
+      "--remote",
+    ],
     { cwd: process.cwd(), stdio: ["pipe", "pipe", "pipe"] },
   );
 }

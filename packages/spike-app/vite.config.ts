@@ -2,6 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
+import { existsSync, readFileSync } from "fs";
+
+const certDir = resolve(import.meta.dirname, "../../.dev-certs");
+const certFile = resolve(certDir, "local.spike.land.pem");
+const keyFile = resolve(certDir, "local.spike.land-key.pem");
+const hasLocalCerts = existsSync(certFile) && existsSync(keyFile);
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -16,9 +22,29 @@ export default defineConfig({
     },
   },
   server: {
+    fs: {
+      allow: [resolve(import.meta.dirname, "../..")],
+    },
+    ...(hasLocalCerts
+      ? {
+          host: "local.spike.land",
+          https: {
+            key: readFileSync(keyFile),
+            cert: readFileSync(certFile),
+          },
+        }
+      : {}),
     proxy: {
-      "/api": "http://localhost:8787",
-      "/mcp": "http://localhost:8787",
+      "/api": {
+        target: "https://spike.land",
+        changeOrigin: true,
+        secure: true,
+      },
+      "/mcp": {
+        target: "https://spike.land",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
   build: {

@@ -123,7 +123,7 @@ export function useChat(): UseChatReturn {
           content: m.content,
         }));
 
-        const geminiKey = localStorage.getItem("gemini_api_key");
+        const geminiKey = sessionStorage.getItem("gemini_api_key");
         const textModel = localStorage.getItem("pref_text_model");
         const thinkingBudget = localStorage.getItem("pref_thinking_budget");
 

@@ -277,6 +277,222 @@ function findLandmark(
   return null;
 }
 
+// ─── Compact Narration ───────────────────────────────────────────────────────
+
+const LANDMARK_SHORT: Record<string, string> = {
+  banner: "banner",
+  navigation: "nav",
+  main: "main",
+  complementary: "aside",
+  contentinfo: "footer",
+  form: "form",
+  region: "region",
+  search: "search",
+};
+
+const HEADING_SHORT: Record<number, string> = {
+  1: "h1",
+  2: "h2",
+  3: "h3",
+  4: "h4",
+  5: "h5",
+  6: "h6",
+};
+
+function truncate(s: string, max: number): string {
+  return s.length > max ? s.slice(0, max - 1) + "\u2026" : s;
+}
+
+function shortUrl(url: string): string {
+  return url.replace(/^https?:\/\//, "");
+}
+
+function compactStates(node: AccessibilityNode): string {
+  const parts: string[] = [];
+  if (node.checked === true) parts.push("checked");
+  if (node.checked === "mixed") parts.push("mixed");
+  if (node.disabled) parts.push("disabled");
+  if (node.expanded === true) parts.push("expanded");
+  if (node.expanded === false) parts.push("collapsed");
+  if (node.selected) parts.push("selected");
+  if (node.pressed === true) parts.push("pressed");
+  if (node.pressed === "mixed") parts.push("mixed-pressed");
+  return parts.length > 0 ? ` (${parts.join(",")})` : "";
+}
+
+function compactInteractive(node: AccessibilityNode, ref: number): string {
+  const name = node.name ? ` ${truncate(node.name, 40)}` : "";
+  const val = node.value !== undefined && node.value !== ""
+    ? `="${truncate(node.value, 30)}"`
+    : "";
+  const states = compactStates(node);
+  return `${name}${val}${states} ref=${ref}`;
+}
+
+function narrateCompactNode(
+  node: AccessibilityNode,
+  state: NarrationState,
+  depth: number,
+  lines: string[],
+  siblings: AccessibilityNode[],
+  siblingIndex: number,
+): void {
+  if (shouldSkip(node)) {
+    for (const child of node.children ?? []) {
+      narrateCompactNode(child, state, depth, lines, node.children ?? [], (node.children ?? []).indexOf(child));
+    }
+    return;
+  }
+
+  const indent = "  ".repeat(depth);
+
+  if (isLandmark(node.role)) {
+    const short = LANDMARK_SHORT[node.role] ?? node.role;
+    const label = node.name ? `${short} "${truncate(node.name, 30)}"` : short;
+    lines.push(`${indent}[${label}]`);
+    const children = node.children ?? [];
+    for (let i = 0; i < children.length; i++) {
+      narrateCompactNode(children[i]!, state, depth + 1, lines, children, i);
+    }
+    return;
+  }
+
+  if (shouldAssignRef(node.role)) {
+    const ref = state.nextRef++;
+    state.refMap.set(ref, node);
+    state.elements.push({
+      ref,
+      role: node.role,
+      ...(node.name !== undefined ? { name: node.name } : {}),
+      ...(node.value !== undefined ? { value: node.value } : {}),
+      states: getStates(node),
+      ...(node.level !== undefined ? { level: node.level } : {}),
+      depth,
+    });
+
+    // Collapse consecutive interactive siblings on the same line
+    const isGroupable = node.role !== "heading" && node.role !== "textbox" &&
+      node.role !== "searchbox" && node.role !== "combobox" &&
+      node.role !== "slider" && node.role !== "spinbutton";
+
+    if (isGroupable && siblingIndex > 0) {
+      const prev = siblings[siblingIndex - 1];
+      if (prev && shouldAssignRef(prev.role) && prev.role !== "heading" &&
+          prev.role !== "textbox" && prev.role !== "searchbox") {
+        // Append to previous line with pipe separator
+        const lastLine = lines[lines.length - 1];
+        if (lastLine && !lastLine.endsWith("]")) {
+          lines[lines.length - 1] = `${lastLine} | ${node.role}${compactInteractive(node, ref)}`;
+          return;
+        }
+      }
+    }
+
+    const role = node.role === "heading"
+      ? `[${HEADING_SHORT[node.level ?? 1] ?? `h${node.level}`}]`
+      : `[${node.role}]`;
+    lines.push(`${indent}${role}${compactInteractive(node, ref)}`);
+    return;
+  }
+
+  // Static text
+  if (node.role === "text" || node.role === "StaticText") {
+    if (node.name) {
+      lines.push(`${indent}[text] ${truncate(node.name, 80)}`);
+    }
+    return;
+  }
+
+  // Other roles — recurse
+  if (node.name && node.role !== "WebArea" && node.role !== "RootWebArea") {
+    lines.push(`${indent}[${node.role}] ${truncate(node.name, 60)}`);
+  }
+
+  const children = node.children ?? [];
+  for (let i = 0; i < children.length; i++) {
+    narrateCompactNode(children[i]!, state, depth, lines, children, i);
+  }
+}
+
+/**
+ * Compact narration for token-efficient AI consumption.
+ * ~40-60% smaller than full narration.
+ */
+export function narrateCompact(
+  tree: AccessibilityNode,
+  title: string,
+  url: string,
+): NarrationResult {
+  const state: NarrationState = {
+    nextRef: 1,
+    elements: [],
+    refMap: new Map(),
+  };
+
+  const lines: string[] = [];
+  lines.push(`[Page "${title}" ${shortUrl(url)}]`);
+
+  const children = tree.children ?? [];
+  for (let i = 0; i < children.length; i++) {
+    narrateCompactNode(children[i]!, state, 0, lines, children, i);
+  }
+
+  return {
+    title,
+    url,
+    text: lines.join("\n"),
+    elements: state.elements,
+    refCount: state.nextRef - 1,
+  };
+}
+
+/**
+ * Compact narration of a single landmark section.
+ */
+export function narrateCompactSection(
+  tree: AccessibilityNode,
+  landmarkName: string,
+  title: string,
+  url: string,
+): NarrationResult {
+  const landmark = findLandmark(tree, landmarkName);
+  if (!landmark) {
+    return {
+      title,
+      url,
+      text: `[Page "${title}" ${shortUrl(url)}]\n[No "${landmarkName}" found]`,
+      elements: [],
+      refCount: 0,
+    };
+  }
+
+  const state: NarrationState = {
+    nextRef: 1,
+    elements: [],
+    refMap: new Map(),
+  };
+
+  const lines: string[] = [];
+  lines.push(`[Page "${title}" ${shortUrl(url)}]`);
+
+  const short = LANDMARK_SHORT[landmark.role] ?? landmark.role;
+  const label = landmark.name ? `${short} "${truncate(landmark.name, 30)}"` : short;
+  lines.push(`[${label}]`);
+
+  const children = landmark.children ?? [];
+  for (let i = 0; i < children.length; i++) {
+    narrateCompactNode(children[i]!, state, 1, lines, children, i);
+  }
+
+  return {
+    title,
+    url,
+    text: lines.join("\n"),
+    elements: state.elements,
+    refCount: state.nextRef - 1,
+  };
+}
+
 /**
  * Find an accessibility node by its ref number.
  * Rebuilds the ref map by re-walking the tree.

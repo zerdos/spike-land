@@ -199,7 +199,7 @@ async function uploadToGallery(file: File) {
     formData.append("file", file);
     formData.append("name", file.name);
 
-    const geminiKey = localStorage.getItem("gemini_api_key");
+    const geminiKey = sessionStorage.getItem("gemini_api_key");
     const res = await fetch("/api/gallery/upload", {
       method: "POST",
       headers: {

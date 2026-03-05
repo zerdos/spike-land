@@ -124,7 +124,7 @@ describe("web tools", () => {
       const result = await server.call("web_navigate", { url: "https://example.com" });
       expect(mockGoto).toHaveBeenCalledWith("https://example.com", { waitUntil: "load" });
       expect(result.content[0]!.text).toContain("Test Page");
-      expect(result.content[0]!.text).toContain("heading level 1 ref=1");
+      expect(result.content[0]!.text).toContain("ref=1");
     });
 
     it("uses custom wait_until", async () => {
@@ -137,14 +137,20 @@ describe("web tools", () => {
   });
 
   describe("web_read", () => {
-    it("returns full page narration", async () => {
+    it("returns compact narration by default", async () => {
       const result = await server.call("web_read", {});
+      expect(result.content[0]!.text).toContain("[main]");
+      expect(result.content[0]!.text).toContain("ref=1");
+    });
+
+    it("returns full narration when detail=full", async () => {
+      const result = await server.call("web_read", { detail: "full" });
       expect(result.content[0]!.text).toContain("main landmark");
       expect(result.content[0]!.text).toContain("heading level 1 ref=1");
     });
 
     it("filters by landmark", async () => {
-      const result = await server.call("web_read", { landmark: "main" });
+      const result = await server.call("web_read", { landmark: "main", detail: "full" });
       expect(result.content[0]!.text).toContain("main landmark");
       // Inside main: heading ref=1, link ref=2, button ref=3, textbox ref=4
       expect(result.content[0]!.text).toContain("button ref=3");

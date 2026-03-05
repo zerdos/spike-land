@@ -1,0 +1,16 @@
+name = "qa-studio"
+main = "../../src/qa-studio/worker-entry.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[browser]
+binding = "BROWSER"
+
+[durable_objects]
+bindings = [
+  { name = "BROWSER_SESSION", class_name = "BrowserSessionDO" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["BrowserSessionDO"]
