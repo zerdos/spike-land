@@ -169,6 +169,11 @@ async function run() {
     "/pricing",
     "/blog",
     "/tools",
+    "/store",
+    "/login",
+    "/learn",
+    "/privacy",
+    "/terms",
     ...blogSlugs.map((slug) => `/blog/${slug}`),
   ];
 

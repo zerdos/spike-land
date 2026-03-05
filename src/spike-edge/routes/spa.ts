@@ -165,6 +165,37 @@ spa.get("/*", async (c) => {
       } catch { /* D1 unavailable — serve SPA shell without blog metadata */ }
     }
 
+    // Inject route-specific metadata for known routes (if not already injected by app/blog handlers)
+    if (!appId && !blogSlug) {
+      const routeMeta: Record<string, { title: string; description: string }> = {
+        "/": { title: "spike.land - Open App Ecosystem for AI", description: "Connect your AI to real-world tools. Browse, build, and share AI-powered applications with 80+ tools on spike.land." },
+        "/tools": { title: "AI Tools - spike.land", description: "Browse 80+ AI tools on spike.land. Find tools for code review, image generation, data analysis, and more." },
+        "/store": { title: "Tool Store - spike.land", description: "Discover and install AI-powered tools from the spike.land store." },
+        "/pricing": { title: "Pricing - spike.land", description: "Simple, transparent pricing. Free plan for individuals, Pro at $29/mo, Business at $99/mo." },
+        "/about": { title: "About spike.land", description: "Learn about spike.land — who we are, our mission, and how we're building an open platform for AI tools." },
+        "/login": { title: "Sign In - spike.land", description: "Sign in to spike.land to access your AI development tools." },
+        "/privacy": { title: "Privacy Policy - spike.land", description: "spike.land Privacy Policy. How we handle your data, cookies, and your rights." },
+        "/terms": { title: "Terms of Service - spike.land", description: "spike.land Terms of Service. Acceptable use, billing, and legal terms." },
+        "/learn": { title: "Learn &amp; Verify - spike.land", description: "Learn from any content and prove your understanding through AI-powered quizzes." },
+        "/blog": { title: "Blog - spike.land", description: "Articles and tutorials from the spike.land team about AI, MCP, and edge computing." },
+      };
+      const meta = routeMeta[path];
+      if (meta) {
+        html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(meta.title)}</title>`);
+        html = html.replace(
+          /<meta name="description" content="[^"]*" \/>/,
+          `<meta name="description" content="${escapeHtml(meta.description)}" />`,
+        );
+        const ogTags = `
+        <meta property="og:title" content="${escapeHtml(meta.title)}" />
+        <meta property="og:description" content="${escapeHtml(meta.description)}" />
+        <meta property="og:url" content="https://spike.land${path}" />
+        <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
+        <meta name="twitter:description" content="${escapeHtml(meta.description)}" />`;
+        html = html.replace("</head>", `${ogTags}\n</head>`);
+      }
+    }
+
     const response = new Response(html, {
       headers: {
         "content-type": "text/html; charset=utf-8",
@@ -172,19 +203,21 @@ spa.get("/*", async (c) => {
       },
     });
 
-    const clientId = await getClientId(c.req.raw);
     const existingCookie = c.req.header("cookie") ?? "";
-    if (!existingCookie.includes("spike_client_id=")) {
-      // Set a persistent cookie for 1 year
+    // Only set tracking cookie if user has consented (GDPR compliance)
+    const hasConsent = existingCookie.includes("cookie_consent=accepted");
+    if (hasConsent && !existingCookie.includes("spike_client_id=")) {
+      const clientId = await getClientId(c.req.raw);
       response.headers.append(
         "set-cookie",
         `spike_client_id=${clientId}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`,
       );
     }
 
-    try {
-      c.executionCtx.waitUntil(
-        Promise.resolve(clientId).then((cid) =>
+    if (hasConsent) {
+      try {
+        const cid = hasConsent ? await getClientId(c.req.raw) : "anonymous";
+        c.executionCtx.waitUntil(
           sendGA4Events(c.env, cid, [{
             name: "page_view",
             params: {
@@ -193,9 +226,9 @@ spa.get("/*", async (c) => {
               user_agent: (c.req.header("user-agent") ?? "").slice(0, 200),
             },
           }])
-        ),
-      );
-    } catch { /* no ExecutionContext in test environment */ }
+        );
+      } catch { /* no ExecutionContext in test environment */ }
+    }
 
     return response;
   }

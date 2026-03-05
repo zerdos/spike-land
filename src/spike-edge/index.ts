@@ -28,6 +28,7 @@ import { requestIdMiddleware } from "./middleware/request-id.js";
 import { support } from "./routes/support.js";
 import { experiments } from "./routes/experiments.js";
 import { spa } from "./routes/spa.js";
+import { wellKnown } from "./routes/well-known.js";
 import { handleScheduled } from "./scheduled.js";
 
 const log = createLogger("spike-edge");
@@ -46,7 +47,8 @@ app.use("*", async (c, next) => {
   const corsMiddleware = cors({
     origin: allowedOrigins,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "Mcp-Session-Id", "Mcp-Protocol-Version", "Accept"],
+    exposeHeaders: ["Mcp-Session-Id"],
     maxAge: 86400,
   });
 
@@ -72,7 +74,7 @@ app.use("*", async (c, next) => {
   const isLive = c.req.path.startsWith("/live/");
 
   c.res.headers.set("X-Content-Type-Options", "nosniff");
-  c.res.headers.set("X-XSS-Protection", "1; mode=block");
+  c.res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
   if (!isLive) {
     c.res.headers.set("X-Frame-Options", "DENY");
   }
@@ -230,8 +232,10 @@ app.get("/api/store/tools", async (c) => {
   return c.json({ categories, featured, total: tools.length });
 });
 
-// MCP JSON-RPC proxy via service binding (requires auth)
-app.post("/mcp", async (c) => {
+// --- MCP Gateway ---
+
+// Helper: proxy request to MCP service binding
+async function mcpProxy(c: import("hono").Context<{ Bindings: Env }>) {
   const url = new URL(c.req.url);
   url.hostname = "mcp.spike.land";
   url.port = "";
@@ -245,7 +249,64 @@ app.post("/mcp", async (c) => {
     statusText: response.statusText,
     headers: new Headers(response.headers),
   });
+}
+
+// OAuth well-known discovery (inline, not proxied)
+app.get("/.well-known/oauth-authorization-server", (c) => {
+  c.header("Cache-Control", "public, max-age=86400");
+  return c.json({
+    issuer: "https://spike.land",
+    authorization_endpoint: "https://spike.land/mcp/authorize",
+    token_endpoint: "https://spike.land/oauth/token",
+    device_authorization_endpoint: "https://spike.land/oauth/device",
+    response_types_supported: ["token"],
+    grant_types_supported: ["urn:ietf:params:oauth:grant-type:device_code"],
+    token_endpoint_auth_methods_supported: ["none"],
+    code_challenge_methods_supported: ["S256"],
+  });
 });
+
+app.get("/.well-known/oauth-protected-resource/mcp", (c) => {
+  c.header("Cache-Control", "public, max-age=86400");
+  return c.json({
+    resource: "https://spike.land/mcp",
+    authorization_servers: ["https://spike.land"],
+    bearer_methods_supported: ["header"],
+    resource_documentation: "https://spike.land/docs/mcp",
+  });
+});
+
+// OAuth device flow proxy routes
+app.post("/oauth/device", mcpProxy);
+app.post("/oauth/token", mcpProxy);
+
+// Device approval requires session auth + internal secret injection
+app.post("/oauth/device/approve", authMiddleware, async (c) => {
+  const url = new URL(c.req.url);
+  url.hostname = "mcp.spike.land";
+  url.port = "";
+  url.protocol = "https:";
+
+  const body = await c.req.json<{ user_code: string }>();
+  const userId = c.get("userId" as never) as string;
+  const newRequest = new Request(url.toString(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Internal-Secret": c.env.MCP_INTERNAL_SECRET,
+      "X-Request-Id": c.get("requestId" as never) as string,
+    },
+    body: JSON.stringify({ user_code: body.user_code, user_id: userId }),
+  });
+  const response = await c.env.MCP_SERVICE.fetch(newRequest);
+  return new Response(response.body, {
+    status: response.status,
+    headers: new Headers(response.headers),
+  });
+});
+
+// MCP Streamable HTTP proxy — POST, GET, DELETE (all methods)
+app.all("/mcp", mcpProxy);
 
 // Better Auth proxy via service binding (sub-1ms internal call)
 app.all("/api/auth/*", async (c) => {
@@ -267,6 +328,7 @@ app.all("/api/auth/*", async (c) => {
   });
 });
 
+app.route("/", wellKnown);
 app.route("/", spa);
 
 export { RateLimiter };
