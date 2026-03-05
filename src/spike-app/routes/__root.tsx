@@ -135,8 +135,10 @@ function injectJsonLd(id: string, content: string) {
 
 const NAV_LINKS = [
   { to: "/tools", label: "Tools" },
+  { to: "/store", label: "Store" },
   { to: "/pricing", label: "Pricing" },
   { to: "/blog", label: "Blog" },
+  { to: "/about", label: "About" },
 ] as const;
 
 export function RootLayout() {
