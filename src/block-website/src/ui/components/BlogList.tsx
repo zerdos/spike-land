@@ -25,7 +25,7 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
       <div className={`overflow-hidden ${className}`}>
         <img
           src={post.heroImage}
-          alt={post.title}
+          alt=""
           loading="lazy"
           decoding="async"
           className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
@@ -144,7 +144,7 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
           </div>
         )}
         {/* Skeleton: featured card */}
-        <div className="animate-pulse bg-card rounded-2xl border border-border overflow-hidden mb-8">
+        <div aria-busy="true" className="animate-pulse bg-card rounded-2xl border border-border overflow-hidden mb-8">
           <div className="aspect-[21/9] bg-muted" />
           <div className="p-6">
             <div className="h-4 bg-muted rounded w-1/4 mb-4" />

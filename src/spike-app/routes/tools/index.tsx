@@ -28,7 +28,7 @@ export function ToolsIndexPage() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading tools from edge...</div>
+        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">Loading tools...</div>
       </div>
     );
   }
@@ -56,6 +56,7 @@ export function ToolsIndexPage() {
         placeholder="Search tools by name or description..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        aria-label="Search tools"
         className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
       />
 
@@ -64,6 +65,7 @@ export function ToolsIndexPage() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
+            aria-pressed={activeCategory === cat}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               activeCategory === cat
                 ? "bg-primary text-primary-foreground"

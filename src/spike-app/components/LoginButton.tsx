@@ -16,8 +16,17 @@ export function LoginButton() {
         setMenuOpen(false);
       }
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [menuOpen]);
 
   if (isLoading) {
@@ -64,19 +73,21 @@ export function LoginButton() {
       </button>
 
       {menuOpen && (
-        <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-border bg-card py-1 shadow-lg">
+        <div role="menu" className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-border bg-card py-1 shadow-lg">
           <div className="border-b border-border px-4 py-2">
             <p className="truncate text-sm font-medium text-foreground">{user.name ?? "User"}</p>
             {user.email && <p className="truncate text-xs text-muted-foreground">{user.email}</p>}
           </div>
           <Link
             to="/settings"
+            role="menuitem"
             onClick={() => setMenuOpen(false)}
             className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
           >
             Settings
           </Link>
           <button
+            role="menuitem"
             onClick={() => {
               setMenuOpen(false);
               logout();
