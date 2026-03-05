@@ -5,8 +5,9 @@ cd "$(dirname "$0")"
 
 R2_BUCKET="spike-app-assets"
 VERSION_URL="https://spike.land/version"
-WRANGLER="./node_modules/.bin/wrangler"
-VITE="./node_modules/.bin/vite"
+WRANGLER="npx wrangler"
+VITE="npx vite"
+TSX="npx tsx"
 
 # ── 1. Current HEAD info ──
 HEAD_SHA="$(git rev-parse HEAD)"
@@ -52,7 +53,7 @@ if [ "$NEED_BUILD" = true ]; then
   "$VITE" build
   
   echo "Prerendering static HTML for SEO..."
-  ./node_modules/.bin/tsx scripts/prerender.ts
+  "$TSX" scripts/prerender.ts
 
   echo "$TREE_HASH" > "$CACHE_DIR/app.treehash"
 else
@@ -174,7 +175,7 @@ fi
 
 if [ "$BLOG_HASH" != "$CACHED_BLOG_HASH" ] || [ -z "$BLOG_HASH" ]; then
   echo "Seeding blog content to D1 + R2..."
-  (cd ../.. && ./node_modules/.bin/tsx scripts/seed-blog.ts --remote)
+  (cd ../.. && npx tsx scripts/seed-blog.ts --remote)
   if [ -n "$BLOG_HASH" ]; then
     echo "$BLOG_HASH" > "$CACHE_DIR/blog.treehash"
   fi
