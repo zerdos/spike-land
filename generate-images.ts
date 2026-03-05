@@ -2,7 +2,11 @@ import { readdir, readFile, mkdir, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { GoogleGenAI } from '@google/genai';
 
-const GEMINI_API_KEY = "AIzaSyBI5sIrfqz8e41LElePt4oUXd-qrRyzsBI";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) {
+  console.error("Error: GEMINI_API_KEY environment variable is not set.");
+  process.exit(1);
+}
 
 async function generateImages() {
   const blogDir = 'content/blog';

@@ -17,3 +17,4 @@ coverage/
 packages/my-spacetime-app/
 *.log
 out/
+generate-images.ts
