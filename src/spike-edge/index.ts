@@ -331,6 +331,12 @@ app.all("/api/auth/*", async (c) => {
 
 app.route("/", wellKnown);
 app.route("/", sitemap);
+
+// Catch-all for unmatched API routes — return JSON 404 instead of SPA HTML
+app.all("/api/*", (c) => {
+  return c.json({ error: "Not Found", path: c.req.path }, 404);
+});
+
 app.route("/", spa);
 
 export { RateLimiter };
