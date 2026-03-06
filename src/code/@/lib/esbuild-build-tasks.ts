@@ -278,31 +278,36 @@ const createAliases = async (dir: string): Promise<Record<string, string>> => {
 // These are typically UI components, libraries, hooks, and services.
 // The `createEntryPoints` function scans the respective directories under `src/@`
 // and collects all .ts/.tsx files to be treated as individual entry points for one of the build steps.
-const uiEntryPoints = await createEntryPoints("components/ui");
+let _standaloneEntryPoints: string[] | null = null;
+let _extraAliases: Record<string, string> | null = null;
 
-const appEntryPoints = await createEntryPoints("components/app");
-const libEntryPoints = await createEntryPoints("lib");
-const externalEntryPoints = await createEntryPoints("external");
-const hooksEntryPoints = await createEntryPoints("hooks");
-const servicesEntryPoints = await createEntryPoints("services");
+async function getStandaloneEntryPoints(): Promise<string[]> {
+  if (_standaloneEntryPoints) return _standaloneEntryPoints;
+  const [ui, app, lib, external, hooks, services] = await Promise.all([
+    createEntryPoints("components/ui"),
+    createEntryPoints("components/app"),
+    createEntryPoints("lib"),
+    createEntryPoints("external"),
+    createEntryPoints("hooks"),
+    createEntryPoints("services"),
+  ]);
+  _standaloneEntryPoints = [...ui, ...lib, ...external, ...app, ...hooks, ...services];
+  return _standaloneEntryPoints;
+}
 
-const standaloneEntryPoints = [
-  ...uiEntryPoints,
-  ...libEntryPoints,
-  ...externalEntryPoints,
-  ...appEntryPoints,
-  ...hooksEntryPoints,
-  ...servicesEntryPoints,
-];
-
-const extraAliases = {
-  ...(await createAliases("components/ui")),
-  ...(await createAliases("components/app")),
-  ...(await createAliases("lib")),
-  ...(await createAliases("external")),
-  ...(await createAliases("hooks")),
-  ...(await createAliases("services")),
-};
+async function getExtraAliases(): Promise<Record<string, string>> {
+  if (_extraAliases) return _extraAliases;
+  const [ui, app, lib, external, hooks, services] = await Promise.all([
+    createAliases("components/ui"),
+    createAliases("components/app"),
+    createAliases("lib"),
+    createAliases("external"),
+    createAliases("hooks"),
+    createAliases("services"),
+  ]);
+  _extraAliases = { ...ui, ...app, ...lib, ...external, ...hooks, ...services };
+  return _extraAliases;
+}
 
 // This function is responsible for building the main application bundles.
 // It performs multiple build steps with different configurations:
@@ -402,7 +407,7 @@ export async function buildMainBundle(wasmFile: string): Promise<void> {
         ],
       }),
     ],
-    entryPoints: standaloneEntryPoints,
+    entryPoints: await getStandaloneEntryPoints(),
   });
 
   // console.warn(JSON.stringify(extraAliases, null, 2)); // Useful for debugging generated aliases
@@ -451,14 +456,14 @@ export async function buildMainBundle(wasmFile: string): Promise<void> {
     ],
     alias: {
       ...buildOptions.alias,
-      ...extraAliases,
+      ...(await getExtraAliases()),
       // ;,
       // ...(isProduction ? {} : {
       //   "react": "preact/compat",
       //   "react-dom": "preact/compat",
       // }),
     },
-    external: [...Object.values(extraAliases)],
+    external: [...Object.values(await getExtraAliases())],
   });
 
   async function runImportMapReplaceOnAllFilesRecursive(dir: string): Promise<void> {
