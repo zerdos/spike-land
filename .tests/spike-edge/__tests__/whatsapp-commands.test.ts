@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseCommand, dispatchCommand } from "../../../src/edge-api/main/lib/whatsapp-commands.js";
-import type { CommandContext, ParsedCommand } from "../../../src/edge-api/main/lib/whatsapp-commands.js";
-import type { Env } from "../../../src/edge-api/main/env.js";
+import { parseCommand, dispatchCommand } from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
+import type { CommandContext, ParsedCommand } from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 // ─── parseCommand ─────────────────────────────────────────────────────────────
 

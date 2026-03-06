@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { spa } from "../../../src/edge-api/main/routes/spa.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { spa } from "../../../src/edge-api/main/api/routes/spa.js";
 
 function makeR2Object(content: string) {
   return {

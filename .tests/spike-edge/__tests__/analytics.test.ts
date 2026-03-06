@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockedFunction } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { analytics } from "../../../src/edge-api/main/routes/analytics.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { analytics } from "../../../src/edge-api/main/api/routes/analytics.js";
 
 function createMockD1(): D1Database {
   const mockStmt = {

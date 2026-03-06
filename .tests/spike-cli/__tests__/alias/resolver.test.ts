@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { AliasResolver } from "../../../../src/cli/spike-cli/alias/resolver.js";
-import type { AliasConfig } from "../../../../src/cli/spike-cli/alias/types.js";
+import { AliasResolver } from "../../../../src/cli/spike-cli/core-logic/alias/resolver.js";
+import type { AliasConfig } from "../../../../src/cli/spike-cli/core-logic/alias/types.js";
 
 function makeConfig(overrides?: Partial<AliasConfig>): AliasConfig {
   return {

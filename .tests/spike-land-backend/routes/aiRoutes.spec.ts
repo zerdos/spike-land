@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/edge-api/backend/chatRoom";
-import { GetHandler } from "../../../src/edge-api/backend/handlers/getHandler";
-import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
-import { StorageService } from "../../../src/edge-api/backend/services/storageService";
-import { AiRoutes } from "../../../src/edge-api/backend/routes/aiRoutes";
+import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
+import { GetHandler } from "../../../src/edge-api/backend/core-logic/handlers/getHandler";
+import { PostHandler } from "../../../src/edge-api/backend/core-logic/handlers/postHandler";
+import { StorageService } from "../../../src/edge-api/backend/core-logic/services/storageService";
+import { AiRoutes } from "../../../src/edge-api/backend/core-logic/routes/aiRoutes";
 
-vi.mock("../../../src/edge-api/backend/services/storageService");
-vi.mock("../../../src/edge-api/backend/handlers/getHandler");
-vi.mock("../../../src/edge-api/backend/handlers/postHandler");
+vi.mock("../../../src/edge-api/backend/core-logic/services/storageService");
+vi.mock("../../../src/edge-api/backend/core-logic/handlers/getHandler");
+vi.mock("../../../src/edge-api/backend/core-logic/handlers/postHandler");
 
 describe("AiRoutes", () => {
   let aiRoutes: AiRoutes;

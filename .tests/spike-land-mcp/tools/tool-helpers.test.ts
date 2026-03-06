@@ -19,9 +19,9 @@ import {
   safeToolCall,
   SPIKE_LAND_BASE_URL,
   textResult,
-} from "../../../src/edge-api/spike-land/tools/tool-helpers";
+} from "../../../src/edge-api/spike-land/core-logic/lib/tool-helpers";
 import { createMockD1 } from "../__test-utils__/mock-env";
-import { createDb } from "../../../src/edge-api/spike-land/db/index";
+import { createDb } from "../../../src/edge-api/spike-land/db/db/db-index";
 
 // ─── McpError ────────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@ import {
   executeListFiles,
   executeReadFile,
   executeWriteFile,
-} from "../../../../src/edge-api/backend/mcp/tools/file-tools";
+} from "../../../../src/edge-api/backend/core-logic/mcp/tools/file-tools";
 
 describe("executeListFiles", () => {
   it("returns entry point from session code when files map is empty", () => {

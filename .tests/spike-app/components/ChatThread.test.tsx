@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ChatThread, type Message } from "../../../src/frontend/platform-frontend/components/ChatThread";
+import { ChatThread, type Message } from "@/ui/components/ChatThread";
 
 describe("ChatThread", () => {
   const mockSend = vi.fn();
@@ -19,32 +19,34 @@ describe("ChatThread", () => {
 
   it("shows empty state when no messages", () => {
     render(<ChatThread messages={[]} onSendMessage={mockSend} />);
-    expect(screen.getByText("No messages yet. Start a conversation.")).toBeInTheDocument();
+    expect(screen.getByText("No messages yet")).toBeInTheDocument();
+    expect(screen.getByText(/Start a conversation/)).toBeInTheDocument();
   });
 
   it("shows loading indicator when isLoading", () => {
-    const { container } = render(<ChatThread messages={[]} onSendMessage={mockSend} isLoading />);
-    // Three bouncing dots
-    const dots = container.querySelectorAll(".animate-bounce");
-    expect(dots).toHaveLength(3);
+    render(<ChatThread messages={[]} onSendMessage={mockSend} isLoading />);
+    expect(screen.getByText("Assistant is thinking...")).toBeInTheDocument();
+    // Loader2 with animate-spin
+    const loader = screen.getByText("Assistant is thinking...").previousSibling;
+    expect(loader).toHaveClass("animate-spin");
   });
 
   it("does not show loading indicator when not loading", () => {
-    const { container } = render(
+    render(
       <ChatThread messages={[]} onSendMessage={mockSend} isLoading={false} />,
     );
-    const dots = container.querySelectorAll(".animate-bounce");
-    expect(dots).toHaveLength(0);
+    expect(screen.queryByText("Assistant is thinking...")).not.toBeInTheDocument();
   });
 
   it("calls onSendMessage when send button clicked", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/);
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/);
     fireEvent.change(textarea, { target: { value: "test message" } });
 
-    const sendBtn = screen.getByText("Send");
+    // The button has no text, so we find it by role or via parent
+    const sendBtn = screen.getByRole("button", { name: "" }); // Button with Send icon
     fireEvent.click(sendBtn);
 
     expect(onSend).toHaveBeenCalledWith("test message");
@@ -54,9 +56,9 @@ describe("ChatThread", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/) as HTMLTextAreaElement;
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/) as HTMLTextAreaElement;
     fireEvent.change(textarea, { target: { value: "hello" } });
-    fireEvent.click(screen.getByText("Send"));
+    fireEvent.click(screen.getByRole("button", { name: "" }));
 
     expect(textarea.value).toBe("");
   });
@@ -65,26 +67,26 @@ describe("ChatThread", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/);
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/);
     fireEvent.change(textarea, { target: { value: "   " } });
-    fireEvent.click(screen.getByText("Send"));
+    fireEvent.click(screen.getByRole("button", { name: "" }));
 
     expect(onSend).not.toHaveBeenCalled();
   });
 
   it("send button is disabled when input is empty", () => {
     render(<ChatThread messages={[]} onSendMessage={mockSend} />);
-    const sendBtn = screen.getByText("Send");
+    const sendBtn = screen.getByRole("button", { name: "" });
     expect(sendBtn).toBeDisabled();
   });
 
   it("send button is disabled when loading", () => {
     render(<ChatThread messages={[]} onSendMessage={mockSend} isLoading />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/);
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/);
     fireEvent.change(textarea, { target: { value: "hello" } });
 
-    const sendBtn = screen.getByText("Send");
+    const sendBtn = screen.getByRole("button", { name: "" });
     expect(sendBtn).toBeDisabled();
   });
 
@@ -92,9 +94,10 @@ describe("ChatThread", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/);
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/);
     fireEvent.change(textarea, { target: { value: "keyboard send" } });
-    fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true });
+    // In ChatThread.tsx handleKeyDown uses Enter without shiftKey
+    fireEvent.keyDown(textarea, { key: "Enter" });
 
     expect(onSend).toHaveBeenCalledWith("keyboard send");
   });
@@ -103,22 +106,11 @@ describe("ChatThread", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Type a message/);
+    const textarea = screen.getByPlaceholderText(/Describe what you want to build/);
     fireEvent.change(textarea, { target: { value: "mac send" } });
     fireEvent.keyDown(textarea, { key: "Enter", metaKey: true });
 
     expect(onSend).toHaveBeenCalledWith("mac send");
-  });
-
-  it("does not send on plain Enter", () => {
-    const onSend = vi.fn();
-    render(<ChatThread messages={[]} onSendMessage={onSend} />);
-
-    const textarea = screen.getByPlaceholderText(/Type a message/);
-    fireEvent.change(textarea, { target: { value: "no send" } });
-    fireEvent.keyDown(textarea, { key: "Enter" });
-
-    expect(onSend).not.toHaveBeenCalled();
   });
 
   it("renders message timestamps when provided", () => {
@@ -131,7 +123,6 @@ describe("ChatThread", () => {
       },
     ];
     render(<ChatThread messages={msgs} onSendMessage={mockSend} />);
-    // The timestamp is rendered via toLocaleTimeString
     expect(screen.getByText("Hi")).toBeInTheDocument();
   });
 
@@ -154,6 +145,7 @@ describe("ChatThread", () => {
     render(<ChatThread messages={msgs} onSendMessage={mockSend} />);
 
     const msgEl = screen.getByText("Bot msg").closest("div[class*='bg-']");
-    expect(msgEl?.className).toContain("bg-muted");
+    // In ChatThread.tsx: bg-card border border-border text-foreground rounded-tl-none hover:border-primary/30
+    expect(msgEl?.className).toContain("bg-card");
   });
 });

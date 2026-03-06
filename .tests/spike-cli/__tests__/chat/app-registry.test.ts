@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { AppRegistryImpl } from "../../../../src/cli/spike-cli/chat/app-registry.js";
-import type { AppInfo } from "../../../../src/cli/spike-cli/chat/app-registry.js";
-import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+import { AppRegistryImpl } from "../../../../src/cli/spike-cli/core-logic/chat/app-registry.js";
+import type { AppInfo } from "../../../../src/cli/spike-cli/core-logic/chat/app-registry.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 const TEST_APPS: AppInfo[] = [
   {

@@ -9,9 +9,9 @@ import {
   getVisibleTools,
   getVisibleToolsEnhanced,
   stripNamespace,
-} from "../../../../src/cli/spike-cli/chat/slash-commands.js";
-import { SessionState } from "../../../../src/cli/spike-cli/chat/session-state.js";
-import type { NamespacedTool } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+} from "../../../../src/cli/spike-cli/core-logic/chat/slash-commands.js";
+import { SessionState } from "../../../../src/cli/spike-cli/core-logic/chat/session-state.js";
+import type { NamespacedTool } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 function makeTool(overrides: Partial<NamespacedTool> & { namespacedName: string }): NamespacedTool {
   return {

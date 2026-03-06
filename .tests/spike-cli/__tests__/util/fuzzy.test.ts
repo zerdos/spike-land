@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fuzzyFilter, fuzzyScore } from "../../../../src/cli/spike-cli/util/fuzzy.js";
+import { fuzzyFilter, fuzzyScore } from "../../../../src/cli/spike-cli/core-logic/util/fuzzy.js";
 
 describe("fuzzyScore", () => {
   it("returns 0 for empty query", () => {

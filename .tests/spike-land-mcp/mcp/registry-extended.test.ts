@@ -4,7 +4,7 @@
  * disableCategory, registerBuilt, restoreCategories, getToolDefinitions with options.
  */
 import { describe, expect, it, vi } from "vitest";
-import { ToolRegistry } from "../../../src/edge-api/spike-land/mcp/registry";
+import { ToolRegistry } from "../../../src/edge-api/spike-land/lazy-imports/registry";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
@@ -329,5 +329,222 @@ describe("ToolRegistry.getUserId", () => {
     const server = createMockMcpServer();
     const registry = new ToolRegistry(server, "my-user-id");
     expect(registry.getUserId()).toBe("my-user-id");
+  });
+});
+
+describe("ToolRegistry.getStabilityBreakdown", () => {
+  it("returns correct counts for each stability tag", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "stable_a", stability: "stable" });
+    registerTool(registry, { name: "stable_b", stability: "stable" });
+    registerTool(registry, { name: "beta_a", stability: "beta" });
+    registerTool(registry, { name: "exp_a", stability: "experimental" });
+
+    const breakdown = registry.getStabilityBreakdown();
+    expect(breakdown["stable"]).toBe(2);
+    expect(breakdown["beta"]).toBe(1);
+    expect(breakdown["experimental"]).toBe(1);
+    expect(breakdown["deprecated"]).toBeUndefined();
+  });
+
+  it("defaults unlabelled tools to stable", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "no_stability_tool" }); // no stability field
+
+    const breakdown = registry.getStabilityBreakdown();
+    expect(breakdown["stable"]).toBe(1);
+  });
+
+  it("returns empty object when no tools are registered", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    const breakdown = registry.getStabilityBreakdown();
+    expect(Object.keys(breakdown)).toHaveLength(0);
+  });
+
+  it("counts deprecated tools separately", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "dep_tool", stability: "deprecated" });
+    registerTool(registry, { name: "stable_tool", stability: "stable" });
+
+    const breakdown = registry.getStabilityBreakdown();
+    expect(breakdown["deprecated"]).toBe(1);
+    expect(breakdown["stable"]).toBe(1);
+    expect(Object.keys(breakdown)).toHaveLength(2);
+  });
+});
+
+describe("ToolRegistry.getToolDefinitions — version and stability fields", () => {
+  it("includes version and stability on every returned definition", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "versioned_tool", version: "2.3.1", stability: "beta" });
+
+    const defs = registry.getToolDefinitions();
+    expect(defs).toHaveLength(1);
+    const def = defs[0]!;
+    expect(def.version).toBe("2.3.1");
+    expect(def.stability).toBe("beta");
+  });
+
+  it("defaults version to 1.0.0 and stability to stable when not provided", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "plain_tool" });
+
+    const defs = registry.getToolDefinitions();
+    const def = defs[0]!;
+    expect(def.version).toBe("1.0.0");
+    expect(def.stability).toBe("stable");
+  });
+});
+
+describe("ToolRegistry — version coexistence", () => {
+  it("both v1 and v2 exist in versionedTools via getToolByVersion", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "multi_ver", version: "1.0.0" });
+    registerTool(registry, { name: "multi_ver", version: "2.0.0" });
+
+    const v1 = registry.getToolByVersion("multi_ver", "1.0.0");
+    const v2 = registry.getToolByVersion("multi_ver", "2.0.0");
+
+    expect(v1).toBeDefined();
+    expect(v1!.version).toBe("1.0.0");
+    expect(v2).toBeDefined();
+    expect(v2!.version).toBe("2.0.0");
+  });
+
+  it("callToolDirect without version param executes the latest (v2) handler", async () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.register({
+      name: "active_tool",
+      description: "v1",
+      category: "c",
+      tier: "free",
+      version: "1.0.0",
+      alwaysEnabled: true,
+      handler: async () => ({ content: [{ type: "text" as const, text: "from-v1" }] }),
+    });
+    registry.register({
+      name: "active_tool",
+      description: "v2",
+      category: "c",
+      tier: "free",
+      version: "2.0.0",
+      alwaysEnabled: true,
+      handler: async () => ({ content: [{ type: "text" as const, text: "from-v2" }] }),
+    });
+
+    const result = await registry.callToolDirect("active_tool", {});
+    expect(result.isError).toBeUndefined();
+    expect((result.content[0] as { text: string }).text).toBe("from-v2");
+  });
+
+  it("v1 is auto-deprecated when v2 is registered after it", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "auto_dep", version: "1.0.0" });
+    registerTool(registry, { name: "auto_dep", version: "2.0.0" });
+
+    const v1 = registry.getToolByVersion("auto_dep", "1.0.0");
+    expect(v1!.stability).toBe("deprecated");
+  });
+
+  it("listVersions returns both versions sorted semver descending", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registerTool(registry, { name: "sorted_tool", version: "1.0.0" });
+    registerTool(registry, { name: "sorted_tool", version: "2.0.0" });
+
+    const versions = registry.listVersions("sorted_tool");
+    expect(versions).toHaveLength(2);
+    expect(versions[0]!.version).toBe("2.0.0");
+    expect(versions[1]!.version).toBe("1.0.0");
+  });
+});
+
+describe("ToolRegistry — not-implemented stability", () => {
+  it("skips registration entirely for not-implemented tools", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.register({
+      name: "future_tool",
+      description: "Not yet built",
+      category: "c",
+      tier: "free",
+      stability: "not-implemented",
+      handler: async () => ({ content: [{ type: "text" as const, text: "unreachable" }] }),
+    });
+
+    expect(registry.getToolCount()).toBe(0);
+    expect(server.registerTool).not.toHaveBeenCalled();
+  });
+
+  it("not-implemented tool is absent from versionedTools", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.register({
+      name: "ghost_tool",
+      description: "Placeholder",
+      category: "c",
+      tier: "free",
+      version: "1.0.0",
+      stability: "not-implemented",
+      handler: async () => ({ content: [] }),
+    });
+
+    expect(registry.getToolByVersion("ghost_tool", "1.0.0")).toBeUndefined();
+    expect(registry.listVersions("ghost_tool")).toHaveLength(0);
+  });
+
+  it("not-implemented tool is not returned by filterByStability", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.register({
+      name: "ni_tool",
+      description: "Placeholder",
+      category: "c",
+      tier: "free",
+      stability: "not-implemented",
+      handler: async () => ({ content: [] }),
+    });
+
+    // filterByStability queries the active tools map — ni_tool was never added
+    const results = registry.filterByStability("not-implemented");
+    expect(results).toHaveLength(0);
+  });
+
+  it("registerBuilt also skips not-implemented tools", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.registerBuilt({
+      name: "ni_built",
+      description: "Not implemented via builder",
+      inputSchema: {},
+      meta: { stability: "not-implemented" },
+      handler: async () => ({ content: [] }),
+    });
+
+    expect(registry.getToolCount()).toBe(0);
+    expect(server.registerTool).not.toHaveBeenCalled();
   });
 });

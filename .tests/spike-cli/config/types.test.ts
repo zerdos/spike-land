@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SPIKE_CONFIG_VERSION } from "../../../src/cli/spike-cli/config/types";
+import { SPIKE_CONFIG_VERSION } from "../../../src/cli/spike-cli/core-logic/config/types";
 
 describe("config types", () => {
   it("defines SPIKE_CONFIG_VERSION", () => {

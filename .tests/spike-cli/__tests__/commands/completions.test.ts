@@ -5,7 +5,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Command } from "commander";
-import { registerCompletionsCommand } from "../../../../src/cli/spike-cli/commands/completions.js";
+import { registerCompletionsCommand } from "../../../../src/cli/spike-cli/core-logic/commands/completions.js";
 
 // Mock the installer module
 const mockDetectShell = vi.hoisted(() => vi.fn().mockReturnValue("bash"));
@@ -17,7 +17,7 @@ const mockInstallCompletions = vi.hoisted(() =>
 );
 const mockUninstallCompletions = vi.hoisted(() => vi.fn().mockReturnValue(false));
 
-vi.mock("../../../../src/cli/spike-cli/completions/installer.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/node-sys/installer.js", () => ({
   detectShell: mockDetectShell,
   installCompletions: mockInstallCompletions,
   uninstallCompletions: mockUninstallCompletions,

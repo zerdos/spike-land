@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ConfigWatcher } from "../../../../src/cli/spike-cli/config/watcher.js";
-import type { ResolvedConfig } from "../../../../src/cli/spike-cli/config/types.js";
+import { ConfigWatcher } from "../../../../src/cli/spike-cli/node-sys/watcher.js";
+import type { ResolvedConfig } from "../../../../src/cli/spike-cli/core-logic/config/types.js";
 
 // mockFsWatch must be hoisted so it can be referenced inside vi.mock factory
 const mockFsWatch = vi.hoisted(() => vi.fn());
@@ -15,7 +15,7 @@ const mockWatcher = {
   _callback: null as (() => void) | null,
 };
 
-vi.mock("../../../../src/cli/spike-cli/config/discovery.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/node-sys/discovery.js", () => ({
   discoverConfig: vi.fn().mockResolvedValue({
     servers: { newServer: { command: "node", args: ["new.js"] } },
   }),
@@ -97,7 +97,7 @@ describe("ConfigWatcher", () => {
 
   it("warns but does not throw when config reload fails with non-Error", async () => {
     const { discoverConfig } = await import(
-      "../../../../src/cli/spike-cli/config/discovery.js"
+      "../../../../src/cli/spike-cli/node-sys/discovery.js"
     );
     // Reject with a non-Error value to hit the String(err) fallback path
     const nonError: unknown = { message: "not-an-error" };
@@ -121,7 +121,7 @@ describe("ConfigWatcher", () => {
 
   it("warns but does not throw when config reload fails", async () => {
     const { discoverConfig } = await import(
-      "../../../../src/cli/spike-cli/config/discovery.js"
+      "../../../../src/cli/spike-cli/node-sys/discovery.js"
     );
     vi.mocked(discoverConfig).mockRejectedValueOnce(new Error("reload failed"));
 

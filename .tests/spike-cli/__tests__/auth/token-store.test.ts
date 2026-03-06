@@ -22,8 +22,8 @@ import {
   isTokenExpired,
   loadTokens,
   saveTokens,
-} from "../../../../src/cli/spike-cli/auth/token-store.js";
-import type { AuthTokens } from "../../../../src/cli/spike-cli/auth/token-store.js";
+} from "../../../../src/cli/spike-cli/node-sys/token-store.js";
+import type { AuthTokens } from "../../../../src/cli/spike-cli/node-sys/token-store.js";
 
 describe("token-store", () => {
   let tempDir: string;

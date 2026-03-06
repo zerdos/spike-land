@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useBrowserBridge } from "@/hooks/useBrowserBridge";
-import type { ChatMessage } from "@/hooks/useChat";
+import { useBrowserBridge } from "@/ui/hooks/useBrowserBridge";
+import type { ChatMessage } from "@/ui/hooks/useChat";
 
 function makeMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
   return {

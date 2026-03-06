@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/edge-api/backend/chatRoom";
-import { UtilityRoutes } from "../../../src/edge-api/backend/routes/utilityRoutes";
+import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
+import { UtilityRoutes } from "../../../src/edge-api/backend/core-logic/routes/utilityRoutes";
 
 describe("UtilityRoutes", () => {
   let utilityRoutes: UtilityRoutes;

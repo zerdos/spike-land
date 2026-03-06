@@ -457,9 +457,8 @@ describe("wrapServerWithLogging", () => {
     await expect(mock.call("explode")).rejects.toThrow("boom");
     expect(logs[0]).toMatchObject({ outcome: "error", tool: "explode" });
   });
-
   it("writes to stderr when no onLog callback is provided", async () => {
-    const stderrSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const stderrSpy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
     const mock = createMockServer();
     wrapServerWithLogging(mock as unknown as McpServerType, "stderr-server");
 

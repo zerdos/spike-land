@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Command } from "commander";
-import { registerAgentCommand } from "../../../src/cli/spike-cli/commands/agent";
+import { registerAgentCommand } from "../../../src/cli/spike-cli/ai-cli/agent";
 
 vi.mock("@google/genai", () => ({
   GoogleGenAI: class {
@@ -139,7 +139,7 @@ describe("agent command", () => {
     const handler = postCall![1] as (req: unknown, res: unknown) => Promise<void>;
 
     // Use the ai module's generateContent and make it throw
-    const { ai } = await import("../../../src/cli/spike-cli/commands/agent");
+    const { ai } = await import("../../../src/cli/spike-cli/ai-cli/agent");
     vi.mocked(ai.models.generateContent).mockRejectedValueOnce(new Error("AI failed"));
 
     const req = { body: { prefix: "const x =" } };

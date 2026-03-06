@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CodeRateLimiter } from "../../src/edge-api/backend/core-logic/rateLimiter.js";
 
 // Mock handleErrors to pass through the handler
-vi.mock("../../src/edge-api/backend/handleErrors", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/handleErrors", () => ({
   handleErrors: vi.fn((_request, handler) => handler()),
 }));
 
@@ -106,7 +106,7 @@ describe("CodeRateLimiter", () => {
 
   describe("Error Handling", () => {
     it("should use handleErrors wrapper", async () => {
-      const { handleErrors } = await import("../../src/edge-api/backend/handleErrors");
+      const { handleErrors } = await import("../../src/edge-api/backend/lazy-imports/handleErrors");
       const request = new Request("https://example.com", { method: "GET" });
 
       await rateLimiter.fetch(request);

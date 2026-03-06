@@ -6,9 +6,9 @@ import {
   SAMPLE_USER,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNReadClient } from "../../../src/mcp-tools/hackernews/clients/hn-read-client.js";
-import { registerUserTools } from "../../../src/mcp-tools/hackernews/tools/user.js";
-import { HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/types.js";
+import { HNReadClient } from "../../../src/mcp-tools/hackernews/core-logic/hn-read-client.js";
+import { registerUserTools } from "../../../src/mcp-tools/hackernews/core-logic/user.js";
+import { HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/mcp/types.js";
 
 describe("user tools", () => {
   let server: MockMcpServer;

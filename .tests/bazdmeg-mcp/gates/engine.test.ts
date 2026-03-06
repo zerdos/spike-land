@@ -12,9 +12,9 @@ import {
   getChangedFiles,
   getRuleByName,
   runGates,
-} from "../../../src/mcp-tools/bazdmeg/gates/engine.js";
+} from "../../../src/mcp-tools/bazdmeg/core-logic/engine.js";
 import { buildDiff } from "../__test-utils__/fixtures.js";
-import type { GateResult, RuleContext } from "../../../src/mcp-tools/bazdmeg/types.js";
+import type { GateResult, RuleContext } from "../../../src/mcp-tools/bazdmeg/core-logic/types.js";
 
 function makeContext(overrides: Partial<RuleContext> = {}): RuleContext {
   return {

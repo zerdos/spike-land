@@ -7,10 +7,10 @@ import {
   VOTE_SUCCESS_HTML,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNWriteClient } from "../../../src/mcp-tools/hackernews/clients/hn-write-client.js";
-import { SessionManager } from "../../../src/mcp-tools/hackernews/session/session-manager.js";
-import { registerVoteTools } from "../../../src/mcp-tools/hackernews/tools/vote.js";
-import { HN_WEB_BASE } from "../../../src/mcp-tools/hackernews/types.js";
+import { HNWriteClient } from "../../../src/mcp-tools/hackernews/core-logic/hn-write-client.js";
+import { SessionManager } from "../../../src/mcp-tools/hackernews/core-logic/session-manager.js";
+import { registerVoteTools } from "../../../src/mcp-tools/hackernews/core-logic/vote.js";
+import { HN_WEB_BASE } from "../../../src/mcp-tools/hackernews/mcp/types.js";
 
 describe("vote tools", () => {
   let server: MockMcpServer;

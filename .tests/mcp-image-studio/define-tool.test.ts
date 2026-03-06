@@ -361,7 +361,7 @@ describe("define-tool framework", () => {
 
   describe("DomainError catching", () => {
     it("should catch DomainError and convert to errorResult", async () => {
-      const { DomainError } = await import("../../src/mcp-tools/image-studio/tools/try-catch.js");
+      const { DomainError } = await import("../../src/mcp-tools/image-studio/mcp/try-catch.js");
       const tool = defineTool("domain_err_test", "desc", {}).handler(async () => {
         throw new DomainError("UNKNOWN_ERROR", "A specific domain error", true);
       });

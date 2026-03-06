@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { PERSONAS } from "../../../../src/edge-api/spike-land/lib/persona-data";
+import { PERSONAS } from "../../../../src/edge-api/spike-land/core-logic/lib/persona-data";
 
 // Test the SEGMENTS mapping and scoring logic
 

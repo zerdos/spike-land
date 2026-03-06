@@ -19,7 +19,7 @@ describe("logger — isVerbose()", () => {
 
   it("returns false by default", async () => {
     const { isVerbose, setVerbose } = await import(
-      "../../../src/cli/spike-cli/util/logger.js"
+      "../../../src/cli/spike-cli/core-logic/util/logger.js"
     );
     setVerbose(false);
     expect(isVerbose()).toBe(false);
@@ -27,7 +27,7 @@ describe("logger — isVerbose()", () => {
 
   it("returns true after setVerbose(true)", async () => {
     const { isVerbose, setVerbose } = await import(
-      "../../../src/cli/spike-cli/util/logger.js"
+      "../../../src/cli/spike-cli/core-logic/util/logger.js"
     );
     setVerbose(true);
     expect(isVerbose()).toBe(true);
@@ -40,7 +40,7 @@ describe("logger — isVerbose()", () => {
 describe("parseInlineUrls — port 0 triggers throw (lines 62) and rethrow (68)", () => {
   it("throws 'Port must be 1–65535' for port 0 (valid URL but out of range)", async () => {
     const { parseInlineUrls } = await import(
-      "../../../src/cli/spike-cli/commands/common.js"
+      "../../../src/cli/spike-cli/core-logic/commands/common.js"
     );
     // new URL("http://localhost:0") succeeds (port 0 is valid URL spec).
     // parseInt("0") = 0, which satisfies (port < 1), so line 62 throws.
@@ -98,19 +98,19 @@ vi.mock("cors", () => ({
   default: vi.fn(() => (_req: unknown, _res: unknown, next: () => void) => next()),
 }));
 
-vi.mock("../../../src/cli/spike-cli/commands/auth.js", () => ({
+vi.mock("../../../src/cli/spike-cli/core-logic/commands/auth.js", () => ({
   registerAuthCommand: vi.fn(),
 }));
-vi.mock("../../../src/cli/spike-cli/commands/alias.js", () => ({
+vi.mock("../../../src/cli/spike-cli/core-logic/commands/alias.js", () => ({
   registerAliasCommand: vi.fn(),
 }));
-vi.mock("../../../src/cli/spike-cli/commands/completions.js", () => ({
+vi.mock("../../../src/cli/spike-cli/core-logic/commands/completions.js", () => ({
   registerCompletionsCommand: vi.fn(),
 }));
-vi.mock("../../../src/cli/spike-cli/commands/registry.js", () => ({
+vi.mock("../../../src/cli/spike-cli/core-logic/commands/registry.js", () => ({
   registerRegistryCommand: vi.fn(),
 }));
-vi.mock("../../../src/cli/spike-cli/alias/store.js", () => ({
+vi.mock("../../../src/cli/spike-cli/node-sys/store.js", () => ({
   loadAliases: vi.fn().mockResolvedValue({ commands: {} }),
 }));
 
@@ -120,7 +120,7 @@ describe("agent — response.text falsy (line 46)", () => {
     capturedPostHandlers.clear();
 
     const { registerAgentCommand } = await import(
-      "../../../src/cli/spike-cli/commands/agent.js"
+      "../../../src/cli/spike-cli/ai-cli/agent.js"
     );
     const { Command } = await import("commander");
     const program = new Command();
@@ -154,7 +154,7 @@ describe("agent — response.text falsy (line 46)", () => {
     process.env.GEMINI_API_KEY = "test-key";
 
     const { registerAgentCommand } = await import(
-      "../../../src/cli/spike-cli/commands/agent.js"
+      "../../../src/cli/spike-cli/ai-cli/agent.js"
     );
     const { Command } = await import("commander");
     const program = new Command();

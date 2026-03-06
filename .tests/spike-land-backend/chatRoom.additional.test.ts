@@ -12,13 +12,13 @@ import type Env from "../../src/edge-api/backend/core-logic/env.js";
 import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler.js";
 import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
-vi.mock("../../src/edge-api/backend/routeHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/routeHandler.js", () => ({
   RouteHandler: vi.fn().mockImplementation(function () {
     return { handleRoute: vi.fn().mockResolvedValue(new Response("OK")) };
   }),
 }));
 
-vi.mock("../../src/edge-api/backend/websocketHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/websocketHandler.js", () => ({
   WebSocketHandler: vi.fn().mockImplementation(function () {
     return {
       broadcast: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("../../src/edge-api/backend/websocketHandler.js", () => ({
   }),
 }));
 
-vi.mock("../../src/edge-api/backend/mcp.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/mcp.js", () => ({
   McpServer: vi.fn().mockImplementation(function () {
     return {
       setEnv: vi.fn(),

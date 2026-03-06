@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { namespaceTool, parseNamespacedTool, stripNamespace } from "../../../../src/cli/spike-cli/multiplexer/namespace.js";
+import { namespaceTool, parseNamespacedTool, stripNamespace } from "../../../../src/cli/spike-cli/core-logic/multiplexer/namespace.js";
 
 describe("namespaceTool", () => {
   it("prefixes tool name with server name and default separator", () => {

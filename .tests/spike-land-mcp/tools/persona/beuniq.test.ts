@@ -5,11 +5,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   clearBeUniqSessions,
-} from "../../../../src/edge-api/spike-land/tools/persona/beuniq";
+} from "../../../../src/edge-api/spike-land/core-logic/tools/persona/beuniq";
 import {
   getPersonaFromAnswers,
   PERSONAS,
-} from "../../../../src/edge-api/spike-land/lib/persona-data";
+} from "../../../../src/edge-api/spike-land/core-logic/lib/persona-data";
 
 // Mock registry + freeTool to capture registered handlers
 interface CapturedTool {

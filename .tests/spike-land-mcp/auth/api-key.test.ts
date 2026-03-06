@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { hashApiKey, lookupApiKey } from "../../../src/edge-api/spike-land/auth/api-key";
+import { hashApiKey, lookupApiKey } from "../../../src/edge-api/spike-land/db/auth/api-key";
 
 describe("hashApiKey", () => {
   it("returns a hex string", async () => {

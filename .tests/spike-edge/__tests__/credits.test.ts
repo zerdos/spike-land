@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { credits } from "../../../src/edge-api/main/routes/credits.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { credits } from "../../../src/edge-api/main/api/routes/credits.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { escapeHtml, quizBadge } from "../../../src/edge-api/main/routes/quiz-badge.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { escapeHtml, quizBadge } from "../../../src/edge-api/main/api/routes/quiz-badge.js";
 
 const TEST_SECRET = "test-badge-secret";
 

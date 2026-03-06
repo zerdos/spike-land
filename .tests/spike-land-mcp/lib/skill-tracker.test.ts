@@ -2,7 +2,7 @@
  * Tests for lib/skill-tracker.ts
  */
 import { describe, expect, it, vi } from "vitest";
-import { recordSkillCall } from "../../../src/edge-api/spike-land/lib/skill-tracker";
+import { recordSkillCall } from "../../../src/edge-api/spike-land/core-logic/lib/skill-tracker";
 
 function createMockD1WithCapture() {
   const batches: unknown[][] = [];

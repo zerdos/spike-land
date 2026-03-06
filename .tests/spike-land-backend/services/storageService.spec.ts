@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type Env from "../../../src/edge-api/backend/env";
-import { StorageService } from "../../../src/edge-api/backend/services/storageService";
+import type Env from "../../../src/edge-api/backend/core-logic/env";
+import { StorageService } from "../../../src/edge-api/backend/core-logic/services/storageService";
 
 describe("StorageService", () => {
   let service: StorageService;

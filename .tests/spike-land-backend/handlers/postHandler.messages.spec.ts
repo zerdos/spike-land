@@ -1,22 +1,22 @@
 import type { Message } from "@spike-land-ai/code";
 import type { CoreMessage } from "ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/edge-api/backend/chatRoom";
-import type Env from "../../../src/edge-api/backend/env";
-import { StorageService } from "../../../src/edge-api/backend/services/storageService";
-import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
+import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
+import type Env from "../../../src/edge-api/backend/core-logic/env";
+import { StorageService } from "../../../src/edge-api/backend/core-logic/services/storageService";
+import { PostHandler } from "../../../src/edge-api/backend/core-logic/handlers/postHandler";
 import {
   createMockCode,
   createMockEnv,
   createMockStorageService,
   setupCrypto,
   setupStorageServiceMock,
-} from "../../../src/edge-api/backend/handlers/postHandler.test-utils";
+} from "../../../src/edge-api/backend/core-logic/handlers/postHandler.test-utils";
 
 // Mock all external dependencies
 vi.mock("@ai-sdk/anthropic");
 vi.mock("ai");
-vi.mock("../../../src/edge-api/backend/services/storageService");
+vi.mock("../../../src/edge-api/backend/core-logic/services/storageService");
 
 // Setup crypto mock
 setupCrypto();

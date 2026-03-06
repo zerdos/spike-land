@@ -7,19 +7,19 @@ import { handleCMSIndexRequest } from "../../src/edge-api/backend/edge/chat.js";
 import type Env from "../../src/edge-api/backend/core-logic/env.js";
 import { createMockEnv } from "../../src/edge-api/backend/edge/test-utils.js";
 
-vi.mock("../../src/edge-api/backend/anthropicHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/anthropicHandler.js", () => ({
   handleAnthropicRequest: vi.fn(),
 }));
-vi.mock("../../src/edge-api/backend/openaiHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/openaiHandler.js", () => ({
   handleGPT4Request: vi.fn(),
 }));
-vi.mock("../../src/edge-api/backend/replicateHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/ai/replicateHandler.js", () => ({
   handleReplicateRequest: vi.fn(),
 }));
-vi.mock("../../src/edge-api/backend/mainFetchHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/mainFetchHandler.js", () => ({
   handleMainFetch: vi.fn().mockResolvedValue(new Response("main fetch")),
 }));
-vi.mock("../../src/edge-api/backend/Logs.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/Logs.js", () => ({
   KVLogger: class {
     log = vi.fn().mockResolvedValue(undefined);
     getLogs = vi.fn().mockResolvedValue([]);

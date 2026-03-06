@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authClient, authProviders } from "../../../src/frontend/platform-frontend/lib/auth";
+import { authClient, authProviders } from "@/auth/auth";
 
 describe("authClient", () => {
   it("is defined", () => {

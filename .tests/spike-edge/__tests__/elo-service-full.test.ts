@@ -5,7 +5,7 @@ import {
   recordEloEvent,
   clearEloCache,
   grantBugBounty,
-} from "../../../src/edge-api/main/lib/elo-service.js";
+} from "../../../src/edge-api/main/core-logic/elo-service.js";
 
 function buildDB(overrides: {
   existingRow?: Record<string, unknown> | null;

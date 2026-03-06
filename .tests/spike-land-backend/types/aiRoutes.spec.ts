@@ -9,7 +9,7 @@ import {
   isTextContentPart,
   isToolResultContentPart,
   isToolUseContentPart,
-} from "../../../src/edge-api/backend/types/aiRoutes.js";
+} from "../../../src/edge-api/backend/core-logic/types/aiRoutes.js";
 
 describe("types/aiRoutes type guards", () => {
   describe("isTextContentPart", () => {

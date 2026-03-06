@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getBalance, deductCredit, purchaseCredits, getUsedToday } from "../../../src/edge-api/main/lib/credit-service.js";
+import { getBalance, deductCredit, purchaseCredits, getUsedToday } from "../../../src/edge-api/main/core-logic/credit-service.js";
 
 /**
  * Build a mock D1Database that simulates the credit_balances table.
@@ -20,7 +20,7 @@ function createMockDB(options: {
   const runMock = vi.fn().mockResolvedValue({ success: true });
 
   // We need to handle multiple prepare() calls returning different values
-  let callCount = 0;
+  const callCount = 0;
   const firstResponses: Array<unknown> = [
     // resolveEffectiveTier: SELECT grants + SELECT sub
     null, // access_grants
@@ -227,7 +227,7 @@ describe("purchaseCredits", () => {
   it("adds credits to existing balance", async () => {
     const today = new Date().toISOString().slice(0, 10);
     const batchMock = vi.fn().mockResolvedValue([]);
-    let selectBalanceCall = false;
+    const selectBalanceCall = false;
 
     const prepareMock = vi.fn().mockImplementation((sql: string) => ({
       bind: vi.fn().mockReturnThis(),

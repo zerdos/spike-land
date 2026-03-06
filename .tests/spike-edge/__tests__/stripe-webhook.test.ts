@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import { stripeWebhook } from "../../../src/edge-api/main/routes/stripe-webhook.js";
-import type { Env } from "../../../src/edge-api/main/env.js";
+import { stripeWebhook } from "../../../src/edge-api/main/api/routes/stripe-webhook.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

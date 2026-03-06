@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ToolRegistry, validateSchemaDescriptions, formatExamplesAsDescription, compareSemver } from "../../../src/edge-api/spike-land/mcp/registry";
+import { ToolRegistry, validateSchemaDescriptions, formatExamplesAsDescription, compareSemver } from "../../../src/edge-api/spike-land/lazy-imports/registry";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
@@ -76,6 +76,20 @@ describe("formatExamplesAsDescription", () => {
     expect(res).toContain("### Examples");
     expect(res).toContain("- **ex1**: desc1");
     expect(res).toContain('{"a":1}');
+  });
+
+  it("includes expected_output when present", () => {
+    const res = formatExamplesAsDescription("Desc", [
+      { name: "ex1", description: "desc1", input: { a: 1 }, expected_output: "some result" }
+    ]);
+    expect(res).toContain("Expected: some result");
+  });
+
+  it("omits expected_output line when not present", () => {
+    const res = formatExamplesAsDescription("Desc", [
+      { name: "ex1", description: "desc1", input: { a: 1 } }
+    ]);
+    expect(res).not.toContain("Expected:");
   });
 });
 
@@ -408,6 +422,93 @@ describe("ToolRegistry", () => {
     const examples = registry.getToolExamples("ex_tool");
     expect(examples).toBeDefined();
     expect(examples![0].name).toBe("test");
+  });
+
+  describe("getToolsWithExamples", () => {
+    it("returns tools that have examples", () => {
+      const server = createMockMcpServer();
+      const registry = new ToolRegistry(server, "user-1");
+
+      registry.register({
+        name: "with_examples",
+        description: "d",
+        category: "c",
+        tier: "free",
+        examples: [
+          { name: "ex1", description: "first", input: { x: 1 } },
+          { name: "ex2", description: "second", input: { x: 2 } },
+        ],
+        handler: () => ({ content: [] }),
+      });
+      registry.register({
+        name: "no_examples",
+        description: "d",
+        category: "c",
+        tier: "free",
+        handler: () => ({ content: [] }),
+      });
+
+      const result = registry.getToolsWithExamples();
+      expect(result).toHaveLength(1);
+      expect(result[0]!.name).toBe("with_examples");
+      expect(result[0]!.exampleCount).toBe(2);
+    });
+
+    it("returns empty array when no tools have examples", () => {
+      const server = createMockMcpServer();
+      const registry = new ToolRegistry(server, "user-1");
+
+      registry.register({
+        name: "no_examples",
+        description: "d",
+        category: "c",
+        tier: "free",
+        handler: () => ({ content: [] }),
+      });
+
+      expect(registry.getToolsWithExamples()).toEqual([]);
+    });
+
+    it("does not include tools with an empty examples array", () => {
+      const server = createMockMcpServer();
+      const registry = new ToolRegistry(server, "user-1");
+
+      registry.register({
+        name: "empty_examples",
+        description: "d",
+        category: "c",
+        tier: "free",
+        examples: [],
+        handler: () => ({ content: [] }),
+      });
+
+      expect(registry.getToolsWithExamples()).toEqual([]);
+    });
+  });
+
+  it("stores expected_output on ToolExample and surfaces it via getToolExamples", () => {
+    const server = createMockMcpServer();
+    const registry = new ToolRegistry(server, "user-1");
+
+    registry.register({
+      name: "tool_with_expected_output",
+      description: "d",
+      category: "c",
+      tier: "free",
+      examples: [
+        {
+          name: "ex1",
+          description: "An example with output",
+          input: { q: "hello" },
+          expected_output: "Returns a greeting",
+        },
+      ],
+      handler: () => ({ content: [] }),
+    });
+
+    const examples = registry.getToolExamples("tool_with_expected_output");
+    expect(examples).toBeDefined();
+    expect(examples![0]!.expected_output).toBe("Returns a greeting");
   });
 
   describe("Versioning", () => {

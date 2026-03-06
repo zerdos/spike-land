@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createLogger, type LogEntry } from "../../../src/core/shared-utils/utils/logger";
+import { createLogger, type LogEntry } from "../../../src/core/shared-utils/core-logic/logger";
 
 describe("createLogger", () => {
   beforeEach(() => {

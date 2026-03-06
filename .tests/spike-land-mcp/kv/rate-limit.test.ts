@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { checkRateLimit } from "../../../src/edge-api/spike-land/kv/rate-limit";
+import { checkRateLimit } from "../../../src/edge-api/spike-land/core-logic/kv/rate-limit";
 import { createMockKV } from "../__test-utils__/mock-env";
 
 describe("checkRateLimit", () => {

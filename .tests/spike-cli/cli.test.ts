@@ -5,12 +5,12 @@ import * as alias from "../../src/cli/spike-cli/core-logic/commands/alias.js";
 import { main } from "../../src/cli/spike-cli/core-logic/cli.js";
 
 // Mock the commands so we don't trigger real logic
-vi.mock("../../src/cli/spike-cli/commands/auth", () => ({ registerAuthCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/commands/alias", () => ({ registerAliasCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/commands/completions", () => ({ registerCompletionsCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/commands/registry", () => ({ registerRegistryCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/commands/agent", () => ({ registerAgentCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/alias/store", () => ({ loadAliases: vi.fn().mockResolvedValue({ commands: {} }) }));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/auth", () => ({ registerAuthCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/alias", () => ({ registerAliasCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/completions", () => ({ registerCompletionsCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/registry", () => ({ registerRegistryCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/ai-cli/agent", () => ({ registerAgentCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/node-sys/store", () => ({ loadAliases: vi.fn().mockResolvedValue({ commands: {} }) }));
 
 describe("cli", () => {
   const originalArgv = process.argv;
@@ -49,7 +49,7 @@ describe("cli", () => {
   });
 
   it("rewrites command aliases", async () => {
-    const store = await import("../../src/cli/spike-cli/alias/store");
+    const store = await import("../../src/cli/spike-cli/node-sys/store");
     vi.mocked(store.loadAliases).mockResolvedValue({
       commands: { st: "status" },
     } as unknown as { commands: Record<string, string> });
@@ -61,7 +61,7 @@ describe("cli", () => {
   });
 
   it("preAction hook sets verbose when --verbose is passed", async () => {
-    const logger = await import("../../src/cli/spike-cli/util/logger");
+    const logger = await import("../../src/cli/spike-cli/core-logic/util/logger");
     const setVerboseSpy = vi.spyOn(logger, "setVerbose");
 
     // Restore real parse to let the preAction hook fire
@@ -91,7 +91,7 @@ describe("cli", () => {
   });
 
   it("handles alias loading failure silently", async () => {
-    const store = await import("../../src/cli/spike-cli/alias/store");
+    const store = await import("../../src/cli/spike-cli/node-sys/store");
     vi.mocked(store.loadAliases).mockRejectedValue(new Error("load failed"));
 
     process.argv = ["node", "spike", "status"];
@@ -101,7 +101,7 @@ describe("cli", () => {
   });
 
   it("handles non-alias command", async () => {
-    const store = await import("../../src/cli/spike-cli/alias/store");
+    const store = await import("../../src/cli/spike-cli/node-sys/store");
     vi.mocked(store.loadAliases).mockResolvedValue({
       commands: { st: "status" },
     } as any);
@@ -112,7 +112,7 @@ describe("cli", () => {
   });
 
   it("preAction hook does not set verbose when --verbose is missing", async () => {
-    const logger = await import("../../src/cli/spike-cli/util/logger");
+    const logger = await import("../../src/cli/spike-cli/core-logic/util/logger");
     const setVerboseSpy = vi.spyOn(logger, "setVerbose");
 
     vi.spyOn(program, "parse").mockImplementation(() => {

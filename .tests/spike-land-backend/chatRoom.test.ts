@@ -6,13 +6,13 @@ import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler
 import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
 // Mock external dependencies - use function expression for Vitest 4 constructor mocking
-vi.mock("../../src/edge-api/backend/routeHandler", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/routeHandler", () => ({
   RouteHandler: vi.fn().mockImplementation(function () {
     return { handleRoute: vi.fn() };
   }),
 }));
 
-vi.mock("../../src/edge-api/backend/websocketHandler", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/websocketHandler", () => ({
   WebSocketHandler: vi.fn().mockImplementation(function () {
     return {
       broadcast: vi.fn(),

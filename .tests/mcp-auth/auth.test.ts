@@ -24,8 +24,8 @@ vi.mock("better-auth", () => ({
   })),
 }));
 
-// Mock better-auth/adapters/drizzle
-vi.mock("better-auth/adapters/drizzle", () => ({
+// Mock @better-auth/drizzle-adapter
+vi.mock("@better-auth/drizzle-adapter", () => ({
   drizzleAdapter: vi.fn((_db: unknown, _opts: unknown) => ({
     type: "drizzle-adapter",
   })),
@@ -113,7 +113,7 @@ describe("createAuth", () => {
     expect(callArg.socialProviders.apple.clientSecret).toBe("asecret");
   });
 
-  it("defaults social provider secrets to empty strings when not provided", async () => {
+  it("defaults social provider secrets to undefined (omitted) when not provided", async () => {
     const { betterAuth } = await import("better-auth");
     const env = makeEnv({
       GOOGLE_CLIENT_ID: undefined,
@@ -124,10 +124,10 @@ describe("createAuth", () => {
       APPLE_CLIENT_SECRET: undefined,
     });
     createAuth(env);
-    const callArg = vi.mocked(betterAuth).mock.calls[0][0] as Record<string, unknown>;
-    expect(callArg.socialProviders.google.clientId).toBe("");
-    expect(callArg.socialProviders.github.clientId).toBe("");
-    expect(callArg.socialProviders.apple.clientId).toBe("");
+    const callArg = (vi.mocked(betterAuth).mock.calls[0][0] as { socialProviders: Record<string, unknown> });
+    expect(callArg.socialProviders.google).toBeUndefined();
+    expect(callArg.socialProviders.github).toBeUndefined();
+    expect(callArg.socialProviders.apple).toBeUndefined();
   });
 
   it("enables email and password auth", async () => {
@@ -226,7 +226,7 @@ describe("createAuth", () => {
   });
 
   it("configures drizzle adapter with sqlite provider", async () => {
-    const { drizzleAdapter } = await import("better-auth/adapters/drizzle");
+    const { drizzleAdapter } = await import("@better-auth/drizzle-adapter");
     const env = makeEnv();
     createAuth(env);
     expect(drizzleAdapter).toHaveBeenCalledOnce();

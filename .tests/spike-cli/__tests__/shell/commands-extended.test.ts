@@ -14,11 +14,11 @@ import {
   handleReconnect,
   handleToolsets,
   type ShellContext,
-} from "../../../../src/cli/spike-cli/shell/commands.js";
-import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
-import type { ResolvedConfig } from "../../../../src/cli/spike-cli/config/types.js";
-import type { AliasResolver } from "../../../../src/cli/spike-cli/alias/resolver.js";
-import type { ToolsetManager } from "../../../../src/cli/spike-cli/multiplexer/toolset-manager.js";
+} from "../../../../src/cli/spike-cli/core-logic/shell/commands.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import type { ResolvedConfig } from "../../../../src/cli/spike-cli/core-logic/config/types.js";
+import type { AliasResolver } from "../../../../src/cli/spike-cli/core-logic/alias/resolver.js";
+import type { ToolsetManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/toolset-manager.js";
 
 // Isolate alias store operations in a temp directory
 let tempDir: string;
@@ -303,7 +303,7 @@ describe("handleLoadToolset", () => {
 
 describe("handleAlias", () => {
   it("lists aliases when no subcommand is given", async () => {
-    const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
+    const { addAlias } = await import("../../../../src/cli/spike-cli/node-sys/store.js");
     await addAlias("commands", "s", "serve");
 
     const ctx = makeCtx();
@@ -371,7 +371,7 @@ describe("handleAlias", () => {
   });
 
   it("removes an existing alias", async () => {
-    const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
+    const { addAlias } = await import("../../../../src/cli/spike-cli/node-sys/store.js");
     await addAlias("commands", "delme", "serve");
 
     const ctx = makeCtx();
@@ -399,7 +399,7 @@ describe("handleAlias", () => {
   });
 
   it("shows JSON representation for composite alias values in list", async () => {
-    const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
+    const { addAlias } = await import("../../../../src/cli/spike-cli/node-sys/store.js");
     await addAlias("composite", "qm", {
       tool: "chess__move",
       args: { from: "e2" },

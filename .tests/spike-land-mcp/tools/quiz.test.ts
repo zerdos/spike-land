@@ -15,8 +15,8 @@ import {
   type QuizRound,
   type QuizSession,
   verifyBadgeToken,
-} from "../../../src/edge-api/spike-land/tools/quiz";
-import type { Env } from "../../../src/edge-api/spike-land/env";
+} from "../../../src/edge-api/spike-land/core-logic/tools/quiz";
+import type { Env } from "../../../src/edge-api/spike-land/core-logic/env";
 
 // Minimal mock env with no API key so tests use the deterministic heuristic path
 const mockEnvNoGemini = { GEMINI_API_KEY: "" } as unknown as Env;

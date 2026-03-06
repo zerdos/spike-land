@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockServer } from "@spike-land-ai/mcp-server-base";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StripeClient } from "../../../src/mcp-tools/stripe-analytics/clients/stripe-client.js";
-import { registerCustomerTools } from "../../../src/mcp-tools/stripe-analytics/tools/customers.js";
+import { StripeClient } from "../../../src/mcp-tools/stripe-analytics/core-logic/stripe-client.js";
+import { registerCustomerTools } from "../../../src/mcp-tools/stripe-analytics/mcp/customers.js";
 
 function mockFetch(responses: Array<{ body: unknown; status?: number }>) {
   let callIndex = 0;

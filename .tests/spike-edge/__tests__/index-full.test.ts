@@ -15,7 +15,7 @@
  * - scheduled export
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Env } from "../../../src/edge-api/main/env.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 function makeCtx() {
   return {

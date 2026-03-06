@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerStatusTool } from "../../../src/mcp-tools/esbuild-wasm/tools/status.js";
+import { registerStatusTool } from "../../../src/mcp-tools/esbuild-wasm/core-logic/status.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockGetState = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../src/mcp-tools/esbuild-wasm/wasm-api.js", () => ({
+vi.mock("../../../src/mcp-tools/esbuild-wasm/node-sys/wasm-api.js", () => ({
   getState: mockGetState,
 }));
 

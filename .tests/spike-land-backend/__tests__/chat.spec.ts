@@ -1,26 +1,26 @@
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import type Env from "../../../src/edge-api/backend/env.js";
-import { createMockEnv } from "../../../src/edge-api/backend/test-utils.js";
+import type Env from "../../../src/edge-api/backend/core-logic/env.js";
+import { createMockEnv } from "../../../src/edge-api/backend/core-logic/test-utils.js";
 
 // Mock external modules - must be before any imports that use them
-vi.mock("../../../src/edge-api/backend/anthropicHandler.js", () => ({
+vi.mock("../../../src/edge-api/backend/core-logic/anthropicHandler.js", () => ({
   handleAnthropicRequest: vi.fn(),
 }));
 
-vi.mock("../../../src/edge-api/backend/openaiHandler.js", () => ({
+vi.mock("../../../src/edge-api/backend/core-logic/openaiHandler.js", () => ({
   handleGPT4Request: vi.fn(),
 }));
 
-vi.mock("../../../src/edge-api/backend/replicateHandler.js", () => ({
+vi.mock("../../../src/edge-api/backend/ai/replicateHandler.js", () => ({
   handleReplicateRequest: vi.fn(),
 }));
 
-vi.mock("../../../src/edge-api/backend/mainFetchHandler.js", () => ({
+vi.mock("../../../src/edge-api/backend/lazy-imports/mainFetchHandler.js", () => ({
   handleMainFetch: vi.fn(),
 }));
 
 // Use a class mock for KVLogger
-vi.mock("../../../src/edge-api/backend/Logs.js", () => {
+vi.mock("../../../src/edge-api/backend/core-logic/Logs.js", () => {
   const mockLog = vi.fn().mockResolvedValue(undefined);
   return {
     KVLogger: class MockKVLogger {
@@ -44,18 +44,18 @@ vi.mock("@spike-land-ai/code", () => ({
   serveWithCache: vi.fn(() => mockKvServer),
 }));
 
-vi.mock("../../../src/edge-api/backend/staticContent.mjs", () => ({
+vi.mock("../../../src/edge-api/backend/core-logic/staticContent.mjs", () => ({
   ASSET_HASH: "test-hash-12345",
   ASSET_MANIFEST: "{}",
   files: { "test.js": "test.js" },
 }));
 
 // Import the main handler after mocks are set up
-import { handleAnthropicRequest } from "../../../src/edge-api/backend/anthropicHandler.js";
-import main, { handleCMSIndexRequest } from "../../../src/edge-api/backend/chat.js";
-import { handleMainFetch } from "../../../src/edge-api/backend/mainFetchHandler.js";
-import { handleGPT4Request } from "../../../src/edge-api/backend/openaiHandler.js";
-import { handleReplicateRequest } from "../../../src/edge-api/backend/replicateHandler.js";
+import { handleAnthropicRequest } from "../../../src/edge-api/backend/core-logic/anthropicHandler.js";
+import main, { handleCMSIndexRequest } from "../../../src/edge-api/backend/core-logic/chat.js";
+import { handleMainFetch } from "../../../src/edge-api/backend/lazy-imports/mainFetchHandler.js";
+import { handleGPT4Request } from "../../../src/edge-api/backend/core-logic/openaiHandler.js";
+import { handleReplicateRequest } from "../../../src/edge-api/backend/ai/replicateHandler.js";
 
 describe("Chat Handler", () => {
   let mockEnv: ReturnType<typeof createMockEnv>;

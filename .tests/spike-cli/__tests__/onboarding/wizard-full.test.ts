@@ -19,7 +19,7 @@ vi.mock("node:readline", () => ({
 const mockFetch = vi.hoisted(() => vi.fn());
 vi.stubGlobal("fetch", mockFetch);
 
-import { runOnboardingWizard, submitOnboarding } from "../../../../src/cli/spike-cli/onboarding/wizard.js";
+import { runOnboardingWizard, submitOnboarding } from "../../../../src/cli/spike-cli/core-logic/onboarding/wizard.js";
 
 describe("runOnboardingWizard", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;

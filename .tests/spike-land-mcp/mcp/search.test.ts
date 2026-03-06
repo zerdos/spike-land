@@ -5,9 +5,9 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { ToolSearch } from "../../../src/edge-api/spike-land/mcp/search";
+import { ToolSearch } from "../../../src/edge-api/spike-land/core-logic/mcp/search";
 import type { RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { ToolDefinition } from "../../../src/edge-api/spike-land/mcp/registry";
+import type { ToolDefinition } from "../../../src/edge-api/spike-land/lazy-imports/registry";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { signJwt, verifyJwt } from "../../../src/edge-api/spike-land/auth/jwt";
+import { signJwt, verifyJwt } from "../../../src/edge-api/spike-land/core-logic/auth/jwt";
 
 const SECRET = "test-jwt-secret-at-least-32-chars-long";
 

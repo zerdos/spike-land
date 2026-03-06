@@ -74,7 +74,7 @@ vi.mock("drizzle-orm/d1", () => ({
 
 // Mock auth module
 let mockGetSession = vi.fn(async (..._args: unknown[]) => null);
-vi.mock("../../src/edge-api/auth/auth", () => ({
+vi.mock("../../src/edge-api/auth/db-auth/auth", () => ({
   createAuth: vi.fn(() => ({
     handler: vi.fn(async (_req: Request) => new Response("auth response", { status: 200 })),
     api: {
@@ -161,7 +161,7 @@ describe("worker fetch handler", () => {
 
   describe("/api/auth/* routes", () => {
     it("delegates to better-auth handler", async () => {
-      const { createAuth } = await import("../../src/edge-api/auth/auth");
+      const { createAuth } = await import("../../src/edge-api/auth/db-auth/auth");
       const req = makeRequest("GET", "/api/auth/session");
       const res = await worker.fetch(req, makeEnv());
       expect(createAuth).toHaveBeenCalled();
@@ -169,7 +169,7 @@ describe("worker fetch handler", () => {
     });
 
     it("delegates /api/auth/sign-in/email to better-auth handler", async () => {
-      const { createAuth } = await import("../../src/edge-api/auth/auth");
+      const { createAuth } = await import("../../src/edge-api/auth/db-auth/auth");
       const req = makeRequest("POST", "/api/auth/sign-in/email");
       const res = await worker.fetch(req, makeEnv());
       expect(createAuth).toHaveBeenCalled();

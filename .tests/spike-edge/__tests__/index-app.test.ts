@@ -3,14 +3,14 @@
  * MCP proxy routes, auth proxy, catch-all API route, and scheduled handler.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { Env } from "../../../src/edge-api/main/env.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 // Import the full app module
 // Note: We re-create a minimal app using the same patterns as index.ts
 // because importing index.ts directly would require all CF bindings
 import { Hono } from "hono";
-import { requestIdMiddleware } from "../../../src/edge-api/main/middleware/request-id.js";
-import { RateLimiter } from "../../../src/edge-api/main/rate-limiter.js";
+import { requestIdMiddleware } from "../../../src/edge-api/main/api/middleware/request-id.js";
+import { RateLimiter } from "../../../src/edge-api/main/edge/rate-limiter.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {
@@ -82,7 +82,7 @@ describe("requestIdMiddleware", () => {
 describe("RateLimiter export", () => {
   it("is exported from index", async () => {
     // Dynamic import to avoid loading the whole app
-    const { RateLimiter: RL } = await import("../../../src/edge-api/main/rate-limiter.js");
+    const { RateLimiter: RL } = await import("../../../src/edge-api/main/edge/rate-limiter.js");
     expect(RL).toBeDefined();
   });
 });

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useChat } from "@/hooks/useChat";
+import { useChat } from "@/ui/hooks/useChat";
 
 // Mock apiUrl
-vi.mock("@/lib/api", () => ({
+vi.mock("@/core-logic/api", () => ({
   apiUrl: (path: string) => `/api${path}`,
 }));
 

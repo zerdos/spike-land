@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createCompleter } from "../../../../src/cli/spike-cli/shell/completer.js";
-import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+import { createCompleter } from "../../../../src/cli/spike-cli/core-logic/shell/completer.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 describe("createCompleter", () => {
   let mockManager: ServerManager;

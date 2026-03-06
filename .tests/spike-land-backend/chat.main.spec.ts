@@ -5,23 +5,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock all the heavy imports
-vi.mock("../../src/edge-api/backend/mainFetchHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/mainFetchHandler.js", () => ({
   handleMainFetch: vi.fn().mockResolvedValue(new Response("main fetch", { status: 200 })),
 }));
 
-vi.mock("../../src/edge-api/backend/anthropicHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/anthropicHandler.js", () => ({
   handleAnthropicRequest: vi.fn().mockResolvedValue(new Response("anthropic ok", { status: 200 })),
 }));
 
-vi.mock("../../src/edge-api/backend/openaiHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/openaiHandler.js", () => ({
   handleGPT4Request: vi.fn().mockResolvedValue(new Response("openai ok", { status: 200 })),
 }));
 
-vi.mock("../../src/edge-api/backend/replicateHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/ai/replicateHandler.js", () => ({
   handleReplicateRequest: vi.fn().mockResolvedValue(new Response("replicate ok", { status: 200 })),
 }));
 
-vi.mock("../../src/edge-api/backend/Logs.js", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/Logs.js", () => ({
   KVLogger: class {
     log = vi.fn().mockResolvedValue(undefined);
   },
@@ -247,7 +247,7 @@ describe("chat.ts main export", () => {
 
   describe("anthropic routing", () => {
     it("routes requests with 'anthropic' in URL to handleAnthropicRequest", async () => {
-      const { handleAnthropicRequest } = await import("../../src/edge-api/backend/anthropicHandler.js");
+      const { handleAnthropicRequest } = await import("../../src/edge-api/backend/core-logic/anthropicHandler.js");
 
       const request = new Request("https://example.com/anthropic/v1/messages");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -259,7 +259,7 @@ describe("chat.ts main export", () => {
 
   describe("openai routing", () => {
     it("routes requests with 'openai' in URL to handleGPT4Request", async () => {
-      const { handleGPT4Request } = await import("../../src/edge-api/backend/openaiHandler.js");
+      const { handleGPT4Request } = await import("../../src/edge-api/backend/core-logic/openaiHandler.js");
 
       const request = new Request("https://example.com/openai/v1/chat");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -270,7 +270,7 @@ describe("chat.ts main export", () => {
 
   describe("replicate routing", () => {
     it("routes requests with 'replicate' in URL to handleReplicateRequest", async () => {
-      const { handleReplicateRequest } = await import("../../src/edge-api/backend/replicateHandler.js");
+      const { handleReplicateRequest } = await import("../../src/edge-api/backend/ai/replicateHandler.js");
 
       const request = new Request("https://example.com/replicate/v1/predictions");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -358,7 +358,7 @@ describe("chat.ts main export", () => {
 
   describe("fallthrough to handleMainFetch", () => {
     it("routes unknown paths to handleMainFetch", async () => {
-      const { handleMainFetch } = await import("../../src/edge-api/backend/mainFetchHandler.js");
+      const { handleMainFetch } = await import("../../src/edge-api/backend/lazy-imports/mainFetchHandler.js");
 
       const request = new Request("https://example.com/unknown-path");
       const response = await main.fetch(request, mockEnv, mockCtx);

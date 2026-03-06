@@ -24,15 +24,15 @@ describe("MainFetchHandler", () => {
     } as unknown as ExecutionContext;
 
     // Mock imported functions
-    vi.mock("../../src/edge-api/backend/fetchHandler", () => ({
+    vi.mock("../../src/edge-api/backend/lazy-imports/fetchHandler", () => ({
       handleFetchApi: vi.fn(),
     }));
 
-    vi.mock("../../src/edge-api/backend/handleErrors", () => ({
+    vi.mock("../../src/edge-api/backend/lazy-imports/handleErrors", () => ({
       handleErrors: vi.fn(),
     }));
 
-    vi.mock("../../src/edge-api/backend/utils", () => ({
+    vi.mock("../../src/edge-api/backend/core-logic/utils", () => ({
       handleUnauthorizedRequest: vi.fn(),
     }));
   });

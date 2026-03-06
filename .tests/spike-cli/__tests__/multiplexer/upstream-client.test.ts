@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UpstreamClient } from "../../../../src/cli/spike-cli/multiplexer/upstream-client.js";
+import { UpstreamClient } from "../../../../src/cli/spike-cli/core-logic/multiplexer/upstream-client.js";
 
 describe("UpstreamClient", () => {
   it("constructor sets name and defaults to disconnected", () => {

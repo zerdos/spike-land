@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getClientId, hashClientId, sendGA4Events } from "../../../src/edge-api/main/lib/ga4.js";
+import { getClientId, hashClientId, sendGA4Events } from "../../../src/edge-api/main/lazy-imports/ga4.js";
 
 describe("hashClientId", () => {
   it("returns consistent hex hash for same input", async () => {

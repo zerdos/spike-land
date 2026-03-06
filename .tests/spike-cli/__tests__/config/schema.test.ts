@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateConfig } from "../../../../src/cli/spike-cli/config/schema.js";
+import { validateConfig } from "../../../../src/cli/spike-cli/core-logic/config/schema.js";
 
 describe("validateConfig", () => {
   it("validates a stdio server config", () => {

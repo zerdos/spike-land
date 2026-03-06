@@ -1,18 +1,18 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { LivePreview } from "../../../src/frontend/platform-frontend/components/LivePreview";
+import { LivePreview } from "@/ui/components/LivePreview";
 
 describe("LivePreview", () => {
   it("renders iframe with correct src", () => {
     render(<LivePreview appId="my-app" />);
-    const iframe = screen.getByTitle(/Preview my-app/) as HTMLIFrameElement;
+    const iframe = screen.getByTitle(/Preview.*my-app/) as HTMLIFrameElement;
     expect(iframe.src).toBe("https://edge.spike.land/live/my-app/index.html");
   });
 
   it("uses custom edgeUrl", () => {
     render(<LivePreview appId="app1" edgeUrl="https://custom.edge" />);
-    const iframe = screen.getByTitle(/Preview app1/) as HTMLIFrameElement;
+    const iframe = screen.getByTitle(/Preview.*app1/) as HTMLIFrameElement;
     expect(iframe.src).toBe("https://custom.edge/live/app1/index.html");
   });
 
@@ -23,7 +23,7 @@ describe("LivePreview", () => {
 
   it("iframe has sandbox attributes", () => {
     render(<LivePreview appId="my-app" />);
-    const iframe = screen.getByTitle("Preview my-app");
+    const iframe = screen.getByTitle(/Preview.*my-app/);
     // jsdom doesn't implement DOMTokenList for sandbox, check the attribute string
     const sandbox = iframe.getAttribute("sandbox") ?? "";
     expect(sandbox).toContain("allow-scripts");
@@ -37,7 +37,7 @@ describe("LivePreview", () => {
 
   it("hides loading spinner after iframe loads", () => {
     const { container } = render(<LivePreview appId="my-app" />);
-    const iframe = screen.getByTitle("Preview my-app");
+    const iframe = screen.getByTitle(/Preview.*my-app/);
     fireEvent.load(iframe);
     expect(container.querySelector(".animate-spin")).not.toBeInTheDocument();
   });
@@ -46,24 +46,24 @@ describe("LivePreview", () => {
   // rendering is tested via the refresh-after-error flow instead.
   it("refresh clears loading state for retry", () => {
     render(<LivePreview appId="my-app" />);
-    const iframe = screen.getByTitle("Preview my-app");
+    const iframe = screen.getByTitle(/Preview.*my-app/);
     fireEvent.load(iframe);
 
     // Click refresh — should show loading again
-    fireEvent.click(screen.getByTitle("Refresh"));
+    fireEvent.click(screen.getByTitle(/Refresh/i));
     const { container } = render(<LivePreview appId="my-app" />);
     expect(container.querySelector(".animate-spin")).toBeInTheDocument();
   });
 
   it("has refresh button", () => {
     render(<LivePreview appId="my-app" />);
-    const refreshBtn = screen.getByTitle("Refresh");
+    const refreshBtn = screen.getByTitle(/Refresh/i);
     expect(refreshBtn).toBeInTheDocument();
   });
 
   it("has fullscreen toggle button", () => {
     render(<LivePreview appId="my-app" />);
-    const fsBtn = screen.getByTitle("Fullscreen");
+    const fsBtn = screen.getByTitle(/fullscreen/i);
     expect(fsBtn).toBeInTheDocument();
   });
 
@@ -74,11 +74,11 @@ describe("LivePreview", () => {
     expect(container.firstChild).not.toHaveClass("fixed");
 
     // Click fullscreen
-    fireEvent.click(screen.getByTitle("Fullscreen"));
+    fireEvent.click(screen.getByTitle(/fullscreen/i));
     expect(container.firstChild).toHaveClass("fixed");
 
     // Click exit fullscreen
-    fireEvent.click(screen.getByTitle("Exit fullscreen"));
+    fireEvent.click(screen.getByTitle(/fullscreen/i));
     expect(container.firstChild).not.toHaveClass("fixed");
   });
 });

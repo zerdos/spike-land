@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
 
-vi.mock("../../../src/mcp-tools/bazdmeg/manifest.js", async (importOriginal) => {
+vi.mock("../../../src/mcp-tools/bazdmeg/node-sys/manifest.js", async (importOriginal) => {
   const actual = (await importOriginal()) as any;
   return {
     ...actual,
@@ -16,8 +16,8 @@ vi.mock("../../../src/mcp-tools/bazdmeg/manifest.js", async (importOriginal) => 
   };
 });
 
-import { readManifest, topologicalSort } from "../../../src/mcp-tools/bazdmeg/manifest.js";
-import { registerDepGraphTools } from "../../../src/mcp-tools/bazdmeg/tools/deps.js";
+import { readManifest, topologicalSort } from "../../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
+import { registerDepGraphTools } from "../../../src/mcp-tools/bazdmeg/mcp/deps.js";
 
 const mockReadManifest = vi.mocked(readManifest);
 const mockTopologicalSort = vi.mocked(topologicalSort);

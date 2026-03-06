@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { version } from "../../../src/edge-api/main/routes/version.js";
-import { wellKnown } from "../../../src/edge-api/main/routes/well-known.js";
-import { sitemap } from "../../../src/edge-api/main/routes/sitemap.js";
-import { githubStars } from "../../../src/edge-api/main/routes/github-stars.js";
-import { docsApi } from "../../../src/edge-api/main/routes/docs-api.js";
-import { userProfile } from "../../../src/edge-api/main/routes/user-profile.js";
-import { billing } from "../../../src/edge-api/main/routes/billing.js";
-import { apiKeys } from "../../../src/edge-api/main/routes/api-keys.js";
-import { cockpit } from "../../../src/edge-api/main/routes/cockpit.js";
-import { credits } from "../../../src/edge-api/main/routes/credits.js";
-import { support } from "../../../src/edge-api/main/routes/support.js";
-import { errors } from "../../../src/edge-api/main/routes/errors.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { version } from "../../../src/edge-api/main/api/routes/version.js";
+import { wellKnown } from "../../../src/edge-api/main/api/routes/well-known.js";
+import { sitemap } from "../../../src/edge-api/main/api/routes/sitemap.js";
+import { githubStars } from "../../../src/edge-api/main/api/routes/github-stars.js";
+import { docsApi } from "../../../src/edge-api/main/api/routes/docs-api.js";
+import { userProfile } from "../../../src/edge-api/main/api/routes/user-profile.js";
+import { billing } from "../../../src/edge-api/main/api/routes/billing.js";
+import { apiKeys } from "../../../src/edge-api/main/api/routes/api-keys.js";
+import { cockpit } from "../../../src/edge-api/main/api/routes/cockpit.js";
+import { credits } from "../../../src/edge-api/main/api/routes/credits.js";
+import { support } from "../../../src/edge-api/main/api/routes/support.js";
+import { errors } from "../../../src/edge-api/main/api/routes/errors.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {

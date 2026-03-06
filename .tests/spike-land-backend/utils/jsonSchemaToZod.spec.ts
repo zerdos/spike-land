@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { Code } from "../../../src/edge-api/backend/chatRoom";
-import { McpServer } from "../../../src/edge-api/backend/mcp";
+import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
+import { McpServer } from "../../../src/edge-api/backend/core-logic/mcp";
 import {
   JsonSchemaToZodConverter,
   isJsonSchemaType,
   isMcpToolInputSchema,
   type JsonSchemaType,
-} from "../../../src/edge-api/backend/utils/jsonSchemaToZod";
+} from "../../../src/edge-api/backend/core-logic/utils/jsonSchemaToZod";
 
 describe("JsonSchemaToZodConverter", () => {
   let converter: JsonSchemaToZodConverter;

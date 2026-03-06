@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { withEdgeCache, safeCtx } from "../../../src/edge-api/main/lib/edge-cache.js";
+import { withEdgeCache, safeCtx } from "../../../src/edge-api/main/api/lib/edge-cache.js";
 import type { Context } from "hono";
 
 describe("safeCtx", () => {

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { blogComments } from "../../../src/edge-api/main/routes/blog-comments.js";
-import { clearEloCache } from "../../../src/edge-api/main/lib/elo-service.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { blogComments } from "../../../src/edge-api/main/api/routes/blog-comments.js";
+import { clearEloCache } from "../../../src/edge-api/main/core-logic/elo-service.js";
 
 const AUTH_COOKIE = "session=valid-session";
 
@@ -229,7 +229,7 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
     const batchMock = vi.fn().mockResolvedValue([]);
 
     const prepareMock = vi.fn().mockImplementation((sql: string) => {
-      let localCount = 0;
+      const localCount = 0;
       return {
         bind: vi.fn().mockReturnThis(),
         first: vi.fn().mockImplementation(() => {

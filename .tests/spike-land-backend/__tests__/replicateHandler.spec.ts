@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import type Env from "../../../src/edge-api/backend/env.js";
-import { createMockEnv } from "../../../src/edge-api/backend/test-utils.js";
+import type Env from "../../../src/edge-api/backend/core-logic/env.js";
+import { createMockEnv } from "../../../src/edge-api/backend/core-logic/test-utils.js";
 
 // Mock external modules
 vi.mock("@spike-land-ai/code", () => ({
   md5: vi.fn().mockImplementation((input: string) => `md5-${input.substring(0, 20)}`),
 }));
 
-vi.mock("../../../src/edge-api/backend/utils/cache", () => ({
+vi.mock("../../../src/edge-api/backend/core-logic/utils/cache", () => ({
   getCacheDefault: vi.fn().mockReturnValue({
     match: vi.fn().mockResolvedValue(null),
     put: vi.fn().mockResolvedValue(undefined),
@@ -25,8 +25,8 @@ vi.mock("replicate", () => {
 
 // Import after mocks are set up
 import Replicate from "replicate";
-import { handleReplicateRequest, parseInputFromUrl } from "../../../src/edge-api/backend/replicateHandler.js";
-import { getCacheDefault } from "../../../src/edge-api/backend/utils/cache.js";
+import { handleReplicateRequest, parseInputFromUrl } from "../../../src/edge-api/backend/ai/replicateHandler.js";
+import { getCacheDefault } from "../../../src/edge-api/backend/core-logic/utils/cache.js";
 
 describe("parseInputFromUrl", () => {
   describe("default values", () => {

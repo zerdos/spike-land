@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { handleScheduled } from "../../../src/edge-api/main/scheduled.js";
-import type { Env } from "../../../src/edge-api/main/env.js";
+import { handleScheduled } from "../../../src/edge-api/main/lazy-imports/scheduled.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 function createDB(overrides: {
   errorCount?: number;

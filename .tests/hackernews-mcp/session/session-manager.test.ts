@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SessionManager } from "../../../src/mcp-tools/hackernews/session/session-manager.js";
+import { SessionManager } from "../../../src/mcp-tools/hackernews/core-logic/session-manager.js";
 
 describe("SessionManager", () => {
   let session: SessionManager;

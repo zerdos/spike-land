@@ -5,11 +5,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { clearInterviewSessions, getInterviewSession, registerWorkflowTools } from "../../../src/mcp-tools/bazdmeg/tools/workflow.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/workspace-state.js";
+import { clearInterviewSessions, getInterviewSession, registerWorkflowTools } from "../../../src/mcp-tools/bazdmeg/mcp/workflow.js";
+import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 import { buildDiff } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
-import * as engine from "../../../src/mcp-tools/bazdmeg/gates/engine.js";
+import * as engine from "../../../src/mcp-tools/bazdmeg/core-logic/engine.js";
 
 describe("workflow tools", () => {
   let server: ReturnType<typeof createMockServer>;

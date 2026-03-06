@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { HNWriteClient } from "../../../src/mcp-tools/hackernews/clients/hn-write-client.js";
-import { SessionManager } from "../../../src/mcp-tools/hackernews/session/session-manager.js";
+import { HNWriteClient } from "../../../src/mcp-tools/hackernews/core-logic/hn-write-client.js";
+import { SessionManager } from "../../../src/mcp-tools/hackernews/core-logic/session-manager.js";
 import { createFailingFetch, createMockFetch } from "../__test-utils__/index.js";
 import {
   COMMENT_SUCCESS_HTML,
@@ -14,7 +14,7 @@ import {
   SUBMIT_SUCCESS_HTML,
   VOTE_SUCCESS_HTML,
 } from "../__test-utils__/index.js";
-import { HN_WEB_BASE } from "../../../src/mcp-tools/hackernews/types.js";
+import { HN_WEB_BASE } from "../../../src/mcp-tools/hackernews/mcp/types.js";
 
 describe("HNWriteClient", () => {
   let session: SessionManager;

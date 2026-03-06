@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerTransformTool } from "../../../src/mcp-tools/esbuild-wasm/tools/transform.js";
+import { registerTransformTool } from "../../../src/mcp-tools/esbuild-wasm/lazy-imports/transform.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockEsbuild = vi.hoisted(() => ({
   transform: vi.fn(),
 }));
 
-vi.mock("../../../src/mcp-tools/esbuild-wasm/wasm-api.js", () => ({
+vi.mock("../../../src/mcp-tools/esbuild-wasm/node-sys/wasm-api.js", () => ({
   getEsbuildWasm: vi.fn().mockResolvedValue(mockEsbuild),
 }));
 

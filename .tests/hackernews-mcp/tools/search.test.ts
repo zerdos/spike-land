@@ -7,9 +7,9 @@ import {
   SAMPLE_UPDATES,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNReadClient } from "../../../src/mcp-tools/hackernews/clients/hn-read-client.js";
-import { registerSearchTools } from "../../../src/mcp-tools/hackernews/tools/search.js";
-import { ALGOLIA_BASE, HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/types.js";
+import { HNReadClient } from "../../../src/mcp-tools/hackernews/core-logic/hn-read-client.js";
+import { registerSearchTools } from "../../../src/mcp-tools/hackernews/core-logic/search.js";
+import { ALGOLIA_BASE, HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/mcp/types.js";
 
 describe("search tools", () => {
   let server: MockMcpServer;

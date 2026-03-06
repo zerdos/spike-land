@@ -72,7 +72,9 @@ describe('Incremental Test Logic', () => {
     });
 
     it('should return empty object if cache file does not exist', async () => {
-      (fs.readFile as any).mockRejectedValue({ code: 'ENOENT' });
+      const error = new Error('File not found');
+      (error as any).code = 'ENOENT';
+      (fs.readFile as any).mockRejectedValue(error);
       const loaded = await loadCache(cachePath);
       expect(loaded).toEqual({});
     });

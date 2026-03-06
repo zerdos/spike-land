@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { experiments } from "../../../src/edge-api/main/routes/experiments.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { experiments } from "../../../src/edge-api/main/api/routes/experiments.js";
 
 const BASE_VARIANTS = JSON.stringify([
   { id: "control", config: { color: "blue" }, weight: 50 },

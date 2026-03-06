@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerBuildTool } from "../../../src/mcp-tools/esbuild-wasm/tools/build.js";
-import { registerContextTool } from "../../../src/mcp-tools/esbuild-wasm/tools/context.js";
+import { registerBuildTool } from "../../../src/mcp-tools/esbuild-wasm/lazy-imports/build.js";
+import { registerContextTool } from "../../../src/mcp-tools/esbuild-wasm/lazy-imports/context.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockEsbuild = vi.hoisted(() => ({
@@ -8,7 +8,7 @@ const mockEsbuild = vi.hoisted(() => ({
   context: vi.fn(),
 }));
 
-vi.mock("../../../src/mcp-tools/esbuild-wasm/wasm-api.js", () => ({
+vi.mock("../../../src/mcp-tools/esbuild-wasm/node-sys/wasm-api.js", () => ({
   getEsbuildWasm: vi.fn().mockResolvedValue(mockEsbuild),
 }));
 

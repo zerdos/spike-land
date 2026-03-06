@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { type AppVersion, VersionHistory } from "../../../src/frontend/platform-frontend/components/VersionHistory";
+import { type AppVersion, VersionHistory } from "@/ui/components/VersionHistory";
 
 describe("VersionHistory", () => {
   it("renders empty state when no versions", () => {
     render(<VersionHistory versions={[]} />);
-    expect(screen.getByText("No versions yet.")).toBeInTheDocument();
+    expect(screen.getByText("No versions recorded")).toBeInTheDocument();
   });
 
   it("renders versions sorted descending", () => {
@@ -34,7 +34,7 @@ describe("VersionHistory", () => {
     expect(labels).toEqual(["v3", "v2", "v1"]);
   });
 
-  it("marks the latest version as Current", () => {
+  it("marks the latest version as Active", () => {
     const versions: AppVersion[] = [
       {
         version: 1,
@@ -49,7 +49,7 @@ describe("VersionHistory", () => {
     ];
 
     render(<VersionHistory versions={versions} />);
-    expect(screen.getByText("Current")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
   it("displays change description", () => {

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { StorageService } from "../../../src/edge-api/backend/services/storageService";
-import { GetHandler } from "../../../src/edge-api/backend/handlers/getHandler";
+import type { StorageService } from "../../../src/edge-api/backend/core-logic/services/storageService";
+import { GetHandler } from "../../../src/edge-api/backend/core-logic/handlers/getHandler";
 
 describe("GetHandler", () => {
   let handler: GetHandler;

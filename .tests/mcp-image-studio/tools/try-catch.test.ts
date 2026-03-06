@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { tryCatch } from "../../../src/mcp-tools/image-studio/tools/try-catch.js";
+import { tryCatch } from "../../../src/mcp-tools/image-studio/mcp/try-catch.js";
 
 describe("tryCatch utility", () => {
   it("returns ok:true and data on success", async () => {

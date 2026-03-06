@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getCacheDefault } from "../../../src/edge-api/backend/utils/cache";
+import { getCacheDefault } from "../../../src/edge-api/backend/core-logic/utils/cache";
 
 describe("getCacheDefault", () => {
   beforeEach(() => {

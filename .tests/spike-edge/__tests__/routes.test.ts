@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/main/env.js";
-import { health } from "../../../src/edge-api/main/routes/health.js";
-import { r2 } from "../../../src/edge-api/main/routes/r2.js";
-import { proxy } from "../../../src/edge-api/main/routes/proxy.js";
-import { live } from "../../../src/edge-api/main/routes/live.js";
-import { analytics } from "../../../src/edge-api/main/routes/analytics.js";
-import { spa } from "../../../src/edge-api/main/routes/spa.js";
-import { RateLimiter } from "../../../src/edge-api/main/rate-limiter.js";
+import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+import { health } from "../../../src/edge-api/main/api/routes/health.js";
+import { r2 } from "../../../src/edge-api/main/api/routes/r2.js";
+import { proxy } from "../../../src/edge-api/main/api/routes/proxy.js";
+import { live } from "../../../src/edge-api/main/api/routes/live.js";
+import { analytics } from "../../../src/edge-api/main/api/routes/analytics.js";
+import { spa } from "../../../src/edge-api/main/api/routes/spa.js";
+import { RateLimiter } from "../../../src/edge-api/main/edge/rate-limiter.js";
 
 function createMockEnv(): Env {
   return {
@@ -1349,7 +1349,7 @@ describe("app middleware (index.ts)", () => {
   });
 });
 
-import { sitemap } from "../../../src/edge-api/main/routes/sitemap.js";
+import { sitemap } from "../../../src/edge-api/main/api/routes/sitemap.js";
 
 describe("Sitemap & Robots", () => {
   it("returns sitemap.xml with blog posts", async () => {
@@ -1382,7 +1382,7 @@ describe("Sitemap & Robots", () => {
   });
 });
 
-vi.mock("../../../src/edge-api/main/lib/ga4.js", () => ({
+vi.mock("../../../src/edge-api/main/lazy-imports/ga4.js", () => ({
   getClientId: vi.fn().mockResolvedValue("mocked-client-id"),
   sendGA4Events: vi.fn().mockResolvedValue(undefined),
 }));

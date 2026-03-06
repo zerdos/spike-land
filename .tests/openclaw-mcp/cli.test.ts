@@ -12,7 +12,7 @@ const mockBridgeInstance = {
   callTool: vi.fn().mockResolvedValue({ content: [] }),
 };
 
-vi.mock("../../src/mcp-tools/openclaw/bridge.js", () => ({
+vi.mock("../../src/mcp-tools/openclaw/core-logic/bridge.js", () => ({
   createMcpBridge: vi.fn(() => mockBridgeInstance),
 }));
 

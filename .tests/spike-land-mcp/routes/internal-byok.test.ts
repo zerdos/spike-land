@@ -3,12 +3,12 @@
  */
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/edge-api/spike-land/env";
+import type { Env } from "../../../src/edge-api/spike-land/core-logic/env";
 
 // Control what the mocked db.select returns across tests
 let _mockDbRows: Record<string, unknown>[] = [];
 
-vi.mock("../../../src/edge-api/spike-land/db/index", () => {
+vi.mock("../../../src/edge-api/spike-land/db/db/db-index", () => {
   return {
     createDb: () => ({
       select: () => ({
@@ -74,7 +74,7 @@ async function encryptByokKey(
 }
 
 function buildApp(vaultSecret = "test-vault-secret") {
-  const { internalByokRoute } = require("../../../src/edge-api/spike-land/routes/internal-byok") as { internalByokRoute: ReturnType<typeof import("hono")["Hono"]["prototype"]["route"]> };
+  const { internalByokRoute } = require("../../../src/edge-api/spike-land/api/internal-byok") as { internalByokRoute: ReturnType<typeof import("hono")["Hono"]["prototype"]["route"]> };
   const app = new Hono<{ Bindings: Env }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app.route("/internal", internalByokRoute as any);
@@ -90,7 +90,7 @@ function buildApp(vaultSecret = "test-vault-secret") {
 describe("internalByokRoute POST /byok/get", () => {
   it("returns 400 when userId is missing", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -112,7 +112,7 @@ describe("internalByokRoute POST /byok/get", () => {
 
   it("returns 400 when provider is missing", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -134,7 +134,7 @@ describe("internalByokRoute POST /byok/get", () => {
 
   it("returns null key when no vault record found", async () => {
     _mockDbRows = []; // empty — no record
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -164,7 +164,7 @@ describe("internalByokRoute POST /byok/get", () => {
     }));
 
     _mockDbRows = [{ encryptedKey: invalidEncryptedKey }];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -187,7 +187,7 @@ describe("internalByokRoute POST /byok/get", () => {
 
   it("returns 400 when body is not valid JSON", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -217,7 +217,7 @@ describe("internalByokRoute POST /byok/get", () => {
     // The mocked createDb returns this row directly from select().from().where().limit()
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: vaultSecret } as unknown as Env;
@@ -247,7 +247,7 @@ describe("internalByokRoute POST /byok/get", () => {
 
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     // No VAULT_SECRET in env — triggers ?? "" branch on line 77
@@ -315,7 +315,7 @@ describe("internalByokRoute POST /byok/get", () => {
 
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/routes/internal-byok");
+    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "some-vault-secret" } as unknown as Env;

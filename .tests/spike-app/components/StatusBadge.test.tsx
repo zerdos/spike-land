@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { type AppStatus, StatusBadge } from "../../../src/frontend/platform-frontend/components/StatusBadge";
+import { type AppStatus, StatusBadge } from "@/ui/components/StatusBadge";
 
 describe("StatusBadge", () => {
   const allStatuses: AppStatus[] = [
@@ -20,26 +20,26 @@ describe("StatusBadge", () => {
 
   it("renders with correct icon for live status", () => {
     const { container } = render(<StatusBadge status="live" />);
-    // The live icon is ● (U+25CF)
-    expect(container.textContent).toContain("\u25CF");
+    // Live uses Circle icon
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   it("renders with correct icon for deleted status", () => {
     const { container } = render(<StatusBadge status="deleted" />);
-    // The deleted icon is ✕ (U+2715)
-    expect(container.textContent).toContain("\u2715");
+    // Deleted uses X icon
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   it("applies color classes for live status", () => {
     render(<StatusBadge status="live" />);
-    const badge = screen.getByText("live").closest("span");
-    expect(badge?.className).toContain("bg-success");
-    expect(badge?.className).toContain("text-success-foreground");
+    const badge = screen.getByRole("status");
+    expect(badge.className).toContain("bg-success");
+    expect(badge.className).toContain("text-success-foreground");
   });
 
   it("applies color classes for archived status", () => {
     render(<StatusBadge status="archived" />);
-    const badge = screen.getByText("archived").closest("span");
-    expect(badge?.className).toContain("bg-muted");
+    const badge = screen.getByRole("status");
+    expect(badge.className).toContain("bg-muted");
   });
 });

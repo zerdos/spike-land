@@ -7,15 +7,15 @@ import { handleFetchApi } from "../../src/edge-api/backend/lazy-imports/fetchHan
 import { handleErrors } from "../../src/edge-api/backend/lazy-imports/handleErrors.js";
 import { handleMainFetch } from "../../src/edge-api/backend/lazy-imports/mainFetchHandler.js";
 
-vi.mock("../../src/edge-api/backend/fetchHandler", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/fetchHandler", () => ({
   handleFetchApi: vi.fn(),
 }));
 
-vi.mock("../../src/edge-api/backend/handleErrors", () => ({
+vi.mock("../../src/edge-api/backend/lazy-imports/handleErrors", () => ({
   handleErrors: vi.fn(),
 }));
 
-vi.mock("../../src/edge-api/backend/utils", () => ({
+vi.mock("../../src/edge-api/backend/core-logic/utils", () => ({
   handleUnauthorizedRequest: vi.fn().mockReturnValue(new Response("Unauthorized", { status: 401 })),
 }));
 

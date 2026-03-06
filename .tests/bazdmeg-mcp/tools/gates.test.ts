@@ -5,8 +5,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { registerGatesTools } from "../../../src/mcp-tools/bazdmeg/tools/gates.js";
-import { resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/workspace-state.js";
+import { registerGatesTools } from "../../../src/mcp-tools/bazdmeg/mcp/gates.js";
+import { resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 import { buildDiff } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
 

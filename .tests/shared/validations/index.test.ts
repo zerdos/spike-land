@@ -15,7 +15,7 @@ import {
   ShippingAddressSchema,
   SignUpRequestSchema,
   UpdateAlbumRequestSchema,
-} from "../../../src/core/shared-utils/validations/index";
+} from "../../../src/core/shared-utils/core-logic/validations-index";
 
 describe("validations", () => {
   describe("EnhancementTierSchema", () => {
@@ -504,7 +504,7 @@ import {
   TargetAudienceSchema,
   type TypedCampaignObjective,
   type TypedTargetAudience,
-} from "../../../src/core/shared-utils/validations/json-schemas";
+} from "../../../src/core/shared-utils/core-logic/json-schemas";
 
 describe("dual-read helpers", () => {
   describe("safeParseJson", () => {

@@ -3,16 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockLoadTokens = vi.hoisted(() => vi.fn());
 const mockSearchRegistry = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../../src/cli/spike-cli/auth/token-store.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/node-sys/token-store.js", () => ({
   loadTokens: mockLoadTokens,
 }));
 
-vi.mock("../../../../src/cli/spike-cli/registry/client.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/core-logic/registry/client.js", () => ({
   searchRegistry: mockSearchRegistry,
   getRegistryServer: vi.fn(),
 }));
 
-import { registerRegistryCommand } from "../../../../src/cli/spike-cli/commands/registry.js";
+import { registerRegistryCommand } from "../../../../src/cli/spike-cli/core-logic/commands/registry.js";
 
 describe("registry search command", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;

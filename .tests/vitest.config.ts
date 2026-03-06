@@ -270,7 +270,7 @@ const packages: Record<string, PkgConfig> = {
 
   "spike-edge": {
     tier: 2,
-    aliases: { "cloudflare:workers": src("edge-api/main/__mocks__/cloudflare-workers.ts") },
+    aliases: { "cloudflare:workers": src("edge-api/main/core-logic/cloudflare-workers.ts") },
     coverageExclude: [],
   },
 
@@ -307,24 +307,16 @@ const packages: Record<string, PkgConfig> = {
   "spike-land-mcp": {
     tier: 2,
     aliases: {
-      "@spike-land-ai/shared/tool-builder": src("core/shared-utils/tool-builder/index.ts"),
-      "@spike-land-ai/shared": src("core/shared-utils/index.ts"),
-      "@spike-land-ai/mcp-server-base": src("core/server-base/index.ts"),
+      "@spike-land-ai/shared/tool-builder": src("core/shared-utils/core-logic/tool-builder-index.ts"),
+      "@spike-land-ai/shared": src("core/shared-utils/core-logic/index.ts"),
+      "@spike-land-ai/mcp-server-base": src("core/server-base/core-logic/index.ts"),
     },
     includeSrc: [
-      src("edge-api/spike-land/auth/**/*.ts"),
+      src("edge-api/spike-land/api/**/*.ts"),
+      src("edge-api/spike-land/core-logic/**/*.ts"),
       src("edge-api/spike-land/db/**/*.ts"),
-      src("edge-api/spike-land/kv/**/*.ts"),
-      src("edge-api/spike-land/lib/**/*.ts"),
-      src("edge-api/spike-land/mcp/**/*.ts"),
-      src("edge-api/spike-land/middleware/**/*.ts"),
-      src("edge-api/spike-land/procedures/**/*.ts"),
-      src("edge-api/spike-land/routes/**/*.ts"),
-      src("edge-api/spike-land/tools/tool-helpers.ts"),
-      src("edge-api/spike-land/tools/tool-factory.ts"),
-      src("edge-api/spike-land/tools/types.ts"),
-      src("edge-api/spike-land/app.ts"),
-      src("edge-api/spike-land/env.ts"),
+      src("edge-api/spike-land/lazy-imports/**/*.ts"),
+      src("edge-api/spike-land/index.ts"),
     ],
     coverageExclude: [],
   },
@@ -334,7 +326,7 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: ["**/cli.ts", "**/worker/**", "**/spike-review/worker/**"],
   },
 
-  "stripe-analytics-mcp": { tier: 2, pool: "forks" },
+  "stripe-analytics-mcp": { tier: 2, pool: "forks", aliases: baseAliases },
 
   "state-machine": {
     tier: 2,
@@ -413,7 +405,7 @@ function buildProject(name: string, cfg: PkgConfig) {
   if (cfg.setup) testConfig.setupFiles = cfg.setup;
 
   const project: Record<string, unknown> = { test: testConfig };
-  if (cfg.aliases) project.resolve = { alias: cfg.aliases };
+  project.resolve = { alias: { ...baseAliases, ...(cfg.aliases ?? {}) } };
   if (cfg.plugins) project.plugins = cfg.plugins;
 
   return project;

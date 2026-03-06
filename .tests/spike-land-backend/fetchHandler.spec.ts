@@ -66,7 +66,7 @@ describe("FetchHandler", () => {
       props: {},
     } as unknown as ExecutionContext;
 
-    vi.mock("../../src/edge-api/backend/utils", () => ({
+    vi.mock("../../src/edge-api/backend/core-logic/utils", () => ({
       handleCORS: vi.fn(),
     }));
   });

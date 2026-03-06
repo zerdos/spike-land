@@ -7,11 +7,11 @@ const mockLoadTokens = vi.hoisted(() => vi.fn());
 const mockGetRegistryServer = vi.hoisted(() => vi.fn());
 const mockSearchRegistry = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../../src/cli/spike-cli/auth/token-store.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/node-sys/token-store.js", () => ({
   loadTokens: mockLoadTokens,
 }));
 
-vi.mock("../../../../src/cli/spike-cli/registry/client.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/core-logic/registry/client.js", () => ({
   searchRegistry: mockSearchRegistry,
   getRegistryServer: mockGetRegistryServer,
 }));
@@ -27,7 +27,7 @@ vi.mock("node:os", async (importOriginal) => {
   };
 });
 
-import { registerRegistryCommand } from "../../../../src/cli/spike-cli/commands/registry.js";
+import { registerRegistryCommand } from "../../../../src/cli/spike-cli/core-logic/commands/registry.js";
 import { Command } from "commander";
 
 describe("registry add command", () => {

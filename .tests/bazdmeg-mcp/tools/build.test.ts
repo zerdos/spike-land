@@ -6,20 +6,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
 
-vi.mock("../../../src/mcp-tools/bazdmeg/shell.js", () => ({
+vi.mock("../../../src/mcp-tools/bazdmeg/node-sys/shell.js", () => ({
   runCommand: vi.fn(),
   hasScript: vi.fn(),
 }));
 
-vi.mock("../../../src/mcp-tools/bazdmeg/manifest.js", () => ({
+vi.mock("../../../src/mcp-tools/bazdmeg/node-sys/manifest.js", () => ({
   getManifestPackage: vi.fn(),
   readManifest: vi.fn(),
   clearManifestCache: vi.fn(),
 }));
 
-import { hasScript, runCommand } from "../../../src/mcp-tools/bazdmeg/shell.js";
-import { getManifestPackage, readManifest } from "../../../src/mcp-tools/bazdmeg/manifest.js";
-import { registerBuildTools } from "../../../src/mcp-tools/bazdmeg/tools/build.js";
+import { hasScript, runCommand } from "../../../src/mcp-tools/bazdmeg/node-sys/shell.js";
+import { getManifestPackage, readManifest } from "../../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
+import { registerBuildTools } from "../../../src/mcp-tools/bazdmeg/mcp/build.js";
 
 const mockRunCommand = vi.mocked(runCommand);
 const mockHasScript = vi.mocked(hasScript);
