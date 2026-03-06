@@ -441,6 +441,7 @@ export async function buildMainBundle(wasmFile: string): Promise<void> {
       "src/emotionStyled.ts",
       "src/reactMod.ts",
       "src/recharts.ts",
+      "src/framerMotion.ts",
       "src/reactDom.ts",
       "src/start.ts",
       "src/reactDomServer.ts",
@@ -482,7 +483,7 @@ export async function buildMainBundle(wasmFile: string): Promise<void> {
         if (fileStat.isDirectory()) {
           await runImportMapReplaceOnAllFilesRecursive(filePath); // Recursive call
         } else {
-          if (filePath.includes("worker")) continue;
+          if (filePath.endsWith(".js") && filePath.includes("worker")) continue;
           const { data: content, error: readFileError } = await tryCatch(
             readFile(filePath, "utf8"),
           );
