@@ -522,6 +522,7 @@ async function main() {
     options: {
       apply: { type: "boolean" },
       verify: { type: "boolean" },
+      diff: { type: "boolean" },
       output: { type: "string", default: "src-reorganized" },
     },
   });
@@ -552,30 +553,28 @@ async function main() {
   project.addSourceFilesAtPaths(files);
 
   const nodes = await discoverFiles(project);
-  resolveZeroImportFiles(nodes);
+  propagateDeps(nodes);
+
+  // Package-level category assignment
+  const packageCategories = computePackageCategories(nodes, packagesYaml);
 
   const plans: MovePlan[] = [];
   const targetCounts = new Map<string, number>();
 
   for (const n of nodes) {
-    const depGroupName = getDependencyGroupName(n.resolvedDeps!);
-    let category = fallbackCategory;
-    
-    for (const rule of categoryRules) {
-      if (rule.predicate(n.resolvedDeps!, n.externalDeps, packagesYaml[n.packageName]?.kind)) {
-        category = rule.category;
-        break;
-      }
-    }
+    const depGroupRaw = getDependencyGroupName(n.resolvedDeps!);
+    const category = packageCategories.get(n.packageName) || fallbackCategory;
+
+    // Deduplicate: avoid cli/cli/cli stutter
+    const depGroupName = deduplicateDepGroup(depGroupRaw, category);
 
     const appName = resolveAppName(n.packageName);
     const targetDir = path.join(category, appName, depGroupName);
-    
-    // Colocate tests, do not use __tests__ directory
+
     const finalDir = targetDir;
-    
+
     let fileName = flattenFilename(n.relPath, n.packageName);
-    
+
     const fullTargetDir = path.join(outputDir, finalDir);
     const targetPath = path.join(fullTargetDir, fileName);
     let disambigName = fileName;
@@ -597,17 +596,41 @@ async function main() {
 
   console.log(`Discovered ${nodes.length} files. Grouping...`);
 
+  // --diff mode: show old path → new path
+  if (values.diff) {
+    console.log("\n--- Diff: old path → new path ---\n");
+    for (const p of plans) {
+      console.log(`  ${p.fileNode.relPath}`);
+      console.log(`    → ${p.targetRelPath}`);
+    }
+    console.log(`\nTotal: ${plans.length} files`);
+    return;
+  }
+
   if (!values.apply) {
     const stats = new Map<string, number>();
     for (const p of plans) {
       stats.set(p.targetDir, (stats.get(p.targetDir) || 0) + 1);
     }
+
+    // Summary by top-level category
+    const catStats = new Map<string, number>();
+    for (const p of plans) {
+      const cat = p.targetDir.split(path.sep)[0];
+      catStats.set(cat, (catStats.get(cat) || 0) + 1);
+    }
+    console.log(`\nCategory breakdown:`);
+    for (const [cat, count] of [...catStats.entries()].sort((a, b) => b[1] - a[1])) {
+      const pct = ((count / plans.length) * 100).toFixed(1);
+      console.log(`  ${cat}: ${count} files (${pct}%)`);
+    }
+
     console.log(`\nDry run summary (Top 15 dirs):`);
     const sorted = [...stats.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15);
     for (const [dir, count] of sorted) {
       console.log(`  ${dir}: ${count} files`);
     }
-    console.log(`\nRun with --apply to execute.`);
+    console.log(`\nRun with --apply to execute, --diff for path mapping.`);
     return;
   }
 
@@ -638,14 +661,27 @@ async function main() {
     }
   }
   
+  const BARREL_THRESHOLD = 3; // Only generate barrels for dirs with >= 3 exportable items
   const sortedDirs = Array.from(dirSet).sort((a, b) => b.length - a.length);
   const barrelProject = new Project({ useInMemoryFileSystem: true });
-  
+
   for (const d of sortedDirs) {
     if (d.includes("__tests__") || d.endsWith(".test") || path.basename(d) === "__tests__") continue;
-    
+
     const absD = path.resolve(outputDir, d);
     const entries = await fs.readdir(absD, { withFileTypes: true });
+
+    // Count exportable items (source files + subdirectories, excluding tests/utils/index)
+    const exportableCount = entries.filter(e => {
+      if (e.name === "index.ts" || e.name === "index.tsx") return false;
+      if (e.name.startsWith("_")) return false;
+      if (e.name.endsWith(".test.ts") || e.name.endsWith(".test.tsx") || e.name.includes(".spec.")) return false;
+      if (e.isDirectory()) return true;
+      return e.name.endsWith(".ts") || e.name.endsWith(".tsx");
+    }).length;
+
+    if (exportableCount < BARREL_THRESHOLD) continue;
+
     let barrelContent = "";
     
     for (const entry of entries) {

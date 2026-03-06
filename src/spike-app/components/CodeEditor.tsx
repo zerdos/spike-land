@@ -1,9 +1,17 @@
 import { lazy, Suspense, useState, useCallback, useMemo } from "react";
 import type { OnMount, BeforeMount } from "@monaco-editor/react";
+import loader from "@monaco-editor/loader";
 import { Copy, Check, FileCode } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { useMonacoTypeAcquisition } from "../hooks/useMonacoTypeAcquisition";
+
+// Configure Monaco loader to use esm.spike.land instead of cdn.jsdelivr.net (CSP-safe).
+loader.config({
+  paths: {
+    vs: "https://esm.spike.land/monaco-editor@0.55.1/min/vs",
+  },
+});
 
 // Configure Monaco web workers to load from esm.spike.land (CSP-safe).
 if (typeof globalThis !== "undefined") {
