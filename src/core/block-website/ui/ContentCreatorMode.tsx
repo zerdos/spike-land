@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { Pencil, X, GitPullRequest } from "lucide-react";
 import { Button } from "../lazy-imports/button";
 import { cn } from "@spike-land-ai/shared";
+import { apiUrl } from "../core-logic/api";
 
 // Lazy-load Monaco if available; falls back to textarea
 type LazyMod = { default: React.ComponentType<Record<string, unknown>> };
@@ -51,7 +52,7 @@ export function ContentCreatorMode({
   const handleSubmitPR = useCallback(async () => {
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/blog/${encodeURIComponent(slug)}/edit`, {
+      const res = await fetch(apiUrl(`/blog/${encodeURIComponent(slug)}/edit`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),

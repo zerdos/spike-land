@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { BlogPost } from "../core-logic/types";
 import { Calendar, Tag, ArrowRight, Clock, BookOpen } from "lucide-react";
 import { cn } from "@spike-land-ai/shared";
+import { apiUrl } from "../core-logic/api";
 
 type BlogMeta = Omit<BlogPost, "content">;
 
@@ -159,7 +160,7 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
     async function load() {
       while (attempt < 2) {
         try {
-          const r = await fetch("/api/blog");
+          const r = await fetch(apiUrl("/blog"));
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           const data = await r.json() as unknown;
           if (!Array.isArray(data)) throw new Error("Unexpected response shape");

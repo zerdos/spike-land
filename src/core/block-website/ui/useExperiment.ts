@@ -7,6 +7,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { apiUrl } from "../core-logic/api";
 
 interface WidgetVariantConfig {
   defaultSliderIdx: number;
@@ -147,7 +148,7 @@ export function ExperimentProvider({
       const clientId = getOrCreateClientId();
 
       try {
-        const response = await fetch("/api/experiments/assign", {
+        const response = await fetch(apiUrl("/experiments/assign"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ clientId }),

@@ -1,10 +1,18 @@
-const isProd = import.meta.env.PROD;
+const isDev = import.meta.env.DEV;
 
-export const API_BASE = isProd ? "https://api.spike.land" : "";
-export const MCP_BASE = isProd ? "https://mcp.spike.land" : "";
+export const API_BASE = isDev ? "" : "https://api.spike.land";
+export const MCP_BASE = isDev ? "" : "https://mcp.spike.land";
 
 export function apiUrl(path: string): string {
   return `${API_BASE}/api${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+/**
+ * Fetch wrapper for authenticated API calls.
+ * Always sends credentials (cookies) so cross-origin requests to api.spike.land work.
+ */
+export function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+  return fetch(apiUrl(path), { credentials: "include", ...init });
 }
 
 /**
@@ -20,7 +28,7 @@ export function apiUrl(path: string): string {
  */
 export function mcpUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  if (!isProd) {
+  if (isDev) {
     // /mcp is the streamable HTTP endpoint — don't double-prefix
     if (normalized === "/mcp") return "/mcp";
     return `/mcp${normalized}`;

@@ -3,6 +3,7 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import type { BlogPost } from "../core-logic/types";
+import { apiUrl } from "../core-logic/api";
 import { BlogListView } from "./BlogList";
 import { ExperimentProvider, useExperiment } from "./useExperiment";
 import { useWidgetTracking } from "./useWidgetTracking";
@@ -168,7 +169,7 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
   useEffect(() => {
     setLoading(true);
     setError(false);
-    fetch(`/api/blog/${slug}`)
+    fetch(apiUrl(`/blog/${slug}`))
       .then((r) => {
         if (!r.ok) throw new Error("Not found");
         return r.json() as Promise<BlogPost>;
@@ -372,7 +373,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
   }, [slug]);
 
   useEffect(() => {
-    fetch(`/api/support/engagement/${encodeURIComponent(slug)}`)
+    fetch(apiUrl(`/support/engagement/${encodeURIComponent(slug)}`))
       .then((r) => r.ok ? r.json() as Promise<{ fistBumps: number; supporters: number }> : null)
       .then((data) => {
         if (data) {
@@ -388,7 +389,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
     setBumpAnimating(true);
     setTimeout(() => setBumpAnimating(false), 600);
     try {
-      const res = await fetch("/api/support/fistbump", {
+      const res = await fetch(apiUrl("/support/fistbump"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, clientId: getClientId() }),
@@ -405,7 +406,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
     if (!amount || amount < 1) return;
     setDonating(true);
     try {
-      const res = await fetch("/api/support/donate", {
+      const res = await fetch(apiUrl("/support/donate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, amount, clientId: getClientId() }),

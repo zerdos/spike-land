@@ -57,12 +57,18 @@ app.use("*", async (c, next) => {
 
 // CORS middleware
 app.use("*", async (c, next) => {
-  const allowedOrigins = c.env.ALLOWED_ORIGINS
+  const configuredOrigins = c.env.ALLOWED_ORIGINS
     ? c.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-    : ["https://spike.land", "https://local.spike.land:5173"];
+    : ["https://spike.land"];
 
   const corsMiddleware = cors({
-    origin: allowedOrigins,
+    origin: (requestOrigin) => {
+      if (!requestOrigin) return configuredOrigins[0];
+      if (configuredOrigins.includes(requestOrigin)) return requestOrigin;
+      // Allow any local.spike.land origin (any port)
+      if (requestOrigin.match(/^https:\/\/local\.spike\.land(:\d+)?$/)) return requestOrigin;
+      return configuredOrigins[0];
+    },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "Mcp-Session-Id", "Mcp-Protocol-Version", "Accept", "Cookie"],
     exposeHeaders: ["Mcp-Session-Id", "Set-Cookie"],
@@ -109,7 +115,7 @@ app.use("*", async (c, next) => {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://esm.spike.land",
       "img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://avatars.githubusercontent.com https://*.googleusercontent.com data: blob:",
       "font-src 'self' https://fonts.gstatic.com https://esm.spike.land data:",
-      "connect-src 'self' https://api.spike.land https://edge.spike.land https://auth-mcp.spike.land https://mcp.spike.land https://checkout.stripe.com wss://spike.land https://esm.spike.land blob: data:",
+      "connect-src 'self' https://api.spike.land https://edge.spike.land https://auth-mcp.spike.land https://mcp.spike.land https://checkout.stripe.com wss://spike.land https://esm.spike.land https://local.spike.land:5173 blob: data:",
       "worker-src 'self' blob: https://esm.spike.land",
       "frame-src 'self' https://edge.spike.land",
       "object-src 'none'",

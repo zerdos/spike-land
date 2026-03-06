@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "../lazy-imports/link";
+import { apiUrl } from "../core-logic/api";
 
 export const TOTAL_TOOL_COUNT = 80;
 
@@ -7,7 +8,7 @@ export function LandingHero() {
     const [stars, setStars] = useState<number | null>(null);
 
     useEffect(() => {
-        fetch("/api/github/stars")
+        fetch(apiUrl("/github/stars"))
             .then(res => res.json() as Promise<{ stars: number | null }>)
             .then((data) => {
                 if (data.stars != null) setStars(data.stars);

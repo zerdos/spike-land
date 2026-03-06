@@ -1,6 +1,7 @@
 import { useParams, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { BlogPostView } from "@spike-land-ai/block-website/ui";
+import { apiUrl } from "../../../core-logic/api";
 
 const SITE_URL = "https://spike.land";
 
@@ -21,7 +22,7 @@ export function BlogPostPage() {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/blog/${slug}`)
+    fetch(apiUrl(`/blog/${slug}`))
       .then((r) => (r.ok ? r.json() : null))
       .then((data: { title?: string } | null) => {
         if (data?.title) setPostTitle(data.title);

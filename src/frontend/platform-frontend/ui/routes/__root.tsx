@@ -10,6 +10,7 @@ import { CookieConsent } from "../components/CookieConsent";
 import { MessageCircle } from "lucide-react";
 import { AiChatWidget } from "../components/AiChatWidget";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
+import { apiUrl } from "../../core-logic/api";
 
 const DEFAULT_TITLE = "spike.land - MCP-First AI Development Platform";
 const DEFAULT_DESCRIPTION =
@@ -200,7 +201,7 @@ export function RootLayout() {
       rssLink.rel = "alternate";
       rssLink.type = "application/rss+xml";
       rssLink.title = "spike.land Blog";
-      rssLink.href = "/api/blog/rss";
+      rssLink.href = apiUrl("/blog/rss");
       document.head.appendChild(rssLink);
     }
   }, []);

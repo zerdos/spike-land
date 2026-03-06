@@ -5,6 +5,7 @@ import {
   getPersonaSlug,
   getContentVariant,
 } from "../core-logic/persona-content-variants";
+import { apiUrl } from "../core-logic/api";
 
 interface Tool {
   name: string;
@@ -211,7 +212,7 @@ export function ToolsByCategoryGrid() {
   const expandedCategories = new Set(variant.expandedCategories);
 
   useEffect(() => {
-    fetch("/api/tools")
+    fetch(apiUrl("/tools"))
       .then((r): Promise<Tool[]> => r.ok ? (r.json() as Promise<Tool[]>) : Promise.resolve([]))
       .then((data) => setTools(Array.isArray(data) ? data : []))
       .catch(() => setTools([]))

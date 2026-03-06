@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import { apiUrl } from "../core-logic/api";
 
 type WidgetEventType =
   | "widget_impression"
@@ -79,10 +80,10 @@ export function useWidgetTracking(
     const payload = JSON.stringify({ events });
 
     try {
-      navigator.sendBeacon("/api/experiments/track", payload);
+      navigator.sendBeacon(apiUrl("/experiments/track"), payload);
     } catch {
       // sendBeacon not available — fall back to fetch (best effort)
-      fetch("/api/experiments/track", {
+      fetch(apiUrl("/experiments/track"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: payload,
