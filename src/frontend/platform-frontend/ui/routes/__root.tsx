@@ -154,8 +154,8 @@ function injectJsonLd(id: string, content: string) {
   el.textContent = content;
 }
 
-const NAV_LINKS = [
-  { to: "/vibe-code", label: "Vibe" },
+const ALL_NAV_LINKS = [
+  { to: "/vibe-code", label: "Vibe", localOnly: true },
   { to: "/tools", label: "Tools" },
   { to: "/store", label: "Store" },
   { to: "/pricing", label: "Pricing" },
@@ -163,6 +163,9 @@ const NAV_LINKS = [
   { to: "/blog", label: "Blog" },
   { to: "/about", label: "About" },
 ] as const;
+
+const isLocalDev = typeof window !== "undefined" && window.location.hostname === "local.spike.land";
+const NAV_LINKS = ALL_NAV_LINKS.filter((link) => !("localOnly" in link && link.localOnly) || isLocalDev);
 
 export function RootLayout() {
   useAnalytics();
