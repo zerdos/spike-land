@@ -58,7 +58,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn typecheck
 
   lint:
@@ -71,7 +71,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn lint
 
   test:
@@ -88,7 +88,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn test:src -- --shard=${{ matrix.shard }}/4
 
   build:
@@ -101,7 +101,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn build:src
 
       # esbuild.config.ts outputs to dist/<packageName>/.
@@ -129,7 +129,7 @@ jobs:
           cache: yarn
           registry-url: https://npm.pkg.github.com
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
 
       # publish-changed.js reads from dist/<packageName>/ (line: const DIST = join(ROOT, "dist"))
       - name: Download build artifacts
@@ -158,7 +158,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
 
       # No artifact download needed — wrangler compiles TypeScript directly
       # from src/ via the main field in each packages/*/wrangler.toml.
