@@ -11,6 +11,7 @@ import {
   fallbackCategory,
   nameOverrides,
   excludeGlobs,
+  getDependencyGroupName,
 } from "./reorganize-config.js";
 
 // Multi-pattern regexes for parsing imports
@@ -168,11 +169,6 @@ function resolveZeroImportFiles(nodes: FileNode[]) {
   }
 }
 
-function buildDepSetKey(deps: Set<string>): string {
-  if (deps.size === 0) return "core-utils";
-  return Array.from(deps).sort().join(",");
-}
-
 function resolveAppName(packageName: string): string {
   if (nameOverrides[packageName]) return nameOverrides[packageName];
   let name = packageName;
@@ -309,7 +305,7 @@ async function main() {
   const targetCounts = new Map<string, number>();
 
   for (const n of nodes) {
-    const key = buildDepSetKey(n.resolvedDeps!);
+    const depGroupName = getDependencyGroupName(n.resolvedDeps!);
     let category = fallbackCategory;
     
     for (const rule of categoryRules) {
@@ -320,7 +316,7 @@ async function main() {
     }
 
     const appName = resolveAppName(n.packageName);
-    const targetDir = path.join(key, category, appName);
+    const targetDir = path.join(category, appName, depGroupName);
     
     // Handle tests directory
     let isTest = n.relPath.includes("__tests__") || n.absPath.endsWith(".test.ts") || n.absPath.endsWith(".test.tsx");
