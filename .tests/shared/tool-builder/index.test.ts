@@ -4,8 +4,8 @@
 
 import { z } from "zod";
 import { describe, expect, it } from "vitest";
-import { baseProcedure, createProcedure } from "../../../src/shared/tool-builder/builder";
-import { middleware } from "../../../src/shared/tool-builder/middleware";
+import { baseProcedure, createProcedure } from "../../../src/core/shared-utils/tool-builder/builder";
+import { middleware } from "../../../src/core/shared-utils/tool-builder/middleware";
 
 // ---------------------------------------------------------------------------
 // createProcedure / baseProcedure

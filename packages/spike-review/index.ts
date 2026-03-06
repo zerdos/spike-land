@@ -1,1 +1,1 @@
-export * from "../../src/spike-review/index.ts";
+export * from "../../src/mcp-tools/code-review/mcp/index.ts";

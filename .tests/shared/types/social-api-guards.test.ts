@@ -11,7 +11,7 @@ import {
   isLinkedInErrorResponse,
   isSocialPlatformErrorResponse,
   isTwitterErrorResponse,
-} from "../../../src/shared/types/social-api-guards";
+} from "../../../src/core/shared-utils/types/social-api-guards";
 
 describe("Social API Type Guards", () => {
   describe("isFacebookErrorResponse", () => {

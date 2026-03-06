@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ICodeSession } from "@spike-land-ai/code";
-import { executeFindLines, findLinesTool, findTools } from "../../../../src/spike-land-backend/mcp/tools/find-tools";
+import { executeFindLines, findLinesTool, findTools } from "../../../../src/edge-api/backend/mcp/tools/find-tools";
 
 const createMockSession = (code: string): ICodeSession =>
   ({

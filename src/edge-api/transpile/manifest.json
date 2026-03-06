@@ -1,0 +1,10 @@
+{
+  "name": "transpile",
+  "category": "edge-api",
+  "dependencies": [
+    "@spike-land-ai/code"
+  ],
+  "files": [
+    "lazy-imports/index.ts"
+  ]
+}

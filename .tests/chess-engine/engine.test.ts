@@ -10,7 +10,7 @@ import {
   isValidFen,
   loadPgn,
   makeMove,
-} from "../../src/chess-engine/engine";
+} from "../../src/core/chess/chess-core/engine.js";
 
 describe("createGame", () => {
   it("creates a game with default starting position", () => {

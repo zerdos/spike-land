@@ -107,6 +107,52 @@ const profiles: Record<PackageKind, BuildProfile> = {
   },
 };
 
+// ─── Source Path Resolver ─────────────────────────────────────────────────────
+//
+// After the src/ reorganization, source lives at src/{category}/{subdir}/
+// rather than the old flat src/{packageName}/.
+// This map is derived from reorganize-config.ts (kindToCategory + nameOverrides).
+
+const kindToCategory: Record<PackageKind, string> = {
+  "mcp-server": "mcp-tools",
+  worker: "edge-api",
+  browser: "frontend",
+  video: "media",
+  cli: "cli",
+  library: "core",
+  block: "core",
+  config: "utilities",
+};
+
+const nameOverrides: Record<string, string> = {
+  "spike-app": "platform-frontend",
+  "spike-edge": "main",
+  "spike-land-backend": "backend",
+  code: "monaco-editor",
+  "react-ts-worker": "react-engine",
+  shared: "shared-utils",
+  video: "educational-videos",
+  "chess-engine": "chess",
+  "qa-studio": "browser-automation",
+  "state-machine": "statecharts",
+  "vibe-dev": "docker-dev",
+  "spike-review": "code-review",
+};
+
+/**
+ * Resolve the source directory for a package in the new
+ * src/{category}/{subdir}/ layout.  Falls back to the legacy
+ * flat src/{packageName}/ if the categorised path does not exist.
+ */
+function resolveSourceDir(packageName: string, kind: PackageKind): string {
+  const category = kindToCategory[kind] ?? "utilities";
+  const subdir = nameOverrides[packageName] ?? packageName;
+  const newPath = resolve("src", category, subdir);
+  if (existsSync(newPath)) return newPath;
+  // Legacy flat layout fallback
+  return resolve("src", packageName);
+}
+
 // ─── Manifest Loader ─────────────────────────────────────────────────────────
 
 function loadManifest(): PackagesYaml {
@@ -148,7 +194,7 @@ export function createBuildConfig(opts: BuildOptions): esbuild.BuildOptions {
   const { packageName, entry, kind, allPackages } = opts;
   const profile = profiles[kind];
 
-  const srcDir = resolve("src", packageName);
+  const srcDir = resolveSourceDir(packageName, kind);
   const outDir = resolve("dist", packageName);
   const entryPoint = join(srcDir, entry);
 
@@ -211,7 +257,7 @@ export async function buildPackage(opts: BuildOptions): Promise<esbuild.BuildRes
  *   2. browser/ — self-contained ESM for browser (IndexedDB adapter)
  */
 async function buildBlock(opts: BuildOptions): Promise<esbuild.BuildResult> {
-  const srcDir = resolve("src", opts.packageName);
+  const srcDir = resolveSourceDir(opts.packageName, opts.kind);
   const outDir = resolve("dist", opts.packageName);
 
   console.log(`Building ${opts.packageName} (block — dual target)...`);
@@ -337,7 +383,7 @@ if (process.argv[1]?.endsWith("esbuild.config.ts")) {
 
 function copyBrowserAssets(opts: BuildOptions, outDir: string) {
   const pkgDir = resolve("packages", opts.packageName);
-  const srcDir = resolve("src", opts.packageName);
+  const srcDir = resolveSourceDir(opts.packageName, opts.kind);
   
   // Copy index.html
   const htmlSrc = join(pkgDir, "index.html");

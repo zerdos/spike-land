@@ -1,0 +1,278 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "./**/*.{ts,tsx}";
+@source "../../core/block-website/src/**/*.{ts,tsx}";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rubik", ui-sans-serif, system-ui, sans-serif;
+
+  /* Obsidian Core - Deep midnight blue-purple */
+  --color-obsidian-950: #0a0c14;
+  --color-obsidian-900: #101321;
+  --color-obsidian-800: #181c31;
+  --color-obsidian-700: #252a47;
+
+  /* Creation Amber - Warmer, more premium */
+  --color-amber-neon: #ffb800;
+  --color-amber-glow: rgba(255, 184, 0, 0.12);
+
+  /* Cyber Emerald - Brighter, more electric */
+  --color-emerald-neon: #00ffcc;
+  --color-emerald-glow: rgba(0, 255, 204, 0.12);
+
+  /* Refined Accent Palette */
+  --color-accent-50: #f5f7ff;
+  --color-accent-100: #ebf0fe;
+  --color-accent-200: #ced9fd;
+  --color-accent-300: #a3b8fc;
+  --color-accent-400: #728ef8;
+  --color-accent-500: #4a66f3;
+  --color-accent-600: #384ceb;
+  --color-accent-700: #2d3bbd;
+  --color-accent-800: #253099;
+  --color-accent-900: #22297a;
+  --color-accent-950: #141747;
+
+  /* Structural */
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card: var(--card-bg);
+  --color-card-foreground: var(--card-fg);
+  --color-muted: var(--muted-bg);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border-color);
+  --color-input: var(--input-color);
+  --color-ring: var(--ring-color);
+
+  /* Primary (links, active items) */
+  --color-primary: var(--primary-color);
+  --color-primary-foreground: var(--primary-fg);
+  --color-primary-light: var(--primary-light);
+  --color-primary-glow: var(--primary-glow);
+
+  /* Secondary (secondary buttons, badges) */
+  --color-secondary: var(--secondary-bg);
+  --color-secondary-foreground: var(--secondary-fg);
+
+  /* Accent (hover states, highlights) */
+  --color-accent: var(--accent-bg);
+  --color-accent-foreground: var(--accent-fg);
+
+  /* Destructive / error / deleted */
+  --color-destructive: var(--destructive-bg);
+  --color-destructive-foreground: var(--destructive-fg);
+
+  /* Semantic status colors */
+  --color-success: var(--success-bg);
+  --color-success-foreground: var(--success-fg);
+
+  --color-warning: var(--warning-bg);
+  --color-warning-foreground: var(--warning-fg);
+
+  --color-info: var(--info-bg);
+  --color-info-foreground: var(--info-fg);
+}
+
+/* Base typography utilities layer */
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  }
+
+  /* Fluid typography map using clamp
+     Formula: clamp(min-size, dynamic-size, max-size) */
+  h1,
+  .text-fluid-h1 {
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+    line-height: 1.2;
+    font-weight: 800;
+    /* Use variable font weight scaling via standard properties */
+    font-variation-settings: "wght" 800;
+  }
+
+  h2,
+  .text-fluid-h2 {
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 3rem);
+    line-height: 1.25;
+    font-weight: 700;
+    font-variation-settings: "wght" 700;
+  }
+
+  h3,
+  .text-fluid-h3 {
+    font-size: clamp(1.5rem, 2.5vw + 0.3rem, 2rem);
+    line-height: 1.3;
+    font-weight: 600;
+    font-variation-settings: "wght" 600;
+  }
+
+  .text-fluid-base {
+    font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
+    line-height: 1.6;
+    font-variation-settings: "wght" 400;
+  }
+}
+
+/* Light theme (default) */
+:root {
+  --bg: #f9fafb;
+  --fg: #111827;
+  --card-bg: #ffffff;
+  --card-fg: #111827;
+  --muted-bg: #f3f4f6;
+  --muted-fg: #4b5563;
+  --border-color: #e5e7eb;
+  --input-color: #d1d5db;
+  --ring-color: #2563eb;
+
+  --primary-color: #2563eb;
+  --primary-fg: #ffffff;
+  --primary-light: #60a5fa;
+  --primary-glow: rgba(37, 99, 235, 0.3);
+
+  --secondary-bg: #f1f5f9;
+  --secondary-fg: #475569;
+
+  --accent-bg: #f0f9ff;
+  --accent-fg: #1e40af;
+
+  --destructive-bg: #fef2f2;
+  --destructive-fg: #dc2626;
+
+  --success-bg: #f0fdf4;
+  --success-fg: #16a34a;
+
+  --warning-bg: #fffbeb;
+  --warning-fg: #d97706;
+
+  --info-bg: #ecfeff;
+  --info-fg: #0891b2;
+}
+
+/* Dark theme mapped to Obsidian & Amber Neon */
+.dark {
+  --bg: var(--color-obsidian-950);
+  --fg: #e2e8f0;
+  /* softer text equivalent to text-gray-200 */
+  --card-bg: rgba(255, 255, 255, 0.05);
+  /* keep some visual separation */
+  --card-fg: #f8fafc;
+  --muted-bg: rgba(255, 255, 255, 0.08);
+  --muted-fg: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --input-color: rgba(255, 255, 255, 0.12);
+  --ring-color: var(--color-amber-neon);
+
+  --primary-color: var(--color-amber-neon);
+  --primary-fg: #000000;
+  --primary-light: #fcd34d;
+  --primary-glow: var(--color-amber-glow);
+
+  --secondary-bg: rgba(255, 255, 255, 0.08);
+  --secondary-fg: #cbd5e1;
+
+  --accent-bg: var(--color-obsidian-900);
+  --accent-fg: var(--color-accent-300);
+
+  --destructive-bg: #450a0a;
+  --destructive-fg: #fca5a5;
+
+  --success-bg: rgba(0, 255, 204, 0.1);
+  --success-fg: var(--color-emerald-neon);
+
+  --warning-bg: #451a03;
+  --warning-fg: #fcd34d;
+
+  --info-bg: #083344;
+  --info-fg: #67e8f9;
+
+  /* Chat widget - image-studio glassmorphism aesthetic */
+  --chat-bg: var(--color-obsidian-950);
+  --chat-surface: var(--color-obsidian-900);
+  --chat-accent: var(--color-amber-neon);
+  --chat-accent-light: #fcd34d;
+  --chat-success: var(--color-emerald-neon);
+}
+
+/* Rich radial gradient background for dark mode (Obsidian core) */
+.dark body {
+  background: radial-gradient(ellipse at top left, var(--color-obsidian-800), var(--color-obsidian-900), var(--color-obsidian-950));
+  min-height: 100vh;
+}
+
+/* Chat widget utilities */
+.glass-panel {
+  background: rgba(16, 19, 33, 0.6);
+  /* Equivalent to bg-obsidian-900/60 */
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  /* shadow-2xl equivalent */
+}
+
+/* Primary pulse glow animation for the floating chat button */
+@keyframes pulse-teal {
+
+  0%,
+  100% {
+    box-shadow: 0 0 30px var(--primary-glow), 0 0 60px color-mix(in srgb, var(--primary-color) 20%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--primary-glow), 0 0 80px color-mix(in srgb, var(--primary-color) 35%, transparent);
+  }
+}
+
+/* Utility: primary glow shadow */
+.glow-primary {
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Glassmorphism card for dark mode */
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  transition: all 0.5s ease;
+}
+
+.dark .glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  /* hover:shadow-xl hover:shadow-black/20 */
+}
+
+.neon-border-amber {
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.15);
+}
+
+.neon-border-emerald {
+  border: 1px solid rgba(0, 255, 204, 0.4);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+}
+
+.dark .nice-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dark .nice-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .nice-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.dark .nice-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

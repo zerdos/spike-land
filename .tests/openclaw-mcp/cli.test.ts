@@ -12,12 +12,12 @@ const mockBridgeInstance = {
   callTool: vi.fn().mockResolvedValue({ content: [] }),
 };
 
-vi.mock("../../src/openclaw-mcp/bridge.js", () => ({
+vi.mock("../../src/mcp-tools/openclaw/bridge.js", () => ({
   createMcpBridge: vi.fn(() => mockBridgeInstance),
 }));
 
-import { CliTransport, main } from "../../src/openclaw-mcp/cli.js";
-import { createMcpBridge } from "../../src/openclaw-mcp/bridge.js";
+import { CliTransport, main } from "../../src/mcp-tools/openclaw/mcp/cli.js";
+import { createMcpBridge } from "../../src/mcp-tools/openclaw/core-logic/bridge.js";
 
 beforeEach(() => {
   vi.mocked(createMcpBridge).mockClear();

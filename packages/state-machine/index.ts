@@ -1,1 +1,1 @@
-export * from "../../src/state-machine/index";
+export * from "../../src/core/statecharts/core-logic/index.ts";

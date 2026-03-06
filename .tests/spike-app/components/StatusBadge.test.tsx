@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { type AppStatus, StatusBadge } from "../../../src/spike-app/components/StatusBadge";
+import { type AppStatus, StatusBadge } from "../../../src/frontend/platform-frontend/components/StatusBadge";
 
 describe("StatusBadge", () => {
   const allStatuses: AppStatus[] = [

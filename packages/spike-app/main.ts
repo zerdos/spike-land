@@ -1,1 +1,1 @@
-import "../../src/spike-app/main.tsx";
+import "../../src/frontend/platform-frontend/ui/main.tsx";

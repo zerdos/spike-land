@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeMovePlans } from "../../reorganize.js";
+import { computeMovePlans } from "../../reorganize/planning.js";
 import type { FileNode } from "../../reorganize/types.js";
 
 describe("computeMovePlans", () => {

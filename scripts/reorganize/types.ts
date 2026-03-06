@@ -17,3 +17,6 @@ export interface MovePlan {
 export interface ManifestPkg {
   kind?: string;
 }
+
+/** Per-package alias map: packageName → { prefix: "@/", baseDir: absolute path } */
+export type AliasMap = Map<string, { prefix: string; baseDir: string }>;

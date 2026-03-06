@@ -156,7 +156,7 @@ function makeDeps(overrides: Partial<ImageStudioDeps> = {}): ImageStudioDeps {
 
 describe("createToolRegistry", () => {
   it("registers and lists tools after initialization", async () => {
-    const { createToolRegistry } = await import("../../src/image-studio-worker/tool-registry.ts");
+    const { createToolRegistry } = await import("../../src/edge-api/image-studio-worker/tool-registry.ts");
     const deps = makeDeps();
     const registry = createToolRegistry("user-123", deps);
     const tools = registry.list();
@@ -171,7 +171,7 @@ describe("createToolRegistry", () => {
   });
 
   it("returns an error result for an unknown tool", async () => {
-    const { createToolRegistry } = await import("../../src/image-studio-worker/tool-registry.ts");
+    const { createToolRegistry } = await import("../../src/edge-api/image-studio-worker/tool-registry.ts");
     const deps = makeDeps();
     const registry = createToolRegistry("user-123", deps);
 
@@ -182,7 +182,7 @@ describe("createToolRegistry", () => {
   });
 
   it("logs a PENDING tool call before execution", async () => {
-    const { createToolRegistry } = await import("../../src/image-studio-worker/tool-registry.ts");
+    const { createToolRegistry } = await import("../../src/edge-api/image-studio-worker/tool-registry.ts");
     const toolCallCreate = vi.fn().mockResolvedValue("call-id-pending");
     const toolCallUpdate = vi.fn().mockResolvedValue(undefined);
     const deps = makeDeps({
@@ -208,7 +208,7 @@ describe("createToolRegistry", () => {
   });
 
   it("updates the tool call log to COMPLETED after success", async () => {
-    const { createToolRegistry } = await import("../../src/image-studio-worker/tool-registry.ts");
+    const { createToolRegistry } = await import("../../src/edge-api/image-studio-worker/tool-registry.ts");
     const toolCallCreate = vi.fn().mockResolvedValue("call-id-1");
     const toolCallUpdate = vi.fn().mockResolvedValue(undefined);
     const deps = makeDeps({
@@ -228,7 +228,7 @@ describe("createToolRegistry", () => {
   });
 
   it("records an ERROR status when the tool throws", async () => {
-    const { createToolRegistry } = await import("../../src/image-studio-worker/tool-registry.ts");
+    const { createToolRegistry } = await import("../../src/edge-api/image-studio-worker/tool-registry.ts");
     const toolCallCreate = vi.fn().mockResolvedValue("call-id-err");
     const toolCallUpdate = vi.fn().mockResolvedValue(undefined);
 
@@ -252,12 +252,12 @@ describe("createToolRegistry", () => {
 
 describe("createR2Storage", () => {
   it("uploads bytes to R2 and returns url, r2Key, sizeBytes", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockPut = vi.fn().mockResolvedValue(undefined);
     const mockEnv = {
       IMAGE_R2: { put: mockPut, get: vi.fn(), delete: vi.fn() },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://example.com");
     const bytes = new Uint8Array([1, 2, 3, 4]);
@@ -273,12 +273,12 @@ describe("createR2Storage", () => {
   });
 
   it("passes correct cache-control and custom metadata on upload", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockPut = vi.fn().mockResolvedValue(undefined);
     const mockEnv = {
       IMAGE_R2: { put: mockPut, get: vi.fn(), delete: vi.fn() },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://cdn.example.com");
     await storage.upload("user-xyz", new Uint8Array([0xff]), {
@@ -300,7 +300,7 @@ describe("createR2Storage", () => {
   });
 
   it("downloads bytes from R2", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const fakeBytes = new Uint8Array([10, 20, 30]);
     const mockGet = vi.fn().mockResolvedValue({
@@ -308,7 +308,7 @@ describe("createR2Storage", () => {
     });
     const mockEnv = {
       IMAGE_R2: { put: vi.fn(), get: mockGet, delete: vi.fn() },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://example.com");
     const result = await storage.download("user-abc/photo.png");
@@ -319,24 +319,24 @@ describe("createR2Storage", () => {
   });
 
   it("throws when downloading a missing R2 object", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockGet = vi.fn().mockResolvedValue(null);
     const mockEnv = {
       IMAGE_R2: { put: vi.fn(), get: mockGet, delete: vi.fn() },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://example.com");
     await expect(storage.download("user-abc/missing.png")).rejects.toThrow("R2 object not found");
   });
 
   it("deletes an object from R2", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockDelete = vi.fn().mockResolvedValue(undefined);
     const mockEnv = {
       IMAGE_R2: { put: vi.fn(), get: vi.fn(), delete: mockDelete },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://example.com");
     await storage.delete("user-abc/old.png");
@@ -345,12 +345,12 @@ describe("createR2Storage", () => {
   });
 
   it("accepts ArrayBuffer as well as Uint8Array input", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockPut = vi.fn().mockResolvedValue(undefined);
     const mockEnv = {
       IMAGE_R2: { put: mockPut, get: vi.fn(), delete: vi.fn() },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const storage = createR2Storage(mockEnv, "https://example.com");
     const buffer = new ArrayBuffer(8);
@@ -364,7 +364,7 @@ describe("createR2Storage", () => {
 });
 
 it("uploads bytes with fallback bin extension", async () => {
-  const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+  const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
   const mockPut = vi.fn().mockResolvedValue(undefined);
   const mockEnv = { IMAGE_R2: { put: mockPut } } as any;
   const storage = createR2Storage(mockEnv, "https://cdn.example.com");
@@ -383,7 +383,7 @@ describe("validateSession", () => {
   });
 
   it("returns session when auth service responds with valid session", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     const fakeSession = {
       user: { id: "user-auth-1", email: "test@example.com", name: "Test User" },
@@ -401,7 +401,7 @@ describe("validateSession", () => {
     const headers = new Headers({ Cookie: "better-auth.session_token=abc123" });
     const env = {
       AUTH_SERVICE_URL: "https://auth.example.com",
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const result = await validateSession(headers, env);
     expect(result).not.toBeNull();
@@ -410,19 +410,19 @@ describe("validateSession", () => {
   });
 
   it("returns null when auth service responds with 401", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
 
     const headers = new Headers();
-    const env = {} as import("../../src/image-studio-worker/env.d.ts").Env;
+    const env = {} as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const result = await validateSession(headers, env);
     expect(result).toBeNull();
   });
 
   it("returns null when session has no user.id", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     vi.stubGlobal(
       "fetch",
@@ -433,26 +433,26 @@ describe("validateSession", () => {
     );
 
     const headers = new Headers();
-    const env = {} as import("../../src/image-studio-worker/env.d.ts").Env;
+    const env = {} as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const result = await validateSession(headers, env);
     expect(result).toBeNull();
   });
 
   it("returns null when the network fetch throws", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
 
     const headers = new Headers();
-    const env = {} as import("../../src/image-studio-worker/env.d.ts").Env;
+    const env = {} as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const result = await validateSession(headers, env);
     expect(result).toBeNull();
   });
 
   it("returns null when auth service returns null body", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     vi.stubGlobal(
       "fetch",
@@ -463,14 +463,14 @@ describe("validateSession", () => {
     );
 
     const headers = new Headers();
-    const env = {} as import("../../src/image-studio-worker/env.d.ts").Env;
+    const env = {} as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     const result = await validateSession(headers, env);
     expect(result).toBeNull();
   });
 
   it("forwards cookies and Authorization header to auth service", async () => {
-    const { validateSession } = await import("../../src/image-studio-worker/auth.ts");
+    const { validateSession } = await import("../../src/edge-api/image-studio-worker/auth.ts");
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -487,7 +487,7 @@ describe("validateSession", () => {
     });
     const env = {
       AUTH_SERVICE_URL: "https://auth.test.com",
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
 
     await validateSession(headers, env);
 
@@ -502,7 +502,7 @@ describe("validateSession", () => {
 
 describe("getOrCreateDefaultAlbum (standalone gallery helper)", () => {
   it("returns a fresh album with id and handle when none exists", async () => {
-    const { getOrCreateDefaultAlbum } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { getOrCreateDefaultAlbum } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const mockDb = {
       prepare: vi.fn().mockReturnValue({
@@ -519,7 +519,7 @@ describe("getOrCreateDefaultAlbum (standalone gallery helper)", () => {
   });
 
   it("returns existing album without inserting", async () => {
-    const { getOrCreateDefaultAlbum } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { getOrCreateDefaultAlbum } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const existing = { id: "alb-existing", handle: "gallery-existing-abcdef" };
     const mockPrepare = vi.fn().mockReturnValue({
@@ -536,7 +536,7 @@ describe("getOrCreateDefaultAlbum (standalone gallery helper)", () => {
   });
 
   it("handle includes a truncated userId prefix", async () => {
-    const { getOrCreateDefaultAlbum } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { getOrCreateDefaultAlbum } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const mockDb = {
       prepare: vi.fn().mockReturnValue({
@@ -557,12 +557,12 @@ describe("getOrCreateDefaultAlbum (standalone gallery helper)", () => {
 
 describe("Upload flow logic", () => {
   it("upload returns url, r2Key, and sizeBytes", async () => {
-    const { createR2Storage } = await import("../../src/image-studio-worker/deps/storage.ts");
+    const { createR2Storage } = await import("../../src/edge-api/image-studio-worker/deps/storage.ts");
 
     const mockPut = vi.fn().mockResolvedValue(undefined);
     const env = {
       IMAGE_R2: { put: mockPut },
-    } as unknown as import("../../src/image-studio-worker/env.d.ts").Env;
+    } as unknown as import("../../src/edge-api/image-studio-worker/env.d.ts").Env;
     const storage = createR2Storage(env, "https://studio.example.com");
 
     const fakePng = new Uint8Array(100).fill(0xff);
@@ -613,7 +613,7 @@ describe("Upload flow logic", () => {
   });
 
   it("adds image to the default album after upload", async () => {
-    const { addImageToDefaultAlbum } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { addImageToDefaultAlbum } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const albumRow = { id: "alb-default", handle: "gallery-user12-abcdef" };
     const mockDb = {
@@ -729,7 +729,7 @@ describe("Gallery API route logic (unit-level)", () => {
 
   describe("Gallery pagination cursor logic", () => {
     it("nextCursor is null when results fit within limit", async () => {
-      const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+      const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
       const mockDb = {
         prepare: vi.fn().mockReturnValue({
@@ -765,7 +765,7 @@ describe("Gallery API route logic (unit-level)", () => {
     });
 
     it("nextCursor is the ISO createdAt of the last image when there are more", async () => {
-      const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+      const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
       const limit = 2;
       const rows = Array.from({ length: limit + 1 }, (_, i) => ({
@@ -851,7 +851,7 @@ describe("Credits system (D1-backed)", () => {
 
 describe("D1 row mapping (createD1Db internals via galleryRecentImages)", () => {
   it("maps isPublic=1 to true and isPublic=0 to false", async () => {
-    const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const makeRow = (isPublic: number) => ({
       id: "img-x",
@@ -890,7 +890,7 @@ describe("D1 row mapping (createD1Db internals via galleryRecentImages)", () => 
   });
 
   it("parses tags JSON array correctly", async () => {
-    const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const mockDb = {
       prepare: vi.fn().mockReturnValue({
@@ -926,7 +926,7 @@ describe("D1 row mapping (createD1Db internals via galleryRecentImages)", () => 
   });
 
   it("returns empty tags array for null or invalid JSON", async () => {
-    const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     for (const badTags of [null, "not-json", ""]) {
       const mockDb = {
@@ -964,7 +964,7 @@ describe("D1 row mapping (createD1Db internals via galleryRecentImages)", () => 
   });
 
   it("createdAt and updatedAt are Date instances", async () => {
-    const { galleryRecentImages } = await import("../../src/image-studio-worker/deps/db.ts");
+    const { galleryRecentImages } = await import("../../src/edge-api/image-studio-worker/deps/db.ts");
 
     const isoDate = "2026-01-15T10:30:00.000Z";
     const mockDb = {

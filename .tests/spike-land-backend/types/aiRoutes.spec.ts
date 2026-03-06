@@ -9,7 +9,7 @@ import {
   isTextContentPart,
   isToolResultContentPart,
   isToolUseContentPart,
-} from "../../../src/spike-land-backend/types/aiRoutes.js";
+} from "../../../src/edge-api/backend/types/aiRoutes.js";
 
 describe("types/aiRoutes type guards", () => {
   describe("isTextContentPart", () => {

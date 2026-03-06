@@ -4,8 +4,8 @@ import {
   mockImageRow,
   mockJobRow,
 } from "../__test-utils__/mock-deps.js";
-import { crop } from "../../../src/mcp-image-studio/tools/crop.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
+import { crop } from "../../../src/mcp-tools/image-studio/tools/crop.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 import { standardScenarios } from "../__test-utils__/standard-scenarios.js";
 
 describe("crop", () => {
@@ -91,7 +91,7 @@ describe("crop", () => {
   });
 
   it("should return error for unknown preset", async () => {
-    const parsed = (await import("../../../src/mcp-image-studio/tools/crop.js")).CropInputSchema.safeParse({
+    const parsed = (await import("../../../src/mcp-tools/image-studio/tools/crop.js")).CropInputSchema.safeParse({
       image_id: "img-1",
       preset: "tiktok_vertical" as unknown as string,
     });

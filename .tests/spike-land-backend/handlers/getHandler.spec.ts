@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { StorageService } from "../../../src/spike-land-backend/services/storageService";
-import { GetHandler } from "../../../src/spike-land-backend/handlers/getHandler";
+import type { StorageService } from "../../../src/edge-api/backend/services/storageService";
+import { GetHandler } from "../../../src/edge-api/backend/handlers/getHandler";
 
 describe("GetHandler", () => {
   let handler: GetHandler;

@@ -7,10 +7,10 @@ import {
   ITEM_PAGE_WITH_COMMENT_FORM_HTML,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNWriteClient } from "../../../src/hackernews-mcp/clients/hn-write-client.js";
-import { SessionManager } from "../../../src/hackernews-mcp/session/session-manager.js";
-import { registerCommentTools } from "../../../src/hackernews-mcp/tools/comment.js";
-import { HN_WEB_BASE } from "../../../src/hackernews-mcp/types.js";
+import { HNWriteClient } from "../../../src/mcp-tools/hackernews/clients/hn-write-client.js";
+import { SessionManager } from "../../../src/mcp-tools/hackernews/session/session-manager.js";
+import { registerCommentTools } from "../../../src/mcp-tools/hackernews/tools/comment.js";
+import { HN_WEB_BASE } from "../../../src/mcp-tools/hackernews/types.js";
 
 describe("comment tools", () => {
   let server: MockMcpServer;

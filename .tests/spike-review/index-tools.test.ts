@@ -27,7 +27,7 @@ vi.mock("@octokit/rest", () => ({
   },
 }));
 
-vi.mock("../../src/spike-review/github/client.js", () => ({
+vi.mock("../../src/mcp-tools/code-review/github/client.js", () => ({
   GitHubClient: class MockGitHubClient {
     getPRDetails = mockGitHubMethods.getPRDetails;
     getPRFiles = mockGitHubMethods.getPRFiles;
@@ -56,7 +56,7 @@ vi.mock("@spike-land-ai/mcp-server-base", () => ({
 
 const capturedHandlers: Record<string, (...args: unknown[]) => Promise<unknown>> = {};
 
-const { createServer } = await import("../../src/spike-review/index.js");
+const { createServer } = await import("../../src/mcp-tools/code-review/index.js");
 
 // Create server to capture all handlers
 createServer("test-token");
@@ -237,7 +237,7 @@ describe("submit_review tool handler", () => {
 describe("review_pr tool handler", () => {
   it("calls reviewPR and formats the response", async () => {
     // Mock the reviewPR function to avoid GitHub API calls
-    const { reviewPR } = await import("../../src/spike-review/tools/review-pr.js");
+    const { reviewPR } = await import("../../src/mcp-tools/code-review/tools/review-pr.js");
 
     // The review_pr handler calls reviewPR internally
     // We need to mock at the tool level - inject a mock via vi.mock

@@ -6,14 +6,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("fs");
 vi.mock("fs/promises");
-vi.mock("../../../src/vibe-dev/api.js");
-vi.mock("../../../src/vibe-dev/redis.js");
+vi.mock("../../../src/cli/docker-dev/api.js");
+vi.mock("../../../src/cli/docker-dev/redis.js");
 vi.mock("child_process", () => ({ spawn: vi.fn() }));
 
 import { spawn } from "child_process";
-import * as api from "../../../src/vibe-dev/api.js";
-import * as redis from "../../../src/vibe-dev/redis.js";
-import * as agent from "../../../src/vibe-dev/agent.js";
+import * as api from "../../../src/cli/docker-dev/api.js";
+import * as redis from "../../../src/cli/docker-dev/redis.js";
+import * as agent from "../../../src/cli/docker-dev/agent.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -1361,7 +1361,7 @@ describe("spawnClaudeCode AGENT_REQUIRE_PERMISSIONS branch", () => {
     vi.resetModules();
     process.env.AGENT_REQUIRE_PERMISSIONS = "true";
 
-    const freshAgent = await import("../../../src/vibe-dev/agent.js");
+    const freshAgent = await import("../../../src/cli/docker-dev/agent.js");
     const proc = makeMockProcess();
     vi.mocked(spawn).mockReturnValue(proc as unknown as ReturnType<typeof spawn>);
     vi.mocked(mkdir).mockResolvedValue(undefined);

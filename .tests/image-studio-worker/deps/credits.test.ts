@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createD1Credits } from "../../../src/image-studio-worker/deps/credits.ts";
-import { nanoid } from "../../../src/image-studio-worker/deps/nanoid.ts";
+import { createD1Credits } from "../../../src/edge-api/image-studio-worker/deps/credits.ts";
+import { nanoid } from "../../../src/edge-api/image-studio-worker/deps/nanoid.ts";
 
 describe("credits", () => {
   it("hasEnough returns true if remaining >= amount", async () => {

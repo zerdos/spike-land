@@ -3,8 +3,8 @@
  */
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-land-mcp/env";
-import { internalAnalytics } from "../../../src/spike-land-mcp/routes/internal-analytics";
+import type { Env } from "../../../src/edge-api/spike-land/env";
+import { internalAnalytics } from "../../../src/edge-api/spike-land/routes/internal-analytics";
 import { createMockD1 } from "../__test-utils__/mock-env";
 
 function buildApp(queryResult: Record<string, unknown>[] = []) {

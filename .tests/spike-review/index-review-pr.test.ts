@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from "vitest";
 // Mock reviewPR
 const mockReviewPR = vi.fn();
 
-vi.mock("../../src/spike-review/tools/review-pr.js", () => ({
+vi.mock("../../src/mcp-tools/code-review/tools/review-pr.js", () => ({
   reviewPR: mockReviewPR,
 }));
 
@@ -37,7 +37,7 @@ vi.mock("@spike-land-ai/mcp-server-base", () => ({
   })),
 }));
 
-const { createServer } = await import("../../src/spike-review/index.js");
+const { createServer } = await import("../../src/mcp-tools/code-review/index.js");
 createServer("test-token");
 
 describe("review_pr tool handler (lines 46-51)", () => {

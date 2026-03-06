@@ -5,8 +5,8 @@ import {
   mapChildren,
   onlyChild,
   toArray,
-} from "../../../../src/react-ts-worker/react/ReactChildren.js";
-import { createElement, isValidElement } from "../../../../src/react-ts-worker/react/ReactElement.js";
+} from "../../../../src/core/react-engine/react/ReactChildren.js";
+import { createElement, isValidElement } from "../../../../src/core/react-engine/react/ReactElement.js";
 
 describe("mapChildren", () => {
   it("returns null for null children", () => {

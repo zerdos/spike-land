@@ -4,7 +4,7 @@
  * disableCategory, registerBuilt, restoreCategories, getToolDefinitions with options.
  */
 import { describe, expect, it, vi } from "vitest";
-import { ToolRegistry } from "../../../src/spike-land-mcp/mcp/registry";
+import { ToolRegistry } from "../../../src/edge-api/spike-land/mcp/registry";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 

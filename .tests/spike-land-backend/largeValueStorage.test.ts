@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { LargeValueStorage } from "../../src/spike-land-backend/largeValueStorage";
+import { LargeValueStorage } from "../../src/edge-api/backend/core-logic/largeValueStorage.js";
 
 function makeR2Object(text: string) {
   return {

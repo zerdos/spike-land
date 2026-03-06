@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { generateVisualizerCode } from "../../src/state-machine/visualizer-template.js";
-import type { MachineExport } from "../../src/state-machine/types.js";
+import { generateVisualizerCode } from "../../src/core/statecharts/core-logic/visualizer-template.js";
+import type { MachineExport } from "../../src/core/statecharts/core-logic/types.js";
 
 // ---------------------------------------------------------------------------
 // Fixture

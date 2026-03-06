@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   resetIdCounter,
   ServerDispatcher,
-} from "../../../../src/react-ts-worker/server/ReactFizzHooks.js";
-import { createContext } from "../../../../src/react-ts-worker/react/ReactContext.js";
-import { REACT_CONTEXT_TYPE } from "../../../../src/react-ts-worker/react/ReactSymbols.js";
+} from "../../../../src/core/react-engine/server/ReactFizzHooks.js";
+import { createContext } from "../../../../src/core/react-engine/react/ReactContext.js";
+import { REACT_CONTEXT_TYPE } from "../../../../src/core/react-engine/react/ReactSymbols.js";
 
 describe("ReactFizzHooks - ServerDispatcher", () => {
   beforeEach(() => {

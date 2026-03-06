@@ -2,10 +2,10 @@
  * Additional apiRoutes tests for uncovered parseTranspileErrors branches (lines 256-268, 274)
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Code } from "../../../src/spike-land-backend/chatRoom.js";
-import { ApiRoutes } from "../../../src/spike-land-backend/routes/apiRoutes.js";
+import { Code } from "../../../src/edge-api/backend/chatRoom.js";
+import { ApiRoutes } from "../../../src/edge-api/backend/routes/apiRoutes.js";
 
-vi.mock("../../../src/spike-land-backend/chatRoom", () => ({
+vi.mock("../../../src/edge-api/backend/chatRoom", () => ({
   Code: vi.fn(),
   md5: vi.fn(),
 }));

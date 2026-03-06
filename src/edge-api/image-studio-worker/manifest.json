@@ -1,0 +1,26 @@
+{
+  "name": "image-studio-worker",
+  "category": "edge-api",
+  "dependencies": [
+    "@google/genai",
+    "@spike-land-ai/mcp-image-studio",
+    "hono",
+    "node:buffer"
+  ],
+  "files": [
+    "ai-mcp/generation.ts",
+    "ai/chat-handler.ts",
+    "api-mcp/index.ts",
+    "core-logic/auth.ts",
+    "core-logic/browser-tools.ts",
+    "core-logic/nanoid.ts",
+    "core-logic/shared-types.ts",
+    "core-logic/system-prompt.ts",
+    "mcp/credits.ts",
+    "mcp/db.ts",
+    "mcp/resolvers.ts",
+    "mcp/server.ts",
+    "mcp/storage.ts",
+    "mcp/tool-registry.ts"
+  ]
+}

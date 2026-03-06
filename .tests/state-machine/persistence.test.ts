@@ -25,8 +25,8 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { getSharedMachine, shareMachine } from "../../src/state-machine/persistence.js";
-import type { MachineExport } from "../../src/state-machine/types.js";
+import { getSharedMachine, shareMachine } from "../../src/core/statecharts/node-sys/persistence.js";
+import type { MachineExport } from "../../src/core/statecharts/core-logic/types.js";
 
 // ---------------------------------------------------------------------------
 // Fixture helpers

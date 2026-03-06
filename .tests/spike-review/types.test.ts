@@ -11,7 +11,7 @@ import {
   ReviewPRSchema,
   SubmitReviewSchema,
   ValidateCommentTargetSchema,
-} from "../../src/spike-review/types.js";
+} from "../../src/mcp-tools/code-review/core-logic/types.js";
 
 describe("types", () => {
   describe("enums", () => {

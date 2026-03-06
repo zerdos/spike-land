@@ -1,1 +1,1 @@
-export * from "../../src/image-studio-worker/index.ts";
+export * from "../../src/edge-api/image-studio-worker/api-mcp/index.ts";

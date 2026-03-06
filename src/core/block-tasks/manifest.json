@@ -1,0 +1,12 @@
+{
+  "name": "block-tasks",
+  "category": "core",
+  "dependencies": [
+    "@spike-land-ai/block-sdk"
+  ],
+  "files": [
+    "lazy-imports/browser.ts",
+    "lazy-imports/index.ts",
+    "lazy-imports/worker.ts"
+  ]
+}

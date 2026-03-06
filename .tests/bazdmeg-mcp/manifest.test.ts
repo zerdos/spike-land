@@ -14,7 +14,7 @@ import {
   getManifestPackage,
   readManifest,
   topologicalSort,
-} from "../../src/bazdmeg-mcp/manifest.js";
+} from "../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
 
 // Helper to create a temp directory with a packages.yaml file
 async function createTempManifest(yamlContent: string): Promise<{ root: string; cleanup: () => Promise<void> }> {

@@ -21,7 +21,7 @@ import {
   textResult,
   tryCatch,
   wrapServerWithLogging,
-} from "../../src/mcp-server-base/index.js";
+} from "../../src/core/server-base/core-logic/index.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 

@@ -14,7 +14,7 @@ import {
   validateMachine,
   exportMachine,
   listMachines,
-} from "../../src/state-machine/engine.js";
+} from "../../src/core/statecharts/node-sys/engine.js";
 
 describe("Statechart Engine Coverage", () => {
   beforeEach(() => {

@@ -4,13 +4,13 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { blog } from "../../../src/spike-edge/routes/blog.js";
-import { githubStars } from "../../../src/spike-edge/routes/github-stars.js";
-import { sitemap } from "../../../src/spike-edge/routes/sitemap.js";
-import { r2 } from "../../../src/spike-edge/routes/r2.js";
-import { stripeWebhook } from "../../../src/spike-edge/routes/stripe-webhook.js";
-import { cockpit } from "../../../src/spike-edge/routes/cockpit.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { blog } from "../../../src/edge-api/main/routes/blog.js";
+import { githubStars } from "../../../src/edge-api/main/routes/github-stars.js";
+import { sitemap } from "../../../src/edge-api/main/routes/sitemap.js";
+import { r2 } from "../../../src/edge-api/main/routes/r2.js";
+import { stripeWebhook } from "../../../src/edge-api/main/routes/stripe-webhook.js";
+import { cockpit } from "../../../src/edge-api/main/routes/cockpit.js";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

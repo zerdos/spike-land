@@ -1,1 +1,1 @@
-export * from "../../src/shared/index.ts";
+export * from "../../src/core/shared-utils/core-logic/index.ts";

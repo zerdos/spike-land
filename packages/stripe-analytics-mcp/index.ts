@@ -1,1 +1,1 @@
-export * from "../../src/stripe-analytics-mcp/index.js";
+export * from "../../src/mcp-tools/stripe-analytics/mcp/index.ts";

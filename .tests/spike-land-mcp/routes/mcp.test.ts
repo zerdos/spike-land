@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-land-mcp/env";
-import type { AuthVariables } from "../../../src/spike-land-mcp/auth/middleware";
+import type { Env } from "../../../src/edge-api/spike-land/env";
+import type { AuthVariables } from "../../../src/edge-api/spike-land/auth/middleware";
 import { createMockKV, mockEnv } from "../__test-utils__/mock-env";
 
 // Mock the MCP server creation to avoid pulling in all tool dependencies
-vi.mock("../../../src/spike-land-mcp/mcp/server", () => ({
+vi.mock("../../../src/edge-api/spike-land/mcp/server", () => ({
   createMcpServer: vi.fn().mockImplementation(async () => ({
     connect: vi.fn(),
     close: vi.fn(),
@@ -16,7 +16,7 @@ vi.mock("../../../src/spike-land-mcp/mcp/server", () => ({
 let _hashClientIdShouldFail = false;
 let _recordSkillCallShouldFail = false;
 
-vi.mock("../../../src/spike-land-mcp/lib/ga4", () => ({
+vi.mock("../../../src/edge-api/spike-land/lib/ga4", () => ({
   hashClientId: vi.fn().mockImplementation(async () => {
     if (_hashClientIdShouldFail) throw new Error("GA4 hash failed");
     return "mock-client-id";
@@ -24,13 +24,13 @@ vi.mock("../../../src/spike-land-mcp/lib/ga4", () => ({
   sendGA4Events: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("../../../src/spike-land-mcp/lib/skill-tracker", () => ({
+vi.mock("../../../src/edge-api/spike-land/lib/skill-tracker", () => ({
   recordSkillCall: vi.fn().mockImplementation(async () => {
     if (_recordSkillCallShouldFail) throw new Error("skill-tracker failed");
   }),
 }));
 
-vi.mock("../../../src/spike-land-mcp/lib/analytics", () => ({
+vi.mock("../../../src/edge-api/spike-land/lib/analytics", () => ({
   trackPlatformEvents: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -67,7 +67,7 @@ vi.mock("@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js", () => {
  * Uses the real createApp pattern: auth middleware on /mcp/*, route on /mcp.
  */
 async function buildTestApp() {
-  const { mcpRoute } = await import("../../../src/spike-land-mcp/routes/mcp");
+  const { mcpRoute } = await import("../../../src/edge-api/spike-land/routes/mcp");
 
   // Test the mcpRoute directly, pre-setting userId as the auth middleware would
   const app = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
@@ -245,7 +245,7 @@ describe("GET /mcp (mcpRoute handler)", () => {
   it("returns 401 from route handler when no Authorization header (covers line 206)", async () => {
     // Mount mcpRoute directly without the outer auth middleware, so the
     // route's own GET handler auth check (line 206) is exercised
-    const { mcpRoute } = await import("../../../src/spike-land-mcp/routes/mcp");
+    const { mcpRoute } = await import("../../../src/edge-api/spike-land/routes/mcp");
     const bareApp = new Hono<{ Bindings: typeof mockEnv extends (...args: unknown[]) => infer R ? R : never }>();
     bareApp.route("/", mcpRoute);
     const env = mockEnv();

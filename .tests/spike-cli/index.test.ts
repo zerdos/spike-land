@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as index from "../../src/spike-cli/index";
+import * as index from "../../src/cli/spike-cli/core-logic/index.js";
 
 describe("index", () => {
   it("exports expected symbols", () => {

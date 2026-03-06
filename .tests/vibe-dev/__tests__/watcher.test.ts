@@ -3,14 +3,14 @@ import { existsSync, mkdirSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { pullCode, pushCode, withRetry } from "../../../src/vibe-dev/sync.js";
-import * as watcher from "../../../src/vibe-dev/watcher.js";
+import { pullCode, pushCode, withRetry } from "../../../src/cli/docker-dev/sync.js";
+import * as watcher from "../../../src/cli/docker-dev/watcher.js";
 
 // Mock dependencies
 vi.mock("fs");
 vi.mock("fs/promises");
 vi.mock("chokidar");
-vi.mock("../../../src/vibe-dev/sync.js");
+vi.mock("../../../src/cli/docker-dev/sync.js");
 
 describe("Watcher Module", () => {
   const mockWatcher: Pick<FSWatcher, "on" | "close"> = {

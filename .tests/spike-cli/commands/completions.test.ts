@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Command } from "commander";
-import { registerCompletionsCommand } from "../../../src/spike-cli/commands/completions";
-import * as installer from "../../../src/spike-cli/completions/installer";
+import { registerCompletionsCommand } from "../../../src/cli/spike-cli/commands/completions";
+import * as installer from "../../../src/cli/spike-cli/completions/installer";
 
-vi.mock("../../../src/spike-cli/completions/installer", () => ({
+vi.mock("../../../src/cli/spike-cli/completions/installer", () => ({
   detectShell: vi.fn().mockReturnValue("zsh"),
   installCompletions: vi.fn().mockReturnValue({ instructions: "done" }),
   uninstallCompletions: vi.fn().mockReturnValue(true),

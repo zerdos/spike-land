@@ -9,13 +9,13 @@ import {
   isEntryPointTool,
   parseSlashInput,
   trackToolCallForSession,
-} from "../../../../src/spike-cli/chat/slash-commands.js";
-import { SessionState } from "../../../../src/spike-cli/chat/session-state.js";
-import type { SlashCommandContext } from "../../../../src/spike-cli/chat/slash-commands.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
-import type { ChatClient, Message } from "../../../../src/spike-cli/chat/client.js";
-import { AppRegistryImpl } from "../../../../src/spike-cli/chat/app-registry.js";
-import type { AppInfo } from "../../../../src/spike-cli/chat/app-registry.js";
+} from "../../../../src/cli/spike-cli/chat/slash-commands.js";
+import { SessionState } from "../../../../src/cli/spike-cli/chat/session-state.js";
+import type { SlashCommandContext } from "../../../../src/cli/spike-cli/chat/slash-commands.js";
+import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+import type { ChatClient, Message } from "../../../../src/cli/spike-cli/chat/client.js";
+import { AppRegistryImpl } from "../../../../src/cli/spike-cli/chat/app-registry.js";
+import type { AppInfo } from "../../../../src/cli/spike-cli/chat/app-registry.js";
 
 // Helper to create a mock tool
 function mockTool(overrides: Partial<NamespacedTool> & { namespacedName: string }): NamespacedTool {

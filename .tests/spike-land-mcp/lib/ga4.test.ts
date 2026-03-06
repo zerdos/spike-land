@@ -2,7 +2,7 @@
  * Tests for lib/ga4.ts
  */
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { hashClientId, sendGA4Events, type GA4Event } from "../../../src/spike-land-mcp/lib/ga4";
+import { hashClientId, sendGA4Events, type GA4Event } from "../../../src/edge-api/spike-land/lib/ga4";
 
 describe("hashClientId", () => {
   it("returns a hex string of length 64", async () => {

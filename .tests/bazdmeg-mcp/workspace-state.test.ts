@@ -18,7 +18,7 @@ import {
   getWorkspace,
   isWorkspaceActive,
   resetWorkspaceState,
-} from "../../src/bazdmeg-mcp/workspace-state.js";
+} from "../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 
 describe("workspace-state", () => {
   beforeEach(() => {

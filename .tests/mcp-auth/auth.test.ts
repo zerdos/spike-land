@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createAuth } from "../../src/mcp-auth/auth";
-import type { Env } from "../../src/mcp-auth/auth";
+import { createAuth } from "../../src/edge-api/auth/db-auth/auth.js";
+import type { Env } from "../../src/edge-api/auth/db-auth/auth.js";
 
 // Mock drizzle-orm/d1
 vi.mock("drizzle-orm/d1", () => ({

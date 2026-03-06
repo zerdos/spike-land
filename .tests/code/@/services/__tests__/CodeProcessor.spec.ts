@@ -47,7 +47,7 @@ vi.mock("@/services/RenderService", () => ({
 import { importMapReplace } from "@/lib/importmap-utils";
 import { md5 } from "@/lib/md5";
 import { transpileCode } from "@/services/editorUtils";
-import { CodeProcessor } from "../../../../../src/code/@/services/CodeProcessor";
+import { CodeProcessor } from "../../../../../src/frontend/monaco-editor/@/services/CodeProcessor";
 
 describe("CodeProcessor", () => {
   let processor: CodeProcessor;

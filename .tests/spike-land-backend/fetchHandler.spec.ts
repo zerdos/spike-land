@@ -1,9 +1,9 @@
 import { importMap } from "@spike-land-ai/code";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import type Env from "../../src/spike-land-backend/env.js";
-import { handleFetchApi } from "../../src/spike-land-backend/fetchHandler.js";
-import { createMockEnv } from "../../src/spike-land-backend/test-utils.js";
-import { handleCORS } from "../../src/spike-land-backend/utils.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { handleFetchApi } from "../../src/edge-api/backend/lazy-imports/fetchHandler.js";
+import { createMockEnv } from "../../src/edge-api/backend/edge/test-utils.js";
+import { handleCORS } from "../../src/edge-api/backend/core-logic/utils.js";
 
 interface MockWebSocket extends WebSocket {
   accept: Mock;
@@ -66,7 +66,7 @@ describe("FetchHandler", () => {
       props: {},
     } as unknown as ExecutionContext;
 
-    vi.mock("../../src/spike-land-backend/utils", () => ({
+    vi.mock("../../src/edge-api/backend/utils", () => ({
       handleCORS: vi.fn(),
     }));
   });

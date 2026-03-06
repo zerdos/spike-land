@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockImageStudioDeps, mockImageRow } from "../__test-utils__/mock-deps.js";
-import { share } from "../../../src/mcp-image-studio/tools/share.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
+import { share } from "../../../src/mcp-tools/image-studio/tools/share.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("share", () => {
   const userId = "u1";

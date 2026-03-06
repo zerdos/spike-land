@@ -23,12 +23,12 @@ describe("importMapReplace", () => {
 
     // Path handling
     "Path imports": {
-      "relative imports without extension": `import { helper } from "../../../src/code/__tests__/utils/helper";`,
-      "parent directory relative imports": `import { shared } from "../../../src/code/shared/utils";`,
-      "should preserve existing extensions in relative imports": `import { component } from "../../../src/code/__tests__/components/Button";`,
+      "relative imports without extension": `import { helper } from "../../../src/frontend/monaco-editor/__tests__/utils/helper";`,
+      "parent directory relative imports": `import { shared } from "../../../src/frontend/monaco-editor/shared/utils";`,
+      "should preserve existing extensions in relative imports": `import { component } from "../../../src/frontend/monaco-editor/__tests__/components/Button";`,
       "deep nested paths": `import { util } from "../../../../very/deep/nested/path";`,
-      "current directory marker": `import { tool } from "../../../src/code/__tests__/current/path";`,
-      "relative imports with trailing slash": `import module from "../../../src/code/__tests__/folder";`,
+      "current directory marker": `import { tool } from "../../../src/frontend/monaco-editor/__tests__/current/path";`,
+      "relative imports with trailing slash": `import module from "../../../src/frontend/monaco-editor/__tests__/folder";`,
       "directory imports": `import "./components/";`,
       "existing .js extensions": `import { func } from "./lib";`,
       "should prevent double .mjs extension": `import "./file.mjs";`,
@@ -44,8 +44,8 @@ describe("importMapReplace", () => {
       "URLs with complex query parameters": `import { module } from "https://example.com/module?version=1.2.3&format=esm&debug=true";`,
       "URLs with hash fragments": `import { section } from "module#section";`,
       "URLs with version tags": `import { lib } from "https://esm.sh/lodash@4.17.21";`,
-      "query and hash in imports": `import { lib } from "../../../src/code/__tests__/module?foo=bar#section";`,
-      "relative imports with query parameters": `import { util } from "../../../src/code/__tests__/utils?foo=bar";`,
+      "query and hash in imports": `import { lib } from "../../../src/frontend/monaco-editor/__tests__/module?foo=bar#section";`,
+      "relative imports with query parameters": `import { util } from "../../../src/frontend/monaco-editor/__tests__/utils?foo=bar";`,
       "external lib": `import { MoonIcon, SunIcon, PlusIcon, TrashIcon, PencilIcon } from "lucide-react";`,
     },
 
@@ -54,8 +54,8 @@ describe("importMapReplace", () => {
       "dynamic imports": `const mod = await import("module");`,
       "dynamic imports with template literals": `const mod = await import(\`./modules/\${name}\`);`,
       "dynamic imports with complex expressions": `const mod = await import(process.env['NODE_ENV'] === 'production' ? 'prod' : 'dev');`,
-      "dynamic imports with relative paths": `const mod = await import('../../../src/code/__tests__/relative/path/module');`,
-      "dynamic imports with string concatenation": `const mod = await import('../../../src/code/__tests__/modules' + name + '/index');`,
+      "dynamic imports with relative paths": `const mod = await import('../../../src/frontend/monaco-editor/__tests__/relative/path/module');`,
+      "dynamic imports with string concatenation": `const mod = await import('../../../src/frontend/monaco-editor/__tests__/modules' + name + '/index');`,
     },
 
     // Export variations
@@ -66,7 +66,7 @@ describe("importMapReplace", () => {
       "export with destructuring": `export const { foo, bar } = await import("module");`,
       "export all from a module": `export * from "module";`,
       "re-export default": `export { default } from "module";`,
-      "export all from relative module": `export * from "../../../src/code/__tests__/utils/helpers";`,
+      "export all from relative module": `export * from "../../../src/frontend/monaco-editor/__tests__/utils/helpers";`,
     },
 
     // Special formatting cases
@@ -90,11 +90,11 @@ describe("importMapReplace", () => {
 
     // Module types
     "Module types": {
-      "CSS modules": `import styles from "../../../src/code/__tests__/styles.module.css";`,
-      "JSON modules": `import data from "../../../src/code/__tests__/data.json";`,
-      "WASM modules": `import * as wasm from "../../../src/code/__tests__/module.wasm";`,
-      "SVG modules": `import logo from "../../../src/code/__tests__/logo.svg";`,
-      "text file imports": `import text from "../../../src/code/__tests__/file.txt";`,
+      "CSS modules": `import styles from "../../../src/frontend/monaco-editor/__tests__/styles.module.css";`,
+      "JSON modules": `import data from "../../../src/frontend/monaco-editor/__tests__/data.json";`,
+      "WASM modules": `import * as wasm from "../../../src/frontend/monaco-editor/__tests__/module.wasm";`,
+      "SVG modules": `import logo from "../../../src/frontend/monaco-editor/__tests__/logo.svg";`,
+      "text file imports": `import text from "../../../src/frontend/monaco-editor/__tests__/file.txt";`,
     },
 
     // Package imports

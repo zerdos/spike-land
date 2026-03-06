@@ -1,1 +1,1 @@
-export * from "../../src/code/modules.ts";
+export * from "../../src/frontend/monaco-editor/core-logic/modules.ts";

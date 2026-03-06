@@ -1,0 +1,24 @@
+{
+  "name": "code-review",
+  "category": "mcp-tools",
+  "dependencies": [
+    "@octokit/rest",
+    "@spike-land-ai/mcp-server-base"
+  ],
+  "files": [
+    "core-logic/check-gates.ts",
+    "core-logic/claude-md-parser.ts",
+    "core-logic/cli.ts",
+    "core-logic/confidence.ts",
+    "core-logic/engine.ts",
+    "core-logic/env.ts",
+    "core-logic/prompts.ts",
+    "core-logic/review-job.ts",
+    "core-logic/review-pr.ts",
+    "core-logic/types.ts",
+    "core-logic/webhook-handler.ts",
+    "core-logic/worker-index.ts",
+    "lazy-imports/client.ts",
+    "mcp/index.ts"
+  ]
+}

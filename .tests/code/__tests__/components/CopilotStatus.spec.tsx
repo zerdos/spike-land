@@ -17,7 +17,7 @@ vi.mock("@/services/CopilotService", () => ({
   },
 }));
 
-import { CopilotStatus } from "../../../../src/code/components/CopilotStatus";
+import { CopilotStatus } from "../../../../src/frontend/monaco-editor/components/CopilotStatus";
 
 describe("CopilotStatus", () => {
   beforeEach(() => {

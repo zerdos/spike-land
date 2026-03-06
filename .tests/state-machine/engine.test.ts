@@ -7,7 +7,7 @@ import {
   getState,
   resetMachine,
   sendEvent,
-} from "../../src/state-machine/engine.js";
+} from "../../src/core/statecharts/node-sys/engine.js";
 
 describe("Statechart Engine", () => {
   beforeEach(() => {

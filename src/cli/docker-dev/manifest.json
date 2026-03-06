@@ -1,0 +1,20 @@
+{
+  "name": "docker-dev",
+  "category": "cli",
+  "dependencies": [
+    "child_process",
+    "chokidar",
+    "commander",
+    "fs",
+    "os",
+    "path"
+  ],
+  "files": [
+    "core-logic/api.ts",
+    "core-logic/cli.ts",
+    "core-logic/redis.ts",
+    "core-logic/sync.ts",
+    "lazy-imports/watcher.ts",
+    "node-sys/agent.ts"
+  ]
+}

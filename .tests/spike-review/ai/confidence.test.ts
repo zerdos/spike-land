@@ -4,9 +4,9 @@ import {
   DEFAULT_CONFIDENCE_THRESHOLD,
   filterByConfidence,
   sortByConfidence,
-} from "../../../src/spike-review/ai/confidence.js";
-import type { ReviewFinding } from "../../../src/spike-review/types.js";
-import { DiffSide } from "../../../src/spike-review/types.js";
+} from "../../../src/mcp-tools/code-review/ai/confidence.js";
+import type { ReviewFinding } from "../../../src/mcp-tools/code-review/types.js";
+import { DiffSide } from "../../../src/mcp-tools/code-review/types.js";
 
 const makeFinding = (confidence: number): ReviewFinding => ({
   path: "test.ts",

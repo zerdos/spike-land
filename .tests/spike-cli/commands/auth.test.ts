@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Command } from "commander";
-import { registerAuthCommand } from "../../../src/spike-cli/commands/auth";
-import * as flow from "../../../src/spike-cli/auth/device-flow";
-import * as store from "../../../src/spike-cli/auth/token-store";
-import type { AuthTokens } from "../../../src/spike-cli/auth/token-store";
+import { registerAuthCommand } from "../../../src/cli/spike-cli/commands/auth";
+import * as flow from "../../../src/cli/spike-cli/auth/device-flow";
+import * as store from "../../../src/cli/spike-cli/auth/token-store";
+import type { AuthTokens } from "../../../src/cli/spike-cli/auth/token-store";
 
-vi.mock("../../../src/spike-cli/auth/device-flow", () => ({ deviceCodeLogin: vi.fn() }));
-vi.mock("../../../src/spike-cli/auth/token-store", () => ({
+vi.mock("../../../src/cli/spike-cli/auth/device-flow", () => ({ deviceCodeLogin: vi.fn() }));
+vi.mock("../../../src/cli/spike-cli/auth/token-store", () => ({
   deleteTokens: vi.fn(),
   loadTokens: vi.fn(),
   isTokenExpired: vi.fn(),
 }));
-vi.mock("../../../src/spike-cli/onboarding/wizard", () => ({
+vi.mock("../../../src/cli/spike-cli/onboarding/wizard", () => ({
   runOnboardingWizard: vi.fn().mockRejectedValue(new Error("skip")),
   submitOnboarding: vi.fn(),
 }));
@@ -87,7 +87,7 @@ describe("auth command", () => {
       accessToken: "abc",
       baseUrl: "https://test",
     } as unknown as AuthTokens);
-    const wizard = await import("../../../src/spike-cli/onboarding/wizard");
+    const wizard = await import("../../../src/cli/spike-cli/onboarding/wizard");
     vi.mocked(wizard.runOnboardingWizard).mockRejectedValue(new Error("skip"));
 
     registerAuthCommand(program);
@@ -118,7 +118,7 @@ describe("auth command", () => {
       accessToken: "abc",
       baseUrl: "https://test",
     } as unknown as AuthTokens);
-    const wizard = await import("../../../src/spike-cli/onboarding/wizard");
+    const wizard = await import("../../../src/cli/spike-cli/onboarding/wizard");
     vi.mocked(wizard.runOnboardingWizard).mockResolvedValue({
       personaName: "Coder",
       personaId: 1,

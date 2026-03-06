@@ -5,17 +5,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/bazdmeg-mcp/workspace-state.js";
+import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/workspace-state.js";
 import { unlink } from "node:fs/promises";
 
 // Mock the shell module
-vi.mock("../../../src/bazdmeg-mcp/shell.js", () => ({
+vi.mock("../../../src/mcp-tools/bazdmeg/shell.js", () => ({
   runCommand: vi.fn(),
   hasScript: vi.fn(),
 }));
 
-import { hasScript, runCommand } from "../../../src/bazdmeg-mcp/shell.js";
-import { registerShipTools } from "../../../src/bazdmeg-mcp/tools/ship.js";
+import { hasScript, runCommand } from "../../../src/mcp-tools/bazdmeg/shell.js";
+import { registerShipTools } from "../../../src/mcp-tools/bazdmeg/tools/ship.js";
 
 const mockRunCommand = vi.mocked(runCommand);
 const mockHasScript = vi.mocked(hasScript);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { forwardRef } from "../../../../src/react-ts-worker/react/ReactForwardRef.js";
-import { REACT_FORWARD_REF_TYPE } from "../../../../src/react-ts-worker/react/ReactSymbols.js";
-import type { Ref } from "../../../../src/react-ts-worker/react/ReactTypes.js";
+import { forwardRef } from "../../../../src/core/react-engine/react/ReactForwardRef.js";
+import { REACT_FORWARD_REF_TYPE } from "../../../../src/core/react-engine/react/ReactSymbols.js";
+import type { Ref } from "../../../../src/core/react-engine/react/ReactTypes.js";
 
 describe("forwardRef", () => {
   it("creates forwardRef component with correct $$typeof", () => {

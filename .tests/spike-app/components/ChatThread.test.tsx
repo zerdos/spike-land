@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ChatThread, type Message } from "../../../src/spike-app/components/ChatThread";
+import { ChatThread, type Message } from "../../../src/frontend/platform-frontend/components/ChatThread";
 
 describe("ChatThread", () => {
   const mockSend = vi.fn();

@@ -10,7 +10,7 @@ import {
   isChunk,
   isUrlFile,
   readRequestBody,
-} from "../../src/spike-land-backend/utils";
+} from "../../src/edge-api/backend/core-logic/utils.js";
 
 describe("Utils Functions", () => {
   describe("getAllowOrigin", () => {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ToolRegistry, validateSchemaDescriptions, formatExamplesAsDescription, compareSemver } from "../../../src/spike-land-mcp/mcp/registry";
+import { ToolRegistry, validateSchemaDescriptions, formatExamplesAsDescription, compareSemver } from "../../../src/edge-api/spike-land/mcp/registry";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 

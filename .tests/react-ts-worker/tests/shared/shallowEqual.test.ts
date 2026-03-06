@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import shallowEqual from "../../../../src/react-ts-worker/shared/shallowEqual.js";
+import shallowEqual from "../../../../src/core/react-engine/shared/shallowEqual.js";
 
 describe("shallowEqual", () => {
   it("returns true for same reference", () => {

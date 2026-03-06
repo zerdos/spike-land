@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { whatsapp } from "../../../src/spike-edge/routes/whatsapp.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { whatsapp } from "../../../src/edge-api/main/routes/whatsapp.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {

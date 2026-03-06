@@ -1,1 +1,1 @@
-export * from "../../src/mcp-image-studio/index.ts";
+export * from "../../src/mcp-tools/image-studio/core-logic/index.ts";

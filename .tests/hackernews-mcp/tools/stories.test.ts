@@ -7,9 +7,9 @@ import {
   SAMPLE_STORY_IDS,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNReadClient } from "../../../src/hackernews-mcp/clients/hn-read-client.js";
-import { registerStoriesTools } from "../../../src/hackernews-mcp/tools/stories.js";
-import { HN_FIREBASE_BASE } from "../../../src/hackernews-mcp/types.js";
+import { HNReadClient } from "../../../src/mcp-tools/hackernews/clients/hn-read-client.js";
+import { registerStoriesTools } from "../../../src/mcp-tools/hackernews/tools/stories.js";
+import { HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/types.js";
 
 describe("stories tools", () => {
   let server: MockMcpServer;

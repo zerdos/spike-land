@@ -1,0 +1,11 @@
+export { VibeCodingParadox } from "../video/compositions/vibe-coding-paradox/VibeCodingParadox";
+export { Scene01_Hook } from "../video/compositions/vibe-coding-paradox/Scene01_Hook";
+export { Scene02_PhysicsOfAttention } from "../video/compositions/vibe-coding-paradox/Scene02_PhysicsOfAttention";
+export { Scene03_BeforeState } from "../video/compositions/vibe-coding-paradox/Scene03_BeforeState";
+export { Scene04_FiveLayerStack } from "../video/compositions/vibe-coding-paradox/Scene04_FiveLayerStack";
+export { Scene05_FixLoop } from "../video/compositions/vibe-coding-paradox/Scene05_FixLoop";
+export { Scene06_AgentMemory } from "../video/compositions/vibe-coding-paradox/Scene06_AgentMemory";
+export { Scene07_SkillMatching } from "../video/compositions/vibe-coding-paradox/Scene07_SkillMatching";
+export { Scene08_MetaBuild } from "../video/compositions/vibe-coding-paradox/Scene08_MetaBuild";
+export { Scene09_Results } from "../video/compositions/vibe-coding-paradox/Scene09_Results";
+export { Scene10_EndCard } from "../video/compositions/vibe-coding-paradox/Scene10_EndCard";

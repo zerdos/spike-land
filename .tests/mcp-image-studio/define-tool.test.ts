@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { defineTool } from "../../src/mcp-image-studio/define-tool.js";
-import type { ImageStudioDeps } from "../../src/mcp-image-studio/types.js";
-import { jsonResult } from "../../src/mcp-image-studio/types.js";
+import { defineTool } from "../../src/mcp-tools/image-studio/core-logic/define-tool.js";
+import type { ImageStudioDeps } from "../../src/mcp-tools/image-studio/mcp/types.js";
+import { jsonResult } from "../../src/mcp-tools/image-studio/mcp/types.js";
 
 import { z } from "zod";
 
@@ -361,7 +361,7 @@ describe("define-tool framework", () => {
 
   describe("DomainError catching", () => {
     it("should catch DomainError and convert to errorResult", async () => {
-      const { DomainError } = await import("../../src/mcp-image-studio/tools/try-catch.js");
+      const { DomainError } = await import("../../src/mcp-tools/image-studio/tools/try-catch.js");
       const tool = defineTool("domain_err_test", "desc", {}).handler(async () => {
         throw new DomainError("UNKNOWN_ERROR", "A specific domain error", true);
       });

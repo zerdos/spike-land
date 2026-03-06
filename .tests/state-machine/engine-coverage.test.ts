@@ -25,7 +25,7 @@ import {
   sendEvent,
   setContext,
   validateMachine,
-} from "../../src/state-machine/engine.js";
+} from "../../src/core/statecharts/node-sys/engine.js";
 
 describe("Engine extra coverage", () => {
   beforeEach(() => {

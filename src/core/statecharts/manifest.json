@@ -1,0 +1,17 @@
+{
+  "name": "statecharts",
+  "category": "core",
+  "dependencies": [
+    "node:crypto",
+    "node:readline"
+  ],
+  "files": [
+    "cli/cli.ts",
+    "core-logic/index.ts",
+    "core-logic/parser.ts",
+    "core-logic/types.ts",
+    "core-logic/visualizer-template.ts",
+    "node-sys/engine.ts",
+    "node-sys/persistence.ts"
+  ]
+}

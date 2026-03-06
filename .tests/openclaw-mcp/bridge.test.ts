@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { GatewayTransport } from "../../src/openclaw-mcp/types.js";
-import { createMcpBridge } from "../../src/openclaw-mcp/bridge.js";
+import type { GatewayTransport } from "../../src/mcp-tools/openclaw/core-logic/types.js";
+import { createMcpBridge } from "../../src/mcp-tools/openclaw/core-logic/bridge.js";
 
 function mockTransport(): GatewayTransport & {
   request: ReturnType<typeof vi.fn>;

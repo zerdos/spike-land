@@ -11,22 +11,22 @@ const mockDeviceCodeLogin = vi.hoisted(() => vi.fn());
 const mockRunOnboardingWizard = vi.hoisted(() => vi.fn());
 const mockSubmitOnboarding = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../../src/spike-cli/auth/token-store.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/auth/token-store.js", () => ({
   loadTokens: mockLoadTokens,
   isTokenExpired: mockIsTokenExpired,
   deleteTokens: mockDeleteTokens,
 }));
 
-vi.mock("../../../../src/spike-cli/auth/device-flow.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/auth/device-flow.js", () => ({
   deviceCodeLogin: mockDeviceCodeLogin,
 }));
 
-vi.mock("../../../../src/spike-cli/onboarding/wizard.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/onboarding/wizard.js", () => ({
   runOnboardingWizard: mockRunOnboardingWizard,
   submitOnboarding: mockSubmitOnboarding,
 }));
 
-import { registerAuthCommand } from "../../../../src/spike-cli/commands/auth.js";
+import { registerAuthCommand } from "../../../../src/cli/spike-cli/commands/auth.js";
 
 describe("auth status command", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;

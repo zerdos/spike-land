@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { calculateBackoff, ReconnectManager } from "../../../../src/spike-cli/multiplexer/reconnect.js";
-import type { ReconnectFn } from "../../../../src/spike-cli/multiplexer/reconnect.js";
-import type { ServerConfig } from "../../../../src/spike-cli/config/types.js";
+import { calculateBackoff, ReconnectManager } from "../../../../src/cli/spike-cli/multiplexer/reconnect.js";
+import type { ReconnectFn } from "../../../../src/cli/spike-cli/multiplexer/reconnect.js";
+import type { ServerConfig } from "../../../../src/cli/spike-cli/config/types.js";
 
 describe("calculateBackoff", () => {
   it("returns initialDelayMs for attempt 0", () => {

@@ -6,7 +6,7 @@ import {
   executeEditCode,
   executeSearchAndReplace,
   executeUpdateCode,
-} from "../../../../src/spike-land-backend/mcp/tools/edit-tools.js";
+} from "../../../../src/edge-api/backend/mcp/tools/edit-tools.js";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;

@@ -42,7 +42,7 @@ Object.assign(globalThis, {
 });
 
 // Import sw.ts after globals are set up so handlers get registered
-await import("../../../src/code/sw");
+await import("../../../src/frontend/monaco-editor/sw");
 
 describe("Service Worker", () => {
   const respondWithSpy = vi.fn();

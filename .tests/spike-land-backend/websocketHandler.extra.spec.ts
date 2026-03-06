@@ -14,9 +14,9 @@
  * - pong no-op (lines 91-94)
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../src/spike-land-backend/chatRoom.js";
-import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler.js";
-import type { WsAttachment } from "../../src/spike-land-backend/websocketHandler.js";
+import type { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
+import type { WsAttachment } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 import { computeSessionHash } from "@spike-land-ai/code";
 
 vi.mock("@spike-land-ai/code", async (importOriginal) => {

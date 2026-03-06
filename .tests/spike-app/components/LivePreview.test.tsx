@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { LivePreview } from "../../../src/spike-app/components/LivePreview";
+import { LivePreview } from "../../../src/frontend/platform-frontend/components/LivePreview";
 
 describe("LivePreview", () => {
   it("renders iframe with correct src", () => {

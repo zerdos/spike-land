@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { createFiberRoot } from "../../../../src/react-ts-worker/reconciler/ReactFiberRoot.js";
-import { HostRoot } from "../../../../src/react-ts-worker/reconciler/ReactWorkTags.js";
-import { NoLanes } from "../../../../src/react-ts-worker/reconciler/ReactFiberLane.js";
-import type { HostConfig } from "../../../../src/react-ts-worker/host-config/HostConfigInterface.js";
+import { createFiberRoot } from "../../../../src/core/react-engine/reconciler/ReactFiberRoot.js";
+import { HostRoot } from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
+import { NoLanes } from "../../../../src/core/react-engine/reconciler/ReactFiberLane.js";
+import type { HostConfig } from "../../../../src/core/react-engine/host-config/HostConfigInterface.js";
 
 function makeHostConfig(): HostConfig {
   return {

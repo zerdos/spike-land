@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mapTestToSource, getFileHash, loadCache, saveCache, runVitestWithCoverage, execPromise } from '../../src/incremental-test-mcp/logic.js';
+import { mapTestToSource, getFileHash, loadCache, saveCache, runVitestWithCoverage, execPromise } from '../../src/utilities/incremental-test/node-sys/logic.js';
 import * as fs from 'node:fs/promises';
 import * as child_process from 'node:child_process';
 

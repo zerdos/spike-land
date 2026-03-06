@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { HNReadClient } from "../../../src/hackernews-mcp/clients/hn-read-client.js";
+import { HNReadClient } from "../../../src/mcp-tools/hackernews/clients/hn-read-client.js";
 import {
   createFailingFetch,
   createMockFetch,
@@ -11,8 +11,8 @@ import {
   SAMPLE_UPDATES,
   SAMPLE_USER,
 } from "../__test-utils__/index.js";
-import type { FetchFn } from "../../../src/hackernews-mcp/types.js";
-import { ALGOLIA_BASE, HN_FIREBASE_BASE } from "../../../src/hackernews-mcp/types.js";
+import type { FetchFn } from "../../../src/mcp-tools/hackernews/types.js";
+import { ALGOLIA_BASE, HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/types.js";
 
 describe("HNReadClient", () => {
   describe("getItem", () => {

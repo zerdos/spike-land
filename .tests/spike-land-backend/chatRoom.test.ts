@@ -1,18 +1,18 @@
 import type { ICodeSession } from "@spike-land-ai/code";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Code } from "../../src/spike-land-backend/chatRoom";
-import type Env from "../../src/spike-land-backend/env"; // Assuming Env type is exported from env.ts
-import { RouteHandler } from "../../src/spike-land-backend/routeHandler";
-import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler";
+import { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js"; // Assuming Env type is exported from env.ts
+import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler.js";
+import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
 // Mock external dependencies - use function expression for Vitest 4 constructor mocking
-vi.mock("../../src/spike-land-backend/routeHandler", () => ({
+vi.mock("../../src/edge-api/backend/routeHandler", () => ({
   RouteHandler: vi.fn().mockImplementation(function () {
     return { handleRoute: vi.fn() };
   }),
 }));
 
-vi.mock("../../src/spike-land-backend/websocketHandler", () => ({
+vi.mock("../../src/edge-api/backend/websocketHandler", () => ({
   WebSocketHandler: vi.fn().mockImplementation(function () {
     return {
       broadcast: vi.fn(),

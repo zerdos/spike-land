@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { lazy } from "../../../../src/react-ts-worker/react/ReactLazy.js";
-import { REACT_LAZY_TYPE } from "../../../../src/react-ts-worker/react/ReactSymbols.js";
+import { lazy } from "../../../../src/core/react-engine/react/ReactLazy.js";
+import { REACT_LAZY_TYPE } from "../../../../src/core/react-engine/react/ReactSymbols.js";
 
 describe("lazy", () => {
   it("creates lazy component with correct $$typeof", () => {

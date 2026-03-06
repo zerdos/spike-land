@@ -1,8 +1,8 @@
 import type { ICodeSession } from "@spike-land-ai/code";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom.js";
-import type Env from "../../../src/spike-land-backend/env.js";
-import { McpHandler } from "../../../src/spike-land-backend/mcp/handler.js";
+import type { Code } from "../../../src/edge-api/backend/chatRoom.js";
+import type Env from "../../../src/edge-api/backend/env.js";
+import { McpHandler } from "../../../src/edge-api/backend/mcp/handler.js";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;

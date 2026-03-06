@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { account, orgInvite, orgMember, organization, session, user, verification } from "../../../src/mcp-auth/db/schema";
+import { account, orgInvite, orgMember, organization, session, user, verification } from "../../../src/edge-api/auth/db/schema";
 import { getTableConfig } from "drizzle-orm/sqlite-core";
 import { getTableColumns } from "drizzle-orm";
 

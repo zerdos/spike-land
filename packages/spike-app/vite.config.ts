@@ -14,22 +14,6 @@ const certFile = resolve(certDir, "local.spike.land.pem");
 const keyFile = resolve(certDir, "local.spike.land-key.pem");
 const hasLocalCerts = existsSync(certFile) && existsSync(keyFile);
 
-const ESM_CDN = "https://esm.spike.land";
-
-// Read dependency versions from package.json for pinned CDN URLs
-const pkg = JSON.parse(readFileSync(resolve(import.meta.dirname, "package.json"), "utf-8"));
-const allDeps: Record<string, string> = { ...pkg.dependencies, ...pkg.devDependencies };
-
-function getVersionedSpecifier(bare: string): string {
-  // Find the top-level package name (@scope/pkg or pkg)
-  const topPkg = bare.startsWith("@") ? bare.split("/").slice(0, 2).join("/") : bare.split("/")[0];
-  const version = allDeps[topPkg]?.replace(/^[\^~>=<]/, "");
-  const pinned = version ? `${topPkg}@${version}` : topPkg;
-  // Append subpath if present
-  const subpath = bare.slice(topPkg.length);
-  return `${pinned}${subpath}`;
-}
-
 /**
  * Vite plugin that rewrites CSS @plugin directives to PnP-resolved paths.
  * Tailwind CSS resolves @plugin from the CSS file's directory, which fails
@@ -51,38 +35,9 @@ function tailwindPnpPlugin(): Plugin {
   };
 }
 
-/**
- * Vite plugin that rewrites bare npm imports to esm.spike.land CDN URLs.
- * The CDN serves proper CORS headers, so no local proxy is needed.
- */
-function esmCdnPlugin(): Plugin {
-  return {
-    name: "esm-cdn-resolve",
-    enforce: "pre",
-    resolveId(source, importer) {
-      // Skip relative imports, absolute paths, virtual modules, and local aliases
-      if (
-        source.startsWith(".") ||
-        source.startsWith("/") ||
-        source.startsWith("\0") ||
-        source.startsWith("@/") ||
-        source.startsWith("@spike-land-ai/")
-      ) {
-        return null;
-      }
-      // Don't externalize imports from CSS files (e.g. tailwindcss resolved by @tailwindcss/postcss)
-      if (importer && /\.css($|\?)/.test(importer)) {
-        return null;
-      }
-      // Rewrite bare npm specifiers to CDN URL
-      const specifier = getVersionedSpecifier(source);
-      return { id: `${ESM_CDN}/${specifier}`, external: true };
-    },
-  };
-}
-
 export default defineConfig(() => ({
-  plugins: [tailwindPnpPlugin(), esmCdnPlugin(), react()],
+  publicDir: resolve(import.meta.dirname, "../../src/frontend/platform-frontend/public"),
+  plugins: [tailwindPnpPlugin(), react()],
   css: {
     postcss: {
       plugins: [tailwindcss()],
@@ -95,17 +50,17 @@ export default defineConfig(() => ({
   },
   resolve: {
     alias: {
-      "@": resolve(import.meta.dirname, "../../src/spike-app"),
-      "@spike-land-ai/block-website/ui": resolve(import.meta.dirname, "../../src/block-website/src/ui/index.ts"),
-      "@spike-land-ai/block-website/core": resolve(import.meta.dirname, "../../src/block-website/src/core/index.ts"),
-      "@spike-land-ai/block-website/mcp": resolve(import.meta.dirname, "../../src/block-website/src/mcp/index.ts"),
-      "@spike-land-ai/block-website": resolve(import.meta.dirname, "../../src/block-website/src/index.ts"),
-      "@spike-land-ai/shared/constants": resolve(import.meta.dirname, "../../src/shared/constants/index.ts"),
-      "@spike-land-ai/shared/types": resolve(import.meta.dirname, "../../src/shared/types/index.ts"),
-      "@spike-land-ai/shared/validations": resolve(import.meta.dirname, "../../src/shared/validations/index.ts"),
-      "@spike-land-ai/shared/utils": resolve(import.meta.dirname, "../../src/shared/utils/index.ts"),
-      "@spike-land-ai/shared/tool-builder": resolve(import.meta.dirname, "../../src/shared/tool-builder/index.ts"),
-      "@spike-land-ai/shared": resolve(import.meta.dirname, "../../src/shared/index.ts"),
+      "@": resolve(import.meta.dirname, "../../src/frontend/platform-frontend"),
+      "@spike-land-ai/block-website/ui": resolve(import.meta.dirname, "../../src/core/block-website/core-logic/ui-index.ts"),
+      "@spike-land-ai/block-website/core": resolve(import.meta.dirname, "../../src/core/block-website/core-logic/core-index.ts"),
+      "@spike-land-ai/block-website/mcp": resolve(import.meta.dirname, "../../src/core/block-website/mcp/mcp-index.ts"),
+      "@spike-land-ai/block-website": resolve(import.meta.dirname, "../../src/core/block-website/index.ts"),
+      "@spike-land-ai/shared/constants": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/constants-index.ts"),
+      "@spike-land-ai/shared/types": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/types-index.ts"),
+      "@spike-land-ai/shared/validations": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/validations-index.ts"),
+      "@spike-land-ai/shared/utils": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
+      "@spike-land-ai/shared/tool-builder": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/tool-builder-index.ts"),
+      "@spike-land-ai/shared": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
       // PnP resolve aliases for CSS @import "tailwindcss" and @plugin "@tailwindcss/typography"
       "tailwindcss": pnpResolveDir("tailwindcss"),
       "@tailwindcss/typography": pnpResolveDir("@tailwindcss/typography"),
@@ -143,13 +98,26 @@ export default defineConfig(() => ({
       },
     },
   },
-  optimizeDeps: {
-    noDiscovery: true,
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development"),
+    "process.env": "{}",
   },
   build: {
     outDir: "dist",
     sourcemap: false,
     target: "es2022",
-    rollupOptions: {},
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("/@tanstack/")) return "vendor-tanstack";
+          if (id.includes("/framer-motion/")) return "vendor-framer-motion";
+          if (id.includes("/@xterm/")) return "vendor-xterm";
+          if (id.includes("/typescript/") || id.includes("/@typescript/ata/")) return "vendor-typescript";
+          if (id.includes("/lucide-react/") || id.includes("/clsx/") || id.includes("/class-variance-authority/") || id.includes("/tailwind-merge/") || id.includes("/@radix-ui/")) return "vendor-ui";
+          return "vendor-misc";
+        },
+      },
+    },
   },
 }));

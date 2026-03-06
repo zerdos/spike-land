@@ -4,8 +4,7 @@
   "packageManager": "yarn@4.13.0",
   "workspaces": [
     "packages/*",
-    ".github/packages/*",
-    "src-reorganized/*/*/*"
+    ".github/packages/*"
   ],
   "scripts": {
     "build": "yarn workspaces foreach -Apt run build",

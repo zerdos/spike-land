@@ -4598,6 +4598,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@remotion/paths@npm:4.0.434":
+  version: 4.0.434
+  resolution: "@remotion/paths@npm:4.0.434"
+  checksum: 10c0/8b40b82733938cf62445e97434c850358d837f85f45a251a4b125071720eb0553b5beac665713bf587d936560ab882023216b628439b0cfe3d27ecb8bd397430
+  languageName: node
+  linkType: hard
+
+"@remotion/shapes@npm:4.0.434":
+  version: 4.0.434
+  resolution: "@remotion/shapes@npm:4.0.434"
+  dependencies:
+    "@remotion/paths": "npm:4.0.434"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/51282684b8d0e988c6ab44c821d36dfaf379a8ba966ae04a8ed16ef7ae2f776e4580337e92f3f1095030270fad8e58e5de8865f01ed25a82fef6b3c64e42f0c0
+  languageName: node
+  linkType: hard
+
+"@remotion/transitions@npm:^4.0.0":
+  version: 4.0.434
+  resolution: "@remotion/transitions@npm:4.0.434"
+  dependencies:
+    "@remotion/paths": "npm:4.0.434"
+    "@remotion/shapes": "npm:4.0.434"
+    remotion: "npm:4.0.434"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/4a4df55e7bf60ac9537e25ab42c80c58acef71281952c341ac88fd0f73de1fb301410f6c8d1abdd641da461ef6eab61d3e9ca01425f560b9457c7c464696f227
+  languageName: node
+  linkType: hard
+
 "@rolldown/pluginutils@npm:1.0.0-rc.2":
   version: 1.0.0-rc.2
   resolution: "@rolldown/pluginutils@npm:1.0.0-rc.2"
@@ -5180,7 +5213,7 @@ __metadata:
     typescript: "npm:^5.9.3"
     vitest: "npm:^4.0.18"
   bin:
-    mcp-image-studio: cli-server.js
+    mcp-image-studio: ./dist/mcp/cli-server.js
   languageName: unknown
   linkType: soft
 
@@ -5306,6 +5339,9 @@ __metadata:
     playwright: "npm:^1.58.2"
     react: "npm:^19.2.4"
     react-dom: "npm:^19.2.4"
+    react-markdown: "npm:^9.0.0"
+    rehype-raw: "npm:^7.0.0"
+    remark-gfm: "npm:^4.0.0"
     tailwind-merge: "npm:^3.5.0"
     tailwindcss: "npm:^4.2.1"
     tsx: "npm:^4.21.0"
@@ -5490,6 +5526,17 @@ __metadata:
     vitest: "npm:4.0.18"
   bin:
     vibe-dev: ./dist/cli.js
+  languageName: unknown
+  linkType: soft
+
+"@spike-land-ai/video@workspace:packages/educational-videos":
+  version: 0.0.0-use.local
+  resolution: "@spike-land-ai/video@workspace:packages/educational-videos"
+  dependencies:
+    "@remotion/transitions": "npm:^4.0.0"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+    remotion: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -13962,7 +14009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -16584,6 +16631,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^18.2.0":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
+  languageName: node
+  linkType: hard
+
 "react-icons@npm:5.6.0":
   version: 5.6.0
   resolution: "react-icons@npm:5.6.0"
@@ -16626,6 +16685,28 @@ __metadata:
     "@types/react": ">=18"
     react: ">=18"
   checksum: 10c0/4a5dc7d15ca6d05e9ee95318c1904f83b111a76f7588c44f50f1d54d4c97193b84e4f64c4b592057c989228238a2590306cedd0c4d398e75da49262b2b5ae1bf
+  languageName: node
+  linkType: hard
+
+"react-markdown@npm:^9.0.0":
+  version: 9.1.0
+  resolution: "react-markdown@npm:9.1.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    "@types/mdast": "npm:^4.0.0"
+    devlop: "npm:^1.0.0"
+    hast-util-to-jsx-runtime: "npm:^2.0.0"
+    html-url-attributes: "npm:^3.0.0"
+    mdast-util-to-hast: "npm:^13.0.0"
+    remark-parse: "npm:^11.0.0"
+    remark-rehype: "npm:^11.0.0"
+    unified: "npm:^11.0.0"
+    unist-util-visit: "npm:^5.0.0"
+    vfile: "npm:^6.0.0"
+  peerDependencies:
+    "@types/react": ">=18"
+    react: ">=18"
+  checksum: 10c0/5bd645d39379f776d64588105f4060c390c3c8e4ff048552c9fa0ad31b756bb3ff7c11081542dc58d840ccf183a6dd4fd4d4edab44d8c24dee8b66551a5fd30d
   languageName: node
   linkType: hard
 
@@ -16784,6 +16865,15 @@ __metadata:
   version: 19.2.4
   resolution: "react@npm:19.2.4"
   checksum: 10c0/cd2c9ff67a720799cc3b38a516009986f7fc4cb8d3e15716c6211cf098d1357ee3e348ab05ad0600042bbb0fd888530ba92e329198c92eafa0994f5213396596
+  languageName: node
+  linkType: hard
+
+"react@npm:^18.2.0":
+  version: 18.3.1
+  resolution: "react@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
   languageName: node
   linkType: hard
 
@@ -17017,7 +17107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-gfm@npm:^4.0.1":
+"remark-gfm@npm:^4.0.0, remark-gfm@npm:^4.0.1":
   version: 4.0.1
   resolution: "remark-gfm@npm:4.0.1"
   dependencies:
@@ -17064,6 +17154,16 @@ __metadata:
     mdast-util-to-markdown: "npm:^2.0.0"
     unified: "npm:^11.0.0"
   checksum: 10c0/0cdb37ce1217578f6f847c7ec9f50cbab35df5b9e3903d543e74b405404e67c07defcb23cd260a567b41b769400f6de03c2c3d9cd6ae7a6707d5c8d89ead489f
+  languageName: node
+  linkType: hard
+
+"remotion@npm:4.0.434, remotion@npm:^4.0.0":
+  version: 4.0.434
+  resolution: "remotion@npm:4.0.434"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/ae422c3ebd4e865ee279e5bd4d025334a95f9c52d16003111003403080dd29c3456681e20255394a7247715923043cd21c9a7d68970e631f369e29093a1babbf
   languageName: node
   linkType: hard
 
@@ -17558,6 +17658,15 @@ __metadata:
   dependencies:
     xmlchars: "npm:^2.2.0"
   checksum: 10c0/3847b839f060ef3476eb8623d099aa502ad658f5c40fd60c105ebce86d244389b0d76fcae30f4d0c728d7705ceb2f7e9b34bb54717b6a7dbedaf5dad2d9a4b74
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10c0/26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
   languageName: node
   linkType: hard
 

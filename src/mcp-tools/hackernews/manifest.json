@@ -1,0 +1,22 @@
+{
+  "name": "hackernews",
+  "category": "mcp-tools",
+  "dependencies": [
+    "@spike-land-ai/mcp-server-base"
+  ],
+  "files": [
+    "core-logic/auth.ts",
+    "core-logic/comment.ts",
+    "core-logic/hn-read-client.ts",
+    "core-logic/hn-write-client.ts",
+    "core-logic/item.ts",
+    "core-logic/search.ts",
+    "core-logic/session-manager.ts",
+    "core-logic/stories.ts",
+    "core-logic/submit.ts",
+    "core-logic/user.ts",
+    "core-logic/vote.ts",
+    "mcp/index.ts",
+    "mcp/types.ts"
+  ]
+}

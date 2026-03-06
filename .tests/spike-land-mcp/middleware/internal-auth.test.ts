@@ -3,8 +3,8 @@
  */
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-land-mcp/env";
-import { internalAuthMiddleware } from "../../../src/spike-land-mcp/middleware/internal-auth";
+import type { Env } from "../../../src/edge-api/spike-land/env";
+import { internalAuthMiddleware } from "../../../src/edge-api/spike-land/middleware/internal-auth";
 
 function buildApp(internalSecret: string) {
   const app = new Hono<{ Bindings: Env }>();

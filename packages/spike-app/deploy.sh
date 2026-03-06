@@ -36,13 +36,13 @@ mkdir -p "$CACHE_DIR"
 
 # ── 3. Inject build metadata into index.html ──
 # Only inject build metadata if not already present
-if ! grep -q 'name="build-sha"' ../../dist/spike-app/index.html; then
-  sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" ../../dist/spike-app/index.html
-  rm -f ../../dist/spike-app/index.html.bak
+if ! grep -q 'name="build-sha"' ./dist/index.html; then
+  sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" ./dist/index.html
+  rm -f ./dist/index.html.bak
 else
   # Update existing metadata
-  sed -i.bak "s|content=\"[a-f0-9]*\" /><meta name=\"build-time\" content=\"[^\"]*\"|content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\"|" ../../dist/spike-app/index.html
-  rm -f ../../dist/spike-app/index.html.bak
+  sed -i.bak "s|content=\"[a-f0-9]*\" /><meta name=\"build-time\" content=\"[^\"]*\"|content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\"|" ./dist/index.html
+  rm -f ./dist/index.html.bak
 fi
 
 # ── 4. Archive current build in R2 for rollback ──
@@ -86,7 +86,7 @@ touch "$UPLOADED_KEYS_FILE"
 
 upload_file() {
   local file="$1"
-  local key="${file#../../dist/spike-app/}"
+  local key="${file#./dist/}"
   local content_type
 
   case "$file" in
@@ -118,9 +118,9 @@ export R2_BUCKET WRANGLER
 FILES_TO_UPLOAD=()
 NEW_KEYS=()
 
-find ../../dist/spike-app -type f -print0 > "$CACHE_DIR/files.tmp"
+find ./dist -type f -print0 > "$CACHE_DIR/files.tmp"
 while IFS= read -r -d '' file; do
-  key="${file#../../dist/spike-app/}"
+  key="${file#./dist/}"
   # Hashed assets (contain content hash in filename) can be skipped if already uploaded
   if [[ "$key" =~ \.[0-9a-f]{8,}\. ]] && grep -qxF "$key" "$UPLOADED_KEYS_FILE" 2>/dev/null; then
     continue
@@ -129,7 +129,7 @@ while IFS= read -r -d '' file; do
   NEW_KEYS+=("$key")
 done < "$CACHE_DIR/files.tmp"
 
-echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped $(( $(find ../../dist/spike-app -type f | wc -l) - ${#FILES_TO_UPLOAD[@]} )) cached)..."
+echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped $(( $(find ./dist -type f | wc -l) - ${#FILES_TO_UPLOAD[@]} )) cached)..."
 
 # Upload in parallel (4 concurrent to avoid R2 rate limits)
 printf '%s\0' "${FILES_TO_UPLOAD[@]}" | xargs -0 -P 4 -I {} bash -c 'upload_file "$@"' _ {}

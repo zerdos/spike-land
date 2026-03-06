@@ -1,1 +1,1 @@
-export * from "../../src/spike-cli/index.ts";
+export * from "../../src/cli/spike-cli/core-logic/index.ts";

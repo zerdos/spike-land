@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { health } from "../../../src/spike-edge/routes/health.js";
-import { r2 } from "../../../src/spike-edge/routes/r2.js";
-import { proxy } from "../../../src/spike-edge/routes/proxy.js";
-import { live } from "../../../src/spike-edge/routes/live.js";
-import { analytics } from "../../../src/spike-edge/routes/analytics.js";
-import { spa } from "../../../src/spike-edge/routes/spa.js";
-import { RateLimiter } from "../../../src/spike-edge/rate-limiter.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { health } from "../../../src/edge-api/main/routes/health.js";
+import { r2 } from "../../../src/edge-api/main/routes/r2.js";
+import { proxy } from "../../../src/edge-api/main/routes/proxy.js";
+import { live } from "../../../src/edge-api/main/routes/live.js";
+import { analytics } from "../../../src/edge-api/main/routes/analytics.js";
+import { spa } from "../../../src/edge-api/main/routes/spa.js";
+import { RateLimiter } from "../../../src/edge-api/main/rate-limiter.js";
 
 function createMockEnv(): Env {
   return {
@@ -1218,7 +1218,7 @@ describe("proxy route — body forwarding", () => {
 
 describe("app middleware (index.ts)", () => {
   it("applies security headers to all responses", async () => {
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
 
     const res = await (
@@ -1233,7 +1233,7 @@ describe("app middleware (index.ts)", () => {
   });
 
   it("handles CORS preflight for allowed origin", async () => {
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
 
     const res = await (
@@ -1255,7 +1255,7 @@ describe("app middleware (index.ts)", () => {
   });
 
   it("defaults to https://spike.land CORS when ALLOWED_ORIGINS is empty", async () => {
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
     env.ALLOWED_ORIGINS = "";
 
@@ -1296,7 +1296,7 @@ describe("app middleware (index.ts)", () => {
 
   it("full app error handler logs and returns 500 for thrown errors", async () => {
     // Test the actual error handler in index.ts by mounting a throw route
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
 
     // R2 head throws to trigger 503 from health, which exercises the error path
@@ -1331,7 +1331,7 @@ describe("app middleware (index.ts)", () => {
   });
 
   it("actual index.ts onError handler triggers when a route throws", async () => {
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
 
     // Make SPA_ASSETS.get throw (not return null) to bypass route's own error handling
@@ -1349,7 +1349,7 @@ describe("app middleware (index.ts)", () => {
   });
 });
 
-import { sitemap } from "../../../src/spike-edge/routes/sitemap.js";
+import { sitemap } from "../../../src/edge-api/main/routes/sitemap.js";
 
 describe("Sitemap & Robots", () => {
   it("returns sitemap.xml with blog posts", async () => {
@@ -1382,7 +1382,7 @@ describe("Sitemap & Robots", () => {
   });
 });
 
-vi.mock("../../../src/spike-edge/lib/ga4.js", () => ({
+vi.mock("../../../src/edge-api/main/lib/ga4.js", () => ({
   getClientId: vi.fn().mockResolvedValue("mocked-client-id"),
   sendGA4Events: vi.fn().mockResolvedValue(undefined),
 }));
@@ -1427,7 +1427,7 @@ describe("SPA Cookie Consent", () => {
 
 describe("API 404 Catch-all", () => {
   it("returns JSON 404 for unknown /api/* routes", async () => {
-    const { default: appModule } = await import("../../../src/spike-edge/index.js");
+    const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
     const res = await (appModule as any).fetch(new Request("https://spike.land/api/does-not-exist"), env, { waitUntil: () => {}, passThroughOnException: () => {} });
     expect(res.status).toBe(404);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { computeOverallStatus, formatGateResults, getBuiltinRules, runGates } from "../../../src/spike-review/rules/engine.js";
-import type { RuleContext } from "../../../src/spike-review/rules/engine.js";
-import type { GateResult } from "../../../src/spike-review/types.js";
+import { computeOverallStatus, formatGateResults, getBuiltinRules, runGates } from "../../../src/mcp-tools/code-review/rules/engine.js";
+import type { RuleContext } from "../../../src/mcp-tools/code-review/rules/engine.js";
+import type { GateResult } from "../../../src/mcp-tools/code-review/types.js";
 
 function makeContext(overrides: Partial<RuleContext> = {}): RuleContext {
   return {

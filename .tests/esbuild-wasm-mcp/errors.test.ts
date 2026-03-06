@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEsbuildError, isEsbuildError } from "../../src/esbuild-wasm-mcp/errors.js";
+import { formatEsbuildError, isEsbuildError } from "../../src/mcp-tools/esbuild-wasm/mcp/errors.js";
 
 describe("errors", () => {
   describe("isEsbuildError", () => {

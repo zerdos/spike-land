@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { StorageRoutes } from "../../../src/spike-land-backend/routes/storageRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { StorageRoutes } from "../../../src/edge-api/backend/routes/storageRoutes";
 
 describe("StorageRoutes", () => {
   let storageRoutes: StorageRoutes;

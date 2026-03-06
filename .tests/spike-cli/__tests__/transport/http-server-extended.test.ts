@@ -10,11 +10,11 @@
  */
 import http from "node:http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 // Helper: start server on an available port and return { closeServer, baseUrl }
 async function withHttpServer(manager: ServerManager, options: { apiKey?: string } = {}) {
-  const { startHttpServer } = await import("../../../../src/spike-cli/transport/http-server.js");
+  const { startHttpServer } = await import("../../../../src/cli/spike-cli/transport/http-server.js");
 
   const tempServer = http.createServer();
   await new Promise<void>((resolve) => tempServer.listen(0, () => resolve()));
@@ -27,7 +27,7 @@ async function withHttpServer(manager: ServerManager, options: { apiKey?: string
 }
 
 async function withSseServer(manager: ServerManager, options: { apiKey?: string } = {}) {
-  const { startSseServer } = await import("../../../../src/spike-cli/transport/sse-server.js");
+  const { startSseServer } = await import("../../../../src/cli/spike-cli/transport/sse-server.js");
 
   const tempServer = http.createServer();
   await new Promise<void>((resolve) => tempServer.listen(0, () => resolve()));
@@ -248,7 +248,7 @@ describe("SSE server — /messages endpoint", () => {
 describe("HTTP server — createMcpServer", () => {
   it("creates a server with ListTools handler that returns tools from manager", async () => {
     const manager = makeManager();
-    const { createMcpServer } = await import("../../../../src/spike-cli/transport/http-server.js");
+    const { createMcpServer } = await import("../../../../src/cli/spike-cli/transport/http-server.js");
     const server = createMcpServer(manager);
     expect(server).toBeDefined();
     // The server is a valid MCP Server instance
@@ -269,7 +269,7 @@ describe("HTTP server — createMcpServer", () => {
       callTool: vi.fn().mockResolvedValue({ content: [{ type: "text", text: "ok" }] }),
     } as unknown as ServerManager;
 
-    const { createMcpServer } = await import("../../../../src/spike-cli/transport/http-server.js");
+    const { createMcpServer } = await import("../../../../src/cli/spike-cli/transport/http-server.js");
     const server = createMcpServer(managerWithUndescribed);
     expect(server).toBeDefined();
   });

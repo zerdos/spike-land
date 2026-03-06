@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { handleScheduled } from "../../../src/spike-edge/scheduled.js";
-import type { Env } from "../../../src/spike-edge/env.js";
+import { handleScheduled } from "../../../src/edge-api/main/scheduled.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
 
 function createDB(overrides: {
   errorCount?: number;

@@ -2,20 +2,20 @@
  * Additional mainFetchHandler tests for uncovered branches
  */
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import type Env from "../../src/spike-land-backend/env.js";
-import { handleFetchApi } from "../../src/spike-land-backend/fetchHandler.js";
-import { handleErrors } from "../../src/spike-land-backend/handleErrors.js";
-import { handleMainFetch } from "../../src/spike-land-backend/mainFetchHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { handleFetchApi } from "../../src/edge-api/backend/lazy-imports/fetchHandler.js";
+import { handleErrors } from "../../src/edge-api/backend/lazy-imports/handleErrors.js";
+import { handleMainFetch } from "../../src/edge-api/backend/lazy-imports/mainFetchHandler.js";
 
-vi.mock("../../src/spike-land-backend/fetchHandler", () => ({
+vi.mock("../../src/edge-api/backend/fetchHandler", () => ({
   handleFetchApi: vi.fn(),
 }));
 
-vi.mock("../../src/spike-land-backend/handleErrors", () => ({
+vi.mock("../../src/edge-api/backend/handleErrors", () => ({
   handleErrors: vi.fn(),
 }));
 
-vi.mock("../../src/spike-land-backend/utils", () => ({
+vi.mock("../../src/edge-api/backend/utils", () => ({
   handleUnauthorizedRequest: vi.fn().mockReturnValue(new Response("Unauthorized", { status: 401 })),
 }));
 

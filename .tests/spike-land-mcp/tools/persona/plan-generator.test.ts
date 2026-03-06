@@ -9,7 +9,7 @@ import {
   getPersonaBySlug,
   getPersonaFromAnswers,
   getQuestionSequence,
-} from "../../../../src/spike-land-mcp/lib/persona-data";
+} from "../../../../src/edge-api/spike-land/lib/persona-data";
 
 describe("Plan Generator", () => {
   describe("getAnswersForPersona", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collect, parseInlineServers, parseInlineUrls } from "../../../src/spike-cli/commands/common";
+import { collect, parseInlineServers, parseInlineUrls } from "../../../src/cli/spike-cli/commands/common";
 
 describe("common command helpers", () => {
   it("collect appends to array", () => {

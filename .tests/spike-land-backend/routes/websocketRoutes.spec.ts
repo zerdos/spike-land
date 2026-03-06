@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { WebsocketRoutes } from "../../../src/spike-land-backend/routes/websocketRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { WebsocketRoutes } from "../../../src/edge-api/backend/routes/websocketRoutes";
 
 vi.mock("@spike-land-ai/code", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@spike-land-ai/code")>();

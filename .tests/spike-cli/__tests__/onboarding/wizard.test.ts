@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPersonaId } from "../../../../src/spike-cli/onboarding/wizard.js";
+import { getPersonaId } from "../../../../src/cli/spike-cli/onboarding/wizard.js";
 
 describe("onboarding wizard", () => {
   describe("getPersonaId", () => {

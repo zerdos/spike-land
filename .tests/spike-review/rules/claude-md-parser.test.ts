@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseClaudeMd, rulesToPromptLines } from "../../../src/spike-review/rules/claude-md-parser.js";
+import { parseClaudeMd, rulesToPromptLines } from "../../../src/mcp-tools/code-review/rules/claude-md-parser.js";
 
 describe("parseClaudeMd", () => {
   it("extracts blocking rules with NEVER/ALWAYS prefix", () => {

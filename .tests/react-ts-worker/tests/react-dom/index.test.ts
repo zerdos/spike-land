@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createRoot, hydrateRoot } from "../../../../src/react-ts-worker/react-dom/index.js";
+import { createRoot, hydrateRoot } from "../../../../src/core/react-engine/react-dom/index.js";
 
 describe("react-dom/index re-exports", () => {
   it("exports createRoot", () => {

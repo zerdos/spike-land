@@ -2,17 +2,17 @@
  * Additional fetchHandler tests to cover uncovered branches
  */
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import { handleApiRequest } from "../../src/spike-land-backend/apiHandler.js";
-import type Env from "../../src/spike-land-backend/env.js";
-import { handleFetchApi } from "../../src/spike-land-backend/fetchHandler.js";
-import { createMockEnv } from "../../src/spike-land-backend/test-utils.js";
-import { handleCORS } from "../../src/spike-land-backend/utils.js";
+import { handleApiRequest } from "../../src/edge-api/backend/lazy-imports/apiHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { handleFetchApi } from "../../src/edge-api/backend/lazy-imports/fetchHandler.js";
+import { createMockEnv } from "../../src/edge-api/backend/edge/test-utils.js";
+import { handleCORS } from "../../src/edge-api/backend/core-logic/utils.js";
 
-vi.mock("../../src/spike-land-backend/utils", () => ({
+vi.mock("../../src/edge-api/backend/utils", () => ({
   handleCORS: vi.fn(),
 }));
 
-vi.mock("../../src/spike-land-backend/apiHandler", () => ({
+vi.mock("../../src/edge-api/backend/apiHandler", () => ({
   handleApiRequest: vi.fn(),
 }));
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { sitemap } from "../../../src/spike-edge/routes/sitemap.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { sitemap } from "../../../src/edge-api/main/routes/sitemap.js";
 
 function createMockEnv(blogPosts: Array<{ slug: string; date: string }> = []): Env {
   return {

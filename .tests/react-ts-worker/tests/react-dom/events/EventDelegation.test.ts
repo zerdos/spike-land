@@ -3,8 +3,8 @@ import {
   listenToAllSupportedEvents,
   setFiberOnNode,
   setPropsOnNode,
-} from "../../../../../src/react-ts-worker/react-dom/events/EventDelegation.js";
-import { HostComponent } from "../../../../../src/react-ts-worker/reconciler/ReactWorkTags.js";
+} from "../../../../../src/core/react-engine/react-dom/events/EventDelegation.js";
+import { HostComponent } from "../../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
 
 describe("EventDelegation", () => {
   describe("setFiberOnNode", () => {

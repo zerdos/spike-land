@@ -1,1 +1,1 @@
-export * from "../../src/qa-studio/index.js";
+export * from "../../src/core/browser-automation/core-logic/index.ts";

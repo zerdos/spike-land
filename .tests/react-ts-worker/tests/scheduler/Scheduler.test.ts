@@ -6,14 +6,14 @@ import {
   getCurrentTime,
   scheduleCallback,
   shouldYield,
-} from "../../../../src/react-ts-worker/scheduler/Scheduler.js";
+} from "../../../../src/core/react-engine/scheduler/Scheduler.js";
 import {
   IdlePriority,
   ImmediatePriority,
   LowPriority,
   NormalPriority,
   UserBlockingPriority,
-} from "../../../../src/react-ts-worker/scheduler/SchedulerPriorities.js";
+} from "../../../../src/core/react-engine/scheduler/SchedulerPriorities.js";
 
 describe("Scheduler", () => {
   beforeEach(() => {

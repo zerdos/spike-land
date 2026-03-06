@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ToolsetManager } from "../../../../src/spike-cli/multiplexer/toolset-manager.js";
+import { ToolsetManager } from "../../../../src/cli/spike-cli/multiplexer/toolset-manager.js";
 
 describe("ToolsetManager", () => {
   let manager: ToolsetManager;

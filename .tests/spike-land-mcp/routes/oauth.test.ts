@@ -6,9 +6,9 @@
 
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import { oauthRoute } from "../../../src/spike-land-mcp/routes/oauth";
+import { oauthRoute } from "../../../src/edge-api/spike-land/routes/oauth";
 import { createMockD1, createMockKV } from "../__test-utils__/mock-env";
-import type { Env } from "../../../src/spike-land-mcp/env";
+import type { Env } from "../../../src/edge-api/spike-land/env";
 
 function makeApp(_d1Handler?: Parameters<typeof createMockD1>[0]) {
   const app = new Hono<{ Bindings: Env }>();

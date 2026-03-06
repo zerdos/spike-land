@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+import { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 // Mock UpstreamClient as a class
 const mockConnect = vi.hoisted(() => vi.fn());
@@ -7,7 +7,7 @@ const mockGetTools = vi.hoisted(() => vi.fn());
 const mockCallTool = vi.hoisted(() => vi.fn());
 const mockClose = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../../src/spike-cli/multiplexer/upstream-client.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/multiplexer/upstream-client.js", () => ({
   UpstreamClient: class MockUpstreamClient {
     name: string;
     connected = true;

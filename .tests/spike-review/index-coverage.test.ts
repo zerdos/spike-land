@@ -39,7 +39,7 @@ vi.mock("@octokit/rest", () => ({
   },
 }));
 
-const { createServer, startServer } = await import("../../src/spike-review/index.js");
+const { createServer, startServer } = await import("../../src/mcp-tools/code-review/index.js");
 
 describe("createServer", () => {
   beforeEach(() => {
@@ -174,7 +174,7 @@ describe("tool handlers", () => {
       });
 
       // Need to re-setup with a controllable GitHub client
-      const { GitHubClient } = await import("../../src/spike-review/github/client.js");
+      const { GitHubClient } = await import("../../src/mcp-tools/code-review/github/client.js");
       const origGetPRDetails = GitHubClient.prototype.getPRDetails;
       GitHubClient.prototype.getPRDetails = mockGetPRDetails;
 
@@ -207,7 +207,7 @@ describe("tool handlers", () => {
         { filename: "src/other.ts", status: "modified", additions: 1, deletions: 0, patch: "", hunks: [] },
       ]);
 
-      const { GitHubClient } = await import("../../src/spike-review/github/client.js");
+      const { GitHubClient } = await import("../../src/mcp-tools/code-review/github/client.js");
       const origGetPRFiles = GitHubClient.prototype.getPRFiles;
       GitHubClient.prototype.getPRFiles = mockGetPRFiles;
 

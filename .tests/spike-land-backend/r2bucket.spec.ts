@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Mock } from "vitest";
-import type MyEnv from "../../src/spike-land-backend/env";
-import R2BucketHandler from "../../src/spike-land-backend/r2bucket";
+import type MyEnv from "../../src/edge-api/backend/core-logic/env.js";
+import R2BucketHandler from "../../src/edge-api/backend/core-logic/r2bucket.js";
 
 type SpyInstance = ReturnType<typeof vi.spyOn>;
 

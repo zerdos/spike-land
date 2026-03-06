@@ -3,8 +3,9 @@
   "version": "2.0.0",
   "description": "AI image generation, enhancement, albums & pipelines",
   "type": "module",
-  "main": "index.ts",
-  "bin": "cli-server.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": "./dist/mcp/cli-server.js",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",

@@ -3,9 +3,9 @@
  * Targets uncovered branches: 59, 97, 102, 117, 120, 136, 158-163, 221-227, 252, 267, 279-281, 320, 346-355, 436
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../src/spike-land-backend/chatRoom.js";
-import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler.js";
-import type { WsAttachment } from "../../src/spike-land-backend/websocketHandler.js";
+import type { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
+import type { WsAttachment } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
 vi.mock("@spike-land-ai/code", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@spike-land-ai/code")>();

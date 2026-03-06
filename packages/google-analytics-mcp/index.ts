@@ -1,1 +1,1 @@
-export * from "../../src/google-analytics-mcp/index.js";
+export * from "../../src/mcp-tools/google-analytics/mcp/index.ts";

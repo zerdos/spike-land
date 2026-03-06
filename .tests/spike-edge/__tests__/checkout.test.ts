@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import { checkout } from "../../../src/spike-edge/routes/checkout.js";
-import type { Env } from "../../../src/spike-edge/env.js";
+import { checkout } from "../../../src/edge-api/main/routes/checkout.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

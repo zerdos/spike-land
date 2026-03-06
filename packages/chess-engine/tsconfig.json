@@ -7,9 +7,13 @@
     "declaration": true,
     "declarationMap": true,
     "paths": {
-      "@/*": ["../../src/chess-engine/*"]
+      "@/*": [
+        "../../src/core/chess/*"
+      ]
     }
   },
-  "include": ["index.ts"],
+  "include": [
+    "index.ts"
+  ],
   "references": []
 }

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockImageStudioDeps, mockImageRow } from "../__test-utils__/mock-deps.js";
-import { subjectSave } from "../../../src/mcp-image-studio/tools/subject-save.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
-import { asImageId } from "../../../src/mcp-image-studio/types.js";
+import { subjectSave } from "../../../src/mcp-tools/image-studio/tools/subject-save.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
+import { asImageId } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("subjectSave", () => {
   const userId = "u1";

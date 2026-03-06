@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { renderToString, renderToReadableStream } from "../../../../src/react-ts-worker/react-dom/server.js";
-import { createElement } from "../../../../src/react-ts-worker/react/index.js";
+import { renderToString, renderToReadableStream } from "../../../../src/core/react-engine/react-dom/server.js";
+import { createElement } from "../../../../src/core/react-engine/react/index.js";
 
 describe("react-dom/server re-exports", () => {
   it("exports renderToString", () => {

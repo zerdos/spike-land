@@ -6,14 +6,14 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-land-mcp/env";
+import type { Env } from "../../../src/edge-api/spike-land/env";
 import { createMockD1, createMockKV } from "../__test-utils__/mock-env";
 
 // Mock lookupApiKey to allow per-test control
 let _lookupApiKeyResult: { userId: string } | null = null;
 
-vi.mock("../../../src/spike-land-mcp/auth/api-key", async (importActual) => {
-  const actual = await importActual<typeof import("../../../src/spike-land-mcp/auth/api-key")>();
+vi.mock("../../../src/edge-api/spike-land/auth/api-key", async (importActual) => {
+  const actual = await importActual<typeof import("../../../src/edge-api/spike-land/auth/api-key")>();
   return {
     ...actual,
     lookupApiKey: vi.fn().mockImplementation(async () => _lookupApiKeyResult),
@@ -38,7 +38,7 @@ function makeEnv(d1Override?: Parameters<typeof createMockD1>[0]) {
 
 // Create a simple test app that uses authMiddleware
 async function createTestApp(_d1Override?: Parameters<typeof createMockD1>[0]) {
-  const { authMiddleware } = await import("../../../src/spike-land-mcp/auth/middleware");
+  const { authMiddleware } = await import("../../../src/edge-api/spike-land/auth/middleware");
   const app = new Hono<{ Bindings: Env }>();
 
   app.use("/protected/*", authMiddleware);
@@ -147,7 +147,7 @@ describe("authMiddleware", () => {
   });
 
   it("does not protect unmatched routes", async () => {
-    const { authMiddleware } = await import("../../../src/spike-land-mcp/auth/middleware");
+    const { authMiddleware } = await import("../../../src/edge-api/spike-land/auth/middleware");
     const app = new Hono<{ Bindings: Env }>();
     app.use("/protected/*", authMiddleware);
     app.get("/public", (c) => c.json({ ok: true }));

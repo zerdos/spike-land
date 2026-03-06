@@ -1,0 +1,22 @@
+{
+  "name": "esbuild-wasm",
+  "category": "mcp-tools",
+  "dependencies": [
+    "@spike-land-ai/esbuild-wasm",
+    "@spike-land-ai/mcp-server-base",
+    "node:fs"
+  ],
+  "files": [
+    "core-logic/initialize.ts",
+    "core-logic/schemas.ts",
+    "core-logic/status.ts",
+    "lazy-imports/analyze.ts",
+    "lazy-imports/build.ts",
+    "lazy-imports/context.ts",
+    "lazy-imports/format-messages.ts",
+    "lazy-imports/transform.ts",
+    "mcp/errors.ts",
+    "mcp/index.ts",
+    "node-sys/wasm-api.ts"
+  ]
+}

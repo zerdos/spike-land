@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { makeResponse } from "../../src/spike-land-backend/makeResponse";
+import { makeResponse } from "../../src/edge-api/backend/core-logic/makeResponse.js";
 
 describe("makeResponse", () => {
   const createMockR2Object = (metadata?: Record<string, string>, body?: string): R2ObjectBody => {

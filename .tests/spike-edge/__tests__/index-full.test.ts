@@ -15,7 +15,7 @@
  * - scheduled export
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Env } from "../../../src/spike-edge/env.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
 
 function makeCtx() {
   return {
@@ -86,7 +86,7 @@ let appFetch: (req: Request, env: Env, ctx: ExecutionContext) => Promise<Respons
 
 beforeEach(async () => {
   vi.resetModules();
-  const mod = await import("../../../src/spike-edge/index.js");
+  const mod = await import("../../../src/edge-api/main/index.js");
   appFetch = mod.default.fetch as typeof appFetch;
 });
 
@@ -576,7 +576,7 @@ describe("Error handler (index.ts onError)", () => {
 
 describe("scheduled handler", () => {
   it("is exported and callable", async () => {
-    const mod = await import("../../../src/spike-edge/index.js");
+    const mod = await import("../../../src/edge-api/main/index.js");
     expect(typeof mod.default.scheduled).toBe("function");
 
     const env = createMockEnv();
@@ -587,7 +587,7 @@ describe("scheduled handler", () => {
   });
 
   it("exports RateLimiter class", async () => {
-    const mod = await import("../../../src/spike-edge/index.js");
+    const mod = await import("../../../src/edge-api/main/index.js");
     expect(mod.RateLimiter).toBeDefined();
     expect(typeof mod.RateLimiter).toBe("function");
   });

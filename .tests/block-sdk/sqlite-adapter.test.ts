@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { sqliteAdapter } from "../../src/block-sdk/adapters/sqlite.js";
-import type { StorageAdapter } from "../../src/block-sdk/storage/types.js";
+import { sqliteAdapter } from "../../src/core/block-sdk/db/sqlite.js";
+import type { StorageAdapter } from "../../src/core/block-sdk/core-logic/types-block-sdk.js";
 
 describe("SQLite StorageAdapter", () => {
   let adapter: StorageAdapter;

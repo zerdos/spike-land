@@ -3,13 +3,13 @@
  */
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-land-mcp/env";
-import type { AuthVariables } from "../../../src/spike-land-mcp/auth/middleware";
-import { publicToolsRoute } from "../../../src/spike-land-mcp/routes/public-tools";
+import type { Env } from "../../../src/edge-api/spike-land/env";
+import type { AuthVariables } from "../../../src/edge-api/spike-land/auth/middleware";
+import { publicToolsRoute } from "../../../src/edge-api/spike-land/routes/public-tools";
 import { createMockD1, createMockKV } from "../__test-utils__/mock-env";
 
 // Mock registerAllTools to avoid needing full D1/env setup for all 80+ tools
-vi.mock("../../../src/spike-land-mcp/mcp/manifest", () => ({
+vi.mock("../../../src/edge-api/spike-land/mcp/manifest", () => ({
   registerAllTools: vi.fn().mockResolvedValue(undefined),
 }));
 

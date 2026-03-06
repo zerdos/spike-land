@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import * as indexExports from "../../src/state-machine/index.js";
+import * as indexExports from "../../src/core/statecharts/core-logic/index.js";
 
 describe("index.ts re-exports", () => {
   it("re-exports evaluateGuard from parser", () => {

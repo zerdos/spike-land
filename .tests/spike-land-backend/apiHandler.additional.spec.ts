@@ -2,8 +2,8 @@
  * Additional apiHandler tests for uncovered branches
  */
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import { handleApiRequest } from "../../src/spike-land-backend/apiHandler.js";
-import type Env from "../../src/spike-land-backend/env.js";
+import { handleApiRequest } from "../../src/edge-api/backend/lazy-imports/apiHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
 vi.mock("@spike-land-ai/code", () => ({
   HTML: Promise.resolve("<html>mock html</html>"),

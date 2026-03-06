@@ -51,7 +51,7 @@ describe("useAnalytics", () => {
   it("flushEvents POSTs to /api/analytics/ingest with correct format", async () => {
     vi.useFakeTimers();
 
-    const { useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     const analytics = useAnalytics();
 
     analytics.trackCustomEvent("test_event", { key: "value" });
@@ -85,7 +85,7 @@ describe("useAnalytics", () => {
       configurable: true,
     });
 
-    const { useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     const analytics = useAnalytics();
 
     analytics.trackEvent("beacon_test", { page: "/test" });
@@ -111,7 +111,7 @@ describe("useAnalytics", () => {
 
     mockFetch.mockResolvedValue({ status: 429 } as Response);
 
-    const { useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     const analytics = useAnalytics();
 
     analytics.trackEvent("test", {});
@@ -133,7 +133,7 @@ describe("useAnalytics", () => {
   it("clears queue after flush", async () => {
     vi.useFakeTimers();
 
-    const { useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     const analytics = useAnalytics();
 
     analytics.trackEvent("event1", {});
@@ -151,7 +151,7 @@ describe("useAnalytics", () => {
   it("auto-tracks page views on route change via subscribe", async () => {
     vi.useFakeTimers();
 
-    const { useAnalytics: _useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics: _useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     _useAnalytics();
 
     // useEffect should have called router.subscribe("onResolved", ...)
@@ -173,7 +173,7 @@ describe("useAnalytics", () => {
   it("flushes events with correct source and eventType structure", async () => {
     vi.useFakeTimers();
 
-    const { useAnalytics } = await import("../../../src/spike-app/hooks/useAnalytics.js");
+    const { useAnalytics } = await import("../../../src/frontend/platform-frontend/hooks/useAnalytics.js");
     const analytics = useAnalytics();
 
     analytics.trackEvent("custom_test", { key1: "val1", key2: 42 });

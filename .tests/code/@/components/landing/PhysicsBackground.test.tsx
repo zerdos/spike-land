@@ -55,7 +55,7 @@ vi.mock("framer-motion", () => ({
   useScroll: () => ({ scrollYProgress: { get: () => 0 } }),
 }));
 
-import { PhysicsBackground } from "../../../../../src/code/@/components/landing/PhysicsBackground";
+import { PhysicsBackground } from "../../../../../src/frontend/monaco-editor/@/components/landing/PhysicsBackground";
 
 describe("PhysicsBackground", () => {
   beforeEach(() => {

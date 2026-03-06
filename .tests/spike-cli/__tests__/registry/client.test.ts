@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockFetch = vi.hoisted(() => vi.fn());
 vi.stubGlobal("fetch", mockFetch);
 
-import { getRegistryServer, searchRegistry } from "../../../../src/spike-cli/registry/client.js";
+import { getRegistryServer, searchRegistry } from "../../../../src/cli/spike-cli/registry/client.js";
 
 describe("registry client", () => {
   const baseUrl = "https://spike.land";

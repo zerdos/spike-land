@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createElement, useState, useEffect } from "../../src/react-ts-worker/react/index.js";
-import { createRoot } from "../../src/react-ts-worker/react-dom/client.js";
+import { createElement, useState, useEffect } from "../../src/core/react-engine/core-logic/react/react-index.js";
+import { createRoot } from "../../src/core/react-engine/core-logic/react-dom/client.js";
 
 describe("react-ts-worker rendering", () => {
   let container: HTMLDivElement;

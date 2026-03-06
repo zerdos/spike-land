@@ -4,18 +4,18 @@
  */
 import type { ICodeSession } from "@spike-land-ai/code";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Code } from "../../src/spike-land-backend/chatRoom.js";
-import type Env from "../../src/spike-land-backend/env.js";
-import { RouteHandler } from "../../src/spike-land-backend/routeHandler.js";
-import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler.js";
+import { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler.js";
+import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
-vi.mock("../../src/spike-land-backend/routeHandler", () => ({
+vi.mock("../../src/edge-api/backend/routeHandler", () => ({
   RouteHandler: vi.fn().mockImplementation(function () {
     return { handleRoute: vi.fn().mockResolvedValue(new Response("OK")) };
   }),
 }));
 
-vi.mock("../../src/spike-land-backend/websocketHandler", () => ({
+vi.mock("../../src/edge-api/backend/websocketHandler", () => ({
   WebSocketHandler: vi.fn().mockImplementation(function () {
     return {
       broadcast: vi.fn(),
@@ -28,7 +28,7 @@ vi.mock("../../src/spike-land-backend/websocketHandler", () => ({
   }),
 }));
 
-vi.mock("../../src/spike-land-backend/mcp", () => ({
+vi.mock("../../src/edge-api/backend/mcp", () => ({
   McpServer: vi.fn().mockImplementation(function () {
     return {
       handleRequest: vi.fn().mockResolvedValue(new Response("MCP OK")),

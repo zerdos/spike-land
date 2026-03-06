@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getManifestEntry, TOOL_MANIFEST } from "../../src/mcp-image-studio/tool-manifest.js";
+import { getManifestEntry, TOOL_MANIFEST } from "../../src/mcp-tools/image-studio/core-logic/tool-manifest.js";
 
 describe("tool-manifest", () => {
   it("should have a populated manifest", () => {

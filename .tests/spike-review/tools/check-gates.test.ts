@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkBazdmegGates } from "../../../src/spike-review/tools/check-gates.js";
+import { checkBazdmegGates } from "../../../src/mcp-tools/code-review/tools/check-gates.js";
 
 describe("checkBazdmegGates", () => {
   it("returns formatted gate results for clean diff", () => {
@@ -12,7 +12,7 @@ describe("checkBazdmegGates", () => {
 --- a/src/foo.test.ts
 +++ b/src/foo.test.ts
 @@ -1,2 +1,3 @@
- import { x } from '../../../src/spike-review/tools/foo';
+ import { x } from '../../../src/mcp-tools/code-review/tools/foo';
 +test('y exists', () => expect(y).toBe(2));`;
 
     const result = checkBazdmegGates({ diff });

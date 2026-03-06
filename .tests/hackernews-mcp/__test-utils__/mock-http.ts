@@ -3,7 +3,7 @@
  */
 
 import { vi } from "vitest";
-import type { FetchFn } from "../../../src/hackernews-mcp/types.js";
+import type { FetchFn } from "../../../src/mcp-tools/hackernews/types.js";
 
 export interface MockRoute {
   url: string | RegExp;

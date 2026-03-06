@@ -4,8 +4,8 @@ import {
   extractDefaults,
   getRequiredParams,
   mcpToolsToClaude,
-} from "../../../../src/spike-cli/chat/tool-adapter.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+} from "../../../../src/cli/spike-cli/chat/tool-adapter.js";
+import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 describe("mcpToolsToClaude", () => {
   it("converts MCP tools to Claude format", () => {

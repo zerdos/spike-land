@@ -1,1 +1,1 @@
-export * from "../../src/spike-land-backend/chat.ts";
+export * from "../../src/edge-api/backend/edge/chat.ts";

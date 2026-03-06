@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateInput } from "../../src/mcp-image-studio/validate.js";
+import { validateInput } from "../../src/mcp-tools/image-studio/core-logic/validate.js";
 
 describe("validateInput", () => {
   const simpleSchema = {

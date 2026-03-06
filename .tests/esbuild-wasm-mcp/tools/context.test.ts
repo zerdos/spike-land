@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { registerContextTool } from "../../../src/esbuild-wasm-mcp/tools/context.js";
+import { registerContextTool } from "../../../src/mcp-tools/esbuild-wasm/tools/context.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockContext = vi.hoisted(() => vi.fn());

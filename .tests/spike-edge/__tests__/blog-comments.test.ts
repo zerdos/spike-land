@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { blogComments } from "../../../src/spike-edge/routes/blog-comments.js";
-import { clearEloCache } from "../../../src/spike-edge/lib/elo-service.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { blogComments } from "../../../src/edge-api/main/routes/blog-comments.js";
+import { clearEloCache } from "../../../src/edge-api/main/lib/elo-service.js";
 
 const AUTH_COOKIE = "session=valid-session";
 

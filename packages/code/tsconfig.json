@@ -8,8 +8,8 @@
   },
   "include": [
     "index.ts",
-    "../../src/code/**/*.ts",
-    "../../src/code/**/*.tsx",
+    "../../src/frontend/monaco-editor/**/*.ts",
+    "../../src/frontend/monaco-editor/**/*.tsx",
     "../../src/code/**/*.d.ts"
   ],
   "references": []

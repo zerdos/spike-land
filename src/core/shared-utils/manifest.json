@@ -1,0 +1,34 @@
+{
+  "name": "shared-utils",
+  "category": "core",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority",
+    "clsx",
+    "lucide-react",
+    "react",
+    "tailwind-merge"
+  ],
+  "files": [
+    "core-logic/badge-token.ts",
+    "core-logic/builder.ts",
+    "core-logic/constants-index.ts",
+    "core-logic/elo.ts",
+    "core-logic/error-reporter.ts",
+    "core-logic/hash.ts",
+    "core-logic/index.ts",
+    "core-logic/json-schemas.ts",
+    "core-logic/logger.ts",
+    "core-logic/middleware.ts",
+    "core-logic/stats.ts",
+    "core-logic/tool-builder-index.ts",
+    "core-logic/try-catch.ts",
+    "core-logic/types-index.ts",
+    "core-logic/types.ts",
+    "core-logic/ui-index.ts",
+    "core-logic/validations-index.ts",
+    "styling/cn.ts",
+    "ui/button.tsx",
+    "ui/link.tsx"
+  ]
+}

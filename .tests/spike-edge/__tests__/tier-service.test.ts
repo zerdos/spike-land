@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { resolveEffectiveTier } from "../../../src/spike-edge/lib/tier-service.js";
+import { resolveEffectiveTier } from "../../../src/edge-api/main/lib/tier-service.js";
 
 // ── Mock D1 Builder ───────────────────────────────────────────────────────────
 

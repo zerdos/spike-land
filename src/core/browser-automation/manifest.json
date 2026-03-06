@@ -1,0 +1,28 @@
+{
+  "name": "browser-automation",
+  "category": "core",
+  "dependencies": [
+    "@cloudflare/puppeteer",
+    "@spike-land-ai/mcp-server-base",
+    "cloudflare:workers",
+    "cors",
+    "express",
+    "hono",
+    "playwright"
+  ],
+  "files": [
+    "api/worker-entry.ts",
+    "core-logic/adapter.ts",
+    "core-logic/browser-session.ts",
+    "core-logic/env.ts",
+    "core-logic/index.ts",
+    "core-logic/narrate.ts",
+    "core-logic/types.ts",
+    "edge/adapter-puppeteer.ts",
+    "edge/session-do.ts",
+    "lazy-imports/http-server.ts",
+    "mcp/mcp-server.ts",
+    "mcp/tools.ts",
+    "testing/adapter-playwright.ts"
+  ]
+}

@@ -3,18 +3,18 @@
  * Lines: 86, 158, 166, 209, 221, 265, 372, 373, 403, 405, 452, 486, 497, 498, 521, 556
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import type Env from "../../../src/spike-land-backend/env";
-import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandler";
-import { StorageService } from "../../../src/spike-land-backend/services/storageService";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import type Env from "../../../src/edge-api/backend/env";
+import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
+import { StorageService } from "../../../src/edge-api/backend/services/storageService";
 
 vi.mock("@ai-sdk/anthropic");
 vi.mock("@ai-sdk/google", () => ({
   createGoogleGenerativeAI: vi.fn(() => vi.fn(() => "google-model")),
 }));
 vi.mock("ai");
-vi.mock("../../../src/spike-land-backend/services/storageService");
-vi.mock("../../../src/spike-land-backend/lib/ga4", () => ({
+vi.mock("../../../src/edge-api/backend/services/storageService");
+vi.mock("../../../src/edge-api/backend/lib/ga4", () => ({
   hashClientId: vi.fn().mockResolvedValue("client-id"),
   sendGA4Events: vi.fn().mockResolvedValue(undefined),
 }));
@@ -84,7 +84,7 @@ describe("PostHandler — branch coverage", () => {
 
   describe("GA tracking branch (line 166)", () => {
     it("fires GA events when GA_MEASUREMENT_ID and GA_API_SECRET are set", async () => {
-      const { hashClientId, sendGA4Events } = await import("../../../src/spike-land-backend/lib/ga4.js");
+      const { hashClientId, sendGA4Events } = await import("../../../src/edge-api/backend/lib/ga4.js");
       const envWithGA = createMockEnv({
         GA_MEASUREMENT_ID: "G-123",
         GA_API_SECRET: "secret",
@@ -105,7 +105,7 @@ describe("PostHandler — branch coverage", () => {
     });
 
     it("handles GA4 event failure gracefully when hashClientId rejects (line 177 catch)", async () => {
-      const { hashClientId } = await import("../../../src/spike-land-backend/lib/ga4.js");
+      const { hashClientId } = await import("../../../src/edge-api/backend/lib/ga4.js");
       (hashClientId as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("hash failure"));
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 

@@ -5,10 +5,10 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { approveDeviceCode, createDeviceCode, exchangeDeviceCode } from "../../../src/spike-land-mcp/auth/oauth-device";
+import { approveDeviceCode, createDeviceCode, exchangeDeviceCode } from "../../../src/edge-api/spike-land/auth/oauth-device";
 import { createMockD1 } from "../__test-utils__/mock-env";
-import { createDb } from "../../../src/spike-land-mcp/db/index";
-import type { DrizzleDB } from "../../../src/spike-land-mcp/db/index";
+import { createDb } from "../../../src/edge-api/spike-land/db/index";
+import type { DrizzleDB } from "../../../src/edge-api/spike-land/db/index";
 
 // ─── Fake DrizzleDB builder ───────────────────────────────────────────────────
 

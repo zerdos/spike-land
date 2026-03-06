@@ -14,9 +14,9 @@ vi.mock("node:os", async (importOriginal) => {
   };
 });
 
-const { registerAliasCommand } = await import("../../../../src/spike-cli/commands/alias.js");
+const { registerAliasCommand } = await import("../../../../src/cli/spike-cli/commands/alias.js");
 const { Command } = await import("commander");
-const { loadAliases } = await import("../../../../src/spike-cli/alias/store.js");
+const { loadAliases } = await import("../../../../src/cli/spike-cli/alias/store.js");
 
 describe("alias set-composite", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -170,7 +170,7 @@ describe("alias list — multiple sections", () => {
 
   it("shows all populated sections in list output", async () => {
     // Add aliases across multiple sections
-    const { addAlias } = await import("../../../../src/spike-cli/alias/store.js");
+    const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
     await addAlias("commands", "s", "serve");
     await addAlias("tools", "mv", "chess__move");
     await addAlias("servers", "sp", "spike-land");
@@ -192,7 +192,7 @@ describe("alias list — multiple sections", () => {
   });
 
   it("shows composite alias as JSON in list output", async () => {
-    const { addAlias } = await import("../../../../src/spike-cli/alias/store.js");
+    const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
     await addAlias("composite", "quickmove", {
       tool: "chess__move",
       args: { from: "e2" },

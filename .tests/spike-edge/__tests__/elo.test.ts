@@ -6,7 +6,7 @@ import {
   eloToTier,
   expectedScore,
   getKFactor,
-} from "../../../src/spike-edge/lib/elo.js";
+} from "../../../src/edge-api/main/lib/elo.js";
 
 describe("expectedScore", () => {
   it("returns 0.5 for equal ELOs", () => {

@@ -27,7 +27,7 @@ describe("wasm-api", () => {
     it("initializes successfully with default options", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       const state = await initializeWasm();
 
       expect(mockInitialize).toHaveBeenCalledWith({ worker: false });
@@ -40,7 +40,7 @@ describe("wasm-api", () => {
     it("stores provided options in state", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       const state = await initializeWasm({ worker: true });
 
       expect(state.options).toEqual({ worker: true });
@@ -49,7 +49,7 @@ describe("wasm-api", () => {
     it("re-initializes when called while already initialized", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       // First init
       await initializeWasm({ worker: false });
       // Second init — triggers re-init branch
@@ -64,7 +64,7 @@ describe("wasm-api", () => {
     it("accepts a wasmURL option and passes it to initialize", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       const state = await initializeWasm({
         wasmURL: "https://example.com/esbuild.wasm",
       });
@@ -86,7 +86,7 @@ describe("wasm-api", () => {
       const compileSpy = vi.spyOn(WebAssembly, "compile").mockResolvedValue(fakeModule);
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       const state = await initializeWasm({
         wasmModule: "/path/to/esbuild.wasm",
       });
@@ -104,7 +104,7 @@ describe("wasm-api", () => {
     it("sets error status and rethrows when initialization fails", async () => {
       mockInitialize.mockRejectedValue(new Error("WASM load failed"));
 
-      const { initializeWasm, getState } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getState } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
 
       await expect(initializeWasm()).rejects.toThrow("WASM load failed");
 
@@ -116,7 +116,7 @@ describe("wasm-api", () => {
     it("records the error string for non-Error throws", async () => {
       mockInitialize.mockRejectedValue("raw string error");
 
-      const { initializeWasm, getState } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getState } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
 
       await expect(initializeWasm()).rejects.toThrow();
 
@@ -132,7 +132,7 @@ describe("wasm-api", () => {
       });
       mockInitialize.mockReturnValue(initPromise);
 
-      const { initializeWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
 
       // Start first init
       const firstCall = initializeWasm();
@@ -158,7 +158,7 @@ describe("wasm-api", () => {
       // Force the state back to uninitialized by triggering an error init
       mockInitialize.mockRejectedValue(new Error("fail"));
 
-      const { initializeWasm, getState } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getState } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       try {
         await initializeWasm();
       } catch {
@@ -172,7 +172,7 @@ describe("wasm-api", () => {
     it("returns a shallow copy — mutations do not affect internal state", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm, getState } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getState } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       await initializeWasm();
 
       const state = getState();
@@ -190,7 +190,7 @@ describe("wasm-api", () => {
     it("returns the esbuild module when already initialized", async () => {
       mockInitialize.mockResolvedValue(undefined);
 
-      const { initializeWasm, getEsbuildWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getEsbuildWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
       await initializeWasm();
 
       const esbuild = await getEsbuildWasm();
@@ -206,7 +206,7 @@ describe("wasm-api", () => {
       // Reset to uninitialized by triggering error first, then allow success
       mockInitialize.mockRejectedValueOnce(new Error("first fail")).mockResolvedValue(undefined);
 
-      const { initializeWasm, getEsbuildWasm } = await import("../../src/esbuild-wasm-mcp/wasm-api.js");
+      const { initializeWasm, getEsbuildWasm } = await import("../../src/mcp-tools/esbuild-wasm/wasm-api.js");
 
       // Force error state
       try {

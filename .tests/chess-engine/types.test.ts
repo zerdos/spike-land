@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TIME_CONTROL_MS } from "../../src/chess-engine/types";
+import { TIME_CONTROL_MS } from "../../src/core/chess/core-logic/types.js";
 
 describe("chess/types", () => {
   describe("TIME_CONTROL_MS", () => {

@@ -1,16 +1,16 @@
 import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { jsonSchema, streamText, type StreamTextResult, tool } from "ai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import type Env from "../../../src/spike-land-backend/env";
-import type { McpTool } from "../../../src/spike-land-backend/mcp";
-import { StorageService } from "../../../src/spike-land-backend/services/storageService";
-import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandler";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import type Env from "../../../src/edge-api/backend/env";
+import type { McpTool } from "../../../src/edge-api/backend/mcp";
+import { StorageService } from "../../../src/edge-api/backend/services/storageService";
+import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
 
 // Mock dependencies
 vi.mock("@ai-sdk/anthropic");
 vi.mock("ai");
-vi.mock("../../../src/spike-land-backend/services/storageService");
+vi.mock("../../../src/edge-api/backend/services/storageService");
 
 describe("PostHandler - Tool Schema Validation", () => {
   let postHandler: PostHandler;
@@ -164,7 +164,7 @@ describe("PostHandler - Tool Schema Validation", () => {
     });
 
     it("should validate that Zod schemas are created from inputSchema", async () => {
-      const JsonSchemaToZodConverter = await import("../../../src/spike-land-backend/utils/jsonSchemaToZod").then(
+      const JsonSchemaToZodConverter = await import("../../../src/edge-api/backend/utils/jsonSchemaToZod").then(
         (m) => m.JsonSchemaToZodConverter,
       );
       const converter = new JsonSchemaToZodConverter();

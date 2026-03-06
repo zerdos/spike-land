@@ -16,11 +16,11 @@ vi.mock("node:os", async (importOriginal) => {
 });
 
 // Import after mock setup
-const { addAlias } = await import("../../../../src/spike-cli/alias/store.js");
+const { addAlias } = await import("../../../../src/cli/spike-cli/alias/store.js");
 
 // The alias command handlers call console.error for user feedback.
 // We import the command registration to test its action handlers.
-const { registerAliasCommand } = await import("../../../../src/spike-cli/commands/alias.js");
+const { registerAliasCommand } = await import("../../../../src/cli/spike-cli/commands/alias.js");
 
 // We use Commander to build a program and invoke the actions
 const { Command } = await import("commander");

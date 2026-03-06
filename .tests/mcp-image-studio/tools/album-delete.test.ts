@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { albumDelete } from "../../../src/mcp-image-studio/tools/album-delete.js";
+import { albumDelete } from "../../../src/mcp-tools/image-studio/tools/album-delete.js";
 import { createMockImageStudioDeps, mockAlbumRow } from "../__test-utils__/index.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
-import { asAlbumHandle } from "../../../src/mcp-image-studio/types.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
+import { asAlbumHandle } from "../../../src/mcp-tools/image-studio/types.js";
 import { standardScenarios } from "../__test-utils__/standard-scenarios.js";
 
 describe("albumDelete tool", () => {

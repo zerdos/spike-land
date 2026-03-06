@@ -23,12 +23,12 @@ vi.mock("node:fs", () => {
   return { ...mocked, default: mocked };
 });
 
-vi.mock("../../../../src/spike-cli/auth/token-store.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/auth/token-store.js", () => ({
   hasValidToken: mockHasValidToken,
   loadTokens: mockLoadTokens,
 }));
 
-import { discoverConfig } from "../../../../src/spike-cli/config/discovery.js";
+import { discoverConfig } from "../../../../src/cli/spike-cli/config/discovery.js";
 
 describe("discoverConfig — auth auto-injection", () => {
   beforeEach(() => {

@@ -3,10 +3,10 @@ import {
   detectShell,
   installCompletions,
   uninstallCompletions,
-} from "../../../../src/spike-cli/completions/installer.js";
-import { generateBashCompletions } from "../../../../src/spike-cli/completions/bash.js";
-import { generateZshCompletions } from "../../../../src/spike-cli/completions/zsh.js";
-import { generateFishCompletions } from "../../../../src/spike-cli/completions/fish.js";
+} from "../../../../src/cli/spike-cli/completions/installer.js";
+import { generateBashCompletions } from "../../../../src/cli/spike-cli/completions/bash.js";
+import { generateZshCompletions } from "../../../../src/cli/spike-cli/completions/zsh.js";
+import { generateFishCompletions } from "../../../../src/cli/spike-cli/completions/fish.js";
 
 // Must use vi.hoisted for variables used inside vi.mock
 const mockFs = vi.hoisted(() => ({

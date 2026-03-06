@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { LiveRoutes } from "../../../src/spike-land-backend/routes/liveRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { LiveRoutes } from "../../../src/edge-api/backend/routes/liveRoutes";
 
 vi.mock("@spike-land-ai/code", () => ({
   HTML: '<html><head>// IMPORTMAP</head><body><div id="embed"></div><!-- Inline LINK for initial theme --><script src="/start.mjs"></script></body></html>',
@@ -16,7 +16,7 @@ const mockHandleMessagesRoute = vi.fn().mockResolvedValue(
   }),
 );
 
-vi.mock("../../../src/spike-land-backend/routes/aiRoutes", () => {
+vi.mock("../../../src/edge-api/backend/routes/aiRoutes", () => {
   class AiRoutes {
     handleMessagesRoute = mockHandleMessagesRoute;
     constructor(_code: unknown) {}

@@ -17,7 +17,7 @@ vi.mock("node:os", async (importOriginal) => {
 
 // Import after mock setup
 const { loadAliases, saveAliases, addAlias, removeAlias, getAliasPath } = await import(
-  "../../../../src/spike-cli/alias/store.js"
+  "../../../../src/cli/spike-cli/alias/store.js"
 );
 
 describe("alias store", () => {

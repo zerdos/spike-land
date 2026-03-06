@@ -1,1 +1,0 @@
-/Users/z/Developer/spike-land-ai/packages/spike-land-backend/staticContent.mjs

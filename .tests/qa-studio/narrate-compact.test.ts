@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { narrateCompact, narrateCompactSection } from "../../src/qa-studio/narrate.js";
-import type { AccessibilityNode } from "../../src/qa-studio/types.js";
+import { narrateCompact, narrateCompactSection } from "../../src/core/browser-automation/core-logic/narrate.js";
+import type { AccessibilityNode } from "../../src/core/browser-automation/core-logic/types.js";
 
 function makeTree(children: AccessibilityNode[]): AccessibilityNode {
   return { role: "RootWebArea", name: "Test Page", children };

@@ -10,7 +10,7 @@ import {
   isStream,
   isTransferable,
   isTypedArray,
-} from "../../../../../src/code/@/lib/transferables";
+} from "../../../../../src/frontend/monaco-editor/@/lib/transferables";
 
 describe("transferables", () => {
   describe("isObject", () => {

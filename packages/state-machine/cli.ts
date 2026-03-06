@@ -1,1 +1,1 @@
-export * from "../../src/state-machine/cli";
+export * from "../../src/core/statecharts/cli/cli.ts";

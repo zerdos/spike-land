@@ -10,7 +10,7 @@ import {
   isPathAllowed,
   packageNameToPath,
   resolveWorkspacePaths,
-} from "../../src/bazdmeg-mcp/workspace-resolver.js";
+} from "../../src/mcp-tools/bazdmeg/node-sys/workspace-resolver.js";
 import { createFakeMonorepo } from "./__test-utils__/fixtures.js";
 import { resolve } from "node:path";
 

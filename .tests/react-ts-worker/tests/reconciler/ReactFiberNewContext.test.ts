@@ -6,13 +6,13 @@ import {
   popProvider,
   readContext,
   resetContextDependencies,
-} from "../../../../src/react-ts-worker/reconciler/ReactFiberNewContext.js";
-import { createContext } from "../../../../src/react-ts-worker/react/ReactContext.js";
-import type { Fiber } from "../../../../src/react-ts-worker/reconciler/ReactFiberTypes.js";
-import { createHostRootFiber } from "../../../../src/react-ts-worker/reconciler/ReactFiber.js";
-import { NoLanes, SyncLane } from "../../../../src/react-ts-worker/reconciler/ReactFiberLane.js";
-import { NoFlags } from "../../../../src/react-ts-worker/reconciler/ReactFiberFlags.js";
-import { FunctionComponent, HostComponent } from "../../../../src/react-ts-worker/reconciler/ReactWorkTags.js";
+} from "../../../../src/core/react-engine/reconciler/ReactFiberNewContext.js";
+import { createContext } from "../../../../src/core/react-engine/react/ReactContext.js";
+import type { Fiber } from "../../../../src/core/react-engine/reconciler/ReactFiberTypes.js";
+import { createHostRootFiber } from "../../../../src/core/react-engine/reconciler/ReactFiber.js";
+import { NoLanes, SyncLane } from "../../../../src/core/react-engine/reconciler/ReactFiberLane.js";
+import { NoFlags } from "../../../../src/core/react-engine/reconciler/ReactFiberFlags.js";
+import { FunctionComponent, HostComponent } from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
 
 function makeTestFiber(overrides: Partial<Fiber> = {}): Fiber {
   return {

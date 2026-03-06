@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { authMiddleware } from "../../../src/spike-edge/middleware/auth.js";
-import { creditMeterMiddleware } from "../../../src/spike-edge/middleware/credit-meter.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { authMiddleware } from "../../../src/edge-api/main/middleware/auth.js";
+import { creditMeterMiddleware } from "../../../src/edge-api/main/middleware/credit-meter.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {

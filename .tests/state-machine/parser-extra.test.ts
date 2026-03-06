@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { evaluateExpression, evaluateGuard } from "../../src/state-machine/parser.js";
+import { evaluateExpression, evaluateGuard } from "../../src/core/statecharts/core-logic/parser.js";
 
 describe("Parser extra branch coverage", () => {
   describe("multiplication operator", () => {

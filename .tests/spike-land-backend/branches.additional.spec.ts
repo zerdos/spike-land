@@ -6,12 +6,12 @@
  * - replicateHandler.ts: branches at 119, 135, 149, 150, 183
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handleGPT4Request } from "../../src/spike-land-backend/openaiHandler.js";
-import { RouteHandler } from "../../src/spike-land-backend/routeHandler.js";
-import type Env from "../../src/spike-land-backend/env.js";
+import { handleGPT4Request } from "../../src/edge-api/backend/core-logic/openaiHandler.js";
+import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
 // Mock the routes barrel so RouteHandler constructors succeed
-vi.mock("../../src/spike-land-backend/routes/index.js", () => {
+vi.mock("../../src/edge-api/backend/routes/index.js", () => {
   class CodeRoutes { handleCodeRoute = vi.fn(); handleSessionRoute = vi.fn(); handleJsRoute = vi.fn(); handleCssRoute = vi.fn(); }
   class WebsocketRoutes { handleUsersRoute = vi.fn(); handleWebsocketRoute = vi.fn(); }
   class LiveRoutes { handleLazyRoute = vi.fn(); handleLiveRoute = vi.fn(); handleRenderToStr = vi.fn(); handleWrapRoute = vi.fn(); handleWrapHTMLRoute = vi.fn(); handleScreenShotRoute = vi.fn(); handleVersionRoute = vi.fn(); handleVersionsRoute = vi.fn(); }

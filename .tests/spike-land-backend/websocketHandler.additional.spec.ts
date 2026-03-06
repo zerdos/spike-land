@@ -6,9 +6,9 @@
  * Note: catch blocks at lines 325, 360 are unreachable because safeSend swallows errors
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../src/spike-land-backend/chatRoom.js";
-import { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler.js";
-import type { WsAttachment } from "../../src/spike-land-backend/websocketHandler.js";
+import type { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
+import type { WsAttachment } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
 vi.mock("@spike-land-ai/code", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@spike-land-ai/code")>();

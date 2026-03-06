@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { LRUCache } from "../../../../../src/code/@/lib/lru-cache";
+import { LRUCache } from "../../../../../src/frontend/monaco-editor/@/lib/lru-cache";
 
 // Helper to mock performance.now for TTL tests
 const mockPerformanceNow = () => {

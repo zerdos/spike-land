@@ -8,7 +8,7 @@ import {
   readHtmlTool,
   readSessionTool,
   readTools,
-} from "../../../../src/spike-land-backend/mcp/tools/read-tools";
+} from "../../../../src/edge-api/backend/mcp/tools/read-tools";
 
 const createMockSession = (overrides: Partial<ICodeSession> = {}): ICodeSession =>
   ({

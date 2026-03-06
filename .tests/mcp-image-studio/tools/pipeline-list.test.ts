@@ -1,8 +1,8 @@
-import { asPipelineId } from "../../../src/mcp-image-studio/types.js";
+import { asPipelineId } from "../../../src/mcp-tools/image-studio/types.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createMockImageStudioDeps, mockPipelineRow } from "../__test-utils__/mock-deps.js";
-import { pipelineList } from "../../../src/mcp-image-studio/tools/pipeline-list.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
+import { pipelineList } from "../../../src/mcp-tools/image-studio/tools/pipeline-list.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("pipelineList", () => {
   const userId = "u1";

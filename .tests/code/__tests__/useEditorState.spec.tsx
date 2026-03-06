@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { type EditorState as _EditorState, useEditorState } from "../../../src/code/hooks/use-editor-state";
+import { type EditorState as _EditorState, useEditorState } from "../../../src/frontend/monaco-editor/hooks/use-editor-state";
 
 describe("useEditorState", () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handleErrors } from "../../src/spike-land-backend/handleErrors";
+import { handleErrors } from "../../src/edge-api/backend/lazy-imports/handleErrors.js";
 import * as shared from "@spike-land-ai/shared";
 
 describe("handleErrors", () => {

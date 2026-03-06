@@ -20,7 +20,7 @@ import {
   STYLE_NAME_VALUES,
   textResult,
   toolEvent,
-} from "../../src/mcp-image-studio/types.js";
+} from "../../src/mcp-tools/image-studio/mcp/types.js";
 
 describe("Enum Values", () => {
   it("exports valid enum lists", () => {

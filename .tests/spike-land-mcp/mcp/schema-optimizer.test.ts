@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { optimizeSchema, shortenDescription, measureTokenSavings } from "../../../src/spike-land-mcp/mcp/schema-optimizer";
+import { optimizeSchema, shortenDescription, measureTokenSavings } from "../../../src/edge-api/spike-land/mcp/schema-optimizer";
 
 describe("optimizeSchema", () => {
   it("returns a copy without mutating the original", () => {

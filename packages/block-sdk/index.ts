@@ -1,1 +1,1 @@
-export * from "../../src/block-sdk/index.ts";
+export * from "../../src/core/block-sdk/core-logic/index.ts";

@@ -1,0 +1,19 @@
+{
+  "name": "chess",
+  "category": "core",
+  "dependencies": [
+    "@spike-land-ai/shared",
+    "chess.js"
+  ],
+  "files": [
+    "chess-core/engine.ts",
+    "core-logic/challenge-manager.ts",
+    "core-logic/game-manager.ts",
+    "core-logic/index.ts",
+    "core-logic/player-manager.ts",
+    "core-logic/prisma-chess-engine.ts",
+    "core-logic/prisma.ts",
+    "core-logic/types.ts",
+    "lazy-imports/elo.ts"
+  ]
+}

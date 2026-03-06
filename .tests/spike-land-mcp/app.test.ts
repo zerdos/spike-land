@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createApp } from "../../src/spike-land-mcp/app.js";
+import { createApp } from "../../src/edge-api/spike-land/api/app.js";
 
 describe("app", () => {
   it("GET /health returns 200 ok", async () => {

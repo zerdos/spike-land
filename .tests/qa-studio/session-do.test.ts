@@ -6,7 +6,7 @@ const mockNewPage = vi.fn();
 const mockIsConnected = vi.fn().mockReturnValue(true);
 const mockAdapterClose = vi.fn().mockResolvedValue(undefined);
 
-vi.mock("../../src/qa-studio/adapter-puppeteer.js", () => {
+vi.mock("../../src/core/browser-automation/adapter-puppeteer.js", () => {
   return {
     PuppeteerAdapter: class MockPuppeteerAdapter {
       launch() { return mockLaunch(); }
@@ -65,7 +65,7 @@ function makeMockPage() {
   };
 }
 
-import { BrowserSessionDO } from "../../src/qa-studio/session-do.js";
+import { BrowserSessionDO } from "../../src/core/browser-automation/edge/session-do.js";
 
 describe("BrowserSessionDO", () => {
   let dObj: BrowserSessionDO;

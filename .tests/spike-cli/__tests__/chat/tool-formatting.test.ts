@@ -3,10 +3,10 @@ import {
   formatAppGroupedTools,
   formatAppsList,
   formatGroupedTools,
-} from "../../../../src/spike-cli/chat/tool-formatting.js";
-import type { SessionState } from "../../../../src/spike-cli/chat/session-state.js";
-import type { AppRegistry } from "../../../../src/spike-cli/chat/app-registry.js";
-import type { NamespacedTool } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+} from "../../../../src/cli/spike-cli/chat/tool-formatting.js";
+import type { SessionState } from "../../../../src/cli/spike-cli/chat/session-state.js";
+import type { AppRegistry } from "../../../../src/cli/spike-cli/chat/app-registry.js";
+import type { NamespacedTool } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 function makeSessionState(created: string[] = []): SessionState {
   return {

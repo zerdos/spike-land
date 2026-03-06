@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { KVLogger } from "../../src/spike-land-backend/Logs.js";
+import { KVLogger } from "../../src/edge-api/backend/core-logic/Logs.js";
 
 type SpyInstance = ReturnType<typeof vi.spyOn>;
 

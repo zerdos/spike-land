@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import type { CallToolResult, ImageStudioDeps, ToolContext } from "../../../src/mcp-image-studio/types.js";
+import type { CallToolResult, ImageStudioDeps, ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 
 export function standardScenarios(config: {
   handler: (input: unknown, ctx: ToolContext) => Promise<CallToolResult> | CallToolResult;

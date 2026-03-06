@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MultiplexerServer } from "../../../../src/spike-cli/multiplexer/multiplexer-server.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+import { MultiplexerServer } from "../../../../src/cli/spike-cli/multiplexer/multiplexer-server.js";
+import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 // Mock the MCP SDK Server and transport using class syntax
 const mockConnect = vi.hoisted(() => vi.fn());

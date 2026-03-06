@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { GetHandler } from "../../../src/spike-land-backend/handlers/getHandler";
-import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandler";
-import { StorageService } from "../../../src/spike-land-backend/services/storageService";
-import { AiRoutes } from "../../../src/spike-land-backend/routes/aiRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { GetHandler } from "../../../src/edge-api/backend/handlers/getHandler";
+import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
+import { StorageService } from "../../../src/edge-api/backend/services/storageService";
+import { AiRoutes } from "../../../src/edge-api/backend/routes/aiRoutes";
 
-vi.mock("../../../src/spike-land-backend/services/storageService");
-vi.mock("../../../src/spike-land-backend/handlers/getHandler");
-vi.mock("../../../src/spike-land-backend/handlers/postHandler");
+vi.mock("../../../src/edge-api/backend/services/storageService");
+vi.mock("../../../src/edge-api/backend/handlers/getHandler");
+vi.mock("../../../src/edge-api/backend/handlers/postHandler");
 
 describe("AiRoutes", () => {
   let aiRoutes: AiRoutes;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type { BrowserAdapter, BrowserPage, CdpAxNode } from "../../src/qa-studio/adapter.js";
-import { rebuildTree } from "../../src/qa-studio/adapter.js";
+import type { BrowserAdapter, BrowserPage, CdpAxNode } from "../../src/core/browser-automation/core-logic/adapter.js";
+import { rebuildTree } from "../../src/core/browser-automation/core-logic/adapter.js";
 
 describe("BrowserAdapter interface contract", () => {
   it("BrowserPage interface has all required methods", () => {

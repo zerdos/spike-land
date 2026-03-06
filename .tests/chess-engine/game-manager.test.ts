@@ -28,13 +28,13 @@ const mockEngine = vi.hoisted(() => ({
   getGameState: vi.fn(),
 }));
 
-vi.mock("../../src/chess-engine/engine", () => mockEngine);
+vi.mock("../../src/core/chess/engine", () => mockEngine);
 
 const mockElo = vi.hoisted(() => ({
   calculateEloChange: vi.fn(),
 }));
 
-vi.mock("../../src/chess-engine/elo", () => mockElo);
+vi.mock("../../src/core/chess/elo", () => mockElo);
 
 import {
   acceptDraw,
@@ -49,7 +49,7 @@ import {
   makeGameMove,
   offerDraw,
   resignGame,
-} from "../../src/chess-engine/game-manager";
+} from "../../src/core/chess/core-logic/game-manager.js";
 
 const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

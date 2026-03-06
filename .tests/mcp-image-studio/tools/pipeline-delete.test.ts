@@ -1,8 +1,8 @@
-import { asPipelineId } from "../../../src/mcp-image-studio/types.js";
+import { asPipelineId } from "../../../src/mcp-tools/image-studio/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockImageStudioDeps, mockPipelineRow } from "../__test-utils__/mock-deps.js";
-import { pipelineDelete } from "../../../src/mcp-image-studio/tools/pipeline-delete.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
+import { pipelineDelete } from "../../../src/mcp-tools/image-studio/tools/pipeline-delete.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("pipelineDelete", () => {
   const userId = "u1";

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type Env from "../../src/spike-land-backend/env";
-import { handleGPT4Request } from "../../src/spike-land-backend/openaiHandler";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { handleGPT4Request } from "../../src/edge-api/backend/core-logic/openaiHandler.js";
 
 describe("handleGPT4Request", () => {
   let mockEnv: Env;

@@ -1,7 +1,7 @@
 import type { ICodeSession } from "@spike-land-ai/code";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../src/spike-land-backend/chatRoom";
-import { McpServer } from "../../src/spike-land-backend/mcp";
+import type { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import { McpServer } from "../../src/edge-api/backend/mcp";
 
 // Type interface for MCP test responses
 interface TestMcpResponse {

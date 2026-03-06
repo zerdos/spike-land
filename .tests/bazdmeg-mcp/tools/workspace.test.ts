@@ -5,12 +5,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { registerWorkspaceTools } from "../../../src/bazdmeg-mcp/tools/workspace.js";
-import { enterWorkspace, getWorkspace, resetWorkspaceState } from "../../../src/bazdmeg-mcp/workspace-state.js";
+import { registerWorkspaceTools } from "../../../src/mcp-tools/bazdmeg/tools/workspace.js";
+import { enterWorkspace, getWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/workspace-state.js";
 import { createFakeMonorepo } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
-import * as resolverModule from "../../../src/bazdmeg-mcp/workspace-resolver.js";
-import * as telemetryModule from "../../../src/bazdmeg-mcp/telemetry.js";
+import * as resolverModule from "../../../src/mcp-tools/bazdmeg/workspace-resolver.js";
+import * as telemetryModule from "../../../src/mcp-tools/bazdmeg/telemetry.js";
 
 describe("workspace tools", () => {
   let server: ReturnType<typeof createMockServer>;

@@ -23,7 +23,7 @@ import {
   setPlayerOnline,
   updatePlayer,
   updatePlayerElo,
-} from "../../src/chess-engine/player-manager";
+} from "../../src/core/chess/core-logic/player-manager.js";
 
 describe("player-manager", () => {
   beforeEach(() => {

@@ -16,7 +16,7 @@ import {
   Profiler,
   SimpleMemoComponent,
   SuspenseComponent,
-} from "../../../../src/react-ts-worker/reconciler/ReactWorkTags.js";
+} from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
 
 describe("ReactWorkTags", () => {
   it("FunctionComponent is 0", () => {

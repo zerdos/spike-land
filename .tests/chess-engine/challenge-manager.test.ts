@@ -22,7 +22,7 @@ import {
   expireStaleChallenges,
   listChallenges,
   sendChallenge,
-} from "../../src/chess-engine/challenge-manager";
+} from "../../src/core/chess/core-logic/challenge-manager.js";
 
 describe("challenge-manager", () => {
   beforeEach(() => {

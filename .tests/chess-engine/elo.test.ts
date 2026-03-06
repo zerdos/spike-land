@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calculateEloChange, expectedScore, getKFactor } from "../../src/chess-engine/elo";
+import { calculateEloChange, expectedScore, getKFactor } from "../../src/core/chess/lazy-imports/elo.js";
 
 describe("expectedScore", () => {
   it("returns ~0.5 for equal rated players", () => {

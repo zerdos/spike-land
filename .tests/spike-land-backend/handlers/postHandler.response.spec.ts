@@ -2,12 +2,12 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import type { CoreMessage, StreamTextResult } from "ai";
 import { jsonSchema, streamText, tool } from "ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import type Env from "../../../src/spike-land-backend/env";
-import type { McpTool } from "../../../src/spike-land-backend/mcp";
-import { StorageService } from "../../../src/spike-land-backend/services/storageService";
-import type { PostRequestBody } from "../../../src/spike-land-backend/types/aiRoutes";
-import { PostHandler } from "../../../src/spike-land-backend/handlers/postHandler";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import type Env from "../../../src/edge-api/backend/env";
+import type { McpTool } from "../../../src/edge-api/backend/mcp";
+import { StorageService } from "../../../src/edge-api/backend/services/storageService";
+import type { PostRequestBody } from "../../../src/edge-api/backend/types/aiRoutes";
+import { PostHandler } from "../../../src/edge-api/backend/handlers/postHandler";
 import {
   createMockCode,
   createMockEnv,
@@ -15,7 +15,7 @@ import {
   createMockStorageService,
   setupCrypto,
   setupStorageServiceMock,
-} from "../../../src/spike-land-backend/handlers/postHandler.test-utils";
+} from "../../../src/edge-api/backend/handlers/postHandler.test-utils";
 
 type StreamResult = StreamTextResult<Record<string, unknown>, unknown>;
 
@@ -24,7 +24,7 @@ vi.mock("@ai-sdk/google", () => ({
   createGoogleGenerativeAI: vi.fn(),
 }));
 vi.mock("ai");
-vi.mock("../../../src/spike-land-backend/services/storageService");
+vi.mock("../../../src/edge-api/backend/services/storageService");
 
 // Setup crypto mock
 setupCrypto();

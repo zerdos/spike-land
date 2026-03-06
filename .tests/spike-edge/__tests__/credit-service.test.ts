@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getBalance, deductCredit, purchaseCredits, getUsedToday } from "../../../src/spike-edge/lib/credit-service.js";
+import { getBalance, deductCredit, purchaseCredits, getUsedToday } from "../../../src/edge-api/main/lib/credit-service.js";
 
 /**
  * Build a mock D1Database that simulates the credit_balances table.

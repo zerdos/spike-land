@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { registerAllTools } from "../../../src/spike-land-mcp/mcp/manifest.js";
-import type { ToolRegistry } from "../../../src/spike-land-mcp/mcp/registry.js";
-import type { DrizzleDB } from "../../../src/spike-land-mcp/db/index.js";
+import { registerAllTools } from "../../../src/edge-api/spike-land/mcp/manifest.js";
+import type { ToolRegistry } from "../../../src/edge-api/spike-land/mcp/registry.js";
+import type { DrizzleDB } from "../../../src/edge-api/spike-land/db/index.js";
 
 describe("manifest", () => {
   beforeEach(() => {

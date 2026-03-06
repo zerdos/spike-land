@@ -5,8 +5,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { PRContext } from "../../../src/spike-review/worker/webhook-handler.js";
-import type { Env } from "../../../src/spike-review/worker/env.js";
+import type { PRContext } from "../../../src/mcp-tools/code-review/worker/webhook-handler.js";
+import type { Env } from "../../../src/mcp-tools/code-review/worker/env.js";
 
 // ── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -28,7 +28,7 @@ const {
   mockFetch: vi.fn(),
 }));
 
-vi.mock("../../../src/spike-review/github/client.js", () => ({
+vi.mock("../../../src/mcp-tools/code-review/github/client.js", () => ({
   GitHubClient: class MockGitHubClient {
     getPRDetails = mockGetPRDetails;
     getPRDiff = mockGetPRDiff;
@@ -42,7 +42,7 @@ vi.mock("../../../src/spike-review/github/client.js", () => ({
 vi.stubGlobal("fetch", mockFetch);
 
 // Import after mocks
-const { runReviewJob } = await import("../../../src/spike-review/worker/review-job.js");
+const { runReviewJob } = await import("../../../src/mcp-tools/code-review/worker/review-job.js");
 
 // ── Test Data ───────────────────────────────────────────────────────────────
 
@@ -81,8 +81,8 @@ const mockPRDetails = {
 const mockDiff = `--- a/src/index.ts
 +++ b/src/index.ts
 @@ -1,3 +1,5 @@
- import { foo } from "../../../src/spike-review/worker/foo.js";
-+import { bar } from "../../../src/spike-review/worker/bar.js";
+ import { foo } from "../../../src/mcp-tools/code-review/worker/foo.js";
++import { bar } from "../../../src/mcp-tools/code-review/worker/bar.js";
 +
  export function main() {
 -  return foo();

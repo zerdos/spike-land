@@ -53,7 +53,7 @@ import {
   cleanup,
   getOrCreateTab,
   getPageSnapshot,
-} from "../../../src/qa-studio/browser-session.js";
+} from "../../../src/core/browser-automation/browser-session.js";
 
 async function resetAll() {
   await cleanup();

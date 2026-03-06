@@ -1,9 +1,9 @@
 import { describe, expect, it, type Mock, vi } from "vitest";
-import { registerImageStudioTools } from "../../src/mcp-image-studio/register.js";
+import { registerImageStudioTools } from "../../src/mcp-tools/image-studio/lazy-imports/register.js";
 import { createMockImageStudioDeps, createMockRegistry } from "./__test-utils__/index.js";
-import { generateTool } from "../../src/mcp-image-studio/tools/generate.js";
-import { editTool } from "../../src/mcp-image-studio/tools/edit.js";
-import type { ImageStudioToolRegistry } from "../../src/mcp-image-studio/types.js";
+import { generateTool } from "../../src/mcp-tools/image-studio/core-logic/tools/generate.js";
+import { editTool } from "../../src/mcp-tools/image-studio/core-logic/tools/edit.js";
+import type { ImageStudioToolRegistry } from "../../src/mcp-tools/image-studio/mcp/types.js";
 
 describe("registerImageStudioTools", () => {
   it("should register all 42 img_ tools", () => {

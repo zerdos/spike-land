@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockServer } from "@spike-land-ai/mcp-server-base";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerReportTools } from "../../../src/google-analytics-mcp/tools/reports.js";
-import { GoogleAuthClient } from "../../../src/google-analytics-mcp/auth/google-oauth.js";
+import { registerReportTools } from "../../../src/mcp-tools/google-analytics/tools/reports.js";
+import { GoogleAuthClient } from "../../../src/mcp-tools/google-analytics/auth/google-oauth.js";
 
 function createMockAuth(): GoogleAuthClient {
   const auth = new GoogleAuthClient({

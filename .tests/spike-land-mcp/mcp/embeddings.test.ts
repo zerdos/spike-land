@@ -14,7 +14,7 @@ import {
   suggestParameters,
   tokenize,
   ToolEmbeddingIndex,
-} from "../../../src/spike-land-mcp/mcp/embeddings";
+} from "../../../src/edge-api/spike-land/mcp/embeddings";
 
 // ─── tokenize ────────────────────────────────────────────────────────────────
 

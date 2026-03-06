@@ -40,7 +40,7 @@ beforeEach(async () => {
     wasmFile: "mock-wasm",
   }));
 
-  const mod = await import("../../src/transpile/index");
+  const mod = await import("../../src/edge-api/transpile/index");
   worker = mod.default as typeof worker;
 });
 

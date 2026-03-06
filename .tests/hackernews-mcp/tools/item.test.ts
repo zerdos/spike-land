@@ -8,9 +8,9 @@ import {
   SAMPLE_STORY,
 } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { HNReadClient } from "../../../src/hackernews-mcp/clients/hn-read-client.js";
-import { registerItemTools } from "../../../src/hackernews-mcp/tools/item.js";
-import { HN_FIREBASE_BASE } from "../../../src/hackernews-mcp/types.js";
+import { HNReadClient } from "../../../src/mcp-tools/hackernews/clients/hn-read-client.js";
+import { registerItemTools } from "../../../src/mcp-tools/hackernews/tools/item.js";
+import { HN_FIREBASE_BASE } from "../../../src/mcp-tools/hackernews/types.js";
 
 describe("item tools", () => {
   let server: MockMcpServer;

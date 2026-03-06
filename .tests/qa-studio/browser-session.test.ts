@@ -44,7 +44,7 @@ vi.mock("playwright", () => ({
 }));
 
 // Import after mocks
-import { cleanup, closeTab, getActiveTab, getOrCreateTab, getPageSnapshot, listTabs, setBrowserConfig } from "../../src/qa-studio/browser-session.js";
+import { cleanup, closeTab, getActiveTab, getOrCreateTab, getPageSnapshot, listTabs, setBrowserConfig } from "../../src/core/browser-automation/core-logic/browser-session.js";
 
 // Reset all singleton state and re-configure mocks between tests
 async function resetAll() {

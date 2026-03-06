@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockImageStudioDeps, mockAlbumRow } from "../__test-utils__/mock-deps.js";
-import { albumCreate } from "../../../src/mcp-image-studio/tools/album-create.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
-import { asAlbumHandle } from "../../../src/mcp-image-studio/types.js";
+import { albumCreate } from "../../../src/mcp-tools/image-studio/tools/album-create.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
+import { asAlbumHandle } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("albumCreate", () => {
   const userId = "test-user";

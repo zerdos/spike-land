@@ -1,1 +1,1 @@
-export * from "../../src/incremental-test-mcp/index";
+export * from "../../src/utilities/incremental-test/core-logic/index.ts";

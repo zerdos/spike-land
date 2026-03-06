@@ -429,7 +429,7 @@ packages:
 
   # ─── Media ──────────────────────────────────────────────────────────────────
   video:
-    kind: browser
+    kind: video
     version: 2.0.0
     description: Educational video compositions (Remotion)
     entry: index.ts

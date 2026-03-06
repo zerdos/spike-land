@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerFormatMessagesTool } from "../../../src/esbuild-wasm-mcp/tools/format-messages.js";
+import { registerFormatMessagesTool } from "../../../src/mcp-tools/esbuild-wasm/tools/format-messages.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockEsbuild = vi.hoisted(() => ({
   formatMessages: vi.fn(),
 }));
 
-vi.mock("../../../src/esbuild-wasm-mcp/wasm-api.js", () => ({
+vi.mock("../../../src/mcp-tools/esbuild-wasm/wasm-api.js", () => ({
   getEsbuildWasm: vi.fn().mockResolvedValue(mockEsbuild),
 }));
 

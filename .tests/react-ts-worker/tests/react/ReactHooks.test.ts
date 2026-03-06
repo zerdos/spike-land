@@ -10,10 +10,10 @@ import {
   useReducer,
   useRef,
   useState,
-} from "../../../../src/react-ts-worker/react/ReactHooks.js";
-import ReactSharedInternals from "../../../../src/react-ts-worker/react/ReactSharedInternals.js";
-import type { Dispatcher, ReactContext } from "../../../../src/react-ts-worker/react/ReactTypes.js";
-import { createContext } from "../../../../src/react-ts-worker/react/ReactContext.js";
+} from "../../../../src/core/react-engine/react/ReactHooks.js";
+import ReactSharedInternals from "../../../../src/core/react-engine/react/ReactSharedInternals.js";
+import type { Dispatcher, ReactContext } from "../../../../src/core/react-engine/react/ReactTypes.js";
+import { createContext } from "../../../../src/core/react-engine/react/ReactContext.js";
 
 function makeDispatcher(overrides: Partial<Dispatcher> = {}): Dispatcher {
   return {

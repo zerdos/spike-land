@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { proxy } from "../../../src/spike-edge/routes/proxy.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { proxy } from "../../../src/edge-api/main/routes/proxy.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {

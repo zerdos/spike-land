@@ -20,7 +20,7 @@ vi.mock("@/lib/queued-fetch", () => ({
   },
 }));
 
-import { ata, cleanFileContent, cleanFilePath, extractImportSpecifiers } from "../../../../../src/code/@/workers/ata.worker";
+import { ata, cleanFileContent, cleanFilePath, extractImportSpecifiers } from "../../../../../src/frontend/monaco-editor/@/workers/ata.worker";
 
 describe("ata.worker", () => {
   beforeEach(() => {

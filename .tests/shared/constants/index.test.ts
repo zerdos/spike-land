@@ -9,7 +9,7 @@ import {
   SUBSCRIPTION_TIERS,
   SUPPORTED_ASPECT_RATIOS,
   TOKEN_REGENERATION,
-} from "../../../src/shared/constants/index";
+} from "../../../src/core/shared-utils/constants/index";
 
 describe("constants", () => {
   describe("ENHANCEMENT_COSTS", () => {

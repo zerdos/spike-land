@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AccessibilityNode } from "../../src/qa-studio/types.js";
+import type { AccessibilityNode } from "../../src/core/browser-automation/core-logic/types.js";
 
 // ─── Mock browser-session (factory must not reference top-level vars) ────────
 
@@ -9,7 +9,7 @@ const mockGetPageSnapshot = vi.fn();
 const mockListTabs = vi.fn();
 const mockCloseTab = vi.fn();
 
-vi.mock("../../src/qa-studio/browser-session.js", () => ({
+vi.mock("../../src/core/browser-automation/browser-session.js", () => ({
   getOrCreateTab: (...args: unknown[]) => mockGetOrCreateTab(...args),
   getActiveTab: (...args: unknown[]) => mockGetActiveTab(...args),
   getPageSnapshot: (...args: unknown[]) => mockGetPageSnapshot(...args),
@@ -20,7 +20,7 @@ vi.mock("../../src/qa-studio/browser-session.js", () => ({
 }));
 
 import { createMockServer } from "@spike-land-ai/mcp-server-base";
-import { registerWebTools } from "../../src/qa-studio/tools.js";
+import { registerWebTools } from "../../src/core/browser-automation/mcp/tools.js";
 
 // ─── Shared mock page ────────────────────────────────────────────────────────
 

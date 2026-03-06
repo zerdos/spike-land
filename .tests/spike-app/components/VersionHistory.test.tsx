@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { type AppVersion, VersionHistory } from "../../../src/spike-app/components/VersionHistory";
+import { type AppVersion, VersionHistory } from "../../../src/frontend/platform-frontend/components/VersionHistory";
 
 describe("VersionHistory", () => {
   it("renders empty state when no versions", () => {

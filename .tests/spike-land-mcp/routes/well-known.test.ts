@@ -7,8 +7,8 @@
 
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import { wellKnownRoute } from "../../../src/spike-land-mcp/routes/well-known";
-import type { Env } from "../../../src/spike-land-mcp/env";
+import { wellKnownRoute } from "../../../src/edge-api/spike-land/routes/well-known";
+import type { Env } from "../../../src/edge-api/spike-land/env";
 
 function makeApp() {
   const app = new Hono<{ Bindings: Env }>();

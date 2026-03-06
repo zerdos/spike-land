@@ -36,7 +36,7 @@ vi.mock("playwright", () => ({
   chromium: { launch: mockChromiumLaunch },
 }));
 
-import { setBrowserConfig, getOrCreateTab, cleanup } from "../../../src/qa-studio/browser-session.js";
+import { setBrowserConfig, getOrCreateTab, cleanup } from "../../../src/core/browser-automation/browser-session.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

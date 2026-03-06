@@ -231,7 +231,7 @@ describe("Code", () => {
       async () => {
         const code = mockSession.code || "";
         if (code.includes("./extraModel")) {
-          return `# testCodeSpace.tsx\n\n\`\`\`tsx\nimport extra from "../../../../src/code/__tests__/services/extraModel";\nconsole.warn("Hello, World!");\n\`\`\`\n\n# extraModel.tsx\n\n\`\`\`tsx\nconsole.warn("Extra Model Code");\n\`\`\``;
+          return `# testCodeSpace.tsx\n\n\`\`\`tsx\nimport extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";\nconsole.warn("Hello, World!");\n\`\`\`\n\n# extraModel.tsx\n\n\`\`\`tsx\nconsole.warn("Extra Model Code");\n\`\`\``;
         }
         return `# testCodeSpace.tsx\n\n\`\`\`tsx\nconsole.warn("Hello, World!");\n\`\`\``;
       },
@@ -273,7 +273,7 @@ console.warn("Hello, World!");
 
     it("should return current code with extra models", async () => {
       // Directly set the code in the session
-      const code = 'import extra from "../../../../src/code/__tests__/services/extraModel";\nconsole.warn("Hello, World!");';
+      const code = 'import extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";\nconsole.warn("Hello, World!");';
       cSess.setSession({
         ...cSess["currentSession"],
         code,
@@ -283,7 +283,7 @@ console.warn("Hello, World!");
       const mockGetCurrentCodeWithExtraModels = vi
         .fn()
         .mockResolvedValue(
-          `# testCodeSpace.tsx\n\n\`\`\`tsx\nimport extra from "../../../../src/code/__tests__/services/extraModel";\nconsole.warn("Hello, World!");\n\`\`\`\n\n# extraModel.tsx\n\n\`\`\`tsx\nconsole.warn("Extra Model Code");\n\`\`\``,
+          `# testCodeSpace.tsx\n\n\`\`\`tsx\nimport extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";\nconsole.warn("Hello, World!");\n\`\`\`\n\n# extraModel.tsx\n\n\`\`\`tsx\nconsole.warn("Extra Model Code");\n\`\`\``,
         );
       vi.spyOn(cSess["modelManager"], "getCurrentCodeWithExtraModels").mockImplementation(
         mockGetCurrentCodeWithExtraModels,
@@ -294,7 +294,7 @@ console.warn("Hello, World!");
       const expected = `# testCodeSpace.tsx
 
 \`\`\`tsx
-import extra from "../../../../src/code/__tests__/services/extraModel";
+import extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";
 console.warn("Hello, World!");
 \`\`\`
 

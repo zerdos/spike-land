@@ -4,7 +4,7 @@ import {
   coerceValue,
   extractIdsFromResult,
   promptForParam,
-} from "../../../../src/spike-cli/chat/tool-interaction.js";
+} from "../../../../src/cli/spike-cli/chat/tool-interaction.js";
 
 describe("coerceValue", () => {
   it("converts to number", () => {

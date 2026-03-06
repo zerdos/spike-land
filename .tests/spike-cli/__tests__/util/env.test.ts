@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { expandEnvRecord, expandEnvVars } from "../../../../src/spike-cli/util/env.js";
-import * as logger from "../../../../src/spike-cli/util/logger.js";
+import { expandEnvRecord, expandEnvVars } from "../../../../src/cli/spike-cli/util/env.js";
+import * as logger from "../../../../src/cli/spike-cli/util/logger.js";
 
 describe("expandEnvVars", () => {
   const testEnv: Record<string, string> = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authClient, authProviders } from "../../../src/spike-app/lib/auth";
+import { authClient, authProviders } from "../../../src/frontend/platform-frontend/lib/auth";
 
 describe("authClient", () => {
   it("is defined", () => {

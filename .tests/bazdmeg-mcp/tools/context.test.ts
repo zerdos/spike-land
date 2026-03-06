@@ -5,12 +5,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { registerContextTools } from "../../../src/bazdmeg-mcp/tools/context.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/bazdmeg-mcp/workspace-state.js";
+import { registerContextTools } from "../../../src/mcp-tools/bazdmeg/tools/context.js";
+import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/workspace-state.js";
 import { createFakeMonorepo } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
-import * as bundleModule from "../../../src/bazdmeg-mcp/context-bundle.js";
-import * as telemetryModule from "../../../src/bazdmeg-mcp/telemetry.js";
+import * as bundleModule from "../../../src/mcp-tools/bazdmeg/context-bundle.js";
+import * as telemetryModule from "../../../src/mcp-tools/bazdmeg/telemetry.js";
 
 describe("context tools", () => {
   let server: ReturnType<typeof createMockServer>;

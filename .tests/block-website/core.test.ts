@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPosts,
   getPostBySlug,
-} from "../../src/block-website/src/core/reducers";
-import type { BlogPost } from "../../src/block-website/src/core/types";
+} from "../../src/core/block-website/core-logic/reducers.js";
+import type { BlogPost } from "../../src/core/block-website/core-logic/types.js";
 
 const BASE = "https://edge.spike.land";
 

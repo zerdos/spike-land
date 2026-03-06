@@ -27,8 +27,8 @@ import {
   logToolCall,
   logWorkspaceEnter,
   logWorkspaceExit,
-} from "../../src/bazdmeg-mcp/telemetry.js";
-import { resetWorkspaceState } from "../../src/bazdmeg-mcp/workspace-state.js";
+} from "../../src/mcp-tools/bazdmeg/node-sys/telemetry.js";
+import { resetWorkspaceState } from "../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 
 describe("telemetry", () => {
   beforeEach(() => {

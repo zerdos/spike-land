@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ToolLike } from "../../src/openclaw-mcp/types.js";
-import { convertToolToMcp } from "../../src/openclaw-mcp/tool-adapter.js";
+import type { ToolLike } from "../../src/mcp-tools/openclaw/core-logic/types.js";
+import { convertToolToMcp } from "../../src/mcp-tools/openclaw/core-logic/tool-adapter.js";
 
 describe("convertToolToMcp", () => {
   it("converts tool with properties and required fields", () => {

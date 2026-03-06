@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from "vitest";
 // Mock the index module to control startServer behavior
 const mockStartServer = vi.fn();
 
-vi.mock("../../src/spike-review/index.js", () => ({
+vi.mock("../../src/mcp-tools/code-review/index.js", () => ({
   startServer: mockStartServer,
   createServer: vi.fn(),
 }));

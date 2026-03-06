@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { discoverConfig } from "../../../../src/spike-cli/config/discovery.js";
+import { discoverConfig } from "../../../../src/cli/spike-cli/config/discovery.js";
 
 // Mock fs modules
 const mockReadFile = vi.hoisted(() => vi.fn());

@@ -7,9 +7,9 @@ import {
   handleServers,
   handleTools,
   type ShellContext,
-} from "../../../../src/spike-cli/shell/commands.js";
-import type { ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
-import type { ResolvedConfig } from "../../../../src/spike-cli/config/types.js";
+} from "../../../../src/cli/spike-cli/shell/commands.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+import type { ResolvedConfig } from "../../../../src/cli/spike-cli/config/types.js";
 
 describe("shell commands", () => {
   let ctx: ShellContext;

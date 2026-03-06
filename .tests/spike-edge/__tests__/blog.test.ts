@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import type { Env } from "../../../src/spike-edge/env.js";
-import { blog, rowToPost, getBlogPostRow } from "../../../src/spike-edge/routes/blog.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
+import { blog, rowToPost, getBlogPostRow } from "../../../src/edge-api/main/routes/blog.js";
 
 const SAMPLE_ROW = {
   slug: "hello-world",

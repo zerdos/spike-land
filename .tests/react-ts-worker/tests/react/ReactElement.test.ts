@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { cloneElement, createElement, isValidElement } from "../../../../src/react-ts-worker/react/ReactElement.js";
-import { REACT_ELEMENT_TYPE } from "../../../../src/react-ts-worker/react/ReactSymbols.js";
+import { cloneElement, createElement, isValidElement } from "../../../../src/core/react-engine/react/ReactElement.js";
+import { REACT_ELEMENT_TYPE } from "../../../../src/core/react-engine/react/ReactSymbols.js";
 
 describe("createElement", () => {
   it("creates element with string type", () => {

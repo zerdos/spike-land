@@ -1,0 +1,24 @@
+{
+  "name": "block-sdk",
+  "category": "core",
+  "dependencies": [
+    "@spike-land-ai/shared",
+    "better-sqlite3",
+    "react",
+    "sql.js"
+  ],
+  "files": [
+    "core-logic/d1.ts",
+    "core-logic/index.ts",
+    "core-logic/memory.ts",
+    "core-logic/storage-index.ts",
+    "core-logic/types-block-sdk.ts",
+    "core-logic/types.ts",
+    "db/idb.ts",
+    "db/sql-js-loader.ts",
+    "db/sqlite.ts",
+    "lazy-imports/define-block.ts",
+    "lazy-imports/mcp-index.ts",
+    "ui/react-index.ts"
+  ]
+}

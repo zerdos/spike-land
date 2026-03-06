@@ -5,8 +5,8 @@
  * - pathAfterAnthropicAi empty fallback (line 68)
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handleAnthropicRequest } from "../../src/spike-land-backend/anthropicHandler.js";
-import type Env from "../../src/spike-land-backend/env.js";
+import { handleAnthropicRequest } from "../../src/edge-api/backend/core-logic/anthropicHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
 function createDebugEnv(mockKV: ReturnType<typeof createMockKV>, overrides: Record<string, unknown> = {}): Env {
   return {

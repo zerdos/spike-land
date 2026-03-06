@@ -1,9 +1,9 @@
 import { importMap as _importMap } from "@spike-land-ai/code";
 const md5Promise = import("@spike-land-ai/code").then((m) => m.md5);
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../src/spike-land-backend/chatRoom";
-import { RouteHandler } from "../../src/spike-land-backend/routeHandler";
-import type { WebSocketHandler } from "../../src/spike-land-backend/websocketHandler";
+import type { Code } from "../../src/edge-api/backend/lazy-imports/chatRoom.js";
+import { RouteHandler } from "../../src/edge-api/backend/core-logic/routeHandler.js";
+import type { WebSocketHandler } from "../../src/edge-api/backend/lazy-imports/websocketHandler.js";
 
 vi.mock("snakecase-keys", () => ({}));
 

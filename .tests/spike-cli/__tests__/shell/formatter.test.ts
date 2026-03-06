@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatToolList } from "../../../../src/spike-cli/shell/formatter.js";
+import { formatToolList } from "../../../../src/cli/spike-cli/shell/formatter.js";
 
 describe("formatToolList", () => {
   it("returns dim '(no tools)' for empty array", () => {

@@ -9,10 +9,10 @@
  */
 import http from "node:http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
+import type { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
 
 async function withSseServer(manager: ServerManager, options: { apiKey?: string } = {}) {
-  const { startSseServer } = await import("../../../../src/spike-cli/transport/sse-server.js");
+  const { startSseServer } = await import("../../../../src/cli/spike-cli/transport/sse-server.js");
 
   const tempServer = http.createServer();
   await new Promise<void>((resolve) => tempServer.listen(0, () => resolve()));

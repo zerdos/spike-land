@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ToolLike } from "../../src/openclaw-mcp/types.js";
-import { createToolExecutor } from "../../src/openclaw-mcp/translator.js";
+import type { ToolLike } from "../../src/mcp-tools/openclaw/core-logic/types.js";
+import { createToolExecutor } from "../../src/mcp-tools/openclaw/core-logic/translator.js";
 
 describe("createToolExecutor", () => {
   function makeTool(name: string, result?: { content: Array<{ type: string; text?: string }> }) {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildReviewPrompt, DEFAULT_REVIEW_PROMPT } from "../../../src/spike-review/ai/prompts.js";
-import type { PRDetails } from "../../../src/spike-review/types.js";
+import { buildReviewPrompt, DEFAULT_REVIEW_PROMPT } from "../../../src/mcp-tools/code-review/ai/prompts.js";
+import type { PRDetails } from "../../../src/mcp-tools/code-review/types.js";
 
 const mockPR: PRDetails = {
   title: "feat: add auth",

@@ -50,7 +50,7 @@ vi.mock("@cloudflare/puppeteer", () => ({
   },
 }));
 
-import { PuppeteerAdapter } from "../../src/qa-studio/adapter-puppeteer.js";
+import { PuppeteerAdapter } from "../../src/core/browser-automation/edge/adapter-puppeteer.js";
 
 describe("PuppeteerAdapter", () => {
   const mockBinding = {} as Fetcher;

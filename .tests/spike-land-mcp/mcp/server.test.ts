@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createMcpServer } from "../../../src/spike-land-mcp/mcp/server.js";
-import type { DrizzleDB } from "../../../src/spike-land-mcp/db/index.js";
+import { createMcpServer } from "../../../src/edge-api/spike-land/mcp/server.js";
+import type { DrizzleDB } from "../../../src/edge-api/spike-land/db/index.js";
 
 vi.mock("./manifest", () => ({
   registerAllTools: vi.fn().mockResolvedValue(undefined),

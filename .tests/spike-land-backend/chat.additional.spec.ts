@@ -3,29 +3,29 @@
  * Lines ~334 (CMS GET success)
  */
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
-import { handleCMSIndexRequest } from "../../src/spike-land-backend/chat.js";
-import type Env from "../../src/spike-land-backend/env.js";
-import { createMockEnv } from "../../src/spike-land-backend/test-utils.js";
+import { handleCMSIndexRequest } from "../../src/edge-api/backend/edge/chat.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
+import { createMockEnv } from "../../src/edge-api/backend/edge/test-utils.js";
 
-vi.mock("../../src/spike-land-backend/anthropicHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/anthropicHandler.js", () => ({
   handleAnthropicRequest: vi.fn(),
 }));
-vi.mock("../../src/spike-land-backend/openaiHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/openaiHandler.js", () => ({
   handleGPT4Request: vi.fn(),
 }));
-vi.mock("../../src/spike-land-backend/replicateHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/replicateHandler.js", () => ({
   handleReplicateRequest: vi.fn(),
 }));
-vi.mock("../../src/spike-land-backend/mainFetchHandler.js", () => ({
+vi.mock("../../src/edge-api/backend/mainFetchHandler.js", () => ({
   handleMainFetch: vi.fn().mockResolvedValue(new Response("main fetch")),
 }));
-vi.mock("../../src/spike-land-backend/Logs.js", () => ({
+vi.mock("../../src/edge-api/backend/Logs.js", () => ({
   KVLogger: class {
     log = vi.fn().mockResolvedValue(undefined);
     getLogs = vi.fn().mockResolvedValue([]);
   },
 }));
-vi.mock("../../src/spike-land-backend/staticContent.mjs", () => ({
+vi.mock("../../src/edge-api/backend/staticContent.mjs", () => ({
   ASSET_HASH: "test-hash-123",
   ASSET_MANIFEST: "{}",
   files: {},

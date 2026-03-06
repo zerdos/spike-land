@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   isHttpConfig,
   isStdioConfig,
-} from "../../../../src/spike-cli/config/types.js";
-import type { ServerConfig } from "../../../../src/spike-cli/config/types.js";
+} from "../../../../src/cli/spike-cli/config/types.js";
+import type { ServerConfig } from "../../../../src/cli/spike-cli/config/types.js";
 
 describe("isStdioConfig", () => {
   it("returns true for config with type undefined", () => {

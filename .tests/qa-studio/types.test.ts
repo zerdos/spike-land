@@ -13,7 +13,7 @@ import {
   type QaTabInfo,
   type QaTestResult,
   type QaViewportResult,
-} from "../../src/qa-studio/types.js";
+} from "../../src/core/browser-automation/core-logic/types.js";
 
 describe("isActionError", () => {
   it("returns true for object with error property", () => {

@@ -3,7 +3,7 @@
  */
 
 import { vi } from "vitest";
-import type { CallToolResult, ImageStudioToolRegistry, ToolDefinition } from "../../../src/mcp-image-studio/types.js";
+import type { CallToolResult, ImageStudioToolRegistry, ToolDefinition } from "../../../src/mcp-tools/image-studio/types.js";
 
 export type MockRegistry = ImageStudioToolRegistry & {
   handlers: Map<

@@ -1,0 +1,12 @@
+{
+  "name": "server-base",
+  "category": "core",
+  "dependencies": [],
+  "files": [
+    "core-logic/__tests__/error-shipper.test.ts",
+    "core-logic/__tests__/feedback.test.ts",
+    "core-logic/error-shipper.ts",
+    "core-logic/feedback.ts",
+    "core-logic/index.ts"
+  ]
+}

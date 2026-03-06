@@ -9,7 +9,7 @@ import {
   buildContextBundle,
   extractExportedSymbols,
   formatContextBundle,
-} from "../../src/bazdmeg-mcp/context-bundle.js";
+} from "../../src/mcp-tools/bazdmeg/node-sys/context-bundle.js";
 import { createFakeMonorepo } from "./__test-utils__/fixtures.js";
 
 describe("extractExportedSymbols", () => {

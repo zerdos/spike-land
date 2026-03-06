@@ -26,8 +26,8 @@ vi.mock("node:child_process", () => {
 const mockFetch = vi.hoisted(() => vi.fn());
 vi.stubGlobal("fetch", mockFetch);
 
-import { deviceCodeLogin } from "../../../../src/spike-cli/auth/device-flow.js";
-import * as tokenStore from "../../../../src/spike-cli/auth/token-store.js";
+import { deviceCodeLogin } from "../../../../src/cli/spike-cli/auth/device-flow.js";
+import * as tokenStore from "../../../../src/cli/spike-cli/auth/token-store.js";
 
 describe("deviceCodeLogin", () => {
   let tempDir: string;

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerInitializeTool } from "../../../src/esbuild-wasm-mcp/tools/initialize.js";
+import { registerInitializeTool } from "../../../src/mcp-tools/esbuild-wasm/tools/initialize.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const mockInitializeWasm = vi.hoisted(() => vi.fn());
 
-vi.mock("../../../src/esbuild-wasm-mcp/wasm-api.js", () => ({
+vi.mock("../../../src/mcp-tools/esbuild-wasm/wasm-api.js", () => ({
   initializeWasm: mockInitializeWasm,
 }));
 

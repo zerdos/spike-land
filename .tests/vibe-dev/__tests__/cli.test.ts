@@ -19,21 +19,21 @@ vi.mock("fs/promises", () => ({
   writeFile: vi.fn(),
   mkdir: vi.fn(),
 }));
-vi.mock("../../../src/vibe-dev/agent.js", () => ({ poll: vi.fn() }));
-vi.mock("../../../src/vibe-dev/api.js", () => ({
+vi.mock("../../../src/cli/docker-dev/agent.js", () => ({ poll: vi.fn() }));
+vi.mock("../../../src/cli/docker-dev/api.js", () => ({
   getApiConfig: vi.fn().mockReturnValue({ baseUrl: "https://api.example.com", apiKey: "key" }),
 }));
-vi.mock("../../../src/vibe-dev/redis.js", () => ({
+vi.mock("../../../src/cli/docker-dev/redis.js", () => ({
   getQueueStats: vi.fn(),
   getRedisConfig: vi
     .fn()
     .mockReturnValue({ url: "redis://localhost:6379", token: "token" }),
 }));
-vi.mock("../../../src/vibe-dev/sync.js", () => ({
+vi.mock("../../../src/cli/docker-dev/sync.js", () => ({
   pullCode: vi.fn(),
   pushCode: vi.fn(),
 }));
-vi.mock("../../../src/vibe-dev/watcher.js", () => ({
+vi.mock("../../../src/cli/docker-dev/watcher.js", () => ({
   downloadToLocal: vi.fn(),
   getLocalPath: vi.fn().mockReturnValue("/app/live/my-space.tsx"),
   startDevMode: vi.fn(),
@@ -69,10 +69,10 @@ vi.mock("commander", async (importOriginal) => {
 // Import mocked modules so we can set expectations on them
 import { spawn } from "child_process";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import * as agentModule from "../../../src/vibe-dev/agent.js";
-import * as redisModule from "../../../src/vibe-dev/redis.js";
-import * as syncModule from "../../../src/vibe-dev/sync.js";
-import * as watcherModule from "../../../src/vibe-dev/watcher.js";
+import * as agentModule from "../../../src/cli/docker-dev/agent.js";
+import * as redisModule from "../../../src/cli/docker-dev/redis.js";
+import * as syncModule from "../../../src/cli/docker-dev/sync.js";
+import * as watcherModule from "../../../src/cli/docker-dev/watcher.js";
 
 // Import cli.ts - registers commands with our intercepted commander
 // program.exitOverride() makes commander throw instead of process.exit,
@@ -81,7 +81,7 @@ const originalArgv = process.argv;
 process.argv = ["node", "vibe-dev"];
 
 try {
-  await import("../../../src/vibe-dev/cli.js");
+  await import("../../../src/cli/docker-dev/cli.js");
 } catch (_e) {
   // Commander throws CommanderError when displaying help (exitOverride mode)
   // This is expected - ignore it

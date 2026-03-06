@@ -3,14 +3,14 @@
  * MCP proxy routes, auth proxy, catch-all API route, and scheduled handler.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { Env } from "../../../src/spike-edge/env.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
 
 // Import the full app module
 // Note: We re-create a minimal app using the same patterns as index.ts
 // because importing index.ts directly would require all CF bindings
 import { Hono } from "hono";
-import { requestIdMiddleware } from "../../../src/spike-edge/middleware/request-id.js";
-import { RateLimiter } from "../../../src/spike-edge/rate-limiter.js";
+import { requestIdMiddleware } from "../../../src/edge-api/main/middleware/request-id.js";
+import { RateLimiter } from "../../../src/edge-api/main/rate-limiter.js";
 
 function createMockEnv(overrides: Partial<Env> = {}): Env {
   return {
@@ -82,7 +82,7 @@ describe("requestIdMiddleware", () => {
 describe("RateLimiter export", () => {
   it("is exported from index", async () => {
     // Dynamic import to avoid loading the whole app
-    const { RateLimiter: RL } = await import("../../../src/spike-edge/rate-limiter.js");
+    const { RateLimiter: RL } = await import("../../../src/edge-api/main/rate-limiter.js");
     expect(RL).toBeDefined();
   });
 });
@@ -389,7 +389,7 @@ describe("MCP proxy routes", () => {
 describe("scheduled handler via default export", () => {
   it("is exported as scheduled function", async () => {
     // Just verify the export exists without triggering full CF bindings
-    const mod = await import("../../../src/spike-edge/index.js");
+    const mod = await import("../../../src/edge-api/main/index.js");
     expect(mod.default).toBeDefined();
     expect(typeof mod.default.scheduled).toBe("function");
     expect(typeof mod.default.fetch).toBe("function");

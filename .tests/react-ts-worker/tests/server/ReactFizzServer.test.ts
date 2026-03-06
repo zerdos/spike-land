@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { createElement, createContext } from "../../../../src/react-ts-worker/react/index.js";
-import { memo } from "../../../../src/react-ts-worker/react/ReactMemo.js";
-import { forwardRef } from "../../../../src/react-ts-worker/react/ReactForwardRef.js";
-import { lazy } from "../../../../src/react-ts-worker/react/ReactLazy.js";
-import { renderToString, renderToReadableStream } from "../../../../src/react-ts-worker/server/ReactFizzServer.js";
+import { createElement, createContext } from "../../../../src/core/react-engine/react/index.js";
+import { memo } from "../../../../src/core/react-engine/react/ReactMemo.js";
+import { forwardRef } from "../../../../src/core/react-engine/react/ReactForwardRef.js";
+import { lazy } from "../../../../src/core/react-engine/react/ReactLazy.js";
+import { renderToString, renderToReadableStream } from "../../../../src/core/react-engine/server/ReactFizzServer.js";
 import {
   REACT_ELEMENT_TYPE,
   REACT_FRAGMENT_TYPE,
   REACT_SUSPENSE_TYPE,
-} from "../../../../src/react-ts-worker/react/ReactSymbols.js";
+} from "../../../../src/core/react-engine/react/ReactSymbols.js";
 
 describe("renderToString", () => {
   it("renders a simple host element", () => {

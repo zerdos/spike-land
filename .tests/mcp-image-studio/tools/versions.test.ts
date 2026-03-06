@@ -4,8 +4,8 @@ import {
   mockImageRow,
   mockJobRow,
 } from "../__test-utils__/mock-deps.js";
-import { versions } from "../../../src/mcp-image-studio/tools/versions.js";
-import type { ToolContext } from "../../../src/mcp-image-studio/types.js";
+import { versions } from "../../../src/mcp-tools/image-studio/tools/versions.js";
+import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 
 describe("versions", () => {
   const userId = "u1";

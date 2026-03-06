@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { DefaultRoutes } from "../../../src/spike-land-backend/routes/defaultRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { DefaultRoutes } from "../../../src/edge-api/backend/routes/defaultRoutes";
 
 vi.mock("@spike-land-ai/code", () => ({
   HTML: "<html><head>// IMPORTMAP</head><body>${html}<style>/* criticalCss */</style></body></html>".replace(

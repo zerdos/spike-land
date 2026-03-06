@@ -27,7 +27,7 @@ import {
   StoreConsistency,
   Update,
   Visibility,
-} from "../../../../src/react-ts-worker/reconciler/ReactFiberFlags.js";
+} from "../../../../src/core/react-engine/reconciler/ReactFiberFlags.js";
 
 describe("ReactFiberFlags", () => {
   it("NoFlags is 0", () => {

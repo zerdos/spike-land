@@ -17,7 +17,7 @@ import {
   resetMachine,
   sendEvent,
   validateMachine,
-} from "../../src/state-machine/engine.js";
+} from "../../src/core/statecharts/node-sys/engine.js";
 
 // Test the CLI command dispatch logic by simulating the same operations
 // the CLI routes to. This exercises the CLI surface area without spawning

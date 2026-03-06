@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { chat } from "../../../src/spike-edge/routes/chat.js";
-import type { Env } from "../../../src/spike-edge/env.js";
+import { chat } from "../../../src/edge-api/main/routes/chat.js";
+import type { Env } from "../../../src/edge-api/main/env.js";
 
 function makeEnv(overrides: Partial<Env> = {}): Env {
   return {

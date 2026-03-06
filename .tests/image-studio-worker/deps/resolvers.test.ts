@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createResolvers } from "../../../src/image-studio-worker/deps/resolvers.ts";
+import { createResolvers } from "../../../src/edge-api/image-studio-worker/deps/resolvers.ts";
 import { ImageStudioResolverError } from "@spike-land-ai/mcp-image-studio";
 
 describe("resolvers", () => {

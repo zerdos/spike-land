@@ -10,7 +10,7 @@ const mockCallTool = vi.hoisted(() => vi.fn());
 const mockClose = vi.hoisted(() => vi.fn());
 const mockConnectedGetter = vi.hoisted(() => vi.fn().mockReturnValue(true));
 
-vi.mock("../../../../src/spike-cli/multiplexer/upstream-client.js", () => ({
+vi.mock("../../../../src/cli/spike-cli/multiplexer/upstream-client.js", () => ({
   UpstreamClient: class MockUpstreamClient {
     name: string;
     config: unknown;
@@ -28,9 +28,9 @@ vi.mock("../../../../src/spike-cli/multiplexer/upstream-client.js", () => ({
   },
 }));
 
-import { ServerManager } from "../../../../src/spike-cli/multiplexer/server-manager.js";
-import type { ResolvedConfig } from "../../../../src/spike-cli/config/types.js";
-import type { ToolsetManager } from "../../../../src/spike-cli/multiplexer/toolset-manager.js";
+import { ServerManager } from "../../../../src/cli/spike-cli/multiplexer/server-manager.js";
+import type { ResolvedConfig } from "../../../../src/cli/spike-cli/config/types.js";
+import type { ToolsetManager } from "../../../../src/cli/spike-cli/multiplexer/toolset-manager.js";
 
 function cfg(servers: Record<string, object> = {}): ResolvedConfig {
   return { servers: servers as ResolvedConfig["servers"] };

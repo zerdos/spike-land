@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { type Mock, vi } from "vitest";
-import { handleApiRequest } from "../../src/spike-land-backend/apiHandler";
-import type Env from "../../src/spike-land-backend/env";
+import { handleApiRequest } from "../../src/edge-api/backend/lazy-imports/apiHandler.js";
+import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
 // Mock the HTML import at module level
 vi.mock("@spike-land-ai/code", () => ({

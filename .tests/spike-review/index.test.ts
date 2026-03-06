@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createServer } from "../../src/spike-review/index.js";
+import { createServer } from "../../src/mcp-tools/code-review/mcp/index.js";
 
 // Mock Octokit to avoid real API calls
 vi.mock("@octokit/rest", () => ({

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { hasScript, runCommand } from "../../src/bazdmeg-mcp/shell.js";
+import { hasScript, runCommand } from "../../src/mcp-tools/bazdmeg/node-sys/shell.js";
 import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 

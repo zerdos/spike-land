@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { hashClientId, sendGA4Events } from "../../src/spike-land-backend/lib/ga4.js";
-import type { GA4Event } from "../../src/spike-land-backend/lib/ga4.js";
+import { hashClientId, sendGA4Events } from "../../src/edge-api/backend/core-logic/lib/ga4.js";
+import type { GA4Event } from "../../src/edge-api/backend/core-logic/lib/ga4.js";
 
 describe("ga4", () => {
   describe("hashClientId", () => {

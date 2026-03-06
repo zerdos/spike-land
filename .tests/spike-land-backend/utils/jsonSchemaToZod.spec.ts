@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { McpServer } from "../../../src/spike-land-backend/mcp";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { McpServer } from "../../../src/edge-api/backend/mcp";
 import {
   JsonSchemaToZodConverter,
   isJsonSchemaType,
   isMcpToolInputSchema,
   type JsonSchemaType,
-} from "../../../src/spike-land-backend/utils/jsonSchemaToZod";
+} from "../../../src/edge-api/backend/utils/jsonSchemaToZod";
 
 describe("JsonSchemaToZodConverter", () => {
   let converter: JsonSchemaToZodConverter;

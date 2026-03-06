@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cn } from "../../src/block-website/src/lib/utils";
+import { cn } from "../../src/core/block-website/lazy-imports/utils.js";
 
 describe("cn", () => {
   it("merges class names", () => {

@@ -1,1 +1,1 @@
-export * from "../../src/mcp-auth/index.ts";
+export * from "../../src/edge-api/auth/db/index.ts";

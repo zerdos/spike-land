@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Code } from "../../../src/spike-land-backend/chatRoom";
-import { UtilityRoutes } from "../../../src/spike-land-backend/routes/utilityRoutes";
+import type { Code } from "../../../src/edge-api/backend/chatRoom";
+import { UtilityRoutes } from "../../../src/edge-api/backend/routes/utilityRoutes";
 
 describe("UtilityRoutes", () => {
   let utilityRoutes: UtilityRoutes;

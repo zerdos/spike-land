@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createErrorReporter } from "../../../src/shared/utils/error-reporter";
+import { createErrorReporter } from "../../../src/core/shared-utils/utils/error-reporter";
 
 describe("createErrorReporter", () => {
   beforeEach(() => {

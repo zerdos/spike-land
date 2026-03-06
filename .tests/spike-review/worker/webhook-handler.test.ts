@@ -10,9 +10,9 @@ import {
   isLockfileOnly,
   shouldSkipEvent,
   verifySignature,
-} from "../../../src/spike-review/worker/webhook-handler.js";
-import type { WebhookPayload } from "../../../src/spike-review/worker/webhook-handler.js";
-import type { Env } from "../../../src/spike-review/worker/env.js";
+} from "../../../src/mcp-tools/code-review/worker/webhook-handler.js";
+import type { WebhookPayload } from "../../../src/mcp-tools/code-review/worker/webhook-handler.js";
+import type { Env } from "../../../src/mcp-tools/code-review/worker/env.js";
 
 // ── Test Helpers ────────────────────────────────────────────────────────────
 

@@ -7,7 +7,7 @@ import {
   createHostRootFiber,
   createWorkInProgress,
   isSimpleFunctionComponent,
-} from "../../../../src/react-ts-worker/reconciler/ReactFiber.js";
+} from "../../../../src/core/react-engine/reconciler/ReactFiber.js";
 import {
   ClassComponent,
   ContextConsumer,
@@ -21,9 +21,9 @@ import {
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
-} from "../../../../src/react-ts-worker/reconciler/ReactWorkTags.js";
-import { NoFlags } from "../../../../src/react-ts-worker/reconciler/ReactFiberFlags.js";
-import { NoLanes, SyncLane } from "../../../../src/react-ts-worker/reconciler/ReactFiberLane.js";
+} from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
+import { NoFlags } from "../../../../src/core/react-engine/reconciler/ReactFiberFlags.js";
+import { NoLanes, SyncLane } from "../../../../src/core/react-engine/reconciler/ReactFiberLane.js";
 import {
   REACT_CONSUMER_TYPE,
   REACT_CONTEXT_TYPE,
@@ -32,8 +32,8 @@ import {
   REACT_LAZY_TYPE,
   REACT_MEMO_TYPE,
   REACT_SUSPENSE_TYPE,
-} from "../../../../src/react-ts-worker/react/ReactSymbols.js";
-import { Component } from "../../../../src/react-ts-worker/react/ReactBaseClasses.js";
+} from "../../../../src/core/react-engine/react/ReactSymbols.js";
+import { Component } from "../../../../src/core/react-engine/react/ReactBaseClasses.js";
 
 describe("ReactFiber", () => {
   describe("isSimpleFunctionComponent", () => {
