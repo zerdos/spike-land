@@ -1,0 +1,262 @@
+name: CI
+
+on:
+  push:
+    branches: [main, consolidate]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  detect-affected:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.affected.outputs.packages }}
+      all_changed: ${{ steps.affected.outputs.all_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect affected packages
+        id: affected
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            BASE="${{ github.event.before }}"
+          else
+            BASE="${{ github.event.pull_request.base.sha }}"
+          fi
+
+          # Get changed files (source in src/, config in packages/)
+          CHANGED=$(git diff --name-only "$BASE" HEAD -- src/ packages/ || echo "")
+
+          # Extract package names from both src/ and packages/ paths
+          PACKAGES=$(echo "$CHANGED" | grep -E '^(src|packages)/' | sed 's|^src/||;s|^packages/||' | cut -d/ -f1 | sort -u | jq -R . | jq -cs .)
+
+          echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+
+          # Check if root config changed (affects all)
+          if echo "$CHANGED" | grep -qE '^(tsconfig\.json|esbuild\.config\.ts|packages\.yaml|eslint\.config\.mjs)'; then
+            echo "all_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  typecheck:
+    needs: detect-affected
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn typecheck
+
+  lint:
+    needs: detect-affected
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+
+  test:
+    needs: detect-affected
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn test:src -- --shard=${{ matrix.shard }}/4
+
+  build:
+    needs: [typecheck, lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn build:src
+
+      # esbuild.config.ts outputs to dist/<packageName>/.
+      # publish-changed.js reads from this same dist/ directory.
+      # Workers don't need these artifacts — wrangler compiles src/ directly.
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+          retention-days: 1
+
+  publish:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+          registry-url: https://npm.pkg.github.com
+
+      - run: yarn install --frozen-lockfile
+
+      # publish-changed.js reads from dist/<packageName>/ (line: const DIST = join(ROOT, "dist"))
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - run: node scripts/publish-changed.js
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npmjs.org
+        run: node scripts/publish-changed.js --registry=npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  deploy-workers:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      # No artifact download needed — wrangler compiles TypeScript directly
+      # from src/ via the main field in each packages/*/wrangler.toml.
+
+      # D3: Validate migration SQL for zero-downtime risks
+      - name: Validate D1 migrations
+        run: bash .github/scripts/validate-migrations.sh
+
+      # D6: Run D1 migrations BEFORE deploying workers
+      - name: Apply D1 migrations
+        run: |
+          echo "Applying D1 migrations..."
+          cd packages/spike-land-mcp && npx wrangler d1 migrations apply spike-land-mcp --remote && cd ../..
+          echo "D1 migrations applied."
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Capture pre-deploy state
+        id: pre-deploy
+        run: echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+
+      # D10: Parallelize independent worker deploys (wave 1: no deps)
+      - name: "Deploy wave 1: independent workers"
+        run: |
+          echo "--- Wave 1: transpile, mcp-auth, spike-land-mcp, spike-review, image-studio-worker, spike-agent (parallel) ---"
+          (cd packages/transpile && npm run deploy) &
+          PID_TRANSPILE=$!
+          (cd packages/mcp-auth && npm run deploy) &
+          PID_AUTH=$!
+          (cd packages/spike-land-mcp && npm run deploy) &
+          PID_MCP=$!
+          (cd packages/spike-review && npm run deploy) &
+          PID_REVIEW=$!
+          (cd packages/image-studio-worker && npm run deploy) &
+          PID_IMAGE=$!
+          (cd packages/spike-agent && npm run deploy) &
+          PID_AGENT=$!
+
+          wait $PID_TRANSPILE || { echo "FATAL: transpile deploy failed"; exit 1; }
+          wait $PID_AUTH || { echo "FATAL: mcp-auth deploy failed"; exit 1; }
+          wait $PID_MCP || { echo "FATAL: spike-land-mcp deploy failed"; exit 1; }
+          wait $PID_REVIEW || { echo "FATAL: spike-review deploy failed"; exit 1; }
+          wait $PID_IMAGE || { echo "FATAL: image-studio-worker deploy failed"; exit 1; }
+          wait $PID_AGENT || { echo "FATAL: spike-agent deploy failed"; exit 1; }
+          echo "Wave 1 complete."
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # Wave 2: workers that depend on wave 1
+      - name: "Deploy wave 2: dependent workers"
+        run: |
+          echo "--- Wave 2: spike-land-backend, spike-edge (parallel) ---"
+          (cd packages/spike-land-backend && npm run deploy) &
+          PID_BACKEND=$!
+          (cd packages/spike-edge && npm run deploy) &
+          PID_EDGE=$!
+
+          wait $PID_BACKEND || { echo "FATAL: spike-land-backend deploy failed"; exit 1; }
+          wait $PID_EDGE || { echo "FATAL: spike-edge deploy failed"; exit 1; }
+          echo "Wave 2 complete."
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Deploy spike-app SPA
+        run: bash packages/spike-app/deploy.sh
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # D7: Smoke test failures now BLOCK the pipeline (no more || echo swallow)
+      - name: Smoke test
+        run: |
+          sleep 5
+          echo "Running smoke tests (failures are blocking)..."
+
+          # Retry function: 3 attempts with 10s between
+          smoke_check() {
+            local url="$1" label="$2"
+            for i in 1 2 3; do
+              if curl -sf --max-time 15 "$url" > /dev/null 2>&1; then
+                echo "  ✓ $label"
+                return 0
+              fi
+              [ "$i" -lt 3 ] && sleep 10
+            done
+            echo "  ✗ $label FAILED after 3 attempts"
+            return 1
+          }
+
+          smoke_check "https://edge.spike.land/health" "spike-edge healthy"
+          smoke_check "https://js.spike.land/health" "transpile healthy"
+          smoke_check "https://mcp.spike.land/health" "spike-land-mcp healthy"
+          smoke_check "https://auth-mcp.spike.land/health" "mcp-auth healthy"
+          smoke_check "https://image-studio-mcp.spike.land/health" "image-studio-mcp healthy"
+          smoke_check "https://spike.land/" "SPA serving"
+          echo "All smoke tests passed."
+
+      - name: Rollback on failure
+        if: failure()
+        run: bash .github/scripts/rollback-workers.sh all
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
