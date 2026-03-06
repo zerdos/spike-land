@@ -64,7 +64,9 @@ analytics.post("/analytics/ingest", async (c) => {
           clientId = `user_${session.user.id}`;
         }
       }
-    } catch { /* auth-mcp might be down — fallback to anonymous clientId */ }
+    } catch {
+      /* auth-mcp might be down — fallback to anonymous clientId */
+    }
   }
 
   // Store events in D1
@@ -106,7 +108,8 @@ analytics.post("/analytics/ingest", async (c) => {
 
   try {
     c.executionCtx.waitUntil(allWork);
-  } catch { /* no ExecutionContext in test environment — await instead */
+  } catch {
+    /* no ExecutionContext in test environment — await instead */
     await allWork;
   }
 
@@ -125,7 +128,8 @@ analytics.get("/analytics/events", async (c) => {
 
   const cutoff = Date.now() - rangeMs;
 
-  let query = "SELECT id, source, event_type, metadata, client_id, created_at FROM analytics_events WHERE created_at >= ?";
+  let query =
+    "SELECT id, source, event_type, metadata, client_id, created_at FROM analytics_events WHERE created_at >= ?";
   const params: (string | number)[] = [cutoff];
 
   if (type) {
@@ -153,9 +157,9 @@ analytics.get("/analytics/summary", async (c) => {
   const cutoff = Date.now() - rangeMs;
 
   const results = await c.env.DB.batch([
-    c.env.DB.prepare(
-      "SELECT COUNT(*) as total FROM analytics_events WHERE created_at >= ?",
-    ).bind(cutoff),
+    c.env.DB.prepare("SELECT COUNT(*) as total FROM analytics_events WHERE created_at >= ?").bind(
+      cutoff,
+    ),
     c.env.DB.prepare(
       "SELECT COUNT(DISTINCT client_id) as unique_users FROM analytics_events WHERE created_at >= ?",
     ).bind(cutoff),
@@ -164,6 +168,9 @@ analytics.get("/analytics/summary", async (c) => {
     ).bind(cutoff),
     c.env.DB.prepare(
       "SELECT json_extract(metadata, '$.toolName') as tool_name, COUNT(*) as count FROM analytics_events WHERE created_at >= ? AND event_type = 'tool_use' AND metadata IS NOT NULL GROUP BY tool_name ORDER BY count DESC LIMIT 20",
+    ).bind(cutoff),
+    c.env.DB.prepare(
+      "SELECT json_extract(metadata, '$.slug') as slug, COUNT(*) as count FROM analytics_events WHERE created_at >= ? AND event_type = 'blog_view' AND metadata IS NOT NULL GROUP BY slug ORDER BY count DESC LIMIT 20",
     ).bind(cutoff),
   ]);
 
@@ -175,6 +182,7 @@ analytics.get("/analytics/summary", async (c) => {
     uniqueUsers: usersRow?.unique_users ?? 0,
     eventsByType: results[2]?.results ?? [],
     toolUsage: results[3]?.results ?? [],
+    blogViews: results[4]?.results ?? [],
   });
 });
 

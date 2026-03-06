@@ -23,7 +23,11 @@ interface BlogPostRow {
 
 function rowToPost(row: BlogPostRow, includeContent = false) {
   let tags: unknown = [];
-  try { tags = JSON.parse(row.tags); } catch { /* default to empty */ }
+  try {
+    tags = JSON.parse(row.tags);
+  } catch {
+    /* default to empty */
+  }
 
   const post: Record<string, unknown> = {
     slug: row.slug,
@@ -46,19 +50,24 @@ function rowToPost(row: BlogPostRow, includeContent = false) {
 blog.get("/api/blog", async (c) => {
   let cached: Response | null = null;
   try {
-    cached = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-      const result = await c.env.DB.prepare(
-        `SELECT slug, title, description, primer, date, author, category, tags, featured, hero_image
+    cached = await withEdgeCache(
+      c.req.raw,
+      safeCtx(c),
+      async () => {
+        const result = await c.env.DB.prepare(
+          `SELECT slug, title, description, primer, date, author, category, tags, featured, hero_image
          FROM blog_posts ORDER BY date DESC`,
-      ).all<BlogPostRow>();
+        ).all<BlogPostRow>();
 
-      if (!result.results?.length) return null;
+        if (!result.results?.length) return null;
 
-      const posts = result.results.map((row) => rowToPost(row));
-      return new Response(JSON.stringify(posts), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }, { ttl: 300, swr: 3600 });
+        const posts = result.results.map((row) => rowToPost(row));
+        return new Response(JSON.stringify(posts), {
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+      { ttl: 300, swr: 3600 },
+    );
   } catch {
     // Cache API unavailable — fall back to direct D1
     const result = await c.env.DB.prepare(
@@ -79,13 +88,17 @@ blog.get("/api/blog", async (c) => {
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "blog_index",
-          params: { page_path: "/api/blog" },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "blog_index",
+            params: { page_path: "/api/blog" },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in some environments */ }
+  } catch {
+    /* no ExecutionContext in some environments */
+  }
 
   return cached;
 });
@@ -95,22 +108,27 @@ blog.get("/api/blog/:slug", async (c) => {
 
   let cached: Response | null = null;
   try {
-    cached = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-      const row = await c.env.DB.prepare(
-        `SELECT * FROM blog_posts WHERE slug = ?`,
-      ).bind(slug).first<BlogPostRow>();
+    cached = await withEdgeCache(
+      c.req.raw,
+      safeCtx(c),
+      async () => {
+        const row = await c.env.DB.prepare(`SELECT * FROM blog_posts WHERE slug = ?`)
+          .bind(slug)
+          .first<BlogPostRow>();
 
-      if (!row) return null;
+        if (!row) return null;
 
-      return new Response(JSON.stringify(rowToPost(row, true)), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }, { ttl: 300, swr: 3600 });
+        return new Response(JSON.stringify(rowToPost(row, true)), {
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+      { ttl: 300, swr: 3600 },
+    );
   } catch {
     // Cache API unavailable — fall back to direct D1
-    const row = await c.env.DB.prepare(
-      `SELECT * FROM blog_posts WHERE slug = ?`,
-    ).bind(slug).first<BlogPostRow>();
+    const row = await c.env.DB.prepare(`SELECT * FROM blog_posts WHERE slug = ?`)
+      .bind(slug)
+      .first<BlogPostRow>();
 
     if (row) {
       cached = new Response(JSON.stringify(rowToPost(row, true)), {
@@ -123,14 +141,26 @@ blog.get("/api/blog/:slug", async (c) => {
 
   try {
     c.executionCtx.waitUntil(
-      getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "blog_view",
-          params: { page_path: `/api/blog/${slug}`, slug },
-        }])
-      ),
+      getClientId(c.req.raw).then((clientId) => {
+        const ga4Promise = sendGA4Events(c.env, clientId, [
+          {
+            name: "blog_view",
+            params: { page_path: `/api/blog/${slug}`, slug },
+          },
+        ]);
+
+        const dbPromise = c.env.DB.prepare(
+          "INSERT INTO analytics_events (source, event_type, metadata, client_id) VALUES (?, ?, ?, ?)",
+        )
+          .bind("platform-frontend", "blog_view", JSON.stringify({ slug }), clientId)
+          .run();
+
+        return Promise.all([ga4Promise, dbPromise]);
+      }),
     );
-  } catch { /* no ExecutionContext in some environments */ }
+  } catch {
+    /* no ExecutionContext in some environments */
+  }
 
   return cached;
 });
