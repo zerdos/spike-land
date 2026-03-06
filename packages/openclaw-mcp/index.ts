@@ -1,1 +1,1 @@
-export * from "../../src/openclaw-mcp/index.ts";
+export * from "../../src/openclaw-mcp/index";

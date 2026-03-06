@@ -1,1 +1,1 @@
-export * from "../../src/chess-engine/index.ts";
+export * from "../../src/chess-engine/index";

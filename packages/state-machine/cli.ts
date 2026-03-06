@@ -1,1 +1,1 @@
-export * from "../../src/state-machine/cli.ts";
+export * from "../../src/state-machine/cli";

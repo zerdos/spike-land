@@ -1,1 +1,1 @@
-export * from "../../src/state-machine/index.ts";
+export * from "../../src/state-machine/index";

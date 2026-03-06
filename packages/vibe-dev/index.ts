@@ -1,1 +1,1 @@
-export * from "../../src/vibe-dev/cli.ts";
+export * from "../../src/vibe-dev/cli";
