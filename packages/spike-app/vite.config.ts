@@ -1,8 +1,13 @@
-import { defineConfig, type Plugin } from "vitest/config";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "path";
+import tailwindcss from "@tailwindcss/postcss";
+import { resolve, dirname } from "path";
 import { existsSync, readFileSync } from "fs";
+import { createRequire } from "module";
+
+// Resolve packages through PnP so CSS @import "tailwindcss" and @plugin work
+const pnpRequire = createRequire(import.meta.url);
+const pnpResolveDir = (pkg: string) => dirname(pnpRequire.resolve(`${pkg}/package.json`));
 
 const certDir = resolve(import.meta.dirname, "../../.dev-certs");
 const certFile = resolve(certDir, "local.spike.land.pem");
@@ -26,15 +31,35 @@ function getVersionedSpecifier(bare: string): string {
 }
 
 /**
- * Vite plugin that rewrites bare npm imports to esm.spike.land URLs in dev mode.
- * Local source files (@/, @spike-land-ai/*) are still transpiled locally.
+ * Vite plugin that rewrites CSS @plugin directives to PnP-resolved paths.
+ * Tailwind CSS resolves @plugin from the CSS file's directory, which fails
+ * under Yarn PnP when the CSS file is outside the workspace package.
+ */
+function tailwindPnpPlugin(): Plugin {
+  const typographyDir = pnpResolveDir("@tailwindcss/typography");
+  return {
+    name: "tailwind-pnp-resolve",
+    enforce: "pre",
+    transform(code, id) {
+      if (!id.endsWith(".css")) return null;
+      if (!code.includes('@plugin "@tailwindcss/typography"')) return null;
+      return code.replace(
+        '@plugin "@tailwindcss/typography"',
+        `@plugin "${typographyDir}"`,
+      );
+    },
+  };
+}
+
+/**
+ * Vite plugin that rewrites bare npm imports to esm.spike.land CDN URLs.
+ * The CDN serves proper CORS headers, so no local proxy is needed.
  */
 function esmCdnPlugin(): Plugin {
   return {
     name: "esm-cdn-resolve",
     enforce: "pre",
-    apply: "serve",
-    resolveId(source) {
+    resolveId(source, importer) {
       // Skip relative imports, absolute paths, virtual modules, and local aliases
       if (
         source.startsWith(".") ||
@@ -45,6 +70,10 @@ function esmCdnPlugin(): Plugin {
       ) {
         return null;
       }
+      // Don't externalize imports from CSS files (e.g. tailwindcss resolved by @tailwindcss/postcss)
+      if (importer && /\.css($|\?)/.test(importer)) {
+        return null;
+      }
       // Rewrite bare npm specifiers to CDN URL
       const specifier = getVersionedSpecifier(source);
       return { id: `${ESM_CDN}/${specifier}`, external: true };
@@ -52,8 +81,13 @@ function esmCdnPlugin(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [esmCdnPlugin(), react(), tailwindcss()],
+export default defineConfig(() => ({
+  plugins: [tailwindPnpPlugin(), esmCdnPlugin(), react()],
+  css: {
+    postcss: {
+      plugins: [tailwindcss()],
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
@@ -72,6 +106,9 @@ export default defineConfig({
       "@spike-land-ai/shared/utils": resolve(import.meta.dirname, "../../src/shared/utils/index.ts"),
       "@spike-land-ai/shared/tool-builder": resolve(import.meta.dirname, "../../src/shared/tool-builder/index.ts"),
       "@spike-land-ai/shared": resolve(import.meta.dirname, "../../src/shared/index.ts"),
+      // PnP resolve aliases for CSS @import "tailwindcss" and @plugin "@tailwindcss/typography"
+      "tailwindcss": pnpResolveDir("tailwindcss"),
+      "@tailwindcss/typography": pnpResolveDir("@tailwindcss/typography"),
     },
   },
   server: {
@@ -113,15 +150,6 @@ export default defineConfig({
     outDir: "dist",
     sourcemap: false,
     target: "es2022",
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom", "scheduler"],
-          "vendor-tanstack": ["@tanstack/react-router", "@tanstack/react-store", "@tanstack/history"],
-          "vendor-framer": ["framer-motion"],
-          "vendor-markdown": ["react-markdown", "rehype-raw"],
-        },
-      },
-    },
+    rollupOptions: {},
   },
-});
+}));

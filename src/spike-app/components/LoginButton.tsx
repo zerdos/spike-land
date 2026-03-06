@@ -63,7 +63,7 @@ export function LoginButton() {
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={cn(
-          "flex items-center gap-2 rounded-xl p-1 pr-3 transition-all duration-200 border",
+          "flex items-center gap-2 rounded-xl p-1 sm:pr-3 transition-all duration-200 border",
           // Light mode
           menuOpen ? "bg-muted border-border" : "border-transparent hover:bg-muted",
           // Dark mode: glass trigger
@@ -94,7 +94,7 @@ export function LoginButton() {
             {"Pro Member"}
           </span>
         </div>
-        <ChevronDown className={cn("size-3.5 text-muted-foreground transition-transform duration-200", menuOpen && "rotate-180")} />
+        <ChevronDown className={cn("hidden sm:block size-3.5 text-muted-foreground transition-transform duration-200", menuOpen && "rotate-180")} />
       </button>
 
       {menuOpen && (

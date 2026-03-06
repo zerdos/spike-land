@@ -3,9 +3,10 @@ const UPSTREAM_CDN = "https://cdn.jsdelivr.net/npm";
 
 function getCorsHeaders(request: Request): Record<string, string> {
   const origin = request.headers.get("Origin") ?? "";
+  const originHost = origin.replace(/^https?:\/\//, "").replace(/:\d+$/, "");
   const allowed =
-    origin.endsWith(".spike.land") ||
-    origin === "https://spike.land" ||
+    originHost.endsWith(".spike.land") ||
+    originHost === "spike.land" ||
     origin.startsWith("http://localhost:");
 
   return {
@@ -54,42 +55,53 @@ export default {
     }
 
     const cache = caches.default;
-    const cacheKey = new Request(url.toString(), request);
-    const cached = await cache.match(cacheKey);
-    if (cached) {
-      return cached;
-    }
+    // Cache key ignores Origin so we store one copy per URL
+    const cacheKey = new Request(url.toString());
+    let response = await cache.match(cacheKey);
 
-    const upstream = selectUpstream(url.pathname);
-    const upstreamUrl = `${upstream}${url.pathname}${url.search}`;
+    if (!response) {
+      const upstream = selectUpstream(url.pathname);
+      const upstreamUrl = `${upstream}${url.pathname}${url.search}`;
 
-    const upstreamResponse = await fetch(upstreamUrl, { redirect: "follow" });
+      const upstreamResponse = await fetch(upstreamUrl, { redirect: "follow" });
 
-    if (!upstreamResponse.ok) {
-      return new Response(upstreamResponse.body, {
+      if (!upstreamResponse.ok) {
+        return new Response(upstreamResponse.body, {
+          status: upstreamResponse.status,
+          statusText: upstreamResponse.statusText,
+          headers: {
+            "Content-Type": upstreamResponse.headers.get("Content-Type") ?? "text/plain",
+            ...cors,
+          },
+        });
+      }
+
+      const cacheControl = getCacheControl(url.pathname);
+      const responseHeaders = new Headers(upstreamResponse.headers);
+      responseHeaders.set("Cache-Control", cacheControl);
+      // Strip CORS from cached copy — we apply it fresh per-request
+      responseHeaders.delete("Access-Control-Allow-Origin");
+      responseHeaders.delete("Access-Control-Allow-Methods");
+      responseHeaders.delete("Access-Control-Allow-Headers");
+      responseHeaders.delete("Access-Control-Max-Age");
+
+      response = new Response(upstreamResponse.body, {
         status: upstreamResponse.status,
-        statusText: upstreamResponse.statusText,
-        headers: {
-          "Content-Type": upstreamResponse.headers.get("Content-Type") ?? "text/plain",
-          ...cors,
-        },
+        headers: responseHeaders,
       });
+
+      ctx.waitUntil(cache.put(cacheKey, response.clone()));
     }
 
-    const cacheControl = getCacheControl(url.pathname);
-    const responseHeaders = new Headers(upstreamResponse.headers);
-    responseHeaders.set("Cache-Control", cacheControl);
+    // Apply CORS headers fresh for every request (not from cache)
+    const outHeaders = new Headers(response.headers);
     for (const [key, value] of Object.entries(cors)) {
-      responseHeaders.set(key, value);
+      outHeaders.set(key, value);
     }
 
-    const response = new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers: responseHeaders,
+    return new Response(response.body, {
+      status: response.status,
+      headers: outHeaders,
     });
-
-    ctx.waitUntil(cache.put(cacheKey, response.clone()));
-
-    return response;
   },
 };

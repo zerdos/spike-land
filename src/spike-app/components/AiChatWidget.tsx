@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { MessageCircle, X, Send, Trash2, Sparkles } from "lucide-react";
+import { X, Send, Trash2, Sparkles } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,8 +7,6 @@ import { cn } from "@/shared/utils/cn";
 import { useChat } from "@/hooks/useChat";
 import { useBrowserBridge } from "@/hooks/useBrowserBridge";
 import { AiChatMessage } from "@/components/AiChatMessage";
-
-export const CHAT_SIDEBAR_WIDTH = 380;
 
 interface AiChatWidgetProps {
   open: boolean;
@@ -59,39 +57,24 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
 
   return (
     <>
-      {/* Floating toggle button — shifts left when sidebar is open */}
-      <button
-        onClick={onToggle}
-        style={{
-          right: open ? CHAT_SIDEBAR_WIDTH + 16 : 24,
-          transition: "right 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
+      {/* Backdrop overlay */}
+      <div
         className={cn(
-          "fixed bottom-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 group",
-          open
-            ? isDarkMode
-              ? "bg-white/10 backdrop-blur-xl border border-white/10 hover:bg-white/15 scale-90"
-              : "bg-muted hover:bg-muted/80 scale-90"
-            : "bg-primary text-primary-foreground glow-primary scale-100 hover:scale-110 active:scale-95 animate-[pulse-teal_3s_ease-in-out_infinite]",
+          "fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300",
+          open ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
-        aria-label={open ? "Close chat" : "Open AI chat"}
-      >
-        {open ? (
-          <X className={cn("w-5 h-5", isDarkMode ? "text-primary-light" : "text-foreground")} />
-        ) : (
-          <MessageCircle className="w-6 h-6 stroke-[2.5]" />
-        )}
-      </button>
+        onClick={onToggle}
+        aria-hidden="true"
+      />
 
-      {/* Right sidebar panel */}
+      {/* Overlay chat panel */}
       <div
         style={{
-          width: CHAT_SIDEBAR_WIDTH,
           transform: open ? "translateX(0)" : "translateX(100%)",
           transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
         className={cn(
-          "fixed top-16 right-0 bottom-0 z-40 flex flex-col",
+          "fixed inset-y-0 right-0 z-50 w-full sm:w-[400px] flex flex-col shadow-2xl",
           isDarkMode
             ? "bg-black/95 backdrop-blur-2xl border-l border-white/10"
             : "bg-card border-l border-border",

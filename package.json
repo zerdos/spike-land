@@ -127,6 +127,9 @@
     "@swc/core-linux-x64-musl": {
       "unplugged": true
     },
+    "@tailwindcss/node": {
+      "unplugged": true
+    },
     "@tailwindcss/oxide-darwin-arm64": {
       "unplugged": true
     },
@@ -145,6 +148,9 @@
     "@tailwindcss/oxide-linux-x64-musl": {
       "unplugged": true
     },
+    "@tailwindcss/vite": {
+      "unplugged": true
+    },
     "better-sqlite3": {
       "unplugged": true
     },
@@ -158,6 +164,9 @@
       "unplugged": true
     },
     "sharp": {
+      "unplugged": true
+    },
+    "tailwindcss": {
       "unplugged": true
     }
   },

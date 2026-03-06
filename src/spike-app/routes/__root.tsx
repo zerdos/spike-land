@@ -7,7 +7,8 @@ import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { LoginButton } from "@/components/LoginButton";
 import { AppFooter } from "@/components/AppFooter";
 import { CookieConsent } from "@/components/CookieConsent";
-import { AiChatWidget, CHAT_SIDEBAR_WIDTH } from "@/components/AiChatWidget";
+import { MessageCircle } from "lucide-react";
+import { AiChatWidget } from "@/components/AiChatWidget";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 const DEFAULT_TITLE = "spike.land - MCP-First AI Development Platform";
@@ -276,10 +277,7 @@ export function RootLayout() {
         Skip to main content
       </a>
 
-      <div
-        className="flex flex-1 flex-col min-w-0 transition-[margin-right] duration-300 ease-in-out"
-        style={{ marginRight: showGlobalChat && chatOpen ? CHAT_SIDEBAR_WIDTH : 0 }}
-      >
+      <div className="flex flex-1 flex-col min-w-0">
         <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-card/80 backdrop-blur-xl px-6">
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center gap-8">
@@ -315,6 +313,15 @@ export function RootLayout() {
             </div>
             <div className="flex items-center gap-3">
               <ThemeSwitcher theme={theme} setTheme={setTheme} />
+              {showGlobalChat && (
+                <button
+                  onClick={() => setChatOpen((v) => !v)}
+                  className="rounded-lg p-1.5 transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted dark:hover:bg-white/10"
+                  aria-label={chatOpen ? "Close chat" : "Open chat"}
+                >
+                  <MessageCircle className="size-4" />
+                </button>
+              )}
               <LoginButton />
               {/* Mobile hamburger */}
               <button
