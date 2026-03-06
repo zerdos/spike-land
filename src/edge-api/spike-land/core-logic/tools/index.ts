@@ -39,3 +39,4 @@ export * from "./store";
 export * from "./testgen";
 export * from "./tool-factory";
 export * from "./tts";
+export * from "./categorizer";

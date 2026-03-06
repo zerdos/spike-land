@@ -20,6 +20,9 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
+  "dependencies": {
+    "@spike-land-ai/shared": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "25.3.5",
     "@vitest/coverage-v8": "4.0.18",

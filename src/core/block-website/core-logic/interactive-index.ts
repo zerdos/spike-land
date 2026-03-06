@@ -28,3 +28,10 @@ export { Crescendo } from "../animation/Crescendo";
 export { ScrollWeight } from "./ScrollWeight";
 export { TypeReveal } from "../animation/TypeReveal";
 export { GlitchText } from "../ui/GlitchText";
+
+// Blog: "Where Does Your Code Belong?" interactive components
+export { CodeCategorizerQuiz } from "../ui/CodeCategorizerQuiz";
+export { LiveCategorizer } from "../ui/LiveCategorizer";
+export { ToolsByCategoryGrid } from "../ui/ToolsByCategoryGrid";
+export { PersonalizedSupportBox } from "../ui/PersonalizedSupportBox";
+export { RentStoryToggle } from "../ui/RentStoryToggle";

@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@spike-land-ai/mcp-image-studio": "*",
-    "@spike-land-ai/shared": "*"
+    "@spike-land-ai/shared": "*",
+    "hono": "^4.12.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260305.1",

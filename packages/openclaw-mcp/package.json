@@ -37,9 +37,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.27.1",
+    "@spike-land-ai/mcp-server-base": "workspace:*"
+  },
   "devDependencies": {
     "@changesets/cli": "2.30.0",
-    "@modelcontextprotocol/sdk": "1.27.1",
     "@types/node": "25.3.5",
     "eslint": "10.0.2",
     "typescript": "5.9.3",

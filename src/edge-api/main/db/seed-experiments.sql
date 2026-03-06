@@ -28,3 +28,33 @@ FROM experiments e,
      json_each(e.variants) v,
      (SELECT 'impressions' as name UNION ALL SELECT 'donations' UNION ALL SELECT 'revenue_cents' UNION ALL SELECT 'fistbumps') m
 WHERE e.id IN ('exp-slider-anchor', 'exp-cta-text', 'exp-social-proof');
+
+-- Seed: blog-code-belong-story-v1 experiment
+-- Two variants: adhd-rent (personal story) vs neutral (professional)
+
+INSERT OR IGNORE INTO experiments (id, name, dimension, variants, status, traffic_pct, created_at, updated_at)
+VALUES (
+  'blog-code-belong-story-v1',
+  'Blog Code Belong Story',
+  'blog_intro_style',
+  '[{"id":"adhd-rent","config":{"style":"personal","label":"ADHD Rent Story"},"weight":50},{"id":"neutral","config":{"style":"professional","label":"Neutral Professional"},"weight":50}]',
+  'active',
+  100,
+  strftime('%s','now') * 1000,
+  strftime('%s','now') * 1000
+);
+
+INSERT OR IGNORE INTO experiment_metrics (id, experiment_id, variant_id, metric_name, metric_value, sample_size, updated_at)
+SELECT
+  lower(hex(randomblob(16))),
+  'blog-code-belong-story-v1',
+  json_extract(v.value, '$.id'),
+  m.name,
+  0,
+  0,
+  strftime('%s','now') * 1000
+FROM json_each((SELECT variants FROM experiments WHERE id = 'blog-code-belong-story-v1')) v,
+     (SELECT 'story_impression' as name
+      UNION ALL SELECT 'quiz_started'
+      UNION ALL SELECT 'categorizer_used'
+      UNION ALL SELECT 'support_clicked') m;

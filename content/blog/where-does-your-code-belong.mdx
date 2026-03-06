@@ -1,0 +1,170 @@
+---
+title: "Where Does Your Code Actually Belong? Take the Quiz."
+slug: "where-does-your-code-belong"
+description: "A reorganization script sorted 990 TypeScript files while I couldn't sleep. Can you beat the algorithm? Paste your own code and find out."
+date: "2026-03-09"
+author: "Zoltan Erdos"
+category: "Engineering"
+tags: ["architecture", "monorepo", "typescript", "tooling", "reorganization", "quiz"]
+featured: true
+primer: "990 files. 8 categories. One sleepless night."
+---
+
+<RentStoryToggle></RentStoryToggle>
+
+The question that kept me up was embarrassingly simple: if you had to move every TypeScript file in our monorepo to a new location — all 990 of them — how would you decide where each one goes?
+
+The answer turned out to be: look at what it imports. Not what it does. Not what you named it. What it pulls in from the outside world. That's the architecture, right there, written in plain text at the top of every file.
+
+<Tldr>
+
+- **990 TypeScript files** sorted into **8 categories** by analyzing their dependency graphs
+- **Take the quiz** below — guess which category each code snippet belongs to
+- **Paste your own code** and the algorithm will categorize it instantly
+- The tool is open source and runs entirely in your browser
+
+</Tldr>
+
+---
+
+## The 8 Categories
+
+Before I explain the algorithm, here's what we landed on. Eight categories. Not seven, not twelve — eight, because that's what the import graph told us when we stopped arguing about it.
+
+| Category | Directory | What Lives Here |
+|----------|-----------|-----------------|
+| **Core** | `src/core/` | Pure logic, engines, shared libraries — no framework deps |
+| **Frontend** | `src/frontend/` | React apps, UI components, TanStack Router |
+| **Edge API** | `src/edge-api/` | Cloudflare Workers, Hono handlers, D1 queries |
+| **MCP Tools** | `src/mcp-tools/` | Model Context Protocol servers and tools |
+| **Utilities** | `src/utilities/` | CDN resolvers, test helpers, general-purpose |
+| **CLI** | `src/cli/` | Commander-based command-line tools |
+| **Media** | `src/media/` | Remotion video compositions |
+| **Spike App** | `src/spike-app/` | Legacy frontend (being migrated) |
+
+These categories did not come from a whiteboard session. We did not sit down and design an architecture and then slot files into it. We ran the analysis and these eight buckets emerged from what files actually import.
+
+If a file imports `@modelcontextprotocol/sdk`, it belongs in MCP Tools. If it imports `react`, it's Frontend or Spike App. If it imports `hono`, it's Edge API. The categories are a readout of the code, not a prescription imposed on it. That distinction matters more than it sounds.
+
+---
+
+## Think You Can Beat the Algorithm?
+
+Here are 7 real code snippets from our monorepo — file headers with their import blocks. For each one, guess which of the 8 categories it belongs to. The algorithm is consistent. Whether you are too is what the quiz is measuring.
+
+<CodeCategorizerQuiz></CodeCategorizerQuiz>
+
+---
+
+## How the Algorithm Works
+
+The implementation is about 200 lines of TypeScript. Here's the core logic.
+
+### 1. Import Analysis
+
+The script parses every TypeScript file and extracts its external imports — npm package names, not relative paths. Relative imports tell you about internal structure. External imports tell you what ecosystem the file lives in. We only care about the ecosystem.
+
+A file that says `import { Hono } from 'hono'` is an edge API file, full stop. We don't need to read the rest of it.
+
+### 2. Category Rules
+
+A priority-ordered list of rules, checked in sequence. First match wins:
+
+```typescript
+const categoryRules = [
+  { test: "@modelcontextprotocol/sdk", category: "mcp-tools" },
+  { test: "react / react-dom",         category: "frontend"  },
+  { test: "hono",                      category: "edge-api"  },
+  { test: "remotion",                  category: "media"     },
+  { test: "commander",                 category: "cli"       },
+  { test: "AI SDK packages",           category: "edge-api"  },
+  // No deps? → core. Nothing matched? → utilities.
+];
+```
+
+The ordering is deliberate. MCP SDK goes first because an MCP server that also uses Hono for HTTP transport should be classified as an MCP tool, not an edge API. Framework-specific imports take precedence over general ones. The two edge cases at the bottom — no deps becomes `core`, no match becomes `utilities` — are the catch-all behaviors that handle pure logic and miscellaneous files respectively.
+
+### 3. Subdirectory Mapping
+
+Once the top-level category is known, the file's imports determine which subdirectory it goes into. This is a second pass, finer-grained:
+
+- `ui/` for files importing React components
+- `db/` for files importing Drizzle ORM
+- `api/` for files importing Hono
+- `core-logic/` for pure logic with no framework deps
+- `node-sys/` for files importing Node.js built-ins (`fs`, `path`, `child_process`)
+- `mcp/` for MCP entry points and handler files
+
+A file categorized as `mcp-tools` that also imports Drizzle goes into `mcp-tools/db/`. The outer category says what domain it serves. The subdirectory says what concern it handles within that domain.
+
+### 4. Transitive Propagation
+
+This is the step that surprised me when I implemented it. If file A imports file B, and file B imports React, then B's React dependency should inform how we categorize files that depend on B — even if A itself never mentions React directly.
+
+We walk the import graph and propagate category signals upward from leaf dependencies to their importers. This means you don't need to annotate every file explicitly. The leaf packages carry the category signal, and it flows through the graph automatically.
+
+<Callout type="info">
+
+This is bottom-up architecture discovery. The file's imports ARE the architecture diagram, just written in a format your editor already understands. The categorizer doesn't invent structure — it reads structure that was always there.
+
+</Callout>
+
+---
+
+## Try It Yourself
+
+Paste any TypeScript file and see where it would land in our monorepo. The categorizer runs entirely in your browser — no file is sent anywhere.
+
+<LiveCategorizer></LiveCategorizer>
+
+---
+
+## Claude's Review
+
+We ran the categorization logic past Claude before shipping the migration. Here's the verbatim response:
+
+<Callout type="info">
+
+**Claude's review of the categorization logic:**
+
+"The rule priority ordering is well-designed — framework-specific imports (MCP SDK, React, Hono) take precedence over general patterns, which prevents misclassification of files that import both React and a CLI library. The transitive propagation step is particularly clever: it means you don't need to annotate every file, just the leaf dependencies. The only edge case I'd flag is barrel export files (like `index.ts` re-exports) which have no direct imports — the algorithm correctly falls these through to the parent package's category."
+
+</Callout>
+
+That last point about barrel files is accurate. An `index.ts` that only re-exports from sibling modules has no external imports of its own. It falls through to the parent package's category, which is the right behavior — the barrel file belongs wherever its package belongs.
+
+---
+
+## What a Reorganization of This Scale Actually Looks Like
+
+990 files. 25 packages. The migration ran overnight on a Friday.
+
+We did not touch it. We ran the script, reviewed the output in a diff, checked that no imports were broken, and merged on Monday. The entire thing was automated except for the review.
+
+That is only possible because the algorithm is deterministic and the logic is auditable. Every file's placement has an explicit reason: it imports X, therefore it's in category Y. If a placement looks wrong, you can trace it back to the import that drove it and either fix the import or update the rule.
+
+Manual reorganizations at this scale fail because the decision-making is implicit. You rely on the developer's mental model of what "belongs" somewhere, which is inconsistent across files and impossible to review meaningfully. An import-driven algorithm makes the decision-making explicit and reviewable. That is why it worked.
+
+---
+
+## Explore the Full Tool Catalog
+
+Our monorepo ships 80+ MCP tools. Here they are, grouped by the same 8 categories the reorganizer uses. If you have been wondering what the categorizer would do with production code, this is it:
+
+<ToolsByCategoryGrid></ToolsByCategoryGrid>
+
+---
+
+## One More Thing
+
+This entire platform — the 80+ tools, the categorizer, this blog — is built by two independent developers. No VC funding. No corporate backing. No team of 12 to maintain the import rules.
+
+We built it because we needed it. The reorganizer exists because we had 990 files and no clean way to navigate them. The MCP tools exist because we were tired of writing the same glue code. The blog exists because we had things worth saying.
+
+If this is useful to you, consider supporting the work directly.
+
+<PersonalizedSupportBox></PersonalizedSupportBox>
+
+---
+
+*The architecture was always there. We just needed a script to read it.*
