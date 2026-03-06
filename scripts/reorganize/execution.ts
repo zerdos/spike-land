@@ -236,14 +236,15 @@ export async function updatePackageJsonWorkspaces(outputDir: string) {
 }
 
 export async function generateManifests(plans: MovePlan[], outputDir: string) {
-  const appMap = new Map<string, { files: string[], deps: Set<string> }>();
+  const appMap = new Map<string, { files: string[], deps: Set<string>, category: string }>();
   
   for (const p of plans) {
     const parts = p.targetDir.split(path.sep);
+    const category = parts[0];
     const appFolder = parts.slice(0, 2).join(path.sep);
     
     if (!appMap.has(appFolder)) {
-      appMap.set(appFolder, { files: [], deps: new Set() });
+      appMap.set(appFolder, { files: [], deps: new Set(), category });
     }
     const appData = appMap.get(appFolder)!;
     appData.files.push(path.relative(appFolder, p.targetRelPath));
@@ -253,12 +254,28 @@ export async function generateManifests(plans: MovePlan[], outputDir: string) {
   }
   
   for (const [appFolder, data] of appMap.entries()) {
+    const appName = path.basename(appFolder);
     const manifestPath = path.resolve(outputDir, appFolder, "manifest.json");
+    
+    // Generate Mermaid graph
+    let mermaid = `graph TD\n  ${data.category} --> ${appName}\n`;
+    const depGroups = new Set<string>();
+    for (const f of data.files) {
+       const group = f.split(path.sep)[0];
+       if (group && group !== "." && !f.endsWith("manifest.json")) {
+          depGroups.add(group);
+       }
+    }
+    for (const g of depGroups) {
+       mermaid += `  ${appName} --> ${g}\n`;
+    }
+
     const manifest = {
-       name: path.basename(appFolder),
-       category: path.dirname(appFolder),
+       name: appName,
+       category: data.category,
        dependencies: Array.from(data.deps).sort(),
-       files: data.files.sort()
+       files: data.files.sort(),
+       mermaidGraph: mermaid
     };
     await fs.mkdir(path.dirname(manifestPath), { recursive: true });
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf-8");

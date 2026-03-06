@@ -118,10 +118,10 @@ describe("getDependencyGroupName", () => {
     );
   });
 
-  it("uses 'misc' for unknown deps instead of raw dep names", () => {
+  it("uses 'lazy-imports' for unknown deps instead of raw dep names", () => {
     expect(
       getDependencyGroupName(new Set(["some-obscure-package"])),
-    ).toBe("misc");
+    ).toBe("lazy-imports");
   });
 
   it("does NOT produce raw dep names like 'spike-land-ai-esbuild-wasm-async-mutex'", () => {
@@ -176,6 +176,10 @@ describe("kindToCategory", () => {
 
   it("maps browser to frontend", () => {
     expect(kindToCategory["browser"]).toBe("frontend");
+  });
+
+  it("maps video to media", () => {
+    expect(kindToCategory["video"]).toBe("media");
   });
 
   it("maps cli to cli", () => {
@@ -260,6 +264,10 @@ describe("nameOverrides", () => {
 
   it("spike-app maps to platform-frontend", () => {
     expect(nameOverrides["spike-app"]).toBe("platform-frontend");
+  });
+
+  it("spike-edge maps to main (to avoid edge-api/edge-api stutter)", () => {
+    expect(nameOverrides["spike-edge"]).toBe("main");
   });
 });
 

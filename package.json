@@ -27,7 +27,8 @@
     "seed:blog": "npx tsx scripts/seed-blog.ts",
     "seed:blog:remote": "npx tsx scripts/seed-blog.ts --remote",
     "reorganize": "npx tsx scripts/reorganize.ts",
-    "test:reorganize": "vitest run --config scripts/__tests__/vitest.config.ts"
+    "test:reorganize": "vitest run --config scripts/__tests__/vitest.config.ts",
+    "dev": "bash scripts/dev-local.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

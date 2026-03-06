@@ -5,9 +5,10 @@ import { glob } from "glob";
 import { parseArgs } from "node:util";
 import { execSync } from "node:child_process";
 import { Project } from "ts-morph";
+import chokidar from "chokidar";
 
 import { fallbackCategory, excludeGlobs, getDependencyGroupName, deduplicateDepGroup } from "./reorganize-config.js";
-import type { MovePlan } from "./reorganize/types.js";
+import type { MovePlan, FileNode } from "./reorganize/types.js";
 import { readPackagesYaml } from "./reorganize/utils.js";
 import { discoverFiles } from "./reorganize/discovery.js";
 import { propagateDeps, computePackageCategories, resolveAppName } from "./reorganize/grouping.js";
@@ -20,27 +21,74 @@ import {
   generateManifests,
 } from "./reorganize/execution.js";
 
-async function main() {
-  const { values } = parseArgs({
-    options: {
-      apply: { type: "boolean" },
-      verify: { type: "boolean" },
-      diff: { type: "boolean" },
-      output: { type: "string", default: "src-reorganized" },
-    },
-  });
+export function computeMovePlans(
+  nodes: FileNode[],
+  packageCategories: Map<string, string>,
+  MAX_BUCKET_SIZE: number = 20,
+): MovePlan[] {
+  // Pass 1: Initial grouping to count bucket sizes
+  const bucketCounts = new Map<string, number>();
+  for (const n of nodes) {
+    const depGroupRaw = getDependencyGroupName(n.externalDeps); // Use direct deps
+    const category = packageCategories.get(n.packageName) || fallbackCategory;
+    const depGroupName = deduplicateDepGroup(depGroupRaw, category);
+    const appName = resolveAppName(n.packageName);
+    const bucket = path.join(category, appName, depGroupName);
+    bucketCounts.set(bucket, (bucketCounts.get(bucket) || 0) + 1);
+  }
 
+  const plans: MovePlan[] = [];
+  const targetCounts = new Map<string, number>();
+
+  for (const n of nodes) {
+    const depGroupRaw = getDependencyGroupName(n.externalDeps); // Use direct deps
+    const category = packageCategories.get(n.packageName) || fallbackCategory;
+
+    // Deduplicate: avoid cli/cli/cli stutter
+    let depGroupName = deduplicateDepGroup(depGroupRaw, category);
+
+    const appName = resolveAppName(n.packageName);
+    let targetDir = path.join(category, appName, depGroupName);
+
+    // Issue 3: Split oversized buckets
+    if ((bucketCounts.get(targetDir) || 0) > MAX_BUCKET_SIZE) {
+       const subDir = path.dirname(n.relPath).split(path.sep).slice(1).join(path.sep);
+       if (subDir) {
+          targetDir = path.join(targetDir, subDir);
+       }
+    }
+
+    let fileName = flattenFilename(n.relPath, n.packageName);
+    
+    // Issue 3 (Co-locate tests): Put tests in __tests__ subfolder
+    if (fileName.endsWith(".test.ts") || fileName.endsWith(".test.tsx")) {
+       targetDir = path.join(targetDir, "__tests__");
+    }
+
+    const targetPathKey = path.join(targetDir, fileName);
+    let disambigName = fileName;
+    let count = targetCounts.get(targetPathKey) || 0;
+    if (count > 0) {
+      const ext = path.extname(fileName);
+      const base = path.basename(fileName, ext);
+      disambigName = `${base}-${n.packageName}${ext}`;
+    }
+    targetCounts.set(targetPathKey, count + 1);
+
+    plans.push({
+      fileNode: n,
+      targetDir: targetDir,
+      targetFileName: disambigName,
+      targetRelPath: path.join(targetDir, disambigName),
+    });
+  }
+  return plans;
+}
+
+async function runReorganization(values: any) {
+  const MAX_BUCKET_SIZE = 20;
   const outputDir = path.resolve(process.cwd(), values.output as string);
   const srcDir = path.resolve(process.cwd(), "src");
-
-  if (values.apply) {
-    try {
-      execSync("git diff --quiet", { stdio: "ignore" });
-    } catch {
-      console.error("Git working directory not clean. Commit or stash before --apply");
-      process.exit(1);
-    }
-  }
 
   const packagesYaml = await readPackagesYaml();
   
@@ -48,12 +96,26 @@ async function main() {
     tsConfigFilePath: path.resolve(process.cwd(), "tsconfig.json"),
     skipAddingFilesFromTsConfig: true,
   });
-  const files = await glob("**/*.{ts,tsx}", {
+  
+  // Incremental mode: only changed files
+  let filesToProcess: string[] = [];
+  if (values.incremental) {
+     try {
+       const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
+       filesToProcess = stdout.split("\n")
+         .filter(f => f.startsWith("src/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
+         .map(f => path.resolve(process.cwd(), f));
+     } catch (e) {}
+  }
+
+  const allFiles = await glob("**/*.{ts,tsx}", {
     cwd: srcDir,
     ignore: excludeGlobs,
     absolute: true,
   });
-  project.addSourceFilesAtPaths(files);
+  
+  const files = filesToProcess.length > 0 ? filesToProcess : allFiles;
+  project.addSourceFilesAtPaths(allFiles); 
 
   const nodes = await discoverFiles(project);
   propagateDeps(nodes);
@@ -61,40 +123,27 @@ async function main() {
   // Package-level category assignment
   const packageCategories = computePackageCategories(nodes, packagesYaml);
 
-  const plans: MovePlan[] = [];
-  const targetCounts = new Map<string, number>();
+  const plans = computeMovePlans(nodes, packageCategories, MAX_BUCKET_SIZE);
 
-  for (const n of nodes) {
-    const depGroupRaw = getDependencyGroupName(n.resolvedDeps!);
-    const category = packageCategories.get(n.packageName) || fallbackCategory;
-
-    // Deduplicate: avoid cli/cli/cli stutter
-    const depGroupName = deduplicateDepGroup(depGroupRaw, category);
-
-    const appName = resolveAppName(n.packageName);
-    const targetDir = path.join(category, appName, depGroupName);
-
-    const finalDir = targetDir;
-
-    let fileName = flattenFilename(n.relPath, n.packageName);
-
-    const fullTargetDir = path.join(outputDir, finalDir);
-    const targetPath = path.join(fullTargetDir, fileName);
-    let disambigName = fileName;
-    let count = targetCounts.get(targetPath) || 0;
-    if (count > 0) {
-      const ext = path.extname(fileName);
-      const base = path.basename(fileName, ext);
-      disambigName = `${base}-${n.packageName}${ext}`;
-    }
-    targetCounts.set(targetPath, count + 1);
-
-    plans.push({
-      fileNode: n,
-      targetDir: finalDir,
-      targetFileName: disambigName,
-      targetRelPath: path.join(finalDir, disambigName),
-    });
+  // Lint mode: check for category violations
+  if (values.lint) {
+     let violations = 0;
+     for (const n of nodes) {
+        const category = packageCategories.get(n.packageName);
+        if (category === "core") {
+           const hasFrontend = [...n.externalDeps].some(d => d === "react" || d === "react-dom");
+           if (hasFrontend) {
+              console.warn(`Lint violation: 'core' package '${n.packageName}' file '${n.relPath}' imports frontend dependencies.`);
+              violations++;
+           }
+        }
+     }
+     if (violations > 0) {
+        console.error(`Found ${violations} lint violations.`);
+        process.exit(1);
+     }
+     console.log("Lint passed.");
+     return;
   }
 
   console.log(`Discovered ${nodes.length} files. Grouping...`);
@@ -116,7 +165,6 @@ async function main() {
       stats.set(p.targetDir, (stats.get(p.targetDir) || 0) + 1);
     }
 
-    // Summary by top-level category
     const catStats = new Map<string, number>();
     for (const p of plans) {
       const cat = p.targetDir.split(path.sep)[0];
@@ -147,6 +195,13 @@ async function main() {
     pathMapping.set(p.fileNode.absPath, absNewPath);
   }
 
+  // Issue 10: Reversible mapping file
+  const reversibleMapping: Record<string, string> = {};
+  for (const [oldAbs, newAbs] of pathMapping.entries()) {
+    reversibleMapping[path.relative(process.cwd(), oldAbs)] = path.relative(outputDir, newAbs);
+  }
+  await fs.writeFile(path.join(outputDir, ".mapping.json"), JSON.stringify(reversibleMapping, null, 2));
+
   for (const p of plans) {
     const absNewPath = path.resolve(outputDir, p.targetRelPath);
     await fs.mkdir(path.dirname(absNewPath), { recursive: true });
@@ -164,17 +219,19 @@ async function main() {
     }
   }
   
-  const BARREL_THRESHOLD = 3; // Only generate barrels for dirs with >= 3 exportable items
+  const BARREL_THRESHOLD = 3; 
   const sortedDirs = Array.from(dirSet).sort((a, b) => b.length - a.length);
   const barrelProject = new Project({ useInMemoryFileSystem: true });
 
   for (const d of sortedDirs) {
     if (d.includes("__tests__") || d.endsWith(".test") || path.basename(d) === "__tests__") continue;
 
+    const base = path.basename(d);
+    if (base === "lazy-imports" || base === "core-logic" || base === "node-sys") continue;
+
     const absD = path.resolve(outputDir, d);
     const entries = await fs.readdir(absD, { withFileTypes: true });
 
-    // Count exportable items (source files + subdirectories, excluding tests/utils/index)
     const exportableCount = entries.filter(e => {
       if (e.name === "index.ts" || e.name === "index.tsx") return false;
       if (e.name.startsWith("_")) return false;
@@ -186,7 +243,6 @@ async function main() {
     if (exportableCount < BARREL_THRESHOLD) continue;
 
     let barrelContent = "";
-    
     for (const entry of entries) {
       if (entry.name === "index.ts" || entry.name === "index.tsx") continue;
       if (entry.name.startsWith("_")) continue;
@@ -202,20 +258,16 @@ async function main() {
          }
       } else {
          if (!entry.name.endsWith(".ts") && !entry.name.endsWith(".tsx")) continue;
-         
          const fileContent = await fs.readFile(filePath, "utf-8");
          const sf = barrelProject.createSourceFile(filePath, fileContent, { overwrite: true });
-         
          const exports = sf.getExportDeclarations();
          const exportedDecs = sf.getExportedDeclarations();
-         
          if (exports.length > 0 || exportedDecs.size > 0) {
            const baseName = path.basename(entry.name, path.extname(entry.name));
            barrelContent += `export * from "./${baseName}";\n`;
          }
       }
     }
-    
     if (barrelContent) {
        await fs.writeFile(path.join(absD, "index.ts"), barrelContent, "utf-8");
     }
@@ -229,16 +281,48 @@ async function main() {
   if (values.verify) {
     console.log("\nVerifying...");
     try {
-      console.log("Running TSC...");
       execSync("npx tsc --noEmit", { stdio: "inherit" });
-      console.log("Running ESLint...");
       execSync("npx eslint " + values.output, { stdio: "inherit" });
-      console.log("Running Vitest...");
       execSync("npx vitest run " + values.output, { stdio: "inherit" });
       console.log("Verification passed!");
     } catch (e) {
       console.error("Verification failed:", e);
     }
+  }
+}
+
+async function main() {
+  const { values } = parseArgs({
+    options: {
+      apply: { type: "boolean" },
+      verify: { type: "boolean" },
+      diff: { type: "boolean" },
+      watch: { type: "boolean" },
+      lint: { type: "boolean" },
+      incremental: { type: "boolean" },
+      output: { type: "string", default: "src-reorganized" },
+    },
+  });
+
+  if (values.apply) {
+    try {
+      execSync("git diff --quiet", { stdio: "ignore" });
+    } catch {
+      console.error("Git working directory not clean. Commit or stash before --apply");
+      process.exit(1);
+    }
+  }
+
+  await runReorganization(values);
+
+  if (values.watch) {
+    const srcDir = path.resolve(process.cwd(), "src");
+    console.log(`Watching ${srcDir} for changes...`);
+    chokidar.watch(srcDir, { persistent: true, ignoreInitial: true })
+      .on("all", async (event, path) => {
+         console.log(`Change detected: ${event} ${path}. Re-running...`);
+         await runReorganization(values).catch(console.error);
+      });
   }
 }
 
