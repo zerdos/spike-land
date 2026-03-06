@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"lib": ["dom", "es5", "es2015.collection", "es2015.promise", "es2015.iterable"],
+		"module": "esnext",
+		"moduleResolution": "node",
+		"outDir": "../out/languages/tsc",
+		"paths": {
+			"@/*": ["./*"]
+		},
+		"emitDeclarationOnly": true,
+		"strict": true,
+		"target": "es2018",
+		"sourceMap": true,
+		"allowJs": true,
+		"checkJs": true,
+		"skipLibCheck": true
+	},
+	"exclude": ["languages/features/typescript/lib/typescriptServices.js"]
+}

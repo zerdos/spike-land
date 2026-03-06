@@ -100,6 +100,9 @@ mcpRoute.post("/", async (c) => {
     enabledCategories,
     kv: c.env.KV,
     vaultSecret: c.env.VAULT_SECRET,
+    mcpInternalSecret: c.env.MCP_INTERNAL_SECRET,
+    spikeEdge: c.env.SPIKE_EDGE,
+    spaAssets: c.env.SPA_ASSETS,
   });
   
   // Set caller ELO for tool gating

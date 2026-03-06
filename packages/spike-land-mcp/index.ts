@@ -1,1 +1,1 @@
-export * from "../../src/spike-land-mcp/index.ts";
+export * from '../../src/spike-land-mcp/index.ts';

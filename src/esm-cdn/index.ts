@@ -54,6 +54,17 @@ export default {
       );
     }
 
+    if (url.pathname.includes("modulepreload-polyfill")) {
+      return new Response("/* modulepreload-polyfill is intentionally empty */\n", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/javascript; charset=utf-8",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          ...cors,
+        },
+      });
+    }
+
     const cache = caches.default;
     // Cache key ignores Origin so we store one copy per URL
     const cacheKey = new Request(url.toString());

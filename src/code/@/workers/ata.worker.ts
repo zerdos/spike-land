@@ -17,7 +17,7 @@ export function cleanFilePath(filePath: string, originToUse: string): string {
   let cleaned = filePath
     .replace(originToUse, "")
     .replace("https://spike.land", "")
-    .replace("https://esm.sh", "");
+    .replace("https://esm.spike.land", "");
 
   // Remove node_modules, @types, version paths (e.g., /v18/)
   cleaned = cleaned

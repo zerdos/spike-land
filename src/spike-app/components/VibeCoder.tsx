@@ -50,40 +50,38 @@ export default function App() {
   const [clicks, setClicks] = useState(0);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-[#0a0a0f]">
+    <div className="flex items-center justify-center h-screen bg-background">
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => setClicks(c => c + 1)}
-        className="relative cursor-pointer select-none rounded-2xl p-px"
+        className="relative cursor-pointer select-none rounded-2xl p-px transition-all duration-300"
         style={{
           background: hovered
-            ? "linear-gradient(135deg, #6366f1, #a855f7, #ec4899)"
-            : "linear-gradient(135deg, #334155, #475569)",
+            ? "var(--color-primary, #6366f1)"
+            : "var(--color-muted-foreground, #475569)",
           boxShadow: hovered
-            ? "0 0 40px 8px rgba(168,85,247,0.45)"
+            ? "0 0 40px 8px var(--color-primary, rgba(99, 102, 241, 0.45))"
             : "0 0 0px 0px transparent",
-          transition: "all 0.35s ease",
         }}
       >
-        <div className="rounded-2xl bg-[#0f0f1a]/90 backdrop-blur-xl px-10 py-8 text-center">
+        <div className="rounded-2xl bg-card/90 backdrop-blur-xl px-10 py-8 text-center border border-border">
           <div
-            className="text-5xl mb-3"
-            style={{ filter: hovered ? "drop-shadow(0 0 12px #a855f7)" : "none", transition: "filter 0.35s" }}
+            className="text-5xl mb-3 transition-all duration-300 text-primary"
+            style={{ filter: hovered ? "drop-shadow(0 0 12px var(--color-primary, #6366f1))" : "none" }}
           >
             ✦
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">VibeCoder</h1>
-          <p className="text-sm text-slate-400 mt-1 mb-4">Edit me. I react to you.</p>
-          <div className="inline-block rounded-full bg-white/5 border border-white/10 px-4 py-1 text-xs text-slate-300">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">VibeCoder</h1>
+          <p className="text-sm text-muted-foreground mt-1 mb-4">Edit me. I react to you.</p>
+          <div className="inline-block rounded-full bg-muted border border-border px-4 py-1 text-xs text-muted-foreground">
             {clicks === 0 ? "hover · click · vibe" : \`clicked \${clicks}×\`}
           </div>
         </div>
       </div>
     </div>
   );
-}
-`;
+}`;
 
 // ---------------------------------------------------------------------------
 // Resizable divider

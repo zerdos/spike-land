@@ -6,7 +6,6 @@ cd "$(dirname "$0")"
 R2_BUCKET="spike-app-assets"
 VERSION_URL="https://spike.land/version"
 WRANGLER="yarn wrangler"
-VITE="yarn vite"
 TSX="yarn tsx"
 
 # ── 1. Current HEAD info ──
@@ -32,46 +31,21 @@ if [ "${FORCE_DEPLOY:-}" != "1" ]; then
   echo "Deployed SHA: ${DEPLOYED_SHA:-<unknown>}"
 fi
 
-# ── 3. Build caching via tree hash ──
 CACHE_DIR=".deploy-cache"
 mkdir -p "$CACHE_DIR"
 
-# Hash the spike-app source tree (excludes node_modules, dist, etc. via .gitignore)
-TREE_HASH="$(git ls-tree -r HEAD -- . | git hash-object --stdin)"
-CACHED_HASH=""
-if [ -f "$CACHE_DIR/app.treehash" ]; then
-  CACHED_HASH="$(cat "$CACHE_DIR/app.treehash")"
-fi
-
-NEED_BUILD=false
-if [ "$TREE_HASH" != "$CACHED_HASH" ] || [ ! -d "dist" ]; then
-  NEED_BUILD=true
-fi
-
-if [ "$NEED_BUILD" = true ]; then
-  echo "Building spike-app..."
-  $VITE build
-
-  echo "Prerendering static HTML for SEO..."
-  $TSX scripts/prerender.ts || echo "⚠ Prerender failed (non-fatal), deploying without prerendered HTML"
-
-  echo "$TREE_HASH" > "$CACHE_DIR/app.treehash"
-else
-  echo "Source unchanged (tree hash: ${TREE_HASH:0:12}) — skipping build."
-fi
-
-# ── 4. Inject build metadata into index.html ──
+# ── 3. Inject build metadata into index.html ──
 # Only inject build metadata if not already present
-if ! grep -q 'name="build-sha"' dist/index.html; then
-  sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" dist/index.html
-  rm -f dist/index.html.bak
+if ! grep -q 'name="build-sha"' ../../dist/spike-app/index.html; then
+  sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\" /></head>|" ../../dist/spike-app/index.html
+  rm -f ../../dist/spike-app/index.html.bak
 else
   # Update existing metadata
-  sed -i.bak "s|content=\"[a-f0-9]*\" /><meta name=\"build-time\" content=\"[^\"]*\"|content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\"|" dist/index.html
-  rm -f dist/index.html.bak
+  sed -i.bak "s|content=\"[a-f0-9]*\" /><meta name=\"build-time\" content=\"[^\"]*\"|content=\"${HEAD_SHA}\" /><meta name=\"build-time\" content=\"${COMMIT_TIME}\"|" ../../dist/spike-app/index.html
+  rm -f ../../dist/spike-app/index.html.bak
 fi
 
-# ── 5. Archive current build in R2 for rollback ──
+# ── 4. Archive current build in R2 for rollback ──
 if [ -n "$DEPLOYED_SHA" ] && [ "$DEPLOYED_SHA" != "unknown" ]; then
   echo "Archiving current build (${DEPLOYED_SHA:0:12}) to builds/${DEPLOYED_SHA}/..."
   # Copy root assets to builds/{sha}/ prefix
@@ -103,7 +77,7 @@ if [ -n "$DEPLOYED_SHA" ] && [ "$DEPLOYED_SHA" != "unknown" ]; then
   fi
 fi
 
-# ── 6. Upload new dist/ to R2 ──
+# ── 5. Upload new dist/ to R2 ──
 echo "Uploading to R2 bucket: ${R2_BUCKET}..."
 
 # Load previously uploaded keys for content-hash diffing
@@ -112,7 +86,7 @@ touch "$UPLOADED_KEYS_FILE"
 
 upload_file() {
   local file="$1"
-  local key="${file#dist/}"
+  local key="${file#../../dist/spike-app/}"
   local content_type
 
   case "$file" in
@@ -143,17 +117,19 @@ export R2_BUCKET WRANGLER
 # Build list of files to upload, skipping hashed assets already uploaded
 FILES_TO_UPLOAD=()
 NEW_KEYS=()
+
+find ../../dist/spike-app -type f -print0 > "$CACHE_DIR/files.tmp"
 while IFS= read -r -d '' file; do
-  key="${file#dist/}"
+  key="${file#../../dist/spike-app/}"
   # Hashed assets (contain content hash in filename) can be skipped if already uploaded
   if [[ "$key" =~ \.[0-9a-f]{8,}\. ]] && grep -qxF "$key" "$UPLOADED_KEYS_FILE" 2>/dev/null; then
     continue
   fi
   FILES_TO_UPLOAD+=("$file")
   NEW_KEYS+=("$key")
-done < <(find dist -type f -print0)
+done < "$CACHE_DIR/files.tmp"
 
-echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped $(( $(find dist -type f | wc -l) - ${#FILES_TO_UPLOAD[@]} )) cached)..."
+echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped $(( $(find ../../dist/spike-app -type f | wc -l) - ${#FILES_TO_UPLOAD[@]} )) cached)..."
 
 # Upload in parallel (4 concurrent to avoid R2 rate limits)
 printf '%s\0' "${FILES_TO_UPLOAD[@]}" | xargs -0 -P 4 -I {} bash -c 'upload_file "$@"' _ {}
@@ -162,7 +138,7 @@ printf '%s\0' "${FILES_TO_UPLOAD[@]}" | xargs -0 -P 4 -I {} bash -c 'upload_file
 printf '%s\n' "${NEW_KEYS[@]}" >> "$UPLOADED_KEYS_FILE"
 sort -u -o "$UPLOADED_KEYS_FILE" "$UPLOADED_KEYS_FILE"
 
-# ── 7. Seed blog posts to D1 and upload images to R2 ──
+# ── 6. Seed blog posts to D1 and upload images to R2 ──
 BLOG_DIR="../../content/blog"
 BLOG_HASH=""
 if [ -d "$BLOG_DIR" ]; then

@@ -9,11 +9,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SPA_DIR="$ROOT_DIR/src/spike-app"
 BUCKET="spike-app-assets"
 
-echo "==> Building spike-app..."
-cd "$SPA_DIR"
-npm run build
-
-DIST_DIR="$SPA_DIR/dist"
+echo "==> Note: Assuming spike-app has already been built."
+DIST_DIR="$ROOT_DIR/dist/spike-app"
 
 if [ ! -d "$DIST_DIR" ]; then
   echo "ERROR: dist/ directory not found after build"

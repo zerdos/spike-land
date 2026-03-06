@@ -1,8 +1,9 @@
 import { lazy, Suspense, useState, useCallback, useMemo } from "react";
-import type { OnMount } from "@monaco-editor/react";
+import type { OnMount, BeforeMount } from "@monaco-editor/react";
 import { Copy, Check, FileCode } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { useMonacoTypeAcquisition } from "../hooks/useMonacoTypeAcquisition";
 
 // Configure Monaco web workers to load from esm.spike.land (CSP-safe).
 if (typeof globalThis !== "undefined") {
@@ -80,6 +81,13 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const { isDarkMode } = useDarkMode();
   const [copied, setCopied] = useState(false);
+  const [monacoInstance, setMonacoInstance] = useState<typeof import("monaco-editor") | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { typesReady } = useMonacoTypeAcquisition({
+    monaco: monacoInstance,
+    code: value,
+  });
 
   // Derive Monaco theme: explicit prop overrides auto-detection.
   const monacoTheme = theme ?? (isDarkMode ? "vs-dark" : "light");
@@ -113,9 +121,28 @@ export function CodeEditor({
     }
   }, [value]);
 
+  const handleBeforeMount = useCallback<BeforeMount>((monaco) => {
+    // Basic typescript compiler options
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.Latest,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+      jsxImportSource: "react",
+      allowNonTsExtensions: true,
+      allowSyntheticDefaultImports: true,
+      esModuleInterop: true,
+      strict: false,
+      noEmit: true,
+      skipLibCheck: false,
+      lib: ["dom", "dom.iterable", "es2015", "es2016", "esnext"],
+    });
+  }, []);
+
   // Focus the editor as soon as it mounts so users can type immediately.
-  const handleMount = useCallback<OnMount>((editor) => {
+  const handleMount = useCallback<OnMount>((editor, monaco) => {
     editor.focus();
+    setMonacoInstance(monaco);
   }, []);
 
   return (
@@ -127,7 +154,7 @@ export function CodeEditor({
       style={{ height }}
     >
       {/* Toolbar */}
-      <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-3 py-2">
+      <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-3 py-2 cursor-pointer select-none" onClick={() => setIsEditing(true)}>
         <div className="flex items-center gap-2">
           <FileCode className="h-4 w-4 text-muted-foreground" />
           {fileName && (
@@ -151,11 +178,29 @@ export function CodeEditor({
           >
             {lineCount} {lineCount === 1 ? "line" : "lines"}
           </span>
+          {!isEditing && (
+            <span className="text-xs font-medium text-muted-foreground/60 ml-2">
+              Click to edit
+            </span>
+          )}
+          {monacoInstance && isEditing && (resolvedLanguage === "typescript" || resolvedLanguage === "typescriptreact") && (
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-xs font-medium",
+                typesReady ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500 animate-pulse"
+              )}
+            >
+              {typesReady ? "Types Loaded" : "Loading Types..."}
+            </span>
+          )}
         </div>
 
         <button
           type="button"
-          onClick={handleCopy}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCopy();
+          }}
           aria-label={copied ? "Copied to clipboard" : "Copy code to clipboard"}
           className={cn(
             "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs",
@@ -179,16 +224,46 @@ export function CodeEditor({
       </div>
 
       {/* Editor area */}
-      <div className="min-h-0 flex-1">
-        <Suspense fallback={<LoadingSpinner />}>
-          <Editor
-            height="100%"
-            language={resolvedLanguage}
-            theme={monacoTheme}
-            value={value}
-            onChange={handleChange}
-            onMount={handleMount}
-            options={{
+      <div className="min-h-0 flex-1 relative bg-background">
+        {!isEditing ? (
+          <div 
+            onClick={() => setIsEditing(true)}
+            className="absolute inset-0 overflow-auto p-3 text-sm font-mono cursor-text hover:bg-white/[0.01] transition-colors"
+            style={{ 
+              fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace',
+              lineHeight: "22px",
+              tabSize: 2,
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-all"
+            }}
+          >
+            {/* Simple basic syntax highlighting pass for lightweight unedited view */}
+            <code className="text-muted-foreground" dangerouslySetInnerHTML={{
+              __html: value
+                .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                // Keywords
+                .replace(/\b(import|export|default|function|const|let|var|return|if|else|for|while|await|async)\b/g, '<span class="text-primary">$1</span>')
+                // React Hooks
+                .replace(/\b(useState|useEffect|useCallback|useMemo|useRef)\b/g, '<span class="text-sky-400">$1</span>')
+                // Strings
+                .replace(/(".*?"|'.*?'|\`.*?\`)/g, '<span class="text-emerald-400">$1</span>')
+                // JSX Tags
+                .replace(/(&lt;\/?)([a-zA-Z0-9_-]+)/g, '$1<span class="text-violet-400">$2</span>')
+                // JSX Attributes
+                .replace(/([a-zA-Z0-9_-]+)=/g, '<span class="text-blue-300">$1</span>=')
+            }} />
+          </div>
+        ) : (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Editor
+              height="100%"
+              language={resolvedLanguage}
+              theme={monacoTheme}
+              value={value}
+              onChange={handleChange}
+              beforeMount={handleBeforeMount}
+              onMount={handleMount}
+              options={{
               readOnly,
               minimap: { enabled: false },
               fontSize: 14,

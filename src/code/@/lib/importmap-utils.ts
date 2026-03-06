@@ -53,7 +53,7 @@ const COMPONENT_PATTERNS = [
 
 const MAX_EXPORTS_PER_URL = 8;
 
-export const ESM_CDN = "https://esm.sh";
+export const ESM_CDN = "https://esm.spike.land";
 
 export const REACT_VERSION = "19.2.4";
 export const DEPS_PARAM = `deps=react@${REACT_VERSION},react-dom@${REACT_VERSION},react-is@${REACT_VERSION}`;
@@ -95,7 +95,7 @@ export const importMap: ImportMap = {
     "@dnd-kit/sortable": `${ESM_CDN}/@dnd-kit/sortable?${DEPS_PARAM}`,
     "@dnd-kit/utilities": `${ESM_CDN}/@dnd-kit/utilities?${DEPS_PARAM}`,
     "react-is": `${ESM_CDN}/react-is@${REACT_VERSION}`,
-    "https://esm.sh/react-is/": `${ESM_CDN}/react-is@${REACT_VERSION}/`,
+    "https://esm.spike.land/react-is/": `${ESM_CDN}/react-is@${REACT_VERSION}/`,
   },
 };
 
@@ -271,7 +271,7 @@ function getMappedPath(
     return path;
   }
 
-  // Handle non-relative paths — resolve directly to esm.sh CDN
+  // Handle non-relative paths — resolve directly to ESM CDN
   if (!basePath.startsWith(".") && !basePath.startsWith("/")) {
     const params = ["bundle=true", `external=${EXTERNAL_DEPENDENCIES.join(",")}`, DEPS_PARAM];
 

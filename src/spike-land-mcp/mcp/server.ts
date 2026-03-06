@@ -7,6 +7,9 @@ export interface CreateMcpServerOptions {
   enabledCategories?: string[];
   kv?: KVNamespace;
   vaultSecret?: string;
+  mcpInternalSecret?: string;
+  spikeEdge?: Fetcher;
+  spaAssets?: R2Bucket;
 }
 
 export async function createMcpServer(
@@ -23,6 +26,9 @@ export async function createMcpServer(
   await registerAllTools(registry, userId, db, {
     ...(options?.kv !== undefined ? { kv: options.kv } : {}),
     ...(options?.vaultSecret !== undefined ? { vaultSecret: options.vaultSecret } : {}),
+    ...(options?.mcpInternalSecret !== undefined ? { mcpInternalSecret: options.mcpInternalSecret } : {}),
+    ...(options?.spikeEdge !== undefined ? { spikeEdge: options.spikeEdge } : {}),
+    ...(options?.spaAssets !== undefined ? { spaAssets: options.spaAssets } : {}),
   });
 
   if (options?.enabledCategories && options.enabledCategories.length > 0) {

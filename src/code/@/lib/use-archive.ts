@@ -42,12 +42,12 @@ export const getSpeedy2 = async () => {
     <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     media-src 'self' blob: ;
-    script-src 'self' https://js.spike.land https://cdn.jsdelivr.net https://esm.sh https://static.cloudflareinsights.com data: blob: 'unsafe-eval' 'unsafe-inline';
-    worker-src 'self' https://storage.googleapis.com https://esm.sh blob:;
-    style-src 'self' https://esm.sh 'unsafe-inline' https://fonts.googleapis.com;
-    connect-src 'self' https://cdn.jsdelivr.net blob: https://esm.sh wss://*.peerjs.com;
-    font-src 'self' data: blob: https://esm.sh https://fonts.gstatic.com;
-    img-src 'self' https://esm.sh data: blob:;
+    script-src 'self' https://js.spike.land https://cdn.jsdelivr.net https://esm.spike.land https://static.cloudflareinsights.com data: blob: 'unsafe-eval' 'unsafe-inline';
+    worker-src 'self' https://storage.googleapis.com https://esm.spike.land blob:;
+    style-src 'self' https://esm.spike.land 'unsafe-inline' https://fonts.googleapis.com;
+    connect-src 'self' https://cdn.jsdelivr.net blob: https://esm.spike.land wss://*.peerjs.com;
+    font-src 'self' data: blob: https://esm.spike.land https://fonts.gstatic.com;
+    img-src 'self' https://esm.spike.land data: blob:;
 ">
 
     <!-- Inline style for initial theme -->

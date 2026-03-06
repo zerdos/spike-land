@@ -50,10 +50,18 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "@types/react": "^19.2.14",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.577.0",
+    "react": "^19.2.4",
+    "tailwind-merge": "^3.5.0",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@changesets/cli": "2.30.0",
+    "@types/react": "^19.2.14",
     "@vitest/coverage-v8": "4.0.18",
     "tsup": "8.5.1",
     "typescript": "5.9.3",

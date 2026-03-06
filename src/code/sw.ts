@@ -9,7 +9,7 @@ const PRECACHE_ASSETS = ["/", "/index.html"];
 
 const CACHED_ORIGINS = [
   "unpkg.com",
-  "esm.sh",
+  "esm.spike.land",
   "cdn.jsdelivr.net",
   "cdnjs.cloudflare.com",
   "fonts.googleapis.com",
@@ -144,7 +144,7 @@ sw.addEventListener("fetch", (event) => {
     url.pathname.includes("typescript") ||
     url.pathname.includes("esbuild") ||
     url.hostname === "unpkg.com" ||
-    url.hostname === "esm.sh";
+    url.hostname === "esm.spike.land";
 
   const shouldCache = isCachedOrigin || isCachedExtension || isLocalAsset || isMonacoOrAtaOrEsbuild;
 

@@ -14,6 +14,7 @@ export interface ToolRegistrationEnv {
   vaultSecret?: string | undefined;
   mcpInternalSecret?: string | undefined;
   spikeEdge?: Fetcher | undefined;
+  spaAssets?: R2Bucket | undefined;
 }
 
 // ─── Static Imports ───
@@ -125,7 +126,7 @@ export async function registerAllTools(
   safeRegister(registerWorkspacesTools, "registerWorkspacesTools", registry, userId, db);
   safeRegister(registerBillingTools, "registerBillingTools", registry, userId, db);
   safeRegister(registerVaultTools, "registerVaultTools", registry, userId, db, env?.kv, env?.vaultSecret);
-  safeRegister(registerStorageTools, "registerStorageTools", registry, userId, db);
+  safeRegister(registerStorageTools, "registerStorageTools", registry, userId, db, env?.spaAssets);
   safeRegister(registerBoxesTools, "registerBoxesTools", registry, userId, db);
   safeRegister(registerRemindersTools, "registerRemindersTools", registry, userId, db);
   safeRegister(registerPermissionsTools, "registerPermissionsTools", registry, userId, db);

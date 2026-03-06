@@ -183,7 +183,7 @@ export function createBuildConfig(opts: BuildOptions): esbuild.BuildOptions {
     format: profile.format,
     sourcemap: true,
     target: "es2022",
-    external: (profile.bundle && external.length > 0) ? external : undefined,
+    external: (profile.bundle && external.length > 0) ? external : (profile.platform === "browser" ? ["node:*"] : undefined),
     banner: profile.banner,
     tsconfig: resolve("tsconfig.json"),
     logLevel: "info",
@@ -198,6 +198,10 @@ export async function buildPackage(opts: BuildOptions): Promise<esbuild.BuildRes
   console.log(`Building ${opts.packageName} (${opts.kind})...`);
   const result = await esbuild.build(config);
   console.log(`  ✓ ${opts.packageName} built to dist/${opts.packageName}/`);
+
+  if (opts.kind === "browser") {
+    copyBrowserAssets(opts, outDir);
+  }
   return result;
 }
 
@@ -329,4 +333,38 @@ if (process.argv[1]?.endsWith("esbuild.config.ts")) {
     console.error(err);
     process.exit(1);
   });
+}
+
+function copyBrowserAssets(opts: BuildOptions, outDir: string) {
+  const pkgDir = resolve("packages", opts.packageName);
+  const srcDir = resolve("src", opts.packageName);
+  
+  // Copy index.html
+  const htmlSrc = join(pkgDir, "index.html");
+  if (existsSync(htmlSrc)) {
+    let html = readFileSync(htmlSrc, "utf8");
+    // Change main.ts to main.js or main.tsx to main.js
+    html = html.replace(/src="\.\/main\.(ts|tsx)"/g, 'src="./main.js"');
+    
+    // Also remove any Vite-specific modulepreload if they are lingering
+    html = html.replace(/<link rel="modulepreload" crossorigin href="[^"]+">/g, '');
+    
+    // Also ensure no vite modulepreload-polyfill
+    html = html.replace(/<script type="module" crossorigin src="\/assets\/index-.*\.js"><\/script>/g, '');
+    
+    // Check if main script exists in html, if not add it
+    if (!html.includes('src="./main.js"')) {
+      // Just fallback
+    }
+    
+    writeFileSync(join(outDir, "index.html"), html);
+    console.log(`  ✓ copied and transformed index.html`);
+  }
+
+  // Copy public folder
+  const publicSrc = join(srcDir, "public");
+  if (existsSync(publicSrc)) {
+    fs.cpSync(publicSrc, outDir, { recursive: true });
+    console.log(`  ✓ copied public folder`);
+  }
 }

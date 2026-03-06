@@ -5,6 +5,7 @@ export interface Env {
   // Cloudflare bindings
   DB: D1Database;
   KV: KVNamespace;
+  SPA_ASSETS: R2Bucket;
 
   // Secrets
   MCP_JWT_SECRET: string;

@@ -426,7 +426,6 @@ packages:
     description: Frontend SPA (Vite + TanStack Router)
     entry: main.tsx
     private: true
-    vite: true
 
   # ─── Media ──────────────────────────────────────────────────────────────────
   video:
