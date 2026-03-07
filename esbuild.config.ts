@@ -125,6 +125,7 @@ const kindToCategory: Record<PackageKind, string> = {
 };
 
 const nameOverrides: Record<string, string> = {
+  "mcp-server-base": "server-base",
   "spike-app": "platform-frontend",
   "spike-edge": "main",
   "spike-land-backend": "backend",
