@@ -189,13 +189,18 @@ export function CodeEditor({
   }, [value]);
 
   const handleBeforeMount = useCallback((monaco: any) => {
-    const tsDefaults = monaco.languages.typescript.typescriptDefaults;
+    // Local monaco package exports typescript directly on the root object
+    const typescript = monaco?.typescript || monaco?.languages?.typescript;
+    if (!typescript) return;
+
+    const tsDefaults = typescript.typescriptDefaults;
+    if (!tsDefaults) return;
 
     tsDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.Latest,
-      module: monaco.languages.typescript.ModuleKind.ESNext,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+      target: 99, // ScriptTarget.ESNext
+      module: 99, // ModuleKind.ESNext
+      moduleResolution: 2, // ModuleResolutionKind.NodeJs
+      jsx: 4, // JsxEmit.ReactJSX
       jsxImportSource: "react",
       allowNonTsExtensions: true,
       allowSyntheticDefaultImports: true,

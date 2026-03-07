@@ -61,6 +61,7 @@ export default defineConfig(() => ({
       "@spike-land-ai/shared/utils": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
       "@spike-land-ai/shared/tool-builder": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/tool-builder-index.ts"),
       "@spike-land-ai/shared": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
+      "monaco-editor": resolve(import.meta.dirname, "../../src/monaco-editor/src/index.ts"),
       // PnP resolve aliases for CSS @import "tailwindcss" and @plugin "@tailwindcss/typography"
       "tailwindcss": pnpResolveDir("tailwindcss"),
       "@tailwindcss/typography": pnpResolveDir("@tailwindcss/typography"),
@@ -86,6 +87,11 @@ export default defineConfig(() => ({
       : {}),
     proxy: {
       "/api": {
+        target: "https://api.spike.land",
+        changeOrigin: true,
+        secure: true,
+      },
+      "/analytics": {
         target: "https://api.spike.land",
         changeOrigin: true,
         secure: true,
