@@ -4,7 +4,8 @@
   "packageManager": "yarn@4.13.0",
   "workspaces": [
     "packages/*",
-    ".github/packages/*"
+    ".github/packages/*",
+    "src/monaco-editor"
   ],
   "scripts": {
     "build": "yarn workspaces foreach -Apt run build",
@@ -38,6 +39,9 @@
     "@remotion/transitions": "^4.0.100",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "@spike-land-ai/shared": "workspace:*",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-router": "^1.166.2",
+    "@tanstack/router-cli": "^1.166.2",
     "agents": "^0.7.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

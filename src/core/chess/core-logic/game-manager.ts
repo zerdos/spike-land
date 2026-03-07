@@ -1,17 +1,58 @@
 import { createGame, getGameState, makeMove } from "../chess-core/engine";
 import { calculateEloChange } from "../lazy-imports/elo";
-import type { ChessGameStatus, ChessTimeControl } from "./prisma";
-import type { ChessGameRecord, ChessMoveRecord, ChessPlayerRecord } from "./prisma-chess-engine";
 import type { EloUpdate, GameResult, MoveResult } from "./types";
 import { TIME_CONTROL_MS } from "./types";
 
 const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+interface GameRecord {
+  id: string;
+  whitePlayerId: string;
+  blackPlayerId: string | null;
+  status: string;
+  fen: string;
+  pgn: string;
+  timeControl: string;
+  whiteTimeMs: number;
+  blackTimeMs: number;
+  winnerId: string | null;
+  result: string | null;
+  eloChanges: unknown;
+  moveCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  moves?: MoveRecord[];
+}
+
+interface MoveRecord {
+  id: string;
+  gameId: string;
+  moveNumber: number;
+  san: string;
+  from: string;
+  to: string;
+  fen: string;
+  playerId: string;
+  timeSpentMs: number | null;
+  createdAt: Date;
+}
+
+interface PlayerRecord {
+  id: string;
+  userId: string;
+  elo: number;
+  bestElo: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  streak: number;
+}
+
 export async function createGameRecord(
   whitePlayerId: string,
   timeControl: string = "BLITZ_5",
 ): Promise<{ id: string }> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const timeMs = TIME_CONTROL_MS[timeControl] ?? TIME_CONTROL_MS.BLITZ_5;
 
   const resolvedTimeMs = timeMs ?? 300_000;
@@ -20,7 +61,7 @@ export async function createGameRecord(
       whitePlayerId,
       status: "WAITING",
       fen: INITIAL_FEN,
-      timeControl: timeControl as ChessTimeControl,
+      timeControl: timeControl as import("@/generated/prisma").ChessTimeControl,
       whiteTimeMs: resolvedTimeMs,
       blackTimeMs: resolvedTimeMs,
     },
@@ -30,7 +71,7 @@ export async function createGameRecord(
 }
 
 export async function joinGame(gameId: string, blackPlayerId: string): Promise<{ id: string }> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = await prisma.chessGame.findUnique({ where: { id: gameId } });
 
   if (!game) {
@@ -61,10 +102,10 @@ export async function makeGameMove(
   to: string,
   promotion?: string,
 ): Promise<MoveResult> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -91,15 +132,16 @@ export async function makeGameMove(
   const state = getGameState(chess);
   const newMoveCount = game.moveCount + 1;
 
-  let newStatus: ChessGameStatus = "ACTIVE";
+  type ChessGameStatus = import("@/generated/prisma").ChessGameStatus;
+  let newStatus: ChessGameStatus = "ACTIVE" as ChessGameStatus;
   if (state.isCheckmate) {
-    newStatus = "CHECKMATE";
+    newStatus = "CHECKMATE" as ChessGameStatus;
   } else if (state.isStalemate) {
-    newStatus = "STALEMATE";
+    newStatus = "STALEMATE" as ChessGameStatus;
   } else if (state.isDraw) {
-    newStatus = "DRAW";
+    newStatus = "DRAW" as ChessGameStatus;
   } else if (state.isCheck) {
-    newStatus = "CHECK";
+    newStatus = "CHECK" as ChessGameStatus;
   }
 
   await prisma.chessMove.create({
@@ -141,8 +183,8 @@ export async function makeGameMove(
   return moveResult;
 }
 
-export async function getGame(gameId: string): Promise<ChessGameRecord> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+export async function getGame(gameId: string): Promise<GameRecord> {
+  const prisma = (await import("@/generated/prisma")).default;
   const game = await prisma.chessGame.findUnique({
     where: { id: gameId },
     include: { moves: true },
@@ -152,11 +194,11 @@ export async function getGame(gameId: string): Promise<ChessGameRecord> {
     throw new Error("Game not found");
   }
 
-  return game as ChessGameRecord;
+  return game as GameRecord;
 }
 
-export async function listGames(playerId: string, status?: string): Promise<ChessGameRecord[]> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+export async function listGames(playerId: string, status?: string): Promise<GameRecord[]> {
+  const prisma = (await import("@/generated/prisma")).default;
 
   const where: Record<string, unknown> = {
     OR: [{ whitePlayerId: playerId }, { blackPlayerId: playerId }],
@@ -184,14 +226,14 @@ export async function listGames(playerId: string, status?: string): Promise<Ches
       createdAt: true,
       updatedAt: true,
     },
-  }) as Promise<ChessGameRecord[]>;
+  }) as Promise<GameRecord[]>;
 }
 
 export async function resignGame(gameId: string, playerId: string): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -212,10 +254,10 @@ export async function resignGame(gameId: string, playerId: string): Promise<void
 }
 
 export async function offerDraw(gameId: string, playerId: string): Promise<{ offered: true }> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -231,7 +273,7 @@ export async function offerDraw(gameId: string, playerId: string): Promise<{ off
 }
 
 export async function acceptDraw(gameId: string, _playerId: string): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
 
   await prisma.chessGame.update({
     where: { id: gameId },
@@ -242,10 +284,10 @@ export async function acceptDraw(gameId: string, _playerId: string): Promise<voi
 }
 
 export async function declineDraw(gameId: string, playerId: string): Promise<{ declined: true }> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -262,11 +304,11 @@ export async function declineDraw(gameId: string, playerId: string): Promise<{ d
 
 export async function getGameReplay(
   gameId: string,
-): Promise<{ moves: ChessMoveRecord[]; pgn: string; result: string | null }> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+): Promise<{ moves: MoveRecord[]; pgn: string; result: string | null }> {
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -275,7 +317,7 @@ export async function getGameReplay(
   const moves = (await prisma.chessMove.findMany({
     where: { gameId },
     orderBy: { moveNumber: "asc" },
-  })) as ChessMoveRecord[];
+  })) as MoveRecord[];
 
   return {
     moves,
@@ -285,10 +327,10 @@ export async function getGameReplay(
 }
 
 export async function handleTimeExpiry(gameId: string, playerId: string): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game) {
     throw new Error("Game not found");
@@ -310,10 +352,10 @@ export async function finalizeGame(
   result: GameResult,
   winnerId?: string,
 ): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const game = (await prisma.chessGame.findUnique({
     where: { id: gameId },
-  })) as ChessGameRecord | null;
+  })) as GameRecord | null;
 
   if (!game || !game.blackPlayerId) {
     return;
@@ -321,10 +363,10 @@ export async function finalizeGame(
 
   const whitePlayer = (await prisma.chessPlayer.findUnique({
     where: { id: game.whitePlayerId },
-  })) as ChessPlayerRecord | null;
+  })) as PlayerRecord | null;
   const blackPlayer = (await prisma.chessPlayer.findUnique({
     where: { id: game.blackPlayerId },
-  })) as ChessPlayerRecord | null;
+  })) as PlayerRecord | null;
 
   if (!whitePlayer || !blackPlayer) {
     return;

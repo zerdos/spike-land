@@ -1,18 +1,9 @@
-import { lazy, Suspense, useState, useCallback, useMemo } from "react";
-import type { OnMount, BeforeMount } from "@monaco-editor/react";
-import loader from "@monaco-editor/loader";
+import { lazy, Suspense, useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Copy, Check, FileCode } from "lucide-react";
 import { cn } from "../styling/cn";
 import { useDarkMode } from "../ui/hooks/useDarkMode";
 import { useMonacoTypeAcquisition } from "../ui/hooks/useMonacoTypeAcquisition";
 import { MonacoCover } from "./monaco-cover/MonacoCover";
-
-// Configure Monaco loader to use esm.spike.land instead of cdn.jsdelivr.net (CSP-safe).
-loader.config({
-  paths: {
-    vs: "https://esm.spike.land/monaco-editor@0.55.1/min/vs",
-  },
-});
 
 // Configure Monaco web workers to load from esm.spike.land (CSP-safe).
 if (typeof globalThis !== "undefined") {
@@ -28,8 +19,75 @@ if (typeof globalThis !== "undefined") {
   };
 }
 
-// Lazy-load the heavy Monaco bundle so it doesn't block initial page load.
-const Editor = lazy(() => import("@monaco-editor/react"));
+function LocalMonacoEditor({
+  value,
+  language,
+  theme,
+  onChange,
+  options,
+  onMount,
+  beforeMount,
+}: any) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let isMounted = true;
+
+    import("monaco-editor").then((monaco) => {
+      if (!isMounted) return;
+
+      if (beforeMount) {
+        beforeMount(monaco);
+      }
+
+      editorRef.current = monaco.editor.create(containerRef.current!, {
+        value,
+        language,
+        theme,
+        ...options,
+      });
+
+      if (onMount) {
+        onMount(editorRef.current, monaco);
+      }
+
+      editorRef.current.onDidChangeModelContent(() => {
+        onChange(editorRef.current.getValue());
+      });
+    }).catch(err => {
+      console.error("Failed to load monaco-editor", err);
+    });
+
+    return () => {
+      isMounted = false;
+      if (editorRef.current) {
+        editorRef.current.dispose();
+      }
+    };
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.getValue() !== value) {
+      editorRef.current.setValue(value);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      import("monaco-editor").then((monaco) => {
+         monaco.editor.setTheme(theme);
+         const model = editorRef.current.getModel();
+         if (model) {
+           monaco.editor.setModelLanguage(model, language);
+         }
+      });
+    }
+  }, [theme, language]);
+
+  return <div ref={containerRef} className="w-full h-full" />;
+}
 
 /** Map file extensions to Monaco language identifiers. */
 const EXTENSION_LANGUAGE_MAP: Record<string, string> = {
@@ -130,7 +188,7 @@ export function CodeEditor({
     }
   }, [value]);
 
-  const handleBeforeMount = useCallback<BeforeMount>((monaco) => {
+  const handleBeforeMount = useCallback((monaco: any) => {
     const tsDefaults = monaco.languages.typescript.typescriptDefaults;
 
     tsDefaults.setCompilerOptions({
@@ -162,7 +220,7 @@ export function CodeEditor({
   }, []);
 
   // Focus the editor as soon as it mounts so users can type immediately.
-  const handleMount = useCallback<OnMount>((editor, monaco) => {
+  const handleMount = useCallback((editor: any, monaco: any) => {
     editor.focus();
     setMonacoInstance(monaco);
   }, []);
@@ -255,7 +313,7 @@ export function CodeEditor({
           />
         ) : (
           <Suspense fallback={<LoadingSpinner />}>
-            <Editor
+            <LocalMonacoEditor
               height="100%"
               language={resolvedLanguage}
               theme={monacoTheme}

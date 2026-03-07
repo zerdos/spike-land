@@ -1,4 +1,20 @@
-import type { ChessPlayerRecord } from "./prisma-chess-engine";
+interface ChessPlayer {
+  id: string;
+  userId: string;
+  name: string;
+  avatar: string | null;
+  elo: number;
+  bestElo: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  streak: number;
+  soundEnabled: boolean;
+  isOnline: boolean;
+  lastSeenAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface PlayerStats {
   elo: number;
@@ -15,8 +31,8 @@ export async function createPlayer(
   userId: string,
   name: string,
   avatar?: string,
-): Promise<ChessPlayerRecord> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+): Promise<ChessPlayer> {
+  const prisma = (await import("@/generated/prisma")).default;
   return prisma.chessPlayer.create({
     data: {
       userId,
@@ -26,13 +42,13 @@ export async function createPlayer(
   });
 }
 
-export async function getPlayer(playerId: string): Promise<ChessPlayerRecord | null> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+export async function getPlayer(playerId: string): Promise<ChessPlayer | null> {
+  const prisma = (await import("@/generated/prisma")).default;
   return prisma.chessPlayer.findUnique({ where: { id: playerId } });
 }
 
-export async function getPlayersByUser(userId: string): Promise<ChessPlayerRecord[]> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+export async function getPlayersByUser(userId: string): Promise<ChessPlayer[]> {
+  const prisma = (await import("@/generated/prisma")).default;
   return prisma.chessPlayer.findMany({
     where: { userId },
     select: {
@@ -59,8 +75,8 @@ export async function updatePlayer(
   playerId: string,
   userId: string,
   data: { name?: string; avatar?: string; soundEnabled?: boolean },
-): Promise<ChessPlayerRecord> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+): Promise<ChessPlayer> {
+  const prisma = (await import("@/generated/prisma")).default;
   try {
     return await prisma.chessPlayer.update({
       where: { id: playerId, userId },
@@ -72,7 +88,7 @@ export async function updatePlayer(
 }
 
 export async function deletePlayer(playerId: string, userId: string): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   try {
     await prisma.chessPlayer.delete({ where: { id: playerId, userId } });
   } catch {
@@ -81,7 +97,7 @@ export async function deletePlayer(playerId: string, userId: string): Promise<vo
 }
 
 export async function setPlayerOnline(playerId: string, isOnline: boolean): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   await prisma.chessPlayer.update({
     where: { id: playerId },
     data: {
@@ -91,8 +107,8 @@ export async function setPlayerOnline(playerId: string, isOnline: boolean): Prom
   });
 }
 
-export async function listOnlinePlayers(): Promise<ChessPlayerRecord[]> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+export async function listOnlinePlayers(): Promise<ChessPlayer[]> {
+  const prisma = (await import("@/generated/prisma")).default;
   return prisma.chessPlayer.findMany({
     where: { isOnline: true },
     select: {
@@ -116,7 +132,7 @@ export async function listOnlinePlayers(): Promise<ChessPlayerRecord[]> {
 }
 
 export async function getPlayerStats(playerId: string): Promise<PlayerStats> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
   const player = await prisma.chessPlayer.findUnique({
     where: { id: playerId },
   });
@@ -142,7 +158,7 @@ export async function updatePlayerElo(
   newElo: number,
   result: "win" | "loss" | "draw",
 ): Promise<void> {
-  const prisma = (await import("./prisma-chess-engine")).default;
+  const prisma = (await import("@/generated/prisma")).default;
 
   const winIncrement = result === "win" ? 1 : 0;
   const lossIncrement = result === "loss" ? 1 : 0;

@@ -4283,6 +4283,7 @@ __metadata:
     "@types/react": "npm:^19.2.14"
     framer-motion: "npm:^12.35.0"
     lucide-react: "npm:^0.577.0"
+    monaco-editor: "workspace:*"
     react: "npm:^19.2.4"
     react-markdown: "npm:^10.1.0"
     rehype-raw: "npm:^7.0.0"
@@ -13249,9 +13250,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@workspace:packages/monaco-editor":
+"monaco-editor@workspace:*, monaco-editor@workspace:src/monaco-editor":
   version: 0.0.0-use.local
-  resolution: "monaco-editor@workspace:packages/monaco-editor"
+  resolution: "monaco-editor@workspace:src/monaco-editor"
   dependencies:
     "@eslint/js": "npm:^9.18.0"
     "@types/trusted-types": "npm:^1.0.6"
@@ -15882,6 +15883,9 @@ __metadata:
     "@remotion/transitions": "npm:^4.0.100"
     "@spike-land-ai/mcp-server-base": "workspace:*"
     "@spike-land-ai/shared": "workspace:*"
+    "@tanstack/react-query": "npm:^5.90.21"
+    "@tanstack/react-router": "npm:^1.166.2"
+    "@tanstack/router-cli": "npm:^1.166.2"
     "@types/node": "npm:25.3.5"
     "@vitest/coverage-v8": "npm:4.0.18"
     agents: "npm:^0.7.5"

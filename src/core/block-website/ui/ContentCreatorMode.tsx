@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -6,6 +6,46 @@ import { Pencil, X, GitPullRequest } from "lucide-react";
 import { Button } from "../lazy-imports/button";
 import { cn } from "@spike-land-ai/shared";
 import { apiUrl } from "../core-logic/api";
+
+function MonacoEditorWrapper({ value, onChange }: { value: string, onChange: (v: string) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let isMounted = true;
+
+    import("monaco-editor").then((monaco) => {
+      if (!isMounted) return;
+      editorRef.current = monaco.editor.create(containerRef.current!, {
+        value,
+        language: "markdown",
+        theme: "vs-dark",
+        minimap: { enabled: false },
+        wordWrap: "on",
+        fontSize: 13,
+        lineNumbers: "on",
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+      });
+
+      editorRef.current.onDidChangeModelContent(() => {
+        onChange(editorRef.current.getValue());
+      });
+    }).catch(err => {
+      console.error("Failed to load monaco-editor", err);
+    });
+
+    return () => {
+      isMounted = false;
+      if (editorRef.current) {
+        editorRef.current.dispose();
+      }
+    };
+  }, []); // Run once on mount
+
+  return <div ref={containerRef} className="w-full h-full" />;
+}
 
 function isDevMode(): boolean {
   if (typeof window === "undefined") return false;
@@ -120,13 +160,19 @@ export function ContentCreatorMode({
               MDX Source
             </span>
           </div>
-          <div className="flex-1 overflow-hidden">
-            <textarea
-              className="w-full h-full resize-none bg-background font-mono text-sm p-4 focus:outline-none"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              spellCheck={false}
-            />
+          <div className="flex-1 overflow-hidden relative">
+            <Suspense
+              fallback={
+                <textarea
+                  className="w-full h-full resize-none bg-background font-mono text-sm p-4 focus:outline-none absolute inset-0"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  spellCheck={false}
+                />
+              }
+            >
+              <MonacoEditorWrapper value={content} onChange={setContent} />
+            </Suspense>
           </div>
         </div>
 
