@@ -196,6 +196,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
+      # spike-land-backend uses Workers Sites pointing to the code editor's
+      # dist/. In CI this isn't built (spike-app is the primary SPA now).
+      # Create a minimal placeholder so wrangler doesn't fail.
+      - name: Prepare spike-land-backend site assets
+        run: mkdir -p node_modules/@spike-land-ai/code/dist && echo '{}' > node_modules/@spike-land-ai/code/dist/.gitkeep
+
       # Wave 2: workers that depend on wave 1
       - name: "Deploy wave 2: dependent workers"
         run: |
