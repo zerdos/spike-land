@@ -7,12 +7,7 @@
 
 import { GitHubClient } from "../lazy-imports/client.js";
 import { buildReviewPrompt } from "./prompts.js";
-import {
-  computeOverallStatus,
-  formatGateResults,
-  getBuiltinRules,
-  runGates,
-} from "./engine.js";
+import { computeOverallStatus, formatGateResults, getBuiltinRules, runGates } from "./engine.js";
 import type { RuleContext } from "./engine.js";
 import type { ReviewPRSchema } from "./types.js";
 import type { z } from "zod";

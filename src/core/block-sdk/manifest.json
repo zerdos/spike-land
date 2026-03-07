@@ -1,12 +1,7 @@
 {
   "name": "block-sdk",
   "category": "core",
-  "dependencies": [
-    "@spike-land-ai/shared",
-    "better-sqlite3",
-    "react",
-    "sql.js"
-  ],
+  "dependencies": ["@spike-land-ai/shared", "better-sqlite3", "react", "sql.js"],
   "files": [
     "core-logic/d1.ts",
     "core-logic/index.ts",

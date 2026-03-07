@@ -27,10 +27,7 @@ function tailwindPnpPlugin(): Plugin {
     transform(code, id) {
       if (!id.endsWith(".css")) return null;
       if (!code.includes('@plugin "@tailwindcss/typography"')) return null;
-      return code.replace(
-        '@plugin "@tailwindcss/typography"',
-        `@plugin "${typographyDir}"`,
-      );
+      return code.replace('@plugin "@tailwindcss/typography"', `@plugin "${typographyDir}"`);
     },
   };
 }
@@ -51,19 +48,49 @@ export default defineConfig(() => ({
   resolve: {
     alias: {
       "@": resolve(import.meta.dirname, "../../src/frontend/platform-frontend"),
-      "@spike-land-ai/block-website/ui": resolve(import.meta.dirname, "../../src/core/block-website/core-logic/ui-index.ts"),
-      "@spike-land-ai/block-website/core": resolve(import.meta.dirname, "../../src/core/block-website/core-logic/core-index.ts"),
-      "@spike-land-ai/block-website/mcp": resolve(import.meta.dirname, "../../src/core/block-website/mcp/mcp-index.ts"),
-      "@spike-land-ai/block-website": resolve(import.meta.dirname, "../../src/core/block-website/index.ts"),
-      "@spike-land-ai/shared/constants": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/constants-index.ts"),
-      "@spike-land-ai/shared/types": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/types-index.ts"),
-      "@spike-land-ai/shared/validations": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/validations-index.ts"),
-      "@spike-land-ai/shared/utils": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
-      "@spike-land-ai/shared/tool-builder": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/tool-builder-index.ts"),
-      "@spike-land-ai/shared": resolve(import.meta.dirname, "../../src/core/shared-utils/core-logic/index.ts"),
+      "@spike-land-ai/block-website/ui": resolve(
+        import.meta.dirname,
+        "../../src/core/block-website/core-logic/ui-index.ts",
+      ),
+      "@spike-land-ai/block-website/core": resolve(
+        import.meta.dirname,
+        "../../src/core/block-website/core-logic/core-index.ts",
+      ),
+      "@spike-land-ai/block-website/mcp": resolve(
+        import.meta.dirname,
+        "../../src/core/block-website/mcp/mcp-index.ts",
+      ),
+      "@spike-land-ai/block-website": resolve(
+        import.meta.dirname,
+        "../../src/core/block-website/index.ts",
+      ),
+      "@spike-land-ai/shared/constants": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/constants-index.ts",
+      ),
+      "@spike-land-ai/shared/types": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/types-index.ts",
+      ),
+      "@spike-land-ai/shared/validations": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/validations-index.ts",
+      ),
+      "@spike-land-ai/shared/utils": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/index.ts",
+      ),
+      "@spike-land-ai/shared/tool-builder": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/tool-builder-index.ts",
+      ),
+      "@spike-land-ai/shared": resolve(
+        import.meta.dirname,
+        "../../src/core/shared-utils/core-logic/index.ts",
+      ),
       "monaco-editor": resolve(import.meta.dirname, "../../src/monaco-editor/src/index.ts"),
       // PnP resolve aliases for CSS @import "tailwindcss" and @plugin "@tailwindcss/typography"
-      "tailwindcss": pnpResolveDir("tailwindcss"),
+      tailwindcss: pnpResolveDir("tailwindcss"),
       "@tailwindcss/typography": pnpResolveDir("@tailwindcss/typography"),
     },
   },
@@ -133,8 +160,16 @@ export default defineConfig(() => ({
           if (id.includes("/@tanstack/")) return "vendor-tanstack";
           if (id.includes("/framer-motion/")) return "vendor-framer-motion";
           if (id.includes("/@xterm/")) return "vendor-xterm";
-          if (id.includes("/typescript/") || id.includes("/@typescript/ata/")) return "vendor-typescript";
-          if (id.includes("/lucide-react/") || id.includes("/clsx/") || id.includes("/class-variance-authority/") || id.includes("/tailwind-merge/") || id.includes("/@radix-ui/")) return "vendor-ui";
+          if (id.includes("/typescript/") || id.includes("/@typescript/ata/"))
+            return "vendor-typescript";
+          if (
+            id.includes("/lucide-react/") ||
+            id.includes("/clsx/") ||
+            id.includes("/class-variance-authority/") ||
+            id.includes("/tailwind-merge/") ||
+            id.includes("/@radix-ui/")
+          )
+            return "vendor-ui";
           return "vendor-misc";
         },
       },

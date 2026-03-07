@@ -105,9 +105,7 @@ function createMemorySQL(): SQLAdapter {
     }
 
     // UPDATE table SET col = ? WHERE col2 = ? AND col3 = ?
-    const updateMatch = trimmed.match(
-      /^UPDATE\s+(\w+)\s+SET\s+(.+?)\s+WHERE\s+(.+)/i,
-    );
+    const updateMatch = trimmed.match(/^UPDATE\s+(\w+)\s+SET\s+(.+?)\s+WHERE\s+(.+)/i);
     if (updateMatch) {
       const tableName = updateMatch[1]!;
       const setClauses = updateMatch[2]!.split(",").map((s) => s.trim());
@@ -187,7 +185,10 @@ function createMemoryBlobs(): BlobAdapter {
       if (data instanceof ArrayBuffer) {
         store.set(key, data);
       } else if (data instanceof Uint8Array) {
-        store.set(key, (data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength));
+        store.set(
+          key,
+          (data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength),
+        );
       } else {
         // ReadableStream — collect chunks
         const reader = (data as ReadableStream).getReader();

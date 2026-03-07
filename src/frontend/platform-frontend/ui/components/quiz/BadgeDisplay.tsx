@@ -57,7 +57,9 @@ export function BadgeDisplay({ token, topic, score, completedAt }: BadgeDisplayP
       </div>
 
       <div className="mt-6 border-t border-border pt-4">
-        <label className="mb-1 block text-xs font-medium text-muted-foreground">Share this badge</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">
+          Share this badge
+        </label>
         <div className="flex items-center gap-2">
           <input
             type="text"

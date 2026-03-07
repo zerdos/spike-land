@@ -15,7 +15,9 @@ blogComments.get("/blog/:slug/comments", async (c) => {
     `SELECT id, user_id, user_name, content, anchor_text, position_selector,
             parent_id, upvotes, downvotes, score, created_at, updated_at
      FROM blog_comments WHERE article_slug = ? ORDER BY created_at ASC`,
-  ).bind(slug).all();
+  )
+    .bind(slug)
+    .all();
 
   return c.json(result.results);
 });
@@ -45,7 +47,9 @@ blogComments.post("/blog/:slug/comments", authMiddleware, async (c) => {
   if (body.parent_id) {
     const parent = await c.env.DB.prepare(
       "SELECT id FROM blog_comments WHERE id = ? AND article_slug = ?",
-    ).bind(body.parent_id, slug).first();
+    )
+      .bind(body.parent_id, slug)
+      .first();
     if (!parent) {
       return c.json({ error: "Parent comment not found" }, 404);
     }
@@ -54,15 +58,17 @@ blogComments.post("/blog/:slug/comments", authMiddleware, async (c) => {
   const result = await c.env.DB.prepare(
     `INSERT INTO blog_comments (article_slug, user_id, user_name, content, anchor_text, position_selector, parent_id)
      VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, created_at`,
-  ).bind(
-    slug,
-    userId,
-    body.user_name.trim(),
-    body.content.trim(),
-    body.anchor_text ?? null,
-    body.position_selector ?? null,
-    body.parent_id ?? null,
-  ).first<{ id: string; created_at: number }>();
+  )
+    .bind(
+      slug,
+      userId,
+      body.user_name.trim(),
+      body.content.trim(),
+      body.anchor_text ?? null,
+      body.position_selector ?? null,
+      body.parent_id ?? null,
+    )
+    .first<{ id: string; created_at: number }>();
 
   return c.json(result, 201);
 });
@@ -79,7 +85,9 @@ blogComments.post("/blog/comments/:commentId/vote", authMiddleware, async (c) =>
 
   const comment = await c.env.DB.prepare(
     "SELECT id, user_id, score FROM blog_comments WHERE id = ?",
-  ).bind(commentId).first<{ id: string; user_id: string; score: number }>();
+  )
+    .bind(commentId)
+    .first<{ id: string; user_id: string; score: number }>();
 
   if (!comment) {
     return c.json({ error: "Comment not found" }, 404);
@@ -93,7 +101,9 @@ blogComments.post("/blog/comments/:commentId/vote", authMiddleware, async (c) =>
   // Check for existing vote
   const existingVote = await c.env.DB.prepare(
     "SELECT id, vote FROM blog_comment_votes WHERE comment_id = ? AND user_id = ?",
-  ).bind(commentId, userId).first<{ id: string; vote: number }>();
+  )
+    .bind(commentId, userId)
+    .first<{ id: string; vote: number }>();
 
   if (existingVote) {
     if (existingVote.vote === body.vote) {
@@ -106,18 +116,13 @@ blogComments.post("/blog/comments/:commentId/vote", authMiddleware, async (c) =>
     // Not currently tracked in stats but included for completeness of the calculation.
 
     await c.env.DB.batch([
-      c.env.DB.prepare(
-        "UPDATE blog_comment_votes SET vote = ? WHERE id = ?",
-      ).bind(body.vote, existingVote.id),
+      c.env.DB.prepare("UPDATE blog_comment_votes SET vote = ? WHERE id = ?").bind(
+        body.vote,
+        existingVote.id,
+      ),
       c.env.DB.prepare(
         "UPDATE blog_comments SET upvotes = upvotes + ?, downvotes = downvotes + ?, score = score + ?, updated_at = ? WHERE id = ?",
-      ).bind(
-        body.vote === 1 ? 1 : -1,
-        body.vote === -1 ? 1 : -1,
-        upDelta,
-        Date.now(),
-        commentId,
-      ),
+      ).bind(body.vote === 1 ? 1 : -1, body.vote === -1 ? 1 : -1, upDelta, Date.now(), commentId),
     ]);
   } else {
     // New vote
@@ -132,20 +137,14 @@ blogComments.post("/blog/comments/:commentId/vote", authMiddleware, async (c) =>
           score = score + ?,
           updated_at = ?
         WHERE id = ?`,
-      ).bind(
-        body.vote === 1 ? 1 : 0,
-        body.vote === -1 ? 1 : 0,
-        body.vote,
-        Date.now(),
-        commentId,
-      ),
+      ).bind(body.vote === 1 ? 1 : 0, body.vote === -1 ? 1 : 0, body.vote, Date.now(), commentId),
     ]);
   }
 
   // Check if comment is now overwhelmingly downvoted → ELO penalty for comment author
-  const updatedComment = await c.env.DB.prepare(
-    "SELECT score FROM blog_comments WHERE id = ?",
-  ).bind(commentId).first<{ score: number }>();
+  const updatedComment = await c.env.DB.prepare("SELECT score FROM blog_comments WHERE id = ?")
+    .bind(commentId)
+    .first<{ score: number }>();
 
   let elopenalty = false;
   if (updatedComment && updatedComment.score <= DOWNVOTE_THRESHOLD) {
@@ -168,9 +167,9 @@ blogComments.delete("/blog/comments/:commentId", authMiddleware, async (c) => {
   const commentId = c.req.param("commentId");
   const userId = c.get("userId");
 
-  const comment = await c.env.DB.prepare(
-    "SELECT user_id FROM blog_comments WHERE id = ?",
-  ).bind(commentId).first<{ user_id: string }>();
+  const comment = await c.env.DB.prepare("SELECT user_id FROM blog_comments WHERE id = ?")
+    .bind(commentId)
+    .first<{ user_id: string }>();
 
   if (!comment) {
     return c.json({ error: "Comment not found" }, 404);

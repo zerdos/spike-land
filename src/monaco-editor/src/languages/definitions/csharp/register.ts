@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'csharp',
-	extensions: ['.cs', '.csx', '.cake'],
-	aliases: ['C#', 'csharp'],
-	loader: () => import('./csharp')
+  id: "csharp",
+  extensions: [".cs", ".csx", ".cake"],
+  aliases: ["C#", "csharp"],
+  loader: () => import("./csharp"),
 });

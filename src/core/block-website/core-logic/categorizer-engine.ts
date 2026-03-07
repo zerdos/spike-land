@@ -108,8 +108,7 @@ const CATEGORY_RULES: CategoryRule[] = [
       deps.has("replicate"),
     category: "edge-api",
     rule: "AI SDK packages",
-    reason:
-      "Imports AI SDK (Anthropic/Google/Replicate) — this is an AI gateway or edge handler.",
+    reason: "Imports AI SDK (Anthropic/Google/Replicate) — this is an AI gateway or edge handler.",
   },
 ];
 
@@ -132,8 +131,7 @@ export function categorizeFile(externals: string[]): CategoryResult {
 
   return {
     category: "utilities",
-    reason:
-      "No framework-specific imports detected — falls through to utilities.",
+    reason: "No framework-specific imports detected — falls through to utilities.",
     matchedRule: "fallback",
   };
 }
@@ -148,16 +146,12 @@ export function suggestSubdir(externals: string[]): string {
 
   const tags: string[] = [];
 
-  if (has("playwright") || has("testing-library") || has("vitest"))
-    tags.push("testing");
-  if (has("ai-sdk") || has("anthropic") || has("google/genai") || has("replicate"))
-    tags.push("ai");
-  if (has("drizzle") || has("sql.js") || has("sqlite") || has("better-sqlite3"))
-    tags.push("db");
+  if (has("playwright") || has("testing-library") || has("vitest")) tags.push("testing");
+  if (has("ai-sdk") || has("anthropic") || has("google/genai") || has("replicate")) tags.push("ai");
+  if (has("drizzle") || has("sql.js") || has("sqlite") || has("better-sqlite3")) tags.push("db");
   if (has("hono")) tags.push("api");
   if (has("remotion")) tags.push("video");
-  if (has("commander") || has("dotenv") || has("xterm") || has("readline"))
-    tags.push("cli");
+  if (has("commander") || has("dotenv") || has("xterm") || has("readline")) tags.push("cli");
   if (has("react-three")) tags.push("3d");
   if (has("framer-motion") || has("tw-animate")) tags.push("animation");
   if (has("monaco")) tags.push("editor");
@@ -168,13 +162,7 @@ export function suggestSubdir(externals: string[]): string {
   if (has("stripe")) tags.push("payments");
 
   // React / UI
-  if (
-    has("react") ||
-    has("radix-ui") ||
-    has("lucide") ||
-    has("emotion") ||
-    has("tailwindcss")
-  ) {
+  if (has("react") || has("radix-ui") || has("lucide") || has("emotion") || has("tailwindcss")) {
     if (!tags.includes("editor") && !tags.includes("video") && !tags.includes("3d")) {
       tags.push("ui");
     }

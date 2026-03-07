@@ -13,7 +13,13 @@ const getCorsHeaders = (requestUrl?: string) => {
   let allowOrigin = "https://spike.land";
   if (requestUrl) {
     const origin = new URL(requestUrl).origin;
-    if (origin.endsWith(".spike.land") || origin.startsWith("http://localhost:") || origin.startsWith("https://localhost:") || origin.startsWith("http://127.0.0.1:") || origin.startsWith("https://127.0.0.1:")) {
+    if (
+      origin.endsWith(".spike.land") ||
+      origin.startsWith("http://localhost:") ||
+      origin.startsWith("https://localhost:") ||
+      origin.startsWith("http://127.0.0.1:") ||
+      origin.startsWith("https://127.0.0.1:")
+    ) {
       allowOrigin = origin;
     }
   }
@@ -68,7 +74,10 @@ async function hashCode(code: string): Promise<string> {
   const data = new TextEncoder().encode(code);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+  return hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
 }
 
 const handlePostRequest = async (request: Request, ctx?: ExecutionContext) => {
@@ -97,7 +106,9 @@ const handlePostRequest = async (request: Request, ctx?: ExecutionContext) => {
     // Cache in background — deterministic output, safe to cache for 24h
     try {
       ctx?.waitUntil(cache.put(cacheKey, response.clone()));
-    } catch { /* waitUntil not available outside worker context */ }
+    } catch {
+      /* waitUntil not available outside worker context */
+    }
 
     return response;
   } catch (error) {
@@ -125,7 +136,14 @@ export default {
     if (request.method === "OPTIONS") {
       const requestOrigin = request.headers.get("Origin");
       let allowOrigin = "https://spike.land";
-      if (requestOrigin && (requestOrigin.endsWith(".spike.land") || requestOrigin.startsWith("http://localhost:") || requestOrigin.startsWith("https://localhost:") || requestOrigin.startsWith("http://127.0.0.1:") || requestOrigin.startsWith("https://127.0.0.1:"))) {
+      if (
+        requestOrigin &&
+        (requestOrigin.endsWith(".spike.land") ||
+          requestOrigin.startsWith("http://localhost:") ||
+          requestOrigin.startsWith("https://localhost:") ||
+          requestOrigin.startsWith("http://127.0.0.1:") ||
+          requestOrigin.startsWith("https://127.0.0.1:"))
+      ) {
         allowOrigin = requestOrigin;
       }
 

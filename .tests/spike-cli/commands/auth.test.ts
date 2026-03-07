@@ -109,7 +109,9 @@ describe("auth command", () => {
     // @ts-expect-error
     await login._actionHandler([{ baseUrl: "https://test" }, []]);
 
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("https://spike.land/activate"));
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("https://spike.land/activate"),
+    );
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("USER-CODE"));
   });
 

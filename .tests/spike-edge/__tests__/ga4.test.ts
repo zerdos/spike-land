@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getClientId, hashClientId, sendGA4Events } from "../../../src/edge-api/main/lazy-imports/ga4.js";
+import {
+  getClientId,
+  hashClientId,
+  sendGA4Events,
+} from "../../../src/edge-api/main/lazy-imports/ga4.js";
 
 describe("hashClientId", () => {
   it("returns consistent hex hash for same input", async () => {
@@ -49,9 +53,7 @@ describe("sendGA4Events", () => {
   const env = { GA_MEASUREMENT_ID: "G-TEST123", GA_API_SECRET: "secret123" };
 
   it("sends correct payload to GA4 endpoint", async () => {
-    await sendGA4Events(env, "client-abc", [
-      { name: "page_view", params: { page: "/home" } },
-    ]);
+    await sendGA4Events(env, "client-abc", [{ name: "page_view", params: { page: "/home" } }]);
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     const [url, init] = mockFetch.mock.calls[0]!;
@@ -99,9 +101,7 @@ describe("sendGA4Events", () => {
 
   it("truncates strings longer than 500 chars", async () => {
     const longString = "x".repeat(600);
-    await sendGA4Events(env, "client-abc", [
-      { name: "test", params: { value: longString } },
-    ]);
+    await sendGA4Events(env, "client-abc", [{ name: "test", params: { value: longString } }]);
 
     const body = JSON.parse(mockFetch.mock.calls[0]![1].body);
     expect(body.events[0].params.value).toHaveLength(500);
@@ -113,10 +113,8 @@ describe("sendGA4Events", () => {
     // The current implementation does not catch fetch errors — they propagate.
     // The caller (analytics route) wraps this in waitUntil, so failures are
     // silently swallowed at the Workers runtime level.
-    await expect(
-      sendGA4Events(env, "client-abc", [
-        { name: "test", params: {} },
-      ]),
-    ).rejects.toThrow("network error");
+    await expect(sendGA4Events(env, "client-abc", [{ name: "test", params: {} }])).rejects.toThrow(
+      "network error",
+    );
   });
 });

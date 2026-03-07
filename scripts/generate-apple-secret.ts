@@ -168,9 +168,12 @@ async function main(): Promise<void> {
         `echo "${servicesId}" | npx wrangler secret put AUTH_APPLE_ID --config packages/mcp-auth/wrangler.toml`,
         { stdio: "inherit" },
       );
-      execSync(`echo "${jwt}" | npx wrangler secret put AUTH_APPLE_SECRET --config packages/mcp-auth/wrangler.toml`, {
-        stdio: "inherit",
-      });
+      execSync(
+        `echo "${jwt}" | npx wrangler secret put AUTH_APPLE_SECRET --config packages/mcp-auth/wrangler.toml`,
+        {
+          stdio: "inherit",
+        },
+      );
       console.log("\nSecrets deployed successfully.");
     } catch {
       console.error("\nFailed to deploy secrets. Make sure wrangler is authenticated.");

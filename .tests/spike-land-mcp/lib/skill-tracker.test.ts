@@ -20,7 +20,9 @@ function createMockD1WithCapture() {
         first: async () => null,
         raw: async () => [],
         _sql: sql,
-        get _boundValues() { return boundValues; },
+        get _boundValues() {
+          return boundValues;
+        },
       };
       return stmt;
     },

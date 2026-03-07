@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'python',
-	extensions: ['.py', '.rpy', '.pyw', '.cpy', '.gyp', '.gypi'],
-	aliases: ['Python', 'py'],
-	firstLine: '^#!/.*\\bpython[0-9.-]*\\b',
-	loader: () => import('./python')
+  id: "python",
+  extensions: [".py", ".rpy", ".pyw", ".cpy", ".gyp", ".gypi"],
+  aliases: ["Python", "py"],
+  firstLine: "^#!/.*\\bpython[0-9.-]*\\b",
+  loader: () => import("./python"),
 });

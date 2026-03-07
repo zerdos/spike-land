@@ -1,11 +1,7 @@
 {
   "name": "main",
   "category": "edge-api",
-  "dependencies": [
-    "@spike-land-ai/shared",
-    "cloudflare:workers",
-    "hono"
-  ],
+  "dependencies": ["@spike-land-ai/shared", "cloudflare:workers", "hono"],
   "files": [
     "api/__tests__/__tests__/blog.test.ts",
     "api/__tests__/__tests__/experiments.test.ts",

@@ -34,9 +34,16 @@ export function TermsPage() {
           subject to change with 30 days&rsquo; notice.
         </p>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
-          <li>You may cancel your subscription at any time from the Settings &rarr; Billing page.</li>
-          <li>Cancellation takes effect at the end of the current billing period; no prorated refunds are issued.</li>
-          <li>We reserve the right to suspend access for unpaid invoices after a 7-day grace period.</li>
+          <li>
+            You may cancel your subscription at any time from the Settings &rarr; Billing page.
+          </li>
+          <li>
+            Cancellation takes effect at the end of the current billing period; no prorated refunds
+            are issued.
+          </li>
+          <li>
+            We reserve the right to suspend access for unpaid invoices after a 7-day grace period.
+          </li>
         </ul>
       </section>
 
@@ -44,8 +51,12 @@ export function TermsPage() {
         <h2 className="text-xl font-semibold">4. Acceptable Use</h2>
         <p className="leading-relaxed text-foreground">You agree not to:</p>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
-          <li>Use the Platform to generate, store, or transmit unlawful, harmful, or abusive content</li>
-          <li>Attempt to reverse-engineer, scrape, or disrupt the Platform or its infrastructure</li>
+          <li>
+            Use the Platform to generate, store, or transmit unlawful, harmful, or abusive content
+          </li>
+          <li>
+            Attempt to reverse-engineer, scrape, or disrupt the Platform or its infrastructure
+          </li>
           <li>Resell or sublicense API access or MCP tools without our written consent</li>
           <li>Use automated means to create accounts or circumvent rate limits</li>
           <li>Violate any applicable laws, regulations, or third-party rights</li>
@@ -60,10 +71,10 @@ export function TermsPage() {
         <h2 className="text-xl font-semibold">5. Intellectual Property</h2>
         <p className="leading-relaxed text-foreground">
           You retain full ownership of applications, code, and content you create using the
-          Platform. By publishing an application to the App Store, you grant spike.land a
-          worldwide, non-exclusive, royalty-free licence to display, distribute, and promote it
-          within the Platform solely for the purpose of operating the store. You may remove your
-          application from the store at any time.
+          Platform. By publishing an application to the App Store, you grant spike.land a worldwide,
+          non-exclusive, royalty-free licence to display, distribute, and promote it within the
+          Platform solely for the purpose of operating the store. You may remove your application
+          from the store at any time.
         </p>
         <p className="leading-relaxed text-foreground">
           All Platform code, trademarks, logos, and documentation not created by users remain the
@@ -91,8 +102,9 @@ export function TermsPage() {
           OR PROFITS, ARISING FROM YOUR USE OF OR INABILITY TO USE THE PLATFORM.
         </p>
         <p className="leading-relaxed text-foreground">
-          Our total liability to you for any claim arising out of or related to these Terms shall not
-          exceed the amount you paid us in the 12 months preceding the event giving rise to the claim.
+          Our total liability to you for any claim arising out of or related to these Terms shall
+          not exceed the amount you paid us in the 12 months preceding the event giving rise to the
+          claim.
         </p>
       </section>
 
@@ -135,7 +147,10 @@ export function TermsPage() {
             GitHub organization
           </a>{" "}
           or email us at{" "}
-          <a href="mailto:legal@spike.land" className="text-primary underline hover:text-primary/80">
+          <a
+            href="mailto:legal@spike.land"
+            className="text-primary underline hover:text-primary/80"
+          >
             legal@spike.land
           </a>
           .

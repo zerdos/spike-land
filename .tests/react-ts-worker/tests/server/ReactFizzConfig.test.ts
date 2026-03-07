@@ -34,7 +34,7 @@ describe("ReactFizzConfig", () => {
     });
 
     it("escapes multiple chars", () => {
-      expect(escapeHtml("<a href=\"test\">")).toBe("&lt;a href=&quot;test&quot;&gt;");
+      expect(escapeHtml('<a href="test">')).toBe("&lt;a href=&quot;test&quot;&gt;");
     });
   });
 

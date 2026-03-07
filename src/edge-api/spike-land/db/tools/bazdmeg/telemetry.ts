@@ -27,11 +27,7 @@ export function registerBazdmegTelemetryTools(
             .optional()
             .default(7)
             .describe("Number of days to look back (default 7)."),
-          limit: z
-            .number()
-            .optional()
-            .default(20)
-            .describe("Max tools to return (default 20)."),
+          limit: z.number().optional().default(20).describe("Max tools to return (default 20)."),
         },
       )
       .meta({ category: "mcp-observability", tier: "free" })

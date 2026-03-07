@@ -350,9 +350,9 @@ describe("deploy tools", () => {
       const { existsSync } = await import("node:fs");
       // existsSync calls: pkgDir check, hasBuildScript, frontendDir exists, node_modules not exists
       vi.mocked(existsSync)
-        .mockReturnValueOnce(true)  // pkgDir exists
-        .mockReturnValueOnce(true)  // hasBuildScript (package.json)
-        .mockReturnValueOnce(true)  // frontendDir exists
+        .mockReturnValueOnce(true) // pkgDir exists
+        .mockReturnValueOnce(true) // hasBuildScript (package.json)
+        .mockReturnValueOnce(true) // frontendDir exists
         .mockReturnValueOnce(false); // node_modules not exists
 
       mockGetManifestPackage.mockResolvedValue({
@@ -385,9 +385,9 @@ describe("deploy tools", () => {
     it("blocks when frontend npm install fails", async () => {
       const { existsSync } = await import("node:fs");
       vi.mocked(existsSync)
-        .mockReturnValueOnce(true)  // pkgDir
-        .mockReturnValueOnce(true)  // hasBuildScript
-        .mockReturnValueOnce(true)  // frontendDir exists
+        .mockReturnValueOnce(true) // pkgDir
+        .mockReturnValueOnce(true) // hasBuildScript
+        .mockReturnValueOnce(true) // frontendDir exists
         .mockReturnValueOnce(false); // node_modules not exists
 
       mockGetManifestPackage.mockResolvedValue({
@@ -421,10 +421,10 @@ describe("deploy tools", () => {
     it("blocks when vite build fails", async () => {
       const { existsSync } = await import("node:fs");
       vi.mocked(existsSync)
-        .mockReturnValueOnce(true)   // pkgDir
-        .mockReturnValueOnce(true)   // hasBuildScript
-        .mockReturnValueOnce(true)   // frontendDir exists
-        .mockReturnValueOnce(true);  // node_modules exists (skip install)
+        .mockReturnValueOnce(true) // pkgDir
+        .mockReturnValueOnce(true) // hasBuildScript
+        .mockReturnValueOnce(true) // frontendDir exists
+        .mockReturnValueOnce(true); // node_modules exists (skip install)
 
       mockGetManifestPackage.mockResolvedValue({
         kind: "worker",
@@ -458,10 +458,10 @@ describe("deploy tools", () => {
     it("blocks when vite build fails with stdout only (no stderr)", async () => {
       const { existsSync } = await import("node:fs");
       vi.mocked(existsSync)
-        .mockReturnValueOnce(true)   // pkgDir
-        .mockReturnValueOnce(true)   // hasBuildScript
-        .mockReturnValueOnce(true)   // frontendDir exists
-        .mockReturnValueOnce(true);  // node_modules exists
+        .mockReturnValueOnce(true) // pkgDir
+        .mockReturnValueOnce(true) // hasBuildScript
+        .mockReturnValueOnce(true) // frontendDir exists
+        .mockReturnValueOnce(true); // node_modules exists
 
       mockGetManifestPackage.mockResolvedValue({
         kind: "worker",

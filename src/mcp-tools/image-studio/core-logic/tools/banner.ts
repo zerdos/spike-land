@@ -97,7 +97,6 @@ export const bannerTool = imageProcedure
       }
       if (!jobRes.data?.success) {
         return errorResult(
-
           "GENERATION_FAILED",
           jobRes.data?.error ?? "Failed to create banner job",
           true,

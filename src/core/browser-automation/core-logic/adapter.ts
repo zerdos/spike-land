@@ -75,11 +75,7 @@ export function rebuildTree(nodes: CdpAxNode[]): AccessibilityNode | null {
         switch (prop.name) {
           case "checked":
             node.checked =
-              prop.value.value === "true"
-                ? true
-                : prop.value.value === "mixed"
-                  ? "mixed"
-                  : false;
+              prop.value.value === "true" ? true : prop.value.value === "mixed" ? "mixed" : false;
             break;
           case "disabled":
             node.disabled = !!prop.value.value;
@@ -92,11 +88,7 @@ export function rebuildTree(nodes: CdpAxNode[]): AccessibilityNode | null {
             break;
           case "pressed":
             node.pressed =
-              prop.value.value === "true"
-                ? true
-                : prop.value.value === "mixed"
-                  ? "mixed"
-                  : false;
+              prop.value.value === "true" ? true : prop.value.value === "mixed" ? "mixed" : false;
             break;
           case "level":
             node.level = Number(prop.value.value);
@@ -118,5 +110,5 @@ export function rebuildTree(nodes: CdpAxNode[]): AccessibilityNode | null {
   }
 
   const firstNodeId = nodes[0]?.nodeId;
-  return firstNodeId ? nodeMap.get(firstNodeId) ?? null : null;
+  return firstNodeId ? (nodeMap.get(firstNodeId) ?? null) : null;
 }

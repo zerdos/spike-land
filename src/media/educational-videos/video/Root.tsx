@@ -13,7 +13,13 @@ import {
   Scene10_EndCard,
   VibeCodingParadox,
 } from "../core-logic/vibe-coding-paradox-index.ts";
-import { COLORS, TYPOGRAPHY, VCP_DURATIONS, VCP_TIMING, VIDEO_CONFIG } from "../core-logic/constants";
+import {
+  COLORS,
+  TYPOGRAPHY,
+  VCP_DURATIONS,
+  VCP_TIMING,
+  VIDEO_CONFIG,
+} from "../core-logic/constants";
 import { N404_DURATIONS, N404_TIMING } from "../core-logic/n404-constants";
 import {
   VERITASIUM_SCENE_DURATION,

@@ -42,9 +42,7 @@ export function Button({
         ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
-      {loading ? (
-        <Loader2 className="animate-spin h-3.5 w-3.5" aria-hidden="true" />
-      ) : null}
+      {loading ? <Loader2 className="animate-spin h-3.5 w-3.5" aria-hidden="true" /> : null}
       {children}
     </button>
   );

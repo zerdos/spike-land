@@ -37,9 +37,7 @@ const ALLOWED_METHODS: Record<"stripe" | "ai" | "github", Set<string>> = {
   github: new Set(["GET", "POST"]),
 };
 
-function sanitizeCallerHeaders(
-  raw: Record<string, string> | undefined,
-): Record<string, string> {
+function sanitizeCallerHeaders(raw: Record<string, string> | undefined): Record<string, string> {
   if (!raw) return {};
   const safe: Record<string, string> = {};
   for (const [key, value] of Object.entries(raw)) {
@@ -50,9 +48,24 @@ function sanitizeCallerHeaders(
   return safe;
 }
 
-const AI_PROVIDERS: Array<{ prefix: string; envKey: keyof Env; headerName: string; byokProvider: string }> = [
-  { prefix: "https://api.anthropic.com/", envKey: "CLAUDE_OAUTH_TOKEN", headerName: "x-api-key", byokProvider: "anthropic" },
-  { prefix: "https://generativelanguage.googleapis.com/", envKey: "GEMINI_API_KEY", headerName: "Authorization", byokProvider: "google" },
+const AI_PROVIDERS: Array<{
+  prefix: string;
+  envKey: keyof Env;
+  headerName: string;
+  byokProvider: string;
+}> = [
+  {
+    prefix: "https://api.anthropic.com/",
+    envKey: "CLAUDE_OAUTH_TOKEN",
+    headerName: "x-api-key",
+    byokProvider: "anthropic",
+  },
+  {
+    prefix: "https://generativelanguage.googleapis.com/",
+    envKey: "GEMINI_API_KEY",
+    headerName: "Authorization",
+    byokProvider: "google",
+  },
 ];
 
 /**
@@ -110,13 +123,21 @@ proxy.post("/proxy/stripe", async (c) => {
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "proxy_api_call",
-          params: { provider: "stripe", status: response.status, duration_ms: Date.now() - start },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "proxy_api_call",
+            params: {
+              provider: "stripe",
+              status: response.status,
+              duration_ms: Date.now() - start,
+            },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in test environment */ }
+  } catch {
+    /* no ExecutionContext in test environment */
+  }
 
   return new Response(response.body, {
     status: response.status,
@@ -180,13 +201,22 @@ proxy.post("/proxy/ai", async (c) => {
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "proxy_api_call",
-          params: { provider: providerName, status: response.status, duration_ms: Date.now() - start, byok: usingByok },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "proxy_api_call",
+            params: {
+              provider: providerName,
+              status: response.status,
+              duration_ms: Date.now() - start,
+              byok: usingByok,
+            },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in test environment */ }
+  } catch {
+    /* no ExecutionContext in test environment */
+  }
 
   return new Response(response.body, {
     status: response.status,
@@ -226,13 +256,21 @@ proxy.post("/proxy/github", async (c) => {
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "proxy_api_call",
-          params: { provider: "github", status: response.status, duration_ms: Date.now() - start },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "proxy_api_call",
+            params: {
+              provider: "github",
+              status: response.status,
+              duration_ms: Date.now() - start,
+            },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in test environment */ }
+  } catch {
+    /* no ExecutionContext in test environment */
+  }
 
   return new Response(response.body, {
     status: response.status,

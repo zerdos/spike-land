@@ -179,7 +179,7 @@ describe("constructClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      { x: 1 }
+      { x: 1 },
     );
     expect(instance).toBeDefined();
     expect(fiber.stateNode).toBe(instance);
@@ -189,15 +189,19 @@ describe("constructClassInstance", () => {
   it("uses null state when component has no state", () => {
     class NoState {
       props: Record<string, unknown>;
-      constructor(props: Record<string, unknown>) { this.props = props; }
-      render() { return null; }
+      constructor(props: Record<string, unknown>) {
+        this.props = props;
+      }
+      render() {
+        return null;
+      }
     }
     (NoState.prototype as unknown as Record<string, unknown>).isReactComponent = {};
     const fiber = makeFiber();
     const instance = constructClassInstance(
       fiber,
       NoState as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
     expect(fiber.memoizedState).toBeNull();
   });
@@ -208,7 +212,7 @@ describe("constructClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
     const updater = (instance as unknown as Record<string, { enqueueSetState: Function }>).updater;
     expect(typeof updater.enqueueSetState).toBe("function");
@@ -222,9 +226,10 @@ describe("constructClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
-    const updater = (instance as unknown as Record<string, { enqueueReplaceState: Function }>).updater;
+    const updater = (instance as unknown as Record<string, { enqueueReplaceState: Function }>)
+      .updater;
     expect(() => updater.enqueueReplaceState(instance, {}, null)).not.toThrow();
   });
 
@@ -234,9 +239,10 @@ describe("constructClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
-    const updater = (instance as unknown as Record<string, { enqueueForceUpdate: Function }>).updater;
+    const updater = (instance as unknown as Record<string, { enqueueForceUpdate: Function }>)
+      .updater;
     expect(() => updater.enqueueForceUpdate(instance, null)).not.toThrow();
   });
 
@@ -246,7 +252,7 @@ describe("constructClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
     const updater = (instance as unknown as Record<string, { isMounted: Function }>).updater;
     expect(updater.isMounted()).toBe(true);
@@ -260,13 +266,13 @@ describe("mountClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      { prop: 1 }
+      { prop: 1 },
     );
     mountClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof mountClassInstance>[1],
       { prop: 1 },
-      SyncLane
+      SyncLane,
     );
     expect(instance.props).toEqual({ prop: 1 });
   });
@@ -275,8 +281,12 @@ describe("mountClassInstance", () => {
     class WithDerived {
       props: Record<string, unknown>;
       state = { derived: false };
-      constructor(props: Record<string, unknown>) { this.props = props; }
-      render() { return null; }
+      constructor(props: Record<string, unknown>) {
+        this.props = props;
+      }
+      render() {
+        return null;
+      }
       static getDerivedStateFromProps(props: { active: boolean }) {
         return { derived: props.active };
       }
@@ -287,13 +297,13 @@ describe("mountClassInstance", () => {
     constructClassInstance(
       fiber,
       WithDerived as unknown as Parameters<typeof constructClassInstance>[1],
-      { active: true }
+      { active: true },
     );
     mountClassInstance(
       fiber,
       WithDerived as unknown as Parameters<typeof mountClassInstance>[1],
       { active: true },
-      SyncLane
+      SyncLane,
     );
     expect((fiber.memoizedState as { derived: boolean }).derived).toBe(true);
   });
@@ -302,8 +312,12 @@ describe("mountClassInstance", () => {
     class WithDidMount {
       props: Record<string, unknown>;
       state = null;
-      constructor(props: Record<string, unknown>) { this.props = props; }
-      render() { return null; }
+      constructor(props: Record<string, unknown>) {
+        this.props = props;
+      }
+      render() {
+        return null;
+      }
       componentDidMount() {}
     }
     (WithDidMount.prototype as unknown as Record<string, unknown>).isReactComponent = {};
@@ -312,13 +326,13 @@ describe("mountClassInstance", () => {
     constructClassInstance(
       fiber,
       WithDidMount as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
     mountClassInstance(
       fiber,
       WithDidMount as unknown as Parameters<typeof mountClassInstance>[1],
       {},
-      SyncLane
+      SyncLane,
     );
     expect(fiber.flags & 4).toBeTruthy(); // Update flag
   });
@@ -331,7 +345,7 @@ describe("updateClassInstance", () => {
     const instance = constructClassInstance(
       fiber,
       SimpleComponent as unknown as Parameters<typeof constructClassInstance>[1],
-      { a: 1 }
+      { a: 1 },
     );
     const current = { ...fiber } as Fiber;
     const result = updateClassInstance(
@@ -339,7 +353,7 @@ describe("updateClassInstance", () => {
       fiber,
       SimpleComponent as unknown as Parameters<typeof updateClassInstance>[2],
       { a: 2 },
-      SyncLane
+      SyncLane,
     );
     expect(result).toBe(true);
   });
@@ -348,9 +362,15 @@ describe("updateClassInstance", () => {
     class WithSCU {
       props: Record<string, unknown>;
       state = {};
-      constructor(props: Record<string, unknown>) { this.props = props; }
-      render() { return null; }
-      shouldComponentUpdate() { return false; }
+      constructor(props: Record<string, unknown>) {
+        this.props = props;
+      }
+      render() {
+        return null;
+      }
+      shouldComponentUpdate() {
+        return false;
+      }
     }
     (WithSCU.prototype as unknown as Record<string, unknown>).isReactComponent = {};
     const fiber = makeFiber({ memoizedState: {}, memoizedProps: {} });
@@ -358,7 +378,7 @@ describe("updateClassInstance", () => {
     constructClassInstance(
       fiber,
       WithSCU as unknown as Parameters<typeof constructClassInstance>[1],
-      {}
+      {},
     );
     const current = { ...fiber, alternate: null } as unknown as Fiber;
     const result = updateClassInstance(
@@ -366,7 +386,7 @@ describe("updateClassInstance", () => {
       fiber,
       WithSCU as unknown as Parameters<typeof updateClassInstance>[2],
       {},
-      SyncLane
+      SyncLane,
     );
     expect(result).toBe(false);
   });

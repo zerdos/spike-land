@@ -339,7 +339,9 @@ function TerminalToolCall({
                       <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider leading-none mb-0.5">
                         {field.label}
                       </p>
-                      <p className="text-sm text-foreground font-semibold truncate">{field.value}</p>
+                      <p className="text-sm text-foreground font-semibold truncate">
+                        {field.value}
+                      </p>
                     </div>
                   </motion.div>
                 ))}

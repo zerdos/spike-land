@@ -697,7 +697,9 @@ describe("JsonSchemaToZodConverter", () => {
     it("should convert string with uuid format", () => {
       const schema = { type: "string", format: "uuid" };
       const zodSchema = converter.convert(schema);
-      expect(zodSchema.parse("550e8400-e29b-41d4-a716-446655440000")).toBe("550e8400-e29b-41d4-a716-446655440000");
+      expect(zodSchema.parse("550e8400-e29b-41d4-a716-446655440000")).toBe(
+        "550e8400-e29b-41d4-a716-446655440000",
+      );
     });
 
     it("should convert string with unknown format (falls through)", () => {
@@ -885,14 +887,22 @@ describe("JsonSchemaToZodConverter", () => {
 
     it("should convert single mixed-type enum WITH description (line 429 branch 0)", () => {
       // Mixed-type enum, single value, with description
-      const schema = { type: "string" as const, enum: [null as unknown as string], description: "null only" };
+      const schema = {
+        type: "string" as const,
+        enum: [null as unknown as string],
+        description: "null only",
+      };
       const zodSchema = converter.convert(schema);
       expect(zodSchema.parse(null)).toBe(null);
     });
 
     it("should convert multiple mixed-type enum WITH description (line 442 branch 0)", () => {
       // Multiple mixed-type literals with description
-      const schema = { type: "string" as const, enum: [null as unknown as string, "value"], description: "null or value" };
+      const schema = {
+        type: "string" as const,
+        enum: [null as unknown as string, "value"],
+        description: "null or value",
+      };
       const zodSchema = converter.convert(schema);
       expect(zodSchema.parse(null)).toBe(null);
       expect(zodSchema.parse("value")).toBe("value");

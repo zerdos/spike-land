@@ -20,7 +20,10 @@ if (!match?.[1]) {
 }
 const STRIPE_KEY = match[1].trim();
 
-async function stripePost(path: string, body: Record<string, string>): Promise<Record<string, unknown>> {
+async function stripePost(
+  path: string,
+  body: Record<string, string>,
+): Promise<Record<string, unknown>> {
   const res = await fetch(`https://api.stripe.com${path}`, {
     method: "POST",
     headers: {

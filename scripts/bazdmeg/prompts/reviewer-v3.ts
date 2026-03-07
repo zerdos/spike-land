@@ -3,7 +3,9 @@ import type { PromptVariant, PromptContext } from "../types.js";
 const reviewerV3: PromptVariant = {
   id: "reviewer-v3",
   role: "reviewer",
-  render: (ctx: PromptContext) => `Review each file diff below. Output ONLY verdict blocks — no preamble, no summary, no other text.
+  render: (
+    ctx: PromptContext,
+  ) => `Review each file diff below. Output ONLY verdict blocks — no preamble, no summary, no other text.
 
 Every changed file MUST have exactly one verdict block. Use this exact format:
 

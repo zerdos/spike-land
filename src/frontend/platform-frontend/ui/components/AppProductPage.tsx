@@ -1,4 +1,15 @@
-import { Shield, Zap, Layout, CheckCircle, Terminal, Package, Globe, Cpu, Github, ChevronRight } from "lucide-react";
+import {
+  Shield,
+  Zap,
+  Layout,
+  CheckCircle,
+  Terminal,
+  Package,
+  Globe,
+  Cpu,
+  Github,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "../shared/ui/button";
 
 import { Link } from "@tanstack/react-router";
@@ -9,16 +20,20 @@ interface AppProductPageProps {
 
 const CAPABILITY_ICONS = [Shield, Zap, Layout, CheckCircle, Terminal, Globe, Cpu];
 
-const toolMetadata: Record<string, {
-  name: string;
-  description: string;
-  capabilities: string[];
-  toolNames: string[];
-  packagePath: string;
-}> = {
+const toolMetadata: Record<
+  string,
+  {
+    name: string;
+    description: string;
+    capabilities: string[];
+    toolNames: string[];
+    packagePath: string;
+  }
+> = {
   "chess-engine": {
     name: "Chess Engine",
-    description: "ELO-rated chess engine with game, player, and challenge management. Create games, make moves, query boards, track ratings, and manage tournaments — all via MCP tools.",
+    description:
+      "ELO-rated chess engine with game, player, and challenge management. Create games, make moves, query boards, track ratings, and manage tournaments — all via MCP tools.",
     capabilities: [
       "Game lifecycle management (create, move, resign, draw)",
       "ELO rating system with player tracking",
@@ -31,7 +46,8 @@ const toolMetadata: Record<string, {
   },
   "qa-studio": {
     name: "QA Studio",
-    description: "Browser automation utilities powered by Playwright. Navigate, click, type, capture screenshots, and automate browser workflows visually or through MCP tool calls.",
+    description:
+      "Browser automation utilities powered by Playwright. Navigate, click, type, capture screenshots, and automate browser workflows visually or through MCP tool calls.",
     capabilities: [
       "Visual Web UI without registration",
       "Screen-reader style narration of web pages",
@@ -39,12 +55,24 @@ const toolMetadata: Record<string, {
       "Screenshot capture and element inspection",
       "Form extraction and tab management",
     ],
-    toolNames: ["web_navigate", "web_read", "web_click", "web_type", "web_select", "web_press", "web_scroll", "web_tabs", "web_screenshot", "web_forms"],
+    toolNames: [
+      "web_navigate",
+      "web_read",
+      "web_click",
+      "web_type",
+      "web_select",
+      "web_press",
+      "web_scroll",
+      "web_tabs",
+      "web_screenshot",
+      "web_forms",
+    ],
     packagePath: "src/qa-studio",
   },
   "audio-mixer": {
     name: "Audio Mixer",
-    description: "Audio track creation and effects processing via MCP. Create tracks, apply effects, mix channels, and export audio programmatically.",
+    description:
+      "Audio track creation and effects processing via MCP. Create tracks, apply effects, mix channels, and export audio programmatically.",
     capabilities: [
       "Multi-track audio creation and mixing",
       "Real-time effects and filter application",
@@ -60,7 +88,8 @@ const toolMetadata: Record<string, {
 export function AppProductPage({ appId }: AppProductPageProps) {
   const meta = toolMetadata[appId] ?? {
     name: appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-    description: "An MCP tool package on the Spike Land platform. Use the Terminal tab to interact with its tools.",
+    description:
+      "An MCP tool package on the Spike Land platform. Use the Terminal tab to interact with its tools.",
     capabilities: [
       "MCP-compatible tool interface",
       "JSON-RPC invocation via spike-edge",
@@ -75,7 +104,9 @@ export function AppProductPage({ appId }: AppProductPageProps) {
     <div className="flex flex-col space-y-12 p-6 lg:p-16 max-w-7xl mx-auto">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
-        <Link to="/apps" className="hover:text-primary transition-colors">Apps</Link>
+        <Link to="/apps" className="hover:text-primary transition-colors">
+          Apps
+        </Link>
         <ChevronRight className="size-3" />
         <span className="text-foreground/70">{meta.name}</span>
       </nav>
@@ -94,7 +125,7 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             {meta.description}
           </p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 shrink-0">
           <Button
             size="lg"
@@ -127,7 +158,9 @@ export function AppProductPage({ appId }: AppProductPageProps) {
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-px flex-1 bg-border" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Available Tool Methods</h2>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+              Available Tool Methods
+            </h2>
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="flex flex-wrap gap-2 justify-center">
@@ -152,7 +185,10 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             {meta.capabilities.map((capability, i) => {
               const Icon = CAPABILITY_ICONS[i % CAPABILITY_ICONS.length]!;
               return (
-                <div key={i} className="group flex items-start gap-4 rounded-3xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:border-primary/20">
+                <div
+                  key={i}
+                  className="group flex items-start gap-4 rounded-3xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:border-primary/20"
+                >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                     <Icon className="h-6 w-6" />
                   </div>
@@ -168,19 +204,25 @@ export function AppProductPage({ appId }: AppProductPageProps) {
         {/* Sidebar Info */}
         <div className="space-y-8">
           <div className="rounded-3xl border border-border bg-muted/30 p-8 space-y-6">
-            <h3 className="text-sm font-black uppercase tracking-widest text-foreground/40">Technical Details</h3>
-            
+            <h3 className="text-sm font-black uppercase tracking-widest text-foreground/40">
+              Technical Details
+            </h3>
+
             <div className="space-y-4">
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">Package</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                  Package
+                </span>
                 <div className="flex items-center gap-2 text-sm font-mono text-foreground break-all">
                   <Package className="size-3.5 text-primary" />
                   @spike-land-ai/{appId}
                 </div>
               </div>
-              
+
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">Source Path</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                  Source Path
+                </span>
                 <div className="flex items-center gap-2 text-sm font-mono text-foreground break-all">
                   <Github className="size-3.5 text-primary" />
                   {meta.packagePath}
@@ -188,7 +230,9 @@ export function AppProductPage({ appId }: AppProductPageProps) {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">Architecture</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                  Architecture
+                </span>
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                   <Globe className="size-3.5 text-primary" />
                   MCP Edge Module
@@ -196,7 +240,9 @@ export function AppProductPage({ appId }: AppProductPageProps) {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">Runtime</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                  Runtime
+                </span>
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                   <Cpu className="size-3.5 text-primary" />
                   Cloudflare Workers
@@ -205,7 +251,11 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             </div>
 
             <Button variant="outline" className="w-full rounded-2xl font-bold" asChild>
-              <a href={`https://github.com/spike-land-ai/spike-land-ai/tree/main/${meta.packagePath}`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`https://github.com/spike-land-ai/spike-land-ai/tree/main/${meta.packagePath}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Github className="mr-2 size-4" />
                 View Source
               </a>
@@ -218,7 +268,8 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             </div>
             <h4 className="text-sm font-bold text-primary">Need customization?</h4>
             <p className="text-xs text-primary/60 leading-relaxed">
-              This package is open source. You can fork it and deploy your own version with custom tools.
+              This package is open source. You can fork it and deploy your own version with custom
+              tools.
             </p>
           </div>
         </div>

@@ -29,7 +29,7 @@ describe("lib/auth", () => {
     // The module uses import.meta.env.VITE_AUTH_URL which defaults to 'https://spike.land'
     await import("@/lib/auth");
     expect(createAuthClient).toHaveBeenCalledWith(
-      expect.objectContaining({ baseURL: expect.any(String) })
+      expect.objectContaining({ baseURL: expect.any(String) }),
     );
   });
 

@@ -63,100 +63,123 @@ export function McpTerminal({ appId }: McpTerminalProps) {
     term.write("\r\n");
   }, []);
 
-  const handleCommand = useCallback(async (term: Terminal, input: string) => {
-    const trimmed = input.trim();
-    if (!trimmed) {
-      term.write(PROMPT);
-      return;
-    }
-
-    historyRef.current.unshift(trimmed);
-    historyIndexRef.current = -1;
-
-    if (trimmed === "help") {
-      writeOutput(term, [
-        "\x1b[1mAvailable commands:\x1b[0m",
-        "  \x1b[33mtools\x1b[0m              List available MCP tools",
-        "  \x1b[33mcall\x1b[0m <tool> [json]  Call an MCP tool with optional JSON args",
-        "  \x1b[33mhelp\x1b[0m               Show this help message",
-        "  \x1b[33mclear\x1b[0m              Clear the terminal",
-      ].join("\r\n"));
-      term.write(PROMPT);
-      return;
-    }
-
-    if (trimmed === "clear") {
-      term.clear();
-      term.write(PROMPT);
-      return;
-    }
-
-    if (trimmed === "tools") {
-      term.write("\x1b[2mFetching tools...\x1b[0m\r\n");
-      const fetched = await fetchTools();
-      setTools(fetched);
-
-      // Group by package prefix if appId provided
-      const filtered = appId
-        ? fetched.filter((t) => t.name.startsWith(appId.replace(/-/g, "_")))
-        : fetched;
-
-      if (filtered.length === 0 && appId) {
-        writeOutput(term, `\x1b[33mNo tools found for ${appId}. Showing all ${fetched.length} tools:\x1b[0m`);
-        for (const tool of fetched.slice(0, 30)) {
-          writeOutput(term, `  \x1b[32m${tool.name}\x1b[0m  ${tool.description.slice(0, 60)}`);
-        }
-        if (fetched.length > 30) {
-          writeOutput(term, `  ... and ${fetched.length - 30} more (type "tools" without filter to see all)`);
-        }
-      } else {
-        writeOutput(term, `\x1b[1m${filtered.length} tool${filtered.length === 1 ? "" : "s"} available:\x1b[0m`);
-        for (const tool of filtered) {
-          const paramCount = tool.inputSchema?.properties
-            ? Object.keys(tool.inputSchema.properties).length
-            : 0;
-          writeOutput(term, `  \x1b[32m${tool.name}\x1b[0m (${paramCount} params)  ${tool.description.slice(0, 50)}`);
-        }
+  const handleCommand = useCallback(
+    async (term: Terminal, input: string) => {
+      const trimmed = input.trim();
+      if (!trimmed) {
+        term.write(PROMPT);
+        return;
       }
-      term.write(PROMPT);
-      return;
-    }
 
-    if (trimmed.startsWith("call ")) {
-      const rest = trimmed.slice(5).trim();
-      const spaceIdx = rest.indexOf(" ");
-      const toolName = spaceIdx === -1 ? rest : rest.slice(0, spaceIdx);
-      let args: Record<string, unknown> = {};
+      historyRef.current.unshift(trimmed);
+      historyIndexRef.current = -1;
 
-      if (spaceIdx !== -1) {
-        const jsonStr = rest.slice(spaceIdx + 1).trim();
+      if (trimmed === "help") {
+        writeOutput(
+          term,
+          [
+            "\x1b[1mAvailable commands:\x1b[0m",
+            "  \x1b[33mtools\x1b[0m              List available MCP tools",
+            "  \x1b[33mcall\x1b[0m <tool> [json]  Call an MCP tool with optional JSON args",
+            "  \x1b[33mhelp\x1b[0m               Show this help message",
+            "  \x1b[33mclear\x1b[0m              Clear the terminal",
+          ].join("\r\n"),
+        );
+        term.write(PROMPT);
+        return;
+      }
+
+      if (trimmed === "clear") {
+        term.clear();
+        term.write(PROMPT);
+        return;
+      }
+
+      if (trimmed === "tools") {
+        term.write("\x1b[2mFetching tools...\x1b[0m\r\n");
+        const fetched = await fetchTools();
+        setTools(fetched);
+
+        // Group by package prefix if appId provided
+        const filtered = appId
+          ? fetched.filter((t) => t.name.startsWith(appId.replace(/-/g, "_")))
+          : fetched;
+
+        if (filtered.length === 0 && appId) {
+          writeOutput(
+            term,
+            `\x1b[33mNo tools found for ${appId}. Showing all ${fetched.length} tools:\x1b[0m`,
+          );
+          for (const tool of fetched.slice(0, 30)) {
+            writeOutput(term, `  \x1b[32m${tool.name}\x1b[0m  ${tool.description.slice(0, 60)}`);
+          }
+          if (fetched.length > 30) {
+            writeOutput(
+              term,
+              `  ... and ${fetched.length - 30} more (type "tools" without filter to see all)`,
+            );
+          }
+        } else {
+          writeOutput(
+            term,
+            `\x1b[1m${filtered.length} tool${filtered.length === 1 ? "" : "s"} available:\x1b[0m`,
+          );
+          for (const tool of filtered) {
+            const paramCount = tool.inputSchema?.properties
+              ? Object.keys(tool.inputSchema.properties).length
+              : 0;
+            writeOutput(
+              term,
+              `  \x1b[32m${tool.name}\x1b[0m (${paramCount} params)  ${tool.description.slice(0, 50)}`,
+            );
+          }
+        }
+        term.write(PROMPT);
+        return;
+      }
+
+      if (trimmed.startsWith("call ")) {
+        const rest = trimmed.slice(5).trim();
+        const spaceIdx = rest.indexOf(" ");
+        const toolName = spaceIdx === -1 ? rest : rest.slice(0, spaceIdx);
+        let args: Record<string, unknown> = {};
+
+        if (spaceIdx !== -1) {
+          const jsonStr = rest.slice(spaceIdx + 1).trim();
+          try {
+            args = JSON.parse(jsonStr) as Record<string, unknown>;
+          } catch {
+            writeOutput(term, `\x1b[31mInvalid JSON: ${jsonStr}\x1b[0m`);
+            term.write(PROMPT);
+            return;
+          }
+        }
+
+        term.write(`\x1b[2mCalling ${toolName}...\x1b[0m\r\n`);
         try {
-          args = JSON.parse(jsonStr) as Record<string, unknown>;
-        } catch {
-          writeOutput(term, `\x1b[31mInvalid JSON: ${jsonStr}\x1b[0m`);
-          term.write(PROMPT);
-          return;
+          const result: unknown = await callTool(toolName, args);
+          writeOutput(term, `\x1b[32m${JSON.stringify(result, null, 2)}\x1b[0m`);
+        } catch (err) {
+          writeOutput(term, `\x1b[31mError: ${err}\x1b[0m`);
         }
+        term.write(PROMPT);
+        return;
       }
 
-      term.write(`\x1b[2mCalling ${toolName}...\x1b[0m\r\n`);
-      try {
-        const result: unknown = await callTool(toolName, args);
-        writeOutput(term, `\x1b[32m${JSON.stringify(result, null, 2)}\x1b[0m`);
-      } catch (err) {
-        writeOutput(term, `\x1b[31mError: ${err}\x1b[0m`);
-      }
+      writeOutput(
+        term,
+        `\x1b[31mUnknown command: ${trimmed}\x1b[0m. Type \x1b[33mhelp\x1b[0m for usage.`,
+      );
       term.write(PROMPT);
-      return;
-    }
-
-    writeOutput(term, `\x1b[31mUnknown command: ${trimmed}\x1b[0m. Type \x1b[33mhelp\x1b[0m for usage.`);
-    term.write(PROMPT);
-  }, [appId, fetchTools, callTool, writeOutput]);
+    },
+    [appId, fetchTools, callTool, writeOutput],
+  );
 
   const handleCopy = useCallback(() => {
     if (!terminalRef.current) return;
-    const text = terminalRef.current.getSelection() || tools.map(t => `${t.name}: ${t.description}`).join("\n");
+    const text =
+      terminalRef.current.getSelection() ||
+      tools.map((t) => `${t.name}: ${t.description}`).join("\n");
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -195,7 +218,7 @@ export function McpTerminal({ appId }: McpTerminalProps) {
     fitAddonRef.current = fitAddon;
 
     term.writeln("\x1b[1;36m  spike.land MCP Terminal\x1b[0m");
-    term.writeln("\x1b[2m  Type \"help\" for commands, \"tools\" to list available MCP tools\x1b[0m");
+    term.writeln('\x1b[2m  Type "help" for commands, "tools" to list available MCP tools\x1b[0m');
     if (appId) {
       term.writeln(`\x1b[2m  Filtered to: ${appId}\x1b[0m`);
     }

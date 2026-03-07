@@ -37,11 +37,7 @@ userProfile.post("/api/user/profile", async (c) => {
     return c.json({ error: "name is required" }, 400);
   }
 
-  await c.env.DB.prepare(
-    `UPDATE users SET name = ? WHERE id = ?`,
-  )
-    .bind(name, userId)
-    .run();
+  await c.env.DB.prepare(`UPDATE users SET name = ? WHERE id = ?`).bind(name, userId).run();
 
   return c.json({ success: true });
 });

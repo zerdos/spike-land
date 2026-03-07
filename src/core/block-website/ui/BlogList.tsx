@@ -42,7 +42,13 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
 
   const gradientClass = GRADIENTS[hashSlug(post.slug) % GRADIENTS.length];
   return (
-    <div className={cn("bg-gradient-to-br flex flex-col items-center justify-center p-8 text-center relative overflow-hidden", gradientClass, className)}>
+    <div
+      className={cn(
+        "bg-gradient-to-br flex flex-col items-center justify-center p-8 text-center relative overflow-hidden",
+        gradientClass,
+        className,
+      )}
+    >
       <div className="absolute -right-4 -bottom-4 opacity-5 rotate-12">
         <BookOpen size={120} />
       </div>
@@ -53,7 +59,15 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
   );
 }
 
-function FeaturedCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.ComponentType<{ to: string; className?: string; children: React.ReactNode }> | "a" }) {
+function FeaturedCard({
+  post,
+  LinkComp,
+}: {
+  post: BlogMeta;
+  LinkComp:
+    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | "a";
+}) {
   const content = (
     <div className="flex flex-col lg:flex-row h-full">
       <CardImage post={post} className="lg:w-3/5 lg:h-full aspect-[16/9] lg:aspect-auto" />
@@ -71,14 +85,20 @@ function FeaturedCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Comp
           )}
           <div className="flex items-center gap-1.5 text-muted-foreground/60">
             <Calendar className="size-3" />
-            <time dateTime={post.date}>{new Date(post.date).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+            <time dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString([], {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </time>
           </div>
         </div>
-        
+
         <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] text-foreground mb-6 group-hover:text-primary transition-colors tracking-tighter">
           {post.title}
         </h3>
-        
+
         {post.primer && (
           <p className="text-lg text-muted-foreground leading-relaxed mb-8 line-clamp-3 font-medium">
             {post.primer}
@@ -96,15 +116,27 @@ function FeaturedCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Comp
   return (
     <article className="group relative bg-card rounded-[2.5rem] border border-border/50 shadow-2xl hover:border-primary/30 transition-all duration-500 overflow-hidden mb-16 ring-1 ring-border/5">
       {LinkComp === "a" ? (
-        <a href={`/blog/${post.slug}`} className="block h-full w-full">{content}</a>
+        <a href={`/blog/${post.slug}`} className="block h-full w-full">
+          {content}
+        </a>
       ) : (
-        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full">{content}</LinkComp>
+        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full">
+          {content}
+        </LinkComp>
       )}
     </article>
   );
 }
 
-function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.ComponentType<{ to: string; className?: string; children: React.ReactNode }> | "a" }) {
+function BlogCard({
+  post,
+  LinkComp,
+}: {
+  post: BlogMeta;
+  LinkComp:
+    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | "a";
+}) {
   const content = (
     <>
       <CardImage post={post} className="aspect-[16/10]" />
@@ -122,11 +154,11 @@ function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Componen
           <Clock className="size-3" />
           <span>5 min read</span>
         </div>
-        
+
         <h3 className="text-xl font-black leading-tight text-foreground group-hover:text-primary transition-colors mb-4 line-clamp-2 tracking-tight">
           {post.title}
         </h3>
-        
+
         {post.primer && (
           <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-2 font-medium opacity-80">
             {post.primer}
@@ -151,15 +183,30 @@ function BlogCard({ post, LinkComp }: { post: BlogMeta; LinkComp: React.Componen
   return (
     <article className="group relative bg-card rounded-[2rem] border border-border/50 shadow-sm hover:border-primary/20 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col">
       {LinkComp === "a" ? (
-        <a href={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">{content}</a>
+        <a href={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+          {content}
+        </a>
       ) : (
-        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">{content}</LinkComp>
+        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+          {content}
+        </LinkComp>
       )}
     </article>
   );
 }
 
-export function BlogListView({ linkComponent, limit, showHeader = true }: { linkComponent?: React.ComponentType<{ to: string; className?: string; children: React.ReactNode }> | "a" | undefined; limit?: number | undefined; showHeader?: boolean | undefined }) {
+export function BlogListView({
+  linkComponent,
+  limit,
+  showHeader = true,
+}: {
+  linkComponent?:
+    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | "a"
+    | undefined;
+  limit?: number | undefined;
+  showHeader?: boolean | undefined;
+}) {
   const [posts, setPosts] = useState<BlogMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -173,7 +220,7 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
         try {
           const r = await fetch(apiUrl("/blog"));
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          const data = await r.json() as unknown;
+          const data = (await r.json()) as unknown;
           if (!Array.isArray(data)) throw new Error("Unexpected response shape");
           if (cancelled) return;
           const posts = data as BlogMeta[];
@@ -191,11 +238,18 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
           if (attempt < 2) await new Promise((r) => setTimeout(r, 1000));
         }
       }
-      if (!cancelled) { setPosts([]); setError(true); }
+      if (!cancelled) {
+        setPosts([]);
+        setError(true);
+      }
     }
 
-    load().finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+    load().finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [limit]);
 
   if (loading) {
@@ -208,7 +262,10 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
             <div className="h-6 bg-muted rounded w-1/2 mx-auto" />
           </div>
         )}
-        <div aria-busy="true" className="animate-pulse bg-muted/30 rounded-[2.5rem] h-[400px] mb-12" />
+        <div
+          aria-busy="true"
+          className="animate-pulse bg-muted/30 rounded-[2.5rem] h-[400px] mb-12"
+        />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse bg-muted/30 rounded-[2rem] h-[350px]" />
@@ -225,8 +282,13 @@ export function BlogListView({ linkComponent, limit, showHeader = true }: { link
           <Tag size={32} />
         </div>
         <h2 className="text-2xl font-black tracking-tight mb-2">Failed to load stories</h2>
-        <p className="text-muted-foreground mb-8">Our edge network is having trouble reaching the blog database.</p>
-        <button onClick={() => window.location.reload()} className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:shadow-lg transition-all">
+        <p className="text-muted-foreground mb-8">
+          Our edge network is having trouble reaching the blog database.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:shadow-lg transition-all"
+        >
           Try again
         </button>
       </div>

@@ -64,7 +64,10 @@ describe("sql.js SQL execution (unit tests)", () => {
   });
 
   it("WHERE with OR conditions", () => {
-    const result = db.exec("SELECT * FROM tasks WHERE status = ? OR status = ?", ["open", "blocked"]);
+    const result = db.exec("SELECT * FROM tasks WHERE status = ? OR status = ?", [
+      "open",
+      "blocked",
+    ]);
     expect(result[0]!.values).toHaveLength(3);
     const statuses = result[0]!.values.map((r) => r[2]);
     expect(statuses).toContain("open");
@@ -80,7 +83,10 @@ describe("sql.js SQL execution (unit tests)", () => {
 
   it("INSERT + SELECT round-trip", () => {
     db.run("INSERT INTO tasks (id, title, status, priority) VALUES (?, ?, ?, ?)", [
-      "t6", "New task", "open", 10,
+      "t6",
+      "New task",
+      "open",
+      10,
     ]);
     const result = db.exec("SELECT * FROM tasks WHERE id = ?", ["t6"]);
     expect(result[0]!.values).toHaveLength(1);

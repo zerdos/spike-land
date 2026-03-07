@@ -2,7 +2,11 @@
  * Test fixtures — sample HN data and HTML fragments.
  */
 
-import type { AlgoliaSearchResult, HNItem, HNUser } from "../../../src/mcp-tools/hackernews/mcp/types.js";
+import type {
+  AlgoliaSearchResult,
+  HNItem,
+  HNUser,
+} from "../../../src/mcp-tools/hackernews/mcp/types.js";
 
 // ─── HN Items ───
 

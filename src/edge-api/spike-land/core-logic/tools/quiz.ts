@@ -59,7 +59,12 @@ export {
 
 // ─── Registration ────────────────────────────────────────────────────────────
 
-export function registerQuizTools(registry: ToolRegistry, userId: string, db: DrizzleDB, env: Env): void {
+export function registerQuizTools(
+  registry: ToolRegistry,
+  userId: string,
+  db: DrizzleDB,
+  env: Env,
+): void {
   // ── quiz_create_session ──────────────────────────────────────────────────
   registry.registerBuilt(
     freeTool(userId, db)
@@ -86,25 +91,36 @@ export function registerQuizTools(registry: ToolRegistry, userId: string, db: Dr
             });
 
             if (!res.ok) {
-              throw new Error(`Failed to fetch URL content (Status: ${res.status} ${res.statusText})`);
+              throw new Error(
+                `Failed to fetch URL content (Status: ${res.status} ${res.statusText})`,
+              );
             }
             articleContent = await res.text();
 
-            if (!articleContent || articleContent.trim().toLowerCase().startsWith("<!doctype html>")) {
+            if (
+              !articleContent ||
+              articleContent.trim().toLowerCase().startsWith("<!doctype html>")
+            ) {
               const directRes = await fetch(input.content_url);
               if (!directRes.ok) {
-                throw new Error(`Failed to fetch URL directly (Status: ${directRes.status} ${directRes.statusText})`);
+                throw new Error(
+                  `Failed to fetch URL directly (Status: ${directRes.status} ${directRes.statusText})`,
+                );
               }
               const html = await directRes.text();
               articleContent = html.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ");
             }
           } catch (err: unknown) {
-            throw new Error(`Error fetching URL content: ${err instanceof Error ? err.message : String(err)}`);
+            throw new Error(
+              `Error fetching URL content: ${err instanceof Error ? err.message : String(err)}`,
+            );
           }
         }
 
         if (!articleContent || articleContent.trim().length === 0) {
-          throw new Error("Provide either content_url or content_text, and URL must be accessible and contain text.");
+          throw new Error(
+            "Provide either content_url or content_text, and URL must be accessible and contain text.",
+          );
         }
 
         const concepts = await generateConceptsFromContent(articleContent, env.GEMINI_API_KEY);

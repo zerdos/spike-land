@@ -28,7 +28,9 @@ export function BugbookLeaderboardPage() {
   if (isError) {
     return (
       <div className="space-y-4">
-        <Link to="/bugbook" className="text-primary hover:underline"><span aria-hidden="true">&larr;</span> Back to Bugbook</Link>
+        <Link to="/bugbook" className="text-primary hover:underline">
+          <span aria-hidden="true">&larr;</span> Back to Bugbook
+        </Link>
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-6 text-center text-destructive">
           Failed to load leaderboard.
         </div>
@@ -39,7 +41,9 @@ export function BugbookLeaderboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 text-sm">
-        <Link to="/bugbook" className="text-primary hover:underline">Bugbook</Link>
+        <Link to="/bugbook" className="text-primary hover:underline">
+          Bugbook
+        </Link>
         <span className="text-muted-foreground">/</span>
         <span className="text-muted-foreground">Leaderboard</span>
       </div>
@@ -71,17 +75,25 @@ export function BugbookLeaderboardPage() {
                   <tr key={bug.id} className="last:border-0 hover:bg-muted transition-colors">
                     <td className="py-2 pr-4 font-medium text-muted-foreground">{i + 1}</td>
                     <td className="py-2 pr-4">
-                      <Link to="/bugbook/$bugId" params={{ bugId: bug.id }} className="text-primary hover:underline">
+                      <Link
+                        to="/bugbook/$bugId"
+                        params={{ bugId: bug.id }}
+                        className="text-primary hover:underline"
+                      >
                         {bug.title}
                       </Link>
                     </td>
                     <td className="py-2 pr-4 text-muted-foreground">{bug.category}</td>
                     <td className="py-2 pr-4">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${severityColor[bug.severity] ?? "bg-muted text-foreground"}`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${severityColor[bug.severity] ?? "bg-muted text-foreground"}`}
+                      >
                         {bug.severity}
                       </span>
                     </td>
-                    <td className="py-2 pr-4 text-right text-muted-foreground">{bug.report_count}</td>
+                    <td className="py-2 pr-4 text-right text-muted-foreground">
+                      {bug.report_count}
+                    </td>
                     <td className="py-2 text-right font-bold text-primary">{bug.elo}</td>
                   </tr>
                 ))}
@@ -118,11 +130,15 @@ export function BugbookLeaderboardPage() {
                       {user.user_id.slice(0, 8)}...
                     </td>
                     <td className="py-2 pr-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tierColor[user.tier] ?? ""}`}>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tierColor[user.tier] ?? ""}`}
+                      >
                         {user.tier}
                       </span>
                     </td>
-                    <td className="py-2 pr-4 text-right text-muted-foreground">{user.event_count}</td>
+                    <td className="py-2 pr-4 text-right text-muted-foreground">
+                      {user.event_count}
+                    </td>
                     <td className="py-2 text-right font-bold text-primary">{user.elo}</td>
                   </tr>
                 ))}

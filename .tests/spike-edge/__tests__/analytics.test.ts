@@ -232,9 +232,11 @@ describe("analytics ingest endpoint", () => {
 
   it("fetches user ID from auth session cookie when auth_session cookie present", async () => {
     const app = makeApp();
-    const authMcpFetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ user: { id: "user-session-xyz" } }), { status: 200 }),
-    );
+    const authMcpFetch = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ user: { id: "user-session-xyz" } }), { status: 200 }),
+      );
     const env = createMockEnv({
       AUTH_MCP: { fetch: authMcpFetch } as unknown as Fetcher,
     });
@@ -246,7 +248,7 @@ describe("analytics ingest endpoint", () => {
         headers: {
           "Content-Type": "application/json",
           "cf-connecting-ip": "99.99.99.99",
-          "cookie": "auth_session=valid-session",
+          cookie: "auth_session=valid-session",
         },
         body: JSON.stringify([{ source: "web", eventType: "page_view" }]),
       },
@@ -272,7 +274,7 @@ describe("analytics ingest endpoint", () => {
         headers: {
           "Content-Type": "application/json",
           "cf-connecting-ip": "77.77.77.77",
-          "cookie": "auth_session=bad-session",
+          cookie: "auth_session=bad-session",
         },
         body: JSON.stringify([{ source: "web", eventType: "page_view" }]),
       },
@@ -291,17 +293,19 @@ describe("analytics ingest endpoint", () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json", "cf-connecting-ip": "55.55.55.55" },
-        body: JSON.stringify([{
-          source: "web",
-          eventType: "test",
-          metadata: {
-            str: "hello",
-            num: 42,
-            bool: true,
-            obj: { nested: "skip" },
-            arr: [1, 2, 3],
+        body: JSON.stringify([
+          {
+            source: "web",
+            eventType: "test",
+            metadata: {
+              str: "hello",
+              num: 42,
+              bool: true,
+              obj: { nested: "skip" },
+              arr: [1, 2, 3],
+            },
           },
-        }]),
+        ]),
       },
       env,
     );
@@ -324,7 +328,9 @@ describe("GET /analytics/events", () => {
 
   it("returns events for 24h range (default)", async () => {
     const db = createMockD1();
-    const allMock = (db.prepare("") as unknown as { all: MockedFunction<() => Promise<{ results: unknown[] }>> }).all;
+    const allMock = (
+      db.prepare("") as unknown as { all: MockedFunction<() => Promise<{ results: unknown[] }>> }
+    ).all;
     allMock.mockResolvedValue({ results: [{ id: "1", source: "web" }] });
     const app = makeApp();
     const res = await app.request("/analytics/events", {}, createMockEnv({ DB: db }));
@@ -371,17 +377,24 @@ describe("GET /analytics/summary", () => {
         first: vi.fn().mockResolvedValue(null),
         run: vi.fn().mockResolvedValue({}),
       }),
-      batch: vi.fn().mockResolvedValue([
-        { results: [{ total: 100 }] },
-        { results: [{ unique_users: 25 }] },
-        { results: [{ event_type: "page_view", count: 80 }] },
-        { results: [{ tool_name: "my-tool", count: 20 }] },
-      ]),
+      batch: vi
+        .fn()
+        .mockResolvedValue([
+          { results: [{ total: 100 }] },
+          { results: [{ unique_users: 25 }] },
+          { results: [{ event_type: "page_view", count: 80 }] },
+          { results: [{ tool_name: "my-tool", count: 20 }] },
+        ]),
     } as unknown as D1Database;
     const app = makeApp();
     const res = await app.request("/analytics/summary?range=7d", {}, createMockEnv({ DB: db }));
     expect(res.status).toBe(200);
-    const body = await res.json<{ totalEvents: number; uniqueUsers: number; eventsByType: unknown[]; toolUsage: unknown[] }>();
+    const body = await res.json<{
+      totalEvents: number;
+      uniqueUsers: number;
+      eventsByType: unknown[];
+      toolUsage: unknown[];
+    }>();
     expect(body.totalEvents).toBe(100);
     expect(body.uniqueUsers).toBe(25);
     expect(body.eventsByType).toHaveLength(1);
@@ -410,9 +423,9 @@ describe("GET /analytics/summary", () => {
 
 describe("GET /analytics/mcp/tools", () => {
   it("proxies to MCP service with query params", async () => {
-    const mcpFetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ tools: [] }), { status: 200 }),
-    );
+    const mcpFetch = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ tools: [] }), { status: 200 }));
     const app = makeApp();
     const res = await app.request(
       "/analytics/mcp/tools?range=7d&limit=20",

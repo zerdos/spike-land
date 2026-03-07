@@ -14,6 +14,13 @@ import { CONFIG_PREREQUISITES, type SessionState } from "./session-state";
 import { extractPrefix, stripNamespace } from "./tool-grouping";
 import { formatAppGroupedTools, formatAppsList, formatGroupedTools } from "./tool-formatting";
 import { coerceValue, extractIdsFromResult, promptForParam } from "./tool-interaction";
+import type { TokenTracker } from "./token-tracker";
+import type { DynamicToolRegistry } from "./tool-registry";
+import {
+  saveConversation,
+  loadConversation,
+  listConversations,
+} from "../../node-sys/conversation-store";
 
 // Re-export types and utilities used by consumers
 export type { AppToolGroup, ToolGroup } from "./tool-grouping";
@@ -42,6 +49,8 @@ export interface SlashCommandContext {
   sessionState: SessionState;
   appRegistry?: AppRegistry;
   rl?: ReadlineInterface;
+  usageTracker?: TokenTracker;
+  registry?: DynamicToolRegistry;
 }
 
 /** Result of handling a slash command. */
@@ -80,6 +89,11 @@ const BUILTIN_COMMANDS = new Set([
   "servers",
   "clear",
   "model",
+  "usage",
+  "search",
+  "save",
+  "load",
+  "sessions",
   "help",
   "quit",
   "exit",
@@ -96,7 +110,7 @@ export async function handleSlashCommand(
 
   // Built-in commands
   if (BUILTIN_COMMANDS.has(command)) {
-    return handleBuiltinCommand(command, argsRaw, ctx);
+    return Promise.resolve(handleBuiltinCommand(command, argsRaw, ctx));
   }
 
   // Direct tool invocation
@@ -160,6 +174,9 @@ function handleBuiltinCommand(
 
     case "clear":
       messages.length = 0;
+      if (ctx.registry) {
+        ctx.registry.resetToAlwaysOn();
+      }
       return { output: "Conversation cleared.", exit: false, cleared: true };
 
     case "model":
@@ -176,6 +193,80 @@ function handleBuiltinCommand(
         cleared: false,
       };
 
+    case "usage": {
+      if (!ctx.usageTracker) {
+        return { output: "Token tracking not enabled.", exit: false, cleared: false };
+      }
+      return { output: ctx.usageTracker.formatSummary(), exit: false, cleared: false };
+    }
+
+    case "search": {
+      if (!ctx.registry) {
+        return { output: "Dynamic tool registry not enabled.", exit: false, cleared: false };
+      }
+      if (!argsRaw) {
+        return { output: `${yellow("Usage:")} /search <query>`, exit: false, cleared: false };
+      }
+      const searchResult = ctx.registry.search(argsRaw);
+      if (searchResult.tools.length === 0) {
+        return { output: `No tools matching "${argsRaw}".`, exit: false, cleared: false };
+      }
+      const lines = searchResult.tools.map(
+        (t) => `  ${bold(t.namespacedName)}: ${t.description ?? ""}`,
+      );
+      return {
+        output: `${bold(`Found ${searchResult.tools.length} tools`)} (${searchResult.totalMatches} total matches):\n${lines.join("\n")}\n\n${dim("These tools are now active and available for use.")}`,
+        exit: false,
+        cleared: false,
+      };
+    }
+
+    case "save": {
+      const meta = saveConversation(messages);
+      return {
+        output: `${green("Saved")} conversation ${bold(meta.id)} (${meta.messageCount} messages)`,
+        exit: false,
+        cleared: false,
+      };
+    }
+
+    case "load": {
+      if (!argsRaw) {
+        return {
+          output: `${yellow("Usage:")} /load <conversation-id>`,
+          exit: false,
+          cleared: false,
+        };
+      }
+      const conv = loadConversation(argsRaw);
+      if (!conv) {
+        return { output: `${yellow("Not found:")} ${argsRaw}`, exit: false, cleared: false };
+      }
+      messages.length = 0;
+      messages.push(...conv.messages);
+      return {
+        output: `${green("Loaded")} conversation ${bold(conv.id)} (${conv.messages.length} messages)`,
+        exit: false,
+        cleared: false,
+      };
+    }
+
+    case "sessions": {
+      const sessions = listConversations();
+      if (sessions.length === 0) {
+        return { output: "No saved conversations.", exit: false, cleared: false };
+      }
+      const lines = sessions.map(
+        (s) =>
+          `  ${bold(s.id)} (${s.messageCount} msgs, ${s.updatedAt.slice(0, 10)}) ${dim(s.preview)}`,
+      );
+      return {
+        output: `${bold("Saved conversations:")}\n${lines.join("\n")}`,
+        exit: false,
+        cleared: false,
+      };
+    }
+
     case "help":
       return {
         output: `${bold("Commands:")}
@@ -184,6 +275,11 @@ function handleBuiltinCommand(
   ${cyan("/servers")}       List connected servers
   ${cyan("/clear")}         Clear conversation history
   ${cyan("/model")}         Show current model
+  ${cyan("/usage")}         Show token usage and context health
+  ${cyan("/search")}${dim(" <query>")}  Search and activate tools by keyword
+  ${cyan("/save")}          Save current conversation
+  ${cyan("/load")}${dim(" <id>")}     Load a saved conversation
+  ${cyan("/sessions")}      List saved conversations
   ${cyan("/help")}          Show this help
   ${cyan("/quit")}          Exit
 

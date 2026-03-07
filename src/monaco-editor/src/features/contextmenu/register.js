@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/contextmenu/browser/contextmenu';
+import "monaco-editor-core/esm/vs/editor/contrib/contextmenu/browser/contextmenu";

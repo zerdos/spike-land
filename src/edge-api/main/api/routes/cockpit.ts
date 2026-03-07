@@ -49,9 +49,7 @@ cockpit.get("/api/cockpit/metrics", async (c) => {
   }
 
   // Resolve userId → email and verify admin access
-  const userRow = await c.env.DB.prepare(
-    `SELECT email FROM users WHERE id = ? LIMIT 1`,
-  )
+  const userRow = await c.env.DB.prepare(`SELECT email FROM users WHERE id = ? LIMIT 1`)
     .bind(userId)
     .first<{ email: string }>();
 
@@ -74,17 +72,22 @@ cockpit.get("/api/cockpit/metrics", async (c) => {
     .all<ServicePurchaseRow>()
     .catch((): { results: ServicePurchaseRow[] } => ({ results: [] }));
 
-  const [userCountRow, activeSubsRow, toolCountRow, mrrRow, recentSignupsResult, serviceRevenueRow, servicePurchasesResult] =
-    await Promise.all([
-      c.env.DB.prepare(`SELECT COUNT(*) as count FROM users`)
-        .first<CountRow>(),
-      c.env.DB.prepare(
-        `SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'`,
-      ).first<ActiveSubsRow>(),
-      c.env.DB.prepare(`SELECT COUNT(*) as count FROM registeredTools`)
-        .first<CountRow>(),
-      c.env.DB.prepare(
-        `SELECT COALESCE(SUM(
+  const [
+    userCountRow,
+    activeSubsRow,
+    toolCountRow,
+    mrrRow,
+    recentSignupsResult,
+    serviceRevenueRow,
+    servicePurchasesResult,
+  ] = await Promise.all([
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM users`).first<CountRow>(),
+    c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'`,
+    ).first<ActiveSubsRow>(),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM registeredTools`).first<CountRow>(),
+    c.env.DB.prepare(
+      `SELECT COALESCE(SUM(
           CASE plan
             WHEN 'pro'      THEN 29
             WHEN 'business' THEN 99
@@ -92,13 +95,13 @@ cockpit.get("/api/cockpit/metrics", async (c) => {
           END
         ), 0) as mrr
          FROM subscriptions WHERE status = 'active'`,
-      ).first<MrrRow>(),
-      c.env.DB.prepare(
-        `SELECT id, email, created_at FROM users ORDER BY created_at DESC LIMIT 10`,
-      ).all<RecentSignupRow>(),
-      serviceRevenueQuery,
-      servicePurchasesQuery,
-    ]);
+    ).first<MrrRow>(),
+    c.env.DB.prepare(
+      `SELECT id, email, created_at FROM users ORDER BY created_at DESC LIMIT 10`,
+    ).all<RecentSignupRow>(),
+    serviceRevenueQuery,
+    servicePurchasesQuery,
+  ]);
 
   serviceRevenueTotal = serviceRevenueRow?.total ?? 0;
   servicePurchases = servicePurchasesResult.results ?? [];

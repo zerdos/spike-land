@@ -44,7 +44,7 @@ describe("Code Durable Object additional coverage", () => {
   let codeInstance: Code;
 
   const createSession = (overrides: Partial<ICodeSession> = {}): ICodeSession => ({
-    code: 'export default function App() { return <div>Hello</div>; }',
+    code: "export default function App() { return <div>Hello</div>; }",
     html: "<div>Hello</div>",
     css: "",
     transpiled: "transpiled code",
@@ -163,7 +163,9 @@ describe("Code Durable Object additional coverage", () => {
       codeInstance.initialized = false;
 
       // Make storage throw so initialization fails
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Storage unavailable"));
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error("Storage unavailable"),
+      );
 
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
       const ws = {} as WebSocket;
@@ -236,12 +238,13 @@ describe("Code Durable Object additional coverage", () => {
 
       // Set up storage for initialization
       (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation((key: string) => {
-        if (key === "session_core") return Promise.resolve({
-          codeSpace: "test-space",
-          html: "<div></div>",
-          css: "",
-          messages: [],
-        });
+        if (key === "session_core")
+          return Promise.resolve({
+            codeSpace: "test-space",
+            html: "<div></div>",
+            css: "",
+            messages: [],
+          });
         if (key === "session_code") return Promise.resolve("initial code");
         if (key === "session_transpiled") return Promise.resolve("transpiled");
         return Promise.resolve(null);

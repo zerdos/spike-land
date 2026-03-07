@@ -110,8 +110,8 @@ describe("alias store", () => {
 
   it("addAlias throws when passing object to non-composite section (line 56)", async () => {
     const composite = { tool: "some__tool", args: {} };
-    await expect(
-      addAlias("commands", "myalias", composite as unknown as string),
-    ).rejects.toThrow("requires a string value");
+    await expect(addAlias("commands", "myalias", composite as unknown as string)).rejects.toThrow(
+      "requires a string value",
+    );
   });
 });

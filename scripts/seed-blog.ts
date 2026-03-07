@@ -10,12 +10,7 @@ import { readdir, readFile, writeFile, unlink, stat } from "node:fs/promises";
 import { join, resolve, extname } from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import {
-  type BlogPost,
-  parseMdxContent,
-  sortByDateDesc,
-  generateSQL,
-} from "./seed-blog-lib.js";
+import { type BlogPost, parseMdxContent, sortByDateDesc, generateSQL } from "./seed-blog-lib.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -53,9 +48,7 @@ async function seedD1(posts: BlogPost[]): Promise<void> {
     const cmd = `npx wrangler d1 execute ${DB_NAME} --file="${tmpFile}" ${remoteFlag}`;
     console.log(`Executing: ${cmd}`);
     execSync(cmd, { cwd: SPIKE_EDGE_DIR, stdio: "inherit" });
-    console.log(
-      `Seeded ${posts.length} blog posts to D1 (${isRemote ? "remote" : "local"}).`,
-    );
+    console.log(`Seeded ${posts.length} blog posts to D1 (${isRemote ? "remote" : "local"}).`);
   } finally {
     await unlink(tmpFile).catch(() => {});
   }
@@ -63,9 +56,7 @@ async function seedD1(posts: BlogPost[]): Promise<void> {
 
 async function uploadImages(): Promise<void> {
   if (!isRemote) {
-    console.log(
-      "Skipping image upload (local mode). Use --remote to upload to R2.",
-    );
+    console.log("Skipping image upload (local mode). Use --remote to upload to R2.");
     return;
   }
 
@@ -78,15 +69,7 @@ async function uploadImages(): Promise<void> {
     return;
   }
 
-  const IMAGE_EXTS = new Set([
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".webp",
-    ".svg",
-    ".avif",
-  ]);
+  const IMAGE_EXTS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".avif"]);
 
   for (const slugDir of slugDirs) {
     const dirPath = join(IMAGE_DIR, slugDir);

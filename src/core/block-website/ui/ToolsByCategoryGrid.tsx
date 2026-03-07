@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { cn } from "@spike-land-ai/shared";
-import {
-  getPersonaSlug,
-  getContentVariant,
-} from "../core-logic/persona-content-variants";
+import { getPersonaSlug, getContentVariant } from "../core-logic/persona-content-variants";
 import { apiUrl } from "../core-logic/api";
 
 interface Tool {
@@ -43,56 +40,45 @@ const TOOL_CATEGORY_MAP: Record<string, string> = {
   blog: "learn",
 };
 
-const CATEGORY_META: Record<
-  string,
-  { label: string; colorClass: string; dotClass: string }
-> = {
+const CATEGORY_META: Record<string, { label: string; colorClass: string; dotClass: string }> = {
   core: {
     label: "Core",
-    colorClass:
-      "bg-slate-500/10 border-slate-500/20 text-slate-700 dark:text-slate-300",
+    colorClass: "bg-slate-500/10 border-slate-500/20 text-slate-700 dark:text-slate-300",
     dotClass: "bg-slate-500",
   },
   "mcp-tools": {
     label: "MCP Tools",
-    colorClass:
-      "bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-300",
+    colorClass: "bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-300",
     dotClass: "bg-blue-500",
   },
   frontend: {
     label: "Frontend",
-    colorClass:
-      "bg-violet-500/10 border-violet-500/20 text-violet-700 dark:text-violet-300",
+    colorClass: "bg-violet-500/10 border-violet-500/20 text-violet-700 dark:text-violet-300",
     dotClass: "bg-violet-500",
   },
   "edge-api": {
     label: "Edge API",
-    colorClass:
-      "bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-300",
+    colorClass: "bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-300",
     dotClass: "bg-amber-500",
   },
   utilities: {
     label: "Utilities",
-    colorClass:
-      "bg-teal-500/10 border-teal-500/20 text-teal-700 dark:text-teal-300",
+    colorClass: "bg-teal-500/10 border-teal-500/20 text-teal-700 dark:text-teal-300",
     dotClass: "bg-teal-500",
   },
   cli: {
     label: "CLI",
-    colorClass:
-      "bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-300",
+    colorClass: "bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-300",
     dotClass: "bg-green-500",
   },
   media: {
     label: "Media",
-    colorClass:
-      "bg-rose-500/10 border-rose-500/20 text-rose-700 dark:text-rose-300",
+    colorClass: "bg-rose-500/10 border-rose-500/20 text-rose-700 dark:text-rose-300",
     dotClass: "bg-rose-500",
   },
   learn: {
     label: "Learn",
-    colorClass:
-      "bg-indigo-500/10 border-indigo-500/20 text-indigo-700 dark:text-indigo-300",
+    colorClass: "bg-indigo-500/10 border-indigo-500/20 text-indigo-700 dark:text-indigo-300",
     dotClass: "bg-indigo-500",
   },
 };
@@ -158,9 +144,7 @@ function CategoryCard({ category, tools, defaultExpanded }: CategoryCardProps) {
       >
         <div className="flex items-center gap-3">
           <span className={cn("size-3 rounded-full shrink-0", meta.dotClass)} />
-          <span className="text-base font-black tracking-tight">
-            {meta.label}
-          </span>
+          <span className="text-base font-black tracking-tight">{meta.label}</span>
           <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-background/60 border border-current/20">
             {tools.length}
           </span>
@@ -175,14 +159,9 @@ function CategoryCard({ category, tools, defaultExpanded }: CategoryCardProps) {
       {expanded && (
         <div className="px-6 pb-6 space-y-3 border-t border-current/10 pt-4">
           {tools.map((tool) => (
-            <div
-              key={tool.name}
-              className="flex items-start justify-between gap-4 group"
-            >
+            <div key={tool.name} className="flex items-start justify-between gap-4 group">
               <div className="min-w-0">
-                <p className="text-sm font-bold text-foreground truncate">
-                  {tool.name}
-                </p>
+                <p className="text-sm font-bold text-foreground truncate">{tool.name}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed mt-0.5 line-clamp-2">
                   {tool.description}
                 </p>
@@ -213,7 +192,7 @@ export function ToolsByCategoryGrid() {
 
   useEffect(() => {
     fetch(apiUrl("/tools"))
-      .then((r): Promise<Tool[]> => r.ok ? (r.json() as Promise<Tool[]>) : Promise.resolve([]))
+      .then((r): Promise<Tool[]> => (r.ok ? (r.json() as Promise<Tool[]>) : Promise.resolve([])))
       .then((data) => setTools(Array.isArray(data) ? data : []))
       .catch(() => setTools([]))
       .finally(() => setLoading(false));

@@ -43,9 +43,7 @@ type PwPage = {
   mouse: { wheel(deltaX: number, deltaY: number): Promise<void> };
   viewportSize(): { width: number; height: number } | null;
   context(): {
-    newCDPSession(
-      page: PwPage,
-    ): Promise<{
+    newCDPSession(page: PwPage): Promise<{
       send(method: string): Promise<{ nodes?: CdpAxNode[] }>;
     }>;
   };

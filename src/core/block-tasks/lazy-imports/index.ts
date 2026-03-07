@@ -63,7 +63,15 @@ export const taskQueue = defineBlock({
         };
         await blockCtx.storage.sql.execute(
           "INSERT INTO tasks (id, title, description, status, assignee, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          [task.id, task.title, task.description, task.status, task.assignee, task.created, task.updated],
+          [
+            task.id,
+            task.title,
+            task.description,
+            task.status,
+            task.assignee,
+            task.created,
+            task.updated,
+          ],
         );
         return {
           content: [{ type: "text", text: JSON.stringify(task, null, 2) }],
@@ -100,7 +108,9 @@ export const taskQueue = defineBlock({
         );
         if (result.rows.length === 0) {
           return {
-            content: [{ type: "text", text: "**Error: NOT_FOUND**\nTask not found\n**Retryable:** false" }],
+            content: [
+              { type: "text", text: "**Error: NOT_FOUND**\nTask not found\n**Retryable:** false" },
+            ],
             isError: true,
           };
         }
@@ -121,12 +131,26 @@ export const taskQueue = defineBlock({
         );
         if (result.rowsAffected === 0) {
           return {
-            content: [{ type: "text", text: "**Error: ALREADY_CLAIMED**\nTask is not available for claiming\n**Retryable:** false" }],
+            content: [
+              {
+                type: "text",
+                text: "**Error: ALREADY_CLAIMED**\nTask is not available for claiming\n**Retryable:** false",
+              },
+            ],
             isError: true,
           };
         }
         return {
-          content: [{ type: "text", text: JSON.stringify({ claimed: true, taskId: input.taskId, assignee: blockCtx.userId }) }],
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                claimed: true,
+                taskId: input.taskId,
+                assignee: blockCtx.userId,
+              }),
+            },
+          ],
         };
       }),
 
@@ -142,12 +166,19 @@ export const taskQueue = defineBlock({
         );
         if (result.rowsAffected === 0) {
           return {
-            content: [{ type: "text", text: "**Error: NOT_CLAIMABLE**\nTask is not claimed by you or does not exist\n**Retryable:** false" }],
+            content: [
+              {
+                type: "text",
+                text: "**Error: NOT_CLAIMABLE**\nTask is not claimed by you or does not exist\n**Retryable:** false",
+              },
+            ],
             isError: true,
           };
         }
         return {
-          content: [{ type: "text", text: JSON.stringify({ completed: true, taskId: input.taskId }) }],
+          content: [
+            { type: "text", text: JSON.stringify({ completed: true, taskId: input.taskId }) },
+          ],
         };
       }),
 
@@ -156,18 +187,21 @@ export const taskQueue = defineBlock({
         taskId: z.string(),
       })
       .handler(async ({ input, ctx: blockCtx }) => {
-        const result = await blockCtx.storage.sql.execute(
-          "DELETE FROM tasks WHERE id = ?",
-          [input.taskId],
-        );
+        const result = await blockCtx.storage.sql.execute("DELETE FROM tasks WHERE id = ?", [
+          input.taskId,
+        ]);
         if (result.rowsAffected === 0) {
           return {
-            content: [{ type: "text", text: "**Error: NOT_FOUND**\nTask not found\n**Retryable:** false" }],
+            content: [
+              { type: "text", text: "**Error: NOT_FOUND**\nTask not found\n**Retryable:** false" },
+            ],
             isError: true,
           };
         }
         return {
-          content: [{ type: "text", text: JSON.stringify({ deleted: true, taskId: input.taskId }) }],
+          content: [
+            { type: "text", text: JSON.stringify({ deleted: true, taskId: input.taskId }) },
+          ],
         };
       }),
   }),

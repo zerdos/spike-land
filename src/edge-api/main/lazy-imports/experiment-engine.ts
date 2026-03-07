@@ -130,8 +130,7 @@ export function evaluateExperiment(
   const winnerRate = posteriors.find((p) => p.id === bestVariant)?.donateRate ?? 0;
   const improvement = controlRate > 0 ? (winnerRate - controlRate) / controlRate : 0;
 
-  const shouldGraduate =
-    bestProb > 0.95 && (bestVariant === "control" || improvement >= 0.1);
+  const shouldGraduate = bestProb > 0.95 && (bestVariant === "control" || improvement >= 0.1);
 
   return {
     probabilities,

@@ -3,29 +3,50 @@ import { useAuth } from "../hooks/useAuth";
 import { apiUrl } from "../../core-logic/api";
 
 const DELIVERABLES = [
-  { title: "3-screen working MVP", description: "A functional app with up to 3 core screens tailored to your brief." },
-  { title: "MCP-powered backend", description: "API integrations and data layer built using our MCP tool ecosystem." },
-  { title: "Deployed to production", description: "Live on Cloudflare's global edge network — fast everywhere." },
-  { title: "Source code ownership", description: "Full ownership of everything we build. No lock-in." },
-  { title: "Basic documentation", description: "README and inline docs so you can hand it to any developer." },
-  { title: "14-day bug fix warranty", description: "We fix any bugs in the delivered scope, no questions asked." },
+  {
+    title: "3-screen working MVP",
+    description: "A functional app with up to 3 core screens tailored to your brief.",
+  },
+  {
+    title: "MCP-powered backend",
+    description: "API integrations and data layer built using our MCP tool ecosystem.",
+  },
+  {
+    title: "Deployed to production",
+    description: "Live on Cloudflare's global edge network — fast everywhere.",
+  },
+  {
+    title: "Source code ownership",
+    description: "Full ownership of everything we build. No lock-in.",
+  },
+  {
+    title: "Basic documentation",
+    description: "README and inline docs so you can hand it to any developer.",
+  },
+  {
+    title: "14-day bug fix warranty",
+    description: "We fix any bugs in the delivered scope, no questions asked.",
+  },
 ];
 
 const STEPS = [
   {
     number: "01",
     title: "Brief",
-    description: "You describe what you need in a 30-minute call. We ask the right questions and confirm scope before we start.",
+    description:
+      "You describe what you need in a 30-minute call. We ask the right questions and confirm scope before we start.",
   },
   {
     number: "02",
     title: "Build",
-    description: "Our AI agents and MCP tools get to work. We build in parallel — frontend, backend, and integrations simultaneously.",
+    description:
+      "Our AI agents and MCP tools get to work. We build in parallel — frontend, backend, and integrations simultaneously.",
   },
   {
     number: "03",
     title: "Ship",
-    description: "Your app is deployed, documented, and handed over with source code. You own everything.",
+    description:
+      "Your app is deployed, documented, and handed over with source code. You own everything.",
   },
 ];
 
@@ -84,9 +105,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {open && (
-        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{answer}</p>
-      )}
+      {open && <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{answer}</p>}
     </div>
   );
 }
@@ -160,14 +179,18 @@ export function BuildPage() {
           MCP-first development
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-          We Build Your App<br />in 48 Hours
+          We Build Your App
+          <br />
+          in 48 Hours
         </h1>
         <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-          Describe what you need. Our AI agents and MCP tools build a working 3-screen MVP,
-          deployed to production — for a single fixed price.
+          Describe what you need. Our AI agents and MCP tools build a working 3-screen MVP, deployed
+          to production — for a single fixed price.
         </p>
         <CtaButton />
-        <p className="text-xs text-muted-foreground">One-time payment. No subscription. Source code included.</p>
+        <p className="text-xs text-muted-foreground">
+          One-time payment. No subscription. Source code included.
+        </p>
       </section>
 
       {/* How It Works */}
@@ -178,7 +201,10 @@ export function BuildPage() {
         </div>
         <div className="grid gap-6 sm:grid-cols-3">
           {STEPS.map((step) => (
-            <div key={step.number} className="rounded-2xl border border-border bg-card p-6 space-y-3">
+            <div
+              key={step.number}
+              className="rounded-2xl border border-border bg-card p-6 space-y-3"
+            >
               <span className="text-3xl font-extrabold text-primary/30">{step.number}</span>
               <h3 className="text-base font-bold text-foreground">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
@@ -191,7 +217,9 @@ export function BuildPage() {
       <section className="space-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold text-foreground">What You Get</h2>
-          <p className="text-sm text-muted-foreground">Everything you need to launch, nothing you don't.</p>
+          <p className="text-sm text-muted-foreground">
+            Everything you need to launch, nothing you don't.
+          </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {DELIVERABLES.map((item) => (
@@ -204,11 +232,18 @@ export function BuildPage() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
               </div>
-              <p className="pl-6 text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+              <p className="pl-6 text-xs text-muted-foreground leading-relaxed">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
@@ -221,9 +256,7 @@ export function BuildPage() {
             "A chemistry teacher used our tools to build £90,000 worth of software in 70 hours.
             Imagine what we can build for you."
           </p>
-          <footer className="text-sm text-muted-foreground">
-            — From the spike.land blog
-          </footer>
+          <footer className="text-sm text-muted-foreground">— From the spike.land blog</footer>
         </blockquote>
       </section>
 
@@ -251,7 +284,12 @@ export function BuildPage() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 {item.title}
               </li>
@@ -263,7 +301,9 @@ export function BuildPage() {
 
       {/* FAQ */}
       <section className="space-y-6">
-        <h2 className="text-center text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
+        <h2 className="text-center text-2xl font-bold text-foreground">
+          Frequently Asked Questions
+        </h2>
         <div className="mx-auto max-w-2xl">
           {FAQ_ITEMS.map((item) => (
             <FaqItem key={item.question} question={item.question} answer={item.answer} />
@@ -280,7 +320,10 @@ export function BuildPage() {
         <CtaButton label="Start Your Build — £1,997" />
         <p className="text-xs text-muted-foreground">
           Questions?{" "}
-          <a href="mailto:build@spike.land" className="text-primary underline hover:text-primary/80">
+          <a
+            href="mailto:build@spike.land"
+            className="text-primary underline hover:text-primary/80"
+          >
             Email us at build@spike.land
           </a>
         </p>

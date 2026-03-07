@@ -49,15 +49,17 @@ export async function checkIdempotency(
   eventId: string,
 ): Promise<{ duplicate: boolean }> {
   try {
-    const already = await db.prepare(
-      "SELECT id FROM webhook_events WHERE id = ? LIMIT 1",
-    ).bind(eventId).first<{ id: string }>();
+    const already = await db
+      .prepare("SELECT id FROM webhook_events WHERE id = ? LIMIT 1")
+      .bind(eventId)
+      .first<{ id: string }>();
 
     if (already) return { duplicate: true };
 
-    await db.prepare(
-      "INSERT INTO webhook_events (id, processed_at) VALUES (?, ?)",
-    ).bind(eventId, Date.now()).run();
+    await db
+      .prepare("INSERT INTO webhook_events (id, processed_at) VALUES (?, ?)")
+      .bind(eventId, Date.now())
+      .run();
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     log.error("Idempotency check failed", { error: msg });
@@ -75,19 +77,26 @@ export function logWebhookError(
   stack: string | null,
 ) {
   try {
-    const work = db.prepare(
-      "INSERT INTO error_logs (service_name, error_code, message, stack_trace, metadata, client_id, severity) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    ).bind("stripe-webhook", eventType, message, stack, null, null, "error").run().catch(() => {});
-    try { ctx?.waitUntil(work); } catch { /* no ctx in tests */ }
-  } catch { /* DB unavailable */ }
+    const work = db
+      .prepare(
+        "INSERT INTO error_logs (service_name, error_code, message, stack_trace, metadata, client_id, severity) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      )
+      .bind("stripe-webhook", eventType, message, stack, null, null, "error")
+      .run()
+      .catch(() => {});
+    try {
+      ctx?.waitUntil(work);
+    } catch {
+      /* no ctx in tests */
+    }
+  } catch {
+    /* DB unavailable */
+  }
 }
 
 // ─── Checkout Completed (Subscription) ──────────────────────────────────────
 
-export async function handleCheckoutCompleted(
-  db: D1Database,
-  event: StripeEvent,
-): Promise<void> {
+export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent): Promise<void> {
   const session = event.data.object as unknown as StripeSession;
 
   // Service purchases are handled separately
@@ -108,33 +117,42 @@ export async function handleCheckoutCompleted(
   }
 
   const stripeCustomerId = typeof session.customer === "string" ? session.customer : null;
-  const stripeSubscriptionId = typeof session.subscription === "string" ? session.subscription : null;
+  const stripeSubscriptionId =
+    typeof session.subscription === "string" ? session.subscription : null;
   const now = Date.now();
 
   const rawTier = session.metadata?.tier;
   const plan = rawTier === "business" || rawTier === "pro" ? rawTier : "pro";
 
-  const existing = await db.prepare(
-    "SELECT id FROM subscriptions WHERE user_id = ? LIMIT 1",
-  ).bind(userId).first<{ id: string }>();
+  const existing = await db
+    .prepare("SELECT id FROM subscriptions WHERE user_id = ? LIMIT 1")
+    .bind(userId)
+    .first<{ id: string }>();
 
   if (existing) {
-    await db.prepare(
-      `UPDATE subscriptions SET stripe_customer_id = ?, stripe_subscription_id = ?, status = 'active', plan = ?, updated_at = ?
+    await db
+      .prepare(
+        `UPDATE subscriptions SET stripe_customer_id = ?, stripe_subscription_id = ?, status = 'active', plan = ?, updated_at = ?
        WHERE id = ?`,
-    ).bind(stripeCustomerId, stripeSubscriptionId, plan, now, existing.id).run();
+      )
+      .bind(stripeCustomerId, stripeSubscriptionId, plan, now, existing.id)
+      .run();
   } else {
-    await db.prepare(
-      `INSERT INTO subscriptions (id, user_id, stripe_customer_id, stripe_subscription_id, status, plan, created_at, updated_at)
+    await db
+      .prepare(
+        `INSERT INTO subscriptions (id, user_id, stripe_customer_id, stripe_subscription_id, status, plan, created_at, updated_at)
        VALUES (?, ?, ?, ?, 'active', ?, ?, ?)`,
-    ).bind(crypto.randomUUID(), userId, stripeCustomerId, stripeSubscriptionId, plan, now, now).run();
+      )
+      .bind(crypto.randomUUID(), userId, stripeCustomerId, stripeSubscriptionId, plan, now, now)
+      .run();
   }
 
   const customerEmail = session.customer_email;
   if (customerEmail && customerEmail.length > 0) {
-    await db.prepare(
-      "UPDATE users SET email = ?, updated_at = ? WHERE id = ? AND email != ?",
-    ).bind(customerEmail, now, userId, customerEmail).run();
+    await db
+      .prepare("UPDATE users SET email = ?, updated_at = ? WHERE id = ? AND email != ?")
+      .bind(customerEmail, now, userId, customerEmail)
+      .run();
   }
 }
 
@@ -151,60 +169,64 @@ async function handleServicePurchase(
   const metaUserId = session.metadata?.userId ?? null;
 
   if (serviceName && sessionId) {
-    await db.prepare(
-      `INSERT INTO service_purchases (id, service, stripe_session_id, user_id, email, status, created_at)
+    await db
+      .prepare(
+        `INSERT INTO service_purchases (id, service, stripe_session_id, user_id, email, status, created_at)
        VALUES (?, ?, ?, ?, ?, 'completed', ?)`,
-    ).bind(crypto.randomUUID(), serviceName, sessionId, metaUserId, customerEmail, Date.now()).run();
+      )
+      .bind(crypto.randomUUID(), serviceName, sessionId, metaUserId, customerEmail, Date.now())
+      .run();
   }
 }
 
 // ─── Subscription Updated ───────────────────────────────────────────────────
 
-export async function handleSubscriptionUpdated(
-  db: D1Database,
-  event: StripeEvent,
-): Promise<void> {
+export async function handleSubscriptionUpdated(db: D1Database, event: StripeEvent): Promise<void> {
   const sub = event.data.object as unknown as StripeSubscription;
   const tier = mapStripePlanToTier(sub);
-  const status = sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : sub.status;
+  const status =
+    sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : sub.status;
   const periodEnd = sub.current_period_end ? sub.current_period_end * 1000 : null;
   const now = Date.now();
 
-  await db.prepare(
-    `UPDATE subscriptions SET status = ?, plan = ?, current_period_end = ?, updated_at = ?
+  await db
+    .prepare(
+      `UPDATE subscriptions SET status = ?, plan = ?, current_period_end = ?, updated_at = ?
      WHERE stripe_subscription_id = ?`,
-  ).bind(status, tier, periodEnd, now, sub.id).run();
+    )
+    .bind(status, tier, periodEnd, now, sub.id)
+    .run();
 }
 
 // ─── Subscription Deleted ───────────────────────────────────────────────────
 
-export async function handleSubscriptionDeleted(
-  db: D1Database,
-  event: StripeEvent,
-): Promise<void> {
+export async function handleSubscriptionDeleted(db: D1Database, event: StripeEvent): Promise<void> {
   const sub = event.data.object as unknown as StripeSubscription;
   const now = Date.now();
-  await db.prepare(
-    `UPDATE subscriptions SET status = 'canceled', plan = 'free', updated_at = ?
+  await db
+    .prepare(
+      `UPDATE subscriptions SET status = 'canceled', plan = 'free', updated_at = ?
      WHERE stripe_subscription_id = ?`,
-  ).bind(now, sub.id).run();
+    )
+    .bind(now, sub.id)
+    .run();
 }
 
 // ─── Invoice Paid ───────────────────────────────────────────────────────────
 
-export async function handleInvoicePaid(
-  db: D1Database,
-  event: StripeEvent,
-): Promise<void> {
+export async function handleInvoicePaid(db: D1Database, event: StripeEvent): Promise<void> {
   const invoice = event.data.object as unknown as StripeInvoice;
   const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
   if (subId) {
     const periodEnd = typeof invoice.period_end === "number" ? invoice.period_end * 1000 : null;
     const now = Date.now();
-    await db.prepare(
-      `UPDATE subscriptions SET current_period_end = ?, status = 'active', updated_at = ?
+    await db
+      .prepare(
+        `UPDATE subscriptions SET current_period_end = ?, status = 'active', updated_at = ?
        WHERE stripe_subscription_id = ?`,
-    ).bind(periodEnd, now, subId).run();
+      )
+      .bind(periodEnd, now, subId)
+      .run();
   }
 }
 
@@ -218,9 +240,12 @@ export async function handleInvoicePaymentFailed(
   const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
   if (subId) {
     const now = Date.now();
-    await db.prepare(
-      `UPDATE subscriptions SET status = 'past_due', updated_at = ?
+    await db
+      .prepare(
+        `UPDATE subscriptions SET status = 'past_due', updated_at = ?
        WHERE stripe_subscription_id = ?`,
-    ).bind(now, subId).run();
+      )
+      .bind(now, subId)
+      .run();
   }
 }

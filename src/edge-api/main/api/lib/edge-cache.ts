@@ -51,9 +51,7 @@ export async function withEdgeCache(
   let cacheReq: Request | undefined;
   try {
     cache = (caches as unknown as { default: Cache }).default;
-    cacheReq = options.cacheKey
-      ? new Request(options.cacheKey, { method: "GET" })
-      : request;
+    cacheReq = options.cacheKey ? new Request(options.cacheKey, { method: "GET" }) : request;
 
     const cached = await cache.match(cacheReq);
     if (cached) return cached;
@@ -76,7 +74,9 @@ export async function withEdgeCache(
 
     try {
       ctx?.waitUntil(cache.put(cacheReq, toCache));
-    } catch { /* no ExecutionContext in test environment */ }
+    } catch {
+      /* no ExecutionContext in test environment */
+    }
   }
 
   // Set cache headers on the live response

@@ -157,9 +157,12 @@ describe("ModelManager", () => {
         css: "",
         transpiled: "",
       });
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        text: () => Promise.resolve(""),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          text: () => Promise.resolve(""),
+        }),
+      );
       const mm = new ModelManager("main-space", initialModel as never);
       const result = await mm.getCurrentCodeWithExtraModels();
       expect(result).toContain("main-space.tsx");

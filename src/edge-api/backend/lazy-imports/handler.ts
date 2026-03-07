@@ -17,12 +17,7 @@ import {
   fileTools,
 } from "../core-logic/mcp/tools/file-tools";
 import { executeFindLines, findTools } from "./find-tools";
-import {
-  executeReadCode,
-  executeReadHtml,
-  executeReadSession,
-  readTools,
-} from "./read-tools";
+import { executeReadCode, executeReadHtml, executeReadSession, readTools } from "./read-tools";
 import type {
   CallToolResult,
   LineEdit,
@@ -339,19 +334,21 @@ export class McpHandler {
       return;
     }
     const env = this.env;
-    hashClientId(codeSpace).then((clientId) =>
-      sendGA4Events(env.GA_MEASUREMENT_ID, env.GA_API_SECRET, clientId, [
-        {
-          name: "backend_tool_call",
-          params: {
-            tool_name: toolName,
-            code_space: codeSpace,
-            duration_ms: durationMs,
-            success: String(success),
+    hashClientId(codeSpace)
+      .then((clientId) =>
+        sendGA4Events(env.GA_MEASUREMENT_ID, env.GA_API_SECRET, clientId, [
+          {
+            name: "backend_tool_call",
+            params: {
+              tool_name: toolName,
+              code_space: codeSpace,
+              duration_ms: durationMs,
+              success: String(success),
+            },
           },
-        },
-      ]),
-    ).catch((err) => console.error("Failed to send GA4 event:", err));
+        ]),
+      )
+      .catch((err) => console.error("Failed to send GA4 event:", err));
   }
 
   public async executeTool(
@@ -378,138 +375,143 @@ export class McpHandler {
     let result: Record<string, unknown>;
 
     try {
-    switch (toolName) {
-      case "read_code":
-        result = executeReadCode(session, requestedCodeSpace);
-        break;
+      switch (toolName) {
+        case "read_code":
+          result = executeReadCode(session, requestedCodeSpace);
+          break;
 
-      case "read_html":
-        result = executeReadHtml(session, requestedCodeSpace);
-        break;
+        case "read_html":
+          result = executeReadHtml(session, requestedCodeSpace);
+          break;
 
-      case "read_session":
-        result = executeReadSession(session, requestedCodeSpace);
-        break;
+        case "read_session":
+          result = executeReadSession(session, requestedCodeSpace);
+          break;
 
-      case "update_code": {
-        if (!args.code || typeof args.code !== "string") {
-          throw new Error("Code parameter is required and must be a string");
+        case "update_code": {
+          if (!args.code || typeof args.code !== "string") {
+            throw new Error("Code parameter is required and must be a string");
+          }
+          const origin = this.durableObject.getOrigin();
+          result = await executeUpdateCode(
+            session,
+            requestedCodeSpace,
+            args.code,
+            updateSession,
+            origin,
+          );
+          break;
         }
-        const origin = this.durableObject.getOrigin();
-        result = await executeUpdateCode(
-          session,
-          requestedCodeSpace,
-          args.code,
-          updateSession,
-          origin,
-        );
-        break;
+
+        case "edit_code": {
+          if (!args.edits || !Array.isArray(args.edits)) {
+            throw new Error("Edits parameter is required and must be an array");
+          }
+          const editOrigin = this.durableObject.getOrigin();
+          result = await executeEditCode(
+            session,
+            requestedCodeSpace,
+            args.edits as LineEdit[],
+            updateSession,
+            editOrigin,
+          );
+          break;
+        }
+
+        case "find_lines": {
+          if (!args.pattern || typeof args.pattern !== "string") {
+            throw new Error("Pattern parameter is required and must be a string");
+          }
+          result = executeFindLines(
+            session,
+            requestedCodeSpace,
+            args.pattern,
+            args.isRegex === true,
+          );
+          break;
+        }
+
+        case "search_and_replace": {
+          if (!args.search || typeof args.search !== "string") {
+            throw new Error("Search parameter is required and must be a string");
+          }
+          if (typeof args.replace !== "string") {
+            throw new Error("Replace parameter is required and must be a string");
+          }
+          const replaceOrigin = this.durableObject.getOrigin();
+          result = await executeSearchAndReplace(
+            session,
+            requestedCodeSpace,
+            args.search,
+            args.replace,
+            args.isRegex === true,
+            args.global !== false,
+            updateSession,
+            replaceOrigin,
+          );
+          break;
+        }
+
+        case "list_files": {
+          const files = this.durableObject.getFiles();
+          result = executeListFiles(files, session.code, requestedCodeSpace);
+          break;
+        }
+
+        case "read_file": {
+          if (!args.path || typeof args.path !== "string") {
+            throw new Error("Path parameter is required and must be a string");
+          }
+          const files = this.durableObject.getFiles();
+          result = executeReadFile(files, session.code, requestedCodeSpace, args.path);
+          break;
+        }
+
+        case "write_file": {
+          if (!args.path || typeof args.path !== "string") {
+            throw new Error("Path parameter is required and must be a string");
+          }
+          if (typeof args.content !== "string") {
+            throw new Error("Content parameter is required and must be a string");
+          }
+          const wFiles = this.durableObject.getFiles();
+          result = await executeWriteFile(
+            wFiles,
+            session.code,
+            requestedCodeSpace,
+            args.path,
+            args.content,
+            (p, c) => this.durableObject.setFile(p, c),
+            wFiles.size,
+          );
+          break;
+        }
+
+        case "delete_file": {
+          if (!args.path || typeof args.path !== "string") {
+            throw new Error("Path parameter is required and must be a string");
+          }
+          const dFiles = this.durableObject.getFiles();
+          result = await executeDeleteFile(dFiles, requestedCodeSpace, args.path, (p) =>
+            this.durableObject.deleteFile(p),
+          );
+          break;
+        }
+
+        default:
+          throw new Error(`Unknown tool: ${toolName}`);
       }
 
-      case "edit_code": {
-        if (!args.edits || !Array.isArray(args.edits)) {
-          throw new Error("Edits parameter is required and must be an array");
-        }
-        const editOrigin = this.durableObject.getOrigin();
-        result = await executeEditCode(
-          session,
-          requestedCodeSpace,
-          args.edits as LineEdit[],
-          updateSession,
-          editOrigin,
-        );
-        break;
-      }
+      this.trackToolCall(toolName, requestedCodeSpace, Date.now() - startTime, true);
 
-      case "find_lines": {
-        if (!args.pattern || typeof args.pattern !== "string") {
-          throw new Error("Pattern parameter is required and must be a string");
-        }
-        result = executeFindLines(session, requestedCodeSpace, args.pattern, args.isRegex === true);
-        break;
-      }
-
-      case "search_and_replace": {
-        if (!args.search || typeof args.search !== "string") {
-          throw new Error("Search parameter is required and must be a string");
-        }
-        if (typeof args.replace !== "string") {
-          throw new Error("Replace parameter is required and must be a string");
-        }
-        const replaceOrigin = this.durableObject.getOrigin();
-        result = await executeSearchAndReplace(
-          session,
-          requestedCodeSpace,
-          args.search,
-          args.replace,
-          args.isRegex === true,
-          args.global !== false,
-          updateSession,
-          replaceOrigin,
-        );
-        break;
-      }
-
-      case "list_files": {
-        const files = this.durableObject.getFiles();
-        result = executeListFiles(files, session.code, requestedCodeSpace);
-        break;
-      }
-
-      case "read_file": {
-        if (!args.path || typeof args.path !== "string") {
-          throw new Error("Path parameter is required and must be a string");
-        }
-        const files = this.durableObject.getFiles();
-        result = executeReadFile(files, session.code, requestedCodeSpace, args.path);
-        break;
-      }
-
-      case "write_file": {
-        if (!args.path || typeof args.path !== "string") {
-          throw new Error("Path parameter is required and must be a string");
-        }
-        if (typeof args.content !== "string") {
-          throw new Error("Content parameter is required and must be a string");
-        }
-        const wFiles = this.durableObject.getFiles();
-        result = await executeWriteFile(
-          wFiles,
-          session.code,
-          requestedCodeSpace,
-          args.path,
-          args.content,
-          (p, c) => this.durableObject.setFile(p, c),
-          wFiles.size,
-        );
-        break;
-      }
-
-      case "delete_file": {
-        if (!args.path || typeof args.path !== "string") {
-          throw new Error("Path parameter is required and must be a string");
-        }
-        const dFiles = this.durableObject.getFiles();
-        result = await executeDeleteFile(dFiles, requestedCodeSpace, args.path, (p) =>
-          this.durableObject.deleteFile(p),
-        );
-        break;
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${toolName}`);
-    }
-
-    this.trackToolCall(toolName, requestedCodeSpace, Date.now() - startTime, true);
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
-        },
-      ],
-    };
+      return {
+        content: [
+          {
+            type: "text",
+            text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
+          },
+        ],
+      };
     } catch (error) {
       this.trackToolCall(toolName, requestedCodeSpace, Date.now() - startTime, false);
       throw error;

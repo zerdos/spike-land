@@ -7,14 +7,9 @@ import { z } from "zod";
 import { createZodTool, errorResult, jsonResult, tryCatch } from "@spike-land-ai/mcp-server-base";
 import type { GoogleAdsClient } from "../core-logic/ads-client.js";
 
-const DATE_RANGE = z.enum([
-  "TODAY",
-  "YESTERDAY",
-  "LAST_7_DAYS",
-  "LAST_30_DAYS",
-  "THIS_MONTH",
-  "LAST_MONTH",
-]).describe("Date range for the report");
+const DATE_RANGE = z
+  .enum(["TODAY", "YESTERDAY", "LAST_7_DAYS", "LAST_30_DAYS", "THIS_MONTH", "LAST_MONTH"])
+  .describe("Date range for the report");
 
 function microsToCurrency(micros: number): number {
   return micros / 1_000_000;
@@ -84,9 +79,7 @@ export function registerKeywordTools(server: McpServer, client: GoogleAdsClient)
         quality_score: row.adGroupCriterion?.qualityInfo?.qualityScore ?? null,
         impressions: Number(row.metrics?.impressions ?? 0),
         clicks: Number(row.metrics?.clicks ?? 0),
-        cost: row.metrics?.costMicros
-          ? microsToCurrency(Number(row.metrics.costMicros))
-          : 0,
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
         conversions: Number(row.metrics?.conversions ?? 0),
       }));
 

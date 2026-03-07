@@ -1,1 +1,1 @@
-export * from '../../../languages/features/typescript/register';
+export * from "../../../languages/features/typescript/register";

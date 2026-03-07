@@ -72,7 +72,14 @@ app.use("*", async (c, next) => {
       return configuredOrigins[0];
     },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "Mcp-Session-Id", "Mcp-Protocol-Version", "Accept", "Cookie"],
+    allowHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Mcp-Session-Id",
+      "Mcp-Protocol-Version",
+      "Accept",
+      "Cookie",
+    ],
     exposeHeaders: ["Mcp-Session-Id", "Set-Cookie"],
     credentials: true,
     maxAge: 86400,
@@ -105,10 +112,7 @@ app.use("*", async (c, next) => {
     c.res.headers.set("X-Frame-Options", "DENY");
   }
   c.res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  c.res.headers.set(
-    "Strict-Transport-Security",
-    "max-age=63072000; includeSubDomains; preload",
-  );
+  c.res.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   c.res.headers.set(
     "Content-Security-Policy",
     [
@@ -182,9 +186,26 @@ app.onError((err, c) => {
     const clientId = c.req.header("cf-connecting-ip") ?? null;
     const logWork = c.env.DB.prepare(
       "INSERT INTO error_logs (service_name, error_code, message, stack_trace, metadata, client_id, severity) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    ).bind("spike-edge", "INTERNAL_ERROR", err.message, err.stack ?? null, metadata, clientId, "error").run().catch((e) => log.error("error_logs write failed", { error: String(e) }));
-    try { c.executionCtx.waitUntil(logWork); } catch { /* no ExecutionContext in tests */ }
-  } catch { /* DB unavailable — skip error logging to prevent double-error */ }
+    )
+      .bind(
+        "spike-edge",
+        "INTERNAL_ERROR",
+        err.message,
+        err.stack ?? null,
+        metadata,
+        clientId,
+        "error",
+      )
+      .run()
+      .catch((e) => log.error("error_logs write failed", { error: String(e) }));
+    try {
+      c.executionCtx.waitUntil(logWork);
+    } catch {
+      /* no ExecutionContext in tests */
+    }
+  } catch {
+    /* DB unavailable — skip error logging to prevent double-error */
+  }
   return c.json({ error: "Internal Server Error" }, 500);
 });
 
@@ -219,9 +240,42 @@ app.route("/", cachePurge);
 app.get("/mcp/tools", async (c) => {
   const url = new URL("https://mcp.spike.land/tools");
   const requestId = c.get("requestId");
-  const response = await c.env.MCP_SERVICE.fetch(new Request(url.toString(), {
-    headers: { "X-Request-Id": requestId },
-  }));
+  const response = await c.env.MCP_SERVICE.fetch(
+    new Request(url.toString(), {
+      headers: { "X-Request-Id": requestId },
+    }),
+  );
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: new Headers(response.headers),
+  });
+});
+
+app.get("/api/apps", async (c) => {
+  const url = new URL("https://mcp.spike.land/apps");
+  const requestId = c.get("requestId");
+  const response = await c.env.MCP_SERVICE.fetch(
+    new Request(url.toString(), {
+      headers: { "X-Request-Id": requestId },
+    }),
+  );
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: new Headers(response.headers),
+  });
+});
+
+app.get("/api/apps/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  const url = new URL(`https://mcp.spike.land/apps/${slug}`);
+  const requestId = c.get("requestId");
+  const response = await c.env.MCP_SERVICE.fetch(
+    new Request(url.toString(), {
+      headers: { "X-Request-Id": requestId },
+    }),
+  );
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -240,7 +294,15 @@ app.get("/api/store/tools", async (c) => {
   if (!response.ok) {
     return c.json({ error: "Failed to fetch tools" }, 502);
   }
-  const data = await response.json<{ tools: Array<{ name: string; description: string; category?: string; version?: string; stability?: string }> }>();
+  const data = await response.json<{
+    tools: Array<{
+      name: string;
+      description: string;
+      category?: string;
+      version?: string;
+      stability?: string;
+    }>;
+  }>();
   const tools = data.tools ?? [];
 
   // Group by category

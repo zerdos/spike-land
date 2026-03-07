@@ -273,7 +273,8 @@ console.warn("Hello, World!");
 
     it("should return current code with extra models", async () => {
       // Directly set the code in the session
-      const code = 'import extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";\nconsole.warn("Hello, World!");';
+      const code =
+        'import extra from "../../../../src/frontend/monaco-editor/__tests__/services/extraModel";\nconsole.warn("Hello, World!");';
       cSess.setSession({
         ...cSess["currentSession"],
         code,

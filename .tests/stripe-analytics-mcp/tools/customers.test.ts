@@ -35,17 +35,40 @@ describe("customer tools", () => {
 
   describe("stripe_customer_ltv", () => {
     it("calculates LTV for a specific customer", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [
-            { id: "ch_1", amount: 5000, currency: "usd", created: 1700000000, customer: "cus_1", status: "succeeded" },
-            { id: "ch_2", amount: 3000, currency: "usd", created: 1700100000, customer: "cus_1", status: "succeeded" },
-            { id: "ch_3", amount: 1000, currency: "usd", created: 1700200000, customer: "cus_1", status: "failed" },
-          ],
-          has_more: false,
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [
+              {
+                id: "ch_1",
+                amount: 5000,
+                currency: "usd",
+                created: 1700000000,
+                customer: "cus_1",
+                status: "succeeded",
+              },
+              {
+                id: "ch_2",
+                amount: 3000,
+                currency: "usd",
+                created: 1700100000,
+                customer: "cus_1",
+                status: "succeeded",
+              },
+              {
+                id: "ch_3",
+                amount: 1000,
+                currency: "usd",
+                created: 1700200000,
+                customer: "cus_1",
+                status: "failed",
+              },
+            ],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_customer_ltv", { customer_id: "cus_1" });
       expect(result.isError).toBeUndefined();
@@ -57,17 +80,40 @@ describe("customer tools", () => {
     });
 
     it("returns top customers when no customer_id provided", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [
-            { id: "ch_1", amount: 10000, currency: "usd", created: 1700000000, customer: "cus_1", status: "succeeded" },
-            { id: "ch_2", amount: 5000, currency: "usd", created: 1700100000, customer: "cus_2", status: "succeeded" },
-            { id: "ch_3", amount: 8000, currency: "usd", created: 1700200000, customer: "cus_1", status: "succeeded" },
-          ],
-          has_more: false,
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [
+              {
+                id: "ch_1",
+                amount: 10000,
+                currency: "usd",
+                created: 1700000000,
+                customer: "cus_1",
+                status: "succeeded",
+              },
+              {
+                id: "ch_2",
+                amount: 5000,
+                currency: "usd",
+                created: 1700100000,
+                customer: "cus_2",
+                status: "succeeded",
+              },
+              {
+                id: "ch_3",
+                amount: 8000,
+                currency: "usd",
+                created: 1700200000,
+                customer: "cus_1",
+                status: "succeeded",
+              },
+            ],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_customer_ltv", { limit: 10 });
       expect(result.isError).toBeUndefined();
@@ -95,19 +141,47 @@ describe("customer tools", () => {
           body: {
             object: "list",
             data: [
-              { id: "sub_1", status: "active", customer: "cus_1", items: { data: [] }, created: 1700000000, canceled_at: null, cancellation_details: null },
-              { id: "sub_2", status: "active", customer: "cus_2", items: { data: [] }, created: 1700000000, canceled_at: null, cancellation_details: null },
+              {
+                id: "sub_1",
+                status: "active",
+                customer: "cus_1",
+                items: { data: [] },
+                created: 1700000000,
+                canceled_at: null,
+                cancellation_details: null,
+              },
+              {
+                id: "sub_2",
+                status: "active",
+                customer: "cus_2",
+                items: { data: [] },
+                created: 1700000000,
+                canceled_at: null,
+                cancellation_details: null,
+              },
             ],
             has_more: false,
           },
         },
         // upcoming invoice for cus_1
         {
-          body: { id: "inv_1", amount_due: 2000, currency: "usd", customer: "cus_1", status: "draft" },
+          body: {
+            id: "inv_1",
+            amount_due: 2000,
+            currency: "usd",
+            customer: "cus_1",
+            status: "draft",
+          },
         },
         // upcoming invoice for cus_2
         {
-          body: { id: "inv_2", amount_due: 5000, currency: "usd", customer: "cus_2", status: "draft" },
+          body: {
+            id: "inv_2",
+            amount_due: 5000,
+            currency: "usd",
+            customer: "cus_2",
+            status: "draft",
+          },
         },
       ]);
 
@@ -125,7 +199,15 @@ describe("customer tools", () => {
           body: {
             object: "list",
             data: [
-              { id: "sub_1", status: "active", customer: "cus_1", items: { data: [] }, created: 1700000000, canceled_at: null, cancellation_details: null },
+              {
+                id: "sub_1",
+                status: "active",
+                customer: "cus_1",
+                items: { data: [] },
+                created: 1700000000,
+                canceled_at: null,
+                cancellation_details: null,
+              },
             ],
             has_more: false,
           },

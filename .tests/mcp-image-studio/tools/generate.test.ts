@@ -1,7 +1,10 @@
 import { asImageId } from "../../../src/mcp-tools/image-studio/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockImageStudioDeps, mockImageRow } from "../__test-utils__/mock-deps.js";
-import { generate, GenerateInputSchema } from "../../../src/mcp-tools/image-studio/tools/generate.js";
+import {
+  generate,
+  GenerateInputSchema,
+} from "../../../src/mcp-tools/image-studio/tools/generate.js";
 import type { ToolContext } from "../../../src/mcp-tools/image-studio/types.js";
 import { standardScenarios } from "../__test-utils__/standard-scenarios.js";
 

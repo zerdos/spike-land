@@ -5,21 +5,29 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
+  if ((from && typeof from === "object") || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
       if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+        __defProp(to, key, {
+          get: () => from[key],
+          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+        });
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
+var __toESM = (mod, isNodeMode, target) => (
+  (target = mod != null ? __create(__getProtoOf(mod)) : {}),
+  __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule
+      ? __defProp(target, "default", { value: mod, enumerable: true })
+      : target,
+    mod,
+  )
+);
 
 // build/utils.ts
 var fs2 = __toESM(require("fs"));
@@ -42,8 +50,7 @@ function ensureDir(dirname3) {
     if (!existingDirCache.has(dir)) {
       try {
         fs.mkdirSync(dir);
-      } catch (err) {
-      }
+      } catch (err) {}
       existingDirCache.add(dir);
     }
   });
@@ -68,7 +75,7 @@ function readFile(file, base = "") {
   const relativePath = file.substring(baseLength);
   return {
     path: relativePath,
-    contents
+    contents,
   };
 }
 function writeFiles(files, dest) {
@@ -85,14 +92,16 @@ var path3 = require("path");
 var fs3 = require("fs");
 function getBasicLanguages() {
   const files = glob2.sync("./out/monaco-editor/esm/vs/languages/definitions/*/register.js", {
-    cwd: path3.dirname(__dirname)
+    cwd: path3.dirname(__dirname),
   });
   return files.map((file) => {
-    const label = file.substring("./out/monaco-editor/esm/vs/languages/definitions/".length).replace("/register.js", "");
+    const label = file
+      .substring("./out/monaco-editor/esm/vs/languages/definitions/".length)
+      .replace("/register.js", "");
     const entry = `vs/languages/definitions/${label}/register`;
     return {
       label,
-      entry
+      entry,
     };
   });
 }
@@ -107,11 +116,11 @@ function readAdvancedLanguages() {
           return;
         }
         resolve(
-          files.map(
-            (file) => file.substring("./out/monaco-editor/esm/vs/languages/features/".length)
-          ).map((file) => file.substring(0, file.length - "/register.js".length))
+          files
+            .map((file) => file.substring("./out/monaco-editor/esm/vs/languages/features/".length))
+            .map((file) => file.substring(0, file.length - "/register.js".length)),
         );
-      }
+      },
     );
   });
 }
@@ -130,8 +139,8 @@ function getAdvancedLanguages() {
         entry,
         worker: {
           id: workerId,
-          entry: workerEntry
-        }
+          entry: workerEntry,
+        },
       });
     }
     return result;
@@ -149,8 +158,10 @@ function generateEsmMetadataJsAndDTs() {
     ([basicLanguages, advancedLanguages]) => {
       basicLanguages.sort((a, b) => strcmp(a.entry, b.entry));
       advancedLanguages.sort((a, b) => strcmp(a.entry, b.entry));
-      let i = 0, len = basicLanguages.length;
-      let j = 0, lenJ = advancedLanguages.length;
+      let i = 0,
+        len = basicLanguages.length;
+      let j = 0,
+        lenJ = advancedLanguages.length;
       let languages = [];
       while (i < len || j < lenJ) {
         if (i < len && j < lenJ) {
@@ -161,7 +172,7 @@ function generateEsmMetadataJsAndDTs() {
             languages.push({
               label: basicLanguages[i].label,
               entry,
-              worker: advancedLanguages[j].worker
+              worker: advancedLanguages[j].worker,
             });
             i++;
             j++;
@@ -230,7 +241,7 @@ exports.languages = ${JSON.stringify(languages, null, "  ")};
           }
         }
       }
-    }
+    },
   );
 }
 function strcmp(a, b) {
@@ -244,14 +255,16 @@ function strcmp(a, b) {
 }
 function getFeatures() {
   const featureFiles = glob2.sync("./out/monaco-editor/esm/vs/features/*/register.js", {
-    cwd: path3.dirname(__dirname)
+    cwd: path3.dirname(__dirname),
   });
   return featureFiles.map((file) => {
-    const featureName = file.substring("./out/monaco-editor/esm/vs/features/".length).replace("/register.js", "");
+    const featureName = file
+      .substring("./out/monaco-editor/esm/vs/features/".length)
+      .replace("/register.js", "");
     const entry = `vs/features/${featureName}/register`;
     return {
       label: featureName,
-      entry
+      entry,
     };
   });
 }
@@ -260,7 +273,11 @@ function getFeatures() {
 var import_child_process = require("child_process");
 async function run(command, options) {
   console.log(`Running ${command} in ${options.cwd}`);
-  const process2 = (0, import_child_process.spawn)(command, { shell: true, cwd: options.cwd, stdio: "inherit" });
+  const process2 = (0, import_child_process.spawn)(command, {
+    shell: true,
+    cwd: options.cwd,
+    stdio: "inherit",
+  });
   return new Promise((resolve, reject) => {
     process2.on("exit", (code) => {
       if (code !== 0) {
@@ -292,7 +309,10 @@ var import_promises = require("fs/promises");
 var path4 = require("path");
 var fs4 = require("fs");
 async function run2() {
-  await (0, import_promises.rm)(path4.join(REPO_ROOT2, "./out/monaco-editor"), { recursive: true, force: true });
+  await (0, import_promises.rm)(path4.join(REPO_ROOT2, "./out/monaco-editor"), {
+    recursive: true,
+    force: true,
+  });
   await buildESM();
   await buildAmdMinDev();
   (() => {
@@ -316,19 +336,21 @@ async function run2() {
     otherFiles = otherFiles.concat(readFiles("CHANGELOG.md", { base: "" }));
     otherFiles = otherFiles.concat(
       readFiles("node_modules/monaco-editor-core/LICENSE", {
-        base: "node_modules/monaco-editor-core/"
-      })
+        base: "node_modules/monaco-editor-core/",
+      }),
     );
     writeFiles(otherFiles, `out/monaco-editor`);
   })();
 }
 function createThirdPartyNoticesDotTxt() {
   const tpn = readFiles("node_modules/monaco-editor-core/ThirdPartyNotices.txt", {
-    base: "node_modules/monaco-editor-core"
+    base: "node_modules/monaco-editor-core",
   })[0];
   let contents = tpn.contents.toString();
   console.log("ADDING ThirdPartyNotices from ./ThirdPartyNotices.txt");
-  let thirdPartyNoticeContent = fs4.readFileSync(path4.join(REPO_ROOT2, "ThirdPartyNotices.txt")).toString();
+  let thirdPartyNoticeContent = fs4
+    .readFileSync(path4.join(REPO_ROOT2, "ThirdPartyNotices.txt"))
+    .toString();
   thirdPartyNoticeContent = thirdPartyNoticeContent.split("\n").slice(8).join("\n");
   contents += "\n" + thirdPartyNoticeContent;
   tpn.contents = Buffer.from(contents);

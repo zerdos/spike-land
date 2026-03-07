@@ -23,7 +23,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <div>Hello</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(screen.getByText("Hello")).toBeInTheDocument();
   });
@@ -32,7 +32,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <Bomb shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
     expect(screen.getByText("Test explosion")).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary fallback={<div>Custom Error UI</div>}>
         <Bomb shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(screen.getByText("Custom Error UI")).toBeInTheDocument();
     expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <Bomb shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.click(screen.getByText("Reload page"));
@@ -69,7 +69,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <Bomb shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // reportError with fatal severity triggers immediate fetch
@@ -83,7 +83,7 @@ describe("ErrorBoundary", () => {
     const { container } = render(
       <ErrorBoundary>
         <Bomb shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(container.querySelector("h1")).toHaveTextContent("Something went wrong");
   });

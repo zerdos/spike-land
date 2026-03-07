@@ -59,8 +59,7 @@ export interface ApiConfig {
  * Get API configuration from environment
  */
 export function getApiConfig(): ApiConfig {
-  const baseUrl =
-    process.env.SPIKE_LAND_API_URL || "https://spike.land";
+  const baseUrl = process.env.SPIKE_LAND_API_URL || "https://spike.land";
   const apiKey = process.env.AGENT_API_KEY;
 
   if (!apiKey) {

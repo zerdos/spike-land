@@ -58,7 +58,12 @@ vi.mock("drizzle-orm/d1", () => ({
   drizzle: vi.fn(() => ({
     query: {
       user: {
-        findFirst: (opts?: { where?: (table: Record<string, unknown>, ops: { eq: (a: unknown, b: unknown) => unknown }) => unknown }) => {
+        findFirst: (opts?: {
+          where?: (
+            table: Record<string, unknown>,
+            ops: { eq: (a: unknown, b: unknown) => unknown },
+          ) => unknown;
+        }) => {
           // Invoke the where callback to cover line 126 in index.ts
           if (opts?.where) {
             const mockTable = { email: "email" };
@@ -129,9 +134,7 @@ describe("worker fetch handler", () => {
       const req = makeRequest("OPTIONS", "/anything");
       const res = await worker.fetch(req, makeEnv());
       // No Origin header → falls back to first allowed origin
-      expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://spike.land",
-      );
+      expect(res.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
     });
 
     it("sets Access-Control-Allow-Methods with GET, POST, DELETE, OPTIONS", async () => {
@@ -189,7 +192,7 @@ describe("worker fetch handler", () => {
       const req = makeRequest("GET", "/health");
       const res = await worker.fetch(req, makeEnv());
       expect(res.status).toBe(200);
-      const body = await res.json() as { status: string; service: string };
+      const body = (await res.json()) as { status: string; service: string };
       expect(body.status).toBe("ok");
       expect(body.service).toBe("mcp-auth");
     });
@@ -197,7 +200,7 @@ describe("worker fetch handler", () => {
     it("does not include d1 field in shallow health check", async () => {
       const req = makeRequest("GET", "/health");
       const res = await worker.fetch(req, makeEnv());
-      const body = await res.json() as Record<string, unknown>;
+      const body = (await res.json()) as Record<string, unknown>;
       expect(body).not.toHaveProperty("d1");
     });
 
@@ -211,13 +214,15 @@ describe("worker fetch handler", () => {
       const req = makeRequest("GET", "/health?deep=true");
       const res = await worker.fetch(req, env);
       expect(res.status).toBe(200);
-      const body = await res.json() as { status: string; d1: string };
+      const body = (await res.json()) as { status: string; d1: string };
       expect(body.status).toBe("ok");
       expect(body.d1).toBe("ok");
     });
 
     it("returns 503 with d1:degraded when DB throws in deep check", async () => {
-      const mockFirst = vi.fn(async () => { throw new Error("D1 connection failed"); });
+      const mockFirst = vi.fn(async () => {
+        throw new Error("D1 connection failed");
+      });
       const mockPrepare = vi.fn(() => ({ first: mockFirst }));
       const env: ReturnType<typeof makeEnv> = {
         ...makeEnv(),
@@ -226,7 +231,7 @@ describe("worker fetch handler", () => {
       const req = makeRequest("GET", "/health?deep=true");
       const res = await worker.fetch(req, env);
       expect(res.status).toBe(503);
-      const body = await res.json() as { status: string; d1: string };
+      const body = (await res.json()) as { status: string; d1: string };
       expect(body.status).toBe("degraded");
       expect(body.d1).toBe("degraded");
     });
@@ -240,7 +245,7 @@ describe("worker fetch handler", () => {
     it("returns timestamp in health response", async () => {
       const req = makeRequest("GET", "/health");
       const res = await worker.fetch(req, makeEnv());
-      const body = await res.json() as { timestamp: string };
+      const body = (await res.json()) as { timestamp: string };
       expect(body.timestamp).toBeDefined();
       expect(new Date(body.timestamp).getTime()).not.toBeNaN();
     });
@@ -285,9 +290,7 @@ describe("worker fetch handler", () => {
     it("returns 404 with CORS headers", async () => {
       const req = makeRequest("GET", "/unknown");
       const res = await worker.fetch(req, makeEnv());
-      expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://spike.land",
-      );
+      expect(res.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
     });
 
     it("returns 'Not found' body for unknown path", async () => {
@@ -309,9 +312,7 @@ describe("worker fetch handler", () => {
       const req = makeMcpRequest("POST");
       const res = await worker.fetch(req, makeEnv());
       // No Origin header → falls back to first allowed origin
-      expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
-        "https://spike.land",
-      );
+      expect(res.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
     });
 
     it("connects McpServer to transport before handling request", async () => {

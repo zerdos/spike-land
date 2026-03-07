@@ -4,7 +4,12 @@
  */
 
 import { applyEloDelta, eloToTier } from "../lazy-imports/elo.js";
-import { ensureUserElo, recordEloEvent, type EloEventType, type EloEventResult } from "./elo-service.js";
+import {
+  ensureUserElo,
+  recordEloEvent,
+  type EloEventType,
+  type EloEventResult,
+} from "./elo-service.js";
 
 const DAILY_GAIN_CAP = 100;
 
@@ -38,21 +43,28 @@ function invalidateCache(agentId: string): void {
 }
 
 /** Get agent ELO, creating the row if it doesn't exist. */
-export async function ensureAgentElo(db: D1Database, agentId: string, ownerUserId: string): Promise<AgentElo> {
+export async function ensureAgentElo(
+  db: D1Database,
+  agentId: string,
+  ownerUserId: string,
+): Promise<AgentElo> {
   const cached = getCached(agentId);
   if (cached) return cached;
 
-  const row = await db.prepare(
-    "SELECT agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM agent_elo WHERE agent_id = ?",
-  ).bind(agentId).first<{
-    agent_id: string;
-    owner_user_id: string;
-    elo: number;
-    event_count: number;
-    daily_gains: number;
-    daily_reset_at: number;
-    tier: string;
-  }>();
+  const row = await db
+    .prepare(
+      "SELECT agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM agent_elo WHERE agent_id = ?",
+    )
+    .bind(agentId)
+    .first<{
+      agent_id: string;
+      owner_user_id: string;
+      elo: number;
+      event_count: number;
+      daily_gains: number;
+      daily_reset_at: number;
+      tier: string;
+    }>();
 
   if (row) {
     const data: AgentElo = {
@@ -74,9 +86,12 @@ export async function ensureAgentElo(db: D1Database, agentId: string, ownerUserI
   const tier = eloToTier(startingElo);
   const now = Date.now();
 
-  await db.prepare(
-    "INSERT INTO agent_elo (agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier, created_at, updated_at) VALUES (?, ?, ?, 0, 0, ?, ?, ?, ?)",
-  ).bind(agentId, ownerUserId, startingElo, now, tier, now, now).run();
+  await db
+    .prepare(
+      "INSERT INTO agent_elo (agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier, created_at, updated_at) VALUES (?, ?, ?, 0, 0, ?, ?, ?, ?)",
+    )
+    .bind(agentId, ownerUserId, startingElo, now, tier, now, now)
+    .run();
 
   const data: AgentElo = {
     agentId,
@@ -101,7 +116,7 @@ function shouldResetDaily(dailyResetAt: number, now: number): boolean {
   );
 }
 
-// We redefine deltas for agent-specific logic to match user logic, but maybe we could import it. 
+// We redefine deltas for agent-specific logic to match user logic, but maybe we could import it.
 // However, the prompt says "same logic as user ELO". We'll replicate the delta map or assume it's same.
 const ELO_DELTAS: Record<EloEventType, number> = {
   report_valid_bug: 25,
@@ -157,12 +172,25 @@ export async function recordAgentEloEvent(
   const newTier = eloToTier(newElo);
 
   await db.batch([
-    db.prepare(
-      "UPDATE agent_elo SET elo = ?, event_count = event_count + 1, daily_gains = ?, daily_reset_at = ?, tier = ?, updated_at = ? WHERE agent_id = ?",
-    ).bind(newElo, dailyGains, dailyResetAt, newTier, now, agentId),
-    db.prepare(
-      "INSERT INTO agent_elo_events (id, agent_id, owner_user_id, event_type, delta, old_elo, new_elo, reference_id, created_at) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?, ?)",
-    ).bind(agentId, ownerUserId, eventType, baseDelta, agent.elo, newElo, referenceId ?? null, now),
+    db
+      .prepare(
+        "UPDATE agent_elo SET elo = ?, event_count = event_count + 1, daily_gains = ?, daily_reset_at = ?, tier = ?, updated_at = ? WHERE agent_id = ?",
+      )
+      .bind(newElo, dailyGains, dailyResetAt, newTier, now, agentId),
+    db
+      .prepare(
+        "INSERT INTO agent_elo_events (id, agent_id, owner_user_id, event_type, delta, old_elo, new_elo, reference_id, created_at) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?, ?)",
+      )
+      .bind(
+        agentId,
+        ownerUserId,
+        eventType,
+        baseDelta,
+        agent.elo,
+        newElo,
+        referenceId ?? null,
+        now,
+      ),
   ]);
 
   invalidateCache(agentId);
@@ -174,17 +202,20 @@ export async function getAgentElo(db: D1Database, agentId: string): Promise<Agen
   const cached = getCached(agentId);
   if (cached) return cached;
 
-  const row = await db.prepare(
-    "SELECT agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM agent_elo WHERE agent_id = ?",
-  ).bind(agentId).first<{
-    agent_id: string;
-    owner_user_id: string;
-    elo: number;
-    event_count: number;
-    daily_gains: number;
-    daily_reset_at: number;
-    tier: string;
-  }>();
+  const row = await db
+    .prepare(
+      "SELECT agent_id, owner_user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM agent_elo WHERE agent_id = ?",
+    )
+    .bind(agentId)
+    .first<{
+      agent_id: string;
+      owner_user_id: string;
+      elo: number;
+      event_count: number;
+      daily_gains: number;
+      daily_reset_at: number;
+      tier: string;
+    }>();
 
   if (!row) return null;
 

@@ -10,7 +10,10 @@ const mockCache = {
   default: mockCache,
 };
 
-function makeRequest(path: string, options: RequestInit & { headers?: Record<string, string> } = {}): Request {
+function makeRequest(
+  path: string,
+  options: RequestInit & { headers?: Record<string, string> } = {},
+): Request {
   return new Request(`https://esm.spike.land${path}`, options);
 }
 
@@ -97,10 +100,7 @@ describe("esm-cdn worker", () => {
 
       const res = await worker.fetch(makeRequest("/react@19.2.4"), {}, mockCtx);
 
-      expect(fetchSpy).toHaveBeenCalledWith(
-        "https://esm.sh/react@19.2.4",
-        { redirect: "follow" },
-      );
+      expect(fetchSpy).toHaveBeenCalledWith("https://esm.sh/react@19.2.4", { redirect: "follow" });
       expect(res.status).toBe(200);
       expect(res.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
     });
@@ -153,11 +153,7 @@ describe("esm-cdn worker", () => {
     });
 
     it("rejects non-GET methods", async () => {
-      const res = await worker.fetch(
-        makeRequest("/react@19.2.4", { method: "POST" }),
-        {},
-        mockCtx,
-      );
+      const res = await worker.fetch(makeRequest("/react@19.2.4", { method: "POST" }), {}, mockCtx);
       expect(res.status).toBe(405);
     });
   });

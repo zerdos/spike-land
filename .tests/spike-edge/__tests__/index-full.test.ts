@@ -54,13 +54,15 @@ function createMockEnv(overrides: Partial<Env> = {}): Env {
     } as unknown as DurableObjectNamespace,
     AUTH_MCP: {
       fetch: vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "user-123" } }), { status: 200 }),
+        new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "user-123" } }), {
+          status: 200,
+        }),
       ),
     } as unknown as Fetcher,
     MCP_SERVICE: {
-      fetch: vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ tools: [] }), { status: 200 }),
-      ),
+      fetch: vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ tools: [] }), { status: 200 })),
     } as unknown as Fetcher,
     STRIPE_SECRET_KEY: "sk_test_xxx",
     STRIPE_WEBHOOK_SECRET: "whsec_test",
@@ -97,9 +99,7 @@ describe("GET /mcp/tools (inline route)", () => {
     const tools = [{ name: "my-tool", description: "desc" }];
     const env = createMockEnv({
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ tools }), { status: 200 }),
-        ),
+        fetch: vi.fn().mockResolvedValue(new Response(JSON.stringify({ tools }), { status: 200 })),
       } as unknown as Fetcher,
     });
 
@@ -136,9 +136,7 @@ describe("GET /api/store/tools (inline route)", () => {
     ];
     const env = createMockEnv({
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ tools }), { status: 200 }),
-        ),
+        fetch: vi.fn().mockResolvedValue(new Response(JSON.stringify({ tools }), { status: 200 })),
       } as unknown as Fetcher,
     });
 
@@ -177,7 +175,9 @@ describe("GET /api/store/tools (inline route)", () => {
     const env = createMockEnv({
       MCP_SERVICE: {
         fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ tools: [{ name: "x", description: "d" }] }), { status: 200 }),
+          new Response(JSON.stringify({ tools: [{ name: "x", description: "d" }] }), {
+            status: 200,
+          }),
         ),
       } as unknown as Fetcher,
     });
@@ -229,10 +229,13 @@ describe("POST /oauth/device (proxied to MCP_SERVICE)", () => {
     const env = createMockEnv({
       MCP_SERVICE: {
         fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ device_code: "dc-1", user_code: "ABCD-1234", interval: 5 }), {
-            status: 200,
-            headers: { "content-type": "application/json" },
-          }),
+          new Response(
+            JSON.stringify({ device_code: "dc-1", user_code: "ABCD-1234", interval: 5 }),
+            {
+              status: 200,
+              headers: { "content-type": "application/json" },
+            },
+          ),
         ),
       } as unknown as Fetcher,
     });
@@ -267,7 +270,10 @@ describe("POST /oauth/token (proxied to MCP_SERVICE)", () => {
     const res = await appFetch(
       new Request("https://spike.land/oauth/token", {
         method: "POST",
-        body: JSON.stringify({ grant_type: "urn:ietf:params:oauth:grant-type:device_code", device_code: "dc-1" }),
+        body: JSON.stringify({
+          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+          device_code: "dc-1",
+        }),
         headers: { "content-type": "application/json" },
       }),
       env,
@@ -303,13 +309,15 @@ describe("POST /oauth/device/approve", () => {
   });
 
   it("proxies approval with internal secret when authenticated", async () => {
-    const mcpFetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ approved: true }), { status: 200 }),
-    );
+    const mcpFetch = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ approved: true }), { status: 200 }));
     const env = createMockEnv({
       AUTH_MCP: {
         fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "uid-1" } }), { status: 200 }),
+          new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "uid-1" } }), {
+            status: 200,
+          }),
         ),
       } as unknown as Fetcher,
       MCP_SERVICE: {
@@ -323,7 +331,7 @@ describe("POST /oauth/device/approve", () => {
         body: JSON.stringify({ user_code: "ABCD-1234" }),
         headers: {
           "content-type": "application/json",
-          "authorization": "Bearer sess-token",
+          authorization: "Bearer sess-token",
         },
       }),
       env,
@@ -346,9 +354,7 @@ describe("ALL /mcp (MCP proxy)", () => {
   it("proxies GET /mcp to MCP_SERVICE", async () => {
     const env = createMockEnv({
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response("mcp-data", { status: 200 }),
-        ),
+        fetch: vi.fn().mockResolvedValue(new Response("mcp-data", { status: 200 })),
       } as unknown as Fetcher,
     });
 
@@ -406,9 +412,9 @@ describe("ALL /api/auth/* (auth proxy)", () => {
   it("proxies GET /api/auth/session to AUTH_MCP", async () => {
     const env = createMockEnv({
       AUTH_MCP: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ session: null }), { status: 200 }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({ session: null }), { status: 200 })),
       } as unknown as Fetcher,
     });
 
@@ -430,9 +436,9 @@ describe("ALL /api/auth/* (auth proxy)", () => {
   it("proxies POST /api/auth/sign-in to AUTH_MCP", async () => {
     const env = createMockEnv({
       AUTH_MCP: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ token: "auth-tok" }), { status: 200 }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({ token: "auth-tok" }), { status: 200 })),
       } as unknown as Fetcher,
     });
 
@@ -485,12 +491,24 @@ describe("Security headers middleware", () => {
         get: vi.fn().mockImplementation((key: string) =>
           key === "index.html"
             ? Promise.resolve({
-                body: new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode("<html><head><title>T</title><meta name=\"description\" content=\"D\" /></head><body><div id=\"root\"></div></body></html>")); c.close(); } }),
-                text: () => Promise.resolve("<html><head><title>T</title><meta name=\"description\" content=\"D\" /></head><body><div id=\"root\"></div></body></html>"),
+                body: new ReadableStream({
+                  start(c) {
+                    c.enqueue(
+                      new TextEncoder().encode(
+                        '<html><head><title>T</title><meta name="description" content="D" /></head><body><div id="root"></div></body></html>',
+                      ),
+                    );
+                    c.close();
+                  },
+                }),
+                text: () =>
+                  Promise.resolve(
+                    '<html><head><title>T</title><meta name="description" content="D" /></head><body><div id="root"></div></body></html>',
+                  ),
                 httpEtag: '"abc"',
                 writeHttpMetadata: (h: Headers) => h.set("content-type", "text/html"),
               })
-            : Promise.resolve(null)
+            : Promise.resolve(null),
         ),
       } as unknown as R2Bucket,
     });
@@ -511,7 +529,12 @@ describe("Security headers middleware", () => {
     const env = createMockEnv({
       R2: {
         get: vi.fn().mockResolvedValue({
-          body: new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode("live content")); c.close(); } }),
+          body: new ReadableStream({
+            start(c) {
+              c.enqueue(new TextEncoder().encode("live content"));
+              c.close();
+            },
+          }),
           httpEtag: '"live"',
           writeHttpMetadata: (h: Headers) => h.set("content-type", "text/html"),
         }),
@@ -526,7 +549,9 @@ describe("Security headers middleware", () => {
     );
     // /live routes don't get X-Frame-Options: DENY
     expect(res.headers.get("x-frame-options")).toBeNull();
-    expect(res.headers.get("content-security-policy")).toContain("frame-ancestors https://spike.land");
+    expect(res.headers.get("content-security-policy")).toContain(
+      "frame-ancestors https://spike.land",
+    );
   });
 
   it("applies CORS headers from ALLOWED_ORIGINS", async () => {

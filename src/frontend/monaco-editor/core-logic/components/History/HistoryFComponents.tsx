@@ -2,7 +2,12 @@ import { Wrapper } from "../../../ui/@/components/app/wrapper";
 import { Alert, AlertDescription, AlertTitle } from "../../../ui/@/components/ui/alert";
 import { Button } from "../../../lazy-imports/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/@/components/ui/card";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../../../ui/@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../ui/@/components/ui/dialog";
 import { ScrollArea } from "../../../ui/@/components/ui/scroll-area";
 import type { HistoryItemProps, ICode, IHistoryItem } from "../../../ui/@/lib/interfaces";
 import { cn } from "../../../lazy-imports/utils";

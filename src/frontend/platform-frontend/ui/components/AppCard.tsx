@@ -16,11 +16,23 @@ interface AppCardProps {
 
 const CATEGORY_CONFIG = {
   mcp: { color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20", icon: Boxes },
-  utility: { color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20", icon: Info },
-  game: { color: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20", icon: Gamepad2 },
+  utility: {
+    color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    icon: Info,
+  },
+  game: {
+    color: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+    icon: Gamepad2,
+  },
   tool: { color: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20", icon: Zap },
-  social: { color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20", icon: MessageSquare },
-  other: { color: "bg-muted dark:bg-white/5 text-muted-foreground border-border dark:border-white/10", icon: Package },
+  social: {
+    color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+    icon: MessageSquare,
+  },
+  other: {
+    color: "bg-muted dark:bg-white/5 text-muted-foreground border-border dark:border-white/10",
+    icon: Package,
+  },
 };
 
 export function AppCard({
@@ -53,10 +65,12 @@ export function AppCard({
               MCP
             </span>
           </div>
-          <div className={cn(
-            "inline-flex items-center gap-1 w-fit rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border transition-colors",
-            config.color
-          )}>
+          <div
+            className={cn(
+              "inline-flex items-center gap-1 w-fit rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border transition-colors",
+              config.color,
+            )}
+          >
             <Icon className="size-3" />
             {category}
           </div>
@@ -87,7 +101,9 @@ export function AppCard({
           {createdAt && (
             <div className="flex items-center gap-1">
               <Clock className="size-3" />
-              <span>{new Date(createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+              <span>
+                {new Date(createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}
+              </span>
             </div>
           )}
         </div>

@@ -20,10 +20,14 @@ function makeMockPage() {
     on: mockPageOn,
     accessibility: { snapshot: vi.fn().mockResolvedValue(null) },
     keyboard: { press: vi.fn(), type: vi.fn() },
-    getByRole: vi.fn().mockReturnValue({ click: vi.fn(), fill: vi.fn(), clear: vi.fn(), selectOption: vi.fn() }),
+    getByRole: vi
+      .fn()
+      .mockReturnValue({ click: vi.fn(), fill: vi.fn(), clear: vi.fn(), selectOption: vi.fn() }),
     mouse: { wheel: vi.fn() },
     viewportSize: vi.fn().mockReturnValue({ width: 1280, height: 720 }),
-    context: vi.fn().mockReturnValue({ newCDPSession: vi.fn().mockResolvedValue({ send: vi.fn().mockResolvedValue({}) }) }),
+    context: vi.fn().mockReturnValue({
+      newCDPSession: vi.fn().mockResolvedValue({ send: vi.fn().mockResolvedValue({}) }),
+    }),
   };
 }
 
@@ -36,7 +40,11 @@ vi.mock("playwright", () => ({
   chromium: { launch: mockChromiumLaunch },
 }));
 
-import { setBrowserConfig, getOrCreateTab, cleanup } from "../../../src/core/browser-automation/browser-session.js";
+import {
+  setBrowserConfig,
+  getOrCreateTab,
+  cleanup,
+} from "../../../src/core/browser-automation/browser-session.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

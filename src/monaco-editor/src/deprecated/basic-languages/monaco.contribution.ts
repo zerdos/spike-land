@@ -1,1 +1,1 @@
-export * from '../../languages/definitions/register.all';
+export * from "../../languages/definitions/register.all";

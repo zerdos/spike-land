@@ -174,10 +174,7 @@ describe("state-machine CLI module", () => {
     const machineId = JSON.parse(stdoutWrites[stdoutWrites.length - 1]!.trim()).result.definition
       .id;
 
-    mockRlEmitter.emit(
-      "line",
-      JSON.stringify({ id: 41, method: "reset", params: { machineId } }),
-    );
+    mockRlEmitter.emit("line", JSON.stringify({ id: 41, method: "reset", params: { machineId } }));
     const output = JSON.parse(stdoutWrites[stdoutWrites.length - 1]!.trim());
     expect(output.id).toBe(41);
     expect(output.result.status).toBe("reset");
@@ -262,10 +259,7 @@ describe("state-machine CLI module", () => {
   });
 
   it("writes error JSON for unknown method", () => {
-    mockRlEmitter.emit(
-      "line",
-      JSON.stringify({ id: 99, method: "unknownCommand", params: {} }),
-    );
+    mockRlEmitter.emit("line", JSON.stringify({ id: 99, method: "unknownCommand", params: {} }));
     const output = JSON.parse(stdoutWrites[stdoutWrites.length - 1]!.trim());
     expect(output.error).toContain("Unknown method");
   });

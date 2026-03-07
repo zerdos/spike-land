@@ -4,7 +4,14 @@ import { internalAuthMiddleware } from "../middleware/internal-auth.js";
 
 const fixer = new Hono<{ Bindings: Env; Variables: Variables }>();
 
-const STAGE_ORDER = ["1_setup", "2_explore", "3_triage", "4_fix", "5_regression", "completed"] as const;
+const STAGE_ORDER = [
+  "1_setup",
+  "2_explore",
+  "3_triage",
+  "4_fix",
+  "5_regression",
+  "completed",
+] as const;
 type Stage = (typeof STAGE_ORDER)[number];
 
 const VALID_STAGES = new Set<string>([...STAGE_ORDER, "cancelled"]);
@@ -48,7 +55,17 @@ fixer.post("/internal/fixer/sessions", internalAuthMiddleware, async (c) => {
   try {
     await c.env.DB.prepare(
       "INSERT INTO fixer_sessions (id, stage, target, base_url, config, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    ).bind(body.id, "1_setup", body.target, body.baseUrl, JSON.stringify(body.config ?? {}), now, now).run();
+    )
+      .bind(
+        body.id,
+        "1_setup",
+        body.target,
+        body.baseUrl,
+        JSON.stringify(body.config ?? {}),
+        now,
+        now,
+      )
+      .run();
   } catch (err: unknown) {
     if (err instanceof Error && err.message.includes("UNIQUE constraint")) {
       return c.json({ error: "Session already exists" }, 409);
@@ -96,22 +113,29 @@ fixer.patch("/internal/fixer/sessions/:id", internalAuthMiddleware, async (c) =>
     return c.json({ error: `Invalid stage. Must be one of: ${[...VALID_STAGES].join(", ")}` }, 400);
   }
 
-  const session = await c.env.DB.prepare("SELECT stage FROM fixer_sessions WHERE id = ?").bind(id).first<{ stage: string }>();
+  const session = await c.env.DB.prepare("SELECT stage FROM fixer_sessions WHERE id = ?")
+    .bind(id)
+    .first<{ stage: string }>();
   if (!session) {
     return c.json({ error: "Session not found" }, 404);
   }
 
   if (!isValidTransition(session.stage, body.stage)) {
-    return c.json({
-      error: `Invalid stage transition from '${session.stage}' to '${body.stage}'`,
-    }, 400);
+    return c.json(
+      {
+        error: `Invalid stage transition from '${session.stage}' to '${body.stage}'`,
+      },
+      400,
+    );
   }
 
   const now = Date.now();
   const isTerminal = body.stage === "completed" || body.stage === "cancelled";
   await c.env.DB.prepare(
     "UPDATE fixer_sessions SET stage = ?, updated_at = ?, completed_at = CASE WHEN ? THEN ? ELSE completed_at END WHERE id = ?",
-  ).bind(body.stage, now, isTerminal ? 1 : 0, now, id).run();
+  )
+    .bind(body.stage, now, isTerminal ? 1 : 0, now, id)
+    .run();
 
   return c.json({ success: true, stage: body.stage });
 });
@@ -137,7 +161,9 @@ fixer.post("/internal/fixer/sessions/:id/agents", internalAuthMiddleware, async 
 
   const result = await c.env.DB.prepare(
     "INSERT OR IGNORE INTO fixer_agents (session_id, agent_id, role, personas, quiz_passed, findings_count, quiz_stages_passed) VALUES (?, ?, ?, ?, 0, 0, '[]')",
-  ).bind(id, body.agentId, body.role, JSON.stringify(body.personas)).run();
+  )
+    .bind(id, body.agentId, body.role, JSON.stringify(body.personas))
+    .run();
 
   if (!result.meta.changes) {
     return c.json({ error: "Agent already registered for this session" }, 409);
@@ -181,7 +207,16 @@ fixer.post("/internal/fixer/sessions/:id/findings", internalAuthMiddleware, asyn
   await c.env.DB.batch([
     c.env.DB.prepare(
       "INSERT INTO fixer_findings (id, session_id, agent_id, persona_id, bug_id, title, severity, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    ).bind(body.findingId, id, body.agentId, body.personaId, body.bugId, body.title, body.severity, now),
+    ).bind(
+      body.findingId,
+      id,
+      body.agentId,
+      body.personaId,
+      body.bugId,
+      body.title,
+      body.severity,
+      now,
+    ),
     c.env.DB.prepare(
       "UPDATE fixer_agents SET findings_count = findings_count + 1 WHERE session_id = ? AND agent_id = ?",
     ).bind(id, body.agentId),
@@ -220,7 +255,17 @@ fixer.post("/internal/fixer/sessions/:id/validations", internalAuthMiddleware, a
   const now = Date.now();
   await c.env.DB.prepare(
     "INSERT INTO fixer_validations (id, session_id, bug_id, validator_agent_id, verdict, evidence, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-  ).bind(body.validationId, id, body.bugId, body.validatorAgentId, body.verdict, body.evidence, now).run();
+  )
+    .bind(
+      body.validationId,
+      id,
+      body.bugId,
+      body.validatorAgentId,
+      body.verdict,
+      body.evidence,
+      now,
+    )
+    .run();
 
   return c.json({ success: true });
 });
@@ -255,15 +300,26 @@ fixer.post("/internal/fixer/sessions/:id/quiz", internalAuthMiddleware, async (c
   const stmts = [
     c.env.DB.prepare(
       "INSERT OR REPLACE INTO fixer_quiz_results (session_id, agent_id, stage, score, passed, answers) VALUES (?, ?, ?, ?, ?, ?)",
-    ).bind(id, body.agentId, body.stage, body.score, body.passed ? 1 : 0, JSON.stringify(body.answers)),
+    ).bind(
+      id,
+      body.agentId,
+      body.stage,
+      body.score,
+      body.passed ? 1 : 0,
+      JSON.stringify(body.answers),
+    ),
   ];
 
   if (body.passed) {
     const agent = await c.env.DB.prepare(
       "SELECT quiz_stages_passed FROM fixer_agents WHERE session_id = ? AND agent_id = ?",
-    ).bind(id, body.agentId).first<{ quiz_stages_passed: string }>();
+    )
+      .bind(id, body.agentId)
+      .first<{ quiz_stages_passed: string }>();
 
-    const stagesPassed: string[] = agent?.quiz_stages_passed ? JSON.parse(agent.quiz_stages_passed) as string[] : [];
+    const stagesPassed: string[] = agent?.quiz_stages_passed
+      ? (JSON.parse(agent.quiz_stages_passed) as string[])
+      : [];
     if (!stagesPassed.includes(body.stage)) {
       stagesPassed.push(body.stage);
     }

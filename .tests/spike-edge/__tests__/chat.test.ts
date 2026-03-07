@@ -11,9 +11,9 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     LIMITERS: {} as Env["LIMITERS"],
     AUTH_MCP: {} as Env["AUTH_MCP"],
     MCP_SERVICE: {
-      fetch: vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ tools: [] }), { status: 200 }),
-      ),
+      fetch: vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ tools: [] }), { status: 200 })),
     } as unknown as Env["MCP_SERVICE"],
     STRIPE_SECRET_KEY: "",
     STRIPE_WEBHOOK_SECRET: "",
@@ -40,7 +40,9 @@ function makeExecCtx() {
   const promises: Promise<unknown>[] = [];
   return {
     ctx: {
-      waitUntil: (p: Promise<unknown>) => { promises.push(p); },
+      waitUntil: (p: Promise<unknown>) => {
+        promises.push(p);
+      },
       passThroughOnException: () => {},
     } as unknown as ExecutionContext,
     flush: () => Promise.allSettled(promises),
@@ -187,17 +189,19 @@ describe("POST /api/chat", () => {
   });
 
   it("passes history in Anthropic request", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(
-        [
-          'data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}',
-          'data: {"type":"content_block_stop","index":0}',
-          'data: {"type":"message_stop"}',
-          "",
-        ].join("\n"),
-        { status: 200 },
-      ),
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        new Response(
+          [
+            'data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}',
+            'data: {"type":"content_block_stop","index":0}',
+            'data: {"type":"message_stop"}',
+            "",
+          ].join("\n"),
+          { status: 200 },
+        ),
+      );
 
     const app = makeApp();
     const { ctx, flush } = makeExecCtx();

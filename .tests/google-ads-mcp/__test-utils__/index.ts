@@ -21,11 +21,13 @@ export function createMockServer(): MockMcpServer {
   return { ...base, tool: toolFn };
 }
 
-export function createMockAdsClient(overrides: {
-  search?: (query: string) => Promise<unknown[]>;
-  mutate?: (ops: unknown[]) => Promise<unknown>;
-  getCustomerId?: () => string;
-} = {}) {
+export function createMockAdsClient(
+  overrides: {
+    search?: (query: string) => Promise<unknown[]>;
+    mutate?: (ops: unknown[]) => Promise<unknown>;
+    getCustomerId?: () => string;
+  } = {},
+) {
   return {
     search: overrides.search ?? vi.fn().mockResolvedValue([]),
     mutate: overrides.mutate ?? vi.fn().mockResolvedValue({ results: [] }),

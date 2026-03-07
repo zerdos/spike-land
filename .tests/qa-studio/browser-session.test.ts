@@ -7,7 +7,9 @@ const mockPageIsClosed = vi.fn().mockReturnValue(false);
 const mockPageUrl = vi.fn().mockReturnValue("about:blank");
 const mockPageTitle = vi.fn().mockResolvedValue("Blank");
 
-const mockAccessibilitySnapshot = vi.fn().mockResolvedValue({ role: "RootWebArea", name: "Test", children: [] });
+const mockAccessibilitySnapshot = vi
+  .fn()
+  .mockResolvedValue({ role: "RootWebArea", name: "Test", children: [] });
 
 function makeMockPage() {
   return {
@@ -25,7 +27,9 @@ function makeMockPage() {
     on: mockPageOn,
     accessibility: { snapshot: mockAccessibilitySnapshot },
     keyboard: { press: vi.fn(), type: vi.fn() },
-    getByRole: vi.fn().mockReturnValue({ click: vi.fn(), fill: vi.fn(), clear: vi.fn(), selectOption: vi.fn() }),
+    getByRole: vi
+      .fn()
+      .mockReturnValue({ click: vi.fn(), fill: vi.fn(), clear: vi.fn(), selectOption: vi.fn() }),
     mouse: { wheel: vi.fn() },
     viewportSize: vi.fn().mockReturnValue({ width: 1280, height: 720 }),
   };
@@ -44,7 +48,15 @@ vi.mock("playwright", () => ({
 }));
 
 // Import after mocks
-import { cleanup, closeTab, getActiveTab, getOrCreateTab, getPageSnapshot, listTabs, setBrowserConfig } from "../../src/core/browser-automation/core-logic/browser-session.js";
+import {
+  cleanup,
+  closeTab,
+  getActiveTab,
+  getOrCreateTab,
+  getPageSnapshot,
+  listTabs,
+  setBrowserConfig,
+} from "../../src/core/browser-automation/core-logic/browser-session.js";
 
 // Reset all singleton state and re-configure mocks between tests
 async function resetAll() {

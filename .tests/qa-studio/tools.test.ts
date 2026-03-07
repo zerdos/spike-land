@@ -78,9 +78,7 @@ const simpleTree: AccessibilityNode = {
 
 function setPageSnapshot(tree: AccessibilityNode | null) {
   mockGetPageSnapshot.mockResolvedValue(
-    tree
-      ? { tree, title: "Test Page", url: "https://example.com", page: mockPage }
-      : null,
+    tree ? { tree, title: "Test Page", url: "https://example.com", page: mockPage } : null,
   );
 }
 
@@ -220,9 +218,7 @@ describe("web tools", () => {
     it("selects option by ref", async () => {
       const treeWithCombo: AccessibilityNode = {
         role: "RootWebArea",
-        children: [
-          { role: "combobox", name: "Country", value: "US" },
-        ],
+        children: [{ role: "combobox", name: "Country", value: "US" }],
       };
       setPageSnapshot(treeWithCombo);
       await server.call("web_select", { ref: 1, option: "UK" });

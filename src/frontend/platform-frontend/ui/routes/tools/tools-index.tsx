@@ -8,7 +8,9 @@ export function ToolsIndexPage() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">Loading apps...</div>
+        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">
+          Loading apps...
+        </div>
       </div>
     );
   }
@@ -20,9 +22,7 @@ export function ToolsIndexPage() {
           <h1 className="text-2xl font-bold text-foreground">MCP Apps</h1>
         </div>
         <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
-          <p className="text-muted-foreground">
-            Unable to load apps. Please try again later.
-          </p>
+          <p className="text-muted-foreground">Unable to load apps. Please try again later.</p>
           <p className="text-sm text-muted-foreground">
             {error instanceof Error ? error.message : "An unexpected error occurred."}
           </p>
@@ -42,7 +42,9 @@ export function ToolsIndexPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">MCP Apps</h1>
-          <p className="text-sm text-muted-foreground mt-1">Interactive stateful workflows powered by MCP tools.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Interactive stateful workflows powered by MCP tools.
+          </p>
         </div>
         <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">
           <Sparkles className="w-3.5 h-3.5" />
@@ -78,13 +80,19 @@ export function ToolsIndexPage() {
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-sm text-muted-foreground leading-relaxed flex-1">
                 {app.description}
               </p>
-              
+
               <div className="mt-6 flex items-center justify-end text-sm font-semibold text-primary/80 group-hover:text-primary">
-                Launch App <span aria-hidden="true" className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+                Launch App{" "}
+                <span
+                  aria-hidden="true"
+                  className="ml-1 group-hover:translate-x-1 transition-transform"
+                >
+                  →
+                </span>
               </div>
             </Link>
           ))}

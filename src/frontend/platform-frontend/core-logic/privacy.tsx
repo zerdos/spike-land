@@ -8,8 +8,8 @@ export function PrivacyPage() {
 
       <p className="leading-relaxed text-foreground">
         This Privacy Policy explains how spike.land (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or
-        &ldquo;our&rdquo;) collects, uses, and protects your personal data when you use our
-        platform at{" "}
+        &ldquo;our&rdquo;) collects, uses, and protects your personal data when you use our platform
+        at{" "}
         <a href="https://spike.land" className="text-primary underline hover:text-primary/80">
           spike.land
         </a>
@@ -54,10 +54,18 @@ export function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">2. Legal Basis for Processing (GDPR)</h2>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
-          <li><strong>Contract performance</strong> — to provide the services you signed up for</li>
-          <li><strong>Legitimate interests</strong> — to operate, improve, and secure the Platform</li>
-          <li><strong>Legal obligation</strong> — to comply with applicable laws and regulations</li>
-          <li><strong>Consent</strong> — for optional analytics cookies (where required by law)</li>
+          <li>
+            <strong>Contract performance</strong> — to provide the services you signed up for
+          </li>
+          <li>
+            <strong>Legitimate interests</strong> — to operate, improve, and secure the Platform
+          </li>
+          <li>
+            <strong>Legal obligation</strong> — to comply with applicable laws and regulations
+          </li>
+          <li>
+            <strong>Consent</strong> — for optional analytics cookies (where required by law)
+          </li>
         </ul>
       </section>
 
@@ -86,8 +94,8 @@ export function PrivacyPage() {
             Cloudflare
           </a>{" "}
           infrastructure (Workers, D1, R2) distributed globally. Our infrastructure provider,
-          Cloudflare, maintains SOC 2 Type II and ISO 27001 certifications. These certifications apply
-          to Cloudflare's infrastructure, not to the spike.land application layer.
+          Cloudflare, maintains SOC 2 Type II and ISO 27001 certifications. These certifications
+          apply to Cloudflare's infrastructure, not to the spike.land application layer.
         </p>
         <p className="leading-relaxed text-foreground">
           We implement industry-standard security measures: HTTPS everywhere, session tokens stored
@@ -136,35 +144,70 @@ export function PrivacyPage() {
                 <td className="py-2 pr-4">Stripe</td>
                 <td className="py-2 pr-4">Payment processing</td>
                 <td className="py-2">
-                  <a href="https://stripe.com/privacy" className="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">stripe.com/privacy</a>
+                  <a
+                    href="https://stripe.com/privacy"
+                    className="text-primary underline hover:text-primary/80"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    stripe.com/privacy
+                  </a>
                 </td>
               </tr>
               <tr>
                 <td className="py-2 pr-4">Cloudflare</td>
                 <td className="py-2 pr-4">Hosting, CDN, DDoS protection</td>
                 <td className="py-2">
-                  <a href="https://www.cloudflare.com/privacypolicy/" className="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">cloudflare.com/privacypolicy</a>
+                  <a
+                    href="https://www.cloudflare.com/privacypolicy/"
+                    className="text-primary underline hover:text-primary/80"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    cloudflare.com/privacypolicy
+                  </a>
                 </td>
               </tr>
               <tr>
                 <td className="py-2 pr-4">GitHub (OAuth)</td>
                 <td className="py-2 pr-4">Authentication</td>
                 <td className="py-2">
-                  <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" className="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a>
+                  <a
+                    href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+                    className="text-primary underline hover:text-primary/80"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub Privacy Statement
+                  </a>
                 </td>
               </tr>
               <tr>
                 <td className="py-2 pr-4">Google (OAuth)</td>
                 <td className="py-2 pr-4">Authentication</td>
                 <td className="py-2">
-                  <a href="https://policies.google.com/privacy" className="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>
+                  <a
+                    href="https://policies.google.com/privacy"
+                    className="text-primary underline hover:text-primary/80"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    policies.google.com/privacy
+                  </a>
                 </td>
               </tr>
               <tr>
                 <td className="py-2 pr-4">Google Ads</td>
                 <td className="py-2 pr-4">Advertising conversion tracking</td>
                 <td className="py-2">
-                  <a href="https://policies.google.com/technologies/ads" className="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">Google Ads Privacy</a>
+                  <a
+                    href="https://policies.google.com/technologies/ads"
+                    className="text-primary underline hover:text-primary/80"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Google Ads Privacy
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -188,16 +231,32 @@ export function PrivacyPage() {
           If you are located in the European Economic Area or the UK, you have the following rights:
         </p>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
-          <li><strong>Access</strong> — request a copy of the personal data we hold about you</li>
-          <li><strong>Rectification</strong> — request correction of inaccurate data</li>
-          <li><strong>Erasure</strong> — request deletion of your data (&ldquo;right to be forgotten&rdquo;)</li>
-          <li><strong>Portability</strong> — receive your data in a machine-readable format</li>
-          <li><strong>Objection</strong> — object to processing based on legitimate interests</li>
-          <li><strong>Restriction</strong> — request that we limit how we use your data</li>
+          <li>
+            <strong>Access</strong> — request a copy of the personal data we hold about you
+          </li>
+          <li>
+            <strong>Rectification</strong> — request correction of inaccurate data
+          </li>
+          <li>
+            <strong>Erasure</strong> — request deletion of your data (&ldquo;right to be
+            forgotten&rdquo;)
+          </li>
+          <li>
+            <strong>Portability</strong> — receive your data in a machine-readable format
+          </li>
+          <li>
+            <strong>Objection</strong> — object to processing based on legitimate interests
+          </li>
+          <li>
+            <strong>Restriction</strong> — request that we limit how we use your data
+          </li>
         </ul>
         <p className="leading-relaxed text-foreground">
           To exercise any of these rights, contact us at{" "}
-          <a href="mailto:privacy@spike.land" className="text-primary underline hover:text-primary/80">
+          <a
+            href="mailto:privacy@spike.land"
+            className="text-primary underline hover:text-primary/80"
+          >
             privacy@spike.land
           </a>
           . We will respond within 30 days.
@@ -217,23 +276,23 @@ export function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">10. California Privacy Rights (CCPA/CPRA)</h2>
         <p className="leading-relaxed text-foreground">
-          If you are a California resident, the California Consumer Privacy Act (CCPA) and California
-          Privacy Rights Act (CPRA) provide you with the following rights:
+          If you are a California resident, the California Consumer Privacy Act (CCPA) and
+          California Privacy Rights Act (CPRA) provide you with the following rights:
         </p>
         <ul className="list-inside list-disc space-y-2 text-foreground ml-4">
           <li>
             <strong>Right to Know</strong> — you may request that we disclose the categories and
             specific pieces of personal information we have collected about you, the categories of
-            sources, the business purpose for collecting it, and the categories of third parties with
-            whom we share it
+            sources, the business purpose for collecting it, and the categories of third parties
+            with whom we share it
           </li>
           <li>
-            <strong>Right to Delete</strong> — you may request that we delete the personal information
-            we have collected from you, subject to certain exceptions
+            <strong>Right to Delete</strong> — you may request that we delete the personal
+            information we have collected from you, subject to certain exceptions
           </li>
           <li>
-            <strong>Right to Opt-Out</strong> — you have the right to opt out of the sale or sharing of
-            your personal information. We do not sell your personal information
+            <strong>Right to Opt-Out</strong> — you have the right to opt out of the sale or sharing
+            of your personal information. We do not sell your personal information
           </li>
           <li>
             <strong>Right to Non-Discrimination</strong> — we will not discriminate against you for
@@ -242,7 +301,10 @@ export function PrivacyPage() {
         </ul>
         <p className="leading-relaxed text-foreground">
           To exercise any of these rights, contact us at{" "}
-          <a href="mailto:privacy@spike.land" className="text-primary underline hover:text-primary/80">
+          <a
+            href="mailto:privacy@spike.land"
+            className="text-primary underline hover:text-primary/80"
+          >
             privacy@spike.land
           </a>
           . We will verify your identity before processing your request and respond within 45 days.
@@ -269,8 +331,12 @@ export function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">13. Contact & Data Protection Officer</h2>
         <p className="leading-relaxed text-foreground">
-          For privacy questions or to exercise your rights, email our Data Protection Officer (DPO) at{" "}
-          <a href="mailto:privacy@spike.land" className="text-primary underline hover:text-primary/80">
+          For privacy questions or to exercise your rights, email our Data Protection Officer (DPO)
+          at{" "}
+          <a
+            href="mailto:privacy@spike.land"
+            className="text-primary underline hover:text-primary/80"
+          >
             privacy@spike.land
           </a>{" "}
           or open an issue on our{" "}
@@ -285,7 +351,6 @@ export function PrivacyPage() {
           .
         </p>
       </section>
-
     </div>
   );
 }

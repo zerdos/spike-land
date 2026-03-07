@@ -18,18 +18,8 @@ const SEGMENTS: Record<string, string[]> = {
     "enterprise-devops",
     "startup-devops",
   ],
-  Business: [
-    "technical-founder",
-    "nontechnical-founder",
-    "growth-leader",
-    "ops-leader",
-  ],
-  Creator: [
-    "content-creator",
-    "hobbyist-creator",
-    "social-gamer",
-    "solo-explorer",
-  ],
+  Business: ["technical-founder", "nontechnical-founder", "growth-leader", "ops-leader"],
+  Creator: ["content-creator", "hobbyist-creator", "social-gamer", "solo-explorer"],
 };
 
 function getSegment(slug: string): string {
@@ -96,13 +86,44 @@ describe("Audit Questionnaire", () => {
   describe("comparison aggregation logic", () => {
     it("computes correct averages from mock results", () => {
       const mockResults = [
-        { personaSlug: "ai-indie", uxScore: 4, contentRelevance: 5, ctaCompelling: 3, recommendedAppsRelevant: 4, wouldSignUp: 1 },
-        { personaSlug: "classic-indie", uxScore: 3, contentRelevance: 4, ctaCompelling: 4, recommendedAppsRelevant: 3, wouldSignUp: 1 },
-        { personaSlug: "technical-founder", uxScore: 5, contentRelevance: 5, ctaCompelling: 5, recommendedAppsRelevant: 5, wouldSignUp: 1 },
-        { personaSlug: "content-creator", uxScore: 2, contentRelevance: 2, ctaCompelling: 2, recommendedAppsRelevant: 2, wouldSignUp: 0 },
+        {
+          personaSlug: "ai-indie",
+          uxScore: 4,
+          contentRelevance: 5,
+          ctaCompelling: 3,
+          recommendedAppsRelevant: 4,
+          wouldSignUp: 1,
+        },
+        {
+          personaSlug: "classic-indie",
+          uxScore: 3,
+          contentRelevance: 4,
+          ctaCompelling: 4,
+          recommendedAppsRelevant: 3,
+          wouldSignUp: 1,
+        },
+        {
+          personaSlug: "technical-founder",
+          uxScore: 5,
+          contentRelevance: 5,
+          ctaCompelling: 5,
+          recommendedAppsRelevant: 5,
+          wouldSignUp: 1,
+        },
+        {
+          personaSlug: "content-creator",
+          uxScore: 2,
+          contentRelevance: 2,
+          ctaCompelling: 2,
+          recommendedAppsRelevant: 2,
+          wouldSignUp: 0,
+        },
       ];
 
-      const segmentScores: Record<string, { total: number; ux: number; content: number; cta: number; apps: number; signups: number }> = {};
+      const segmentScores: Record<
+        string,
+        { total: number; ux: number; content: number; cta: number; apps: number; signups: number }
+      > = {};
 
       for (const r of mockResults) {
         const seg = getSegment(r.personaSlug);

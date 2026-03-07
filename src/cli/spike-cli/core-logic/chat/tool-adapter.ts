@@ -6,7 +6,12 @@
 import type { NamespacedTool, ServerManager } from "../multiplexer/server-manager";
 import type { Tool } from "../../ai/client";
 import { log } from "../util/logger";
-import { createToolPipeline, type ToolExecutorOptions, type ToolCallCtx, type ToolExecResult } from "./tool-pipeline";
+import {
+  createToolPipeline,
+  type ToolExecutorOptions,
+  type ToolCallCtx,
+  type ToolExecResult,
+} from "./tool-pipeline";
 import { buildNotFoundError, buildUpstreamError, formatToolError } from "./tool-errors";
 
 /**
@@ -106,7 +111,13 @@ export async function executeToolCall(
 export function createToolExecutor(
   manager: ServerManager,
   options?: ToolExecutorOptions,
-): { execute: (name: string, input: Record<string, unknown>, schema?: Record<string, unknown>) => Promise<ToolExecResult> } {
+): {
+  execute: (
+    name: string,
+    input: Record<string, unknown>,
+    schema?: Record<string, unknown>,
+  ) => Promise<ToolExecResult>;
+} {
   const baseHandler = async (ctx: ToolCallCtx): Promise<ToolExecResult> => {
     try {
       const callResult = await manager.callTool(ctx.toolName, ctx.input);
@@ -117,7 +128,10 @@ export function createToolExecutor(
       // Check if tool not found
       const toolExists = allTools.some((t) => t.namespacedName === ctx.toolName);
       if (!toolExists) {
-        return { result: formatToolError(buildNotFoundError(ctx.toolName, allTools)), isError: true };
+        return {
+          result: formatToolError(buildNotFoundError(ctx.toolName, allTools)),
+          isError: true,
+        };
       }
       return { result: formatToolError(buildUpstreamError(ctx.toolName, err)), isError: true };
     }

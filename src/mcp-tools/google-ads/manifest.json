@@ -1,9 +1,7 @@
 {
   "name": "google-ads",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/ads-client.ts",
     "core-logic/google-oauth.ts",

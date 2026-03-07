@@ -7,10 +7,7 @@
  * Usage: node mcp-server.js [--visible] [--http] [--port <port>] [--host <host>]
  */
 
-import {
-  createMcpServer,
-  startMcpServer,
-} from "@spike-land-ai/mcp-server-base";
+import { createMcpServer, startMcpServer } from "@spike-land-ai/mcp-server-base";
 
 import { setBrowserConfig, cleanup } from "../core-logic/browser-session.js";
 import { registerWebTools } from "./tools.js";

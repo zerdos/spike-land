@@ -71,7 +71,9 @@ describe("ReactFiberReconciler - createContainer / updateContainer", () => {
 describe("flushSync", () => {
   it("flushes sync callbacks", () => {
     let called = false;
-    flushSync(() => { called = true; });
+    flushSync(() => {
+      called = true;
+    });
     expect(called).toBe(true);
   });
 
@@ -127,11 +129,7 @@ describe("React rendering - all component types", () => {
 
   it("renders nested host elements", async () => {
     const root = createRoot(container);
-    root.render(
-      createElement("div", null,
-        createElement("span", null, "inner")
-      )
-    );
+    root.render(createElement("div", null, createElement("span", null, "inner")));
     await flushMicrotasks();
     await flushMicrotasks();
     expect(container.querySelector("span")).toBeTruthy();
@@ -141,11 +139,13 @@ describe("React rendering - all component types", () => {
   it("renders multiple children", async () => {
     const root = createRoot(container);
     root.render(
-      createElement("ul", null,
+      createElement(
+        "ul",
+        null,
         createElement("li", { key: "1" }, "first"),
         createElement("li", { key: "2" }, "second"),
         createElement("li", { key: "3" }, "third"),
-      )
+      ),
     );
     await flushMicrotasks();
     await flushMicrotasks();
@@ -408,8 +408,8 @@ describe("React rendering - all component types", () => {
       createElement(
         Ctx as unknown as Parameters<typeof createElement>[0],
         { value: "provided-ctx" } as Record<string, unknown>,
-        createElement(Consumer, null)
-      )
+        createElement(Consumer, null),
+      ),
     );
     await flushMicrotasks();
     await flushMicrotasks();
@@ -446,7 +446,9 @@ describe("React rendering - all component types", () => {
     await flushMicrotasks();
     expect(capturedPending).toBe(false);
     let called = false;
-    capturedStart(() => { called = true; });
+    capturedStart(() => {
+      called = true;
+    });
     expect(called).toBe(true);
   });
 
@@ -501,12 +503,15 @@ describe("React rendering - all component types", () => {
   // === CLASS COMPONENTS ===
 
   it("renders a class component with isReactComponent", async () => {
-    function Comp(this: { props: Record<string, unknown>; state: { val: string } }, props: Record<string, unknown>) {
+    function Comp(
+      this: { props: Record<string, unknown>; state: { val: string } },
+      props: Record<string, unknown>,
+    ) {
       this.props = props;
       this.state = { val: "class-state" };
     }
     Comp.prototype.isReactComponent = {};
-    Comp.prototype.render = function() {
+    Comp.prototype.render = function () {
       return createElement("div", null, (this as unknown as { state: { val: string } }).state.val);
     };
     const root = createRoot(container);
@@ -546,7 +551,7 @@ describe("React rendering - all component types", () => {
 
   it("renders a forwardRef component", async () => {
     const FwdComp = forwardRef<HTMLDivElement, { label: string }>(
-      ({ label }: { label: string }, _ref) => createElement("div", null, label)
+      ({ label }: { label: string }, _ref) => createElement("div", null, label),
     );
     const root = createRoot(container);
     root.render(createElement(FwdComp, { label: "fwd" }));

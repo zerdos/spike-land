@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { narrateCompact, narrateCompactSection } from "../../src/core/browser-automation/core-logic/narrate.js";
+import {
+  narrateCompact,
+  narrateCompactSection,
+} from "../../src/core/browser-automation/core-logic/narrate.js";
 import type { AccessibilityNode } from "../../src/core/browser-automation/core-logic/types.js";
 
 function makeTree(children: AccessibilityNode[]): AccessibilityNode {
@@ -53,9 +56,7 @@ describe("narrateCompact", () => {
 
   it("truncates long text to 80 chars", () => {
     const longText = "A".repeat(120);
-    const tree = makeTree([
-      { role: "text", name: longText },
-    ]);
+    const tree = makeTree([{ role: "text", name: longText }]);
     const result = narrateCompact(tree, "Test", "https://test.com");
     const textLine = result.text.split("\n").find((l) => l.includes("[text]"));
     expect(textLine).toBeDefined();
@@ -122,13 +123,16 @@ describe("narrateCompact", () => {
     const result = narrateCompact(tree, "Test", "https://test.com");
     expect(result.elements).toHaveLength(2);
     expect(result.elements[0]).toMatchObject({ ref: 1, role: "button", name: "OK" });
-    expect(result.elements[1]).toMatchObject({ ref: 2, role: "textbox", name: "Name", value: "John" });
+    expect(result.elements[1]).toMatchObject({
+      ref: 2,
+      role: "textbox",
+      name: "Name",
+      value: "John",
+    });
   });
 
   it("shows values for inputs", () => {
-    const tree = makeTree([
-      { role: "textbox", name: "Email", value: "test@example.com" },
-    ]);
+    const tree = makeTree([{ role: "textbox", name: "Email", value: "test@example.com" }]);
     const result = narrateCompact(tree, "Test", "https://test.com");
     expect(result.text).toContain('="test@example.com"');
   });

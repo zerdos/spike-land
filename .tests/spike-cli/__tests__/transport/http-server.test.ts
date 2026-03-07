@@ -1,6 +1,9 @@
 import http from "node:http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import type {
+  NamespacedTool,
+  ServerManager,
+} from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 describe("http-server", () => {
   let mockManager: ServerManager;
@@ -28,7 +31,9 @@ describe("http-server", () => {
   });
 
   it("startHttpServer exports a function", async () => {
-    const { startHttpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { startHttpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     expect(typeof startHttpServer).toBe("function");
   });
 
@@ -38,7 +43,9 @@ describe("http-server", () => {
   });
 
   it("can start and stop HTTP server", async () => {
-    const { startHttpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { startHttpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     const server = await startHttpServer(mockManager, { port: 0 });
     expect(server).toHaveProperty("close");
     await server.close();
@@ -52,7 +59,9 @@ describe("http-server", () => {
   });
 
   it("createMcpServer exports a function", async () => {
-    const { createMcpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { createMcpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     expect(typeof createMcpServer).toBe("function");
   });
 });
@@ -87,7 +96,9 @@ describe("HTTP server port-in-use", () => {
   });
 
   it("rejects with error when HTTP port is in use", async () => {
-    const { startHttpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { startHttpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     await expect(startHttpServer(mockManager, { port: blockingPort })).rejects.toThrow();
   });
 
@@ -118,7 +129,9 @@ describe("HTTP server endpoints", () => {
       }),
     } as unknown as ServerManager;
 
-    const { startHttpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { startHttpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     const server = await startHttpServer(mockManager, { port: 0 });
     closeServer = server.close;
 

@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockFetch = vi.hoisted(() => vi.fn());
 vi.stubGlobal("fetch", mockFetch);
 
-import { getRegistryServer, searchRegistry } from "../../../../src/cli/spike-cli/core-logic/registry/client.js";
+import {
+  getRegistryServer,
+  searchRegistry,
+} from "../../../../src/cli/spike-cli/core-logic/registry/client.js";
 
 describe("registry client", () => {
   const baseUrl = "https://spike.land";
@@ -108,9 +111,9 @@ describe("registry client", () => {
         statusText: "Internal Server Error",
       });
 
-      await expect(
-        getRegistryServer("some-id", baseUrl, token),
-      ).rejects.toThrow("Registry fetch failed: 500 Internal Server Error");
+      await expect(getRegistryServer("some-id", baseUrl, token)).rejects.toThrow(
+        "Registry fetch failed: 500 Internal Server Error",
+      );
     });
   });
 });

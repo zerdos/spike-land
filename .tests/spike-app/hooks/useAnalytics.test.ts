@@ -18,7 +18,9 @@ vi.mock("react", async () => {
   return {
     ...actual,
     useCallback: (fn: Function) => fn,
-    useEffect: (fn: Function) => { fn(); },
+    useEffect: (fn: Function) => {
+      fn();
+    },
     useRef: (val: unknown) => ({ current: val }),
   };
 });
@@ -93,10 +95,7 @@ describe("useAnalytics", () => {
     // Trigger flush
     vi.advanceTimersByTime(31000);
 
-    expect(mockSendBeacon).toHaveBeenCalledWith(
-      "/analytics/ingest",
-      expect.any(Blob),
-    );
+    expect(mockSendBeacon).toHaveBeenCalledWith("/analytics/ingest", expect.any(Blob));
 
     // Restore
     Object.defineProperty(document, "visibilityState", {

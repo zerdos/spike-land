@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { createWorkerDOMHostConfig } from "../../../../src/core/react-engine/host-config/WorkerDOMHostConfig.js";
-import type { WorkerDocument, WorkerElement, WorkerText } from "../../../../src/core/react-engine/host-config/WorkerDOMHostConfig.js";
+import type {
+  WorkerDocument,
+  WorkerElement,
+  WorkerText,
+} from "../../../../src/core/react-engine/host-config/WorkerDOMHostConfig.js";
 
 function makeWorkerText(text: string): WorkerText {
   return {
@@ -138,7 +142,10 @@ describe("createWorkerDOMHostConfig", () => {
         createTextNode: makeWorkerText,
       };
       const registry = { setHandler: vi.fn(), removeHandler: vi.fn(), dispatch: vi.fn() };
-      const cfg = createWorkerDOMHostConfig(docMock, registry as unknown as Parameters<typeof createWorkerDOMHostConfig>[1]);
+      const cfg = createWorkerDOMHostConfig(
+        docMock,
+        registry as unknown as Parameters<typeof createWorkerDOMHostConfig>[1],
+      );
       const handler = () => {};
       cfg.createInstance("div", { onClick: handler }, rootContainer, rootCtx);
       expect(registry.setHandler).toHaveBeenCalledWith(5, "onClick", handler);
@@ -246,7 +253,10 @@ describe("createWorkerDOMHostConfig", () => {
       const el = makeWorkerElement("div");
       el.__nodeId = 10;
       const registry = { setHandler: vi.fn(), removeHandler: vi.fn(), dispatch: vi.fn() };
-      const cfg = createWorkerDOMHostConfig(doc, registry as unknown as Parameters<typeof createWorkerDOMHostConfig>[1]);
+      const cfg = createWorkerDOMHostConfig(
+        doc,
+        registry as unknown as Parameters<typeof createWorkerDOMHostConfig>[1],
+      );
       const oldHandler = () => {};
       cfg.commitUpdate(el, "div", { onClick: oldHandler }, {});
       expect(registry.removeHandler).toHaveBeenCalledWith(10, "onClick");
@@ -323,7 +333,9 @@ describe("createWorkerDOMHostConfig", () => {
     });
 
     it("finalizeInitialChildren returns false", () => {
-      expect(config.finalizeInitialChildren(makeWorkerElement("div"), "div", {}, rootContainer, rootCtx)).toBe(false);
+      expect(
+        config.finalizeInitialChildren(makeWorkerElement("div"), "div", {}, rootContainer, rootCtx),
+      ).toBe(false);
     });
 
     it("prepareUpdate returns true when props differ", () => {
@@ -338,7 +350,14 @@ describe("createWorkerDOMHostConfig", () => {
 
     it("prepareUpdate returns null when no changes (skips children/key/ref)", () => {
       const el = makeWorkerElement("div");
-      expect(config.prepareUpdate(el, "div", { children: "a", key: "k", ref: null }, { children: "b", key: "k2", ref: {} })).toBeNull();
+      expect(
+        config.prepareUpdate(
+          el,
+          "div",
+          { children: "a", key: "k", ref: null },
+          { children: "b", key: "k2", ref: {} },
+        ),
+      ).toBeNull();
     });
 
     it("clearContainer sets textContent to empty", () => {
@@ -353,7 +372,9 @@ describe("createWorkerDOMHostConfig", () => {
 
     it("scheduleMicrotask schedules a callback", async () => {
       let called = false;
-      config.scheduleMicrotask(() => { called = true; });
+      config.scheduleMicrotask(() => {
+        called = true;
+      });
       await new Promise<void>((r) => queueMicrotask(r));
       expect(called).toBe(true);
     });
@@ -376,9 +397,7 @@ describe("createWorkerDOMHostConfig - worker root", () => {
     const { createRoot } = await import(
       "../../../../src/core/react-engine/react-worker-dom/index.js"
     );
-    const { createElement } = await import(
-      "../../../../src/core/react-engine/react/index.js"
-    );
+    const { createElement } = await import("../../../../src/core/react-engine/react/index.js");
 
     const container = makeWorkerElement("div");
     const root = createRoot(mockDoc, container);

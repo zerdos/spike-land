@@ -7,7 +7,11 @@
 import type { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createZodTool, textResult } from "@spike-land-ai/mcp-server-base";
-import { PlanningInterviewSchema, PrePRCheckSchema, SessionBootstrapSchema } from "../core-logic/types.js";
+import {
+  PlanningInterviewSchema,
+  PrePRCheckSchema,
+  SessionBootstrapSchema,
+} from "../core-logic/types.js";
 import { getWorkspace } from "../node-sys/workspace-state.js";
 import {
   countChanges,
@@ -324,7 +328,6 @@ function selectRoundQuestions(session: InterviewSession): InterviewRound {
 
   // If fewer than 3 unmastered, cycle and pick different variants
   while (selected.length < 3 && unmastered.length > 0) {
-
     const pickIdx = selected.length % unmastered.length;
     const pick = unmastered[pickIdx]!;
     const concept = session.concepts[pick.index]!;

@@ -112,12 +112,7 @@ describe("blog.ts — outer catch fallback paths", () => {
     app.route("/", blog);
 
     const ctx = makeCtx();
-    const res = await app.request(
-      "/api/blog",
-      {},
-      env,
-      ctx as unknown as ExecutionContext,
-    );
+    const res = await app.request("/api/blog", {}, env, ctx as unknown as ExecutionContext);
     expect(res.status).toBe(200);
     const body = await res.json<unknown[]>();
     expect(body).toHaveLength(1);
@@ -168,12 +163,7 @@ describe("blog.ts — outer catch fallback paths", () => {
     app.route("/", blog);
     const ctx = makeCtx();
 
-    const res = await app.request(
-      "/api/blog",
-      {},
-      env,
-      ctx as unknown as ExecutionContext,
-    );
+    const res = await app.request("/api/blog", {}, env, ctx as unknown as ExecutionContext);
     expect(res.status).toBe(200);
     // waitUntil called for GA4 tracking
     expect(ctx.waitUntil).toHaveBeenCalled();
@@ -398,7 +388,12 @@ describe("sitemap.ts — outer catch + inner D1 fallback paths", () => {
 describe("r2.ts — waitUntil paths with executionCtx", () => {
   it("GET /r2/:key: fires GA4 waitUntil with executionCtx", async () => {
     const mockR2Object = {
-      body: new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode("data")); c.close(); } }),
+      body: new ReadableStream({
+        start(c) {
+          c.enqueue(new TextEncoder().encode("data"));
+          c.close();
+        },
+      }),
       httpEtag: '"abc"',
       writeHttpMetadata: vi.fn((h: Headers) => h.set("content-type", "text/plain")),
     };
@@ -414,12 +409,7 @@ describe("r2.ts — waitUntil paths with executionCtx", () => {
     app.route("/", r2);
     const ctx = makeCtx();
 
-    const res = await app.request(
-      "/r2/some/key",
-      {},
-      env,
-      ctx as unknown as ExecutionContext,
-    );
+    const res = await app.request("/r2/some/key", {}, env, ctx as unknown as ExecutionContext);
     expect(res.status).toBe(200);
     expect(ctx.waitUntil).toHaveBeenCalled();
   });
@@ -480,7 +470,9 @@ async function makeStripeSignature(payload: string, secret: string): Promise<str
     ["sign"],
   );
   const signed = await crypto.subtle.sign("HMAC", key, encoder.encode(signedPayload));
-  const hex = Array.from(new Uint8Array(signed)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hex = Array.from(new Uint8Array(signed))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   return `t=${timestamp},v1=${hex}`;
 }
 
@@ -607,14 +599,18 @@ describe("stripe-webhook.ts — error catch branches", () => {
     const app = new Hono<{ Bindings: Env }>();
     app.route("/", stripeWebhook);
 
-    const res = await app.request("/stripe/webhook", {
-      method: "POST",
-      body: payload,
-      headers: {
-        "stripe-signature": sig,
-        "content-type": "application/json",
+    const res = await app.request(
+      "/stripe/webhook",
+      {
+        method: "POST",
+        body: payload,
+        headers: {
+          "stripe-signature": sig,
+          "content-type": "application/json",
+        },
       },
-    }, env);
+      env,
+    );
     expect(res.status).toBe(200);
   });
 
@@ -643,14 +639,18 @@ describe("stripe-webhook.ts — error catch branches", () => {
     const app = new Hono<{ Bindings: Env }>();
     app.route("/", stripeWebhook);
 
-    const res = await app.request("/stripe/webhook", {
-      method: "POST",
-      body: payload,
-      headers: {
-        "stripe-signature": sig,
-        "content-type": "application/json",
+    const res = await app.request(
+      "/stripe/webhook",
+      {
+        method: "POST",
+        body: payload,
+        headers: {
+          "stripe-signature": sig,
+          "content-type": "application/json",
+        },
       },
-    }, env);
+      env,
+    );
     expect(res.status).toBe(200);
   });
 });
@@ -695,7 +695,12 @@ describe("cockpit.ts — null value branches (lines 76-79)", () => {
 
     const res = await app.request("/api/cockpit/metrics", {}, env);
     expect(res.status).toBe(200);
-    const body = await res.json<{ userCount: number; activeSubscriptions: number; toolCount: number; mrr: number }>();
+    const body = await res.json<{
+      userCount: number;
+      activeSubscriptions: number;
+      toolCount: number;
+      mrr: number;
+    }>();
     // All null DB rows → fallback to 0 via ?? operator
     expect(body.userCount).toBe(0);
     expect(body.activeSubscriptions).toBe(0);

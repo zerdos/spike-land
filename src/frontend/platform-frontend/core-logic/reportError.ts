@@ -60,7 +60,11 @@ function scheduleFlush() {
 
 export function reportError(
   error: Error | string,
-  extra?: { code?: string; severity?: "warning" | "error" | "fatal"; metadata?: Record<string, unknown> },
+  extra?: {
+    code?: string;
+    severity?: "warning" | "error" | "fatal";
+    metadata?: Record<string, unknown>;
+  },
 ) {
   const msg = typeof error === "string" ? error : error.message;
   const stack = typeof error === "string" ? undefined : error.stack;

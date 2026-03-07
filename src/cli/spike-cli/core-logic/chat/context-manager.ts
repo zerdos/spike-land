@@ -31,10 +31,7 @@ export class ContextManager {
    * Mutates the messages array in place.
    * Returns true if summarization was performed.
    */
-  async maybeSummarize(
-    messages: Message[],
-    tracker: TokenTracker,
-  ): Promise<boolean> {
+  async maybeSummarize(messages: Message[], tracker: TokenTracker): Promise<boolean> {
     if (!tracker.shouldSummarize) return false;
     if (messages.length <= this.keepRecent + 1) return false;
 
@@ -53,7 +50,12 @@ export class ContextManager {
       },
       {
         role: "assistant",
-        content: [{ type: "text", text: "I understand. I have the context from our previous conversation. How can I help?" }],
+        content: [
+          {
+            type: "text",
+            text: "I understand. I have the context from our previous conversation. How can I help?",
+          },
+        ],
       },
       ...toKeep,
     );

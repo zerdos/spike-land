@@ -54,13 +54,13 @@ export function registerAppsTools(
         {
           name: "create_todo_app",
           input: { prompt: "Create a simple todo list app with local storage." },
-          description: "Create a basic app"
+          description: "Create a basic app",
         },
         {
           name: "create_with_template",
           input: { prompt: "Make it a dark theme analytics dashboard.", template_id: "dashboard" },
-          description: "Start from a dashboard template"
-        }
+          description: "Start from a dashboard template",
+        },
       ])
       .handler(async ({ input }) => {
         const { prompt, codespace_id, image_ids, template_id } = input;
@@ -127,13 +127,13 @@ export function registerAppsTools(
         {
           name: "list_active",
           input: { limit: 10 },
-          description: "List up to 10 active apps"
+          description: "List up to 10 active apps",
         },
         {
           name: "list_live_apps",
           input: { status: "LIVE" },
-          description: "List only published apps"
-        }
+          description: "List only published apps",
+        },
       ])
       .handler(async ({ input }) => {
         const { status, limit } = input;
@@ -385,7 +385,9 @@ export function registerAppsTools(
         app_id: z.string().min(1).describe("App identifier."),
         status: z
           .enum(["ARCHIVED", "PROMPTING", "LIVE", "TEST"])
-          .describe("LIVE publishes the app. TEST marks it for testing. ARCHIVED stops the live app. PROMPTING resets to draft state."),
+          .describe(
+            "LIVE publishes the app. TEST marks it for testing. ARCHIVED stops the live app. PROMPTING resets to draft state.",
+          ),
       })
       .meta({ category: "apps", tier: "free" })
       .handler(async ({ input }) => {
@@ -522,7 +524,9 @@ export function registerAppsTools(
     t
       .tool("apps_batch_status", "Set status on multiple apps at once.", {
         app_ids: z.array(z.string().min(1)).min(1).max(20).describe("List of app identifiers."),
-        status: z.enum(["ARCHIVED", "PROMPTING", "LIVE", "TEST"]).describe("Target status for all apps."),
+        status: z
+          .enum(["ARCHIVED", "PROMPTING", "LIVE", "TEST"])
+          .describe("Target status for all apps."),
       })
       .meta({ category: "apps", tier: "free" })
       .handler(async ({ input }) => {
@@ -677,11 +681,31 @@ export function registerAppsTools(
       .meta({ category: "apps", tier: "free" })
       .handler(async () => {
         const templates = [
-          { id: "blank", name: "Blank Canvas", description: "Start from scratch with an empty React app" },
-          { id: "dashboard", name: "Dashboard", description: "Admin dashboard with charts, tables, and sidebar navigation" },
-          { id: "landing-page", name: "Landing Page", description: "Marketing landing page with hero, features, and CTA sections" },
-          { id: "portfolio", name: "Portfolio", description: "Personal portfolio with project gallery and about section" },
-          { id: "chat-app", name: "Chat App", description: "Real-time chat interface with message history and user list" },
+          {
+            id: "blank",
+            name: "Blank Canvas",
+            description: "Start from scratch with an empty React app",
+          },
+          {
+            id: "dashboard",
+            name: "Dashboard",
+            description: "Admin dashboard with charts, tables, and sidebar navigation",
+          },
+          {
+            id: "landing-page",
+            name: "Landing Page",
+            description: "Marketing landing page with hero, features, and CTA sections",
+          },
+          {
+            id: "portfolio",
+            name: "Portfolio",
+            description: "Personal portfolio with project gallery and about section",
+          },
+          {
+            id: "chat-app",
+            name: "Chat App",
+            description: "Real-time chat interface with message history and user list",
+          },
         ];
 
         let text = `**Available App Templates (${templates.length})**\n\n`;

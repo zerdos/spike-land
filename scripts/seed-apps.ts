@@ -10,11 +10,7 @@ import { readdir, readFile, writeFile, unlink } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import {
-  type McpApp,
-  parseMdContent,
-  generateSQL,
-} from "./seed-apps-lib.js";
+import { type McpApp, parseMdContent, generateSQL } from "./seed-apps-lib.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -50,9 +46,7 @@ async function seedD1(apps: McpApp[]): Promise<void> {
     const cmd = `npx wrangler d1 execute ${DB_NAME} --file="${tmpFile}" ${remoteFlag}`;
     console.log(`Executing: ${cmd}`);
     execSync(cmd, { cwd: SPIKE_LAND_MCP_DIR, stdio: "inherit" });
-    console.log(
-      `Seeded ${apps.length} MCP apps to D1 (${isRemote ? "remote" : "local"}).`,
-    );
+    console.log(`Seeded ${apps.length} MCP apps to D1 (${isRemote ? "remote" : "local"}).`);
   } finally {
     await unlink(tmpFile).catch(() => {});
   }

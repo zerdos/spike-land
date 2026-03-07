@@ -14,8 +14,12 @@ export function ConnectionPanel({ url, connected, onConnect, onDisconnect }: Pro
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/50 border border-border">
-        <div className={`w-2 h-2 rounded-full transition-all duration-500 ${connected ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]'}`} />
-        <span className="text-[11px] font-semibold tracking-wide uppercase text-muted-foreground">{connected ? 'Connected' : 'Disconnected'}</span>
+        <div
+          className={`w-2 h-2 rounded-full transition-all duration-500 ${connected ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"}`}
+        />
+        <span className="text-[11px] font-semibold tracking-wide uppercase text-muted-foreground">
+          {connected ? "Connected" : "Disconnected"}
+        </span>
       </div>
 
       <div className="flex items-center gap-1.5 bg-background border border-border rounded-md px-2 py-1 focus-within:ring-2 focus-within:ring-primary/20 transition-all">

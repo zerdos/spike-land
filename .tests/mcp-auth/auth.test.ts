@@ -124,7 +124,9 @@ describe("createAuth", () => {
       APPLE_CLIENT_SECRET: undefined,
     });
     createAuth(env);
-    const callArg = (vi.mocked(betterAuth).mock.calls[0][0] as { socialProviders: Record<string, unknown> });
+    const callArg = vi.mocked(betterAuth).mock.calls[0][0] as {
+      socialProviders: Record<string, unknown>;
+    };
     expect(callArg.socialProviders.google).toBeUndefined();
     expect(callArg.socialProviders.github).toBeUndefined();
     expect(callArg.socialProviders.apple).toBeUndefined();
@@ -207,7 +209,7 @@ describe("createAuth", () => {
 
     const response = await qrPlugin.endpoints.signInQR(ctx);
     expect(response.status).toBe(501);
-    const body = await response.json() as { error: string };
+    const body = (await response.json()) as { error: string };
     expect(body.error).toContain("not yet implemented");
   });
 

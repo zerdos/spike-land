@@ -234,9 +234,7 @@ describe("ToolBuilder", () => {
   it("examples sets examples on the built tool", () => {
     const tool = baseProcedure
       .tool("examples_tool", "With examples", { x: z.string() })
-      .examples([
-        { name: "basic", input: { x: "hello" }, description: "Basic usage" },
-      ])
+      .examples([{ name: "basic", input: { x: "hello" }, description: "Basic usage" }])
       .handler(async () => ({ content: [{ type: "text", text: "ok" }] }));
 
     expect(tool.meta.examples).toHaveLength(1);
@@ -262,15 +260,15 @@ describe("ToolBuilder", () => {
 
 describe("middleware", () => {
   it("creates a middleware with fn property", () => {
-    const mw = middleware<{}, { userId: string }>(
-      async ({ ctx, next }) => next({ ...ctx, userId: "user-123" }),
+    const mw = middleware<{}, { userId: string }>(async ({ ctx, next }) =>
+      next({ ...ctx, userId: "user-123" }),
     );
     expect(typeof mw.fn).toBe("function");
   });
 
   it("middleware can be used in a procedure chain", async () => {
-    const withUserId = middleware<{}, { userId: string }>(
-      async ({ ctx, next }) => next({ ...ctx, userId: "user-123" }),
+    const withUserId = middleware<{}, { userId: string }>(async ({ ctx, next }) =>
+      next({ ...ctx, userId: "user-123" }),
     );
 
     const t = createProcedure().use(withUserId);
@@ -288,12 +286,10 @@ describe("middleware", () => {
   it("middleware receives input and context", async () => {
     const capturedParams: { input: unknown; ctx: unknown }[] = [];
 
-    const captureMw = middleware<{}, {}>(
-      async ({ input, ctx, next }) => {
-        capturedParams.push({ input, ctx });
-        return next(ctx);
-      },
-    );
+    const captureMw = middleware<{}, {}>(async ({ input, ctx, next }) => {
+      capturedParams.push({ input, ctx });
+      return next(ctx);
+    });
 
     const tool = createProcedure()
       .use(captureMw)

@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'aes',
-	extensions: ['.aes'],
-	aliases: ['aes', 'sophia', 'Sophia'],
-	loader: () => import('./sophia')
+  id: "aes",
+  extensions: [".aes"],
+  aliases: ["aes", "sophia", "Sophia"],
+  loader: () => import("./sophia"),
 });

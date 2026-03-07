@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { filterTools, matchesAnyGlob, matchesGlob } from "../../../../src/cli/spike-cli/core-logic/util/glob.js";
+import {
+  filterTools,
+  matchesAnyGlob,
+  matchesGlob,
+} from "../../../../src/cli/spike-cli/core-logic/util/glob.js";
 
 describe("matchesGlob", () => {
   it("matches exact names", () => {

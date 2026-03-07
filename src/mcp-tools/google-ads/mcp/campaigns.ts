@@ -49,7 +49,10 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
     name: "ads_list_campaigns",
     description: "List all Google Ads campaigns with budget and performance metrics",
     schema: {
-      status: z.enum(["ENABLED", "PAUSED", "REMOVED"]).optional().describe("Filter by campaign status"),
+      status: z
+        .enum(["ENABLED", "PAUSED", "REMOVED"])
+        .optional()
+        .describe("Filter by campaign status"),
       limit: z.number().int().min(1).max(1000).optional().describe("Max campaigns to return"),
     },
     async handler({ status, limit }) {
@@ -77,9 +80,7 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
           : null,
         impressions: Number(row.metrics?.impressions ?? 0),
         clicks: Number(row.metrics?.clicks ?? 0),
-        cost: row.metrics?.costMicros
-          ? microsToCurrency(Number(row.metrics.costMicros))
-          : 0,
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
       }));
 
       return jsonResult({ count: campaigns.length, campaigns });
@@ -92,17 +93,27 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
     schema: {
       name: z.string().describe("Campaign name"),
       budget_amount: z.number().positive().describe("Daily budget in currency units (e.g. 50.00)"),
-      bidding_strategy: z.enum([
-        "MAXIMIZE_CLICKS",
-        "MAXIMIZE_CONVERSIONS",
-        "TARGET_CPA",
-        "TARGET_ROAS",
-        "MANUAL_CPC",
-      ]).describe("Bidding strategy type"),
-      channel_type: z.enum(["SEARCH", "DISPLAY", "SHOPPING", "VIDEO"]).describe("Advertising channel type"),
+      bidding_strategy: z
+        .enum([
+          "MAXIMIZE_CLICKS",
+          "MAXIMIZE_CONVERSIONS",
+          "TARGET_CPA",
+          "TARGET_ROAS",
+          "MANUAL_CPC",
+        ])
+        .describe("Bidding strategy type"),
+      channel_type: z
+        .enum(["SEARCH", "DISPLAY", "SHOPPING", "VIDEO"])
+        .describe("Advertising channel type"),
       status: z.enum(["ENABLED", "PAUSED"]).default("PAUSED").describe("Initial campaign status"),
     },
-    async handler({ name, budget_amount: budgetAmount, bidding_strategy: biddingStrategy, channel_type: channelType, status }) {
+    async handler({
+      name,
+      budget_amount: budgetAmount,
+      bidding_strategy: biddingStrategy,
+      channel_type: channelType,
+      status,
+    }) {
       const resolvedStatus = String(status ?? "PAUSED");
 
       const operations = [
@@ -141,7 +152,11 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
     schema: {
       campaign_id: z.string().describe("Campaign ID to update"),
       status: z.enum(["ENABLED", "PAUSED"]).optional().describe("New campaign status"),
-      budget_amount: z.number().positive().optional().describe("New daily budget in currency units"),
+      budget_amount: z
+        .number()
+        .positive()
+        .optional()
+        .describe("New daily budget in currency units"),
     },
     async handler({ campaign_id, status, budget_amount: budgetAmount }) {
       const campaignId = String(campaign_id);
@@ -226,8 +241,5 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
 export { microsToCurrency, currencyToMicros };
 
 function camelCase(screaming: string): string {
-  return screaming
-    .toLowerCase()
-    .replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+  return screaming.toLowerCase().replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
 }
-

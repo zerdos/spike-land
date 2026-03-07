@@ -6,7 +6,7 @@ import * as fs from "node:fs";
 
 async function main() {
   console.log("🚀 Starting Multi-Agent User Test for spike.land...");
-  
+
   // 1. Get initial page narration
   let homepageNarration = "";
   try {
@@ -33,7 +33,7 @@ async function main() {
   // 2. Run test for each of the 16 personas
   for (const persona of PERSONAS) {
     console.log(`  [Agent] Running test for persona: ${persona.name} (${persona.slug})...`);
-    
+
     const prompt = {
       id: `user-test-${persona.slug}`,
       role: "user-tester",
@@ -71,39 +71,42 @@ Output your response in this format:
 - <issue 1>
 - <issue 2>
 ...
-`
+`,
     };
 
     const output = spawnClaude(prompt as any, { narration: homepageNarration } as any);
     results.push(output);
-    
+
     // Simple parsing for summary
     const issuesMatch = output.match(/## Issues & Concerns\n([\s\S]+)/);
     if (issuesMatch) {
       findings.push({
         persona: persona.name,
-        issues: issuesMatch[1].trim().split("\n").map(line => line.replace(/^- /, "").trim())
+        issues: issuesMatch[1]
+          .trim()
+          .split("\n")
+          .map((line) => line.replace(/^- /, "").trim()),
       });
     }
   }
 
   // 3. Generate summary markdown
   console.log("📊 Generating USER_TEST_FINDINGS.md...");
-  
+
   let summary = `# spike.land User Test Findings Summary\n\n`;
   summary += `Tested with 16 diverse AI agent personas on ${new Date().toLocaleDateString()}.\n\n`;
-  
+
   summary += `## Overview\n`;
   summary += `The agents explored the homepage of spike.land and provided feedback based on their specific professional and personal backgrounds.\n\n`;
-  
+
   summary += `## Aggregate Issues & Concerns\n`;
   const allIssues = new Set<string>();
-  findings.forEach(f => f.issues.forEach((i: string) => allIssues.add(i)));
-  
-  allIssues.forEach(issue => {
+  findings.forEach((f) => f.issues.forEach((i: string) => allIssues.add(i)));
+
+  allIssues.forEach((issue) => {
     summary += `- ${issue}\n`;
   });
-  
+
   summary += `\n## Individual Persona Reports\n\n`;
   summary += results.join("\n\n---\n\n");
 
@@ -111,7 +114,7 @@ Output your response in this format:
   console.log("✅ Done! Findings saved to USER_TEST_FINDINGS.md");
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });

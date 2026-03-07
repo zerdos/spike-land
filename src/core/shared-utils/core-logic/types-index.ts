@@ -325,4 +325,3 @@ export interface FeaturedGalleryItem {
   sortOrder: number;
   isActive: boolean;
 }
-

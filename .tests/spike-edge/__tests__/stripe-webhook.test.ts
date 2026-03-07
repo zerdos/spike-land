@@ -107,11 +107,10 @@ describe("POST /stripe/webhook", () => {
       const { db } = createMockDb();
       const app = createApp({ STRIPE_WEBHOOK_SECRET: WEBHOOK_SECRET, DB: db });
 
-      const res = await app.request(
-        "/stripe/webhook",
-        { method: "POST", body: "{}" },
-        { STRIPE_WEBHOOK_SECRET: WEBHOOK_SECRET, DB: db } as unknown as Env,
-      );
+      const res = await app.request("/stripe/webhook", { method: "POST", body: "{}" }, {
+        STRIPE_WEBHOOK_SECRET: WEBHOOK_SECRET,
+        DB: db,
+      } as unknown as Env);
 
       expect(res.status).toBe(400);
       const body = await res.json();
@@ -292,9 +291,11 @@ describe("POST /stripe/webhook", () => {
         prepareCalls.push(sql);
         return {
           bind: (..._args: unknown[]) => ({
-            first: vi.fn().mockResolvedValue(
-              sql.includes("subscriptions WHERE user_id") ? { id: "existing-sub-id" } : null,
-            ),
+            first: vi
+              .fn()
+              .mockResolvedValue(
+                sql.includes("subscriptions WHERE user_id") ? { id: "existing-sub-id" } : null,
+              ),
             run: mockRun,
           }),
           first: vi.fn().mockResolvedValue(null),
@@ -763,7 +764,10 @@ describe("POST /stripe/webhook", () => {
           all: vi.fn().mockResolvedValue({ results: [] }),
         };
       });
-      const db = { prepare: mockPrepare, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+      const db = {
+        prepare: mockPrepare,
+        batch: vi.fn().mockResolvedValue([]),
+      } as unknown as D1Database;
       const app = createApp({ STRIPE_WEBHOOK_SECRET: WEBHOOK_SECRET, DB: db });
 
       const event = {
@@ -804,7 +808,10 @@ describe("POST /stripe/webhook", () => {
           all: vi.fn().mockResolvedValue({ results: [] }),
         };
       });
-      const db = { prepare: mockPrepare, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+      const db = {
+        prepare: mockPrepare,
+        batch: vi.fn().mockResolvedValue([]),
+      } as unknown as D1Database;
       const app = createApp({ STRIPE_WEBHOOK_SECRET: WEBHOOK_SECRET, DB: db });
 
       const event = {

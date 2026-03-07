@@ -97,10 +97,7 @@ export function registerErrorQueryTools(
           })
           .from(skillUsageEvents)
           .where(
-            and(
-              eq(skillUsageEvents.outcome, "error"),
-              gt(skillUsageEvents.createdAt, sinceTs),
-            ),
+            and(eq(skillUsageEvents.outcome, "error"), gt(skillUsageEvents.createdAt, sinceTs)),
           )
           .groupBy(skillUsageEvents.serverName, skillUsageEvents.skillName)
           .orderBy(sql`count(*) DESC`);

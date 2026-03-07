@@ -34,7 +34,9 @@ export function QaStudioPage() {
   const handleScreenshot = async () => {
     try {
       const result = await mcp.callTool("web_screenshot", {});
-      const imgContent = result.content.find((c) => c.type === "image" || c.mimeType === "image/png" || c.data);
+      const imgContent = result.content.find(
+        (c) => c.type === "image" || c.mimeType === "image/png" || c.data,
+      );
       if (imgContent?.data) {
         setScreenshotData(imgContent.data);
       }
@@ -103,10 +105,10 @@ export function QaStudioPage() {
           />
         </div>
       </div>
-      
+
       {mcp.connected && (
         <div className="flex flex-col flex-1 overflow-hidden">
-          <BrowserBar 
+          <BrowserBar
             onNavigate={handleNavigate}
             onRefresh={handleRefresh}
             onScreenshot={handleScreenshot}
@@ -114,16 +116,16 @@ export function QaStudioPage() {
             onGetTabs={handleGetTabs}
             isCalling={mcp.isCalling}
           />
-          
+
           <div className="flex flex-1 overflow-hidden">
             <div className="w-1/2 min-w-[400px] border-r border-border overflow-hidden flex flex-col">
-              <NarrationPanel 
-                text={narrationText} 
-                onRefClick={handleRefClick} 
-                isCalling={mcp.isCalling} 
+              <NarrationPanel
+                text={narrationText}
+                onRefClick={handleRefClick}
+                isCalling={mcp.isCalling}
               />
             </div>
-            
+
             <div className="w-1/2 min-w-[400px] overflow-hidden flex flex-col">
               <SidePanel
                 {...(screenshotData !== undefined && { screenshotData })}
@@ -132,7 +134,7 @@ export function QaStudioPage() {
               />
             </div>
           </div>
-          
+
           <ConsolePanel history={mcp.history} />
         </div>
       )}
@@ -145,25 +147,34 @@ export function QaStudioPage() {
             </div>
             <div className="text-2xl font-bold text-foreground mb-2">Connect to QA Studio</div>
             <div className="text-base text-muted-foreground mb-8 max-w-md text-center">
-              Control browser automation visually without writing any code. Connect to a local MCP server to begin.
+              Control browser automation visually without writing any code. Connect to a local MCP
+              server to begin.
             </div>
 
             <div className="w-full text-left space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">1</div>
+                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">
+                  1
+                </div>
                 <div>
                   <div className="font-semibold text-foreground mb-2">Start the local server</div>
                   <div className="bg-background border border-border p-3 rounded-lg shadow-inner">
-                    <code className="font-mono text-sm text-primary">npx @spike-land-ai/qa-studio --http --visible</code>
+                    <code className="font-mono text-sm text-primary">
+                      npx @spike-land-ai/qa-studio --http --visible
+                    </code>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">2</div>
+                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">
+                  2
+                </div>
                 <div>
                   <div className="font-semibold text-foreground mb-1">Connect from the header</div>
-                  <div className="text-sm text-muted-foreground">Click the Connect button in the top right corner of this page.</div>
+                  <div className="text-sm text-muted-foreground">
+                    Click the Connect button in the top right corner of this page.
+                  </div>
                 </div>
               </div>
             </div>

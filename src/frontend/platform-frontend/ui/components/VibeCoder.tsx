@@ -169,7 +169,15 @@ interface ChatPanelProps {
 function ChatPanel({ isDarkMode, className, onStreamingChange }: ChatPanelProps) {
   const { isAuthenticated, login } = useAuth();
   const router = useRouter();
-  const { messages, sendMessage, isStreaming, error, clearError, clearMessages, submitBrowserResult } = useChat();
+  const {
+    messages,
+    sendMessage,
+    isStreaming,
+    error,
+    clearError,
+    clearMessages,
+    submitBrowserResult,
+  } = useChat();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -276,17 +284,10 @@ function ChatPanel({ isDarkMode, className, onStreamingChange }: ChatPanelProps)
                 isDarkMode ? "bg-white/5" : "bg-muted",
               )}
             >
-              <Sparkles
-                className="w-7 h-7 text-primary"
-              />
+              <Sparkles className="w-7 h-7 text-primary" />
             </div>
             <div className="space-y-1.5">
-              <p
-                className={cn(
-                  "text-sm font-bold",
-                  isDarkMode ? "text-white" : "text-foreground",
-                )}
-              >
+              <p className={cn("text-sm font-bold", isDarkMode ? "text-white" : "text-foreground")}>
                 Start coding with AI
               </p>
               <p
@@ -402,9 +403,7 @@ function ChatPanel({ isDarkMode, className, onStreamingChange }: ChatPanelProps)
               )}
             >
               {isStreaming ? (
-                <div
-                  className="w-4 h-4 border-2 rounded-full animate-spin border-primary-foreground/20 border-t-primary-foreground"
-                />
+                <div className="w-4 h-4 border-2 rounded-full animate-spin border-primary-foreground/20 border-t-primary-foreground" />
               ) : (
                 <Send className="w-4 h-4 stroke-[2.5]" />
               )}
@@ -443,15 +442,16 @@ interface CodePanelProps {
   fileName?: string;
 }
 
-function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className, fileName }: CodePanelProps) {
+function CodePanel({
+  code,
+  onChange,
+  isDarkMode,
+  isStreaming = false,
+  className,
+  fileName,
+}: CodePanelProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full overflow-hidden",
-        "bg-background",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col h-full overflow-hidden", "bg-background", className)}>
       {/* Panel header */}
       <div
         className={cn(
@@ -459,9 +459,7 @@ function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className,
           isDarkMode ? "border-white/5 bg-white/3" : "border-border bg-muted/40",
         )}
       >
-        <Code2
-          className="w-3.5 h-3.5 text-primary"
-        />
+        <Code2 className="w-3.5 h-3.5 text-primary" />
         <span
           className={cn(
             "text-xs font-bold tracking-tight",
@@ -499,9 +497,7 @@ function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className,
         <Suspense
           fallback={
             <div className="h-full flex items-center justify-center gap-3">
-              <Loader2
-                className="w-5 h-5 animate-spin text-primary"
-              />
+              <Loader2 className="w-5 h-5 animate-spin text-primary" />
               <span
                 className={cn(
                   "text-xs font-medium",
@@ -535,13 +531,7 @@ function PreviewPanel({ appId, code, isDarkMode, className }: PreviewPanelProps)
   const { html, error: transpileError, isTranspiling } = useTranspiler(code);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full overflow-hidden",
-        "bg-background",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col h-full overflow-hidden", "bg-background", className)}>
       {/* Panel header */}
       <div
         className={cn(
@@ -549,9 +539,7 @@ function PreviewPanel({ appId, code, isDarkMode, className }: PreviewPanelProps)
           isDarkMode ? "border-white/5 bg-white/3" : "border-border bg-muted/40",
         )}
       >
-        <Eye
-          className="w-3.5 h-3.5 text-success-foreground"
-        />
+        <Eye className="w-3.5 h-3.5 text-success-foreground" />
         <span
           className={cn(
             "text-xs font-bold tracking-tight",
@@ -605,7 +593,12 @@ function PreviewPanel({ appId, code, isDarkMode, className }: PreviewPanelProps)
               <p className={cn("text-sm font-bold", isDarkMode ? "text-white" : "text-foreground")}>
                 Transpilation Error
               </p>
-              <p className={cn("text-xs font-mono leading-relaxed", isDarkMode ? "text-red-400" : "text-destructive")}>
+              <p
+                className={cn(
+                  "text-xs font-mono leading-relaxed",
+                  isDarkMode ? "text-red-400" : "text-destructive",
+                )}
+              >
                 {transpileError}
               </p>
             </div>
@@ -620,7 +613,12 @@ function PreviewPanel({ appId, code, isDarkMode, className }: PreviewPanelProps)
         ) : code.trim() ? (
           <div className="h-full flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
-            <span className={cn("text-xs font-medium", isDarkMode ? "text-gray-500" : "text-muted-foreground")}>
+            <span
+              className={cn(
+                "text-xs font-medium",
+                isDarkMode ? "text-gray-500" : "text-muted-foreground",
+              )}
+            >
               Transpiling...
             </span>
           </div>
@@ -645,8 +643,14 @@ function PreviewPanel({ appId, code, isDarkMode, className }: PreviewPanelProps)
               <p className={cn("text-sm font-bold", isDarkMode ? "text-white" : "text-foreground")}>
                 Your app appears here
               </p>
-              <p className={cn("text-xs leading-relaxed max-w-[200px]", isDarkMode ? "text-gray-500" : "text-muted-foreground")}>
-                Describe what you want to build in the Chat panel and the AI will generate a live preview instantly.
+              <p
+                className={cn(
+                  "text-xs leading-relaxed max-w-[200px]",
+                  isDarkMode ? "text-gray-500" : "text-muted-foreground",
+                )}
+              >
+                Describe what you want to build in the Chat panel and the AI will generate a live
+                preview instantly.
               </p>
             </div>
             <div
@@ -880,7 +884,9 @@ export function VibeCoder({ initialCode = DEFAULT_CODE, appId }: VibeCoderProps)
               style={{ width: previewWidth, minWidth: MIN_PANEL_WIDTH }}
               className={cn(
                 "shrink-0 overflow-hidden border-l",
-                activePanel === "preview" ? "flex flex-col flex-1 md:flex-none" : "hidden md:flex md:flex-col",
+                activePanel === "preview"
+                  ? "flex flex-col flex-1 md:flex-none"
+                  : "hidden md:flex md:flex-col",
                 isDarkMode ? "border-white/5" : "border-border",
               )}
             >
@@ -913,7 +919,9 @@ export function VibeCoder({ initialCode = DEFAULT_CODE, appId }: VibeCoderProps)
               style={{ width: chatWidth, minWidth: MIN_PANEL_WIDTH }}
               className={cn(
                 "shrink-0 overflow-hidden border-l",
-                activePanel === "chat" ? "flex flex-col flex-1 md:flex-none" : "hidden md:flex md:flex-col",
+                activePanel === "chat"
+                  ? "flex flex-col flex-1 md:flex-none"
+                  : "hidden md:flex md:flex-col",
                 isDarkMode ? "border-white/5" : "border-border",
               )}
             >
@@ -924,7 +932,11 @@ export function VibeCoder({ initialCode = DEFAULT_CODE, appId }: VibeCoderProps)
                   activePanel === "chat" && "animate-in fade-in duration-200",
                 )}
               >
-                <ChatPanel isDarkMode={isDarkMode} className="h-full" onStreamingChange={setIsStreaming} />
+                <ChatPanel
+                  isDarkMode={isDarkMode}
+                  className="h-full"
+                  onStreamingChange={setIsStreaming}
+                />
               </div>
             </div>
           </>

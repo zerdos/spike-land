@@ -30,10 +30,7 @@ export function escapeSQL(str: string): string {
  * Parse frontmatter + body from raw MDX content.
  * Returns null if the content has no title.
  */
-export function parseMdxContent(
-  rawContent: string,
-  filename: string,
-): BlogPost | null {
+export function parseMdxContent(rawContent: string, filename: string): BlogPost | null {
   const { data, content } = matter(rawContent);
 
   const isDraft = Boolean(data.draft);
@@ -48,16 +45,17 @@ export function parseMdxContent(
       const match = line.match(/^!\[.*?\]\((\/blog\/[^)]+)\)$/);
       if (match?.[1] && !line.includes("placehold.co")) {
         heroImage = match[1];
-        body = body.replace(line + "\n", "").replace(line, "").trim();
+        body = body
+          .replace(line + "\n", "")
+          .replace(line, "")
+          .trim();
         break;
       }
     }
   } else {
     // Strip hero image line from body if it matches the frontmatter heroImage
     const escapedHero = heroImage.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    body = body
-      .replace(new RegExp(`^!\\[.*?\\]\\(${escapedHero}\\)\\n?`, "m"), "")
-      .trim();
+    body = body.replace(new RegExp(`^!\\[.*?\\]\\(${escapedHero}\\)\\n?`, "m"), "").trim();
   }
 
   return {
@@ -80,9 +78,7 @@ export function parseMdxContent(
  * Sort posts by date descending (newest first).
  */
 export function sortByDateDesc(posts: BlogPost[]): BlogPost[] {
-  return [...posts].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  return [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 /**

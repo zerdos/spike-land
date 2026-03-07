@@ -48,8 +48,8 @@ export function formatExamplesAsDescription(description: string, examples: ToolE
 }
 
 export function compareSemver(a: string, b: string): number {
-  const pa = (a.split('-')[0] ?? "").split('.').map(Number);
-  const pb = (b.split('-')[0] ?? "").split('.').map(Number);
+  const pa = (a.split("-")[0] ?? "").split(".").map(Number);
+  const pb = (b.split("-")[0] ?? "").split(".").map(Number);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
     const na = pa[i] || 0;
     const nb = pb[i] || 0;
@@ -189,20 +189,20 @@ export class ToolRegistry {
     let isLatest = true;
     const existingLatest = this.tools.get(def.name);
     if (existingLatest) {
-       const existingVersion = existingLatest.definition.version ?? "1.0.0";
-       if (compareSemver(existingVersion, version) > 0) {
-           isLatest = false;
-       } else if (compareSemver(existingVersion, version) < 0) {
-           // We are newer. Deprecate the old version in the versionedTools map if it exists
-           const oldKey = `${def.name}@${existingVersion}`;
-           const oldTool = this.versionedTools.get(oldKey);
-           if (oldTool) {
-               oldTool.definition.stability = "deprecated";
-               if (oldTool.registered && oldTool.registered._meta) {
-                 oldTool.registered._meta.stability = "deprecated";
-               }
-           }
-       }
+      const existingVersion = existingLatest.definition.version ?? "1.0.0";
+      if (compareSemver(existingVersion, version) > 0) {
+        isLatest = false;
+      } else if (compareSemver(existingVersion, version) < 0) {
+        // We are newer. Deprecate the old version in the versionedTools map if it exists
+        const oldKey = `${def.name}@${existingVersion}`;
+        const oldTool = this.versionedTools.get(oldKey);
+        if (oldTool) {
+          oldTool.definition.stability = "deprecated";
+          if (oldTool.registered && oldTool.registered._meta) {
+            oldTool.registered._meta.stability = "deprecated";
+          }
+        }
+      }
     }
 
     let finalDescription = def.description;
@@ -211,9 +211,10 @@ export class ToolRegistry {
     }
 
     // Optimize inputSchema to reduce token usage in LLM tool selection
-    let optimizedInputSchema = def.inputSchema !== undefined
-      ? optimizeSchema(def.inputSchema) as z.ZodRawShape
-      : undefined;
+    let optimizedInputSchema =
+      def.inputSchema !== undefined
+        ? (optimizeSchema(def.inputSchema) as z.ZodRawShape)
+        : undefined;
 
     if (optimizedInputSchema && def.examples && def.examples.length > 0) {
       optimizedInputSchema = injectExamplesIntoSchema(
@@ -227,10 +228,12 @@ export class ToolRegistry {
       if (required && this.callerTier) {
         if ((TIER_RANK[this.callerTier] ?? 0) < (TIER_RANK[required] ?? 0)) {
           return {
-            content: [{
-              type: "text",
-              text: `Insufficient ELO: This tool requires ${required} tier (current tier: ${this.callerTier}, elo: ${this.callerElo ?? 'unknown'}).`,
-            }],
+            content: [
+              {
+                type: "text",
+                text: `Insufficient ELO: This tool requires ${required} tier (current tier: ${this.callerTier}, elo: ${this.callerElo ?? "unknown"}).`,
+              },
+            ],
             isError: true,
           };
         }
@@ -241,10 +244,12 @@ export class ToolRegistry {
         const ROLE_RANK: Record<string, number> = { user: 0, admin: 1, super_admin: 2 };
         if ((ROLE_RANK[this.callerRole] ?? 0) < (ROLE_RANK[requiredRole] ?? 0)) {
           return {
-            content: [{
-              type: "text",
-              text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
-            }],
+            content: [
+              {
+                type: "text",
+                text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
+              },
+            ],
             isError: true,
           };
         }
@@ -254,7 +259,7 @@ export class ToolRegistry {
 
     // If it's the latest version, we register it with the MCP server using its normal name
     let registered: RegisteredTool | undefined;
-    
+
     if (isLatest) {
       registered = this.mcpServer.registerTool(
         def.name,
@@ -279,9 +284,9 @@ export class ToolRegistry {
 
     // Always store in versionedTools (even if it's not the latest, we might just store a mock RegisteredTool or omit it if not strictly required, but TrackedTool requires it).
     // For non-latest, we don't register it to the active MCP server endpoints, but we keep the definition.
-    this.versionedTools.set(versionKey, { 
-      definition: def, 
-      registered: registered || ({} as RegisteredTool) // fallback if not registered actively
+    this.versionedTools.set(versionKey, {
+      definition: def,
+      registered: registered || ({} as RegisteredTool), // fallback if not registered actively
     });
   }
 
@@ -305,12 +310,8 @@ export class ToolRegistry {
         ? { alwaysEnabled: built.meta.alwaysEnabled }
         : {}),
       ...(built.meta.version ? { version: built.meta.version } : {}),
-      ...(built.meta.stability
-        ? { stability: built.meta.stability as ToolStability }
-        : {}),
-      ...(built.meta.examples
-        ? { examples: built.meta.examples as ToolExample[] }
-        : {}),
+      ...(built.meta.stability ? { stability: built.meta.stability as ToolStability } : {}),
+      ...(built.meta.examples ? { examples: built.meta.examples as ToolExample[] } : {}),
       inputSchema: built.inputSchema,
       handler: built.handler as unknown as ToolDefinition["handler"],
     });
@@ -340,7 +341,7 @@ export class ToolRegistry {
       if (key.startsWith(`${name}@`)) {
         versions.push({
           version: tool.definition.version ?? "1.0.0",
-          stability: tool.definition.stability ?? "stable"
+          stability: tool.definition.stability ?? "stable",
         });
       }
     }
@@ -370,7 +371,11 @@ export class ToolRegistry {
   enableCategory(category: string): string[] {
     const enabled: string[] = [];
     for (const [, { definition, registered }] of this.tools) {
-      if (definition.category === category && registered.enabled !== undefined && !registered.enabled) {
+      if (
+        definition.category === category &&
+        registered.enabled !== undefined &&
+        !registered.enabled
+      ) {
         registered.enable();
         enabled.push(definition.name);
       }
@@ -497,20 +502,20 @@ export class ToolRegistry {
     name: string,
     input: Record<string, unknown>,
     userTier?: EloTier,
-    version?: string
+    version?: string,
   ): Promise<CallToolResult> {
     let tracked = this.tools.get(name);
     if (version) {
       tracked = this.versionedTools.get(`${name}@${version}`);
     }
-    
+
     if (!tracked) {
       return {
-        content: [{ type: "text", text: `Tool not found: ${name}${version ? `@${version}` : ''}` }],
+        content: [{ type: "text", text: `Tool not found: ${name}${version ? `@${version}` : ""}` }],
         isError: true,
       };
     }
-    
+
     // Skip enabled check if accessing a specific older version, or enforce it?
     // We enforce it for the latest version.
     if (!version && tracked.registered.enabled !== undefined && !tracked.registered.enabled) {
@@ -525,10 +530,12 @@ export class ToolRegistry {
     if (required && userTier) {
       if ((TIER_RANK[userTier] ?? 0) < (TIER_RANK[required] ?? 0)) {
         return {
-          content: [{
-            type: "text",
-            text: `This tool requires ${required} tier (your tier: ${userTier}). Improve your ELO rating to unlock it.`,
-          }],
+          content: [
+            {
+              type: "text",
+              text: `This tool requires ${required} tier (your tier: ${userTier}). Improve your ELO rating to unlock it.`,
+            },
+          ],
           isError: true,
         };
       }
@@ -540,10 +547,12 @@ export class ToolRegistry {
       const ROLE_RANK: Record<string, number> = { user: 0, admin: 1, super_admin: 2 };
       if ((ROLE_RANK[this.callerRole] ?? 0) < (ROLE_RANK[requiredRole] ?? 0)) {
         return {
-          content: [{
-            type: "text",
-            text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
-          }],
+          content: [
+            {
+              type: "text",
+              text: `Insufficient permissions: This tool requires ${requiredRole} role (current role: ${this.callerRole}).`,
+            },
+          ],
           isError: true,
         };
       }

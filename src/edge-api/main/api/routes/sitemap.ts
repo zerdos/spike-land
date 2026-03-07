@@ -50,18 +50,23 @@ sitemap.get("/sitemap.xml", async (c) => {
   let response: Response | null = null;
 
   try {
-    response = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-      const result = await c.env.DB.prepare(
-        "SELECT slug, date FROM blog_posts ORDER BY date DESC",
-      ).all<{ slug: string; date: string }>();
+    response = await withEdgeCache(
+      c.req.raw,
+      safeCtx(c),
+      async () => {
+        const result = await c.env.DB.prepare(
+          "SELECT slug, date FROM blog_posts ORDER BY date DESC",
+        ).all<{ slug: string; date: string }>();
 
-      const posts = result.results ?? [];
-      const xml = buildSitemapXml(STATIC_ROUTES, posts);
+        const posts = result.results ?? [];
+        const xml = buildSitemapXml(STATIC_ROUTES, posts);
 
-      return new Response(xml, {
-        headers: { "Content-Type": "application/xml; charset=utf-8" },
-      });
-    }, { ttl: 3600, swr: 86400 });
+        return new Response(xml, {
+          headers: { "Content-Type": "application/xml; charset=utf-8" },
+        });
+      },
+      { ttl: 3600, swr: 86400 },
+    );
   } catch {
     // Cache API unavailable — fall back to direct D1
     try {
@@ -90,12 +95,9 @@ sitemap.get("/sitemap.xml", async (c) => {
 });
 
 sitemap.get("/robots.txt", (c) => {
-  const body = [
-    "User-agent: *",
-    "Allow: /",
-    "Sitemap: https://spike.land/sitemap.xml",
-    "",
-  ].join("\n");
+  const body = ["User-agent: *", "Allow: /", "Sitemap: https://spike.land/sitemap.xml", ""].join(
+    "\n",
+  );
 
   return c.text(body, 200, {
     "Cache-Control": "public, max-age=86400",

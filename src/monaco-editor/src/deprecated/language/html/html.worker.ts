@@ -1,1 +1,1 @@
-export * from '../../../languages/features/html/html.worker';
+export * from "../../../languages/features/html/html.worker";

@@ -3,7 +3,9 @@ import type { PromptVariant, PromptContext } from "../types.js";
 const reviewFixerV3: PromptVariant = {
   id: "review-fixer-v3",
   role: "review-fixer",
-  render: (ctx: PromptContext) => `The code reviewer rejected these files. Fix ONLY the specific issues mentioned. Do not refactor or change anything beyond what the reviewer flagged.
+  render: (
+    ctx: PromptContext,
+  ) => `The code reviewer rejected these files. Fix ONLY the specific issues mentioned. Do not refactor or change anything beyond what the reviewer flagged.
 
 WORKFLOW — Read, edit, verify:
 1. For each rejected file, READ the file first to understand context.

@@ -33,9 +33,7 @@ describe("useChat", () => {
   });
 
   it("restores messages from localStorage on mount", () => {
-    const stored = [
-      { id: "msg-1", role: "user", content: "Hello", timestamp: 1000 },
-    ];
+    const stored = [{ id: "msg-1", role: "user", content: "Hello", timestamp: 1000 }];
     localStorage.setItem("spike-chat-messages", JSON.stringify(stored));
 
     const { result } = renderHook(() => useChat());
@@ -50,12 +48,14 @@ describe("useChat", () => {
   });
 
   it("sends message and parses text_delta events", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      makeSSEResponse([
-        JSON.stringify({ type: "text_delta", text: "Hello " }),
-        JSON.stringify({ type: "text_delta", text: "world" }),
-      ]),
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        makeSSEResponse([
+          JSON.stringify({ type: "text_delta", text: "Hello " }),
+          JSON.stringify({ type: "text_delta", text: "world" }),
+        ]),
+      );
 
     const { result } = renderHook(() => useChat());
 
@@ -122,9 +122,7 @@ describe("useChat", () => {
 
   it("sets error on error event", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      makeSSEResponse([
-        JSON.stringify({ type: "error", error: "Rate limited" }),
-      ]),
+      makeSSEResponse([JSON.stringify({ type: "error", error: "Rate limited" })]),
     );
 
     const { result } = renderHook(() => useChat());
@@ -212,10 +210,7 @@ describe("useChat", () => {
 
   it("skips malformed SSE data gracefully", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      makeSSEResponse([
-        "not-json",
-        JSON.stringify({ type: "text_delta", text: "Valid" }),
-      ]),
+      makeSSEResponse(["not-json", JSON.stringify({ type: "text_delta", text: "Valid" })]),
     );
 
     const { result } = renderHook(() => useChat());

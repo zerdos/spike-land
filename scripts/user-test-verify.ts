@@ -34,7 +34,11 @@ async function main() {
     log("Nav: Pricing link", texts.includes("Pricing"), `Found: ${texts.join(", ")}`);
     log("Nav: Blog link", texts.includes("Blog"), `Found: ${texts.join(", ")}`);
     log("Nav: About link", texts.includes("About"), `Found: ${texts.join(", ")}`);
-    log("Nav: Docs link", texts.some((t) => t === "Docs"), `Found: ${texts.join(", ")}`);
+    log(
+      "Nav: Docs link",
+      texts.some((t) => t === "Docs"),
+      `Found: ${texts.join(", ")}`,
+    );
     await page.close();
   }
 
@@ -50,8 +54,16 @@ async function main() {
         els.map((el) => el.textContent?.trim()),
       );
       log("Footer: Pricing", footerLinks.includes("Pricing"), `Links: ${footerLinks.join(", ")}`);
-      log("Footer: Privacy", footerLinks.some((t) => t === "Privacy Policy"), `Links: ${footerLinks.join(", ")}`);
-      log("Footer: Terms", footerLinks.some((t) => t === "Terms of Service"), `Links: ${footerLinks.join(", ")}`);
+      log(
+        "Footer: Privacy",
+        footerLinks.some((t) => t === "Privacy Policy"),
+        `Links: ${footerLinks.join(", ")}`,
+      );
+      log(
+        "Footer: Terms",
+        footerLinks.some((t) => t === "Terms of Service"),
+        `Links: ${footerLinks.join(", ")}`,
+      );
       log("Footer: Blog", footerLinks.includes("Blog"), `Links: ${footerLinks.join(", ")}`);
     }
     await page.close();
@@ -71,11 +83,19 @@ async function main() {
 
     // Check annual toggle exists
     const annualBtn = await page.$('button:has-text("Annual")');
-    log("Pricing: annual toggle", !!annualBtn, annualBtn ? "Annual toggle found" : "No annual toggle");
+    log(
+      "Pricing: annual toggle",
+      !!annualBtn,
+      annualBtn ? "Annual toggle found" : "No annual toggle",
+    );
 
     // Check Contact Sales section
     const contactSales = await page.$('a[href="mailto:enterprise@spike.land"]');
-    log("Pricing: Contact Sales", !!contactSales, contactSales ? "Contact Sales link found" : "No Contact Sales");
+    log(
+      "Pricing: Contact Sales",
+      !!contactSales,
+      contactSales ? "Contact Sales link found" : "No Contact Sales",
+    );
     await page.close();
   }
 
@@ -90,7 +110,11 @@ async function main() {
     log("Sitemap: has /pricing", body?.includes("/pricing") ?? false, "");
     log("Sitemap: has /about", body?.includes("/about") ?? false, "");
     log("Sitemap: has /blog", body?.includes("/blog") ?? false, "");
-    log("Sitemap: has blog posts", body?.includes("/blog/") ?? false, "Contains individual blog post URLs");
+    log(
+      "Sitemap: has blog posts",
+      body?.includes("/blog/") ?? false,
+      "Contains individual blog post URLs",
+    );
     await page.close();
   }
 
@@ -103,7 +127,11 @@ async function main() {
     const status = resp?.status();
     log("API 404: returns 404", status === 404, `Status: ${status}`);
     log("API 404: returns JSON", contentType.includes("json"), `Content-Type: ${contentType}`);
-    log("API 404: has error field", body?.includes('"error"') ?? false, `Body: ${body?.slice(0, 100)}`);
+    log(
+      "API 404: has error field",
+      body?.includes('"error"') ?? false,
+      `Body: ${body?.slice(0, 100)}`,
+    );
     await page.close();
   }
 
@@ -123,7 +151,11 @@ async function main() {
     const resp = await page.goto(`${BASE}/.well-known/security.txt`);
     const body = await resp?.text();
     log("security.txt: returns 200", resp?.status() === 200, `Status: ${resp?.status()}`);
-    log("security.txt: has contact", body?.includes("Contact:") ?? false, body?.slice(0, 200) ?? "");
+    log(
+      "security.txt: has contact",
+      body?.includes("Contact:") ?? false,
+      body?.slice(0, 200) ?? "",
+    );
     await page.close();
   }
 
@@ -133,7 +165,18 @@ async function main() {
     const resp = await page.goto(`${BASE}/manifest.webmanifest`);
     const body = await resp?.text();
     log("Manifest: returns 200", resp?.status() === 200, `Status: ${resp?.status()}`);
-    log("Manifest: valid JSON", (() => { try { JSON.parse(body ?? ""); return true; } catch { return false; } })(), "");
+    log(
+      "Manifest: valid JSON",
+      (() => {
+        try {
+          JSON.parse(body ?? "");
+          return true;
+        } catch {
+          return false;
+        }
+      })(),
+      "",
+    );
     await page.close();
   }
 
@@ -143,7 +186,9 @@ async function main() {
     const resp = await page.goto(`${BASE}/health`);
     const body = await resp?.text();
     let json: Record<string, unknown> = {};
-    try { json = JSON.parse(body ?? "{}"); } catch {}
+    try {
+      json = JSON.parse(body ?? "{}");
+    } catch {}
     log("Health: returns 200", resp?.status() === 200, `Status: ${resp?.status()}`);
     log("Health: has status field", "status" in json, `Body: ${body?.slice(0, 200)}`);
     log("Health: has r2 field", "r2" in json, `Fields: ${Object.keys(json).join(", ")}`);
@@ -157,7 +202,9 @@ async function main() {
     const resp = await page.goto(`${BASE}/api/blog`);
     const body = await resp?.text();
     let posts: unknown[] = [];
-    try { posts = JSON.parse(body ?? "[]"); } catch {}
+    try {
+      posts = JSON.parse(body ?? "[]");
+    } catch {}
     log("Blog API: returns 200", resp?.status() === 200, `Status: ${resp?.status()}`);
     log("Blog API: returns array", Array.isArray(posts), `Type: ${typeof posts}`);
     log("Blog API: has posts", posts.length > 0, `Count: ${posts.length}`);
@@ -172,8 +219,8 @@ async function main() {
     const resp = await page.goto(`${BASE}/pricing`, { waitUntil: "commit" });
     const html = await resp?.text();
     log("SSR /pricing: has title", html?.includes("Pricing") ?? false, "");
-    log("SSR /pricing: has og:title", html?.includes('og:title') ?? false, "");
-    log("SSR /pricing: has description", html?.includes('og:description') ?? false, "");
+    log("SSR /pricing: has og:title", html?.includes("og:title") ?? false, "");
+    log("SSR /pricing: has description", html?.includes("og:description") ?? false, "");
     await page.close();
   }
 
@@ -193,7 +240,11 @@ async function main() {
     await page.goto(BASE, { waitUntil: "commit" });
     const html = await page.content();
     log("noscript: has fallback", html.includes("<noscript>"), "");
-    log("noscript: has message", html.includes("JavaScript Required") || html.includes("JavaScript"), "");
+    log(
+      "noscript: has message",
+      html.includes("JavaScript Required") || html.includes("JavaScript"),
+      "",
+    );
     await page.close();
   }
 

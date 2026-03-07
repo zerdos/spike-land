@@ -184,7 +184,10 @@ export async function buildServiceWorker(): Promise<void> {
   });
 }
 
-const createAliases = async (dir: string, basePath: string = "ui/@"): Promise<Record<string, string>> => {
+const createAliases = async (
+  dir: string,
+  basePath: string = "ui/@",
+): Promise<Record<string, string>> => {
   const result: Record<string, string> = {};
 
   // This function recursively scans directories (e.g., "components/ui", "lib")

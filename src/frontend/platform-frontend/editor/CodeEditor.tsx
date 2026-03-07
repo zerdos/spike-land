@@ -77,7 +77,16 @@ function LocalMonacoEditor({
 }: LocalMonacoEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<MonacoEditorInstance | null>(null);
-  const propsRef = useRef({ value, language, theme, fileName, onChange, options, onMount, beforeMount });
+  const propsRef = useRef({
+    value,
+    language,
+    theme,
+    fileName,
+    onChange,
+    options,
+    onMount,
+    beforeMount,
+  });
   propsRef.current = { value, language, theme, fileName, onChange, options, onMount, beforeMount };
 
   useEffect(() => {
@@ -85,38 +94,40 @@ function LocalMonacoEditor({
     let isMounted = true;
     const props = propsRef.current;
 
-    import("monaco-editor").then((monaco: MonacoModule) => {
-      if (!isMounted) return;
+    import("monaco-editor")
+      .then((monaco: MonacoModule) => {
+        if (!isMounted) return;
 
-      if (props.beforeMount) {
-        props.beforeMount(monaco);
-      }
+        if (props.beforeMount) {
+          props.beforeMount(monaco);
+        }
 
-      const uri = monaco.Uri.parse(`file:///${props.fileName || 'file.tsx'}`);
-      let model = monaco.editor.getModel(uri);
-      if (!model) {
-        model = monaco.editor.createModel(props.value, props.language, uri);
-      } else {
-        model.setValue(props.value);
-        monaco.editor.setModelLanguage(model, props.language || 'typescript');
-      }
+        const uri = monaco.Uri.parse(`file:///${props.fileName || "file.tsx"}`);
+        let model = monaco.editor.getModel(uri);
+        if (!model) {
+          model = monaco.editor.createModel(props.value, props.language, uri);
+        } else {
+          model.setValue(props.value);
+          monaco.editor.setModelLanguage(model, props.language || "typescript");
+        }
 
-      editorRef.current = monaco.editor.create(containerRef.current!, {
-        model,
-        theme: props.theme,
-        ...props.options,
+        editorRef.current = monaco.editor.create(containerRef.current!, {
+          model,
+          theme: props.theme,
+          ...props.options,
+        });
+
+        if (props.onMount) {
+          props.onMount(editorRef.current, monaco);
+        }
+
+        editorRef.current.onDidChangeModelContent(() => {
+          propsRef.current.onChange?.(editorRef.current!.getValue());
+        });
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to load monaco-editor", err);
       });
-
-      if (props.onMount) {
-        props.onMount(editorRef.current, monaco);
-      }
-
-      editorRef.current.onDidChangeModelContent(() => {
-        propsRef.current.onChange?.(editorRef.current!.getValue());
-      });
-    }).catch((err: unknown) => {
-      console.error("Failed to load monaco-editor", err);
-    });
 
     return () => {
       isMounted = false;
@@ -135,11 +146,11 @@ function LocalMonacoEditor({
   useEffect(() => {
     if (editorRef.current) {
       import("monaco-editor").then((monaco) => {
-         monaco.editor.setTheme(theme);
-         const model = editorRef.current.getModel();
-         if (model) {
-           monaco.editor.setModelLanguage(model, language);
-         }
+        monaco.editor.setTheme(theme);
+        const model = editorRef.current.getModel();
+        if (model) {
+          monaco.editor.setModelLanguage(model, language);
+        }
       });
     }
   }, [theme, language]);
@@ -218,16 +229,10 @@ export function CodeEditor({
   const monacoTheme = theme ?? (isDarkMode ? "vs-dark" : "vs");
 
   // Auto-detect language from fileName extension; fall back to the prop.
-  const resolvedLanguage = useMemo(
-    () => detectLanguage(fileName, language),
-    [fileName, language],
-  );
+  const resolvedLanguage = useMemo(() => detectLanguage(fileName, language), [fileName, language]);
 
   // Derive line count from current value for the toolbar badge.
-  const lineCount = useMemo(
-    () => value.split("\n").length,
-    [value],
-  );
+  const lineCount = useMemo(() => value.split("\n").length, [value]);
 
   const handleChange = useCallback(
     (newValue: string | undefined) => {
@@ -296,14 +301,13 @@ export function CodeEditor({
       style={{ height }}
     >
       {/* Toolbar */}
-      <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-3 py-2 cursor-pointer select-none" onClick={() => setIsEditing(true)}>
+      <div
+        className="flex shrink-0 items-center justify-between border-b border-border bg-muted/40 px-3 py-2 cursor-pointer select-none"
+        onClick={() => setIsEditing(true)}
+      >
         <div className="flex items-center gap-2">
           <FileCode className="h-4 w-4 text-muted-foreground" />
-          {fileName && (
-            <span className="text-sm font-medium text-foreground">
-              {fileName}
-            </span>
-          )}
+          {fileName && <span className="text-sm font-medium text-foreground">{fileName}</span>}
           <span
             className={cn(
               "rounded-full px-2 py-0.5 text-xs font-medium",
@@ -321,20 +325,22 @@ export function CodeEditor({
             {lineCount} {lineCount === 1 ? "line" : "lines"}
           </span>
           {!isEditing && (
-            <span className="text-xs font-medium text-muted-foreground/60 ml-2">
-              Click to edit
-            </span>
+            <span className="text-xs font-medium text-muted-foreground/60 ml-2">Click to edit</span>
           )}
-          {monacoInstance && isEditing && (resolvedLanguage === "typescript" || resolvedLanguage === "typescriptreact") && (
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-xs font-medium",
-                typesReady ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500 animate-pulse"
-              )}
-            >
-              {typesReady ? "Types Loaded" : "Loading Types..."}
-            </span>
-          )}
+          {monacoInstance &&
+            isEditing &&
+            (resolvedLanguage === "typescript" || resolvedLanguage === "typescriptreact") && (
+              <span
+                className={cn(
+                  "rounded-full px-2 py-0.5 text-xs font-medium",
+                  typesReady
+                    ? "bg-green-500/10 text-green-500"
+                    : "bg-yellow-500/10 text-yellow-500 animate-pulse",
+                )}
+              >
+                {typesReady ? "Types Loaded" : "Loading Types..."}
+              </span>
+            )}
         </div>
 
         <button
@@ -385,26 +391,26 @@ export function CodeEditor({
               beforeMount={handleBeforeMount}
               onMount={handleMount}
               options={{
-              readOnly,
-              minimap: { enabled: false },
-              fontSize: 14,
-              lineHeight: 22,
-              fontFamily:
-                '"JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace',
-              fontLigatures: true,
-              scrollBeyondLastLine: false,
-              wordWrap: "on",
-              tabSize: 2,
-              renderWhitespace: "selection",
-              smoothScrolling: true,
-              cursorBlinking: "smooth",
-              padding: { top: 12, bottom: 12 },
-              bracketPairColorization: { enabled: true },
-              guides: { bracketPairs: true },
-              suggest: { showKeywords: true },
-            }}
-          />
-        </Suspense>
+                readOnly,
+                minimap: { enabled: false },
+                fontSize: 14,
+                lineHeight: 22,
+                fontFamily:
+                  '"JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace',
+                fontLigatures: true,
+                scrollBeyondLastLine: false,
+                wordWrap: "on",
+                tabSize: 2,
+                renderWhitespace: "selection",
+                smoothScrolling: true,
+                cursorBlinking: "smooth",
+                padding: { top: 12, bottom: 12 },
+                bracketPairColorization: { enabled: true },
+                guides: { bracketPairs: true },
+                suggest: { showKeywords: true },
+              }}
+            />
+          </Suspense>
         )}
       </div>
     </div>

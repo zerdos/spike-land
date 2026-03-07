@@ -1,5 +1,10 @@
 import { Button } from "../lazy-imports/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/@/components/ui/tooltip";
 import { FaDownload } from "../ui/@/external/icons";
 import { FullscreenIcon } from "../ui/@/external/lucide-react";
 import { motion } from "framer-motion";

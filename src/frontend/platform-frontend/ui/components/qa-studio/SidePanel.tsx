@@ -40,7 +40,11 @@ export function SidePanel({ screenshotData, tabsData, formsData }: Props) {
         </div>
       </div>
       <div className="flex-1 overflow-hidden relative bg-muted/10">
-        {activeTab === "screenshot" && <ScreenshotViewer {...(screenshotData !== undefined ? { base64Data: screenshotData } : {})} />}
+        {activeTab === "screenshot" && (
+          <ScreenshotViewer
+            {...(screenshotData !== undefined ? { base64Data: screenshotData } : {})}
+          />
+        )}
         {activeTab === "forms" && (
           <div className="p-4 h-full overflow-auto scrollbar-thin scrollbar-thumb-border animate-in fade-in slide-in-from-right-2 duration-300">
             {formsData ? (
@@ -48,11 +52,15 @@ export function SidePanel({ screenshotData, tabsData, formsData }: Props) {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-semibold text-foreground">Extracted Form Data</h3>
                   <button
-                    onClick={() => handleCopy(formsData, 'forms')}
+                    onClick={() => handleCopy(formsData, "forms")}
                     className="flex items-center gap-1.5 text-[10px] bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1 rounded-md font-medium transition-colors border border-primary/20"
                   >
-                    {copied === 'forms' ? <CheckCircle2 className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    {copied === 'forms' ? 'Copied' : 'Copy JSON'}
+                    {copied === "forms" ? (
+                      <CheckCircle2 className="w-3 h-3" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                    {copied === "forms" ? "Copied" : "Copy JSON"}
                   </button>
                 </div>
                 <pre className="text-[11px] flex-1 overflow-auto font-mono bg-[#0f111a] text-slate-50 p-4 rounded-lg border border-border whitespace-pre-wrap break-all leading-relaxed shadow-inner">
@@ -62,7 +70,9 @@ export function SidePanel({ screenshotData, tabsData, formsData }: Props) {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 text-sm text-center p-8 space-y-2">
                 <p>No forms data available.</p>
-                <p className="text-[11px]">Click the forms icon in the browser bar to fetch forms.</p>
+                <p className="text-[11px]">
+                  Click the forms icon in the browser bar to fetch forms.
+                </p>
               </div>
             )}
           </div>
@@ -74,11 +84,15 @@ export function SidePanel({ screenshotData, tabsData, formsData }: Props) {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-semibold text-foreground">Open Browser Tabs</h3>
                   <button
-                    onClick={() => handleCopy(tabsData, 'tabs')}
+                    onClick={() => handleCopy(tabsData, "tabs")}
                     className="flex items-center gap-1.5 text-[10px] bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1 rounded-md font-medium transition-colors border border-primary/20"
                   >
-                    {copied === 'tabs' ? <CheckCircle2 className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    {copied === 'tabs' ? 'Copied' : 'Copy JSON'}
+                    {copied === "tabs" ? (
+                      <CheckCircle2 className="w-3 h-3" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                    {copied === "tabs" ? "Copied" : "Copy JSON"}
                   </button>
                 </div>
                 <pre className="text-[11px] flex-1 overflow-auto font-mono bg-[#0f111a] text-slate-50 p-4 rounded-lg border border-border whitespace-pre-wrap break-all leading-relaxed shadow-inner">
@@ -88,7 +102,9 @@ export function SidePanel({ screenshotData, tabsData, formsData }: Props) {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 text-sm text-center p-8 space-y-2">
                 <p>No tabs data available.</p>
-                <p className="text-[11px]">Click the tabs icon in the browser bar to fetch open tabs.</p>
+                <p className="text-[11px]">
+                  Click the tabs icon in the browser bar to fetch open tabs.
+                </p>
               </div>
             )}
           </div>

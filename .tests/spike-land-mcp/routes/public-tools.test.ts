@@ -69,7 +69,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: unknown[] };
+    const body = (await res.json()) as { tools: unknown[] };
     expect(Array.isArray(body.tools)).toBe(true);
   });
 
@@ -92,7 +92,9 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: Array<{ name: string; description: string; category: string }> };
+    const body = (await res.json()) as {
+      tools: Array<{ name: string; description: string; category: string }>;
+    };
     // Since registerAllTools is mocked, tools array will be empty
     expect(Array.isArray(body.tools)).toBe(true);
   });
@@ -107,7 +109,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools?stability=beta", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: Array<{ name: string; stability: string }> };
+    const body = (await res.json()) as { tools: Array<{ name: string; stability: string }> };
     expect(Array.isArray(body.tools)).toBe(true);
     for (const tool of body.tools) {
       expect(tool.stability).toBe("beta");
@@ -125,7 +127,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools?category=storage", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: Array<{ name: string; category: string }> };
+    const body = (await res.json()) as { tools: Array<{ name: string; category: string }> };
     for (const tool of body.tools) {
       expect(tool.category).toBe("storage");
     }
@@ -144,7 +146,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools?stability=stable&category=storage", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: Array<{ name: string }> };
+    const body = (await res.json()) as { tools: Array<{ name: string }> };
     const names = body.tools.map((t) => t.name);
     expect(names).toContain("stable_tool");
     expect(names).not.toContain("exp_tool"); // experimental, not stable
@@ -160,7 +162,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools?stability=deprecated", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: unknown[] };
+    const body = (await res.json()) as { tools: unknown[] };
     expect(body.tools).toHaveLength(0);
   });
 
@@ -173,7 +175,7 @@ describe("publicToolsRoute GET /", () => {
     const res = await app.request("/tools", {}, env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { tools: unknown[] };
+    const body = (await res.json()) as { tools: unknown[] };
     expect(body.tools).toHaveLength(3);
   });
 });

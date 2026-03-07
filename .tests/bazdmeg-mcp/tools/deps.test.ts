@@ -407,10 +407,10 @@ describe("dep graph tools", () => {
       mockReadManifest.mockResolvedValue({
         defaults: MOCK_MANIFEST.defaults,
         packages: {
-          "root": { kind: "library", version: "1.0.0", deps: ["child"] },
-          "child": { kind: "library", version: "1.0.0", deps: ["dep1", "dep2"] },
-          "dep1": { kind: "library", version: "1.0.0" },
-          "dep2": { kind: "library", version: "1.0.0" },
+          root: { kind: "library", version: "1.0.0", deps: ["child"] },
+          child: { kind: "library", version: "1.0.0", deps: ["dep1", "dep2"] },
+          dep1: { kind: "library", version: "1.0.0" },
+          dep2: { kind: "library", version: "1.0.0" },
         },
       } as any);
 
@@ -426,9 +426,9 @@ describe("dep graph tools", () => {
       mockReadManifest.mockResolvedValue({
         defaults: MOCK_MANIFEST.defaults,
         packages: {
-          "pkg": { kind: "library", version: "1.0.0", deps: ["dep", "dep", "transitive"] },
-          "dep": { kind: "library", version: "1.0.0", deps: ["transitive", "transitive"] },
-          "transitive": { kind: "library", version: "1.0.0" },
+          pkg: { kind: "library", version: "1.0.0", deps: ["dep", "dep", "transitive"] },
+          dep: { kind: "library", version: "1.0.0", deps: ["transitive", "transitive"] },
+          transitive: { kind: "library", version: "1.0.0" },
         },
       } as any);
 
@@ -439,7 +439,7 @@ describe("dep graph tools", () => {
       });
       const text = result.content[0].text;
       // Should only appear once even though it's twice in manifest
-      const lines = text.split("\n").filter(l => l.includes("pkg --> dep"));
+      const lines = text.split("\n").filter((l) => l.includes("pkg --> dep"));
       expect(lines.length).toBe(1);
     });
 

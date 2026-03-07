@@ -32,14 +32,11 @@ export class CaddyAdminClient {
       ],
     };
 
-    const res = await fetch(
-      `${this.baseUrl}/config/apps/http/servers/srv0/routes`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(route),
-      },
-    );
+    const res = await fetch(`${this.baseUrl}/config/apps/http/servers/srv0/routes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(route),
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to add Caddy route: ${res.status} ${await res.text()}`);
@@ -47,9 +44,7 @@ export class CaddyAdminClient {
   }
 
   async listRoutes(): Promise<SubdomainMapping[]> {
-    const res = await fetch(
-      `${this.baseUrl}/config/apps/http/servers/srv0/routes`,
-    );
+    const res = await fetch(`${this.baseUrl}/config/apps/http/servers/srv0/routes`);
 
     if (!res.ok) {
       if (res.status === 404) return [];

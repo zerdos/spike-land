@@ -204,7 +204,14 @@ describe("tool handlers", () => {
   describe("validate_comment_target handler - file not found", () => {
     it("returns invalid when file not in PR", async () => {
       const mockGetPRFiles = vi.fn().mockResolvedValue([
-        { filename: "src/other.ts", status: "modified", additions: 1, deletions: 0, patch: "", hunks: [] },
+        {
+          filename: "src/other.ts",
+          status: "modified",
+          additions: 1,
+          deletions: 0,
+          patch: "",
+          hunks: [],
+        },
       ]);
 
       const { GitHubClient } = await import("../../src/mcp-tools/code-review/github/client.js");
@@ -254,9 +261,7 @@ describe("startServer", () => {
       expect((e as Error).message).toBe("process.exit called");
     }
 
-    expect(mockConsoleError).toHaveBeenCalledWith(
-      expect.stringContaining("GITHUB_TOKEN"),
-    );
+    expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining("GITHUB_TOKEN"));
     expect(mockExit).toHaveBeenCalledWith(1);
 
     mockExit.mockRestore();

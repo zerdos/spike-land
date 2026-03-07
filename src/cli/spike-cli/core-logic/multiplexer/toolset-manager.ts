@@ -3,6 +3,7 @@
  */
 
 import type { ToolsetConfig } from "../config/types.js";
+import type { DynamicToolRegistry } from "../chat/tool-registry.js";
 
 export interface ToolDefinitionMeta {
   name: string;
@@ -27,6 +28,8 @@ export class ToolsetManager {
   private toolsets: Record<string, ToolsetConfig>;
   private loadedToolsets: Set<string> = new Set();
   private toolCountFn: (serverName: string) => number;
+  /** Optional dynamic tool registry for tool_search/tool_catalog meta-tools. */
+  registry?: DynamicToolRegistry;
 
   /**
    * @param toolsets - Map of toolset name to config (servers + description).
@@ -77,7 +80,7 @@ export class ToolsetManager {
   }
 
   getMetaTools(): ToolDefinitionMeta[] {
-    return [
+    const tools: ToolDefinitionMeta[] = [
       {
         name: "spike__list_toolsets",
         description: "List available toolsets and their load status",
@@ -106,13 +109,48 @@ export class ToolsetManager {
         },
       },
     ];
+
+    // Add tool_search and tool_catalog when registry is available
+    if (this.registry) {
+      tools.push(
+        {
+          name: "spike__tool_search",
+          description:
+            "Search for tools by keyword. Returns matching tool names and their full schemas. Activates them for use.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description: "Search query (tool name, keyword, or description fragment)",
+              },
+              max_results: {
+                type: "number",
+                description: "Maximum results to return (default: 5)",
+              },
+            },
+            required: ["query"],
+          },
+        },
+        {
+          name: "spike__tool_catalog",
+          description:
+            "Show the full catalog of all available tools grouped by server, with one-line descriptions.",
+          inputSchema: { type: "object", properties: {} },
+        },
+      );
+    }
+
+    return tools;
   }
 
   isMetaTool(name: string): boolean {
     return (
       name === "spike__list_toolsets" ||
       name === "spike__load_toolset" ||
-      name === "spike__unload_toolset"
+      name === "spike__unload_toolset" ||
+      name === "spike__tool_search" ||
+      name === "spike__tool_catalog"
     );
   }
 
@@ -190,6 +228,54 @@ export class ToolsetManager {
             text: `Unloaded toolset "${toolsetName}": ${config.servers.join(", ")}`,
           },
         ],
+      };
+    }
+
+    if (name === "spike__tool_search") {
+      if (!this.registry) {
+        return {
+          content: [{ type: "text", text: "Dynamic tool registry not enabled" }],
+          isError: true,
+        };
+      }
+      const query = args.query;
+      if (typeof query !== "string") {
+        return {
+          content: [{ type: "text", text: "query is required" }],
+          isError: true,
+        };
+      }
+      const maxResults = typeof args.max_results === "number" ? args.max_results : 5;
+      const searchResult = this.registry.search(query, maxResults);
+      const toolSchemas = searchResult.tools.map((t) => ({
+        name: t.namespacedName,
+        description: t.description,
+        inputSchema: t.inputSchema,
+      }));
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              query: searchResult.query,
+              found: searchResult.tools.length,
+              totalMatches: searchResult.totalMatches,
+              tools: toolSchemas,
+            }),
+          },
+        ],
+      };
+    }
+
+    if (name === "spike__tool_catalog") {
+      if (!this.registry) {
+        return {
+          content: [{ type: "text", text: "Dynamic tool registry not enabled" }],
+          isError: true,
+        };
+      }
+      return {
+        content: [{ type: "text", text: this.registry.buildCatalog() }],
       };
     }
 

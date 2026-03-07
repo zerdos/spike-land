@@ -246,7 +246,9 @@ describe("GET /mcp (mcpRoute handler)", () => {
     // Mount mcpRoute directly without the outer auth middleware, so the
     // route's own GET handler auth check (line 206) is exercised
     const { mcpRoute } = await import("../../../src/edge-api/spike-land/api/mcp");
-    const bareApp = new Hono<{ Bindings: typeof mockEnv extends (...args: unknown[]) => infer R ? R : never }>();
+    const bareApp = new Hono<{
+      Bindings: typeof mockEnv extends (...args: unknown[]) => infer R ? R : never;
+    }>();
     bareApp.route("/", mcpRoute);
     const env = mockEnv();
 
@@ -288,10 +290,10 @@ describe("POST /mcp tools/call tracking", () => {
     _recordSkillCallShouldFail = false;
     // Reset to default handler before each test
     _transportHandleRequest = async () =>
-      new Response(
-        JSON.stringify({ jsonrpc: "2.0", result: { tools: [] }, id: 1 }),
-        { status: 200, headers: new Headers({ "Content-Type": "application/json" }) },
-      );
+      new Response(JSON.stringify({ jsonrpc: "2.0", result: { tools: [] }, id: 1 }), {
+        status: 200,
+        headers: new Headers({ "Content-Type": "application/json" }),
+      });
   });
 
   it("tracks a tools/call request via waitUntil", async () => {
@@ -317,7 +319,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "search_tools" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "search_tools" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: (p: Promise<unknown>) => waitUntilPromises.push(p) },
@@ -351,7 +358,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "search_tools" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "search_tools" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: (p: Promise<unknown>) => waitUntilPromises.push(p) },
@@ -382,7 +394,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "bad_tool" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "bad_tool" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: () => {} },
@@ -445,10 +462,10 @@ describe("POST /mcp tools/call tracking", () => {
   it("covers GA4 .catch branch (line 151) when hashClientId rejects", async () => {
     _hashClientIdShouldFail = true;
     _transportHandleRequest = async () =>
-      new Response(
-        JSON.stringify({ jsonrpc: "2.0", result: { tools: [] }, id: 1 }),
-        { status: 200, headers: new Headers({ "Content-Type": "application/json" }) },
-      );
+      new Response(JSON.stringify({ jsonrpc: "2.0", result: { tools: [] }, id: 1 }), {
+        status: 200,
+        headers: new Headers({ "Content-Type": "application/json" }),
+      });
 
     const waitUntilPromises: Promise<unknown>[] = [];
     const app = await buildTestApp();
@@ -499,10 +516,10 @@ describe("POST /mcp tools/call tracking", () => {
 
   it("uses 'unknown' toolName when tools/call has no params.name (line 99 branch)", async () => {
     _transportHandleRequest = async () =>
-      new Response(
-        JSON.stringify({ jsonrpc: "2.0", result: { content: [] }, id: 1 }),
-        { status: 200, headers: new Headers({ "Content-Type": "application/json" }) },
-      );
+      new Response(JSON.stringify({ jsonrpc: "2.0", result: { content: [] }, id: 1 }), {
+        status: 200,
+        headers: new Headers({ "Content-Type": "application/json" }),
+      });
 
     const app = await buildTestApp();
 
@@ -527,10 +544,10 @@ describe("POST /mcp tools/call tracking", () => {
 
   it("sets outcome to error when transport returns 4xx status for tools/call (line 104 branch)", async () => {
     _transportHandleRequest = async () =>
-      new Response(
-        JSON.stringify({ jsonrpc: "2.0", error: { code: -32600 }, id: 1 }),
-        { status: 400, headers: new Headers({ "Content-Type": "application/json" }) },
-      );
+      new Response(JSON.stringify({ jsonrpc: "2.0", error: { code: -32600 }, id: 1 }), {
+        status: 400,
+        headers: new Headers({ "Content-Type": "application/json" }),
+      });
 
     const app = await buildTestApp();
 
@@ -543,7 +560,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "mytool" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "mytool" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: () => {} },
@@ -578,7 +600,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "mytool" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "mytool" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: () => {} },
@@ -613,7 +640,12 @@ describe("POST /mcp tools/call tracking", () => {
           Authorization: "Bearer valid-test-token",
           Accept: "application/json, text/event-stream",
         },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name: "any_tool" }, id: 1 }),
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: { name: "any_tool" },
+          id: 1,
+        }),
       },
       env,
       { waitUntil: (p: Promise<unknown>) => waitUntilPromises.push(p) },

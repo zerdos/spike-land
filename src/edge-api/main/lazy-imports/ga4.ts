@@ -34,9 +34,8 @@ function truncateStringParams(
   const result: Record<string, string | number | boolean> = {};
   for (const [key, value] of Object.entries(params)) {
     const truncatedKey = key.slice(0, 40);
-    result[truncatedKey] = typeof value === "string"
-      ? value.slice(0, MAX_STRING_PARAM_LENGTH)
-      : value;
+    result[truncatedKey] =
+      typeof value === "string" ? value.slice(0, MAX_STRING_PARAM_LENGTH) : value;
   }
   return result;
 }
@@ -51,10 +50,9 @@ export async function getClientId(request: Request): Promise<string> {
   }
 
   // 2. Fallback to hashed IP
-  const ip = request.headers.get("cf-connecting-ip") || 
-             request.headers.get("x-real-ip") || 
-             "127.0.0.1";
-             
+  const ip =
+    request.headers.get("cf-connecting-ip") || request.headers.get("x-real-ip") || "127.0.0.1";
+
   return hashClientId(ip);
 }
 

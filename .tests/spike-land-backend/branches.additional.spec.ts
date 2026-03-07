@@ -12,21 +12,70 @@ import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
 // Mock the routes barrel so RouteHandler constructors succeed
 vi.mock("../../src/edge-api/backend/routes/index.js", () => {
-  class CodeRoutes { handleCodeRoute = vi.fn(); handleSessionRoute = vi.fn(); handleJsRoute = vi.fn(); handleCssRoute = vi.fn(); }
-  class WebsocketRoutes { handleUsersRoute = vi.fn(); handleWebsocketRoute = vi.fn(); }
-  class LiveRoutes { handleLazyRoute = vi.fn(); handleLiveRoute = vi.fn(); handleRenderToStr = vi.fn(); handleWrapRoute = vi.fn(); handleWrapHTMLRoute = vi.fn(); handleScreenShotRoute = vi.fn(); handleVersionRoute = vi.fn(); handleVersionsRoute = vi.fn(); }
-  class UtilityRoutes { handleRequestRoute = vi.fn(); handleListRoute = vi.fn(); handleRoomRoute = vi.fn(); handlePathRoute = vi.fn(); handleEnvRoute = vi.fn(); }
-  class StorageRoutes { handleHashCodeRoute = vi.fn(); }
-  class DefaultRoutes { handleDefaultRoute = vi.fn(); handleHtmlRoute = vi.fn(); }
-  class AiRoutes { handleMessagesRoute = vi.fn(); handleAiRoute = vi.fn(); }
-  class ApiRoutes { handleApiRoute = vi.fn(); }
-  return { CodeRoutes, WebsocketRoutes, LiveRoutes, UtilityRoutes, StorageRoutes, DefaultRoutes, AiRoutes, ApiRoutes };
+  class CodeRoutes {
+    handleCodeRoute = vi.fn();
+    handleSessionRoute = vi.fn();
+    handleJsRoute = vi.fn();
+    handleCssRoute = vi.fn();
+  }
+  class WebsocketRoutes {
+    handleUsersRoute = vi.fn();
+    handleWebsocketRoute = vi.fn();
+  }
+  class LiveRoutes {
+    handleLazyRoute = vi.fn();
+    handleLiveRoute = vi.fn();
+    handleRenderToStr = vi.fn();
+    handleWrapRoute = vi.fn();
+    handleWrapHTMLRoute = vi.fn();
+    handleScreenShotRoute = vi.fn();
+    handleVersionRoute = vi.fn();
+    handleVersionsRoute = vi.fn();
+  }
+  class UtilityRoutes {
+    handleRequestRoute = vi.fn();
+    handleListRoute = vi.fn();
+    handleRoomRoute = vi.fn();
+    handlePathRoute = vi.fn();
+    handleEnvRoute = vi.fn();
+  }
+  class StorageRoutes {
+    handleHashCodeRoute = vi.fn();
+  }
+  class DefaultRoutes {
+    handleDefaultRoute = vi.fn();
+    handleHtmlRoute = vi.fn();
+  }
+  class AiRoutes {
+    handleMessagesRoute = vi.fn();
+    handleAiRoute = vi.fn();
+  }
+  class ApiRoutes {
+    handleApiRoute = vi.fn();
+  }
+  return {
+    CodeRoutes,
+    WebsocketRoutes,
+    LiveRoutes,
+    UtilityRoutes,
+    StorageRoutes,
+    DefaultRoutes,
+    AiRoutes,
+    ApiRoutes,
+  };
 });
 
 describe("routeHandler — undefined firstPath branch (line 42)", () => {
   it("returns 404 when path is empty array", async () => {
     const mockCode = {
-      getSession: vi.fn().mockReturnValue({ codeSpace: "test", code: "", html: "", css: "", transpiled: "", messages: [] }),
+      getSession: vi.fn().mockReturnValue({
+        codeSpace: "test",
+        code: "",
+        html: "",
+        css: "",
+        transpiled: "",
+        messages: [],
+      }),
       getEnv: vi.fn().mockReturnValue({}),
     };
     const handler = new RouteHandler(mockCode as unknown as Parameters<typeof RouteHandler>[0]);

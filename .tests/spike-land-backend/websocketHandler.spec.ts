@@ -73,10 +73,7 @@ describe("WebSocketHandler", () => {
       updateAndBroadcastSession: vi.fn(),
     };
 
-    wsHandler = new WebSocketHandler(
-      mockCode as Code,
-      mockState as unknown as DurableObjectState,
-    );
+    wsHandler = new WebSocketHandler(mockCode as Code, mockState as unknown as DurableObjectState);
   });
 
   describe("handleMessage", () => {
@@ -116,19 +113,20 @@ describe("WebSocketHandler", () => {
       const ws = createMockWebSocket();
       allSockets.push(ws);
 
-      wsHandler.handleMessage(ws, JSON.stringify({
-        type: "subscribe",
-        topics: ["topic1", "topic2"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "subscribe",
+          topics: ["topic1", "topic2"],
+        }),
+      );
 
       expect(ws.serializeAttachment).toHaveBeenCalledWith(
         expect.objectContaining({
           subscribedTopics: ["topic1", "topic2"],
         }),
       );
-      expect(ws.send).toHaveBeenCalledWith(
-        expect.stringContaining('"action":"subscribe"'),
-      );
+      expect(ws.send).toHaveBeenCalledWith(expect.stringContaining('"action":"subscribe"'));
     });
 
     it("should handle unsubscribe and persist to attachment", () => {
@@ -142,10 +140,13 @@ describe("WebSocketHandler", () => {
       } as unknown as Partial<WebSocket>);
       allSockets.push(ws);
 
-      wsHandler.handleMessage(ws, JSON.stringify({
-        type: "unsubscribe",
-        topics: ["topic1"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "unsubscribe",
+          topics: ["topic1"],
+        }),
+      );
 
       expect(ws.serializeAttachment).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -169,27 +170,29 @@ describe("WebSocketHandler", () => {
       allSockets.push(ws1, ws2);
 
       // Subscribe ws2 to the topic via handleMessage to set up topics map
-      wsHandler.handleMessage(ws2, JSON.stringify({
-        type: "subscribe",
-        topics: ["test-topic"],
-      }));
+      wsHandler.handleMessage(
+        ws2,
+        JSON.stringify({
+          type: "subscribe",
+          topics: ["test-topic"],
+        }),
+      );
       (ws2.send as ReturnType<typeof vi.fn>).mockClear();
 
       // Publish from ws1
-      wsHandler.handleMessage(ws1, JSON.stringify({
-        type: "publish",
-        topic: "test-topic",
-        data: "hello",
-      }));
+      wsHandler.handleMessage(
+        ws1,
+        JSON.stringify({
+          type: "publish",
+          topic: "test-topic",
+          data: "hello",
+        }),
+      );
 
       // ws2 should receive the message
-      expect(ws2.send).toHaveBeenCalledWith(
-        expect.stringContaining('"type":"message"'),
-      );
+      expect(ws2.send).toHaveBeenCalledWith(expect.stringContaining('"type":"message"'));
       // ws1 should get ack
-      expect(ws1.send).toHaveBeenCalledWith(
-        expect.stringContaining('"action":"publish"'),
-      );
+      expect(ws1.send).toHaveBeenCalledWith(expect.stringContaining('"action":"publish"'));
     });
   });
 
@@ -198,12 +201,15 @@ describe("WebSocketHandler", () => {
       const ws = createMockWebSocket();
       allSockets.push(ws);
 
-      wsHandler.handleMessage(ws, JSON.stringify({
-        type: "swarm_register",
-        agent_id: "agent-1",
-        display_name: "Agent One",
-        capabilities: ["code", "review"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "swarm_register",
+          agent_id: "agent-1",
+          display_name: "Agent One",
+          capabilities: ["code", "review"],
+        }),
+      );
 
       expect(ws.serializeAttachment).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -215,9 +221,7 @@ describe("WebSocketHandler", () => {
           }),
         }),
       );
-      expect(ws.send).toHaveBeenCalledWith(
-        expect.stringContaining('"type":"swarm_registered"'),
-      );
+      expect(ws.send).toHaveBeenCalledWith(expect.stringContaining('"type":"swarm_registered"'));
     });
 
     it("should handle swarm_list_agents", () => {
@@ -237,9 +241,12 @@ describe("WebSocketHandler", () => {
       allSockets.push(ws);
 
       const queryer = createMockWebSocket();
-      wsHandler.handleMessage(queryer, JSON.stringify({
-        type: "swarm_list_agents",
-      }));
+      wsHandler.handleMessage(
+        queryer,
+        JSON.stringify({
+          type: "swarm_list_agents",
+        }),
+      );
 
       expect(queryer.send).toHaveBeenCalledWith(
         expect.stringContaining('"type":"swarm_agents_list"'),
@@ -260,10 +267,13 @@ describe("WebSocketHandler", () => {
 
       mockCode.updateAndBroadcastSession = vi.fn().mockResolvedValue(undefined);
 
-      wsHandler.handleMessage(ws, JSON.stringify({
-        oldHash: validHash,
-        patch: ["test patch"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          oldHash: validHash,
+          patch: ["test patch"],
+        }),
+      );
 
       // Wait for async processing
       await vi.waitFor(() => {
@@ -275,15 +285,16 @@ describe("WebSocketHandler", () => {
       const ws = createMockWebSocket();
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      wsHandler.handleMessage(ws, JSON.stringify({
-        oldHash: "wrong-hash",
-        patch: ["test patch"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          oldHash: "wrong-hash",
+          patch: ["test patch"],
+        }),
+      );
 
       expect(consoleError).toHaveBeenCalledWith("Hash mismatch");
-      expect(ws.send).toHaveBeenCalledWith(
-        expect.stringContaining("Session hash mismatch"),
-      );
+      expect(ws.send).toHaveBeenCalledWith(expect.stringContaining("Session hash mismatch"));
 
       consoleError.mockRestore();
     });
@@ -299,9 +310,7 @@ describe("WebSocketHandler", () => {
       expect(ws.serializeAttachment).toHaveBeenCalledWith(
         expect.objectContaining({ name: "testUser" }),
       );
-      expect(ws.send).toHaveBeenCalledWith(
-        expect.stringContaining('"action":"nameUpdate"'),
-      );
+      expect(ws.send).toHaveBeenCalledWith(expect.stringContaining('"action":"nameUpdate"'));
     });
 
     it("should deliver blocked messages when name matches", () => {
@@ -321,9 +330,7 @@ describe("WebSocketHandler", () => {
       wsHandler.handleMessage(ws, JSON.stringify({ name: "testUser" }));
 
       // Should deliver the blocked message to the new socket
-      expect(ws.send).toHaveBeenCalledWith(
-        expect.stringContaining('"swarm_message"'),
-      );
+      expect(ws.send).toHaveBeenCalledWith(expect.stringContaining('"swarm_message"'));
       // Should clear blocked messages on the other socket
       expect(otherWs.serializeAttachment).toHaveBeenCalledWith(
         expect.objectContaining({ blockedMessages: [] }),
@@ -344,11 +351,14 @@ describe("WebSocketHandler", () => {
       const senderWs = createMockWebSocket();
       allSockets.push(senderWs, targetWs);
 
-      wsHandler.handleMessage(senderWs, JSON.stringify({
-        target: "otherUser",
-        type: "video-offer",
-        offer: "test offer",
-      }));
+      wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          target: "otherUser",
+          type: "video-offer",
+          offer: "test offer",
+        }),
+      );
 
       expect(targetWs.send).toHaveBeenCalled();
     });
@@ -407,27 +417,33 @@ describe("WebSocketHandler", () => {
       allSockets.push(ws);
 
       // Subscribe first to populate topics map
-      wsHandler.handleMessage(ws, JSON.stringify({
-        type: "subscribe",
-        topics: ["topic1"],
-      }));
+      wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "subscribe",
+          topics: ["topic1"],
+        }),
+      );
 
       wsHandler.handleClose(ws);
 
       // Verify topic cleanup by publishing — the closed socket shouldn't receive
       const otherWs = createMockWebSocket();
       allSockets.push(otherWs);
-      wsHandler.handleMessage(otherWs, JSON.stringify({
-        type: "publish",
-        topic: "topic1",
-        data: "test",
-      }));
+      wsHandler.handleMessage(
+        otherWs,
+        JSON.stringify({
+          type: "publish",
+          topic: "topic1",
+          data: "test",
+        }),
+      );
 
       // ws should not receive the published message after close
       // (send was called for the subscribe ack, but not for the publish)
       const sendCalls = (ws.send as ReturnType<typeof vi.fn>).mock.calls;
-      const publishMessages = sendCalls.filter((call: unknown[]) =>
-        typeof call[0] === "string" && call[0].includes('"type":"message"'),
+      const publishMessages = sendCalls.filter(
+        (call: unknown[]) => typeof call[0] === "string" && call[0].includes('"type":"message"'),
       );
       expect(publishMessages).toHaveLength(0);
     });
@@ -476,12 +492,14 @@ describe("WebSocketHandler", () => {
       allSockets.push(ws);
 
       const agents = wsHandler.getSwarmAgents();
-      expect(agents).toEqual([{
-        agentId: "agent-1",
-        displayName: "Agent One",
-        capabilities: ["code"],
-        online: true,
-      }]);
+      expect(agents).toEqual([
+        {
+          agentId: "agent-1",
+          displayName: "Agent One",
+          capabilities: ["code"],
+          online: true,
+        },
+      ]);
     });
   });
 });

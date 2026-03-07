@@ -57,12 +57,7 @@ describe("FetchHandler additional coverage", () => {
         method: "OPTIONS",
         headers: { Origin: "https://spike.land" },
       });
-      const response = await handleFetchApi(
-        ["api-v1", "my-space"],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      const response = await handleFetchApi(["api-v1", "my-space"], request, mockEnv, mockCtx);
 
       // All OPTIONS requests are intercepted by the global OPTIONS handler which calls handleCORS
       expect(handleCORS).toHaveBeenCalledWith(request);
@@ -84,12 +79,7 @@ describe("FetchHandler additional coverage", () => {
       (mockEnv.CODE.get as Mock).mockReturnValue(mockRoomObject);
 
       const request = new Request("https://example.com/api-v1/my-space/session");
-      await handleFetchApi(
-        ["api-v1", "my-space", "session"],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      await handleFetchApi(["api-v1", "my-space", "session"], request, mockEnv, mockCtx);
 
       expect(mockRoomObject.fetch).toHaveBeenCalled();
     });
@@ -103,12 +93,7 @@ describe("FetchHandler additional coverage", () => {
 
       const hexId = "abcdef0123456789"; // exactly 16 hex chars
       const request = new Request(`https://example.com/api-v1/${hexId}/session`);
-      await handleFetchApi(
-        ["api-v1", hexId, "session"],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      await handleFetchApi(["api-v1", hexId, "session"], request, mockEnv, mockCtx);
 
       expect(mockEnv.CODE.idFromString).toHaveBeenCalledWith(hexId);
     });
@@ -116,15 +101,10 @@ describe("FetchHandler additional coverage", () => {
     it("handles api-v1 path with too-long codeSpace", async () => {
       const longId = "a".repeat(33); // 33 chars > 32
       const request = new Request(`https://example.com/api-v1/${longId}`);
-      const response = await handleFetchApi(
-        ["api-v1", longId],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      const response = await handleFetchApi(["api-v1", longId], request, mockEnv, mockCtx);
 
       expect(response.status).toBe(400);
-      const body = await response.json() as { error: string };
+      const body = (await response.json()) as { error: string };
       expect(body.error).toContain("too long");
     });
   });
@@ -305,12 +285,7 @@ describe("FetchHandler additional coverage", () => {
       const request = new Request("https://example.com/live/testspace/index.mjs", {
         method: "GET",
       });
-      await handleFetchApi(
-        ["live", "testspace", "index.mjs"],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      await handleFetchApi(["live", "testspace", "index.mjs"], request, mockEnv, mockCtx);
 
       expect(handleApiRequest).toHaveBeenCalled();
     });
@@ -492,12 +467,7 @@ describe("FetchHandler additional coverage", () => {
     it("handles ata route (calls handleApiRequest)", async () => {
       vi.mocked(handleApiRequest).mockResolvedValue(new Response("ata-response", { status: 200 }));
       const request = new Request("https://example.com/ata/room/my-space");
-      const response = await handleFetchApi(
-        ["ata", "room", "my-space"],
-        request,
-        mockEnv,
-        mockCtx,
-      );
+      const response = await handleFetchApi(["ata", "room", "my-space"], request, mockEnv, mockCtx);
       expect(response.status).toBe(200);
       expect(handleApiRequest).toHaveBeenCalledWith(["room", "my-space"], request, mockEnv);
     });

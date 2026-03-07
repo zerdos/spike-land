@@ -30,22 +30,23 @@ async function runReorganization(values: any) {
   const srcDir = path.resolve(process.cwd(), values.src as string);
 
   const packagesYaml = await readPackagesYaml();
-  
+
   const project = new Project({
     tsConfigFilePath: path.resolve(process.cwd(), "tsconfig.json"),
     skipAddingFilesFromTsConfig: true,
   });
-  
+
   // Incremental mode: only changed files
   let filesToProcess: string[] = [];
   if (values.incremental) {
-     try {
-       const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
-       const srcRel = values.src as string;
-       filesToProcess = stdout.split("\n")
-         .filter(f => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
-         .map(f => path.resolve(process.cwd(), f));
-     } catch (e) {}
+    try {
+      const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
+      const srcRel = values.src as string;
+      filesToProcess = stdout
+        .split("\n")
+        .filter((f) => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
+        .map((f) => path.resolve(process.cwd(), f));
+    } catch (e) {}
   }
 
   const allFiles = await glob("**/*.{ts,tsx}", {
@@ -53,9 +54,9 @@ async function runReorganization(values: any) {
     ignore: excludeGlobs,
     absolute: true,
   });
-  
+
   const files = filesToProcess.length > 0 ? filesToProcess : allFiles;
-  project.addSourceFilesAtPaths(allFiles); 
+  project.addSourceFilesAtPaths(allFiles);
 
   const { nodes, aliasMap } = await discoverFiles(project, srcDir);
   propagateDeps(nodes);
@@ -67,13 +68,13 @@ async function runReorganization(values: any) {
 
   // Lint mode: check for category violations
   if (values.lint) {
-     const violations = checkLint(nodes, packageCategories);
-     if (violations > 0) {
-        console.error(`Found ${violations} lint violations.`);
-        process.exit(1);
-     }
-     console.log("Lint passed.");
-     return;
+    const violations = checkLint(nodes, packageCategories);
+    if (violations > 0) {
+      console.error(`Found ${violations} lint violations.`);
+      process.exit(1);
+    }
+    console.log("Lint passed.");
+    return;
   }
 
   console.log(`Discovered ${nodes.length} files. Grouping...`);
@@ -104,13 +105,23 @@ async function runReorganization(values: any) {
   for (const [oldAbs, newAbs] of pathMapping.entries()) {
     reversibleMapping[path.relative(process.cwd(), oldAbs)] = path.relative(outputDir, newAbs);
   }
-  await fs.writeFile(path.join(outputDir, ".mapping.json"), JSON.stringify(reversibleMapping, null, 2));
+  await fs.writeFile(
+    path.join(outputDir, ".mapping.json"),
+    JSON.stringify(reversibleMapping, null, 2),
+  );
 
   for (const p of plans) {
     const absNewPath = path.resolve(outputDir, p.targetRelPath);
     await fs.mkdir(path.dirname(absNewPath), { recursive: true });
-    
-    const newContent = rewriteImports(project, p.fileNode.absPath, absNewPath, pathMapping, aliasMap, p.fileNode.packageName);
+
+    const newContent = rewriteImports(
+      project,
+      p.fileNode.absPath,
+      absNewPath,
+      pathMapping,
+      aliasMap,
+      p.fileNode.packageName,
+    );
     await fs.writeFile(absNewPath, newContent, "utf-8");
   }
 
@@ -153,10 +164,11 @@ async function main() {
   if (values.watch) {
     const watchDir = path.resolve(process.cwd(), values.src as string);
     console.log(`Watching ${watchDir} for changes...`);
-    chokidar.watch(watchDir, { persistent: true, ignoreInitial: true })
+    chokidar
+      .watch(watchDir, { persistent: true, ignoreInitial: true })
       .on("all", async (event, path) => {
-         console.log(`Change detected: ${event} ${path}. Re-running...`);
-         await runReorganization(values).catch(console.error);
+        console.log(`Change detected: ${event} ${path}. Re-running...`);
+        await runReorganization(values).catch(console.error);
       });
   }
 }

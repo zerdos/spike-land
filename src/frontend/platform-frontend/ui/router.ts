@@ -9,9 +9,12 @@ import {
 import { RootLayout } from "./routes/__root";
 import { NotFoundPage } from "./routes/not-found";
 
-function withSuspense(load: () => Promise<{ [key: string]: React.ComponentType }>, exportName: string) {
+function withSuspense(
+  load: () => Promise<{ [key: string]: React.ComponentType }>,
+  exportName: string,
+) {
   const LazyComponent = lazy(() =>
-    load().then((mod) => ({ default: mod[exportName] as React.ComponentType }))
+    load().then((mod) => ({ default: mod[exportName] as React.ComponentType })),
   );
   return function SuspenseWrapper() {
     return createElement(
@@ -19,15 +22,19 @@ function withSuspense(load: () => Promise<{ [key: string]: React.ComponentType }
       {
         fallback: createElement(
           "div",
-          { role: "status", "aria-label": "Loading", className: "flex items-center justify-center py-20" },
+          {
+            role: "status",
+            "aria-label": "Loading",
+            className: "flex items-center justify-center py-20",
+          },
           createElement("div", {
             className: "h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary",
             "aria-hidden": "true",
           }),
-          createElement("span", { className: "sr-only" }, "Loading...")
+          createElement("span", { className: "sr-only" }, "Loading..."),
         ),
       },
-      createElement(LazyComponent)
+      createElement(LazyComponent),
     );
   };
 }
@@ -249,7 +256,10 @@ const messagesRoute = createRoute({
 const messagesIndexRoute = createRoute({
   getParentRoute: () => messagesRoute,
   path: "/",
-  component: withSuspense(() => import("./routes/messages/messages-index.tsx"), "MessagesIndexPage"),
+  component: withSuspense(
+    () => import("./routes/messages/messages-index.tsx"),
+    "MessagesIndexPage",
+  ),
 });
 
 const messageThreadRoute = createRoute({
@@ -331,15 +341,17 @@ const startChecklistRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/spike-land-start-checklist",
   beforeLoad: () => {
-    if (typeof window !== "undefined"
-      && window.location.hostname !== "local.spike.land"
-      && window.location.hostname !== "localhost") {
+    if (
+      typeof window !== "undefined" &&
+      window.location.hostname !== "local.spike.land" &&
+      window.location.hostname !== "localhost"
+    ) {
       throw redirect({ to: "/" });
     }
   },
   component: withSuspense(
     () => import("./routes/spike-land-start-checklist"),
-    "SpikeLandStartChecklistPage"
+    "SpikeLandStartChecklistPage",
   ),
 });
 

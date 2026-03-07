@@ -454,13 +454,16 @@ describe("getVaultSecret", () => {
   });
 
   it("apiRequest handles text() failure and non-JSON body", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-      text: () => Promise.reject(new Error("stream dead")),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: () => Promise.reject(new Error("stream dead")),
+      }),
+    );
 
-    const err = await apiRequest("/fail").catch(e => e as McpError);
+    const err = await apiRequest("/fail").catch((e) => e as McpError);
     expect(err.message).toBe("Unknown error");
 
     vi.mocked(fetch).mockResolvedValue({
@@ -469,33 +472,40 @@ describe("getVaultSecret", () => {
       text: () => Promise.resolve("not-json"),
     } as Response);
 
-    const err2 = await apiRequest("/fail").catch(e => e as McpError);
+    const err2 = await apiRequest("/fail").catch((e) => e as McpError);
     expect(err2.message).toBe("not-json");
   });
 
   it("apiRequest uses fallback for JSON without error field", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: false,
-      status: 400,
-      text: () => Promise.resolve('{"something":"else"}'),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve('{"something":"else"}'),
+      }),
+    );
 
-    const err = await apiRequest("/fail").catch(e => e as McpError);
+    const err = await apiRequest("/fail").catch((e) => e as McpError);
     expect(err.message).toBe('{"something":"else"}');
   });
 
   it("resolveWorkspace returns workspace on success", async () => {
     const mockWorkspace = { id: "w1", slug: "my-ws", name: "My Workspace", plan: "free" };
-    const db = createDb(createMockD1(() => ({ 
-      results: [{
-        id: "w1",
-        slug: "my-ws",
-        name: "My Workspace",
-        plan: "free"
-      }], 
-      success: true, 
-      meta: {} 
-    })));
+    const db = createDb(
+      createMockD1(() => ({
+        results: [
+          {
+            id: "w1",
+            slug: "my-ws",
+            name: "My Workspace",
+            plan: "free",
+          },
+        ],
+        success: true,
+        meta: {},
+      })),
+    );
 
     const result = await resolveWorkspace(db, "u1", "my-ws");
     expect(result.id).toBe("w1");
@@ -504,17 +514,19 @@ describe("getVaultSecret", () => {
 
   it("getVaultSecret handles legacy salt and successful decryption", async () => {
     // This is complex to test fully without real WebCrypto keys, but we can hit the branches
-    const db = createDb(createMockD1((sql) => {
-      if (sql.includes("vault_secrets")) {
-        // Return a payload without salt to hit legacy branch
-        const payload = JSON.stringify({
-          iv: btoa(String.fromCharCode(...new Uint8Array(12))),
-          data: btoa("some-encrypted-data"),
-        });
-        return { results: [{ encrypted_value: btoa(payload) }], success: true, meta: {} };
-      }
-      return { results: [], success: true, meta: {} };
-    }));
+    const db = createDb(
+      createMockD1((sql) => {
+        if (sql.includes("vault_secrets")) {
+          // Return a payload without salt to hit legacy branch
+          const payload = JSON.stringify({
+            iv: btoa(String.fromCharCode(...new Uint8Array(12))),
+            data: btoa("some-encrypted-data"),
+          });
+          return { results: [{ encrypted_value: btoa(payload) }], success: true, meta: {} };
+        }
+        return { results: [], success: true, meta: {} };
+      }),
+    );
 
     // This will likely hit the 'catch' block because 'some-encrypted-data' is not valid ciphertext for the derived key
     // but it will cover the legacy salt branch and the catch block.
@@ -526,21 +538,31 @@ describe("getVaultSecret", () => {
     const userId = "test-user";
     const secretValue = "super-secret-123";
     const encoder = new TextEncoder();
-    
+
     // 1. Generate salt and key
     const salt = crypto.getRandomValues(new Uint8Array(16));
-    const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(userId), "PBKDF2", false, ["deriveKey"]);
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(userId),
+      "PBKDF2",
+      false,
+      ["deriveKey"],
+    );
     const cryptoKey = await crypto.subtle.deriveKey(
       { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
       keyMaterial,
       { name: "AES-GCM", length: 256 },
       false,
-      ["encrypt"]
+      ["encrypt"],
     );
 
     // 2. Encrypt
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoder.encode(secretValue));
+    const encrypted = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      cryptoKey,
+      encoder.encode(secretValue),
+    );
 
     // 3. Prepare payload
     const payload = JSON.stringify({
@@ -549,12 +571,14 @@ describe("getVaultSecret", () => {
       salt: btoa(String.fromCharCode(...salt)),
     });
 
-    const db = createDb(createMockD1((sql) => {
-      if (sql.includes("vault_secrets")) {
-        return { results: [{ encrypted_value: btoa(payload) }], success: true, meta: {} };
-      }
-      return { results: [], success: true, meta: {} };
-    }));
+    const db = createDb(
+      createMockD1((sql) => {
+        if (sql.includes("vault_secrets")) {
+          return { results: [{ encrypted_value: btoa(payload) }], success: true, meta: {} };
+        }
+        return { results: [], success: true, meta: {} };
+      }),
+    );
 
     const result = await getVaultSecret(db, userId, "MY_SECRET");
     expect(result).toBe(secretValue);

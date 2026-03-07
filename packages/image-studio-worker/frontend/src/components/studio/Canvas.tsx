@@ -329,7 +329,11 @@ export function Canvas() {
       </div>
 
       {/* Details Panel Integration */}
-      <DetailsPanel asset={selectedAsset} onClose={() => setSelectedAssetId(null)} onAction={handleOrbAction} />
+      <DetailsPanel
+        asset={selectedAsset}
+        onClose={() => setSelectedAssetId(null)}
+        onAction={handleOrbAction}
+      />
 
       {/* Canvas Controls */}
       <div className="absolute top-20 right-4 md:top-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 glass-panel rounded-2xl p-1 md:p-1.5 flex flex-col md:flex-row items-center gap-1 md:gap-1.5 z-50 shadow-2xl transition-all">

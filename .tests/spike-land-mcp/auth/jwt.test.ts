@@ -84,9 +84,14 @@ describe("JWT sign + verify", () => {
     // Build a token with a valid signature but a body that decodes to invalid JSON
     // We sign a custom header.body pair so the signature matches but body is garbage
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }))
-      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
     // "not-json" in base64url
-    const badBody = btoa("not-valid-json{{{").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    const badBody = btoa("not-valid-json{{{")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
     const signingInput = `${header}.${badBody}`;
 
     // Sign with the real secret so signature verification passes

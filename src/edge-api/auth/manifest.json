@@ -1,14 +1,6 @@
 {
   "name": "auth",
   "category": "edge-api",
-  "dependencies": [
-    "@better-auth/drizzle-adapter",
-    "better-auth",
-    "drizzle-orm"
-  ],
-  "files": [
-    "db-auth/auth.ts",
-    "db/index.ts",
-    "db/schema.ts"
-  ]
+  "dependencies": ["@better-auth/drizzle-adapter", "better-auth", "drizzle-orm"],
+  "files": ["db-auth/auth.ts", "db/index.ts", "db/schema.ts"]
 }

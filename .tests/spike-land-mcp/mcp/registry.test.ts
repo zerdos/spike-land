@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ToolRegistry, validateSchemaDescriptions, formatExamplesAsDescription, compareSemver } from "../../../src/edge-api/spike-land/lazy-imports/registry";
+import {
+  ToolRegistry,
+  validateSchemaDescriptions,
+  formatExamplesAsDescription,
+  compareSemver,
+} from "../../../src/edge-api/spike-land/lazy-imports/registry";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
@@ -70,7 +75,7 @@ describe("formatExamplesAsDescription", () => {
 
   it("appends examples block", () => {
     const res = formatExamplesAsDescription("Desc", [
-      { name: "ex1", description: "desc1", input: { a: 1 } }
+      { name: "ex1", description: "desc1", input: { a: 1 } },
     ]);
     expect(res).toContain("Desc");
     expect(res).toContain("### Examples");
@@ -80,14 +85,14 @@ describe("formatExamplesAsDescription", () => {
 
   it("includes expected_output when present", () => {
     const res = formatExamplesAsDescription("Desc", [
-      { name: "ex1", description: "desc1", input: { a: 1 }, expected_output: "some result" }
+      { name: "ex1", description: "desc1", input: { a: 1 }, expected_output: "some result" },
     ]);
     expect(res).toContain("Expected: some result");
   });
 
   it("omits expected_output line when not present", () => {
     const res = formatExamplesAsDescription("Desc", [
-      { name: "ex1", description: "desc1", input: { a: 1 } }
+      { name: "ex1", description: "desc1", input: { a: 1 } },
     ]);
     expect(res).not.toContain("Expected:");
   });
@@ -328,7 +333,7 @@ describe("ToolRegistry", () => {
       expect.any(Function),
     );
   });
-  
+
   it("injects examples into description when injectExamples is true", () => {
     const server = createMockMcpServer();
     const registry = new ToolRegistry(server, "user-1", { injectExamples: true });
@@ -538,7 +543,7 @@ describe("ToolRegistry", () => {
       const defs = registry.getToolDefinitions();
       expect(defs).toHaveLength(1);
       expect(defs[0].version).toBe("2.0.0");
-      
+
       // Auto-deprecation: v1 should be marked deprecated
       const v1Def = registry.getToolByVersion("v_tool", "1.0.0");
       expect(v1Def?.stability).toBe("deprecated");
@@ -570,7 +575,7 @@ describe("ToolRegistry", () => {
       const defs = registry.getToolDefinitions();
       expect(defs).toHaveLength(1);
       expect(defs[0].version).toBe("2.0.0");
-      
+
       // The older one can still be accessed via version
       const v1Def = registry.getToolByVersion("v_tool", "1.0.0");
       expect(v1Def?.version).toBe("1.0.0");
@@ -580,9 +585,30 @@ describe("ToolRegistry", () => {
       const server = createMockMcpServer();
       const registry = new ToolRegistry(server, "user-1");
 
-      registry.register({ name: "v_tool", description: "v1", category: "c", tier: "free", version: "1.0.0", handler: () => ({ content: [] }) });
-      registry.register({ name: "v_tool", description: "v2", category: "c", tier: "free", version: "2.0.0", handler: () => ({ content: [] }) });
-      registry.register({ name: "v_tool", description: "v1.5", category: "c", tier: "free", version: "1.5.0", handler: () => ({ content: [] }) });
+      registry.register({
+        name: "v_tool",
+        description: "v1",
+        category: "c",
+        tier: "free",
+        version: "1.0.0",
+        handler: () => ({ content: [] }),
+      });
+      registry.register({
+        name: "v_tool",
+        description: "v2",
+        category: "c",
+        tier: "free",
+        version: "2.0.0",
+        handler: () => ({ content: [] }),
+      });
+      registry.register({
+        name: "v_tool",
+        description: "v1.5",
+        category: "c",
+        tier: "free",
+        version: "1.5.0",
+        handler: () => ({ content: [] }),
+      });
 
       const versions = registry.listVersions("v_tool");
       expect(versions).toHaveLength(3);

@@ -52,9 +52,7 @@ describe("extractIdsFromResult", () => {
   });
 
   it("extracts multiple IDs from JSON result", () => {
-    const ids = extractIdsFromResult(
-      JSON.stringify({ id: "a1", game_id: "g2", player_id: "p3" }),
-    );
+    const ids = extractIdsFromResult(JSON.stringify({ id: "a1", game_id: "g2", player_id: "p3" }));
     expect(ids).toContain("a1");
     expect(ids).toContain("g2");
     expect(ids).toContain("p3");

@@ -1,4 +1,6 @@
-const isDev = typeof import.meta !== "undefined" && (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
+const isDev =
+  typeof import.meta !== "undefined" &&
+  (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
 
 export const API_BASE = isDev ? "" : "https://api.spike.land";
 

@@ -42,8 +42,14 @@ function ProfileTab() {
   async function handleSave() {
     const name = nameRef.current?.value.trim() ?? "";
     const email = emailRef.current?.value.trim() ?? "";
-    if (!name) { setError("Display name is required."); return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("A valid email is required."); return; }
+    if (!name) {
+      setError("Display name is required.");
+      return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("A valid email is required.");
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -139,7 +145,7 @@ function WhatsAppTab() {
     try {
       const res = await fetch(apiUrl("/whatsapp/link/initiate"), { method: "POST" });
       if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-      const data = await res.json() as { otp: string };
+      const data = (await res.json()) as { otp: string };
       setOtp(data.otp);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -170,9 +176,7 @@ function WhatsAppTab() {
           <p className="text-sm font-medium text-foreground">
             Status: {linked ? "Linked" : "Not linked"}
           </p>
-          {linked && (
-            <p className="text-xs text-muted-foreground">{phone}</p>
-          )}
+          {linked && <p className="text-xs text-muted-foreground">{phone}</p>}
         </div>
         <span
           className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
@@ -190,7 +194,8 @@ function WhatsAppTab() {
           <div className="mb-1 flex items-center justify-between">
             <p className="text-sm font-medium text-foreground">Your OTP Code</p>
             <span className="text-xs text-muted-foreground">
-              Expires in {Math.floor(otpSecondsLeft / 60)}:{String(otpSecondsLeft % 60).padStart(2, "0")}
+              Expires in {Math.floor(otpSecondsLeft / 60)}:
+              {String(otpSecondsLeft % 60).padStart(2, "0")}
             </span>
           </div>
           <p className="font-mono text-2xl tracking-widest text-primary">{otp}</p>
@@ -243,7 +248,7 @@ function ApiKeysTab() {
       try {
         const res = await fetch(apiUrl("/keys"));
         if (!res.ok) return;
-        const data = await res.json() as { keys: ApiKey[] };
+        const data = (await res.json()) as { keys: ApiKey[] };
         setKeys(data.keys.map((k) => ({ ...k, key: "****" })));
       } catch {
         // silently ignore
@@ -265,7 +270,7 @@ function ApiKeysTab() {
         body: JSON.stringify({ provider: selectedProvider, apiKey: newKeyValue }),
       });
       if (!res.ok) throw new Error(`Failed to save: ${res.status}`);
-      const data = await res.json() as { id: string; provider: string; createdAt: string };
+      const data = (await res.json()) as { id: string; provider: string; createdAt: string };
       setKeys((prev) => [
         { id: data.id, provider: selectedProvider, key: "****", createdAt: data.createdAt },
         ...prev,
@@ -282,7 +287,7 @@ function ApiKeysTab() {
     setTestingId(key.id);
     try {
       const res = await fetch(apiUrl(`/keys/${key.id}/test`), { method: "POST" });
-      const data = await res.json() as { valid: boolean; status?: number };
+      const data = (await res.json()) as { valid: boolean; status?: number };
       setTestResults((prev) => ({
         ...prev,
         [key.id]: data.valid ? "OK" : `Failed (${data.status ?? "unknown"})`,
@@ -365,7 +370,9 @@ function ApiKeysTab() {
       <div className="rounded-lg border border-border bg-background p-4 space-y-3">
         <p className="text-sm font-medium text-foreground">Add API Key</p>
         <div className="flex gap-2">
-          <label htmlFor="apiKeyProvider" className="sr-only">Provider</label>
+          <label htmlFor="apiKeyProvider" className="sr-only">
+            Provider
+          </label>
           <select
             id="apiKeyProvider"
             value={selectedProvider}
@@ -378,7 +385,9 @@ function ApiKeysTab() {
               </option>
             ))}
           </select>
-          <label htmlFor="apiKeyValue" className="sr-only">API Key</label>
+          <label htmlFor="apiKeyValue" className="sr-only">
+            API Key
+          </label>
           <input
             id="apiKeyValue"
             type="password"
@@ -442,7 +451,7 @@ function BillingTab() {
       try {
         const res = await fetch(apiUrl("/billing/status"));
         if (!res.ok) return;
-        const data = await res.json() as BillingStatus;
+        const data = (await res.json()) as BillingStatus;
         setBilling(data);
       } catch {
         // silently ignore
@@ -546,16 +555,20 @@ function BillingTab() {
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${planColors[plan]}`}>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${planColors[plan]}`}
+          >
             {plan}
           </span>
-          <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
-            status === "active"
-              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-              : status === "past_due"
-              ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-              : "bg-muted text-muted-foreground"
-          }`}>
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
+              status === "active"
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                : status === "past_due"
+                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                  : "bg-muted text-muted-foreground"
+            }`}
+          >
             {status.replace("_", " ")}
           </span>
         </div>
@@ -575,9 +588,7 @@ function BillingTab() {
             {usage} / {usageLimit} messages
           </span>
         </div>
-        {periodEnd && (
-          <p className="text-xs text-muted-foreground">Resets {periodEnd}</p>
-        )}
+        {periodEnd && <p className="text-xs text-muted-foreground">Resets {periodEnd}</p>}
       </div>
 
       {/* Manage subscription (paid plans) */}
@@ -612,7 +623,9 @@ function BillingTab() {
               disabled={upgrading}
               className="flex-1 rounded-lg bg-purple-600 px-6 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-700 disabled:opacity-50"
             >
-              {upgrading ? "Redirecting..." : `Upgrade to Business — ${pricing.business.monthly}/mo`}
+              {upgrading
+                ? "Redirecting..."
+                : `Upgrade to Business — ${pricing.business.monthly}/mo`}
             </button>
           )}
         </div>
@@ -631,8 +644,16 @@ interface EloEvent {
 }
 
 function getTier(score: number): { label: string; color: string } {
-  if (score >= 1500) return { label: "Elite", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" };
-  if (score >= 1000) return { label: "Pro", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" };
+  if (score >= 1500)
+    return {
+      label: "Elite",
+      color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+    };
+  if (score >= 1000)
+    return {
+      label: "Pro",
+      color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    };
   return { label: "Free", color: "bg-muted text-muted-foreground" };
 }
 
@@ -707,7 +728,8 @@ function AccessTab() {
                       event.delta >= 0 ? "text-green-600" : "text-destructive"
                     }`}
                   >
-                    {event.delta >= 0 ? "+" : ""}{event.delta}
+                    {event.delta >= 0 ? "+" : ""}
+                    {event.delta}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {new Date(event.createdAt).toLocaleDateString()}
@@ -729,8 +751,9 @@ export function SettingsPage() {
   const navigate = useNavigate();
 
   const validTabs = TABS.map((t) => t.id);
-  const activeTab: SettingsTab =
-    validTabs.includes(search.tab as SettingsTab) ? (search.tab as SettingsTab) : "profile";
+  const activeTab: SettingsTab = validTabs.includes(search.tab as SettingsTab)
+    ? (search.tab as SettingsTab)
+    : "profile";
 
   const setTab = useCallback(
     (tab: SettingsTab) => {
@@ -745,7 +768,11 @@ export function SettingsPage() {
         <h1 className="text-2xl font-bold text-foreground">Settings</h1>
 
         {/* Tab bar */}
-        <div role="tablist" aria-label="Settings sections" className="flex gap-1 border-b border-border overflow-x-auto">
+        <div
+          role="tablist"
+          aria-label="Settings sections"
+          className="flex gap-1 border-b border-border overflow-x-auto"
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}

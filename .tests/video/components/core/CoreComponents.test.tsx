@@ -10,7 +10,11 @@ import { ModelCascadeCore } from "../../../../src/media/educational-videos/compo
 import { SplitScreenCore } from "../../../../src/media/educational-videos/components/core/SplitScreenCore";
 
 import { GlassmorphismCardCore } from "../../../../src/media/educational-videos/components/core/ui/GlassmorphismCardCore";
-import { clamp, interpolate, seededRandom } from "../../../../src/media/educational-videos/lib/animation-utils";
+import {
+  clamp,
+  interpolate,
+  seededRandom,
+} from "../../../../src/media/educational-videos/lib/animation-utils";
 
 describe("Animation Utils", () => {
   it("interpolates values correctly", () => {
@@ -101,9 +105,9 @@ describe("Core Components Smoke Tests", () => {
     // Use container.textContent to check for presence of numbers
     // or be more specific about which text element we want
     const textElements = Array.from(container.querySelectorAll("text"));
-    const hasSuccessCount = textElements.some(el => el.textContent === "10");
-    const hasFailureCount = textElements.some(el => el.textContent === "2");
-    
+    const hasSuccessCount = textElements.some((el) => el.textContent === "10");
+    const hasFailureCount = textElements.some((el) => el.textContent === "2");
+
     expect(hasSuccessCount).toBe(true);
     expect(hasFailureCount).toBe(true);
   });

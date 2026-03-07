@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseCommand, dispatchCommand } from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
-import type { CommandContext, ParsedCommand } from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
+import {
+  parseCommand,
+  dispatchCommand,
+} from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
+import type {
+  CommandContext,
+  ParsedCommand,
+} from "../../../src/edge-api/main/core-logic/whatsapp-commands.js";
 import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 // ─── parseCommand ─────────────────────────────────────────────────────────────
@@ -30,7 +36,7 @@ describe("parseCommand", () => {
   });
 
   it("parses /use command", () => {
-    const result = parseCommand("/use my_tool {\"key\": \"val\"}");
+    const result = parseCommand('/use my_tool {"key": "val"}');
     expect(result.name).toBe("use");
     expect(result.args).toBe('my_tool {"key": "val"}');
   });
@@ -108,7 +114,11 @@ describe("dispatchCommand — help", () => {
 describe("dispatchCommand — bug", () => {
   it("submits bug report successfully", async () => {
     const ctx = buildCtx("pro", true);
-    const cmd: ParsedCommand = { name: "bug", args: "My Bug | Some description", raw: "/bug My Bug | Some description" };
+    const cmd: ParsedCommand = {
+      name: "bug",
+      args: "My Bug | Some description",
+      raw: "/bug My Bug | Some description",
+    };
     const result = await dispatchCommand(cmd, ctx);
     expect(result).toContain("Bug report submitted");
     expect(result).toContain("My Bug");
@@ -145,10 +155,7 @@ describe("dispatchCommand — bugs", () => {
   });
 
   it("returns default message when no text content", async () => {
-    const mcpResponse = new Response(
-      JSON.stringify({ result: { content: [] } }),
-      { status: 200 },
-    );
+    const mcpResponse = new Response(JSON.stringify({ result: { content: [] } }), { status: 200 });
     const ctx = buildCtx();
     (ctx.env.MCP_SERVICE.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mcpResponse);
     const cmd: ParsedCommand = { name: "bugs", args: "", raw: "/bugs" };
@@ -180,10 +187,7 @@ describe("dispatchCommand — tools", () => {
   });
 
   it("returns default message when no text", async () => {
-    const mcpResponse = new Response(
-      JSON.stringify({ result: {} }),
-      { status: 200 },
-    );
+    const mcpResponse = new Response(JSON.stringify({ result: {} }), { status: 200 });
     const ctx = buildCtx();
     (ctx.env.MCP_SERVICE.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mcpResponse);
     const cmd: ParsedCommand = { name: "tools", args: "", raw: "/tools" };
@@ -209,23 +213,30 @@ describe("dispatchCommand — use", () => {
 
   it("returns JSON parse error for bad args", async () => {
     const ctx = buildCtx("pro");
-    const cmd: ParsedCommand = { name: "use", args: "my_tool {invalid json}", raw: "/use my_tool {invalid}" };
+    const cmd: ParsedCommand = {
+      name: "use",
+      args: "my_tool {invalid json}",
+      raw: "/use my_tool {invalid}",
+    };
     const result = await dispatchCommand(cmd, ctx);
     expect(result).toContain("Invalid JSON");
   });
 
   it("executes tool successfully", async () => {
     const ctx = buildCtx("pro", true);
-    const cmd: ParsedCommand = { name: "use", args: 'my_tool {"param": "value"}', raw: '/use my_tool {"param": "value"}' };
+    const cmd: ParsedCommand = {
+      name: "use",
+      args: 'my_tool {"param": "value"}',
+      raw: '/use my_tool {"param": "value"}',
+    };
     const result = await dispatchCommand(cmd, ctx);
     expect(result).toBe("Tool result");
   });
 
   it("returns MCP error message when tool has error", async () => {
-    const mcpResponse = new Response(
-      JSON.stringify({ error: { message: "Tool not found" } }),
-      { status: 200 },
-    );
+    const mcpResponse = new Response(JSON.stringify({ error: { message: "Tool not found" } }), {
+      status: 200,
+    });
     const ctx = buildCtx("pro");
     (ctx.env.MCP_SERVICE.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mcpResponse);
     const cmd: ParsedCommand = { name: "use", args: "bad_tool", raw: "/use bad_tool" };
@@ -234,10 +245,7 @@ describe("dispatchCommand — use", () => {
   });
 
   it("returns fallback when tool executed with no output", async () => {
-    const mcpResponse = new Response(
-      JSON.stringify({ result: {} }),
-      { status: 200 },
-    );
+    const mcpResponse = new Response(JSON.stringify({ result: {} }), { status: 200 });
     const ctx = buildCtx("pro");
     (ctx.env.MCP_SERVICE.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mcpResponse);
     const cmd: ParsedCommand = { name: "use", args: "my_tool", raw: "/use my_tool" };
@@ -270,7 +278,11 @@ describe("dispatchCommand — key", () => {
 
   it("stores key successfully", async () => {
     const ctx = buildCtx("pro", true);
-    const cmd: ParsedCommand = { name: "key", args: "set openai sk-my-key", raw: "/key set openai sk-my-key" };
+    const cmd: ParsedCommand = {
+      name: "key",
+      args: "set openai sk-my-key",
+      raw: "/key set openai sk-my-key",
+    };
     const result = await dispatchCommand(cmd, ctx);
     expect(result).toContain("openai");
     expect(result).toContain("stored successfully");
@@ -278,7 +290,11 @@ describe("dispatchCommand — key", () => {
 
   it("returns error when MCP fails", async () => {
     const ctx = buildCtx("pro", false);
-    const cmd: ParsedCommand = { name: "key", args: "set anthropic ant-key", raw: "/key set anthropic ant-key" };
+    const cmd: ParsedCommand = {
+      name: "key",
+      args: "set anthropic ant-key",
+      raw: "/key set anthropic ant-key",
+    };
     const result = await dispatchCommand(cmd, ctx);
     expect(result).toContain("Failed");
   });
@@ -374,10 +390,7 @@ describe("dispatchCommand — chat", () => {
   });
 
   it("returns fallback when Gemini response has no candidates", async () => {
-    const geminiResponse = new Response(
-      JSON.stringify({ candidates: [] }),
-      { status: 200 },
-    );
+    const geminiResponse = new Response(JSON.stringify({ candidates: [] }), { status: 200 });
     globalThis.fetch = vi.fn().mockResolvedValueOnce(geminiResponse);
 
     const ctx = buildCtx("pro");

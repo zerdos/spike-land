@@ -18,7 +18,6 @@ export function registerMirrorTools(server: McpServer): void {
     description: "Sync a package to its mirror GitHub repo. Reads mirror field from packages.yaml.",
     schema: SyncMirrorSchema.shape,
     handler: async ({ packageName, dryRun = true }: z.infer<typeof SyncMirrorSchema>) => {
-
       const repoRoot = process.cwd();
       const pkg = await getManifestPackage(packageName, repoRoot);
 

@@ -1,5 +1,9 @@
 import path from "node:path";
-import { fallbackCategory, getDependencyGroupName, deduplicateDepGroup } from "../reorganize-config.js";
+import {
+  fallbackCategory,
+  getDependencyGroupName,
+  deduplicateDepGroup,
+} from "../reorganize-config.js";
 import type { MovePlan, FileNode } from "./types.js";
 import { resolveAppName } from "./grouping.js";
 import { flattenFilename } from "./flatten.js";
@@ -35,17 +39,17 @@ export function computeMovePlans(
 
     // Issue 3: Split oversized buckets
     if ((bucketCounts.get(targetDir) || 0) > MAX_BUCKET_SIZE) {
-       const subDir = path.dirname(n.relPath).split(path.sep).slice(1).join(path.sep);
-       if (subDir) {
-          targetDir = path.join(targetDir, subDir);
-       }
+      const subDir = path.dirname(n.relPath).split(path.sep).slice(1).join(path.sep);
+      if (subDir) {
+        targetDir = path.join(targetDir, subDir);
+      }
     }
 
     let fileName = flattenFilename(n.relPath, n.packageName);
-    
+
     // Issue 3 (Co-locate tests): Put tests in __tests__ subfolder
     if (fileName.endsWith(".test.ts") || fileName.endsWith(".test.tsx")) {
-       targetDir = path.join(targetDir, "__tests__");
+      targetDir = path.join(targetDir, "__tests__");
     }
 
     const targetPathKey = path.join(targetDir, fileName);

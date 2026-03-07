@@ -5,8 +5,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { clearInterviewSessions, getInterviewSession, registerWorkflowTools } from "../../../src/mcp-tools/bazdmeg/mcp/workflow.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
+import {
+  clearInterviewSessions,
+  getInterviewSession,
+  registerWorkflowTools,
+} from "../../../src/mcp-tools/bazdmeg/mcp/workflow.js";
+import {
+  enterWorkspace,
+  resetWorkspaceState,
+} from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 import { buildDiff } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
 import * as engine from "../../../src/mcp-tools/bazdmeg/core-logic/engine.js";
@@ -413,9 +420,9 @@ describe("workflow tools", () => {
     // Now submit ALL wrong answers (to avoid FAILED_LOW_SCORE masking conflict)
     // For the first question specifically, we answer wrong which should trigger conflict
     const wrongAnswers: [number, number, number] = [
-      (firstQ.correctIndex + 1) % 4,      // wrong - triggers conflict for Q1
-      (firstRoundQuestions[1].correctIndex + 1) % 4,  // wrong
-      (firstRoundQuestions[2].correctIndex + 1) % 4,  // wrong
+      (firstQ.correctIndex + 1) % 4, // wrong - triggers conflict for Q1
+      (firstRoundQuestions[1].correctIndex + 1) % 4, // wrong
+      (firstRoundQuestions[2].correctIndex + 1) % 4, // wrong
     ];
 
     const result = await server.call("bazdmeg_planning_interview", {
@@ -455,7 +462,7 @@ describe("workflow tools", () => {
 
     // Answer: Q1 wrong (creates 3rd conflict), Q2+Q3 correct (passes score check of 2/3)
     const answers: [number, number, number] = [
-      (currentQ.correctIndex + 1) % 4,  // wrong for Q1 — triggers 3rd conflict
+      (currentQ.correctIndex + 1) % 4, // wrong for Q1 — triggers 3rd conflict
       session!.currentRound.questions[1].correctIndex, // correct
       session!.currentRound.questions[2].correctIndex, // correct
     ];
@@ -574,7 +581,11 @@ describe("workflow tools", () => {
 
     // Now only 1 concept is unmastered.
     // Answering correctly to trigger NEXT round generation
-    const correctAnswers = session.currentRound.questions.map((q) => q.correctIndex) as [number, number, number];
+    const correctAnswers = session.currentRound.questions.map((q) => q.correctIndex) as [
+      number,
+      number,
+      number,
+    ];
     const result = await server.call("bazdmeg_planning_interview", {
       sessionId,
       answers: correctAnswers,
@@ -608,7 +619,7 @@ describe("workflow tools", () => {
       (q2.correctIndex + 1) % 4, // Wrong for broken concept -> triggers conflict with empty options
       session.currentRound.questions[2].correctIndex,
     ];
-    
+
     // Seed answerHistory for Q2 conflict
     session.conceptStates[q2.conceptIndex].answerHistory.set(q2.variantIndex, q2.correctIndex);
 

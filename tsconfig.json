@@ -23,152 +23,65 @@
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
     "jsx": "react-jsx",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
-      "@/*": [
-        "./src/frontend/monaco-editor/*"
-      ],
-      "@/generated/prisma": [
-        "./src/core/chess/core-logic/prisma.ts"
-      ],
-      "@spike-land-ai/shared": [        "./src/core/shared-utils/core-logic/index.ts"
-      ],
-      "@spike-land-ai/shared/*": [
-        "./src/core/shared-utils/core-logic/*"
-      ],
+      "@/*": ["./src/frontend/monaco-editor/*"],
+      "@/generated/prisma": ["./src/core/chess/core-logic/prisma.ts"],
+      "@spike-land-ai/shared": ["./src/core/shared-utils/core-logic/index.ts"],
+      "@spike-land-ai/shared/*": ["./src/core/shared-utils/core-logic/*"],
       "@spike-land-ai/shared/tool-builder": [
         "./src/core/shared-utils/core-logic/tool-builder-index.ts"
       ],
-      "@spike-land-ai/shared/constants": [
-        "./src/core/shared-utils/core-logic/constants-index.ts"
-      ],
-      "@spike-land-ai/shared/types": [
-        "./src/core/shared-utils/core-logic/types-index.ts"
-      ],
+      "@spike-land-ai/shared/constants": ["./src/core/shared-utils/core-logic/constants-index.ts"],
+      "@spike-land-ai/shared/types": ["./src/core/shared-utils/core-logic/types-index.ts"],
       "@spike-land-ai/shared/validations": [
         "./src/core/shared-utils/core-logic/validations-index.ts"
       ],
-      "@spike-land-ai/block-website/ui": [
-        "./src/core/block-website/core-logic/ui-index.ts"
-      ],
-      "@spike-land-ai/block-website/core": [
-        "./src/core/block-website/core-logic/core-index.ts"
-      ],
-      "@spike-land-ai/mcp-server-base": [
-        "./src/core/server-base/core-logic/index.ts"
-      ],
-      "@spike-land-ai/block-sdk": [
-        "./src/core/block-sdk/core-logic/index.ts"
-      ],
-      "@spike-land-ai/block-sdk/storage": [
-        "./src/core/block-sdk/core-logic/storage-index.ts"
-      ],
-      "@spike-land-ai/block-sdk/adapters/d1": [
-        "./src/core/block-sdk/core-logic/d1.ts"
-      ],
-      "@spike-land-ai/block-sdk/adapters/idb": [
-        "./src/core/block-sdk/db/idb.ts"
-      ],
-      "@spike-land-ai/block-sdk/react": [
-        "./src/core/block-sdk/ui/react-index.ts"
-      ],
-      "@spike-land-ai/block-sdk/mcp": [
-        "./src/core/block-sdk/lazy-imports/mcp-index.ts"
-      ],
-      "@spike-land-ai/block-tasks": [
-        "./src/core/block-tasks/lazy-imports/index.ts"
-      ],
-      "@spike-land-ai/esbuild-wasm": [
-        "./packages/esbuild-wasm/lib/main.d.ts"
-      ],
-      "@spike-land-ai/esbuild-wasm-mcp": [
-        "./src/mcp-tools/esbuild-wasm/mcp/index.ts"
-      ],
-      "@spike-land-ai/react-ts-worker": [
-        "./src/core/react-engine/core-logic/react/react-index.ts"
-      ],
-      "@spike-land-ai/react-ts-worker/*": [
-        "./src/core/react-engine/*"
-      ],
-      "@spike-land-ai/code": [
-        "./src/frontend/monaco-editor/core-logic/modules.ts"
-      ],
+      "@spike-land-ai/block-website/ui": ["./src/core/block-website/core-logic/ui-index.ts"],
+      "@spike-land-ai/block-website/core": ["./src/core/block-website/core-logic/core-index.ts"],
+      "@spike-land-ai/mcp-server-base": ["./src/core/server-base/core-logic/index.ts"],
+      "@spike-land-ai/block-sdk": ["./src/core/block-sdk/core-logic/index.ts"],
+      "@spike-land-ai/block-sdk/storage": ["./src/core/block-sdk/core-logic/storage-index.ts"],
+      "@spike-land-ai/block-sdk/adapters/d1": ["./src/core/block-sdk/core-logic/d1.ts"],
+      "@spike-land-ai/block-sdk/adapters/idb": ["./src/core/block-sdk/db/idb.ts"],
+      "@spike-land-ai/block-sdk/react": ["./src/core/block-sdk/ui/react-index.ts"],
+      "@spike-land-ai/block-sdk/mcp": ["./src/core/block-sdk/lazy-imports/mcp-index.ts"],
+      "@spike-land-ai/block-tasks": ["./src/core/block-tasks/lazy-imports/index.ts"],
+      "@spike-land-ai/esbuild-wasm": ["./packages/esbuild-wasm/lib/main.d.ts"],
+      "@spike-land-ai/esbuild-wasm-mcp": ["./src/mcp-tools/esbuild-wasm/mcp/index.ts"],
+      "@spike-land-ai/react-ts-worker": ["./src/core/react-engine/core-logic/react/react-index.ts"],
+      "@spike-land-ai/react-ts-worker/*": ["./src/core/react-engine/*"],
+      "@spike-land-ai/code": ["./src/frontend/monaco-editor/core-logic/modules.ts"],
       "@spike-land-ai/code/src/@/lib/transpile": [
         "./src/frontend/monaco-editor/concurrency/transpile.ts"
       ],
-      "@spike-land-ai/code/src/@/*": [
-        "./src/frontend/monaco-editor/@/*"
-      ],
-      "@spike-land-ai/code/*": [
-        "./src/frontend/monaco-editor/animation-ui/*"
-      ],
-      "@spike-land-ai/spike-cli": [
-        "./src/cli/spike-cli/core-logic/index.ts"
-      ],
-      "@spike-land-ai/spike-review": [
-        "./src/mcp-tools/code-review/mcp/index.ts"
-      ],
-      "@spike-land-ai/spike-review/*": [
-        "./src/mcp-tools/code-review/mcp/*"
-      ],
-      "@spike-land-ai/hackernews-mcp": [
-        "./src/mcp-tools/hackernews/mcp/index.ts"
-      ],
-      "@spike-land-ai/mcp-image-studio": [
-        "./src/mcp-tools/image-studio/core-logic/index.ts"
-      ],
+      "@spike-land-ai/code/src/@/*": ["./src/frontend/monaco-editor/@/*"],
+      "@spike-land-ai/code/*": ["./src/frontend/monaco-editor/animation-ui/*"],
+      "@spike-land-ai/spike-cli": ["./src/cli/spike-cli/core-logic/index.ts"],
+      "@spike-land-ai/spike-review": ["./src/mcp-tools/code-review/mcp/index.ts"],
+      "@spike-land-ai/spike-review/*": ["./src/mcp-tools/code-review/mcp/*"],
+      "@spike-land-ai/hackernews-mcp": ["./src/mcp-tools/hackernews/mcp/index.ts"],
+      "@spike-land-ai/mcp-image-studio": ["./src/mcp-tools/image-studio/core-logic/index.ts"],
       "@spike-land-ai/mcp-image-studio/register": [
         "./src/mcp-tools/image-studio/lazy-imports/register.ts"
       ],
-      "@spike-land-ai/mcp-image-studio/*": [
-        "./src/mcp-tools/image-studio/*"
-      ],
-      "@spike-land-ai/openclaw-mcp": [
-        "./src/mcp-tools/openclaw/core-logic/index.ts"
-      ],
-      "@spike-land-ai/bazdmeg-mcp": [
-        "./src/mcp-tools/bazdmeg/mcp/index.ts"
-      ],
-      "@spike-land-ai/chess-engine": [
-        "./src/core/chess/core-logic/index.ts"
-      ],
-      "@spike-land-ai/qa-studio": [
-        "./src/core/browser-automation/core-logic/index.ts"
-      ],
-      "@spike-land-ai/state-machine": [
-        "./src/core/statecharts/core-logic/index.ts"
-      ],
-      "@spike-land-ai/state-machine/*": [
-        "./src/core/statecharts/cli/*"
-      ],
-      "@spike-land-ai/vibe-dev": [
-        "./src/cli/docker-dev/core-logic/cli.ts"
-      ],
-      "@spike-land-ai/video": [
-        "./src/media/educational-videos/video/index.ts"
-      ],
-      "@spike-land-ai/image-studio-worker": [
-        "./src/edge-api/image-studio-worker/api-mcp/index.ts"
-      ],
-      "monaco-editor": [
-        "./src/monaco-editor/src/index.ts"
-      ],
-      "monaco-editor/*": [
-        "./src/monaco-editor/*"
-      ]
+      "@spike-land-ai/mcp-image-studio/*": ["./src/mcp-tools/image-studio/*"],
+      "@spike-land-ai/openclaw-mcp": ["./src/mcp-tools/openclaw/core-logic/index.ts"],
+      "@spike-land-ai/bazdmeg-mcp": ["./src/mcp-tools/bazdmeg/mcp/index.ts"],
+      "@spike-land-ai/chess-engine": ["./src/core/chess/core-logic/index.ts"],
+      "@spike-land-ai/qa-studio": ["./src/core/browser-automation/core-logic/index.ts"],
+      "@spike-land-ai/state-machine": ["./src/core/statecharts/core-logic/index.ts"],
+      "@spike-land-ai/state-machine/*": ["./src/core/statecharts/cli/*"],
+      "@spike-land-ai/vibe-dev": ["./src/cli/docker-dev/core-logic/cli.ts"],
+      "@spike-land-ai/video": ["./src/media/educational-videos/video/index.ts"],
+      "@spike-land-ai/image-studio-worker": ["./src/edge-api/image-studio-worker/api-mcp/index.ts"],
+      "monaco-editor": ["./src/monaco-editor/src/index.ts"],
+      "monaco-editor/*": ["./src/monaco-editor/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "dist",

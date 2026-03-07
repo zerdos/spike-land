@@ -10,9 +10,10 @@ import "./app.css";
 
 // Report unhandled promise rejections to backend
 window.addEventListener("unhandledrejection", (event) => {
-  const error = event.reason instanceof Error
-    ? event.reason
-    : new Error(String(event.reason ?? "Unhandled rejection"));
+  const error =
+    event.reason instanceof Error
+      ? event.reason
+      : new Error(String(event.reason ?? "Unhandled rejection"));
   reportError(error, { code: "UNHANDLED_REJECTION" });
 });
 

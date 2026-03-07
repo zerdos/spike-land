@@ -1,4 +1,6 @@
-declare const process: { on(event: string, listener: (...args: unknown[]) => void): void } | undefined;
+declare const process:
+  | { on(event: string, listener: (...args: unknown[]) => void): void }
+  | undefined;
 
 export interface ErrorEntry {
   service_name: string;
@@ -30,10 +32,10 @@ export function createErrorShipper(options: ErrorShipperOptions = {}): ErrorShip
 
   const flush = async () => {
     if (buffer.length === 0) return;
-    
+
     const entries = [...buffer];
     buffer = [];
-    
+
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
@@ -54,7 +56,7 @@ export function createErrorShipper(options: ErrorShipperOptions = {}): ErrorShip
 
   const shipError = (entry: ErrorEntry) => {
     buffer.push(entry);
-    
+
     if (buffer.length >= batchSize) {
       flush();
     } else if (!timeoutId) {

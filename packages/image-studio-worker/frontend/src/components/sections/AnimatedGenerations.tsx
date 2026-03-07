@@ -67,8 +67,8 @@ export function AnimatedGenerations() {
         const unique = generated.filter((v, i, a) => a.findIndex((t) => t.url === v.url) === i);
         setImages(unique.slice(0, 15));
       } catch (err) {
-      console.error("Failed to fetch monitoring calls:", err);
-    }
+        console.error("Failed to fetch monitoring calls:", err);
+      }
     }
 
     fetchCalls();

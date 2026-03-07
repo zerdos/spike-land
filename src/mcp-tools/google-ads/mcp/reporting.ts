@@ -7,14 +7,9 @@ import { z } from "zod";
 import { createZodTool, errorResult, jsonResult, tryCatch } from "@spike-land-ai/mcp-server-base";
 import type { GoogleAdsClient } from "../core-logic/ads-client.js";
 
-const DATE_RANGE = z.enum([
-  "TODAY",
-  "YESTERDAY",
-  "LAST_7_DAYS",
-  "LAST_30_DAYS",
-  "THIS_MONTH",
-  "LAST_MONTH",
-]).describe("Date range for the report");
+const DATE_RANGE = z
+  .enum(["TODAY", "YESTERDAY", "LAST_7_DAYS", "LAST_30_DAYS", "THIS_MONTH", "LAST_MONTH"])
+  .describe("Date range for the report");
 
 function microsToCurrency(micros: number): number {
   return micros / 1_000_000;
@@ -52,11 +47,15 @@ interface SearchTermRow {
 export function registerReportingTools(server: McpServer, client: GoogleAdsClient): void {
   createZodTool(server, {
     name: "ads_campaign_performance",
-    description: "Get detailed campaign performance metrics with optional segmentation by date, device, or network",
+    description:
+      "Get detailed campaign performance metrics with optional segmentation by date, device, or network",
     schema: {
       campaign_id: z.string().describe("Campaign ID to report on"),
       date_range: DATE_RANGE,
-      segments: z.enum(["date", "device", "network"]).optional().describe("Segment results by date, device, or network"),
+      segments: z
+        .enum(["date", "device", "network"])
+        .optional()
+        .describe("Segment results by date, device, or network"),
     },
     async handler({ campaign_id, date_range, segments }) {
       const campaignId = String(campaign_id);
@@ -80,9 +79,7 @@ export function registerReportingTools(server: McpServer, client: GoogleAdsClien
         clicks: Number(row.metrics?.clicks ?? 0),
         ctr: Number(row.metrics?.ctr ?? 0),
         average_cpc: Number(row.metrics?.averageCpc ?? 0),
-        cost: row.metrics?.costMicros
-          ? microsToCurrency(Number(row.metrics.costMicros))
-          : 0,
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
         conversions: Number(row.metrics?.conversions ?? 0),
         conversions_value: Number(row.metrics?.conversionsValue ?? 0),
         cost_per_conversion: Number(row.metrics?.costPerConversion ?? 0),
@@ -121,9 +118,7 @@ export function registerReportingTools(server: McpServer, client: GoogleAdsClien
         search_term: row.searchTermView?.searchTerm,
         impressions: Number(row.metrics?.impressions ?? 0),
         clicks: Number(row.metrics?.clicks ?? 0),
-        cost: row.metrics?.costMicros
-          ? microsToCurrency(Number(row.metrics.costMicros))
-          : 0,
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
         conversions: Number(row.metrics?.conversions ?? 0),
       }));
 

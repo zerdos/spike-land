@@ -7,12 +7,7 @@ import { hashToken } from "../db/auth/token";
 import { oauthAccessTokens, users } from "../db/db/schema";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
-const ANONYMOUS_TOOLS = new Set([
-  "search_tools",
-  "list_categories",
-  "get_status",
-  "get_tool_info",
-]);
+const ANONYMOUS_TOOLS = new Set(["search_tools", "list_categories", "get_status", "get_tool_info"]);
 
 export type UserRole = "user" | "admin" | "super_admin";
 

@@ -63,17 +63,19 @@ export class PostHandler {
 
       // Track ai_message_request event (fire-and-forget)
       if (this.env.GA_MEASUREMENT_ID && this.env.GA_API_SECRET) {
-        hashClientId(codeSpace).then((clientId) =>
-          sendGA4Events(this.env.GA_MEASUREMENT_ID, this.env.GA_API_SECRET, clientId, [
-            {
-              name: "ai_message_request",
-              params: {
-                code_space: codeSpace,
-                request_id: requestId,
+        hashClientId(codeSpace)
+          .then((clientId) =>
+            sendGA4Events(this.env.GA_MEASUREMENT_ID, this.env.GA_API_SECRET, clientId, [
+              {
+                name: "ai_message_request",
+                params: {
+                  code_space: codeSpace,
+                  request_id: requestId,
+                },
               },
-            },
-          ]),
-        ).catch((err) => console.error("Failed to send GA4 event:", err));
+            ]),
+          )
+          .catch((err) => console.error("Failed to send GA4 event:", err));
       }
 
       await this.storageService.saveRequestBody(codeSpace, body);

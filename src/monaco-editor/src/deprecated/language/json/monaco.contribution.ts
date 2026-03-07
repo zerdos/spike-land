@@ -1,1 +1,1 @@
-export * from '../../../languages/features/json/register';
+export * from "../../../languages/features/json/register";

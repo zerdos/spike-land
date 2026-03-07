@@ -6,7 +6,7 @@ set -euo pipefail
 
 echo "Validating D1 migrations..."
 
-MIGRATIONS_DIR="packages/spike-land-mcp/migrations"
+MIGRATIONS_DIR="packages/spike-land-mcp/db/migrations"
 if [ -d "$MIGRATIONS_DIR" ]; then
   RISKY=$(grep -ril 'DROP TABLE\|DROP COLUMN\|RENAME TABLE' "$MIGRATIONS_DIR" 2>/dev/null || true)
   if [ -n "$RISKY" ]; then

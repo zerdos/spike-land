@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { computeOverallStatus, formatGateResults, getBuiltinRules, runGates } from "../../../src/mcp-tools/code-review/rules/engine.js";
+import {
+  computeOverallStatus,
+  formatGateResults,
+  getBuiltinRules,
+  runGates,
+} from "../../../src/mcp-tools/code-review/rules/engine.js";
 import type { RuleContext } from "../../../src/mcp-tools/code-review/rules/engine.js";
 import type { GateResult } from "../../../src/mcp-tools/code-review/types.js";
 
@@ -196,7 +201,7 @@ describe("Rule context edge cases", () => {
     const context = makeContext({ diff });
     const rules = getBuiltinRules();
     // Security patterns rule uses getAddedLines
-    const securityRule = rules.find(r => r.name === "Security Patterns");
+    const securityRule = rules.find((r) => r.name === "Security Patterns");
     expect(securityRule).toBeDefined();
     const result = securityRule!.check(context);
     expect(result.status).toBe("GREEN");
@@ -205,7 +210,7 @@ describe("Rule context edge cases", () => {
   it("handles short PR descriptions", () => {
     const context = makeContext({ prBody: "Too short" });
     const rules = getBuiltinRules();
-    const rule = rules.find(r => r.name === "PR Description Quality");
+    const rule = rules.find((r) => r.name === "PR Description Quality");
     const result = rule!.check(context);
     expect(result.status).toBe("RED");
     expect(result.detail).toContain("too short");
@@ -221,14 +226,16 @@ describe("Rule context edge cases", () => {
     ].join("\n");
     const context = makeContext({ diff });
     const rules = getBuiltinRules();
-    
-    const securityResult = rules.find(r => r.name === "Security Patterns")!.check(context);
+
+    const securityResult = rules.find((r) => r.name === "Security Patterns")!.check(context);
     expect(securityResult.status).toBe("RED");
     expect(securityResult.detail).toContain("Potential API key");
     expect(securityResult.detail).toContain("Potential secret/token");
     expect(securityResult.detail).toContain("innerHTML");
 
-    const complianceResult = rules.find(r => r.name === "TypeScript Strict Compliance")!.check(context);
+    const complianceResult = rules
+      .find((r) => r.name === "TypeScript Strict Compliance")!
+      .check(context);
     expect(complianceResult.status).toBe("RED");
     expect(complianceResult.detail).toContain("@ts-ignore");
     expect(complianceResult.detail).toContain("`any` type detected");

@@ -104,7 +104,10 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
         toolRegistry.set(tool.name, {
           name: tool.name,
           description: tool.description ?? "",
-          inputSchema: (tool.parameters as unknown as JsonSchemaObject | undefined) ?? { type: "object", properties: {} },
+          inputSchema: (tool.parameters as unknown as JsonSchemaObject | undefined) ?? {
+            type: "object",
+            properties: {},
+          },
           sessionKey,
         });
       }
@@ -215,7 +218,12 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
           return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
         } catch (err: unknown) {
           outcome = "error";
-          return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+          return {
+            content: [
+              { type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` },
+            ],
+            isError: true,
+          };
         }
       }
       const entry = toolRegistry.get(name);
@@ -229,11 +237,11 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
       const result = await executeGatewayTool(entry, args);
       if (result.isError) outcome = "error";
       return result;
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       outcome = "error";
       throw err;
-    /* c8 ignore stop */
+      /* c8 ignore stop */
     } finally {
       const durationMs = Date.now() - start;
       log(`[mcp-analytics] openclaw-mcp/${name} ${outcome} ${durationMs}ms`);

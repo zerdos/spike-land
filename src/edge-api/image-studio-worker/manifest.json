@@ -1,12 +1,7 @@
 {
   "name": "image-studio-worker",
   "category": "edge-api",
-  "dependencies": [
-    "@google/genai",
-    "@spike-land-ai/mcp-image-studio",
-    "hono",
-    "node:buffer"
-  ],
+  "dependencies": ["@google/genai", "@spike-land-ai/mcp-image-studio", "hono", "node:buffer"],
   "files": [
     "ai-mcp/generation.ts",
     "ai/chat-handler.ts",

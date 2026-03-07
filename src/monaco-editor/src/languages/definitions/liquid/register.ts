@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'liquid',
-	extensions: ['.liquid', '.html.liquid'],
-	aliases: ['Liquid', 'liquid'],
-	mimetypes: ['application/liquid'],
-	loader: () => import('./liquid')
+  id: "liquid",
+  extensions: [".liquid", ".html.liquid"],
+  aliases: ["Liquid", "liquid"],
+  mimetypes: ["application/liquid"],
+  loader: () => import("./liquid"),
 });

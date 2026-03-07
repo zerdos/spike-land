@@ -19,13 +19,13 @@ function makeR2Object(content: string) {
 
 const BASE_HTML = `<!DOCTYPE html><html><head><title>spike.land - AI Platform</title><meta name="description" content="default desc" /></head><body><div id="root"></div></body></html>`;
 
-function createMockEnv(spaAssets: Record<string, ReturnType<typeof makeR2Object> | null> = {}): Env {
+function createMockEnv(
+  spaAssets: Record<string, ReturnType<typeof makeR2Object> | null> = {},
+): Env {
   return {
     R2: {} as R2Bucket,
     SPA_ASSETS: {
-      get: vi.fn().mockImplementation((key: string) =>
-        Promise.resolve(spaAssets[key] ?? null)
-      ),
+      get: vi.fn().mockImplementation((key: string) => Promise.resolve(spaAssets[key] ?? null)),
     } as unknown as R2Bucket,
     DB: {
       prepare: vi.fn().mockReturnValue({
@@ -115,7 +115,9 @@ describe("SPA — index.html fallback", () => {
   });
 
   it("serves prerendered HTML file when it exists", async () => {
-    const prerendered = makeR2Object("<html><head><title>Blog</title></head><body>Blog page</body></html>");
+    const prerendered = makeR2Object(
+      "<html><head><title>Blog</title></head><body>Blog page</body></html>",
+    );
     const env = createMockEnv({ "blog.html": prerendered });
     const app = makeApp();
     const res = await app.request("https://spike.land/blog", {}, env);
@@ -376,7 +378,9 @@ describe("SPA — direct R2 match for non-extension paths", () => {
       httpEtag: '"etag1"',
       writeHttpMetadata: vi.fn(),
     };
-    const env = createMockEnv({ "some-resource": obj as unknown as ReturnType<typeof makeR2Object> });
+    const env = createMockEnv({
+      "some-resource": obj as unknown as ReturnType<typeof makeR2Object>,
+    });
     const app = makeApp();
     const res = await app.request("https://spike.land/some-resource", {}, env);
     expect(res.status).toBe(200);
@@ -391,9 +395,13 @@ describe("SPA — cookie consent tracking", () => {
     const htmlObj = makeR2Object(BASE_HTML);
     const env = createMockEnv({ "index.html": htmlObj });
     const app = makeApp();
-    const res = await app.request("https://spike.land/settings", {
-      headers: { cookie: "cookie_consent=accepted" },
-    }, env);
+    const res = await app.request(
+      "https://spike.land/settings",
+      {
+        headers: { cookie: "cookie_consent=accepted" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const setCookie = res.headers.get("set-cookie");
     expect(setCookie).toContain("spike_client_id=");
@@ -412,9 +420,13 @@ describe("SPA — cookie consent tracking", () => {
     const htmlObj = makeR2Object(BASE_HTML);
     const env = createMockEnv({ "index.html": htmlObj });
     const app = makeApp();
-    const res = await app.request("https://spike.land/settings", {
-      headers: { cookie: "cookie_consent=accepted; spike_client_id=existing-id" },
-    }, env);
+    const res = await app.request(
+      "https://spike.land/settings",
+      {
+        headers: { cookie: "cookie_consent=accepted; spike_client_id=existing-id" },
+      },
+      env,
+    );
     const setCookie = res.headers.get("set-cookie");
     expect(setCookie).toBeNull();
   });

@@ -41,17 +41,43 @@ describe("revenue tools", () => {
     });
 
     it("aggregates balance transactions by type", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [
-            { id: "txn_1", type: "charge", amount: 5000, fee: 175, net: 4825, currency: "usd", created: 1700000000 },
-            { id: "txn_2", type: "charge", amount: 3000, fee: 117, net: 2883, currency: "usd", created: 1700000100 },
-            { id: "txn_3", type: "refund", amount: -2000, fee: 0, net: -2000, currency: "usd", created: 1700000200 },
-          ],
-          has_more: false,
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [
+              {
+                id: "txn_1",
+                type: "charge",
+                amount: 5000,
+                fee: 175,
+                net: 4825,
+                currency: "usd",
+                created: 1700000000,
+              },
+              {
+                id: "txn_2",
+                type: "charge",
+                amount: 3000,
+                fee: 117,
+                net: 2883,
+                currency: "usd",
+                created: 1700000100,
+              },
+              {
+                id: "txn_3",
+                type: "refund",
+                amount: -2000,
+                fee: 0,
+                net: -2000,
+                currency: "usd",
+                created: 1700000200,
+              },
+            ],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_revenue_summary", {
         start_date: "2023-11-01",
@@ -94,15 +120,26 @@ describe("revenue tools", () => {
 
   describe("stripe_payout_history", () => {
     it("returns payouts", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [
-            { id: "po_1", amount: 10000, currency: "usd", status: "paid", arrival_date: 1700000000, created: 1699900000, method: "standard", description: null },
-          ],
-          has_more: false,
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [
+              {
+                id: "po_1",
+                amount: 10000,
+                currency: "usd",
+                status: "paid",
+                arrival_date: 1700000000,
+                created: 1699900000,
+                method: "standard",
+                description: null,
+              },
+            ],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_payout_history", { limit: 5 });
       expect(result.isError).toBeUndefined();
@@ -113,9 +150,11 @@ describe("revenue tools", () => {
     });
 
     it("filters by status", async () => {
-      setupClient([{
-        body: { object: "list", data: [], has_more: false },
-      }]);
+      setupClient([
+        {
+          body: { object: "list", data: [], has_more: false },
+        },
+      ]);
 
       const result = await server.call("stripe_payout_history", { limit: 10, status: "pending" });
       expect(result.isError).toBeUndefined();
@@ -134,9 +173,33 @@ describe("revenue tools", () => {
           body: {
             object: "list",
             data: [
-              { id: "dp_1", amount: 5000, currency: "usd", status: "won", reason: "general", created: 1700000000, charge: "ch_1" },
-              { id: "dp_2", amount: 3000, currency: "usd", status: "lost", reason: "fraudulent", created: 1700000100, charge: "ch_2" },
-              { id: "dp_3", amount: 2000, currency: "usd", status: "needs_response", reason: "general", created: 1700000200, charge: "ch_3" },
+              {
+                id: "dp_1",
+                amount: 5000,
+                currency: "usd",
+                status: "won",
+                reason: "general",
+                created: 1700000000,
+                charge: "ch_1",
+              },
+              {
+                id: "dp_2",
+                amount: 3000,
+                currency: "usd",
+                status: "lost",
+                reason: "fraudulent",
+                created: 1700000100,
+                charge: "ch_2",
+              },
+              {
+                id: "dp_3",
+                amount: 2000,
+                currency: "usd",
+                status: "needs_response",
+                reason: "general",
+                created: 1700000200,
+                charge: "ch_3",
+              },
             ],
             has_more: false,
           },

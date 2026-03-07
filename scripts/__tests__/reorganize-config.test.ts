@@ -25,17 +25,13 @@ describe("getDependencyGroupName", () => {
   it("detects testing deps", () => {
     expect(getDependencyGroupName(new Set(["playwright"]))).toBe("testing");
     // @testing-library/react matches both "testing" and "react" (ui) tags
-    expect(
-      getDependencyGroupName(new Set(["@testing-library/react"])),
-    ).toBe("testing-ui");
+    expect(getDependencyGroupName(new Set(["@testing-library/react"]))).toBe("testing-ui");
     expect(getDependencyGroupName(new Set(["vitest"]))).toBe("testing");
   });
 
   it("detects AI deps", () => {
     expect(getDependencyGroupName(new Set(["@ai-sdk/anthropic"]))).toBe("ai");
-    expect(
-      getDependencyGroupName(new Set(["@anthropic-ai/sdk"])),
-    ).toBe("ai");
+    expect(getDependencyGroupName(new Set(["@anthropic-ai/sdk"]))).toBe("ai");
   });
 
   it("detects database deps", () => {
@@ -60,15 +56,11 @@ describe("getDependencyGroupName", () => {
   });
 
   it("detects MCP deps", () => {
-    expect(
-      getDependencyGroupName(new Set(["@modelcontextprotocol/sdk"])),
-    ).toBe("mcp");
+    expect(getDependencyGroupName(new Set(["@modelcontextprotocol/sdk"]))).toBe("mcp");
   });
 
   it("detects cloudflare as edge", () => {
-    expect(getDependencyGroupName(new Set(["@cloudflare/workers"]))).toBe(
-      "edge",
-    );
+    expect(getDependencyGroupName(new Set(["@cloudflare/workers"]))).toBe("edge");
   });
 
   it("detects better-auth as auth", () => {
@@ -110,24 +102,16 @@ describe("getDependencyGroupName", () => {
 
   it("uses semantic fallback for known npm packages", () => {
     expect(getDependencyGroupName(new Set(["chess.js"]))).toBe("chess-core");
-    expect(getDependencyGroupName(new Set(["async-mutex"]))).toBe(
-      "concurrency",
-    );
-    expect(getDependencyGroupName(new Set(["html2canvas-pro"]))).toBe(
-      "rendering",
-    );
+    expect(getDependencyGroupName(new Set(["async-mutex"]))).toBe("concurrency");
+    expect(getDependencyGroupName(new Set(["html2canvas-pro"]))).toBe("rendering");
   });
 
   it("uses 'lazy-imports' for unknown deps instead of raw dep names", () => {
-    expect(
-      getDependencyGroupName(new Set(["some-obscure-package"])),
-    ).toBe("lazy-imports");
+    expect(getDependencyGroupName(new Set(["some-obscure-package"]))).toBe("lazy-imports");
   });
 
   it("does NOT produce raw dep names like 'spike-land-ai-esbuild-wasm-async-mutex'", () => {
-    const result = getDependencyGroupName(
-      new Set(["esbuild-wasm", "async-mutex"]),
-    );
+    const result = getDependencyGroupName(new Set(["esbuild-wasm", "async-mutex"]));
     expect(result).not.toContain("spike-land-ai");
     // async-mutex is in the semantic map → "concurrency"
     expect(result).toBe("concurrency");
@@ -202,49 +186,23 @@ describe("categoryRules", () => {
 
   it("MCP rule matches @modelcontextprotocol/sdk", () => {
     const mcpRule = categoryRules.find((r) => r.category === "mcp-tools")!;
-    expect(
-      mcpRule.predicate(
-        emptyDeps,
-        new Set(["@modelcontextprotocol/sdk"]),
-        undefined,
-      ),
-    ).toBe(true);
-    expect(mcpRule.predicate(emptyDeps, new Set(["react"]), undefined)).toBe(
-      false,
+    expect(mcpRule.predicate(emptyDeps, new Set(["@modelcontextprotocol/sdk"]), undefined)).toBe(
+      true,
     );
+    expect(mcpRule.predicate(emptyDeps, new Set(["react"]), undefined)).toBe(false);
   });
 
   it("frontend rule matches react", () => {
-    const frontendRule = categoryRules.find(
-      (r) => r.category === "frontend",
-    )!;
-    expect(
-      frontendRule.predicate(emptyDeps, new Set(["react"]), undefined),
-    ).toBe(true);
-    expect(
-      frontendRule.predicate(emptyDeps, new Set(["react-dom"]), undefined),
-    ).toBe(true);
+    const frontendRule = categoryRules.find((r) => r.category === "frontend")!;
+    expect(frontendRule.predicate(emptyDeps, new Set(["react"]), undefined)).toBe(true);
+    expect(frontendRule.predicate(emptyDeps, new Set(["react-dom"]), undefined)).toBe(true);
   });
 
   it("AI rule matches various AI SDKs", () => {
     const aiRule = categoryRules.find((r) => r.category === "ai")!;
-    expect(
-      aiRule.predicate(
-        emptyDeps,
-        new Set(["@ai-sdk/anthropic"]),
-        undefined,
-      ),
-    ).toBe(true);
-    expect(
-      aiRule.predicate(
-        emptyDeps,
-        new Set(["@anthropic-ai/sdk"]),
-        undefined,
-      ),
-    ).toBe(true);
-    expect(
-      aiRule.predicate(emptyDeps, new Set(["replicate"]), undefined),
-    ).toBe(true);
+    expect(aiRule.predicate(emptyDeps, new Set(["@ai-sdk/anthropic"]), undefined)).toBe(true);
+    expect(aiRule.predicate(emptyDeps, new Set(["@anthropic-ai/sdk"]), undefined)).toBe(true);
+    expect(aiRule.predicate(emptyDeps, new Set(["replicate"]), undefined)).toBe(true);
   });
 
   it("core rule matches library and block kinds", () => {

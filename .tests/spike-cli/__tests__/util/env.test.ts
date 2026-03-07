@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { expandEnvRecord, expandEnvVars } from "../../../../src/cli/spike-cli/core-logic/util/env.js";
+import {
+  expandEnvRecord,
+  expandEnvVars,
+} from "../../../../src/cli/spike-cli/core-logic/util/env.js";
 import * as logger from "../../../../src/cli/spike-cli/core-logic/util/logger.js";
 
 describe("expandEnvVars", () => {

@@ -2,7 +2,6 @@ import { Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
-
 const placeholderMessages = [
   {
     id: 1,
@@ -47,7 +46,9 @@ export function MessageThreadPage() {
           >
             <div
               className={`max-w-xs rounded-2xl px-4 py-2 ${
-                msg.from === "me" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                msg.from === "me"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground"
               }`}
             >
               <p className="text-sm">{msg.text}</p>

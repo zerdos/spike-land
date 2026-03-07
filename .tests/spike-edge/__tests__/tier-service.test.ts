@@ -247,8 +247,9 @@ describe("resolveEffectiveTier", () => {
       const db = createMockDb({ subscription: { plan: "business" } });
       await resolveEffectiveTier(db, userId);
 
-      const prepareCalls = (db as unknown as { prepare: ReturnType<typeof vi.fn> }).prepare.mock
-        .calls.map(([sql]: [string]) => sql);
+      const prepareCalls = (
+        db as unknown as { prepare: ReturnType<typeof vi.fn> }
+      ).prepare.mock.calls.map(([sql]: [string]) => sql);
 
       expect(prepareCalls.some((s) => s.includes("subscriptions"))).toBe(true);
       expect(prepareCalls.some((s) => s.includes("access_grants"))).toBe(false);
@@ -265,8 +266,9 @@ describe("resolveEffectiveTier", () => {
       });
       await resolveEffectiveTier(db, userId);
 
-      const prepareCalls = (db as unknown as { prepare: ReturnType<typeof vi.fn> }).prepare.mock
-        .calls.map(([sql]: [string]) => sql);
+      const prepareCalls = (
+        db as unknown as { prepare: ReturnType<typeof vi.fn> }
+      ).prepare.mock.calls.map(([sql]: [string]) => sql);
 
       expect(prepareCalls.some((s) => s.includes("user_elo"))).toBe(true);
     });

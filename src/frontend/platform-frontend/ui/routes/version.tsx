@@ -133,7 +133,10 @@ export function VersionPage() {
             <tbody className="divide-y divide-border">
               {data.assets.map((asset) => (
                 <tr key={asset.key} className="hover:bg-muted transition-colors">
-                  <td className="max-w-xs truncate px-4 py-2 font-mono text-xs text-foreground" title={asset.key}>
+                  <td
+                    className="max-w-xs truncate px-4 py-2 font-mono text-xs text-foreground"
+                    title={asset.key}
+                  >
                     {asset.key}
                   </td>
                   <td className="px-4 py-2">
@@ -141,7 +144,9 @@ export function VersionPage() {
                       {fileTypeIcon(asset.key)}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-right tabular-nums text-foreground">{formatSize(asset.size)}</td>
+                  <td className="px-4 py-2 text-right tabular-nums text-foreground">
+                    {formatSize(asset.size)}
+                  </td>
                   <td className="px-4 py-2 text-muted-foreground">
                     {new Date(asset.uploaded).toLocaleDateString()}
                   </td>

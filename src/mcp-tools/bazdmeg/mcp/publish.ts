@@ -115,7 +115,6 @@ export function registerPublishTools(server: McpServer): void {
     description: "Generate a valid package.json from packages.yaml entry for npm publishing.",
     schema: GeneratePackageJsonSchema.shape,
     handler: async ({ packageName, dryRun = true }: z.infer<typeof GeneratePackageJsonSchema>) => {
-
       const repoRoot = process.cwd();
       const manifest = await readManifest(repoRoot);
       const pkg = manifest.packages[packageName];
@@ -146,8 +145,11 @@ export function registerPublishTools(server: McpServer): void {
     name: "bazdmeg_publish_npm",
     description: "Build + generate package.json + npm publish. Full publishing pipeline.",
     schema: PublishNpmSchema.shape,
-    handler: async ({ packageName, registry = "github", dryRun = true }: z.infer<typeof PublishNpmSchema>) => {
-
+    handler: async ({
+      packageName,
+      registry = "github",
+      dryRun = true,
+    }: z.infer<typeof PublishNpmSchema>) => {
       const repoRoot = process.cwd();
       const manifest = await readManifest(repoRoot);
       const pkg = manifest.packages[packageName];

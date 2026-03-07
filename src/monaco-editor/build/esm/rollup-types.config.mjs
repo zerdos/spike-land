@@ -5,59 +5,59 @@
 
 // @ts-check
 
-import nodeResolve from '@rollup/plugin-node-resolve';
-import { join } from 'path';
-import { defineConfig } from 'rollup';
-import { dts } from 'rollup-plugin-dts';
-import { dtsDeprecationWarning, getEntryPoints, mapModuleId } from '../shared.mjs';
+import nodeResolve from "@rollup/plugin-node-resolve";
+import { join } from "path";
+import { defineConfig } from "rollup";
+import { dts } from "rollup-plugin-dts";
+import { dtsDeprecationWarning, getEntryPoints, mapModuleId } from "../shared.mjs";
 
-const root = join(import.meta.dirname, '../../');
+const root = join(import.meta.dirname, "../../");
 
 /** Strip `declare global { ... }` blocks that rollup misinterprets as named exports. */
 function stripDeclareGlobal() {
-	return {
-		name: 'strip-declare-global',
-		transform(code, id) {
-			if (id.endsWith('.d.ts') && code.includes('declare global')) {
-				return code.replace(/declare\s+global\s*\{[^}]*\}/gs, '/* declare global stripped */');
-			}
-			return null;
-		}
-	};
+  return {
+    name: "strip-declare-global",
+    transform(code, id) {
+      if (id.endsWith(".d.ts") && code.includes("declare global")) {
+        return code.replace(/declare\s+global\s*\{[^}]*\}/gs, "/* declare global stripped */");
+      }
+      return null;
+    },
+  };
 }
 
 export default defineConfig({
-	input: {
-		...getEntryPoints(true, false)
-	},
-	output: {
-		dir: join(root, './out/monaco-editor/esm'),
-		format: 'es',
-		preserveModules: true,
-		entryFileNames: function (chunkInfo) {
-			const moduleId = chunkInfo.facadeModuleId;
-			if (moduleId) {
-				const m = mapModuleId(moduleId, '.d.ts');
-				console.log(moduleId + ' => ' + m);
-				if (m !== undefined) {
-					return m;
-				}
-			} else {
-				console.warn('NO MODULE ID for chunkInfo', chunkInfo);
-			}
-			return '[name].d.ts';
-		}
-	},
-	external: [/.*\.css/],
-	plugins: [
-		stripDeclareGlobal(),
-		nodeResolve(),
-		dts({
-			compilerOptions: {
-				stripInternal: true
-			},
-			includeExternal: ['monaco-editor-core', '@vscode/monaco-lsp-client']
-		}),
-		dtsDeprecationWarning((f) => f.endsWith('editor.api.d.ts'))
-	]
+  input: {
+    ...getEntryPoints(true, false),
+  },
+  output: {
+    dir: join(root, "./out/monaco-editor/esm"),
+    format: "es",
+    preserveModules: true,
+    entryFileNames: function (chunkInfo) {
+      const moduleId = chunkInfo.facadeModuleId;
+      if (moduleId) {
+        const m = mapModuleId(moduleId, ".d.ts");
+        console.log(moduleId + " => " + m);
+        if (m !== undefined) {
+          return m;
+        }
+      } else {
+        console.warn("NO MODULE ID for chunkInfo", chunkInfo);
+      }
+      return "[name].d.ts";
+    },
+  },
+  external: [/.*\.css/],
+  plugins: [
+    stripDeclareGlobal(),
+    nodeResolve(),
+    dts({
+      compilerOptions: {
+        stripInternal: true,
+      },
+      includeExternal: ["monaco-editor-core", "@vscode/monaco-lsp-client"],
+    }),
+    dtsDeprecationWarning((f) => f.endsWith("editor.api.d.ts")),
+  ],
 });

@@ -1,12 +1,7 @@
 {
   "name": "bazdmeg",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base",
-    "node:child_process",
-    "node:fs",
-    "node:path"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base", "node:child_process", "node:fs", "node:path"],
   "files": [
     "core-logic/engine.ts",
     "core-logic/personas.ts",

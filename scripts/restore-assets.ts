@@ -10,17 +10,22 @@ async function main() {
   }
 
   const allOldFiles = await glob("src-old/**/*", { nodir: true });
-  
+
   for (const oldFile of allOldFiles) {
-    if (oldFile.endsWith(".ts") || oldFile.endsWith(".tsx") || oldFile.endsWith(".js") || oldFile.endsWith(".jsx")) {
+    if (
+      oldFile.endsWith(".ts") ||
+      oldFile.endsWith(".tsx") ||
+      oldFile.endsWith(".js") ||
+      oldFile.endsWith(".jsx")
+    ) {
       continue;
     }
-    
+
     // Find where files in the same directory moved to
     const oldDir = path.dirname(oldFile);
     const siblings = await fs.readdir(oldDir);
     let targetDir: string | null = null;
-    
+
     for (const sibling of siblings) {
       if (sibling.endsWith(".ts") || sibling.endsWith(".tsx")) {
         const siblingPath = path.join(oldDir, sibling).replace("src-old/", "src/");
@@ -30,7 +35,7 @@ async function main() {
         }
       }
     }
-    
+
     if (!targetDir) {
       // Fallback: search mapping for anything in this directory
       const oldDirPrefix = oldDir.replace("src-old/", "src/");
@@ -41,7 +46,7 @@ async function main() {
         }
       }
     }
-    
+
     if (targetDir) {
       const fileName = path.basename(oldFile);
       const destPath = path.join(targetDir, fileName);

@@ -58,8 +58,7 @@ class PuppeteerPageWrapper implements BrowserPage {
     this.keyboard = page.keyboard;
     // Puppeteer mouse.wheel takes an object, normalize to (deltaX, deltaY)
     this.mouse = {
-      wheel: (deltaX: number, deltaY: number) =>
-        page.mouse.wheel({ deltaX, deltaY }),
+      wheel: (deltaX: number, deltaY: number) => page.mouse.wheel({ deltaX, deltaY }),
     };
   }
 
@@ -166,9 +165,9 @@ export class PuppeteerAdapter implements BrowserAdapter {
   async launch(): Promise<void> {
     if (this._browser?.isConnected()) return;
     const puppeteer = await import("@cloudflare/puppeteer");
-    this._browser = await (puppeteer.default ?? puppeteer).launch(
+    this._browser = (await (puppeteer.default ?? puppeteer).launch(
       this._browserBinding,
-    ) as unknown as PuppeteerBrowser;
+    )) as unknown as PuppeteerBrowser;
   }
 
   async newPage(): Promise<BrowserPage> {

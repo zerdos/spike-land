@@ -5,7 +5,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
+import {
+  enterWorkspace,
+  resetWorkspaceState,
+} from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 import { unlink } from "node:fs/promises";
 
 // Mock the shell module

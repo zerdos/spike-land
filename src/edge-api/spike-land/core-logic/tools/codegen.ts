@@ -111,8 +111,8 @@ export function registerCodegenTools(registry: ToolRegistry, userId: string, db:
         {
           name: "create_react_component",
           input: { spec: "Create a button component", file_contents: [] },
-          description: "Create a simple code generation bundle"
-        }
+          description: "Create a simple code generation bundle",
+        },
       ])
       .handler(async ({ input }) => {
         const id = crypto.randomUUID();

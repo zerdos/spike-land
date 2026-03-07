@@ -110,7 +110,7 @@ describe("ReactFiberLane", () => {
     it("removes a lane from set", () => {
       const lanes = SyncLane | DefaultLane;
       const result = removeLanes(lanes, SyncLane);
-      expect((result & SyncLane)).toBe(0);
+      expect(result & SyncLane).toBe(0);
       expect((result & DefaultLane) !== 0).toBe(true);
     });
 

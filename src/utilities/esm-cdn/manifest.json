@@ -2,8 +2,5 @@
   "name": "esm-cdn",
   "category": "utilities",
   "dependencies": [],
-  "files": [
-    "core-logic/index.spec.ts",
-    "core-logic/index.ts"
-  ]
+  "files": ["core-logic/index.spec.ts", "core-logic/index.ts"]
 }

@@ -8,21 +8,14 @@ import { cn } from "../../styling/cn";
 // ---------------------------------------------------------------------------
 
 function PreviewSkeleton({ isDarkMode }: { isDarkMode: boolean }) {
-  const shimmer = isDarkMode
-    ? "bg-white/5 animate-pulse"
-    : "bg-muted animate-pulse";
-  const shimmerAlt = isDarkMode
-    ? "bg-white/[0.03] animate-pulse"
-    : "bg-muted/60 animate-pulse";
+  const shimmer = isDarkMode ? "bg-white/5 animate-pulse" : "bg-muted animate-pulse";
+  const shimmerAlt = isDarkMode ? "bg-white/[0.03] animate-pulse" : "bg-muted/60 animate-pulse";
 
   return (
     <div
       aria-label="Loading preview"
       aria-busy="true"
-      className={cn(
-        "absolute inset-0 z-10 flex flex-col gap-3 p-5",
-        "bg-background",
-      )}
+      className={cn("absolute inset-0 z-10 flex flex-col gap-3 p-5", "bg-background")}
     >
       {/* Fake browser chrome bar */}
       <div className={cn("h-4 w-2/3 rounded-md", shimmer)} />
@@ -123,12 +116,7 @@ function ErrorDisplay({
       >
         <AlertCircle className="size-6" />
       </div>
-      <h3
-        className={cn(
-          "text-sm font-semibold",
-          isDarkMode ? "text-white" : "text-foreground",
-        )}
-      >
+      <h3 className={cn("text-sm font-semibold", isDarkMode ? "text-white" : "text-foreground")}>
         Preview Failed to Load
       </h3>
       <p
@@ -137,9 +125,7 @@ function ErrorDisplay({
           isDarkMode ? "text-gray-500" : "text-muted-foreground",
         )}
       >
-        {message
-          ? `Error: ${message}`
-          : "We couldn't reach the edge runtime for this application."}
+        {message ? `Error: ${message}` : "We couldn't reach the edge runtime for this application."}
       </p>
       <Button
         onClick={onRetry}
@@ -147,8 +133,7 @@ function ErrorDisplay({
         size="sm"
         className={cn(
           "mt-6",
-          isDarkMode &&
-            "border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-white",
+          isDarkMode && "border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-white",
         )}
       >
         <RefreshCw className="mr-2 size-3.5" />
@@ -216,31 +201,20 @@ export function LivePreview({
       <div
         className={cn(
           "flex items-center justify-between border-b px-4 py-2 backdrop-blur-sm shrink-0",
-          isDarkMode
-            ? "border-white/5 bg-white/[0.03]"
-            : "border-border bg-muted/50",
+          isDarkMode ? "border-white/5 bg-white/[0.03]" : "border-border bg-muted/50",
         )}
       >
         {/* Left: traffic lights + URL */}
         <div className="flex items-center gap-3 overflow-hidden min-w-0">
           <div className="flex gap-1.5 shrink-0">
             <div
-              className={cn(
-                "h-2.5 w-2.5 rounded-full",
-                isDarkMode ? "bg-white/10" : "bg-border",
-              )}
+              className={cn("h-2.5 w-2.5 rounded-full", isDarkMode ? "bg-white/10" : "bg-border")}
             />
             <div
-              className={cn(
-                "h-2.5 w-2.5 rounded-full",
-                isDarkMode ? "bg-white/10" : "bg-border",
-              )}
+              className={cn("h-2.5 w-2.5 rounded-full", isDarkMode ? "bg-white/10" : "bg-border")}
             />
             <div
-              className={cn(
-                "h-2.5 w-2.5 rounded-full",
-                isDarkMode ? "bg-white/10" : "bg-border",
-              )}
+              className={cn("h-2.5 w-2.5 rounded-full", isDarkMode ? "bg-white/10" : "bg-border")}
             />
           </div>
           <span
@@ -288,7 +262,12 @@ export function LivePreview({
             asChild
             title="Open in new tab"
           >
-            <a href={src} target="_blank" rel="noopener noreferrer" aria-label="Open preview in new tab">
+            <a
+              href={src}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open preview in new tab"
+            >
               <ExternalLink className="size-3.5" />
             </a>
           </Button>
@@ -307,28 +286,18 @@ export function LivePreview({
             aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             title={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
           >
-            {fullscreen
-              ? <Minimize className="size-3.5" />
-              : <Maximize className="size-3.5" />}
+            {fullscreen ? <Minimize className="size-3.5" /> : <Maximize className="size-3.5" />}
           </Button>
         </div>
       </div>
 
       {/* ---- iframe area ---- */}
-      <div
-        className={cn(
-          "relative",
-          fullscreen ? "flex-1" : "h-[600px]",
-          "bg-background",
-        )}
-      >
+      <div className={cn("relative", fullscreen ? "flex-1" : "h-[600px]", "bg-background")}>
         {/* Skeleton shimmer while loading */}
         {loading && !error && <PreviewSkeleton isDarkMode={isDarkMode} />}
 
         {/* Error overlay */}
-        {error && (
-          <ErrorDisplay isDarkMode={isDarkMode} onRetry={handleRefresh} />
-        )}
+        {error && <ErrorDisplay isDarkMode={isDarkMode} onRetry={handleRefresh} />}
 
         {/* Error boundary wraps the iframe so host-side errors are caught too */}
         <IframeErrorBoundary onReset={handleRefresh} isDarkMode={isDarkMode}>

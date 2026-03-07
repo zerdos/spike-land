@@ -21,10 +21,7 @@ export function registerDirectMessageTools(
     freeTool(userId, db)
       .tool("dm_send", "Send a private message to a user by email address.", {
         content: z.string().min(1).describe("Body of the message."),
-        toEmail: z
-          .string()
-          .email()
-          .describe("Recipient email address (required)."),
+        toEmail: z.string().email().describe("Recipient email address (required)."),
       })
       .meta({ category: "direct-message", tier: "free" })
       .handler(async ({ input, ctx }) => {

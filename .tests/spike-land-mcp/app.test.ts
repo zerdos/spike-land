@@ -7,7 +7,11 @@ describe("app", () => {
     const res = await app.request("/health");
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toEqual({ status: "ok", service: "spike-land-mcp", timestamp: expect.any(String) });
+    expect(body).toEqual({
+      status: "ok",
+      service: "spike-land-mcp",
+      timestamp: expect.any(String),
+    });
   });
 
   it("has expected routes", () => {

@@ -5,33 +5,39 @@ import * as https from "node:https";
 
 async function fetchTools(): Promise<string> {
   return new Promise((resolve, reject) => {
-    https.get("https://mcp.spike.land/tools", (res) => {
-      if (res.statusCode !== 200) {
-        reject(new Error(`Failed to fetch tools: ${res.statusCode}`));
-        return;
-      }
-      let data = "";
-      res.on("data", (chunk) => data += chunk);
-      res.on("end", () => resolve(data));
-    }).on("error", reject);
+    https
+      .get("https://mcp.spike.land/tools", (res) => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`Failed to fetch tools: ${res.statusCode}`));
+          return;
+        }
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => resolve(data));
+      })
+      .on("error", reject);
   });
 }
 
 async function main() {
   console.log("🚀 Starting Multi-Agent MCP User Test for spike.land...");
-  
+
   let toolsList = "";
   try {
     console.log("  [API] Fetching tools from https://mcp.spike.land/tools...");
     const rawData = await fetchTools();
     const data = JSON.parse(rawData);
-    
+
     // Format tools for the prompt
-    toolsList = data.tools.map((t: any) => `
-- **${t.name}** [Category: ${t.category || 'uncategorized'}]
+    toolsList = data.tools
+      .map(
+        (t: any) => `
+- **${t.name}** [Category: ${t.category || "uncategorized"}]
   Description: ${t.description}
   Input Schema: ${JSON.stringify(t.inputSchema || {})}
-`).join("\n");
+`,
+      )
+      .join("\n");
     console.log(`  [API] Successfully fetched ${data.tools.length} tools.`);
   } catch (err) {
     console.error("❌ Failed to fetch tools:", err);
@@ -43,7 +49,7 @@ async function main() {
 
   for (const persona of PERSONAS) {
     console.log(`  [Agent] Running test for persona: ${persona.name} (${persona.slug})...`);
-    
+
     const prompt = {
       id: `mcp-test-${persona.slug}`,
       role: "mcp-user-tester",
@@ -80,20 +86,22 @@ Output your response in this exact format:
 - <issue 1>
 - <issue 2>
 ...
-`
+`,
     };
 
     try {
       const output = spawnClaude(prompt as any, { toolsList } as any);
       results.push(output);
-      
+
       const issuesMatch = output.match(/## Issues & Concerns\n([\s\S]+)/);
       if (issuesMatch) {
         findings.push({
           persona: persona.name,
-          issues: issuesMatch[1].trim().split("\n")
-            .map(line => line.replace(/^- /, "").trim())
-            .filter(line => line.length > 0 && !line.startsWith("#"))
+          issues: issuesMatch[1]
+            .trim()
+            .split("\n")
+            .map((line) => line.replace(/^- /, "").trim())
+            .filter((line) => line.length > 0 && !line.startsWith("#")),
         });
       }
     } catch (err) {
@@ -102,21 +110,21 @@ Output your response in this exact format:
   }
 
   console.log("📊 Generating MCP_USER_TEST_FINDINGS.md...");
-  
+
   let summary = `# spike.land MCP User Test Findings Summary\n\n`;
   summary += `Tested with 16 diverse AI agent personas on ${new Date().toLocaleDateString()}.\n\n`;
-  
+
   summary += `## Overview\n`;
   summary += `The agents explored the capabilities of spike.land via its public MCP tools endpoint and provided feedback based on their specific professional and personal backgrounds.\n\n`;
-  
+
   summary += `## Aggregate Issues & Concerns\n`;
   const allIssues = new Set<string>();
-  findings.forEach(f => f.issues.forEach((i: string) => allIssues.add(`**${f.persona}**: ${i}`)));
-  
-  allIssues.forEach(issue => {
+  findings.forEach((f) => f.issues.forEach((i: string) => allIssues.add(`**${f.persona}**: ${i}`)));
+
+  allIssues.forEach((issue) => {
     summary += `- ${issue}\n`;
   });
-  
+
   summary += `\n## Individual Persona Reports\n\n`;
   summary += results.join("\n\n---\n\n");
 
@@ -124,7 +132,7 @@ Output your response in this exact format:
   console.log("✅ Done! Findings saved to MCP_USER_TEST_FINDINGS.md");
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });

@@ -41,7 +41,7 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 const createSession = (overrides: Partial<ICodeSession> = {}): ICodeSession => ({
-  code: 'export default function App() { return <div>Hello</div>; }',
+  code: "export default function App() { return <div>Hello</div>; }",
   html: "<div>Hello</div>",
   css: "",
   transpiled: "transpiled code",
@@ -113,17 +113,20 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
 
   describe("initializeSession — existing session loaded (lines 453-508)", () => {
     it("loads session from new keys (session_core + session_code + session_transpiled)", async () => {
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return {
-          codeSpace: "test-space",
-          html: "<div>Loaded</div>",
-          css: ".loaded {}",
-          messages: [],
-        };
-        if (key === "session_code") return "loaded code";
-        if (key === "session_transpiled") return "loaded transpiled";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core")
+            return {
+              codeSpace: "test-space",
+              html: "<div>Loaded</div>",
+              css: ".loaded {}",
+              messages: [],
+            };
+          if (key === "session_code") return "loaded code";
+          if (key === "session_transpiled") return "loaded transpiled";
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
@@ -137,37 +140,44 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     it("migrates from old 'session' key to new keys", async () => {
       const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return null; // no new key
-        if (key === "session") return {         // old key present
-          codeSpace: "test-space",
-          code: "old code",
-          transpiled: "old transpiled",
-          html: "<div>Old</div>",
-          css: "",
-          messages: [],
-        };
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core") return null; // no new key
+          if (key === "session")
+            return {
+              // old key present
+              codeSpace: "test-space",
+              code: "old code",
+              transpiled: "old transpiled",
+              html: "<div>Old</div>",
+              css: "",
+              messages: [],
+            };
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
 
       expect(consoleWarn).toHaveBeenCalledWith(expect.stringContaining("Migrating session data"));
-      expect((mockState.storage.get as ReturnType<typeof vi.fn>)).toHaveBeenCalledWith("session");
+      expect(mockState.storage.get as ReturnType<typeof vi.fn>).toHaveBeenCalledWith("session");
       consoleWarn.mockRestore();
     });
 
     it("warns and discards when session_core codeSpace does not match (lines 499-504)", async () => {
       const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return {
-          codeSpace: "different-space", // mismatch!
-          messages: [],
-        };
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core")
+            return {
+              codeSpace: "different-space", // mismatch!
+              messages: [],
+            };
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
@@ -179,15 +189,18 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     });
 
     it("loads HTML and CSS from R2 when session_core exists", async () => {
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return {
-          codeSpace: "test-space",
-          messages: [],
-        };
-        if (key === "session_code") return "code from storage";
-        if (key === "session_transpiled") return "transpiled from storage";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core")
+            return {
+              codeSpace: "test-space",
+              messages: [],
+            };
+          if (key === "session_code") return "code from storage";
+          if (key === "session_transpiled") return "transpiled from storage";
+          return null;
+        },
+      );
 
       // R2 returns HTML and CSS objects
       (mockEnv.R2.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
@@ -207,12 +220,14 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     it("handles R2 HTML error gracefully (line 479-481)", async () => {
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return { codeSpace: "test-space", messages: [] };
-        if (key === "session_code") return "code";
-        if (key === "session_transpiled") return "transpiled";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core") return { codeSpace: "test-space", messages: [] };
+          if (key === "session_code") return "code";
+          if (key === "session_transpiled") return "transpiled";
+          return null;
+        },
+      );
 
       // R2 throws for HTML key
       (mockEnv.R2.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
@@ -223,19 +238,24 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
 
-      expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("Failed to load html from R2"), expect.any(Error));
+      expect(consoleError).toHaveBeenCalledWith(
+        expect.stringContaining("Failed to load html from R2"),
+        expect.any(Error),
+      );
       consoleError.mockRestore();
     });
 
     it("handles R2 CSS error gracefully (line 487-489)", async () => {
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return { codeSpace: "test-space", messages: [] };
-        if (key === "session_code") return "code";
-        if (key === "session_transpiled") return "transpiled";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core") return { codeSpace: "test-space", messages: [] };
+          if (key === "session_code") return "code";
+          if (key === "session_transpiled") return "transpiled";
+          return null;
+        },
+      );
 
       (mockEnv.R2.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
         if (key === "r2_html_test-space") return { text: async () => "<div>HTML</div>" };
@@ -246,7 +266,10 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
 
-      expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("Failed to load css from R2"), expect.any(Error));
+      expect(consoleError).toHaveBeenCalledWith(
+        expect.stringContaining("Failed to load css from R2"),
+        expect.any(Error),
+      );
       consoleError.mockRestore();
     });
   });
@@ -276,14 +299,19 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     });
 
     it("fetches from base codeSpace for derived 2-part codeSpace (lines 530-561)", async () => {
-      mockFetch.mockResolvedValue(new Response(JSON.stringify({
-        code: "base code",
-        transpiled: "base transpiled",
-        html: "<div>Base</div>",
-        css: "",
-        codeSpace: "base",
-        messages: [],
-      }), { status: 200 }));
+      mockFetch.mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: "base code",
+            transpiled: "base transpiled",
+            html: "<div>Base</div>",
+            css: "",
+            codeSpace: "base",
+            messages: [],
+          }),
+          { status: 200 },
+        ),
+      );
 
       // Set up origin first
       codeInstance["origin"] = "https://example.com";
@@ -304,7 +332,10 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
       const url = new URL("https://example.com/live/base-variant?room=base-variant");
       await codeInstance.initializeSession(url);
 
-      expect(consoleError).toHaveBeenCalledWith("Error fetching backup code from base codeSpace:", expect.any(Error));
+      expect(consoleError).toHaveBeenCalledWith(
+        "Error fetching backup code from base codeSpace:",
+        expect.any(Error),
+      );
       expect(codeInstance.initialized).toBe(true);
       consoleError.mockRestore();
     });
@@ -319,16 +350,19 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     });
 
     it("loads storedVersionCount from storage (lines 583-587)", async () => {
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "version_count") return 5;
-        if (key === "session_core") return {
-          codeSpace: "test-space",
-          messages: [],
-        };
-        if (key === "session_code") return "code";
-        if (key === "session_transpiled") return "transpiled";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "version_count") return 5;
+          if (key === "session_core")
+            return {
+              codeSpace: "test-space",
+              messages: [],
+            };
+          if (key === "session_code") return "code";
+          if (key === "session_transpiled") return "transpiled";
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
@@ -348,7 +382,10 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
     });
 
     it("skips initialization for 'websocket' path (line 608)", async () => {
-      const initSpy = vi.spyOn(codeInstance as unknown as { initializeSession: () => Promise<void> }, "initializeSession");
+      const initSpy = vi.spyOn(
+        codeInstance as unknown as { initializeSession: () => Promise<void> },
+        "initializeSession",
+      );
 
       const request = new Request("https://example.com/websocket?room=test-space");
       await codeInstance.fetch(request);
@@ -527,12 +564,32 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
       codeInstance["versionCount"] = 3;
 
       // Mix of real and null versions
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "version_1") return { number: 1, hash: "h1", createdAt: 1000, code: "c1", transpiled: "t1", html: "html1", css: "css1" };
-        if (key === "version_2") return null; // null version — hits false branch
-        if (key === "version_3") return { number: 3, hash: "h3", createdAt: 3000, code: "c3", transpiled: "t3", html: "html3", css: "css3" };
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "version_1")
+            return {
+              number: 1,
+              hash: "h1",
+              createdAt: 1000,
+              code: "c1",
+              transpiled: "t1",
+              html: "html1",
+              css: "css1",
+            };
+          if (key === "version_2") return null; // null version — hits false branch
+          if (key === "version_3")
+            return {
+              number: 3,
+              hash: "h3",
+              createdAt: 3000,
+              code: "c3",
+              transpiled: "t3",
+              html: "html3",
+              css: "css3",
+            };
+          return null;
+        },
+      );
 
       const versions = await codeInstance.getVersionsList();
       expect(versions).toHaveLength(2);
@@ -592,13 +649,15 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
   describe("loadFiles — record truthy (line 385 branch 0)", () => {
     it("loads files map when storage has files record", async () => {
       const filesRecord = { "/src/App.tsx": "const App = () => null;", "/styles.css": "body {}" };
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return { codeSpace: "test-space", messages: [] };
-        if (key === "session_code") return "code";
-        if (key === "session_transpiled") return "";
-        if (key === "files") return filesRecord;
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core") return { codeSpace: "test-space", messages: [] };
+          if (key === "session_code") return "code";
+          if (key === "session_transpiled") return "";
+          if (key === "files") return filesRecord;
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
@@ -626,13 +685,15 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
 
   describe("initializeSession — storedVersionCount falsy (line 536 branch 1)", () => {
     it("does not update versionCount when storedVersionCount is null", async () => {
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return { codeSpace: "test-space", messages: [] };
-        if (key === "session_code") return "code";
-        if (key === "session_transpiled") return "";
-        // version_count key returns null → storedVersionCount is falsy
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core") return { codeSpace: "test-space", messages: [] };
+          if (key === "session_code") return "code";
+          if (key === "session_transpiled") return "";
+          // version_count key returns null → storedVersionCount is falsy
+          return null;
+        },
+      );
 
       const url = new URL("https://example.com/live/test-space?room=test-space");
       await codeInstance.initializeSession(url);
@@ -668,12 +729,15 @@ describe("Code Durable Object — initializeSession & fetch branches", () => {
       codeInstance.initialized = false;
 
       // Set up storage to return a valid session so init succeeds
-      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(async (key: string) => {
-        if (key === "session_core") return { codeSpace: "test-space", messages: [], html: "", css: "" };
-        if (key === "session_code") return "test code";
-        if (key === "session_transpiled") return "";
-        return null;
-      });
+      (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation(
+        async (key: string) => {
+          if (key === "session_core")
+            return { codeSpace: "test-space", messages: [], html: "", css: "" };
+          if (key === "session_code") return "test code";
+          if (key === "session_transpiled") return "";
+          return null;
+        },
+      );
 
       const request = new Request("https://example.com/mcp?room=test-space&codeSpace=test-space", {
         headers: { "X-CodeSpace": "test-space" },

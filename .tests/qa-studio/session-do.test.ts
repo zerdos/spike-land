@@ -9,10 +9,18 @@ const mockAdapterClose = vi.fn().mockResolvedValue(undefined);
 vi.mock("../../src/core/browser-automation/adapter-puppeteer.js", () => {
   return {
     PuppeteerAdapter: class MockPuppeteerAdapter {
-      launch() { return mockLaunch(); }
-      newPage() { return mockNewPage(); }
-      isConnected() { return mockIsConnected(); }
-      close() { return mockAdapterClose(); }
+      launch() {
+        return mockLaunch();
+      }
+      newPage() {
+        return mockNewPage();
+      }
+      isConnected() {
+        return mockIsConnected();
+      }
+      close() {
+        return mockAdapterClose();
+      }
     },
   };
 });
@@ -40,7 +48,10 @@ function makeMockPage() {
     setViewportSize: vi.fn().mockResolvedValue(undefined),
     close: vi.fn().mockResolvedValue(undefined),
     isClosed: vi.fn().mockReturnValue(false),
-    keyboard: { press: vi.fn().mockResolvedValue(undefined), type: vi.fn().mockResolvedValue(undefined) },
+    keyboard: {
+      press: vi.fn().mockResolvedValue(undefined),
+      type: vi.fn().mockResolvedValue(undefined),
+    },
     getByRole: vi.fn().mockReturnValue({
       click: vi.fn().mockResolvedValue(undefined),
       fill: vi.fn().mockResolvedValue(undefined),

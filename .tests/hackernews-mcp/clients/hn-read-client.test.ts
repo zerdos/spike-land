@@ -524,7 +524,12 @@ describe("HNReadClient", () => {
         },
         {
           url: `${HN_FIREBASE_BASE}/item/12347.json`,
-          response: { body: { ...SAMPLE_COMMENT, id: 12347, kids: undefined } as unknown as Record<string, unknown> },
+          response: {
+            body: { ...SAMPLE_COMMENT, id: 12347, kids: undefined } as unknown as Record<
+              string,
+              unknown
+            >,
+          },
         },
       ]);
       const client = new HNReadClient(fetch);

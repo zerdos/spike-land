@@ -124,7 +124,9 @@ describe("WorkerEventRegistry", () => {
     it("creates synthetic event with all data fields", () => {
       const registry = new WorkerEventRegistry();
       let receivedEvent: unknown = null;
-      const handler = vi.fn((e) => { receivedEvent = e; });
+      const handler = vi.fn((e) => {
+        receivedEvent = e;
+      });
 
       registry.setHandler(1, "onClick", handler);
 
@@ -166,7 +168,10 @@ describe("WorkerEventRegistry", () => {
       Object.defineProperty(parent, "__nodeId", { value: 2 });
       child.parentNode = parent;
 
-      const nodeMap = new Map([[1, child], [2, parent]]);
+      const nodeMap = new Map([
+        [1, child],
+        [2, parent],
+      ]);
 
       registry.dispatch(
         {
@@ -185,7 +190,9 @@ describe("WorkerEventRegistry", () => {
 
     it("stopPropagation prevents further bubbling", () => {
       const registry = new WorkerEventRegistry();
-      const childHandler = vi.fn((e) => { e.stopPropagation(); });
+      const childHandler = vi.fn((e) => {
+        e.stopPropagation();
+      });
       const parentHandler = vi.fn();
 
       registry.setHandler(1, "onClick", childHandler);
@@ -198,7 +205,10 @@ describe("WorkerEventRegistry", () => {
       Object.defineProperty(parent, "__nodeId", { value: 2 });
       child.parentNode = parent;
 
-      const nodeMap = new Map([[1, child], [2, parent]]);
+      const nodeMap = new Map([
+        [1, child],
+        [2, parent],
+      ]);
 
       registry.dispatch(
         {
@@ -221,17 +231,19 @@ describe("WorkerEventRegistry", () => {
       const nodeMap = new Map<number, WorkerNodeImpl>();
 
       // Should not throw
-      expect(() => registry.dispatch(
-        {
-          type: "click",
-          bubbles: true,
-          cancelable: true,
-          target: 999,
-          currentTarget: 999,
-          timeStamp: 100,
-        },
-        nodeMap,
-      )).not.toThrow();
+      expect(() =>
+        registry.dispatch(
+          {
+            type: "click",
+            bubbles: true,
+            cancelable: true,
+            target: 999,
+            currentTarget: 999,
+            timeStamp: 100,
+          },
+          nodeMap,
+        ),
+      ).not.toThrow();
     });
 
     it("preventDefault sets defaultPrevented", () => {

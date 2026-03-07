@@ -135,9 +135,7 @@ export function LiveCategorizer() {
       )}
 
       {!result && code.trim() === "" && (
-        <p className="text-xs text-muted-foreground/40">
-          Results appear as you type.
-        </p>
+        <p className="text-xs text-muted-foreground/40">Results appear as you type.</p>
       )}
     </div>
   );

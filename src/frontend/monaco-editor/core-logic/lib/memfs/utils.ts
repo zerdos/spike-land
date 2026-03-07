@@ -1,5 +1,9 @@
 import { tryCatch } from "../../../lazy-imports/try-catch";
-import type { FileSystemDirectoryEntry, FileSystemEntry, FileSystemFileEntry } from "../../../node-sys/types";
+import type {
+  FileSystemDirectoryEntry,
+  FileSystemEntry,
+  FileSystemFileEntry,
+} from "../../../node-sys/types";
 
 /**
  * Normalize a file path to handle different formats

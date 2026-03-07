@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/documentSymbols/browser/documentSymbols';
+import "monaco-editor-core/esm/vs/editor/contrib/documentSymbols/browser/documentSymbols";

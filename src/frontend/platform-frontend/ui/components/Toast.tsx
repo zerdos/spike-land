@@ -48,12 +48,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const showToast = useCallback((message: string, variant: ToastVariant = "info") => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts((prev) => [...prev.slice(-4), { id, message, variant }]);
-    const timer = setTimeout(() => dismiss(id), UI_ANIMATIONS.TOAST_DURATION_MS);
-    timers.current.set(id, timer);
-  }, [dismiss]);
+  const showToast = useCallback(
+    (message: string, variant: ToastVariant = "info") => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      setToasts((prev) => [...prev.slice(-4), { id, message, variant }]);
+      const timer = setTimeout(() => dismiss(id), UI_ANIMATIONS.TOAST_DURATION_MS);
+      timers.current.set(id, timer);
+    },
+    [dismiss],
+  );
 
   useEffect(() => {
     const currentTimers = timers.current;

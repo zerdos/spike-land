@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess';
+import "monaco-editor-core/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess";

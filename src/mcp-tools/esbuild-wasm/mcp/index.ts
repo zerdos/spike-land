@@ -1,5 +1,11 @@
 #!/usr/bin/env node
-import { createMcpServer, startMcpServer, wrapServerWithLogging, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
+import {
+  createMcpServer,
+  startMcpServer,
+  wrapServerWithLogging,
+  registerFeedbackTool,
+  createErrorShipper,
+} from "@spike-land-ai/mcp-server-base";
 import { registerInitializeTool } from "../core-logic/initialize.js";
 import { registerStatusTool } from "../core-logic/status.js";
 import { registerTransformTool } from "../lazy-imports/transform.js";
@@ -14,8 +20,22 @@ const server = createMcpServer({
 });
 
 const shipper = createErrorShipper();
-process.on('uncaughtException', (err) => shipper.shipError({ service_name: "esbuild-wasm-mcp", message: err.message, stack_trace: err.stack, severity: "high" }));
-process.on('unhandledRejection', (err: unknown) => shipper.shipError({ service_name: "esbuild-wasm-mcp", message: err instanceof Error ? err.message : String(err), stack_trace: err instanceof Error ? err.stack : undefined, severity: "high" }));
+process.on("uncaughtException", (err) =>
+  shipper.shipError({
+    service_name: "esbuild-wasm-mcp",
+    message: err.message,
+    stack_trace: err.stack,
+    severity: "high",
+  }),
+);
+process.on("unhandledRejection", (err: unknown) =>
+  shipper.shipError({
+    service_name: "esbuild-wasm-mcp",
+    message: err instanceof Error ? err.message : String(err),
+    stack_trace: err instanceof Error ? err.stack : undefined,
+    severity: "high",
+  }),
+);
 
 wrapServerWithLogging(server, "esbuild-wasm-mcp");
 

@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'bicep',
-	extensions: ['.bicep'],
-	aliases: ['Bicep'],
-	loader: () => import('./bicep')
+  id: "bicep",
+  extensions: [".bicep"],
+  aliases: ["Bicep"],
+  loader: () => import("./bicep"),
 });

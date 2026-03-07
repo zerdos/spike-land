@@ -39,7 +39,7 @@ const packagePathMap: Record<string, string> = {
   "block-tasks": "core/block-tasks",
   "block-website": "core/block-website",
   "chess-engine": "core/chess",
-  "code": "frontend/monaco-editor",
+  code: "frontend/monaco-editor",
   "esm-cdn": "utilities/esm-cdn",
   "esbuild-wasm-mcp": "mcp-tools/esbuild-wasm",
   "google-analytics-mcp": "mcp-tools/google-analytics",
@@ -53,7 +53,7 @@ const packagePathMap: Record<string, string> = {
   "openclaw-mcp": "mcp-tools/openclaw",
   "qa-studio": "core/browser-automation",
   "react-ts-worker": "core/react-engine",
-  "shared": "core/shared-utils",
+  shared: "core/shared-utils",
   "spike-app": "frontend/platform-frontend",
   "spike-cli": "cli/spike-cli",
   "spike-edge": "edge-api/main",
@@ -62,9 +62,9 @@ const packagePathMap: Record<string, string> = {
   "spike-review": "mcp-tools/code-review",
   "stripe-analytics-mcp": "mcp-tools/stripe-analytics",
   "state-machine": "core/statecharts",
-  "transpile": "edge-api/transpile",
+  transpile: "edge-api/transpile",
   "vibe-dev": "cli/docker-dev",
-  "video": "media/educational-videos",
+  video: "media/educational-videos",
   "whatsapp-mcp": "utilities/whatsapp",
 };
 
@@ -129,7 +129,9 @@ const packages: Record<string, PkgConfig> = {
       "@spike-land-ai/block-sdk/storage": src("core/block-sdk/core-logic/storage-index.ts"),
       "@spike-land-ai/block-sdk": src("core/block-sdk/core-logic/index.ts"),
       "@spike-land-ai/block-tasks": src("core/block-tasks/lazy-imports/index.ts"),
-      "@spike-land-ai/shared/tool-builder": src("core/shared-utils/core-logic/tool-builder-index.ts"),
+      "@spike-land-ai/shared/tool-builder": src(
+        "core/shared-utils/core-logic/tool-builder-index.ts",
+      ),
       "@spike-land-ai/shared": src("core/shared-utils/core-logic/index.ts"),
       "@spike-land-ai/mcp-server-base": src("core/server-base/core-logic/index.ts"),
     },
@@ -142,7 +144,7 @@ const packages: Record<string, PkgConfig> = {
     env: "jsdom",
     includeTests: [tests("block-website/**/*.test.ts"), tests("block-website/**/*.test.tsx")],
     aliases: {
-      "react": src("core/react-engine/core-logic/react/index.ts"),
+      react: src("core/react-engine/core-logic/react/index.ts"),
       "react-dom": src("core/react-engine/core-logic/react-dom/client.ts"),
     },
     includeSrc: [
@@ -161,12 +163,16 @@ const packages: Record<string, PkgConfig> = {
     reportsDirectory: path.join(root, "coverage/chess-engine"),
   },
 
-  "code": {
+  code: {
     tier: 3,
     env: "jsdom",
     globals: true,
     setup: [tests("code/setupTests.ts")],
-    includeTests: [tests("code/**/*.test.ts"), tests("code/**/*.spec.ts"), tests("code/**/*.spec.tsx")],
+    includeTests: [
+      tests("code/**/*.test.ts"),
+      tests("code/**/*.spec.ts"),
+      tests("code/**/*.spec.tsx"),
+    ],
     aliases: { "@": src("frontend/monaco-editor/@") },
     includeSrc: [src("frontend/monaco-editor/**/*.ts"), src("frontend/monaco-editor/**/*.tsx")],
     coverageExclude: [],
@@ -238,10 +244,12 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: [],
   },
 
-  "shared": {
+  shared: {
     tier: 2,
     aliases: {
-      "@spike-land-ai/shared/tool-builder": src("core/shared-utils/core-logic/tool-builder-index.ts"),
+      "@spike-land-ai/shared/tool-builder": src(
+        "core/shared-utils/core-logic/tool-builder-index.ts",
+      ),
       "@spike-land-ai/shared": src("core/shared-utils/core-logic/index.ts"),
     },
     coverageReporter: ["text", "text-summary"],
@@ -259,7 +267,10 @@ const packages: Record<string, PkgConfig> = {
     setup: [tests("spike-app/test-setup.ts")],
     aliases: { "@": src("frontend/platform-frontend") },
     includeTests: [tests("spike-app/**/*.test.ts"), tests("spike-app/**/*.test.tsx")],
-    includeSrc: [src("frontend/platform-frontend/**/*.ts"), src("frontend/platform-frontend/**/*.tsx")],
+    includeSrc: [
+      src("frontend/platform-frontend/**/*.ts"),
+      src("frontend/platform-frontend/**/*.tsx"),
+    ],
     coverageExclude: [],
   },
 
@@ -291,24 +302,34 @@ const packages: Record<string, PkgConfig> = {
       },
     ],
     aliases: {
-      "replicate": src("edge-api/backend/__mocks__/replicate.js"),
+      replicate: src("edge-api/backend/__mocks__/replicate.js"),
       "snakecase-keys": src("edge-api/backend/__mocks__/snakecase-keys.js"),
-      "cookie": src("edge-api/backend/__mocks__/cookie.js"),
+      cookie: src("edge-api/backend/__mocks__/cookie.js"),
       "@spike-land-ai/code": src("edge-api/backend/__mocks__/@spike-land-ai/code.js"),
       "esbuild-wasm": path.join(root, "node_modules/esbuild-wasm"),
     },
-    reporters: process.env["COVERAGE"]
-      ? [reporter]
-      : ["hanging-process", reporter],
-    includeTests: [tests("spike-land-backend/**/*.test.ts"), tests("spike-land-backend/**/*.spec.ts")],
+    reporters: process.env["COVERAGE"] ? [reporter] : ["hanging-process", reporter],
+    includeTests: [
+      tests("spike-land-backend/**/*.test.ts"),
+      tests("spike-land-backend/**/*.spec.ts"),
+    ],
     coverageReporter: ["text-summary"],
-    coverageExclude: ["**/*.d.ts", "**/frontend/**", "**/staticContent.mjs", "**/*.html", "**/*.wasm", "**/esbuild-defs.ts"],
+    coverageExclude: [
+      "**/*.d.ts",
+      "**/frontend/**",
+      "**/staticContent.mjs",
+      "**/*.html",
+      "**/*.wasm",
+      "**/esbuild-defs.ts",
+    ],
   },
 
   "spike-land-mcp": {
     tier: 2,
     aliases: {
-      "@spike-land-ai/shared/tool-builder": src("core/shared-utils/core-logic/tool-builder-index.ts"),
+      "@spike-land-ai/shared/tool-builder": src(
+        "core/shared-utils/core-logic/tool-builder-index.ts",
+      ),
       "@spike-land-ai/shared": src("core/shared-utils/core-logic/index.ts"),
       "@spike-land-ai/mcp-server-base": src("core/server-base/core-logic/index.ts"),
     },
@@ -334,7 +355,7 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: ["**/cli.ts", "**/types.ts", "**/prisma.d.ts"],
   },
 
-  "transpile": {
+  transpile: {
     tier: 3,
     plugins: [
       {
@@ -356,7 +377,7 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: ["**/cli.ts"],
   },
 
-  "video": {
+  video: {
     tier: 3,
     env: "jsdom",
     pool: "forks",
@@ -381,9 +402,10 @@ function buildProject(name: string, cfg: PkgConfig) {
   const defaultIncludeSrc = [src(`${mappedPath}/**/*.ts`)];
   const defaultCoverageExclude = [...commonCoverageExclude, "**/index.ts"];
 
-  const coverageExclude = cfg.coverageExclude !== undefined && cfg.coverageExclude.length === 0
-    ? commonCoverageExclude
-    : [...commonCoverageExclude, "**/index.ts", ...(cfg.coverageExclude ?? [])];
+  const coverageExclude =
+    cfg.coverageExclude !== undefined && cfg.coverageExclude.length === 0
+      ? commonCoverageExclude
+      : [...commonCoverageExclude, "**/index.ts", ...(cfg.coverageExclude ?? [])];
 
   const testConfig: Record<string, unknown> = {
     name,

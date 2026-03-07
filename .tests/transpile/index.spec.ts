@@ -26,7 +26,9 @@ Object.defineProperty(globalThis, "caches", {
 });
 
 // Import the worker after setting up mocks
-let worker: { fetch: (request: Request, _env: unknown, ctx: ExecutionContext) => Promise<Response> };
+let worker: {
+  fetch: (request: Request, _env: unknown, ctx: ExecutionContext) => Promise<Response>;
+};
 
 beforeEach(async () => {
   vi.clearAllMocks();
@@ -65,7 +67,11 @@ describe("js.spike.land worker", () => {
       const response = await worker.fetch(request, {}, makeCtx());
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("application/json");
-      const json = await response.json() as { status: string; service: string; timestamp: string };
+      const json = (await response.json()) as {
+        status: string;
+        service: string;
+        timestamp: string;
+      };
       expect(json.status).toBe("ok");
       expect(json.service).toBe("transpile");
       expect(typeof json.timestamp).toBe("string");
@@ -111,18 +117,14 @@ describe("js.spike.land worker", () => {
       mockBuild.mockResolvedValueOnce("console.log('hello');");
       const request = new Request("https://js.spike.land/?codeSpace=my-space", { method: "GET" });
       await worker.fetch(request, {}, makeCtx());
-      expect(mockBuild).toHaveBeenCalledWith(
-        expect.objectContaining({ codeSpace: "my-space" }),
-      );
+      expect(mockBuild).toHaveBeenCalledWith(expect.objectContaining({ codeSpace: "my-space" }));
     });
 
     it("uses default codeSpace 'empty' when not provided", async () => {
       mockBuild.mockResolvedValueOnce("console.log('hello');");
       const request = new Request("https://js.spike.land/", { method: "GET" });
       await worker.fetch(request, {}, makeCtx());
-      expect(mockBuild).toHaveBeenCalledWith(
-        expect.objectContaining({ codeSpace: "empty" }),
-      );
+      expect(mockBuild).toHaveBeenCalledWith(expect.objectContaining({ codeSpace: "empty" }));
     });
 
     it("uses testing.spike.land origin when origin param is 'testing'", async () => {
@@ -186,7 +188,7 @@ describe("js.spike.land worker", () => {
       const response = await worker.fetch(request, {}, makeCtx());
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("application/json");
-      const json = await response.json() as unknown[];
+      const json = (await response.json()) as unknown[];
       expect(json).toHaveLength(1);
     });
 
@@ -245,7 +247,7 @@ describe("js.spike.land worker", () => {
       const request = new Request("https://js.spike.land/", {
         method: "POST",
         body: "const x = 1;",
-        headers: { "TR_ORIGIN": "https://custom.spike.land" },
+        headers: { TR_ORIGIN: "https://custom.spike.land" },
       });
       await worker.fetch(request, {}, makeCtx());
       expect(mockTranspile).toHaveBeenCalledWith(
@@ -260,9 +262,7 @@ describe("js.spike.land worker", () => {
         body: "const x = 1;",
       });
       await worker.fetch(request, {}, makeCtx());
-      expect(mockTranspile).toHaveBeenCalledWith(
-        expect.objectContaining({ originToUse: "" }),
-      );
+      expect(mockTranspile).toHaveBeenCalledWith(expect.objectContaining({ originToUse: "" }));
     });
 
     it("passes wasmModule to transpile", async () => {
@@ -294,7 +294,9 @@ describe("js.spike.land worker", () => {
         body: "const x = 1;",
       });
       const response = await worker.fetch(request, {}, makeCtx());
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://staging.spike.land");
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
+        "https://staging.spike.land",
+      );
     });
 
     it("uses default spike.land origin for non-matching request origin", async () => {

@@ -26,21 +26,19 @@ describe("internalAuthMiddleware", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { ok: boolean };
+    const body = (await res.json()) as { ok: boolean };
     expect(body.ok).toBe(true);
   });
 
   it("rejects request with missing x-internal-secret header", async () => {
     const app = buildApp("my-secret");
 
-    const res = await app.request(
-      "/internal/test",
-      {},
-      { MCP_INTERNAL_SECRET: "my-secret" } as unknown as Env,
-    );
+    const res = await app.request("/internal/test", {}, {
+      MCP_INTERNAL_SECRET: "my-secret",
+    } as unknown as Env);
 
     expect(res.status).toBe(401);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toBe("Unauthorized");
   });
 
@@ -54,7 +52,7 @@ describe("internalAuthMiddleware", () => {
     );
 
     expect(res.status).toBe(401);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toBe("Unauthorized");
   });
 

@@ -6,10 +6,7 @@ import {
   computePackageCategories,
   resolveAppName,
 } from "../../reorganize/grouping.js";
-import {
-  getDependencyGroupName,
-  deduplicateDepGroup,
-} from "../../reorganize-config.js";
+import { getDependencyGroupName, deduplicateDepGroup } from "../../reorganize-config.js";
 
 // ─── Helper to create FileNode objects ──────────────────────────────
 

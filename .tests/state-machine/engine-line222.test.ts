@@ -186,7 +186,13 @@ describe("engine.ts line 222 coverage", () => {
 
     addState(id, { id: "s1", type: "atomic" });
     addState(id, { id: "final", type: "final" }); // no parent
-    addTransition(id, { source: "s1", target: "final", event: "DONE", actions: [], internal: false });
+    addTransition(id, {
+      source: "s1",
+      target: "final",
+      event: "DONE",
+      actions: [],
+      internal: false,
+    });
 
     machine.currentStates = ["s1"];
     // Should not throw even though final state has no parent (no done event raised)

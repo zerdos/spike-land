@@ -25,10 +25,12 @@ export class WebsocketRoutes {
     });
 
     // Send initial handshake
-    server.send(JSON.stringify({
-      type: "handshake",
-      hash: computeSessionHash(this.code.getSession()),
-    }));
+    server.send(
+      JSON.stringify({
+        type: "handshake",
+        hash: computeSessionHash(this.code.getSession()),
+      }),
+    );
 
     return new Response(null, {
       status: 101,

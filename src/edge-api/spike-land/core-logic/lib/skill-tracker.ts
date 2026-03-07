@@ -23,10 +23,7 @@ function dayEpoch(nowMs: number): number {
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
-export async function recordSkillCall(
-  db: D1Database,
-  record: SkillCallRecord,
-): Promise<void> {
+export async function recordSkillCall(db: D1Database, record: SkillCallRecord): Promise<void> {
   const now = Date.now();
   const day = dayEpoch(now);
   const id = crypto.randomUUID();
@@ -62,14 +59,7 @@ export async function recordSkillCall(
            error_count = error_count + excluded.error_count,
            total_ms = total_ms + excluded.total_ms`,
       )
-      .bind(
-        record.userId,
-        record.toolName,
-        record.serverName,
-        day,
-        isError,
-        record.durationMs,
-      ),
+      .bind(record.userId, record.toolName, record.serverName, day, isError, record.durationMs),
 
     // 3. Unique user-tool dedup
     db

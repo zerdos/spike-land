@@ -23,22 +23,39 @@ interface JsonSchemaFormProps {
   initialData?: Record<string, unknown>;
 }
 
-export function JsonSchemaForm({ schema, onChange, onSubmit, isPending, initialData }: JsonSchemaFormProps) {
+export function JsonSchemaForm({
+  schema,
+  onChange,
+  onSubmit,
+  isPending,
+  initialData,
+}: JsonSchemaFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [urlOptions, setUrlOptions] = useState<{ url: string, label: string }[]>([]);
+  const [urlOptions, setUrlOptions] = useState<{ url: string; label: string }[]>([]);
 
   useEffect(() => {
     if (schema.properties?.content_url) {
       Promise.all([
-        fetch(apiUrl("/blog")).then(res => res.ok ? res.json() : []).catch(() => []),
-        fetch(apiUrl("/learnit/recent?limit=20")).then(res => res.ok ? res.json() : []).catch(() => [])
+        fetch(apiUrl("/blog"))
+          .then((res) => (res.ok ? res.json() : []))
+          .catch(() => []),
+        fetch(apiUrl("/learnit/recent?limit=20"))
+          .then((res) => (res.ok ? res.json() : []))
+          .catch(() => []),
       ]).then(([blogs, learnits]) => {
-        const options: { url: string, label: string }[] = [];
+        const options: { url: string; label: string }[] = [];
         if (Array.isArray(blogs)) {
-          blogs.forEach((b: { slug: string; title: string }) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
+          blogs.forEach((b: { slug: string; title: string }) =>
+            options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }),
+          );
         }
         if (Array.isArray(learnits)) {
-          learnits.forEach((l: { slug: string; title: string }) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
+          learnits.forEach((l: { slug: string; title: string }) =>
+            options.push({
+              url: `https://spike.land/learnit/${l.slug}`,
+              label: `LearnIt: ${l.title}`,
+            }),
+          );
         }
         setUrlOptions(options);
       });
@@ -149,7 +166,9 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending, initialD
                   id={key}
                   type="number"
                   value={(formData[key] as number) ?? ""}
-                  onChange={(e) => handleChange(key, e.target.value === "" ? "" : Number(e.target.value))}
+                  onChange={(e) =>
+                    handleChange(key, e.target.value === "" ? "" : Number(e.target.value))
+                  }
                   required={isRequired}
                   className="block w-full rounded-md border-0 py-1.5 text-foreground bg-card shadow-sm ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-ring sm:text-sm sm:leading-6"
                 />
@@ -168,7 +187,11 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending, initialD
                     id={key}
                     type="text"
                     list={key === "content_url" ? "content-url-options" : undefined}
-                    placeholder={key === "content_url" ? "e.g., https://spike.land/blog/... or type to search" : ""}
+                    placeholder={
+                      key === "content_url"
+                        ? "e.g., https://spike.land/blog/... or type to search"
+                        : ""
+                    }
                     value={(formData[key] as string) || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                     required={isRequired}
@@ -176,8 +199,10 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending, initialD
                   />
                   {key === "content_url" && urlOptions.length > 0 && (
                     <datalist id="content-url-options">
-                      {urlOptions.map(opt => (
-                        <option key={opt.url} value={opt.url}>{opt.label}</option>
+                      {urlOptions.map((opt) => (
+                        <option key={opt.url} value={opt.url}>
+                          {opt.label}
+                        </option>
                       ))}
                     </datalist>
                   )}

@@ -34,9 +34,7 @@ describe("useBrowserBridge", () => {
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     expect(mockRouter.navigate).toHaveBeenCalledWith({ to: "/tools" });
   });
@@ -45,15 +43,11 @@ describe("useBrowserBridge", () => {
     const onResult = vi.fn();
     const messages = [
       makeMessage({
-        browserCommands: [
-          { tool: "browser_navigate", args: { url: "store" }, requestId: "req-2" },
-        ],
+        browserCommands: [{ tool: "browser_navigate", args: { url: "store" }, requestId: "req-2" }],
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     expect(mockRouter.navigate).toHaveBeenCalledWith({ to: "/store" });
   });
@@ -69,9 +63,7 @@ describe("useBrowserBridge", () => {
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     expect(openSpy).toHaveBeenCalledWith("https://example.com", "_blank");
     expect(mockRouter.navigate).not.toHaveBeenCalled();
@@ -91,9 +83,7 @@ describe("useBrowserBridge", () => {
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     await vi.waitFor(() => {
       expect(onResult).toHaveBeenCalled();
@@ -114,9 +104,7 @@ describe("useBrowserBridge", () => {
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     await vi.waitFor(() => {
       expect(onResult).toHaveBeenCalled();
@@ -132,15 +120,11 @@ describe("useBrowserBridge", () => {
     const onResult = vi.fn();
     const messages = [
       makeMessage({
-        browserCommands: [
-          { tool: "browser_read_text", args: {}, requestId: "req-7" },
-        ],
+        browserCommands: [{ tool: "browser_read_text", args: {}, requestId: "req-7" }],
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     await vi.waitFor(() => {
       expect(onResult).toHaveBeenCalled();
@@ -156,9 +140,7 @@ describe("useBrowserBridge", () => {
     const onResult = vi.fn();
     const messages = [
       makeMessage({
-        browserCommands: [
-          { tool: "browser_screenshot", args: {}, requestId: "req-8" },
-        ],
+        browserCommands: [{ tool: "browser_screenshot", args: {}, requestId: "req-8" }],
       }),
     ];
 
@@ -182,15 +164,11 @@ describe("useBrowserBridge", () => {
     const onResult = vi.fn();
     const messages = [
       makeMessage({
-        browserCommands: [
-          { tool: "browser_unknown", args: {}, requestId: "req-10" },
-        ],
+        browserCommands: [{ tool: "browser_unknown", args: {}, requestId: "req-10" }],
       }),
     ];
 
-    renderHook(() =>
-      useBrowserBridge({ messages, onResult, router: mockRouter as never }),
-    );
+    renderHook(() => useBrowserBridge({ messages, onResult, router: mockRouter as never }));
 
     await vi.waitFor(() => {
       expect(onResult).toHaveBeenCalled();
@@ -198,7 +176,10 @@ describe("useBrowserBridge", () => {
 
     expect(onResult).toHaveBeenCalledWith(
       "req-10",
-      expect.objectContaining({ success: false, error: expect.stringContaining("Unknown browser tool") }),
+      expect.objectContaining({
+        success: false,
+        error: expect.stringContaining("Unknown browser tool"),
+      }),
     );
   });
 });

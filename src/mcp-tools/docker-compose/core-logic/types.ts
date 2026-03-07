@@ -4,8 +4,12 @@ export const ServiceInfoSchema = z.object({
   name: z.string().describe("Service name from docker-compose"),
   subdomain: z.string().describe("Assigned subdomain (e.g. 'api' for api.spike.local)"),
   port: z.number().int().describe("Container port"),
-  type: z.enum(["worker", "frontend", "mcp", "backend", "database", "proxy"]).describe("Service type"),
-  status: z.enum(["running", "stopped", "restarting", "exited", "created"]).describe("Container status"),
+  type: z
+    .enum(["worker", "frontend", "mcp", "backend", "database", "proxy"])
+    .describe("Service type"),
+  status: z
+    .enum(["running", "stopped", "restarting", "exited", "created"])
+    .describe("Container status"),
   containerId: z.string().optional().describe("Docker container ID"),
 });
 
@@ -32,7 +36,10 @@ export type HealthResult = z.infer<typeof HealthResultSchema>;
 export const ServiceLogsParamsSchema = z.object({
   service: z.string().describe("Service name to get logs for"),
   tail: z.number().int().min(1).max(1000).default(100).describe("Number of lines from the end"),
-  since: z.string().optional().describe("Show logs since timestamp (e.g. '10m', '1h', '2024-01-01')"),
+  since: z
+    .string()
+    .optional()
+    .describe("Show logs since timestamp (e.g. '10m', '1h', '2024-01-01')"),
 });
 
 export type ServiceLogsParams = z.infer<typeof ServiceLogsParamsSchema>;

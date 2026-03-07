@@ -92,23 +92,113 @@ async function startMockApiServer(): Promise<http.Server> {
 
         if (req.url === "/api/docs") {
           res.writeHead(200);
-          res.end(JSON.stringify({
-            categories: [
-              { category: "Guides", docs: [{ slug: "getting-started", title: "Getting Started", category: "Guides", description: "Quick start guide for spike.land" }, { slug: "deployment", title: "Deployment Guide", category: "Guides", description: "Deploy your tools to spike.land" }] },
-              { category: "MCP", docs: [{ slug: "mcp-overview", title: "MCP Overview", category: "MCP", description: "Introduction to Model Context Protocol" }, { slug: "mcp-tools", title: "MCP Tools Reference", category: "MCP", description: "Complete reference for all 80+ MCP tools" }] },
-              { category: "API", docs: [{ slug: "api-reference", title: "API Reference", category: "API", description: "REST API documentation" }, { slug: "authentication", title: "Authentication", category: "API", description: "OAuth and API keys" }, { slug: "webhooks", title: "Webhooks", category: "API", description: "Webhook integrations" }, { slug: "rate-limits", title: "Rate Limits", category: "API", description: "Rate limits and quotas" }] },
-              { category: "Architecture", docs: [{ slug: "architecture", title: "Architecture Overview", category: "Architecture", description: "System architecture" }] },
-              { category: "Security", docs: [{ slug: "security", title: "Security Model", category: "Security", description: "Security practices" }] },
-            ],
-            total: 10,
-          }));
+          res.end(
+            JSON.stringify({
+              categories: [
+                {
+                  category: "Guides",
+                  docs: [
+                    {
+                      slug: "getting-started",
+                      title: "Getting Started",
+                      category: "Guides",
+                      description: "Quick start guide for spike.land",
+                    },
+                    {
+                      slug: "deployment",
+                      title: "Deployment Guide",
+                      category: "Guides",
+                      description: "Deploy your tools to spike.land",
+                    },
+                  ],
+                },
+                {
+                  category: "MCP",
+                  docs: [
+                    {
+                      slug: "mcp-overview",
+                      title: "MCP Overview",
+                      category: "MCP",
+                      description: "Introduction to Model Context Protocol",
+                    },
+                    {
+                      slug: "mcp-tools",
+                      title: "MCP Tools Reference",
+                      category: "MCP",
+                      description: "Complete reference for all 80+ MCP tools",
+                    },
+                  ],
+                },
+                {
+                  category: "API",
+                  docs: [
+                    {
+                      slug: "api-reference",
+                      title: "API Reference",
+                      category: "API",
+                      description: "REST API documentation",
+                    },
+                    {
+                      slug: "authentication",
+                      title: "Authentication",
+                      category: "API",
+                      description: "OAuth and API keys",
+                    },
+                    {
+                      slug: "webhooks",
+                      title: "Webhooks",
+                      category: "API",
+                      description: "Webhook integrations",
+                    },
+                    {
+                      slug: "rate-limits",
+                      title: "Rate Limits",
+                      category: "API",
+                      description: "Rate limits and quotas",
+                    },
+                  ],
+                },
+                {
+                  category: "Architecture",
+                  docs: [
+                    {
+                      slug: "architecture",
+                      title: "Architecture Overview",
+                      category: "Architecture",
+                      description: "System architecture",
+                    },
+                  ],
+                },
+                {
+                  category: "Security",
+                  docs: [
+                    {
+                      slug: "security",
+                      title: "Security Model",
+                      category: "Security",
+                      description: "Security practices",
+                    },
+                  ],
+                },
+              ],
+              total: 10,
+            }),
+          );
           return;
         }
 
         if (req.url?.startsWith("/api/docs/")) {
           const slug = req.url.split("/").pop();
           res.writeHead(200);
-          res.end(JSON.stringify({ slug, title: slug, category: "Guides", description: "Documentation page", content: `# ${slug}\n\nDocumentation coming soon.` }));
+          res.end(
+            JSON.stringify({
+              slug,
+              title: slug,
+              category: "Guides",
+              description: "Documentation page",
+              content: `# ${slug}\n\nDocumentation coming soon.`,
+            }),
+          );
           return;
         }
 
@@ -120,7 +210,18 @@ async function startMockApiServer(): Promise<http.Server> {
 
         if (req.url?.startsWith("/api/experiments/")) {
           res.writeHead(200);
-          res.end(JSON.stringify({ assignments: {}, config: { showSocialProof: true, socialProofStyle: "exact", defaultSliderIdx: 2, ctaColor: "#000", ctaText: "Support us \${amount}" } }));
+          res.end(
+            JSON.stringify({
+              assignments: {},
+              config: {
+                showSocialProof: true,
+                socialProofStyle: "exact",
+                defaultSliderIdx: 2,
+                ctaColor: "#000",
+                ctaText: "Support us \${amount}",
+              },
+            }),
+          );
           return;
         }
 

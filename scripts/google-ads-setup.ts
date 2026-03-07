@@ -53,7 +53,9 @@ function getAccessToken(): string {
     }).trim();
   } catch {
     console.error("Failed to get access token. Run:");
-    console.error('  gcloud auth application-default login --scopes="https://www.googleapis.com/auth/adwords,https://www.googleapis.com/auth/cloud-platform"');
+    console.error(
+      '  gcloud auth application-default login --scopes="https://www.googleapis.com/auth/adwords,https://www.googleapis.com/auth/cloud-platform"',
+    );
     process.exit(1);
   }
 }
@@ -65,7 +67,11 @@ const ACCESS_TOKEN = getAccessToken();
 // ---------------------------------------------------------------------------
 
 interface MutateOperation {
-  [key: string]: { create?: Record<string, unknown>; update?: Record<string, unknown>; remove?: string };
+  [key: string]: {
+    create?: Record<string, unknown>;
+    update?: Record<string, unknown>;
+    remove?: string;
+  };
 }
 
 async function mutate(
@@ -455,7 +461,9 @@ async function verifyAccount(): Promise<boolean> {
       console.error("Account verification failed:", JSON.stringify(data, null, 2));
       return false;
     }
-    console.log(`  Account: ${(data as { descriptiveName?: string }).descriptiveName || CUSTOMER_ID}`);
+    console.log(
+      `  Account: ${(data as { descriptiveName?: string }).descriptiveName || CUSTOMER_ID}`,
+    );
     return true;
   } catch (err) {
     console.error("Account verification error:", err);
@@ -469,13 +477,19 @@ async function listExistingCampaigns(): Promise<void> {
     const data = await search(
       "SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type FROM campaign ORDER BY campaign.id",
     );
-    const results = data as { results?: { campaign: { id: string; name: string; status: string; advertisingChannelType: string } }[] }[];
+    const results = data as {
+      results?: {
+        campaign: { id: string; name: string; status: string; advertisingChannelType: string };
+      }[];
+    }[];
     const rows = results?.[0]?.results;
     if (!rows || rows.length === 0) {
       console.log("  (none)");
     } else {
       for (const row of rows) {
-        console.log(`  [${row.campaign.status}] ${row.campaign.name} (${row.campaign.advertisingChannelType})`);
+        console.log(
+          `  [${row.campaign.status}] ${row.campaign.name} (${row.campaign.advertisingChannelType})`,
+        );
       }
     }
   } catch {
@@ -534,8 +548,9 @@ async function main() {
     const result = await googleAdsMutate(operations);
     console.log("\nCampaign created successfully!");
 
-    const responses = (result as { mutateOperationResponses?: { campaignResult?: { resourceName: string } }[] })
-      .mutateOperationResponses;
+    const responses = (
+      result as { mutateOperationResponses?: { campaignResult?: { resourceName: string } }[] }
+    ).mutateOperationResponses;
     if (responses) {
       const campaignResult = responses.find((r) => r.campaignResult);
       if (campaignResult?.campaignResult) {
@@ -550,12 +565,16 @@ async function main() {
     console.log("  2. Set up conversion tracking:");
     console.log("     - Go to Tools > Conversions > New conversion action > Website");
     console.log("     - Copy the Conversion ID and Label");
-    console.log("     - Set VITE_GOOGLE_ADS_ID and VITE_GOOGLE_ADS_CONVERSION_LABEL in your build env");
+    console.log(
+      "     - Set VITE_GOOGLE_ADS_ID and VITE_GOOGLE_ADS_CONVERSION_LABEL in your build env",
+    );
     console.log("     - Rebuild and deploy spike-app");
     console.log("  3. Review all assets in the Google Ads UI");
     console.log("  4. Enable the campaign when ready");
     console.log();
-    console.log("To enable: Go to ads.google.com > Campaigns > spike.land UK Developer Traffic > Enable");
+    console.log(
+      "To enable: Go to ads.google.com > Campaigns > spike.land UK Developer Traffic > Enable",
+    );
   } catch (err) {
     console.error("\nFailed to create campaign:", err);
     process.exit(1);

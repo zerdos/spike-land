@@ -173,7 +173,17 @@ async function handleCheckout(
   window.location.href = data.url;
 }
 
-function PlanCard({ plan, annual, isAuthenticated, trackEvent }: { plan: PricingPlan; annual: boolean; isAuthenticated: boolean; trackEvent: (event: string, data?: Record<string, unknown>) => void }) {
+function PlanCard({
+  plan,
+  annual,
+  isAuthenticated,
+  trackEvent,
+}: {
+  plan: PricingPlan;
+  annual: boolean;
+  isAuthenticated: boolean;
+  trackEvent: (event: string, data?: Record<string, unknown>) => void;
+}) {
   const isFree = plan.name === "Free";
   const displayPrice = annual ? plan.annualPrice : plan.monthlyPrice;
   const planId = `plan-${plan.name.toLowerCase()}`;
@@ -201,7 +211,9 @@ function PlanCard({ plan, annual, isAuthenticated, trackEvent }: { plan: Pricing
         </span>
       )}
 
-      <h2 id={planId} className="text-xl font-bold text-foreground">{plan.name}</h2>
+      <h2 id={planId} className="text-xl font-bold text-foreground">
+        {plan.name}
+      </h2>
       <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
 
       <div className="mt-4">
@@ -228,7 +240,12 @@ function PlanCard({ plan, annual, isAuthenticated, trackEvent }: { plan: Pricing
               stroke="currentColor"
               aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             {f.text}
           </li>
@@ -281,7 +298,9 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
         </svg>
       </button>
       {open && (
-        <p id={panelId} className="mt-3 text-sm text-muted-foreground leading-relaxed">{answer}</p>
+        <p id={panelId} className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          {answer}
+        </p>
       )}
     </div>
   );
@@ -302,7 +321,8 @@ export function PricingPage() {
           Choose the plan that fits your workflow. From free to enterprise-grade.
         </p>
         <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
-          Launch pricing: £1/mo with code <span className="font-mono font-bold">LAUNCH97</span> — 14-day free trial included
+          Launch pricing: £1/mo with code <span className="font-mono font-bold">LAUNCH97</span> —
+          14-day free trial included
         </div>
 
         {/* Billing toggle */}
@@ -311,8 +331,14 @@ export function PricingPage() {
           aria-label="Billing frequency"
           className="mt-6 inline-flex items-center gap-3 rounded-full border border-border bg-muted p-1"
           onKeyDown={(e) => {
-            if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); setAnnual(false); }
-            if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); setAnnual(true); }
+            if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+              e.preventDefault();
+              setAnnual(false);
+            }
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+              e.preventDefault();
+              setAnnual(true);
+            }
           }}
         >
           <button
@@ -347,13 +373,22 @@ export function PricingPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {PLANS.map((plan) => (
-          <PlanCard key={plan.name} plan={plan} annual={annual} isAuthenticated={isAuthenticated} trackEvent={trackEvent} />
+          <PlanCard
+            key={plan.name}
+            plan={plan}
+            annual={annual}
+            isAuthenticated={isAuthenticated}
+            trackEvent={trackEvent}
+          />
         ))}
       </div>
 
       <p className="text-center text-sm text-muted-foreground">
         Need a custom plan?{" "}
-        <a href="mailto:enterprise@spike.land" className="text-primary underline hover:text-primary/80">
+        <a
+          href="mailto:enterprise@spike.land"
+          className="text-primary underline hover:text-primary/80"
+        >
           Talk to our team
         </a>
       </p>
@@ -365,7 +400,14 @@ export function PricingPage() {
           : "Prices in USD."}{" "}
         VAT may apply.
         <br />
-        Students and educators: <a href="mailto:education@spike.land" className="text-primary underline hover:text-primary/80">Contact us for academic pricing</a>.
+        Students and educators:{" "}
+        <a
+          href="mailto:education@spike.land"
+          className="text-primary underline hover:text-primary/80"
+        >
+          Contact us for academic pricing
+        </a>
+        .
       </p>
 
       {/* FAQ */}
@@ -379,7 +421,7 @@ export function PricingPage() {
           ))}
         </div>
       </div>
-      
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -32,9 +32,7 @@ describe("ChatThread", () => {
   });
 
   it("does not show loading indicator when not loading", () => {
-    render(
-      <ChatThread messages={[]} onSendMessage={mockSend} isLoading={false} />,
-    );
+    render(<ChatThread messages={[]} onSendMessage={mockSend} isLoading={false} />);
     expect(screen.queryByText("Assistant is thinking...")).not.toBeInTheDocument();
   });
 
@@ -56,7 +54,9 @@ describe("ChatThread", () => {
     const onSend = vi.fn();
     render(<ChatThread messages={[]} onSendMessage={onSend} />);
 
-    const textarea = screen.getByPlaceholderText(/Describe what you want to build/) as HTMLTextAreaElement;
+    const textarea = screen.getByPlaceholderText(
+      /Describe what you want to build/,
+    ) as HTMLTextAreaElement;
     fireEvent.change(textarea, { target: { value: "hello" } });
     fireEvent.click(screen.getByRole("button", { name: "" }));
 

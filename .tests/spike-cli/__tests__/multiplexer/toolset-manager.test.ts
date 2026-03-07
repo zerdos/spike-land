@@ -232,7 +232,10 @@ describe("ToolsetManager — handleMetaTool non-Error catch (line 151)", () => {
       badtools: { servers: ["srv"] },
     });
     // Patch loadToolset to throw a non-Error
-    vi.spyOn(mgr as unknown as { loadToolset: (n: string) => void }, "loadToolset").mockImplementation(() => {
+    vi.spyOn(
+      mgr as unknown as { loadToolset: (n: string) => void },
+      "loadToolset",
+    ).mockImplementation(() => {
       const nonError: unknown = "string failure";
       throw nonError;
     });

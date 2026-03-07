@@ -134,7 +134,9 @@ function LevelCard({ level, depth, currentDepth, autoPlaying }: CardProps) {
         {level.label}
       </h3>
 
-      <p className="text-sm text-muted-foreground font-mono leading-relaxed flex-1">{level.sublabel}</p>
+      <p className="text-sm text-muted-foreground font-mono leading-relaxed flex-1">
+        {level.sublabel}
+      </p>
 
       {depth < TOTAL - 1 && nextLevel !== undefined && (
         <div
@@ -248,7 +250,9 @@ export function RecursiveZoomDemo() {
                 >
                   {lvl.label}
                 </button>
-                {idx < ZOOM_LEVELS.length - 1 && <span className="text-muted-foreground opacity-30 text-xs">/</span>}
+                {idx < ZOOM_LEVELS.length - 1 && (
+                  <span className="text-muted-foreground opacity-30 text-xs">/</span>
+                )}
               </span>
             ))}
           </div>

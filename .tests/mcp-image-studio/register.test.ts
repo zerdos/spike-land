@@ -358,9 +358,9 @@ describe("createToolFromFunction error handling within registerImageStudioTools"
         ok: true,
         json: vi.fn().mockResolvedValue({ bugId: "bug-123", isNewBug: true }),
       };
-      const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-        mockResponse as unknown as Response,
-      );
+      const fetchSpy = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(mockResponse as unknown as Response);
 
       registerImageStudioTools(registry, "test-user", deps);
 
@@ -389,9 +389,9 @@ describe("createToolFromFunction error handling within registerImageStudioTools"
         ok: true,
         json: vi.fn().mockResolvedValue({ bugId: "bug-456", isNewBug: false }),
       };
-      const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-        mockResponse as unknown as Response,
-      );
+      const fetchSpy = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(mockResponse as unknown as Response);
 
       registerImageStudioTools(registry, "test-user", deps);
 
@@ -418,9 +418,9 @@ describe("createToolFromFunction error handling within registerImageStudioTools"
       const { deps } = createMockImageStudioDeps();
 
       const mockResponse = { ok: false, status: 500 };
-      const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-        mockResponse as unknown as Response,
-      );
+      const fetchSpy = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(mockResponse as unknown as Response);
 
       registerImageStudioTools(registry, "test-user", deps);
 

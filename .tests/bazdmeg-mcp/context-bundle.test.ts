@@ -123,7 +123,7 @@ describe("buildContextBundle", () => {
   it("handles missing CLAUDE.md in internal dependencies", async () => {
     const result = await createFakeMonorepo([
       { name: "pkg-a" },
-      { name: "dep-no-claude", claudeMd: "" } // Not actually providing it should result in null reading
+      { name: "dep-no-claude", claudeMd: "" }, // Not actually providing it should result in null reading
     ]);
     // The fixture creates a default CLAUDE.md if not provided? No, it only writes if pkg.claudeMd is truthy.
     cleanup = result.cleanup;
@@ -136,7 +136,7 @@ describe("buildContextBundle", () => {
     const longClaudeMd = Array.from({ length: 30 }, (_, i) => `Line ${i + 1}`).join("\n");
     const result = await createFakeMonorepo([
       { name: "pkg-a" },
-      { name: "dep-long", claudeMd: longClaudeMd }
+      { name: "dep-long", claudeMd: longClaudeMd },
     ]);
     cleanup = result.cleanup;
 

@@ -182,7 +182,14 @@ describe("post_check_run tool handler", () => {
 describe("get_pr_files tool handler", () => {
   it("returns PR files as JSON", async () => {
     const mockFiles = [
-      { filename: "src/a.ts", status: "modified", additions: 5, deletions: 2, patch: "", hunks: [] },
+      {
+        filename: "src/a.ts",
+        status: "modified",
+        additions: 5,
+        deletions: 2,
+        patch: "",
+        hunks: [],
+      },
     ];
     mockGitHubMethods.getPRFiles.mockResolvedValue(mockFiles);
 

@@ -78,9 +78,7 @@ export function getPersonaSlug(): string {
   if (typeof window === "undefined") return "solo-explorer";
   try {
     // Check cookie first, then localStorage
-    const cookie = document.cookie
-      .split("; ")
-      .find((c) => c.startsWith("spike-persona="));
+    const cookie = document.cookie.split("; ").find((c) => c.startsWith("spike-persona="));
     if (cookie) return cookie.split("=")[1] ?? "solo-explorer";
 
     return localStorage.getItem("spike_persona") ?? "solo-explorer";

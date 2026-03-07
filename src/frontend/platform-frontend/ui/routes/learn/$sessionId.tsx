@@ -94,12 +94,12 @@ function generateMockSession(content: string): SessionState {
             conceptIndex: 0,
             question:
               "Not enough content was provided to generate a quiz. Please go back and paste article text.",
-            options: [
-              "I understand",
-              "I understand",
-              "I understand",
-              "I understand",
-            ] as [string, string, string, string],
+            options: ["I understand", "I understand", "I understand", "I understand"] as [
+              string,
+              string,
+              string,
+              string,
+            ],
             correctIndex: 0,
           },
         ],

@@ -1,7 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import {
-  DynamicToolRegistry,
-} from "../../../../src/cli/spike-cli/core-logic/chat/tool-registry.js";
+import { DynamicToolRegistry } from "../../../../src/cli/spike-cli/core-logic/chat/tool-registry.js";
 import type { NamespacedTool } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 function makeTool(name: string, server: string, desc?: string): NamespacedTool {

@@ -102,7 +102,7 @@ export function registerStorageTools(
         unchangedCount: input.files.length - toUpload.length - errors.length,
       });
     });
-  
+
   (diffTool as unknown as { requiredRole?: string }).requiredRole = "admin";
   registry.registerBuilt(diffTool);
 

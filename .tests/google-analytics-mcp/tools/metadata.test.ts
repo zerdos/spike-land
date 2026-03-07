@@ -114,9 +114,7 @@ describe("ga4_list_properties", () => {
     expect(data.properties).toHaveLength(1);
 
     const fetchCall = vi.mocked(fetch).mock.calls[0];
-    expect(fetchCall[0]).toBe(
-      "https://analyticsadmin.googleapis.com/v1beta/properties",
-    );
+    expect(fetchCall[0]).toBe("https://analyticsadmin.googleapis.com/v1beta/properties");
 
     vi.unstubAllGlobals();
   });

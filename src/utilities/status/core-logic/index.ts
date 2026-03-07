@@ -55,7 +55,12 @@ async function checkAll(): Promise<ServiceCheck[]> {
   return results.map((r, i) =>
     r.status === "fulfilled"
       ? r.value
-      : { ...SERVICES[i], status: "down" as const, responseTime: TIMEOUT_MS, error: "Check failed" }
+      : {
+          ...SERVICES[i],
+          status: "down" as const,
+          responseTime: TIMEOUT_MS,
+          error: "Check failed",
+        },
   );
 }
 
@@ -97,7 +102,7 @@ function renderHTML(checks: ServiceCheck[], overall: "ok" | "degraded" | "down")
           <span class="time">${c.responseTime}ms</span>
           <span class="badge ${c.status}">${c.status}</span>
         </div>
-      </div>`
+      </div>`,
     )
     .join("");
 
@@ -161,24 +166,34 @@ export default {
     if (url.pathname === "/health") {
       const checks = await checkAll();
       const overall = overallStatus(checks);
-      return Response.json({ status: overall, timestamp: new Date().toISOString() }, {
-        headers: { "Cache-Control": "no-cache", ...cors },
-      });
+      return Response.json(
+        { status: overall, timestamp: new Date().toISOString() },
+        {
+          headers: { "Cache-Control": "no-cache", ...cors },
+        },
+      );
     }
 
     if (url.pathname === "/api/status") {
       const checks = await checkAll();
       const overall = overallStatus(checks);
-      return Response.json({ status: overall, services: checks, timestamp: new Date().toISOString() }, {
-        headers: { "Cache-Control": "no-cache", ...cors },
-      });
+      return Response.json(
+        { status: overall, services: checks, timestamp: new Date().toISOString() },
+        {
+          headers: { "Cache-Control": "no-cache", ...cors },
+        },
+      );
     }
 
     if (url.pathname === "/" || url.pathname === "") {
       const checks = await checkAll();
       const overall = overallStatus(checks);
       return new Response(renderHTML(checks, overall), {
-        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache", ...cors },
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-cache",
+          ...cors,
+        },
       });
     }
 

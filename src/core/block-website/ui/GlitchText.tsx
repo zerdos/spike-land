@@ -10,8 +10,7 @@ function useGlitchFont() {
     const link = document.createElement("link");
     link.id = id;
     link.rel = "stylesheet";
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap";
     document.head.appendChild(link);
   }, []);
 }

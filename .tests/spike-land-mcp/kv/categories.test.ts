@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { loadEnabledCategories, saveEnabledCategories } from "../../../src/edge-api/spike-land/core-logic/kv/categories";
+import {
+  loadEnabledCategories,
+  saveEnabledCategories,
+} from "../../../src/edge-api/spike-land/core-logic/kv/categories";
 import { mockKV } from "../__test-utils__/mock-env";
 
 describe("Category persistence", () => {

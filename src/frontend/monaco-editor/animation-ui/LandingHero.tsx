@@ -66,8 +66,8 @@ export function LandingHero() {
           transition={{ duration: 1.0, delay: 0.6, ease: "easeOut" }}
           className="text-xl sm:text-3xl text-muted-foreground max-w-4xl mx-auto mb-16 font-light leading-relaxed drop-shadow-md"
         >
-          Connect your AI agent to the tools it needs, on-demand. Only give your AI the context 
-          it requires—saving tokens and getting better responses.
+          Connect your AI agent to the tools it needs, on-demand. Only give your AI the context it
+          requires—saving tokens and getting better responses.
         </motion.p>
 
         {/* CTA Buttons */}

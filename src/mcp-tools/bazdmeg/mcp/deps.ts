@@ -132,7 +132,6 @@ export function registerDepGraphTools(server: McpServer): void {
       "Show dependency graph and topological sort. Supports tree, list, and mermaid formats.",
     schema: DepGraphSchema.shape,
     handler: async ({ packageName, format = "tree" }) => {
-
       const repoRoot = process.cwd();
       const manifest = await readManifest(repoRoot);
 

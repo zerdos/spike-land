@@ -44,9 +44,9 @@ function main() {
     // Pass the pre-bundled file and use --no-bundle
     execSync(
       `npx wrangler deploy ../../dist/spike-land-mcp/index.js --name spike-land-mcp -c wrangler.toml --no-bundle`,
-      { stdio: "inherit", cwd: path.join(ROOT_DIR, "packages/spike-land-mcp") }
+      { stdio: "inherit", cwd: path.join(ROOT_DIR, "packages/spike-land-mcp") },
     );
-    
+
     // Save hash on success
     fs.writeFileSync(CACHE_FILE, newHash);
     console.log("Deployment successful!");

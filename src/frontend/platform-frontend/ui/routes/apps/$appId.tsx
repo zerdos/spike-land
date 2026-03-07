@@ -18,7 +18,6 @@ function injectJsonLd(id: string, content: string) {
   el.textContent = content;
 }
 
-
 const McpTerminal = lazy(() =>
   import("../../../cli-ui/McpTerminal").then((m) => ({ default: m.McpTerminal })),
 );
@@ -52,13 +51,16 @@ export function AppDetailPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [appStatus] = useState<AppStatus>("live");
 
-  const setActiveTab = useCallback((tab: Tab) => {
-    navigate({
-      to: "/apps/$appId",
-      params: { appId: appId ?? "" },
-      search: (prev) => ({ ...prev, tab }),
-    });
-  }, [navigate, appId]);
+  const setActiveTab = useCallback(
+    (tab: Tab) => {
+      navigate({
+        to: "/apps/$appId",
+        params: { appId: appId ?? "" },
+        search: (prev) => ({ ...prev, tab }),
+      });
+    },
+    [navigate, appId],
+  );
 
   useEffect(() => {
     const handleTabChange = (e: Event) => {
@@ -88,34 +90,31 @@ export function AppDetailPage() {
     );
   }, [appId]);
 
-  const handleSendMessage = useCallback(
-    (content: string) => {
-      const userMsg: Message = {
+  const handleSendMessage = useCallback((content: string) => {
+    const userMsg: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content,
+      timestamp: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+
+    // Simulate assistant response
+    setTimeout(() => {
+      const assistantMsg: Message = {
         id: crypto.randomUUID(),
-        role: "user",
-        content,
+        role: "assistant",
+        content: `I received your message about "${content.slice(
+          0,
+          50,
+        )}...". I'll work on that change now.`,
         timestamp: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, userMsg]);
-      setIsLoading(true);
-
-      // Simulate assistant response
-      setTimeout(() => {
-        const assistantMsg: Message = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: `I received your message about "${content.slice(
-            0,
-            50,
-          )}...". I'll work on that change now.`,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, assistantMsg]);
-        setIsLoading(false);
-      }, 1500);
-    },
-    [],
-  );
+      setMessages((prev) => [...prev, assistantMsg]);
+      setIsLoading(false);
+    }, 1500);
+  }, []);
 
   function handleAction(_action: "archive" | "delete" | "restore") {
     // No-op until edge API integration

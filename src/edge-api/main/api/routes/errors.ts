@@ -28,8 +28,10 @@ function isValidErrorLog(e: unknown): e is ErrorLogEntry {
     obj.service_name.length <= MAX_STRING &&
     typeof obj.message === "string" &&
     obj.message.length <= MAX_STRING &&
-    (obj.error_code === undefined || (typeof obj.error_code === "string" && obj.error_code.length <= MAX_STRING)) &&
-    (obj.stack_trace === undefined || (typeof obj.stack_trace === "string" && obj.stack_trace.length <= MAX_STACK))
+    (obj.error_code === undefined ||
+      (typeof obj.error_code === "string" && obj.error_code.length <= MAX_STRING)) &&
+    (obj.stack_trace === undefined ||
+      (typeof obj.stack_trace === "string" && obj.stack_trace.length <= MAX_STACK))
   );
 }
 
@@ -111,7 +113,9 @@ errors.get("/errors", async (c) => {
   query += " ORDER BY created_at DESC LIMIT ?";
   params.push(limit);
 
-  const result = await c.env.DB.prepare(query).bind(...params).all();
+  const result = await c.env.DB.prepare(query)
+    .bind(...params)
+    .all();
   return c.json(result.results);
 });
 
@@ -126,12 +130,14 @@ errors.get("/errors/summary", async (c) => {
   const cutoff = Date.now() - (rangeMs[range] ?? 86_400_000);
 
   const [countResult, topCodes] = await Promise.all([
-    c.env.DB.prepare(
-      "SELECT COUNT(*) as total FROM error_logs WHERE created_at >= ?",
-    ).bind(cutoff).first<{ total: number }>(),
+    c.env.DB.prepare("SELECT COUNT(*) as total FROM error_logs WHERE created_at >= ?")
+      .bind(cutoff)
+      .first<{ total: number }>(),
     c.env.DB.prepare(
       "SELECT error_code, COUNT(*) as count FROM error_logs WHERE created_at >= ? GROUP BY error_code ORDER BY count DESC LIMIT 5",
-    ).bind(cutoff).all<{ error_code: string; count: number }>(),
+    )
+      .bind(cutoff)
+      .all<{ error_code: string; count: number }>(),
   ]);
 
   return c.json({

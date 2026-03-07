@@ -1,16 +1,6 @@
-import {
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  existsSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type {
-  RunRecord,
-  RunLog,
-  RunLogEvent,
-  PromptUsage,
-} from "./types.js";
+import type { RunRecord, RunLog, RunLogEvent, PromptUsage } from "./types.js";
 
 const DATA_DIR = join(process.cwd(), ".bazdmeg");
 const METRICS_FILE = join(DATA_DIR, "metrics.json");
@@ -50,12 +40,7 @@ export function createRunLog(runId: string): RunLog {
   return { runId, events: [] };
 }
 
-export function addLogEvent(
-  log: RunLog,
-  phase: string,
-  type: string,
-  data: unknown,
-): void {
+export function addLogEvent(log: RunLog, phase: string, type: string, data: unknown): void {
   const event: RunLogEvent = {
     timestamp: new Date().toISOString(),
     phase,
@@ -74,9 +59,7 @@ export function formatTrend(): string {
 
   const p1Rounds = last5.map((r) => String(r.phase1.rounds)).join(" → ");
   const p2Cycles = last5.map((r) => String(r.phase2.cycles)).join(" → ");
-  const durations = last5
-    .map((r) => `${Math.round(r.totalDurationMs / 60000)}m`)
-    .join(" → ");
+  const durations = last5.map((r) => `${Math.round(r.totalDurationMs / 60000)}m`).join(" → ");
 
   lines.push(`  Phase 1 rounds: ${p1Rounds}  ${trendArrow(last5.map((r) => r.phase1.rounds))}`);
   lines.push(`  Phase 2 cycles: ${p2Cycles}  ${trendArrow(last5.map((r) => r.phase2.cycles))}`);

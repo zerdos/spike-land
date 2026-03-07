@@ -2,16 +2,24 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { ToastProvider, useToast } from "@/components/Toast";
 
-function ToastTrigger({ message, variant }: { message: string; variant?: "success" | "error" | "info" }) {
+function ToastTrigger({
+  message,
+  variant,
+}: {
+  message: string;
+  variant?: "success" | "error" | "info";
+}) {
   const { showToast } = useToast();
-  return (
-    <button onClick={() => showToast(message, variant)}>
-      Show Toast
-    </button>
-  );
+  return <button onClick={() => showToast(message, variant)}>Show Toast</button>;
 }
 
-function TestApp({ message = "Hello", variant }: { message?: string; variant?: "success" | "error" | "info" }) {
+function TestApp({
+  message = "Hello",
+  variant,
+}: {
+  message?: string;
+  variant?: "success" | "error" | "info";
+}) {
   return (
     <ToastProvider>
       <ToastTrigger message={message} variant={variant} />
@@ -57,7 +65,9 @@ describe("ToastProvider / useToast", () => {
     vi.useFakeTimers();
     render(<TestApp message="Auto dismiss" />);
     fireEvent.click(screen.getByText("Show Toast"));
-    await act(async () => { await Promise.resolve(); });
+    await act(async () => {
+      await Promise.resolve();
+    });
     expect(screen.getByRole("status")).toBeInTheDocument();
 
     await act(async () => {
@@ -79,12 +89,20 @@ describe("ToastProvider / useToast", () => {
     function MultiToast() {
       const { showToast } = useToast();
       return (
-        <button onClick={() => {
-          for (let i = 0; i < 7; i++) showToast(`toast ${i}`);
-        }}>Show Many</button>
+        <button
+          onClick={() => {
+            for (let i = 0; i < 7; i++) showToast(`toast ${i}`);
+          }}
+        >
+          Show Many
+        </button>
       );
     }
-    render(<ToastProvider><MultiToast /></ToastProvider>);
+    render(
+      <ToastProvider>
+        <MultiToast />
+      </ToastProvider>,
+    );
     fireEvent.click(screen.getByText("Show Many"));
     await waitFor(() => {
       const toasts = screen.getAllByRole("status");

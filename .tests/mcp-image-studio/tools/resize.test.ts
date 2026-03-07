@@ -117,7 +117,9 @@ describe("resize", () => {
   });
 
   it("should validate width and height are positive integers using schema", async () => {
-    const { ResizeInputSchema } = await import("../../../src/mcp-tools/image-studio/tools/resize.js");
+    const { ResizeInputSchema } = await import(
+      "../../../src/mcp-tools/image-studio/tools/resize.js"
+    );
 
     const resultWidth = ResizeInputSchema.safeParse({
       image_id: "img-1",

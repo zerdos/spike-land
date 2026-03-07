@@ -9,7 +9,9 @@ class MockWebSocket {
   addEventListener() {}
   removeEventListener() {}
   serializeAttachment() {}
-  deserializeAttachment() { return null; }
+  deserializeAttachment() {
+    return null;
+  }
 }
 
 globalThis.WebSocketPair = class WebSocketPair {

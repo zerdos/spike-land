@@ -1,5 +1,9 @@
 import { test, expect, describe } from "vitest";
-import { PERSONAS, createFixerSessionId, QUIZ_BANK } from "../../../src/mcp-tools/bazdmeg/core-logic/personas.js";
+import {
+  PERSONAS,
+  createFixerSessionId,
+  QUIZ_BANK,
+} from "../../../src/mcp-tools/bazdmeg/core-logic/personas.js";
 
 describe("Fixer Core Logic", () => {
   test("Should have 16 personas", () => {

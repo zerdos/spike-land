@@ -7,7 +7,7 @@ describe("Guard Expression Parser Coverage", () => {
     b: 2,
     c: 0,
     nested: { x: { y: 10 } },
-    _event: { data: "hi" }
+    _event: { data: "hi" },
   };
 
   describe("Operators and Branches", () => {
@@ -38,9 +38,9 @@ describe("Guard Expression Parser Coverage", () => {
     it("should cover event access", () => {
       expect(evaluateExpression("event.data", context)).toBe("hi");
       expect(evaluateExpression("event.missing", context)).toBeUndefined();
-      
-      const deepContext = { _event: { outer: { inner: 'deep' } } };
-      expect(evaluateExpression("event.outer.inner", deepContext)).toBe('deep');
+
+      const deepContext = { _event: { outer: { inner: "deep" } } };
+      expect(evaluateExpression("event.outer.inner", deepContext)).toBe("deep");
     });
 
     it("should cover power operator", () => {
@@ -101,7 +101,9 @@ describe("Guard Expression Parser Coverage", () => {
     });
 
     it("should throw on unknown identifiers", () => {
-      expect(() => evaluateExpression("somethingElse", context)).toThrow('unknown identifier "somethingElse"');
+      expect(() => evaluateExpression("somethingElse", context)).toThrow(
+        'unknown identifier "somethingElse"',
+      );
     });
 
     it("should handle trailing whitespace in evaluateExpression", () => {
@@ -109,7 +111,9 @@ describe("Guard Expression Parser Coverage", () => {
     });
 
     it("should throw on unexpected trailing content", () => {
-      expect(() => evaluateExpression("1 + 1 extra", context)).toThrow("unexpected trailing content");
+      expect(() => evaluateExpression("1 + 1 extra", context)).toThrow(
+        "unexpected trailing content",
+      );
     });
 
     it("should handle resolvePath with non-objects", () => {
@@ -124,7 +128,7 @@ describe("Guard Expression Parser Coverage", () => {
     it("should throw on division by zero", () => {
       expect(() => evaluateExpression("10 / 0", context)).toThrow("Division by zero");
     });
-    
+
     it("should throw on invalid number format", () => {
       // Numbers are parsed by Number(), so we need to find something that /\d/ starts but Number() fails
       // Actually Number('1.2.3') is NaN.

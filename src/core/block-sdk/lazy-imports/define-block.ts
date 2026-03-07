@@ -170,7 +170,10 @@ export function defineBlock<
         /* v8 ignore next */ list: async (): Promise<[]> => [],
       },
       sql: {
-        /* v8 ignore next */ execute: async (): Promise<{ rows: []; rowsAffected: 0 }> => ({ rows: [], rowsAffected: 0 }),
+        /* v8 ignore next */ execute: async (): Promise<{ rows: []; rowsAffected: 0 }> => ({
+          rows: [],
+          rowsAffected: 0,
+        }),
         /* v8 ignore next */ batch: async (): Promise<[]> => [],
       },
     };

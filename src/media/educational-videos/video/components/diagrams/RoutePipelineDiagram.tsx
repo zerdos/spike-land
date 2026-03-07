@@ -1,6 +1,11 @@
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { stagger } from "../../lib/animations";
-import { COLORS, SPRING_CONFIGS, TYPOGRAPHY, VERITASIUM_COLORS } from "../../../core-logic/constants";
+import {
+  COLORS,
+  SPRING_CONFIGS,
+  TYPOGRAPHY,
+  VERITASIUM_COLORS,
+} from "../../../core-logic/constants";
 
 type RoutePipelineDiagramProps = {
   revealCount?: number;

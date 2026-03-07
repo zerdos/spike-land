@@ -1,11 +1,7 @@
 {
   "name": "image-studio",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base",
-    "@spike-land-ai/shared",
-    "zod-to-json-schema"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base", "@spike-land-ai/shared", "zod-to-json-schema"],
   "files": [
     "core-logic/define-tool.ts",
     "core-logic/index.ts",

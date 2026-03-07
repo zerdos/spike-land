@@ -26,7 +26,9 @@ const app = new Hono<{ Bindings: Env }>();
 
 app.get("/version", (c) => c.json({ sha: __BUILD_SHA__, built: __BUILD_TIME__ }));
 
-app.get("/health", (c) => c.json({ status: "ok", service: "image-studio-mcp", timestamp: new Date().toISOString() }));
+app.get("/health", (c) =>
+  c.json({ status: "ok", service: "image-studio-mcp", timestamp: new Date().toISOString() }),
+);
 
 app.use(
   "*",
@@ -441,8 +443,12 @@ app.patch("/api/gallery/album/:id", async (c) => {
   const updated = await deps.db.albumUpdate(album.handle as AlbumHandle, {
     ...(body.name !== undefined ? { name: body.name } : {}),
     ...(body.description !== undefined ? { description: body.description } : {}),
-    ...(body.privacy !== undefined ? { privacy: body.privacy as "PUBLIC" | "PRIVATE" | "UNLISTED" } : {}),
-    ...(body.coverImageId !== undefined ? { coverImageId: body.coverImageId as ImageId | null } : {}),
+    ...(body.privacy !== undefined
+      ? { privacy: body.privacy as "PUBLIC" | "PRIVATE" | "UNLISTED" }
+      : {}),
+    ...(body.coverImageId !== undefined
+      ? { coverImageId: body.coverImageId as ImageId | null }
+      : {}),
   });
 
   return c.json({ album: updated });

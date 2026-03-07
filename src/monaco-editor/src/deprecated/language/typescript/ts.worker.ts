@@ -1,1 +1,1 @@
-export * from '../../../languages/features/typescript/ts.worker';
+export * from "../../../languages/features/typescript/ts.worker";

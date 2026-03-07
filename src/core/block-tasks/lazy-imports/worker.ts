@@ -36,7 +36,7 @@ export default {
         return Response.json({ error: "Tool not found" }, { status: 404 });
       }
 
-      const body = await request.json() as Record<string, unknown>;
+      const body = (await request.json()) as Record<string, unknown>;
       const result = await tool.handler(body as Parameters<typeof tool.handler>[0]);
 
       return Response.json(result, {

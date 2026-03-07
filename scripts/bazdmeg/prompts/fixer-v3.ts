@@ -3,7 +3,9 @@ import type { PromptVariant, PromptContext } from "../types.js";
 const fixerV3: PromptVariant = {
   id: "fixer-v3",
   role: "fixer",
-  render: (ctx: PromptContext) => `Fix the following build/lint/test errors. Be surgical — change only what's needed to make the checks pass.
+  render: (
+    ctx: PromptContext,
+  ) => `Fix the following build/lint/test errors. Be surgical — change only what's needed to make the checks pass.
 
 CRITICAL WORKFLOW — Read before edit:
 1. Group the errors by file path.

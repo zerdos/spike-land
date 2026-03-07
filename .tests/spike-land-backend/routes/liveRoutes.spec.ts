@@ -225,7 +225,9 @@ describe("LiveRoutes", () => {
       });
 
       const path = ["live", "test-space", "files", "index.tsx", String(timestamp)];
-      const request = new Request(`https://example.com/live/test-space/files/index.tsx/${timestamp}`);
+      const request = new Request(
+        `https://example.com/live/test-space/files/index.tsx/${timestamp}`,
+      );
       const url = new URL(`https://example.com/live/test-space/files/index.tsx/${timestamp}`);
 
       const response = await liveRoutes.handleLiveRoute(request, url, path);
@@ -238,7 +240,9 @@ describe("LiveRoutes", () => {
       // storage returns null for the timestamp
       const timestamp = 9999999999;
       const path = ["live", "test-space", "files", "index.tsx", String(timestamp)];
-      const request = new Request(`https://example.com/live/test-space/files/index.tsx/${timestamp}`);
+      const request = new Request(
+        `https://example.com/live/test-space/files/index.tsx/${timestamp}`,
+      );
       const url = new URL(`https://example.com/live/test-space/files/index.tsx/${timestamp}`);
 
       const response = await liveRoutes.handleLiveRoute(request, url, path);

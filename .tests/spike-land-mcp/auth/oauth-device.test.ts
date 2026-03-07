@@ -5,7 +5,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { approveDeviceCode, createDeviceCode, exchangeDeviceCode } from "../../../src/edge-api/spike-land/db/auth/oauth-device";
+import {
+  approveDeviceCode,
+  createDeviceCode,
+  exchangeDeviceCode,
+} from "../../../src/edge-api/spike-land/db/auth/oauth-device";
 import { createMockD1 } from "../__test-utils__/mock-env";
 import { createDb } from "../../../src/edge-api/spike-land/db/db/db-index";
 import type { DrizzleDB } from "../../../src/edge-api/spike-land/db/db/db-index";
@@ -19,11 +23,13 @@ import type { DrizzleDB } from "../../../src/edge-api/spike-land/db/db/db-index"
  * select()...limit(n) -> resolves to `selectRows`
  * insert()/update()/delete() -> resolves immediately (no-op unless overridden)
  */
-function makeFakeDb(options: {
-  selectRows?: Record<string, unknown>[];
-  onInsert?: (values: unknown) => void;
-  onDelete?: () => void;
-} = {}): DrizzleDB {
+function makeFakeDb(
+  options: {
+    selectRows?: Record<string, unknown>[];
+    onInsert?: (values: unknown) => void;
+    onDelete?: () => void;
+  } = {},
+): DrizzleDB {
   const selectRows = options.selectRows ?? [];
 
   // Chainable select builder
@@ -258,8 +264,12 @@ describe("exchangeDeviceCode", () => {
           createdAt: now,
         },
       ],
-      onInsert: () => { insertCalled = true; },
-      onDelete: () => { deleteCalled = true; },
+      onInsert: () => {
+        insertCalled = true;
+      },
+      onDelete: () => {
+        deleteCalled = true;
+      },
     });
 
     const result = await exchangeDeviceCode(db, "dc_approved_code");

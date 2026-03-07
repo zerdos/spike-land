@@ -285,18 +285,14 @@ describe("formatGateResults", () => {
   });
 
   it("formats reports with RED status correctly", () => {
-    const gates: GateResult[] = [
-      { name: "Tests", status: "RED", detail: "Missing" },
-    ];
+    const gates: GateResult[] = [{ name: "Tests", status: "RED", detail: "Missing" }];
     const output = formatGateResults(gates);
     expect(output).toContain("Overall: RED");
     expect(output).toContain("Issues must be addressed");
   });
 
   it("formats reports with YELLOW status correctly", () => {
-    const gates: GateResult[] = [
-      { name: "Size", status: "YELLOW", detail: "Large" },
-    ];
+    const gates: GateResult[] = [{ name: "Size", status: "YELLOW", detail: "Large" }];
     const output = formatGateResults(gates);
     expect(output).toContain("Overall: YELLOW");
     expect(output).toContain("Minor concerns noted");
@@ -318,12 +314,12 @@ describe("Diff parsing edge cases", () => {
     ].join("\n");
     const ctx = makeContext({ diff });
     const rules = getBuiltinRules();
-    
-    const complianceRule = rules.find(r => r.name === "TypeScript Strict Compliance")!;
+
+    const complianceRule = rules.find((r) => r.name === "TypeScript Strict Compliance")!;
     expect(complianceRule.check(ctx).status).toBe("RED");
     expect(complianceRule.check(ctx).detail).toContain("@ts-nocheck");
 
-    const securityRule = rules.find(r => r.name === "Security Patterns")!;
+    const securityRule = rules.find((r) => r.name === "Security Patterns")!;
     const res = securityRule.check(ctx);
     expect(res.status).toBe("RED");
     expect(res.detail).toContain("Hardcoded password");
@@ -337,7 +333,7 @@ describe("Workspace scope edge cases", () => {
       files: ["a.ts", "b.ts", "c.ts", "d.ts", "e.ts"],
       allowedPaths: ["src/"],
     });
-    const rule = getBuiltinRules().find(r => r.name === "Workspace Scope Compliance")!;
+    const rule = getBuiltinRules().find((r) => r.name === "Workspace Scope Compliance")!;
     const res = rule.check(ctx);
     expect(res.status).toBe("RED");
     expect(res.detail).toContain("...");

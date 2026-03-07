@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { BrowserAdapter, BrowserPage, CdpAxNode } from "../../src/core/browser-automation/core-logic/adapter.js";
+import type {
+  BrowserAdapter,
+  BrowserPage,
+  CdpAxNode,
+} from "../../src/core/browser-automation/core-logic/adapter.js";
 import { rebuildTree } from "../../src/core/browser-automation/core-logic/adapter.js";
 
 describe("BrowserAdapter interface contract", () => {
@@ -34,7 +38,7 @@ describe("BrowserAdapter interface contract", () => {
   it("BrowserAdapter interface has all required methods", () => {
     const adapter: BrowserAdapter = {
       launch: async () => {},
-      newPage: async () => ({} as BrowserPage),
+      newPage: async () => ({}) as BrowserPage,
       isConnected: () => false,
       close: async () => {},
     };
@@ -108,9 +112,7 @@ describe("rebuildTree", () => {
   });
 
   it("converts numeric value to string", () => {
-    const nodes: CdpAxNode[] = [
-      { nodeId: "1", role: { value: "slider" }, value: { value: 42 } },
-    ];
+    const nodes: CdpAxNode[] = [{ nodeId: "1", role: { value: "slider" }, value: { value: 42 } }];
     const tree = rebuildTree(nodes);
     expect(tree!.value).toBe("42");
   });

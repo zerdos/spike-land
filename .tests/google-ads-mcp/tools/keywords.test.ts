@@ -13,10 +13,7 @@ describe("keyword tools", () => {
     vi.clearAllMocks();
     server = createMockServer();
     mockClient = createMockAdsClient();
-    registerKeywordTools(
-      server as unknown as McpServer,
-      mockClient as unknown as GoogleAdsClient,
-    );
+    registerKeywordTools(server as unknown as McpServer, mockClient as unknown as GoogleAdsClient);
   });
 
   it("registers both keyword tools", () => {
@@ -95,7 +92,8 @@ describe("keyword tools", () => {
 
   describe("ads_audience_insights", () => {
     it("returns gender and age range data", async () => {
-      mockClient.search = vi.fn()
+      mockClient.search = vi
+        .fn()
         .mockResolvedValueOnce([
           {
             genderView: { resourceName: "customers/123/genderViews/MALE" },
@@ -140,7 +138,8 @@ describe("keyword tools", () => {
     });
 
     it("handles age query error", async () => {
-      mockClient.search = vi.fn()
+      mockClient.search = vi
+        .fn()
         .mockResolvedValueOnce([])
         .mockRejectedValueOnce(new Error("Age query failed"));
       const result = await server.call("ads_audience_insights", {

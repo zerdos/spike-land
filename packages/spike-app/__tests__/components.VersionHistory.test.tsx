@@ -3,8 +3,18 @@ import { render, screen } from "@testing-library/react";
 import { VersionHistory } from "@/components/VersionHistory";
 
 const versions = [
-  { version: 1, changeDescription: "Initial release", author: "Alice", timestamp: "2025-01-01T00:00:00Z" },
-  { version: 3, changeDescription: "Added dark mode", author: "Bob", timestamp: "2025-03-01T00:00:00Z" },
+  {
+    version: 1,
+    changeDescription: "Initial release",
+    author: "Alice",
+    timestamp: "2025-01-01T00:00:00Z",
+  },
+  {
+    version: 3,
+    changeDescription: "Added dark mode",
+    author: "Bob",
+    timestamp: "2025-03-01T00:00:00Z",
+  },
   { version: 2, changeDescription: "Bug fixes", timestamp: "2025-02-01T00:00:00Z" },
 ];
 
@@ -46,16 +56,22 @@ describe("VersionHistory", () => {
   });
 
   it("does not crash when author is missing", () => {
-    render(<VersionHistory versions={[
-      { version: 1, changeDescription: "No author", timestamp: "2025-01-01T00:00:00Z" },
-    ]} />);
+    render(
+      <VersionHistory
+        versions={[
+          { version: 1, changeDescription: "No author", timestamp: "2025-01-01T00:00:00Z" },
+        ]}
+      />,
+    );
     expect(screen.getByText("No author")).toBeInTheDocument();
   });
 
   it("renders formatted timestamp", () => {
-    render(<VersionHistory versions={[
-      { version: 1, changeDescription: "Release", timestamp: "2025-06-15T10:30:00Z" },
-    ]} />);
+    render(
+      <VersionHistory
+        versions={[{ version: 1, changeDescription: "Release", timestamp: "2025-06-15T10:30:00Z" }]}
+      />,
+    );
     // Just verify something date-like is present; locale-dependent
     const dateText = new Date("2025-06-15T10:30:00Z").toLocaleString();
     expect(screen.getByText(dateText)).toBeInTheDocument();

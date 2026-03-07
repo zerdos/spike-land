@@ -43,7 +43,12 @@ export function injectExamplesIntoSchema(
 export function measureTokenSavings(
   original: object,
   optimized: object,
-): { originalLength: number; optimizedLength: number; savedLength: number; approximateTokensSaved: number } {
+): {
+  originalLength: number;
+  optimizedLength: number;
+  savedLength: number;
+  approximateTokensSaved: number;
+} {
   const originalLength = JSON.stringify(original).length;
   const optimizedLength = JSON.stringify(optimized).length;
   const savedLength = originalLength - optimizedLength;
@@ -185,7 +190,10 @@ function optimizeNode(node: unknown, propertyName: string | undefined, isRoot = 
     // Process descriptions
     if (key === "description" && typeof value === "string") {
       const nodeType = typeof obj.type === "string" ? obj.type : undefined;
-      if (propertyName && isRedundantDescription(propertyName, value, obj.enum as unknown[] | undefined, nodeType)) {
+      if (
+        propertyName &&
+        isRedundantDescription(propertyName, value, obj.enum as unknown[] | undefined, nodeType)
+      ) {
         continue; // strip entirely
       }
 
@@ -250,8 +258,8 @@ function isRedundantDescription(
   const strippedOptional = normalized.startsWith("optional ")
     ? normalized.slice("optional ".length)
     : normalized.startsWith("required ")
-    ? normalized.slice("required ".length)
-    : normalized;
+      ? normalized.slice("required ".length)
+      : normalized;
 
   // Exact match: description (possibly after stripping Optional/Required) is just the property name
   if (normalized === normalizedName || strippedOptional === normalizedName) return true;
@@ -266,24 +274,22 @@ function isRedundantDescription(
   if (
     normalized.endsWith(` of the ${normalizedName}`) ||
     normalized.endsWith(` for the ${normalizedName}`)
-  ) return true;
-  if (
-    normalized.endsWith(` of ${normalizedName}`) ||
-    normalized.endsWith(` for ${normalizedName}`)
-  ) return true;
+  )
+    return true;
+  if (normalized.endsWith(` of ${normalizedName}`) || normalized.endsWith(` for ${normalizedName}`))
+    return true;
 
   // "ID for <name>" or "ID of <name>"
-  if (
-    normalized === `id for ${normalizedName}` ||
-    normalized === `id of ${normalizedName}`
-  ) return true;
+  if (normalized === `id for ${normalizedName}` || normalized === `id of ${normalizedName}`)
+    return true;
 
   // Boolean patterns
   if (
     normalized === `whether to ${normalizedName}` ||
     normalized === `true if ${normalizedName}` ||
     normalized === `if true, ${normalizedName}`
-  ) return true;
+  )
+    return true;
 
   // Type-obvious descriptions
   if (nodeType !== undefined && isTypeObviousDescription(normalized, nodeType)) return true;
@@ -314,7 +320,31 @@ function isRedundantDescription(
   return false;
 }
 
-const STOP_WORDS = new Set(["the", "a", "an", "of", "for", "to", "is", "in", "by", "on", "it", "its", "be", "as", "at", "was", "when", "this", "that", "are", "with", "or", "and"]);
+const STOP_WORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "of",
+  "for",
+  "to",
+  "is",
+  "in",
+  "by",
+  "on",
+  "it",
+  "its",
+  "be",
+  "as",
+  "at",
+  "was",
+  "when",
+  "this",
+  "that",
+  "are",
+  "with",
+  "or",
+  "and",
+]);
 
 /**
  * Splits a property name into component words, handling snake_case, kebab-case, and camelCase.
@@ -348,7 +378,11 @@ function isWordBagRedundant(propertyName: string, description: string): boolean 
   if (meaningfulNameWords.length === 0) return false;
 
   // Split description into words, strip punctuation, lowercase, remove stops
-  const descRaw = description.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 0);
+  const descRaw = description
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 0);
   const descWords = descRaw.filter((w) => !STOP_WORDS.has(w));
 
   // All meaningful name words must appear in description words
@@ -368,7 +402,14 @@ function isTypeDefaultValue(value: unknown, nodeType: string | undefined): boole
   if ((nodeType === "number" || nodeType === "integer") && value === 0) return true;
   if (nodeType === "boolean" && value === false) return true;
   if (nodeType === "array" && Array.isArray(value) && value.length === 0) return true;
-  if (nodeType === "object" && typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 0) return true;
+  if (
+    nodeType === "object" &&
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === 0
+  )
+    return true;
   return false;
 }
 
@@ -379,7 +420,15 @@ function isTypeDefaultValue(value: unknown, nodeType: string | undefined): boole
 function isTypeObviousDescription(normalized: string, nodeType: string): boolean {
   const typePatterns: Record<string, readonly string[]> = {
     string: ["string", "a string", "a string value", "string value"],
-    number: ["number", "a number", "a number value", "number value", "integer", "an integer", "a number or integer"],
+    number: [
+      "number",
+      "a number",
+      "a number value",
+      "number value",
+      "integer",
+      "an integer",
+      "a number or integer",
+    ],
     integer: ["integer", "an integer", "integer value", "number", "a number", "a number value"],
     boolean: ["boolean", "a boolean", "a boolean value", "boolean value", "true or false"],
     array: ["array", "an array", "a list", "an array of items", "list", "array of items"],
@@ -394,10 +443,7 @@ function isTypeObviousDescription(normalized: string, nodeType: string): boolean
 function isSchemaObject(key: string, value: unknown): value is Record<string, unknown> {
   const schemaKeys = ["items", "additionalProperties", "not", "if", "then", "else"];
   return (
-    schemaKeys.includes(key) &&
-    typeof value === "object" &&
-    value !== null &&
-    !Array.isArray(value)
+    schemaKeys.includes(key) && typeof value === "object" && value !== null && !Array.isArray(value)
   );
 }
 

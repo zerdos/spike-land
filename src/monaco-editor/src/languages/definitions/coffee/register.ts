@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'coffeescript',
-	extensions: ['.coffee'],
-	aliases: ['CoffeeScript', 'coffeescript', 'coffee'],
-	mimetypes: ['text/x-coffeescript', 'text/coffeescript'],
-	loader: () => import('./coffee')
+  id: "coffeescript",
+  extensions: [".coffee"],
+  aliases: ["CoffeeScript", "coffeescript", "coffee"],
+  mimetypes: ["text/x-coffeescript", "text/coffeescript"],
+  loader: () => import("./coffee"),
 });

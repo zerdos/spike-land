@@ -56,32 +56,37 @@ export function useVibeCode(): UseVibeCodeReturn {
   }, []);
 
   // Extract code blocks from the latest assistant message
-  const applyFromChat = useCallback((messages: ChatMessage[]) => {
-    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant" && m.content);
-    if (!lastAssistant) return;
+  const applyFromChat = useCallback(
+    (messages: ChatMessage[]) => {
+      const lastAssistant = [...messages]
+        .reverse()
+        .find((m) => m.role === "assistant" && m.content);
+      if (!lastAssistant) return;
 
-    // Find fenced code blocks
-    const codeBlockRegex = /```(?:tsx?|jsx?|typescript|javascript)?\s*\n([\s\S]*?)```/g;
-    const matches: string[] = [];
-    let match: RegExpExecArray | null;
-    while ((match = codeBlockRegex.exec(lastAssistant.content)) !== null) {
-      if (match[1]) matches.push(match[1].trim());
-    }
-
-    // Apply the last (most complete) code block
-    if (matches.length > 0) {
-      const newCode = matches[matches.length - 1]!;
-      setCode(newCode);
-
-      // Try to detect language from the code block header
-      const langMatch = lastAssistant.content.match(/```(tsx?|jsx?|typescript|javascript)/);
-      if (langMatch) {
-        const lang = langMatch[1];
-        if (lang === "tsx" || lang === "typescript") setLanguage("typescript");
-        else if (lang === "jsx" || lang === "javascript") setLanguage("javascript");
+      // Find fenced code blocks
+      const codeBlockRegex = /```(?:tsx?|jsx?|typescript|javascript)?\s*\n([\s\S]*?)```/g;
+      const matches: string[] = [];
+      let match: RegExpExecArray | null;
+      while ((match = codeBlockRegex.exec(lastAssistant.content)) !== null) {
+        if (match[1]) matches.push(match[1].trim());
       }
-    }
-  }, [setCode]);
+
+      // Apply the last (most complete) code block
+      if (matches.length > 0) {
+        const newCode = matches[matches.length - 1]!;
+        setCode(newCode);
+
+        // Try to detect language from the code block header
+        const langMatch = lastAssistant.content.match(/```(tsx?|jsx?|typescript|javascript)/);
+        if (langMatch) {
+          const lang = langMatch[1];
+          if (lang === "tsx" || lang === "typescript") setLanguage("typescript");
+          else if (lang === "jsx" || lang === "javascript") setLanguage("javascript");
+        }
+      }
+    },
+    [setCode],
+  );
 
   return {
     code,

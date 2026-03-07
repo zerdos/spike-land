@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createElement, useState, useEffect } from "../../src/core/react-engine/core-logic/react/react-index.js";
+import {
+  createElement,
+  useState,
+  useEffect,
+} from "../../src/core/react-engine/core-logic/react/react-index.js";
 import { createRoot } from "../../src/core/react-engine/core-logic/react-dom/client.js";
 
 describe("react-ts-worker rendering", () => {
@@ -23,7 +27,7 @@ describe("react-ts-worker rendering", () => {
   it("should handle state updates", async () => {
     function Counter() {
       const [count, setCount] = useState(0);
-      
+
       useEffect(() => {
         setCount(1);
       }, []);
@@ -35,7 +39,7 @@ describe("react-ts-worker rendering", () => {
     root.render(createElement(Counter));
 
     // Wait for useEffect and re-render
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(container.textContent).toBe("Count: 1");
   });

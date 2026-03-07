@@ -12,9 +12,5 @@ export function RentStoryToggle() {
   const variant = loading ? null : getVariant("blog-code-belong-story-v1");
   const text = variant === "adhd-rent" ? ADHD_RENT_TEXT : NEUTRAL_TEXT;
 
-  return (
-    <p className="text-base leading-relaxed text-foreground/80 md:text-lg">
-      {text}
-    </p>
-  );
+  return <p className="text-base leading-relaxed text-foreground/80 md:text-lg">{text}</p>;
 }

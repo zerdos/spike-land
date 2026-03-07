@@ -66,164 +66,173 @@ export function useChat(): UseChatReturn {
     }
   }, []);
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || isStreaming) return;
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim() || isStreaming) return;
 
-    const userMsg: ChatMessage = {
-      id: makeId(),
-      role: "user",
-      content: content.trim(),
-      timestamp: Date.now(),
-    };
+      const userMsg: ChatMessage = {
+        id: makeId(),
+        role: "user",
+        content: content.trim(),
+        timestamp: Date.now(),
+      };
 
-    setMessages((prev) => [...prev, userMsg]);
-    setIsStreaming(true);
-    setError(null);
+      setMessages((prev) => [...prev, userMsg]);
+      setIsStreaming(true);
+      setError(null);
 
-    const assistantMsg: ChatMessage = {
-      id: makeId(),
-      role: "assistant",
-      content: "",
-      toolCalls: [],
-      browserCommands: [],
-      timestamp: Date.now(),
-    };
+      const assistantMsg: ChatMessage = {
+        id: makeId(),
+        role: "assistant",
+        content: "",
+        toolCalls: [],
+        browserCommands: [],
+        timestamp: Date.now(),
+      };
 
-    setMessages((prev) => [...prev, assistantMsg]);
+      setMessages((prev) => [...prev, assistantMsg]);
 
-    try {
-      abortRef.current = new AbortController();
+      try {
+        abortRef.current = new AbortController();
 
-      const history = messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+        const history = messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
 
-      const res = await fetch(apiUrl("/chat"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ message: content.trim(), history }),
-        signal: abortRef.current.signal,
-      });
+        const res = await fetch(apiUrl("/chat"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ message: content.trim(), history }),
+          signal: abortRef.current.signal,
+        });
 
-      if (!res.ok) {
-        const errBody = await res.text();
-        throw new Error(errBody || `HTTP ${res.status}`);
-      }
+        if (!res.ok) {
+          const errBody = await res.text();
+          throw new Error(errBody || `HTTP ${res.status}`);
+        }
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("No response body");
+        const reader = res.body?.getReader();
+        if (!reader) throw new Error("No response body");
 
-      const decoder = new TextDecoder();
-      let buffer = "";
+        const decoder = new TextDecoder();
+        let buffer = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
 
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6);
-          if (data === "[DONE]") continue;
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const data = line.slice(6);
+            if (data === "[DONE]") continue;
 
-          try {
-            const event = JSON.parse(data) as {
-              type: string;
-              text?: string;
-              name?: string;
-              args?: Record<string, unknown>;
-              result?: string;
-              requestId?: string;
-              tool?: string;
-              error?: string;
-            };
+            try {
+              const event = JSON.parse(data) as {
+                type: string;
+                text?: string;
+                name?: string;
+                args?: Record<string, unknown>;
+                result?: string;
+                requestId?: string;
+                tool?: string;
+                error?: string;
+              };
 
-            if (event.type === "text_delta" && event.text) {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsg.id
-                    ? { ...m, content: m.content + event.text }
-                    : m,
-                ),
-              );
-            } else if (event.type === "tool_call_start" && event.name) {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsg.id
-                    ? {
-                        ...m,
-                        toolCalls: [
-                          ...(m.toolCalls || []),
-                          { name: event.name!, args: event.args || {}, status: "pending" as const },
-                        ],
-                      }
-                    : m,
-                ),
-              );
-            } else if (event.type === "tool_call_end" && event.name) {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsg.id
-                    ? {
-                        ...m,
-                        toolCalls: (m.toolCalls || []).map((tc) =>
-                          tc.name === event.name && tc.status === "pending"
-                            ? { ...tc, ...(event.result !== undefined ? { result: event.result } : {}), status: "done" as const }
-                            : tc,
-                        ),
-                      }
-                    : m,
-                ),
-              );
-            } else if (event.type === "browser_command" && event.tool && event.requestId) {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsg.id
-                    ? {
-                        ...m,
-                        browserCommands: [
-                          ...(m.browserCommands || []),
-                          {
-                            tool: event.tool!,
-                            args: event.args || {},
-                            requestId: event.requestId!,
-                          },
-                        ],
-                      }
-                    : m,
-                ),
-              );
-            } else if (event.type === "error") {
-              setError(event.error || "Unknown error");
+              if (event.type === "text_delta" && event.text) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsg.id ? { ...m, content: m.content + event.text } : m,
+                  ),
+                );
+              } else if (event.type === "tool_call_start" && event.name) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsg.id
+                      ? {
+                          ...m,
+                          toolCalls: [
+                            ...(m.toolCalls || []),
+                            {
+                              name: event.name!,
+                              args: event.args || {},
+                              status: "pending" as const,
+                            },
+                          ],
+                        }
+                      : m,
+                  ),
+                );
+              } else if (event.type === "tool_call_end" && event.name) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsg.id
+                      ? {
+                          ...m,
+                          toolCalls: (m.toolCalls || []).map((tc) =>
+                            tc.name === event.name && tc.status === "pending"
+                              ? {
+                                  ...tc,
+                                  ...(event.result !== undefined ? { result: event.result } : {}),
+                                  status: "done" as const,
+                                }
+                              : tc,
+                          ),
+                        }
+                      : m,
+                  ),
+                );
+              } else if (event.type === "browser_command" && event.tool && event.requestId) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsg.id
+                      ? {
+                          ...m,
+                          browserCommands: [
+                            ...(m.browserCommands || []),
+                            {
+                              tool: event.tool!,
+                              args: event.args || {},
+                              requestId: event.requestId!,
+                            },
+                          ],
+                        }
+                      : m,
+                  ),
+                );
+              } else if (event.type === "error") {
+                setError(event.error || "Unknown error");
+              }
+            } catch {
+              // skip malformed SSE
             }
-          } catch {
-            // skip malformed SSE
           }
         }
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        const msg = err instanceof Error ? err.message : "Failed to send message";
+        setError(msg);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMsg.id && !m.content
+              ? { ...m, content: "Sorry, something went wrong. Please try again." }
+              : m,
+          ),
+        );
+      } finally {
+        setIsStreaming(false);
+        abortRef.current = null;
       }
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      const msg = err instanceof Error ? err.message : "Failed to send message";
-      setError(msg);
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantMsg.id && !m.content
-            ? { ...m, content: "Sorry, something went wrong. Please try again." }
-            : m,
-        ),
-      );
-    } finally {
-      setIsStreaming(false);
-      abortRef.current = null;
-    }
-  }, [isStreaming, messages]);
+    },
+    [isStreaming, messages],
+  );
 
   const clearError = useCallback(() => setError(null), []);
   const clearMessages = useCallback(() => {
@@ -232,5 +241,13 @@ export function useChat(): UseChatReturn {
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  return { messages, sendMessage, isStreaming, error, clearError, clearMessages, submitBrowserResult };
+  return {
+    messages,
+    sendMessage,
+    isStreaming,
+    error,
+    clearError,
+    clearMessages,
+    submitBrowserResult,
+  };
 }

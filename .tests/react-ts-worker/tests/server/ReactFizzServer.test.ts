@@ -3,7 +3,10 @@ import { createElement, createContext } from "../../../../src/core/react-engine/
 import { memo } from "../../../../src/core/react-engine/react/ReactMemo.js";
 import { forwardRef } from "../../../../src/core/react-engine/react/ReactForwardRef.js";
 import { lazy } from "../../../../src/core/react-engine/react/ReactLazy.js";
-import { renderToString, renderToReadableStream } from "../../../../src/core/react-engine/server/ReactFizzServer.js";
+import {
+  renderToString,
+  renderToReadableStream,
+} from "../../../../src/core/react-engine/server/ReactFizzServer.js";
 import {
   REACT_ELEMENT_TYPE,
   REACT_FRAGMENT_TYPE,
@@ -65,18 +68,17 @@ describe("renderToString", () => {
   });
 
   it("renders array of elements", () => {
-    const el = [
-      createElement("div", { key: "a" }, "A"),
-      createElement("span", { key: "b" }, "B"),
-    ];
+    const el = [createElement("div", { key: "a" }, "A"), createElement("span", { key: "b" }, "B")];
     const html = renderToString(el as unknown as null);
     expect(html).toContain("<div>");
     expect(html).toContain("<span>");
   });
 
   it("renders fragment", () => {
-    const el = createElement(REACT_FRAGMENT_TYPE, null,
-      createElement("div", null, "Fragment child")
+    const el = createElement(
+      REACT_FRAGMENT_TYPE,
+      null,
+      createElement("div", null, "Fragment child"),
     );
     const html = renderToString(el);
     expect(html).toContain("Fragment child");
@@ -84,8 +86,7 @@ describe("renderToString", () => {
   });
 
   it("renders function component", () => {
-    const MyComp = ({ name }: { name: string }) =>
-      createElement("p", null, `Hello ${name}`);
+    const MyComp = ({ name }: { name: string }) => createElement("p", null, `Hello ${name}`);
     const el = createElement(MyComp, { name: "World" });
     const html = renderToString(el);
     expect(html).toContain("Hello World");
@@ -97,7 +98,10 @@ describe("renderToString", () => {
       type: REACT_SUSPENSE_TYPE,
       key: null,
       ref: null,
-      props: { children: createElement("div", null, "loaded"), fallback: createElement("div", null, "loading") },
+      props: {
+        children: createElement("div", null, "loaded"),
+        fallback: createElement("div", null, "loading"),
+      },
       _owner: null,
     };
     const html = renderToString(el as unknown as null);
@@ -106,7 +110,9 @@ describe("renderToString", () => {
   });
 
   it("renders Suspense fallback on error", () => {
-    const ThrowComp = () => { throw new Error("oops"); };
+    const ThrowComp = () => {
+      throw new Error("oops");
+    };
     const el = {
       $$typeof: REACT_ELEMENT_TYPE,
       type: REACT_SUSPENSE_TYPE,
@@ -131,7 +137,7 @@ describe("renderToString", () => {
 
   it("renders forwardRef component", () => {
     const FwdComp = forwardRef<HTMLDivElement, { text: string }>(
-      ({ text }: { text: string }, _ref) => createElement("div", null, text)
+      ({ text }: { text: string }, _ref) => createElement("div", null, text),
     );
     const html = renderToString(createElement(FwdComp, { text: "fwd-text" }));
     expect(html).toContain("fwd-text");
@@ -146,7 +152,7 @@ describe("renderToString", () => {
     const el = createElement(
       Ctx as unknown as Parameters<typeof createElement>[0],
       { value: "provided" } as Record<string, unknown>,
-      createElement(Consumer, null)
+      createElement(Consumer, null),
     );
     const html = renderToString(el);
     expect(html).toContain("provided");
@@ -193,7 +199,9 @@ describe("renderToString", () => {
       }
     }
     Object.assign(MyClass.prototype, { isReactComponent: {} });
-    const html = renderToString(createElement(MyClass as unknown as Parameters<typeof createElement>[0], { value: "test" }));
+    const html = renderToString(
+      createElement(MyClass as unknown as Parameters<typeof createElement>[0], { value: "test" }),
+    );
     expect(html).toContain("class:test");
   });
 
@@ -201,7 +209,10 @@ describe("renderToString", () => {
     const Inner = ({ msg }: { msg: string }) => createElement("span", null, msg);
     const LazyComp = lazy(() => Promise.resolve({ default: Inner }));
     // Pre-resolve the lazy component
-    (LazyComp as unknown as Record<string, unknown>)._payload = { status: "fulfilled", value: Inner };
+    (LazyComp as unknown as Record<string, unknown>)._payload = {
+      status: "fulfilled",
+      value: Inner,
+    };
     (LazyComp as unknown as Record<string, unknown>)._init = (p: { value: unknown }) => p.value;
     const html = renderToString(createElement(LazyComp, { msg: "lazy-msg" }));
     expect(html).toContain("lazy-msg");
@@ -265,10 +276,14 @@ describe("renderToReadableStream", () => {
   });
 
   it("calls onError on render error", async () => {
-    const ThrowComp = () => { throw new Error("stream error"); };
+    const ThrowComp = () => {
+      throw new Error("stream error");
+    };
     const errors: unknown[] = [];
     const stream = renderToReadableStream(createElement(ThrowComp, null), {
-      onError: (err) => { errors.push(err); },
+      onError: (err) => {
+        errors.push(err);
+      },
     });
     try {
       await streamToString(stream);

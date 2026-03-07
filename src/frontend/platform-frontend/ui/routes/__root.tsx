@@ -27,55 +27,68 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/tools": {
     title: "AI Tools Registry - spike.land",
-    description: "Browse 80+ MCP tools on spike.land. Find tools for code review, image generation, data analysis, and more.",
+    description:
+      "Browse 80+ MCP tools on spike.land. Find tools for code review, image generation, data analysis, and more.",
   },
   "/apps": {
     title: "Apps - spike.land",
-    description: "Browse and interact with AI-powered applications on spike.land. Connect AI agents to real-world data and actions.",
+    description:
+      "Browse and interact with AI-powered applications on spike.land. Connect AI agents to real-world data and actions.",
   },
   "/store": {
     title: "App Store - spike.land",
-    description: "Discover and install AI-powered applications from the spike.land store. Chess engines, QA studio, data visualization, and more.",
+    description:
+      "Discover and install AI-powered applications from the spike.land store. Chess engines, QA studio, data visualization, and more.",
   },
   "/messages": {
     title: "Messages - spike.land",
-    description: "Real-time messaging and collaboration on spike.land. Chat with teammates, share code, and coordinate AI workflows.",
+    description:
+      "Real-time messaging and collaboration on spike.land. Chat with teammates, share code, and coordinate AI workflows.",
   },
   "/analytics": {
     title: "Analytics - spike.land",
-    description: "View usage analytics and insights for your spike.land apps. Track tool invocations, message volume, and performance metrics.",
+    description:
+      "View usage analytics and insights for your spike.land apps. Track tool invocations, message volume, and performance metrics.",
   },
   "/learn": {
     title: "Learn & Verify - spike.land",
-    description: "Learn from any content and prove your understanding through interactive AI-powered quizzes. Earn verifiable badges.",
+    description:
+      "Learn from any content and prove your understanding through interactive AI-powered quizzes. Earn verifiable badges.",
   },
   "/bugbook": {
     title: "Bugbook - spike.land",
-    description: "Public bug tracker with ELO ranking on spike.land. Report, track, and fix bugs with community-driven prioritization.",
+    description:
+      "Public bug tracker with ELO ranking on spike.land. Report, track, and fix bugs with community-driven prioritization.",
   },
   "/pricing": {
     title: "Pricing - spike.land | Free, Pro $29, Business $99",
-    description: "Simple, transparent pricing for spike.land. Free plan for individuals, Pro at $29/mo, Business at $99/mo with unlimited access and priority support.",
+    description:
+      "Simple, transparent pricing for spike.land. Free plan for individuals, Pro at $29/mo, Business at $99/mo with unlimited access and priority support.",
   },
   "/about": {
     title: "About spike.land - MCP-First AI Platform",
-    description: "Learn about spike.land — who we are, our mission, and how we're building an open platform for AI tools.",
+    description:
+      "Learn about spike.land — who we are, our mission, and how we're building an open platform for AI tools.",
   },
   "/terms": {
     title: "Terms of Service - spike.land",
-    description: "Read the spike.land Terms of Service. Learn about acceptable use, subscription billing, intellectual property rights, and our SaaS agreement.",
+    description:
+      "Read the spike.land Terms of Service. Learn about acceptable use, subscription billing, intellectual property rights, and our SaaS agreement.",
   },
   "/privacy": {
     title: "Privacy Policy - spike.land",
-    description: "spike.land Privacy Policy. GDPR-aware data handling, cookies, third-party services (Stripe, Cloudflare), and your rights as a user.",
+    description:
+      "spike.land Privacy Policy. GDPR-aware data handling, cookies, third-party services (Stripe, Cloudflare), and your rights as a user.",
   },
   "/blog": {
     title: "Blog - spike.land",
-    description: "Articles, tutorials, and engineering insights from the spike.land team. Learn about MCP, AI development, and edge computing.",
+    description:
+      "Articles, tutorials, and engineering insights from the spike.land team. Learn about MCP, AI development, and edge computing.",
   },
   "/docs": {
     title: "Documentation - spike.land",
-    description: "Technical documentation, API reference, MCP tools guide, and architecture overview for spike.land.",
+    description:
+      "Technical documentation, API reference, MCP tools guide, and architecture overview for spike.land.",
   },
   "/settings": {
     title: "Settings - spike.land",
@@ -83,11 +96,13 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/build": {
     title: "AI App Builder — We Build Your App in 48 Hours | spike.land",
-    description: "Get a working 3-screen MVP built in 48 hours for £1,997. MCP-first development with AI agents. Source code included.",
+    description:
+      "Get a working 3-screen MVP built in 48 hours for £1,997. MCP-first development with AI agents. Source code included.",
   },
   "/login": {
     title: "Sign In - spike.land",
-    description: "Sign in to spike.land with GitHub or Google to access your AI development platform.",
+    description:
+      "Sign in to spike.land with GitHub or Google to access your AI development platform.",
   },
   "/version": {
     title: "Version - spike.land",
@@ -95,11 +110,13 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/vibe-code": {
     title: "Vibe Coder - spike.land",
-    description: "Vibe code with AI agents. Chat, edit code in Monaco editor, and see live preview - all in one place.",
+    description:
+      "Vibe code with AI agents. Chat, edit code in Monaco editor, and see live preview - all in one place.",
   },
   "/what-we-do": {
     title: "What We Do - spike.land | MCP-First AI Platform",
-    description: "Explore spike.land's 80+ MCP tools across 11 domains. Code intelligence, image studio, analytics, authentication, and more — all edge-deployed.",
+    description:
+      "Explore spike.land's 80+ MCP tools across 11 domains. Code intelligence, image studio, analytics, authentication, and more — all edge-deployed.",
   },
 };
 
@@ -134,14 +151,16 @@ const WEB_APP_JSON_LD = JSON.stringify({
       name: "Pro",
       price: "29",
       priceCurrency: "USD",
-      description: "500 requests per day, pro tools, BYOK support, natural language chat, priority bug reporting",
+      description:
+        "500 requests per day, pro tools, BYOK support, natural language chat, priority bug reporting",
     },
     {
       "@type": "Offer",
       name: "Business",
       price: "99",
       priceCurrency: "USD",
-      description: "Unlimited requests, all tools, priority support, early access, bug bounty eligibility",
+      description:
+        "Unlimited requests, all tools, priority support, early access, bug bounty eligibility",
     },
   ],
 });
@@ -174,8 +193,8 @@ export function RootLayout() {
   useAuth();
   const { isDeveloper } = useDevMode();
 
-  const navLinks = useMemo(() =>
-    isDeveloper ? [VIBE_NAV_LINK, ...BASE_NAV_LINKS] : [...BASE_NAV_LINKS],
+  const navLinks = useMemo(
+    () => (isDeveloper ? [VIBE_NAV_LINK, ...BASE_NAV_LINKS] : [...BASE_NAV_LINKS]),
     [isDeveloper],
   );
 
@@ -217,16 +236,18 @@ export function RootLayout() {
     // Match exact path first, then strip dynamic segments for a best-effort match
     let meta = ROUTE_META[pathname] ??
       ROUTE_META[pathname.replace(/\/[^/]+$/, "")] ?? {
-      title: DEFAULT_TITLE,
-      description: DEFAULT_DESCRIPTION,
-    };
+        title: DEFAULT_TITLE,
+        description: DEFAULT_DESCRIPTION,
+      };
 
     // Special handling for dynamic app pages
     if (pathname.startsWith("/apps/") && pathname !== "/apps/new") {
       const appId = pathname.split("/")[2];
       const search = new URLSearchParams(searchStr);
       const tab = search.get("tab") || "Overview";
-      const appName = appId ? appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Tool";
+      const appName = appId
+        ? appId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+        : "Tool";
       meta = {
         title: `${appName} (${tab}) — spike.land`,
         description: `Explore ${appName} on spike.land — the MCP-first AI development platform.`,
@@ -288,15 +309,20 @@ export function RootLayout() {
         <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-card/80 backdrop-blur-xl px-6">
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center gap-8">
-              <Link to="/" className="text-xl font-bold">spike.land</Link>
+              <Link to="/" className="text-xl font-bold">
+                spike.land
+              </Link>
               <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
                 {navLinks.map(({ to, label }) => (
                   <Link
                     key={to}
                     to={to}
                     aria-current={pathname === to ? "page" : undefined}
-                    className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === to ? "text-foreground underline underline-offset-4 decoration-primary/50" : "text-muted-foreground"
-                      }`}
+                    className={`text-sm font-medium transition-colors hover:text-foreground ${
+                      pathname === to
+                        ? "text-foreground underline underline-offset-4 decoration-primary/50"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     {label}
                   </Link>
@@ -311,7 +337,14 @@ export function RootLayout() {
                   setTimeout(() => setSearchToast(false), 2000);
                 }}
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
                 <span>Search...</span>
                 <kbd className="hidden lg:inline-flex items-center gap-1 font-sans text-[10px] bg-background border border-border rounded px-1.5 py-0.5 opacity-70">
                   ⌘K
@@ -340,12 +373,34 @@ export function RootLayout() {
                 onClick={() => setMobileNavOpen(!mobileNavOpen)}
               >
                 {mobileNavOpen ? (
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   </svg>
                 )}
               </button>
@@ -368,8 +423,9 @@ export function RootLayout() {
                 <Link
                   key={to}
                   to={to}
-                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${pathname === to ? "text-foreground" : "text-muted-foreground"
-                    }`}
+                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${
+                    pathname === to ? "text-foreground" : "text-muted-foreground"
+                  }`}
                   onClick={() => setMobileNavOpen(false)}
                 >
                   {label}
@@ -383,7 +439,10 @@ export function RootLayout() {
           <noscript>
             <div className="p-8 text-center">
               <h1>JavaScript Required</h1>
-              <p>spike.land requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+              <p>
+                spike.land requires JavaScript to run. Please enable JavaScript in your browser
+                settings.
+              </p>
             </div>
           </noscript>
           <Outlet />
@@ -391,9 +450,7 @@ export function RootLayout() {
 
         <AppFooter />
         <CookieConsent />
-        {showGlobalChat && (
-          <AiChatWidget open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-        )}
+        {showGlobalChat && <AiChatWidget open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />}
         {searchToast && (
           <div
             role="status"

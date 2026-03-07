@@ -12,7 +12,10 @@ import type { Fiber } from "../../../../src/core/react-engine/reconciler/ReactFi
 import { createHostRootFiber } from "../../../../src/core/react-engine/reconciler/ReactFiber.js";
 import { NoLanes, SyncLane } from "../../../../src/core/react-engine/reconciler/ReactFiberLane.js";
 import { NoFlags } from "../../../../src/core/react-engine/reconciler/ReactFiberFlags.js";
-import { FunctionComponent, HostComponent } from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
+import {
+  FunctionComponent,
+  HostComponent,
+} from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
 
 function makeTestFiber(overrides: Partial<Fiber> = {}): Fiber {
   return {
@@ -246,7 +249,7 @@ describe("ReactFiberNewContext", () => {
 
       propagateContextChange(parent, ctx1, SyncLane);
 
-      expect((child.lanes & SyncLane)).toBe(0);
+      expect(child.lanes & SyncLane).toBe(0);
     });
   });
 });

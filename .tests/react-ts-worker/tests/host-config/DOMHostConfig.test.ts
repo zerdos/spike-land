@@ -32,29 +32,25 @@ describe("DOMHostConfig", () => {
       const container = document.createElement("div");
       // Just verify it creates without throwing
       expect(() =>
-        DOMHostConfig.createInstance("button", { is: "custom-button" }, container, { namespace: "" }),
+        DOMHostConfig.createInstance("button", { is: "custom-button" }, container, {
+          namespace: "",
+        }),
       ).not.toThrow();
     });
 
     it("sets text content for children string prop", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "span",
-        { children: "hello" },
-        container,
-        { namespace: "" },
-      );
+      const el = DOMHostConfig.createInstance("span", { children: "hello" }, container, {
+        namespace: "",
+      });
       expect(el.textContent).toBe("hello");
     });
 
     it("sets text content for children number prop", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "span",
-        { children: 42 },
-        container,
-        { namespace: "" },
-      );
+      const el = DOMHostConfig.createInstance("span", { children: 42 }, container, {
+        namespace: "",
+      });
       expect(el.textContent).toBe("42");
     });
 
@@ -71,45 +67,33 @@ describe("DOMHostConfig", () => {
 
     it("sets className as class attribute", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "div",
-        { className: "my-class" },
-        container,
-        { namespace: "" },
-      );
+      const el = DOMHostConfig.createInstance("div", { className: "my-class" }, container, {
+        namespace: "",
+      });
       expect(el.getAttribute("class")).toBe("my-class");
     });
 
     it("sets boolean attributes", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "input",
-        { disabled: true },
-        container,
-        { namespace: "" },
-      );
+      const el = DOMHostConfig.createInstance("input", { disabled: true }, container, {
+        namespace: "",
+      });
       expect(el.hasAttribute("disabled")).toBe(true);
     });
 
     it("removes boolean attribute when false", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "input",
-        { disabled: false },
-        container,
-        { namespace: "" },
-      );
+      const el = DOMHostConfig.createInstance("input", { disabled: false }, container, {
+        namespace: "",
+      });
       expect(el.hasAttribute("disabled")).toBe(false);
     });
 
     it("sets value property on input", () => {
       const container = document.createElement("div");
-      const el = DOMHostConfig.createInstance(
-        "input",
-        { value: "test" },
-        container,
-        { namespace: "" },
-      ) as HTMLInputElement;
+      const el = DOMHostConfig.createInstance("input", { value: "test" }, container, {
+        namespace: "",
+      }) as HTMLInputElement;
       expect(el.value).toBe("test");
     });
 
@@ -123,12 +107,9 @@ describe("DOMHostConfig", () => {
     it("skips ref and key props", () => {
       const container = document.createElement("div");
       expect(() =>
-        DOMHostConfig.createInstance(
-          "div",
-          { ref: () => {}, key: "mykey" },
-          container,
-          { namespace: "" },
-        ),
+        DOMHostConfig.createInstance("div", { ref: () => {}, key: "mykey" }, container, {
+          namespace: "",
+        }),
       ).not.toThrow();
     });
 
@@ -224,82 +205,47 @@ describe("DOMHostConfig", () => {
   describe("commitUpdate", () => {
     it("updates element properties", () => {
       const el = document.createElement("div");
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { className: "old" },
-        { className: "new" },
-      );
+      DOMHostConfig.commitUpdate(el, "div", { className: "old" }, { className: "new" });
       expect(el.getAttribute("class")).toBe("new");
     });
 
     it("removes old props not in new props", () => {
       const el = document.createElement("div");
       el.setAttribute("title", "old-title");
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { title: "old-title" },
-        {},
-      );
+      DOMHostConfig.commitUpdate(el, "div", { title: "old-title" }, {});
       expect(el.hasAttribute("title")).toBe(false);
     });
 
     it("removes old styles not in new props", () => {
       const el = document.createElement("div") as HTMLElement;
       el.style.color = "red";
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { style: { color: "red" } },
-        {},
-      );
+      DOMHostConfig.commitUpdate(el, "div", { style: { color: "red" } }, {});
     });
 
     it("skips children, key, ref in old props removal", () => {
       const el = document.createElement("div");
       expect(() =>
-        DOMHostConfig.commitUpdate(
-          el,
-          "div",
-          { children: "old", key: "k", ref: null },
-          {},
-        ),
+        DOMHostConfig.commitUpdate(el, "div", { children: "old", key: "k", ref: null }, {}),
       ).not.toThrow();
     });
 
     it("skips equal values in update", () => {
       const el = document.createElement("div");
       el.setAttribute("title", "same");
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { title: "same" },
-        { title: "same" },
-      );
+      DOMHostConfig.commitUpdate(el, "div", { title: "same" }, { title: "same" });
       expect(el.getAttribute("title")).toBe("same");
     });
 
     it("removes attribute when new value is null", () => {
       const el = document.createElement("div");
       el.setAttribute("title", "test");
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { title: "test" },
-        { title: null },
-      );
+      DOMHostConfig.commitUpdate(el, "div", { title: "test" }, { title: null });
       expect(el.hasAttribute("title")).toBe(false);
     });
 
     it("updates children text", () => {
       const el = document.createElement("div");
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { children: "old" },
-        { children: "new" },
-      );
+      DOMHostConfig.commitUpdate(el, "div", { children: "old" }, { children: "new" });
       expect(el.textContent).toBe("new");
     });
 
@@ -315,12 +261,7 @@ describe("DOMHostConfig", () => {
 
     it("removes hyphenated old style properties", () => {
       const el = document.createElement("div") as HTMLElement;
-      DOMHostConfig.commitUpdate(
-        el,
-        "div",
-        { style: { "--color": "red" } },
-        { style: {} },
-      );
+      DOMHostConfig.commitUpdate(el, "div", { style: { "--color": "red" } }, { style: {} });
     });
   });
 
@@ -419,7 +360,9 @@ describe("DOMHostConfig", () => {
   describe("finalizeInitialChildren", () => {
     it("returns true when autoFocus is set", () => {
       const el = document.createElement("button");
-      expect(DOMHostConfig.finalizeInitialChildren(el, "button", { autoFocus: true }, { namespace: "" })).toBe(true);
+      expect(
+        DOMHostConfig.finalizeInitialChildren(el, "button", { autoFocus: true }, { namespace: "" }),
+      ).toBe(true);
     });
 
     it("returns false when no autoFocus", () => {

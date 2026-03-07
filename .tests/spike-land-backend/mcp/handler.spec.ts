@@ -72,7 +72,7 @@ describe("McpHandler", () => {
       const request = new Request("http://localhost/mcp", { method: "GET" });
       const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), []);
       expect(response.status).toBe(200);
-      const data = await response.json() as McpResponse;
+      const data = (await response.json()) as McpResponse;
       const result = data.result as Record<string, unknown>;
       expect(result?.serverInfo).toBeDefined();
     });
@@ -84,7 +84,7 @@ describe("McpHandler", () => {
       });
       const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), []);
       expect(response.status).toBe(400);
-      const data = await response.json() as McpResponse;
+      const data = (await response.json()) as McpResponse;
       expect(data.error?.code).toBe(-32700);
     });
 
@@ -710,7 +710,11 @@ describe("McpHandler", () => {
     it("getTools returns a copy of the tools array", () => {
       const tools = handler.getTools();
       const originalLength = tools.length;
-      tools.push({ name: "injected", description: "", inputSchema: { type: "object", properties: {} } });
+      tools.push({
+        name: "injected",
+        description: "",
+        inputSchema: { type: "object", properties: {} },
+      });
       expect(handler.getTools()).toHaveLength(originalLength);
     });
   });

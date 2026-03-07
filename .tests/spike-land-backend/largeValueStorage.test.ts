@@ -304,7 +304,9 @@ describe("LargeValueStorage", () => {
       // R2 returns corrupt (non-JSON) text
       mockR2.get.mockResolvedValue(makeR2Object("not valid json {{{"));
 
-      await expect(lvs.get("bad_key")).rejects.toThrow("Failed to parse stored value: invalid JSON");
+      await expect(lvs.get("bad_key")).rejects.toThrow(
+        "Failed to parse stored value: invalid JSON",
+      );
     });
   });
 });

@@ -259,11 +259,17 @@ describe("albumImages", () => {
       mockImageRow({ id: asImageId("img-1"), userId }),
       mockImageRow({ id: asImageId("img-2"), userId }),
     ]);
-    
+
     // Fail for img-1, succeed for img-2
     mocks.db.albumImageAdd.mockImplementation((_aid, iid) => {
       if (iid === "img-1") return Promise.resolve(null); // duplicate/fail
-      return Promise.resolve({ id: "added", albumId: _aid, imageId: iid, sortOrder: 1, addedAt: new Date() }); // succeed
+      return Promise.resolve({
+        id: "added",
+        albumId: _aid,
+        imageId: iid,
+        sortOrder: 1,
+        addedAt: new Date(),
+      }); // succeed
     });
 
     const result = await albumImages(

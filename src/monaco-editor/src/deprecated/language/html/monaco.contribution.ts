@@ -1,1 +1,1 @@
-export * from '../../../languages/features/html/register';
+export * from "../../../languages/features/html/register";

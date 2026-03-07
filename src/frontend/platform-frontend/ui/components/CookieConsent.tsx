@@ -25,7 +25,7 @@ export function CookieConsent() {
     <div
       className={cn(
         "fixed bottom-0 inset-x-0 z-[100] p-4 transition-all duration-500 ease-out transform",
-        visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0",
       )}
       role="region"
       aria-label="Cookie consent"
@@ -34,13 +34,13 @@ export function CookieConsent() {
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Cookie className="h-6 w-6" />
         </div>
-        
+
         <div className="flex-1 space-y-1">
           <h3 className="text-sm font-bold text-foreground">We use cookies</h3>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
-            We use essential cookies to make our platform work, analytics cookies to understand how you use it,
-            and advertising cookies to measure campaign effectiveness.
-            By clicking &ldquo;Accept All&rdquo;, you agree to our use of all cookies.{" "}
+            We use essential cookies to make our platform work, analytics cookies to understand how
+            you use it, and advertising cookies to measure campaign effectiveness. By clicking
+            &ldquo;Accept All&rdquo;, you agree to our use of all cookies.{" "}
             <Link
               to="/privacy"
               className="font-semibold text-primary hover:underline underline-offset-4"

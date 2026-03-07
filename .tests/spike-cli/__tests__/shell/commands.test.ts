@@ -166,9 +166,7 @@ describe("shell commands", () => {
     });
 
     it("handleCall formats non-Error thrown as String (line 94)", async () => {
-      (mockManager.callTool as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-        "raw string error",
-      );
+      (mockManager.callTool as ReturnType<typeof vi.fn>).mockRejectedValueOnce("raw string error");
       const output = await handleCall(ctx, "some__tool", "{}");
       expect(output).toContain("raw string error");
     });

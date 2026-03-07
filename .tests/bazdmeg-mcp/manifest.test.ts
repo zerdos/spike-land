@@ -17,7 +17,9 @@ import {
 } from "../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
 
 // Helper to create a temp directory with a packages.yaml file
-async function createTempManifest(yamlContent: string): Promise<{ root: string; cleanup: () => Promise<void> }> {
+async function createTempManifest(
+  yamlContent: string,
+): Promise<{ root: string; cleanup: () => Promise<void> }> {
   const root = await mkdtemp(join(tmpdir(), "bazdmeg-manifest-test-"));
   await writeFile(join(root, "packages.yaml"), yamlContent, "utf-8");
   return {
@@ -311,8 +313,20 @@ describe("topologicalSort", () => {
 
   it("sorts a chain of 3 packages in correct build order", () => {
     const packages = {
-      c: { kind: "library", version: "1.0.0", description: "C", entry: "src/index.ts", deps: ["b"] },
-      b: { kind: "library", version: "1.0.0", description: "B", entry: "src/index.ts", deps: ["a"] },
+      c: {
+        kind: "library",
+        version: "1.0.0",
+        description: "C",
+        entry: "src/index.ts",
+        deps: ["b"],
+      },
+      b: {
+        kind: "library",
+        version: "1.0.0",
+        description: "B",
+        entry: "src/index.ts",
+        deps: ["a"],
+      },
       a: { kind: "library", version: "1.0.0", description: "A", entry: "src/index.ts" },
     };
     const order = topologicalSort(packages);
@@ -322,8 +336,20 @@ describe("topologicalSort", () => {
 
   it("throws on circular dependencies", () => {
     const packages = {
-      a: { kind: "library", version: "1.0.0", description: "A", entry: "src/index.ts", deps: ["b"] },
-      b: { kind: "library", version: "1.0.0", description: "B", entry: "src/index.ts", deps: ["a"] },
+      a: {
+        kind: "library",
+        version: "1.0.0",
+        description: "A",
+        entry: "src/index.ts",
+        deps: ["b"],
+      },
+      b: {
+        kind: "library",
+        version: "1.0.0",
+        description: "B",
+        entry: "src/index.ts",
+        deps: ["a"],
+      },
     };
     expect(() => topologicalSort(packages)).toThrow("Circular dependency");
   });
@@ -750,7 +776,10 @@ packages:
     cleanup = tmp.cleanup;
 
     const manifest = await readManifest(root);
-    expect((manifest.packages["test-pkg"] as any).list).toEqual([{ key: null }, { other: "value" }]);
+    expect((manifest.packages["test-pkg"] as any).list).toEqual([
+      { key: null },
+      { other: "value" },
+    ]);
   });
 
   it("handles real numeric values in YAML", async () => {

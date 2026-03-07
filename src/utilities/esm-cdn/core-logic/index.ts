@@ -41,7 +41,10 @@ export default {
     }
 
     if (url.pathname === "/health") {
-      return Response.json({ status: "ok", service: "esm-cdn", timestamp: new Date().toISOString() }, { headers: cors });
+      return Response.json(
+        { status: "ok", service: "esm-cdn", timestamp: new Date().toISOString() },
+        { headers: cors },
+      );
     }
 
     if (request.method !== "GET") {

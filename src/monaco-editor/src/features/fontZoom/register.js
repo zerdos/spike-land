@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/fontZoom/browser/fontZoom';
+import "monaco-editor-core/esm/vs/editor/contrib/fontZoom/browser/fontZoom";

@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'cameligo',
-	extensions: ['.mligo'],
-	aliases: ['Cameligo'],
-	loader: () => import('./cameligo')
+  id: "cameligo",
+  extensions: [".mligo"],
+  aliases: ["Cameligo"],
+  loader: () => import("./cameligo"),
 });

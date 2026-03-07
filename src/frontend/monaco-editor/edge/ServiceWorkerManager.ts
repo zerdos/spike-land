@@ -34,7 +34,11 @@ export const setupServiceWorker = async (): Promise<ServiceWorkerRegistration | 
         ),
       );
 
-      if (!serverVersionResult.error && oldSwVersion === swVersion && serverVersionResult.data === swVersion) {
+      if (
+        !serverVersionResult.error &&
+        oldSwVersion === swVersion &&
+        serverVersionResult.data === swVersion
+      ) {
         return oldRegistration;
       }
       await oldRegistration.unregister();

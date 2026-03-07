@@ -31,19 +31,31 @@ function createFakeIndexedDB() {
       const store = stores[storeName]!;
       const fakeStore = {
         get: (key: string) => {
-          const result = { result: store.get(key), onerror: null as (() => void) | null, onsuccess: null as (() => void) | null };
+          const result = {
+            result: store.get(key),
+            onerror: null as (() => void) | null,
+            onsuccess: null as (() => void) | null,
+          };
           setTimeout(() => result.onsuccess?.(), 0);
           return result;
         },
         put: (value: unknown, key: string) => {
           store.set(key, value);
-          const result = { result: undefined, onerror: null as (() => void) | null, onsuccess: null as (() => void) | null };
+          const result = {
+            result: undefined,
+            onerror: null as (() => void) | null,
+            onsuccess: null as (() => void) | null,
+          };
           setTimeout(() => result.onsuccess?.(), 0);
           return result;
         },
         clear: () => {
           store.clear();
-          const result = { result: undefined, onerror: null as (() => void) | null, onsuccess: null as (() => void) | null };
+          const result = {
+            result: undefined,
+            onerror: null as (() => void) | null,
+            onsuccess: null as (() => void) | null,
+          };
           setTimeout(() => result.onsuccess?.(), 0);
           return result;
         },

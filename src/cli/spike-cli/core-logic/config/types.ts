@@ -35,10 +35,17 @@ export interface McpConfigFile {
   lazyLoading?: boolean | undefined;
 }
 
+export interface DynamicToolLoadingConfig {
+  enabled?: boolean;
+  /** Glob patterns for tools that should always send full schemas. */
+  alwaysOnPatterns?: string[];
+}
+
 export interface ResolvedConfig {
   servers: Record<string, ServerConfig>;
   toolsets?: Record<string, ToolsetConfig> | undefined;
   lazyLoading?: boolean | undefined;
+  dynamicToolLoading?: DynamicToolLoadingConfig | undefined;
   /** Config file paths that were successfully loaded (for diagnostics). */
   configSources?: string[] | undefined;
 }

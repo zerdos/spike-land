@@ -60,7 +60,11 @@ async function buildAliasMap(srcDir: string): Promise<AliasMap> {
  * Resolve an `@/` import to an absolute file path.
  * Returns null if the alias can't be resolved.
  */
-function resolveAliasImport(importPath: string, packageName: string, aliasMap: AliasMap): string | null {
+function resolveAliasImport(
+  importPath: string,
+  packageName: string,
+  aliasMap: AliasMap,
+): string | null {
   if (!importPath.startsWith("@/")) return null;
 
   const entry = aliasMap.get(packageName);
@@ -70,7 +74,10 @@ function resolveAliasImport(importPath: string, packageName: string, aliasMap: A
   return path.resolve(entry.baseDir, subPath);
 }
 
-export async function discoverFiles(project: Project, srcDir?: string): Promise<{ nodes: FileNode[]; aliasMap: AliasMap }> {
+export async function discoverFiles(
+  project: Project,
+  srcDir?: string,
+): Promise<{ nodes: FileNode[]; aliasMap: AliasMap }> {
   const root = srcDir || path.resolve(process.cwd(), "src");
   const aliasMap = await buildAliasMap(root);
   const nodes: FileNode[] = [];
@@ -89,23 +96,36 @@ export async function discoverFiles(project: Project, srcDir?: string): Promise<
 
     const imports = sourceFile.getImportDeclarations();
     const exports = sourceFile.getExportDeclarations();
-    const dynamicImports = sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression)
-      .filter(c => c.getExpression().getText() === "import");
+    const dynamicImports = sourceFile
+      .getDescendantsOfKind(SyntaxKind.CallExpression)
+      .filter((c) => c.getExpression().getText() === "import");
 
     const specs = [
-        ...imports.map(i => i.getModuleSpecifierValue()).filter(Boolean),
-        ...exports.map(e => e.getModuleSpecifierValue()).filter(Boolean),
-        ...dynamicImports.map(d => {
-            const arg = d.getArguments()[0];
-            if (arg && (arg.getKind() === SyntaxKind.StringLiteral || arg.getKind() === SyntaxKind.NoSubstitutionTemplateLiteral)) {
-                return (arg as StringLiteral | NoSubstitutionTemplateLiteral).getLiteralText();
-            }
-            return null;
-        }).filter(Boolean)
+      ...imports.map((i) => i.getModuleSpecifierValue()).filter(Boolean),
+      ...exports.map((e) => e.getModuleSpecifierValue()).filter(Boolean),
+      ...dynamicImports
+        .map((d) => {
+          const arg = d.getArguments()[0];
+          if (
+            arg &&
+            (arg.getKind() === SyntaxKind.StringLiteral ||
+              arg.getKind() === SyntaxKind.NoSubstitutionTemplateLiteral)
+          ) {
+            return (arg as StringLiteral | NoSubstitutionTemplateLiteral).getLiteralText();
+          }
+          return null;
+        })
+        .filter(Boolean),
     ] as string[];
 
     for (const importPath of specs) {
-      if (importPath.startsWith("http") || importPath.endsWith(".css") || importPath.endsWith(".json") || importPath.includes("${")) continue;
+      if (
+        importPath.startsWith("http") ||
+        importPath.endsWith(".css") ||
+        importPath.endsWith(".json") ||
+        importPath.includes("${")
+      )
+        continue;
 
       if (importPath.startsWith(".") || importPath.startsWith("/")) {
         const dir = path.dirname(absPath);

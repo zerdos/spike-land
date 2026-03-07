@@ -22,9 +22,10 @@ export function buildNotFoundError(name: string, allTools: NamespacedTool[]): St
     .slice(0, 3)
     .map((t) => t.namespacedName);
 
-  const hint = suggestions.length > 0
-    ? `Did you mean: ${suggestions.join(", ")}?`
-    : "Use tool_search to find available tools.";
+  const hint =
+    suggestions.length > 0
+      ? `Did you mean: ${suggestions.join(", ")}?`
+      : "Use tool_search to find available tools.";
 
   return {
     code: "TOOL_NOT_FOUND",
@@ -88,7 +89,11 @@ function classifyError(message: string): ErrorClassification {
   }
 
   // Rate limiting
-  if (lower.includes("rate limit") || lower.includes("429") || lower.includes("too many requests")) {
+  if (
+    lower.includes("rate limit") ||
+    lower.includes("429") ||
+    lower.includes("too many requests")
+  ) {
     return {
       code: "RATE_LIMITED",
       retryable: true,
@@ -128,7 +133,11 @@ function classifyError(message: string): ErrorClassification {
   }
 
   // Server errors
-  if (lower.includes("500") || lower.includes("internal server") || lower.includes("internal error")) {
+  if (
+    lower.includes("500") ||
+    lower.includes("internal server") ||
+    lower.includes("internal error")
+  ) {
     return {
       code: "SERVER_ERROR",
       retryable: true,

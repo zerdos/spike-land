@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { collect, parseInlineServers, parseInlineUrls } from "../../../src/cli/spike-cli/core-logic/commands/common";
+import {
+  collect,
+  parseInlineServers,
+  parseInlineUrls,
+} from "../../../src/cli/spike-cli/core-logic/commands/common";
 
 describe("common command helpers", () => {
   it("collect appends to array", () => {
@@ -38,7 +42,9 @@ describe("common command helpers", () => {
   });
 
   it("parseInlineUrls throws when name is empty", () => {
-    expect(() => parseInlineUrls(["=http://localhost:3000"])).toThrow("Server name must not be empty");
+    expect(() => parseInlineUrls(["=http://localhost:3000"])).toThrow(
+      "Server name must not be empty",
+    );
   });
 
   it("parseInlineUrls throws when url is empty", () => {
@@ -47,9 +53,7 @@ describe("common command helpers", () => {
 
   it("parseInlineUrls throws for invalid URL containing invalid port via catch path", () => {
     // URL with invalid IPv6 that throws 'Invalid URL' but has port > 65535
-    expect(() =>
-      parseInlineUrls(["s1=http://[::invalid]:99999"]),
-    ).toThrow("Port must be 1–65535");
+    expect(() => parseInlineUrls(["s1=http://[::invalid]:99999"])).toThrow("Port must be 1–65535");
   });
 
   it("parseInlineUrls allows valid port range", () => {

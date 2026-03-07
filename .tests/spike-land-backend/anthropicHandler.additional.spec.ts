@@ -8,7 +8,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleAnthropicRequest } from "../../src/edge-api/backend/core-logic/anthropicHandler.js";
 import type Env from "../../src/edge-api/backend/core-logic/env.js";
 
-function createDebugEnv(mockKV: ReturnType<typeof createMockKV>, overrides: Record<string, unknown> = {}): Env {
+function createDebugEnv(
+  mockKV: ReturnType<typeof createMockKV>,
+  overrides: Record<string, unknown> = {},
+): Env {
   return {
     CLAUDE_CODE_OAUTH_TOKEN: "token-debug",
     DEBUG_ANTHROPIC_PROXY: "true",
@@ -76,8 +79,8 @@ describe("anthropicHandler additional coverage", () => {
 
       await handleAnthropicRequest(request, env);
       // Should not log tools debug message
-      const debugCalls = consoleSpy.mock.calls.filter(([msg]) =>
-        typeof msg === "string" && msg.includes("contains tools")
+      const debugCalls = consoleSpy.mock.calls.filter(
+        ([msg]) => typeof msg === "string" && msg.includes("contains tools"),
       );
       expect(debugCalls.length).toBe(0);
       consoleSpy.mockRestore();
@@ -99,9 +102,7 @@ describe("anthropicHandler additional coverage", () => {
 
       const request = new Request("https://api.example.com/anthropic/v1/messages");
       await handleAnthropicRequest(request, env);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("[Anthropic Proxy] Token"),
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("[Anthropic Proxy] Token"));
       consoleSpy.mockRestore();
     });
 
@@ -132,9 +133,7 @@ describe("anthropicHandler additional coverage", () => {
       } as RequestInit);
 
       await handleAnthropicRequest(request, env);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "[Anthropic Proxy] Could not parse request body",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("[Anthropic Proxy] Could not parse request body");
       consoleSpy.mockRestore();
     });
   });

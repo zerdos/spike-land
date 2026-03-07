@@ -12,58 +12,56 @@
  * @type {() => import('rollup').Plugin}
  */
 export function urlToEsmPlugin() {
-	return {
-		name: 'import-meta-url',
-		async transform(code, id) {
-			if (this.environment?.mode === 'dev') {
-				return;
-			}
-			let idx = 0;
+  return {
+    name: "import-meta-url",
+    async transform(code, id) {
+      if (this.environment?.mode === "dev") {
+        return;
+      }
+      let idx = 0;
 
-			// Look for `new URL("...?esm", import.meta.url)` patterns.
-			const regex = /new\s+URL\s*\(\s*(['"`])(.*?)\?esm\1\s*,\s*import\.meta\.url\s*\)?/g;
+      // Look for `new URL("...?esm", import.meta.url)` patterns.
+      const regex = /new\s+URL\s*\(\s*(['"`])(.*?)\?esm\1\s*,\s*import\.meta\.url\s*\)?/g;
 
-			let match;
-			let modified = false;
-			let result = code;
-			let offset = 0;
-			/** @type {string[]} */
-			const additionalImports = [];
+      let match;
+      let modified = false;
+      let result = code;
+      let offset = 0;
+      /** @type {string[]} */
+      const additionalImports = [];
 
-			while ((match = regex.exec(code)) !== null) {
-				let path = match[2];
+      while ((match = regex.exec(code)) !== null) {
+        let path = match[2];
 
-				// Skip invalid paths (e.g., "..." in error messages)
-				if (!path || path === '...' || !/^[./\w@-]/.test(path)) {
-					continue;
-				}
+        // Skip invalid paths (e.g., "..." in error messages)
+        if (!path || path === "..." || !/^[./\w@-]/.test(path)) {
+          continue;
+        }
 
-				const start = match.index;
-				const end = start + match[0].length;
+        const start = match.index;
+        const end = start + match[0].length;
 
-				const varName = `__worker_url_${idx++}__`;
-				console.log(`Rewriting worker URL import in ${id}: ${path}?worker`);
-				additionalImports.push(
-					`import ${varName} from ${JSON.stringify(path + '?worker&url')};`
-				);
+        const varName = `__worker_url_${idx++}__`;
+        console.log(`Rewriting worker URL import in ${id}: ${path}?worker`);
+        additionalImports.push(`import ${varName} from ${JSON.stringify(path + "?worker&url")};`);
 
-				const replacement = varName;
+        const replacement = varName;
 
-				result = result.slice(0, start + offset) + replacement + result.slice(end + offset);
-				offset += replacement.length - (end - start);
-				modified = true;
-			}
+        result = result.slice(0, start + offset) + replacement + result.slice(end + offset);
+        offset += replacement.length - (end - start);
+        modified = true;
+      }
 
-			if (!modified) {
-				return null;
-			}
+      if (!modified) {
+        return null;
+      }
 
-			result = additionalImports.join('\n') + '\n' + result;
+      result = additionalImports.join("\n") + "\n" + result;
 
-			return {
-				code: result,
-				map: null
-			};
-		}
-	};
+      return {
+        code: result,
+        map: null,
+      };
+    },
+  };
 }

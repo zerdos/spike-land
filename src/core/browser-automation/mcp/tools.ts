@@ -6,15 +6,23 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import {
-  createZodTool,
-  errorResult,
-  textResult,
-} from "@spike-land-ai/mcp-server-base";
+import { createZodTool, errorResult, textResult } from "@spike-land-ai/mcp-server-base";
 import { z } from "zod";
 
-import { closeTab, getActiveTab, getOrCreateTab, getPageSnapshot, listTabs } from "../core-logic/browser-session.js";
-import { narrate, narrateSection, narrateCompact, narrateCompactSection, findElementByRef } from "../core-logic/narrate.js";
+import {
+  closeTab,
+  getActiveTab,
+  getOrCreateTab,
+  getPageSnapshot,
+  listTabs,
+} from "../core-logic/browser-session.js";
+import {
+  narrate,
+  narrateSection,
+  narrateCompact,
+  narrateCompactSection,
+  findElementByRef,
+} from "../core-logic/narrate.js";
 import type { AccessibilityNode } from "../core-logic/types.js";
 
 async function narrateCurrentPage(
@@ -23,7 +31,8 @@ async function narrateCurrentPage(
 ): Promise<string> {
   const snapshot = await getPageSnapshot();
   if (!snapshot) return "No active browser tab. Use web_navigate first.";
-  if (!snapshot.tree) return `[Page: "${snapshot.title}" - ${snapshot.url}]\n[Empty page - no accessibility tree]`;
+  if (!snapshot.tree)
+    return `[Page: "${snapshot.title}" - ${snapshot.url}]\n[Empty page - no accessibility tree]`;
 
   if (detail === "landmark" && landmark) {
     const result = narrateCompactSection(snapshot.tree, landmark, snapshot.title, snapshot.url);
@@ -54,11 +63,14 @@ export function registerWebTools(server: McpServer): void {
   // 1. web_navigate
   createZodTool(server, {
     name: "web_navigate",
-    description: "Navigate to a URL and return the page narrated as accessibility text. Use this to open websites.",
+    description:
+      "Navigate to a URL and return the page narrated as accessibility text. Use this to open websites.",
     schema: {
       url: z.string().url().describe("URL to navigate to"),
       tab: z.number().optional().describe("Tab index to use (creates new tab if omitted)"),
-      wait_until: z.enum(["load", "domcontentloaded", "networkidle", "commit"]).optional()
+      wait_until: z
+        .enum(["load", "domcontentloaded", "networkidle", "commit"])
+        .optional()
         .describe("When to consider navigation complete (default: load)"),
     },
     async handler(args) {
@@ -76,12 +88,19 @@ export function registerWebTools(server: McpServer): void {
   // 2. web_read
   createZodTool(server, {
     name: "web_read",
-    description: "Re-read the current page as accessibility text. Optionally filter by landmark (banner, navigation, main, contentinfo, complementary, form, region, search).",
+    description:
+      "Re-read the current page as accessibility text. Optionally filter by landmark (banner, navigation, main, contentinfo, complementary, form, region, search).",
     schema: {
-      landmark: z.string().optional()
+      landmark: z
+        .string()
+        .optional()
         .describe("Landmark to read (e.g. 'main', 'banner', 'navigation', 'contentinfo')"),
-      detail: z.enum(["compact", "full", "landmark"]).optional()
-        .describe("compact (default, token-efficient) | full (verbose) | landmark (single section)"),
+      detail: z
+        .enum(["compact", "full", "landmark"])
+        .optional()
+        .describe(
+          "compact (default, token-efficient) | full (verbose) | landmark (single section)",
+        ),
     },
     async handler(args) {
       const landmark = args.landmark as string | undefined;
@@ -94,7 +113,8 @@ export function registerWebTools(server: McpServer): void {
   // 3. web_click
   createZodTool(server, {
     name: "web_click",
-    description: "Click an element by ref number (from narration) or by role+name. Returns updated page narration.",
+    description:
+      "Click an element by ref number (from narration) or by role+name. Returns updated page narration.",
     schema: {
       ref: z.number().optional().describe("Ref number from narration output"),
       role: z.string().optional().describe("ARIA role (e.g. 'button', 'link')"),
@@ -110,8 +130,15 @@ export function registerWebTools(server: McpServer): void {
 
       if (ref !== undefined) {
         const node = findElementByRef(data.tree, ref);
-        if (!node) return errorResult("REF_NOT_FOUND", `No element with ref=${ref}. Re-read the page to get current refs.`);
-        const locator = data.page.getByRole(node.role, node.name !== undefined ? { name: node.name } : undefined);
+        if (!node)
+          return errorResult(
+            "REF_NOT_FOUND",
+            `No element with ref=${ref}. Re-read the page to get current refs.`,
+          );
+        const locator = data.page.getByRole(
+          node.role,
+          node.name !== undefined ? { name: node.name } : undefined,
+        );
         await locator.click();
       } else if (role) {
         const opts = name ? { name } : undefined;
@@ -129,7 +156,8 @@ export function registerWebTools(server: McpServer): void {
   // 4. web_type
   createZodTool(server, {
     name: "web_type",
-    description: "Type text into an input field identified by ref number or name. Returns updated page narration.",
+    description:
+      "Type text into an input field identified by ref number or name. Returns updated page narration.",
     schema: {
       ref: z.number().optional().describe("Ref number from narration output"),
       name: z.string().optional().describe("Accessible name of the input field"),
@@ -204,9 +232,12 @@ export function registerWebTools(server: McpServer): void {
   // 6. web_press
   createZodTool(server, {
     name: "web_press",
-    description: "Press a key or key combination (e.g. 'Enter', 'Tab', 'Ctrl+a', 'Escape'). Returns updated page narration.",
+    description:
+      "Press a key or key combination (e.g. 'Enter', 'Tab', 'Ctrl+a', 'Escape'). Returns updated page narration.",
     schema: {
-      key: z.string().describe("Key or combo to press (e.g. 'Enter', 'Tab', 'Ctrl+a', 'ArrowDown')"),
+      key: z
+        .string()
+        .describe("Key or combo to press (e.g. 'Enter', 'Tab', 'Ctrl+a', 'ArrowDown')"),
     },
     async handler(args) {
       const key = String(args.key);
@@ -259,14 +290,13 @@ export function registerWebTools(server: McpServer): void {
       if (action === "list") {
         const tabList = await listTabs();
         if (tabList.length === 0) return textResult("No open tabs.");
-        const lines = tabList.map(
-          (t) => `[Tab ${t.index}] "${t.title}" - ${t.url}`,
-        );
+        const lines = tabList.map((t) => `[Tab ${t.index}] "${t.title}" - ${t.url}`);
         return textResult(lines.join("\n"));
       }
 
       if (action === "switch") {
-        if (tabIndex === undefined) return errorResult("INVALID_INPUT", "Provide tab index to switch to.");
+        if (tabIndex === undefined)
+          return errorResult("INVALID_INPUT", "Provide tab index to switch to.");
         const { page } = await getOrCreateTab(tabIndex);
         if (!page) return errorResult("TAB_NOT_FOUND", `Tab ${tabIndex} not found.`);
         const text = await narrateCurrentPage();
@@ -274,7 +304,8 @@ export function registerWebTools(server: McpServer): void {
       }
 
       if (action === "close") {
-        if (tabIndex === undefined) return errorResult("INVALID_INPUT", "Provide tab index to close.");
+        if (tabIndex === undefined)
+          return errorResult("INVALID_INPUT", "Provide tab index to close.");
         const closed = await closeTab(tabIndex);
         if (!closed) return errorResult("TAB_NOT_FOUND", `Tab ${tabIndex} not found.`);
         return textResult(`Tab ${tabIndex} closed.`);
@@ -301,16 +332,16 @@ export function registerWebTools(server: McpServer): void {
         type: "png",
       });
 
-      const data = Buffer.isBuffer(buffer)
-        ? buffer.toString("base64")
-        : String(buffer);
+      const data = Buffer.isBuffer(buffer) ? buffer.toString("base64") : String(buffer);
 
       return {
-        content: [{
-          type: "image" as const,
-          data,
-          mimeType: "image/png",
-        }],
+        content: [
+          {
+            type: "image" as const,
+            data,
+            mimeType: "image/png",
+          },
+        ],
       } as unknown as ReturnType<typeof textResult>;
     },
   });
@@ -322,7 +353,8 @@ export function registerWebTools(server: McpServer): void {
     schema: {},
     async handler() {
       const snapshot = await getPageSnapshot();
-      if (!snapshot?.tree) return errorResult("NO_PAGE", "No active browser tab. Use web_navigate first.");
+      if (!snapshot?.tree)
+        return errorResult("NO_PAGE", "No active browser tab. Use web_navigate first.");
 
       const fields = collectFormFields(snapshot.tree);
       if (fields.length === 0) return textResult("No form fields found on the page.");
@@ -364,11 +396,16 @@ function collectFormFields(tree: AccessibilityNode): FormField[] {
   let nextRef = 1;
 
   function walk(node: AccessibilityNode): void {
-    const isInteractive = FORM_ROLES.has(node.role) ||
-      node.role === "link" || node.role === "button" ||
-      node.role === "tab" || node.role === "menuitem" ||
-      node.role === "heading" || node.role === "option" ||
-      node.role === "menuitemcheckbox" || node.role === "menuitemradio" ||
+    const isInteractive =
+      FORM_ROLES.has(node.role) ||
+      node.role === "link" ||
+      node.role === "button" ||
+      node.role === "tab" ||
+      node.role === "menuitem" ||
+      node.role === "heading" ||
+      node.role === "option" ||
+      node.role === "menuitemcheckbox" ||
+      node.role === "menuitemradio" ||
       node.role === "treeitem";
 
     if (isInteractive) {

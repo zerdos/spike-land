@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'powershell',
-	extensions: ['.ps1', '.psm1', '.psd1'],
-	aliases: ['PowerShell', 'powershell', 'ps', 'ps1'],
-	loader: () => import('./powershell')
+  id: "powershell",
+  extensions: [".ps1", ".psm1", ".psd1"],
+  aliases: ["PowerShell", "powershell", "ps", "ps1"],
+  loader: () => import("./powershell"),
 });

@@ -134,9 +134,7 @@ describe("ga4", () => {
     });
 
     it("sends correct Content-Type header", async () => {
-      await sendGA4Events("G-TEST123", "api-secret", "client-abc", [
-        { name: "test", params: {} },
-      ]);
+      await sendGA4Events("G-TEST123", "api-secret", "client-abc", [{ name: "test", params: {} }]);
 
       const [, options] = mockFetch.mock.calls[0] as [string, RequestInit];
       expect((options.headers as Record<string, string>)["Content-Type"]).toBe("application/json");
@@ -153,18 +151,14 @@ describe("ga4", () => {
     });
 
     it("uses POST method", async () => {
-      await sendGA4Events("G-TEST123", "api-secret", "client-abc", [
-        { name: "test", params: {} },
-      ]);
+      await sendGA4Events("G-TEST123", "api-secret", "client-abc", [{ name: "test", params: {} }]);
 
       const [, options] = mockFetch.mock.calls[0] as [string, RequestInit];
       expect(options.method).toBe("POST");
     });
 
     it("encodes special characters in measurement ID and secret", async () => {
-      await sendGA4Events("G-TEST/123", "api&secret", "client-abc", [
-        { name: "test", params: {} },
-      ]);
+      await sendGA4Events("G-TEST/123", "api&secret", "client-abc", [{ name: "test", params: {} }]);
 
       const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
       expect(url).toContain("measurement_id=G-TEST%2F123");

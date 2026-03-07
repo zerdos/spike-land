@@ -8,9 +8,7 @@ interface RateLimiterOptions {
   maxRequests: number;
 }
 
-export function createRateLimiter(
-  options: RateLimiterOptions,
-): (key: string) => boolean {
+export function createRateLimiter(options: RateLimiterOptions): (key: string) => boolean {
   const map = new Map<string, RateLimitEntry>();
   let lastCleanup = Date.now();
 

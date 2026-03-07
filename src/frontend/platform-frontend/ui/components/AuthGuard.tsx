@@ -33,9 +33,5 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
     return <Navigate to="/login" search={{ returnUrl }} />;
   }
 
-  return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-      {children}
-    </div>
-  );
+  return <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">{children}</div>;
 }

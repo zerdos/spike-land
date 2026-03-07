@@ -17,14 +17,16 @@ export function AppsNewPage() {
 
       <div className="rounded-2xl border border-border bg-card dark:glass-card p-8 text-center space-y-6">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <span className="text-2xl" role="img" aria-label="Rocket">🚀</span>
+          <span className="text-2xl" role="img" aria-label="Rocket">
+            🚀
+          </span>
         </div>
-        
+
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-foreground">App Creation is Coming Soon</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            We're building a seamless experience for deploying AI apps directly to the edge.
-            Join the waitlist to get early access.
+            We're building a seamless experience for deploying AI apps directly to the edge. Join
+            the waitlist to get early access.
           </p>
         </div>
 
@@ -34,7 +36,10 @@ export function AppsNewPage() {
           </div>
         ) : (
           <form
-            onSubmit={(e) => { e.preventDefault(); if (e.currentTarget.checkValidity()) setSubmitted(true); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (e.currentTarget.checkValidity()) setSubmitted(true);
+            }}
             className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto"
           >
             <input

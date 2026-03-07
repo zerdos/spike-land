@@ -18,7 +18,9 @@ function createMockEnv(overrides: Partial<Env> = {}): Env {
     } as unknown as D1Database,
     AUTH_MCP: {
       fetch: vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user1" } }), { status: 200 }),
+        new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user1" } }), {
+          status: 200,
+        }),
       ),
     } as unknown as Fetcher,
     MCP_SERVICE: { fetch: vi.fn() } as unknown as Fetcher,
@@ -110,17 +112,23 @@ describe("POST /whatsapp/webhook", () => {
       ["sign"],
     );
     const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body));
-    return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    return Array.from(new Uint8Array(sig))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   it("returns 401 when signature header is missing", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: "{}",
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: "{}",
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(401);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Missing signature");
@@ -129,14 +137,18 @@ describe("POST /whatsapp/webhook", () => {
   it("returns 401 when HMAC signature is invalid", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: "{}",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Hub-Signature-256": "sha256=invalidsig",
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: "{}",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Hub-Signature-256": "sha256=invalidsig",
+        },
       },
-    }, env);
+      env,
+    );
     expect(res.status).toBe(401);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Invalid signature");
@@ -149,11 +161,15 @@ describe("POST /whatsapp/webhook", () => {
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ ok: boolean }>();
     expect(body.ok).toBe(true);
@@ -161,44 +177,62 @@ describe("POST /whatsapp/webhook", () => {
 
   it("handles non-text message type and returns ok", async () => {
     const bodyStr = JSON.stringify({
-      entry: [{
-        changes: [{
-          value: {
-            messages: [{ from: "1234567890", type: "image", id: "msg-1" }],
-          },
-        }],
-      }],
+      entry: [
+        {
+          changes: [
+            {
+              value: {
+                messages: [{ from: "1234567890", type: "image", id: "msg-1" }],
+              },
+            },
+          ],
+        },
+      ],
     });
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
   });
 
   it("sends link invitation when phone is not linked", async () => {
     const bodyStr = JSON.stringify({
-      entry: [{
-        changes: [{
-          value: {
-            messages: [{ from: "1234567890", type: "text", text: { body: "/help" }, id: "msg-1" }],
-          },
-        }],
-      }],
+      entry: [
+        {
+          changes: [
+            {
+              value: {
+                messages: [
+                  { from: "1234567890", type: "text", text: { body: "/help" }, id: "msg-1" },
+                ],
+              },
+            },
+          ],
+        },
+      ],
     });
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
     // DB returns null for whatsapp_links lookup → unlinked
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ ok: boolean; action: string }>();
     expect(body.action).toBe("link_invitation_sent");
@@ -209,11 +243,15 @@ describe("POST /whatsapp/webhook", () => {
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Invalid JSON");
@@ -221,13 +259,19 @@ describe("POST /whatsapp/webhook", () => {
 
   it("processes command when phone is linked and rate limit ok", async () => {
     const bodyStr = JSON.stringify({
-      entry: [{
-        changes: [{
-          value: {
-            messages: [{ from: "1234567890", type: "text", text: { body: "/help" }, id: "msg-1" }],
-          },
-        }],
-      }],
+      entry: [
+        {
+          changes: [
+            {
+              value: {
+                messages: [
+                  { from: "1234567890", type: "text", text: { body: "/help" }, id: "msg-1" },
+                ],
+              },
+            },
+          ],
+        },
+      ],
     });
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
 
@@ -251,11 +295,15 @@ describe("POST /whatsapp/webhook", () => {
 
     const env = createMockEnv({ DB: db });
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ ok: boolean; action: string; command: string }>();
     expect(body.ok).toBe(true);
@@ -265,13 +313,19 @@ describe("POST /whatsapp/webhook", () => {
 
   it("returns rate_limited when daily limit exceeded", async () => {
     const bodyStr = JSON.stringify({
-      entry: [{
-        changes: [{
-          value: {
-            messages: [{ from: "1234567890", type: "text", text: { body: "hello" }, id: "msg-1" }],
-          },
-        }],
-      }],
+      entry: [
+        {
+          changes: [
+            {
+              value: {
+                messages: [
+                  { from: "1234567890", type: "text", text: { body: "hello" }, id: "msg-1" },
+                ],
+              },
+            },
+          ],
+        },
+      ],
     });
     const sig = await makeHmacSignature(bodyStr, "wa-secret");
 
@@ -296,11 +350,15 @@ describe("POST /whatsapp/webhook", () => {
 
     const env = createMockEnv({ DB: db });
     const app = makeApp();
-    const res = await app.request("/whatsapp/webhook", {
-      method: "POST",
-      body: bodyStr,
-      headers: { "X-Hub-Signature-256": `sha256=${sig}` },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/webhook",
+      {
+        method: "POST",
+        body: bodyStr,
+        headers: { "X-Hub-Signature-256": `sha256=${sig}` },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ action: string }>();
     expect(body.action).toBe("rate_limited");
@@ -357,22 +415,30 @@ describe("POST /whatsapp/link/verify", () => {
   it("returns 400 when code missing", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/link/verify", {
-      method: "POST",
-      body: JSON.stringify({}),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/link/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 404 when no pending link found", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/whatsapp/link/verify", {
-      method: "POST",
-      body: JSON.stringify({ code: "123456" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/link/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({ code: "123456" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(404);
   });
 
@@ -392,11 +458,15 @@ describe("POST /whatsapp/link/verify", () => {
     } as unknown as D1Database;
     const env = createMockEnv({ DB: db });
     const app = makeApp();
-    const res = await app.request("/whatsapp/link/verify", {
-      method: "POST",
-      body: JSON.stringify({ code: "123456" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/link/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({ code: "123456" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(410);
   });
 
@@ -416,11 +486,15 @@ describe("POST /whatsapp/link/verify", () => {
     } as unknown as D1Database;
     const env = createMockEnv({ DB: db });
     const app = makeApp();
-    const res = await app.request("/whatsapp/link/verify", {
-      method: "POST",
-      body: JSON.stringify({ code: "999999" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/link/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({ code: "999999" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Invalid code");
@@ -443,11 +517,15 @@ describe("POST /whatsapp/link/verify", () => {
     } as unknown as D1Database;
     const env = createMockEnv({ DB: db });
     const app = makeApp();
-    const res = await app.request("/whatsapp/link/verify", {
-      method: "POST",
-      body: JSON.stringify({ code: "123456" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/whatsapp/link/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({ code: "123456" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ linked: boolean }>();
     expect(body.linked).toBe(true);

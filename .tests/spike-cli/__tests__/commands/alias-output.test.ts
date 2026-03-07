@@ -20,7 +20,9 @@ const { addAlias } = await import("../../../../src/cli/spike-cli/node-sys/store.
 
 // The alias command handlers call console.error for user feedback.
 // We import the command registration to test its action handlers.
-const { registerAliasCommand } = await import("../../../../src/cli/spike-cli/core-logic/commands/alias.js");
+const { registerAliasCommand } = await import(
+  "../../../../src/cli/spike-cli/core-logic/commands/alias.js"
+);
 
 // We use Commander to build a program and invoke the actions
 const { Command } = await import("commander");

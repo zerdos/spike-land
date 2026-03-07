@@ -75,7 +75,8 @@ function AuthorizeForm() {
 
         {user && (
           <p className="text-center text-sm text-muted-foreground">
-            Signed in as <span className="font-medium text-foreground">{user.name ?? user.email}</span>
+            Signed in as{" "}
+            <span className="font-medium text-foreground">{user.name ?? user.email}</span>
           </p>
         )}
 

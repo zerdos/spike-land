@@ -1,10 +1,7 @@
 {
   "name": "code-review",
   "category": "mcp-tools",
-  "dependencies": [
-    "@octokit/rest",
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@octokit/rest", "@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/check-gates.ts",
     "core-logic/claude-md-parser.ts",

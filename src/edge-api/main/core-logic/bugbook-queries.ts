@@ -16,7 +16,8 @@ export interface BuiltQuery {
 }
 
 export function buildBugListQuery(filters: BugListFilters): BuiltQuery {
-  let sql = "SELECT id, title, category, status, severity, elo, report_count, first_seen_at, last_seen_at FROM bugs WHERE 1=1";
+  let sql =
+    "SELECT id, title, category, status, severity, elo, report_count, first_seen_at, last_seen_at FROM bugs WHERE 1=1";
   const params: (string | number)[] = [];
 
   if (filters.status) {
@@ -35,7 +36,9 @@ export function buildBugListQuery(filters: BugListFilters): BuiltQuery {
   return { sql, params };
 }
 
-export function buildBugCountQuery(filters: Pick<BugListFilters, "status" | "category">): BuiltQuery {
+export function buildBugCountQuery(
+  filters: Pick<BugListFilters, "status" | "category">,
+): BuiltQuery {
   let sql = "SELECT COUNT(*) as total FROM bugs WHERE 1=1";
   const params: (string | number)[] = [];
 

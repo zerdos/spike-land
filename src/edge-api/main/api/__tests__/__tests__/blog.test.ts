@@ -162,7 +162,7 @@ describe("GET /api/blog", () => {
     } as unknown as Env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as Array<Record<string, unknown>>;
+    const body = (await res.json()) as Array<Record<string, unknown>>;
     expect(body).toHaveLength(2);
     expect(body[0]!.slug).toBe("newer");
     expect(body[1]!.slug).toBe("older");
@@ -177,7 +177,7 @@ describe("GET /api/blog", () => {
       SPA_ASSETS: mockR2(),
     } as unknown as Env);
 
-    const body = await res.json() as Array<Record<string, unknown>>;
+    const body = (await res.json()) as Array<Record<string, unknown>>;
     expect(body[0]!).not.toHaveProperty("content");
   });
 
@@ -213,7 +213,7 @@ describe("GET /api/blog/:slug", () => {
     } as unknown as Env);
 
     expect(res.status).toBe(200);
-    const body = await res.json() as Record<string, unknown>;
+    const body = (await res.json()) as Record<string, unknown>;
     expect(body.slug).toBe("my-post");
     expect(body.content).toBe("Full body content");
   });
@@ -238,11 +238,10 @@ describe("GET /api/blog-images/:slug/:filename", () => {
     const r2 = mockR2(makeR2Object("PNG_DATA", "image/png"));
     const testApp = app(mockDB([]));
 
-    const res = await testApp.request(
-      "/api/blog-images/test-post/hero.png",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/api/blog-images/test-post/hero.png", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/png");
@@ -254,11 +253,10 @@ describe("GET /api/blog-images/:slug/:filename", () => {
     const r2 = mockR2(null);
     const testApp = app(mockDB([]));
 
-    const res = await testApp.request(
-      "/api/blog-images/test-post/missing.png",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/api/blog-images/test-post/missing.png", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     expect(res.status).toBe(404);
   });
@@ -267,11 +265,10 @@ describe("GET /api/blog-images/:slug/:filename", () => {
     const r2 = mockR2(makeR2Object("JPG_DATA", "image/jpeg"));
     const testApp = app(mockDB([]));
 
-    const res = await testApp.request(
-      "/api/blog-images/test-post/photo.jpg",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/api/blog-images/test-post/photo.jpg", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/jpeg");
@@ -285,11 +282,10 @@ describe("GET /blog/:slug/:filename (backward compat)", () => {
     const r2 = mockR2(makeR2Object("PNG_DATA"));
     const testApp = app(mockDB([]));
 
-    const res = await testApp.request(
-      "/blog/test-post/hero.png",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/blog/test-post/hero.png", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/png");
@@ -300,11 +296,10 @@ describe("GET /blog/:slug/:filename (backward compat)", () => {
     const testApp = app(mockDB([]));
 
     // .html is not in IMAGE_EXTS, should call next()
-    const res = await testApp.request(
-      "/blog/test-post/readme.html",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/blog/test-post/readme.html", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     // Falls through to 404 since there's no SPA catch-all
     expect(res.status).toBe(404);
@@ -316,11 +311,10 @@ describe("GET /blog/:slug/:filename (backward compat)", () => {
     const r2 = mockR2(null);
     const testApp = app(mockDB([]));
 
-    const res = await testApp.request(
-      "/blog/test-post/missing.png",
-      undefined,
-      { DB: mockDB([]), SPA_ASSETS: r2 } as unknown as Env,
-    );
+    const res = await testApp.request("/blog/test-post/missing.png", undefined, {
+      DB: mockDB([]),
+      SPA_ASSETS: r2,
+    } as unknown as Env);
 
     // Falls through via next()
     expect(res.status).toBe(404);

@@ -21,18 +21,27 @@ export function registerBugbookFeedbackTools(
 
   registry.registerBuilt(
     t
-      .tool("report_bug", "Report a bug or provide feedback. Reports are tracked in the public Bugbook at spike.land/bugbook.", {
-        title: z.string().min(5).max(200).describe("Short bug title"),
-        description: z.string().min(10).max(2000).describe("Detailed bug description"),
-        severity: z.enum(["low", "medium", "high", "critical"]).describe("Bug severity"),
-        reproduction_steps: z.string().max(2000).optional().describe("Steps to reproduce"),
-        error_code: z.string().max(100).optional().describe("Error code if applicable"),
-      })
+      .tool(
+        "report_bug",
+        "Report a bug or provide feedback. Reports are tracked in the public Bugbook at spike.land/bugbook.",
+        {
+          title: z.string().min(5).max(200).describe("Short bug title"),
+          description: z.string().min(10).max(2000).describe("Detailed bug description"),
+          severity: z.enum(["low", "medium", "high", "critical"]).describe("Bug severity"),
+          reproduction_steps: z.string().max(2000).optional().describe("Steps to reproduce"),
+          error_code: z.string().max(100).optional().describe("Error code if applicable"),
+        },
+      )
       .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async ({ input }) => {
         if (!spikeEdge) {
           return {
-            content: [{ type: "text" as const, text: "Feedback service unavailable (no SPIKE_EDGE binding)" }],
+            content: [
+              {
+                type: "text" as const,
+                text: "Feedback service unavailable (no SPIKE_EDGE binding)",
+              },
+            ],
             isError: true,
           };
         }
@@ -59,7 +68,9 @@ export function registerBugbookFeedbackTools(
         if (!res.ok) {
           const text = await res.text();
           return {
-            content: [{ type: "text" as const, text: `Failed to submit feedback (${res.status}): ${text}` }],
+            content: [
+              { type: "text" as const, text: `Failed to submit feedback (${res.status}): ${text}` },
+            ],
             isError: true,
           };
         }

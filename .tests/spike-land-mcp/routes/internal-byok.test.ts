@@ -74,7 +74,9 @@ async function encryptByokKey(
 }
 
 function buildApp(vaultSecret = "test-vault-secret") {
-  const { internalByokRoute } = require("../../../src/edge-api/spike-land/api/internal-byok") as { internalByokRoute: ReturnType<typeof import("hono")["Hono"]["prototype"]["route"]> };
+  const { internalByokRoute } = require("../../../src/edge-api/spike-land/api/internal-byok") as {
+    internalByokRoute: ReturnType<typeof import("hono")["Hono"]["prototype"]["route"]>;
+  };
   const app = new Hono<{ Bindings: Env }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app.route("/internal", internalByokRoute as any);
@@ -90,7 +92,9 @@ function buildApp(vaultSecret = "test-vault-secret") {
 describe("internalByokRoute POST /byok/get", () => {
   it("returns 400 when userId is missing", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -106,13 +110,15 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("userId");
   });
 
   it("returns 400 when provider is missing", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -128,13 +134,15 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("provider");
   });
 
   it("returns null key when no vault record found", async () => {
     _mockDbRows = []; // empty — no record
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -150,21 +158,25 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { key: null };
+    const body = (await res.json()) as { key: null };
     expect(body.key).toBeNull();
   });
 
   it("returns null key when decryption fails for invalid ciphertext", async () => {
     // Provide a record with invalid ciphertext (will fail AES-GCM decrypt)
-    const invalidEncryptedKey = btoa(JSON.stringify({
-      v: 2,
-      iv: btoa("short"),
-      data: btoa("not-real-encrypted-data"),
-      salt: btoa("salt-value"),
-    }));
+    const invalidEncryptedKey = btoa(
+      JSON.stringify({
+        v: 2,
+        iv: btoa("short"),
+        data: btoa("not-real-encrypted-data"),
+        salt: btoa("salt-value"),
+      }),
+    );
 
     _mockDbRows = [{ encryptedKey: invalidEncryptedKey }];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -180,14 +192,16 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { key: null };
+    const body = (await res.json()) as { key: null };
     // Decryption will fail for invalid ciphertext → returns null
     expect(body.key).toBeNull();
   });
 
   it("returns 400 when body is not valid JSON", async () => {
     _mockDbRows = [];
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "secret" } as unknown as Env;
@@ -217,7 +231,9 @@ describe("internalByokRoute POST /byok/get", () => {
     // The mocked createDb returns this row directly from select().from().where().limit()
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: vaultSecret } as unknown as Env;
@@ -233,7 +249,7 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { key: string };
+    const body = (await res.json()) as { key: string };
     expect(body.key).toBe(originalKey);
   });
 
@@ -247,7 +263,9 @@ describe("internalByokRoute POST /byok/get", () => {
 
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     // No VAULT_SECRET in env — triggers ?? "" branch on line 77
@@ -264,7 +282,7 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { key: null };
+    const body = (await res.json()) as { key: null };
     // Decryption fails with wrong key → catch returns null
     expect(body.key).toBeNull();
   });
@@ -315,7 +333,9 @@ describe("internalByokRoute POST /byok/get", () => {
 
     _mockDbRows = [{ encryptedKey }];
 
-    const { internalByokRoute } = await import("../../../src/edge-api/spike-land/api/internal-byok");
+    const { internalByokRoute } = await import(
+      "../../../src/edge-api/spike-land/api/internal-byok"
+    );
     const app = new Hono<{ Bindings: Env }>();
     app.route("/internal", internalByokRoute);
     const env = { DB: {} as D1Database, VAULT_SECRET: "some-vault-secret" } as unknown as Env;
@@ -331,7 +351,7 @@ describe("internalByokRoute POST /byok/get", () => {
     );
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { key: string };
+    const body = (await res.json()) as { key: string };
     expect(body.key).toBe(plaintext);
   });
 });

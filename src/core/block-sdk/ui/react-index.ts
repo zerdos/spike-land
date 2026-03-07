@@ -22,10 +22,7 @@ export interface BlockClient<TProcedures extends Record<string, BuiltTool<never,
   ): Promise<CallToolResult>;
 
   /** Subscribe to a table — returns rows matching an optional filter */
-  subscribe<T extends Row>(
-    tableName: string,
-    filter?: Partial<T>,
-  ): SubscriptionHandle<T>;
+  subscribe<T extends Row>(tableName: string, filter?: Partial<T>): SubscriptionHandle<T>;
 
   /** Get all rows from a table (one-shot read) */
   query<T extends Row>(tableName: string, filter?: Partial<T>): Promise<T[]>;
@@ -178,16 +175,15 @@ export function createBlockClient<
  * }
  * ```
  */
-export function createBlockHooks<TProcedures extends Record<string, BuiltTool<never, CallToolResult>>>(
+export function createBlockHooks<
+  TProcedures extends Record<string, BuiltTool<never, CallToolResult>>,
+>(
   client: BlockClient<TProcedures>,
 ): {
   /** Get the block client for calling procedures */
   useBlock: () => BlockClient<TProcedures>;
   /** Subscribe to a table with optional filter — returns live rows */
-  useSubscription: <T extends Row>(
-    tableName: string,
-    filter?: Partial<T>,
-  ) => T[];
+  useSubscription: <T extends Row>(tableName: string, filter?: Partial<T>) => T[];
 } {
   // Cache subscription handles to avoid re-creating on every render
   const subCache = new Map<string, SubscriptionHandle<Row>>();

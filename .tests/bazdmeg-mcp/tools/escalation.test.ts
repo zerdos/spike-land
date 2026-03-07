@@ -8,7 +8,10 @@ import { readdir } from "node:fs/promises";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
 import { registerEscalationTools } from "../../../src/mcp-tools/bazdmeg/mcp/escalation.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
+import {
+  enterWorkspace,
+  resetWorkspaceState,
+} from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 
 describe("escalation tools", () => {
   let server: ReturnType<typeof createMockServer>;

@@ -118,10 +118,7 @@ export function createAuth(env: Env) {
             async (ctx) => {
               // QR sign-in is not yet implemented. Return 501 to prevent
               // the stub from creating sessions for a hardcoded user ID.
-              return ctx.json(
-                { error: "QR sign-in is not yet implemented" },
-                { status: 501 },
-              );
+              return ctx.json({ error: "QR sign-in is not yet implemented" }, { status: 501 });
             },
           ),
         },

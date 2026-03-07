@@ -99,13 +99,21 @@ describe("CliTransport", () => {
 
     vi.mocked(execFile).mockImplementation((_bin, _args, _opts, cb) => {
       // Pass null for stdout/stderr to exercise the ?? "" fallback
-      (cb as Parameters<typeof execFile>[3])(null, null as unknown as string, null as unknown as string);
+      (cb as Parameters<typeof execFile>[3])(
+        null,
+        null as unknown as string,
+        null as unknown as string,
+      );
       return {} as ReturnType<typeof execFile>;
     });
 
     // stdout is null → JSON.parse("") will throw, so mock valid JSON
     vi.mocked(execFile).mockImplementation((_bin, _args, _opts, cb) => {
-      (cb as Parameters<typeof execFile>[3])(null, JSON.stringify(mockOutput), null as unknown as string);
+      (cb as Parameters<typeof execFile>[3])(
+        null,
+        JSON.stringify(mockOutput),
+        null as unknown as string,
+      );
       return {} as ReturnType<typeof execFile>;
     });
 
@@ -140,9 +148,7 @@ describe("CliTransport", () => {
       return {} as ReturnType<typeof execFile>;
     });
 
-    await expect(transport.request("chat.send", { message: "hi" })).rejects.toThrow(
-      SyntaxError,
-    );
+    await expect(transport.request("chat.send", { message: "hi" })).rejects.toThrow(SyntaxError);
   });
 });
 

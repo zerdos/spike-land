@@ -45,9 +45,7 @@ describe("parseInlineUrls — port 0 triggers throw (lines 62) and rethrow (68)"
     // new URL("http://localhost:0") succeeds (port 0 is valid URL spec).
     // parseInt("0") = 0, which satisfies (port < 1), so line 62 throws.
     // The catch block sees the error message includes "Port must be", so line 68 re-throws.
-    expect(() => parseInlineUrls(["srv=http://localhost:0"])).toThrow(
-      "Port must be 1–65535",
-    );
+    expect(() => parseInlineUrls(["srv=http://localhost:0"])).toThrow("Port must be 1–65535");
   });
 });
 
@@ -75,7 +73,9 @@ vi.mock("@google/genai", () => ({
   },
 }));
 
-const capturedPostHandlers = vi.hoisted(() => new Map<string, (req: unknown, res: unknown) => Promise<void>>());
+const capturedPostHandlers = vi.hoisted(
+  () => new Map<string, (req: unknown, res: unknown) => Promise<void>>(),
+);
 
 vi.mock("express", () => {
   const mockApp = {
@@ -119,9 +119,7 @@ describe("agent — response.text falsy (line 46)", () => {
     process.env.GEMINI_API_KEY = "test-key";
     capturedPostHandlers.clear();
 
-    const { registerAgentCommand } = await import(
-      "../../../src/cli/spike-cli/ai-cli/agent.js"
-    );
+    const { registerAgentCommand } = await import("../../../src/cli/spike-cli/ai-cli/agent.js");
     const { Command } = await import("commander");
     const program = new Command();
     vi.spyOn(console, "log").mockImplementation(() => {});
@@ -130,10 +128,7 @@ describe("agent — response.text falsy (line 46)", () => {
 
     registerAgentCommand(program);
     const agentCmd = program.commands.find((c) => c.name() === "agent")!;
-    await (agentCmd as Record<string, unknown>)._actionHandler([
-      { port: "3099" },
-      [],
-    ]);
+    await (agentCmd as Record<string, unknown>)._actionHandler([{ port: "3099" }, []]);
 
     const handler = capturedPostHandlers.get("/completion");
     if (!handler) {
@@ -153,9 +148,7 @@ describe("agent — response.text falsy (line 46)", () => {
   it("returns empty string completion when response.text is empty string", async () => {
     process.env.GEMINI_API_KEY = "test-key";
 
-    const { registerAgentCommand } = await import(
-      "../../../src/cli/spike-cli/ai-cli/agent.js"
-    );
+    const { registerAgentCommand } = await import("../../../src/cli/spike-cli/ai-cli/agent.js");
     const { Command } = await import("commander");
     const program = new Command();
     vi.spyOn(console, "log").mockImplementation(() => {});
@@ -164,10 +157,7 @@ describe("agent — response.text falsy (line 46)", () => {
     registerAgentCommand(program);
     const agentCmd = program.commands.find((c) => c.name() === "agent")!;
     capturedPostHandlers.clear();
-    await (agentCmd as Record<string, unknown>)._actionHandler([
-      { port: "3100" },
-      [],
-    ]);
+    await (agentCmd as Record<string, unknown>)._actionHandler([{ port: "3100" }, []]);
 
     const handler = capturedPostHandlers.get("/completion");
     if (!handler) return;

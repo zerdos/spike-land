@@ -27,7 +27,7 @@ export function ToolRunButton({
   const { data: toolsData } = useMcpTools();
   const [lastResult, setLastResult] = useState<unknown>(null);
 
-  const toolDefinition = toolsData?.tools?.find(t => t.name === toolName);
+  const toolDefinition = toolsData?.tools?.find((t) => t.name === toolName);
   const toolSchema = toolDefinition?.inputSchema || { type: "object" };
 
   // Pre-fill inputs based on session
@@ -65,11 +65,15 @@ export function ToolRunButton({
         onClick={() => isAvailable && setExpanded(!expanded)}
         disabled={!isAvailable}
         className={`w-full flex items-center justify-between px-4 py-3 text-left transition-colors ${
-          isAvailable ? "hover:bg-muted/50 cursor-pointer" : "opacity-60 cursor-not-allowed bg-muted/20"
+          isAvailable
+            ? "hover:bg-muted/50 cursor-pointer"
+            : "opacity-60 cursor-not-allowed bg-muted/20"
         }`}
       >
         <div className="flex items-center gap-3">
-          <div className={`p-1.5 rounded-md ${isAvailable ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+          <div
+            className={`p-1.5 rounded-md ${isAvailable ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}
+          >
             {isAvailable ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
           </div>
           <span className="font-mono text-sm font-semibold">{toolName}</span>

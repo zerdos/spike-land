@@ -254,7 +254,7 @@ var mustBeStringOrBoolean = (value) =>
   typeof value === "string" || typeof value === "boolean" ? null : "a string or a boolean";
 var mustBeStringOrObject = (value) =>
   typeof value === "string" ||
-    (typeof value === "object" && value !== null && !Array.isArray(value))
+  (typeof value === "object" && value !== null && !Array.isArray(value))
     ? null
     : "a string or an object";
 var mustBeStringOrArrayOfStrings = (value) =>
@@ -321,7 +321,8 @@ function pushLogFlags(flags, options, keys, isTTY2, logLevelDefault) {
 function validateStringValue(value, what, key) {
   if (typeof value !== "string") {
     throw new Error(
-      `Expected value for ${what}${key !== void 0 ? " " + quote(key) : ""
+      `Expected value for ${what}${
+        key !== void 0 ? " " + quote(key) : ""
       } to be a string, got ${typeof value} instead`,
     );
   }
@@ -376,7 +377,8 @@ function pushCommonFlags(flags, options, keys) {
   if (platform) flags.push(`--platform=${platform}`);
   if (tsconfigRaw) {
     flags.push(
-      `--tsconfig-raw=${typeof tsconfigRaw === "string" ? tsconfigRaw : JSON.stringify(tsconfigRaw)
+      `--tsconfig-raw=${
+        typeof tsconfigRaw === "string" ? tsconfigRaw : JSON.stringify(tsconfigRaw)
       }`,
     );
   }
@@ -734,7 +736,7 @@ function createChannel(streamIn) {
       const errors = [extractErrorMessageV8(e, streamIn, null, void 0, "")];
       try {
         sendResponse(id, { errors });
-      } catch { }
+      } catch {}
     }
   };
   let isFirstPacket = true;
@@ -886,7 +888,7 @@ function createChannel(streamIn) {
         let flags = [];
         try {
           pushLogFlags(flags, options, {}, isTTY2, transformLogLevelDefault);
-        } catch { }
+        } catch {}
         const error = extractErrorMessageV8(e, streamIn, details, void 0, "");
         sendRequest(refs, { command: "error", flags, error }, () => {
           error.detail = details.load(error.detail);
@@ -974,7 +976,7 @@ function buildOrContextImpl(
     const flags = [];
     try {
       pushLogFlags(flags, options, {}, isTTY2, buildLogLevelDefault);
-    } catch { }
+    } catch {}
     const message = extractErrorMessageV8(e, streamIn, details, void 0, pluginName);
     sendRequest(refs, { command: "error", flags, error: message }, () => {
       message.detail = details.load(message.detail);
@@ -1029,7 +1031,7 @@ function buildOrContextImpl(
     buildOrContextContinue(
       null,
       (result, done) => done([], []),
-      () => { },
+      () => {},
     );
   } catch (e) {
     handleError(e, "");
@@ -1610,13 +1612,13 @@ var handlePlugins = async (
             onEndErrors.push(...newErrors);
             try {
               result.errors.push(...newErrors);
-            } catch { }
+            } catch {}
           }
           if (newWarnings) {
             onEndWarnings.push(...newWarnings);
             try {
               result.warnings.push(...newWarnings);
-            } catch { }
+            } catch {}
           }
         }
         done(onEndErrors, onEndWarnings);
@@ -1668,7 +1670,7 @@ function extractCallerV8(e, streamIn, ident) {
         note = { text: e.message, location };
         return note;
       }
-    } catch { }
+    } catch {}
   };
 }
 function extractErrorMessageV8(e, streamIn, stash, note, pluginName) {
@@ -1676,10 +1678,10 @@ function extractErrorMessageV8(e, streamIn, stash, note, pluginName) {
   let location = null;
   try {
     text = ((e && e.message) || e) + "";
-  } catch { }
+  } catch {}
   try {
     location = parseStackLinesV8(streamIn, (e.stack + "").split("\n"), "");
-  } catch { }
+  } catch {}
   return {
     id: "",
     pluginName,
@@ -1740,20 +1742,20 @@ function failureErrorWithLog(text, errors, warnings) {
     errors.length < 1
       ? ""
       : ` with ${errors.length} error${errors.length < 2 ? "" : "s"}:` +
-      errors
-        .slice(0, limit + 1)
-        .map((e, i) => {
-          if (i === limit) return "\n...";
-          if (!e.location) {
-            return `
+        errors
+          .slice(0, limit + 1)
+          .map((e, i) => {
+            if (i === limit) return "\n...";
+            if (!e.location) {
+              return `
 error: ${e.text}`;
-          }
-          let { file, line, column } = e.location;
-          let pluginText = e.pluginName ? `[plugin: ${e.pluginName}] ` : "";
-          return `
+            }
+            let { file, line, column } = e.location;
+            let pluginText = e.pluginName ? `[plugin: ${e.pluginName}] ` : "";
+            return `
 ${file}:${line}:${column}: ERROR: ${pluginText}${e.text}`;
-        })
-        .join("");
+          })
+          .join("");
   let error = new Error(text);
   for (const [key, value] of [
     ["errors", errors],
@@ -1794,8 +1796,8 @@ function sanitizeLocation(location, where, terminalWidth) {
     const relevantASCII = lineText.slice(
       0,
       (column && column > 0 ? column : 0) +
-      (length && length > 0 ? length : 0) +
-      (terminalWidth && terminalWidth > 0 ? terminalWidth : 80),
+        (length && length > 0 ? length : 0) +
+        (terminalWidth && terminalWidth > 0 ? terminalWidth : 80),
     );
     if (!/[\x7F-\uFFFF]/.test(relevantASCII) && !/\n/.test(lineText)) {
       lineText = relevantASCII;
@@ -1909,7 +1911,7 @@ var worker_threads;
 if (process.env.ESBUILD_WORKER_THREADS !== "0") {
   try {
     worker_threads = require("worker_threads");
-  } catch { }
+  } catch {}
   let [major, minor] = process.versions.node.split(".");
   if (
     // <v12.17.0 does not work
@@ -1936,7 +1938,7 @@ var esbuildCommandAndArgs = () => {
     if (fs2.existsSync(binPath)) {
       return ["node", [binPath]];
     }
-  } catch { }
+  } catch {}
   // 3. Fallback: resolve via require.resolve for environments where
   //    __dirname is virtualized (e.g. Turbopack /ROOT/ prefix)
   try {
@@ -1945,14 +1947,14 @@ var esbuildCommandAndArgs = () => {
     if (fs2.existsSync(binPath)) {
       return ["node", [binPath]];
     }
-  } catch { }
+  } catch {}
   // 3b. Fallback: resolve via process.cwd() for Turbopack environments
   try {
     binPath = path2.join(process.cwd(), "packages", "esbuild-wasm", "bin", "esbuild");
     if (fs2.existsSync(binPath)) {
       return ["node", [binPath]];
     }
-  } catch { }
+  } catch {}
   // 4. Last resort: use original __dirname path (will fail with clear error)
   return ["node", [path2.join(__dirname, "..", "bin", "esbuild")]];
 };
@@ -1963,7 +1965,7 @@ var fsSync = {
       let contents = fs2.readFileSync(tempFile, "utf8");
       try {
         fs2.unlinkSync(tempFile);
-      } catch { }
+      } catch {}
       callback(null, contents);
     } catch (err) {
       callback(err, null);

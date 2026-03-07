@@ -10,6 +10,7 @@
  *   npx tsx esbuild.config.ts --kind=mcp-server
  */
 
+import * as fs from "node:fs";
 import { readFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import * as esbuild from "esbuild";
@@ -17,7 +18,15 @@ import YAML from "yaml";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type PackageKind = "library" | "mcp-server" | "worker" | "cli" | "browser" | "config" | "block" | "video";
+type PackageKind =
+  | "library"
+  | "mcp-server"
+  | "worker"
+  | "cli"
+  | "browser"
+  | "config"
+  | "block"
+  | "video";
 
 interface BuildProfile {
   platform: esbuild.Platform;
@@ -241,7 +250,12 @@ export function createBuildConfig(opts: BuildOptions): esbuild.BuildOptions {
     format: profile.format,
     sourcemap: true,
     target: "es2022",
-    external: (profile.bundle && external.length > 0) ? external : (profile.platform === "browser" ? ["node:*"] : undefined),
+    external:
+      profile.bundle && external.length > 0
+        ? external
+        : profile.platform === "browser"
+          ? ["node:*"]
+          : undefined,
     banner: profile.banner,
     tsconfig: resolve("tsconfig.json"),
     logLevel: "info",
@@ -253,6 +267,7 @@ export async function buildPackage(opts: BuildOptions): Promise<esbuild.BuildRes
     return buildBlock(opts);
   }
   const config = createBuildConfig(opts);
+  const outDir = resolve("dist", opts.packageName);
   console.log(`Building ${opts.packageName} (${opts.kind})...`);
   const result = await esbuild.build(config);
   console.log(`  ✓ ${opts.packageName} built to dist/${opts.packageName}/`);
@@ -401,25 +416,28 @@ if (process.argv[1]?.endsWith("esbuild.config.ts")) {
 function copyBrowserAssets(opts: BuildOptions, outDir: string) {
   const pkgDir = resolve("packages", opts.packageName);
   const srcDir = resolveSourceDir(opts.packageName, opts.kind);
-  
+
   // Copy index.html
   const htmlSrc = join(pkgDir, "index.html");
   if (existsSync(htmlSrc)) {
     let html = readFileSync(htmlSrc, "utf8");
     // Change main.ts to main.js or main.tsx to main.js
     html = html.replace(/src="\.\/main\.(ts|tsx)"/g, 'src="./main.js"');
-    
+
     // Also remove any Vite-specific modulepreload if they are lingering
-    html = html.replace(/<link rel="modulepreload" crossorigin href="[^"]+">/g, '');
-    
+    html = html.replace(/<link rel="modulepreload" crossorigin href="[^"]+">/g, "");
+
     // Also ensure no vite modulepreload-polyfill
-    html = html.replace(/<script type="module" crossorigin src="\/assets\/index-.*\.js"><\/script>/g, '');
-    
+    html = html.replace(
+      /<script type="module" crossorigin src="\/assets\/index-.*\.js"><\/script>/g,
+      "",
+    );
+
     // Check if main script exists in html, if not add it
     if (!html.includes('src="./main.js"')) {
       // Just fallback
     }
-    
+
     writeFileSync(join(outDir, "index.html"), html);
     console.log(`  ✓ copied and transformed index.html`);
   }

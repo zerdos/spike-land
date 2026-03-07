@@ -84,7 +84,13 @@ async function encryptValue(userId: string, value: string, vaultSecret: string):
   return btoa(JSON.stringify(envelope));
 }
 
-export function registerVaultTools(registry: ToolRegistry, userId: string, db: DrizzleDB, _kv?: KVNamespace, vaultSecret?: string): void {
+export function registerVaultTools(
+  registry: ToolRegistry,
+  userId: string,
+  db: DrizzleDB,
+  _kv?: KVNamespace,
+  vaultSecret?: string,
+): void {
   const t = freeTool(userId, db);
 
   registry.registerBuilt(
@@ -111,13 +117,13 @@ export function registerVaultTools(registry: ToolRegistry, userId: string, db: D
         {
           name: "store_openai_key",
           input: { name: "OPENAI_API_KEY", value: "sk-proj-1234567890" },
-          description: "Store an OpenAI API key"
+          description: "Store an OpenAI API key",
         },
         {
           name: "store_github_token",
           input: { name: "GITHUB_TOKEN", value: "ghp_abcdefghijklmno" },
-          description: "Store a GitHub personal access token"
-        }
+          description: "Store a GitHub personal access token",
+        },
       ])
       .handler(async ({ input, ctx }) => {
         try {
@@ -202,8 +208,8 @@ export function registerVaultTools(registry: ToolRegistry, userId: string, db: D
         {
           name: "list_secrets",
           input: {},
-          description: "List all stored secrets"
-        }
+          description: "List all stored secrets",
+        },
       ])
       .handler(async ({ ctx }) => {
         try {
@@ -314,7 +320,11 @@ export function registerVaultTools(registry: ToolRegistry, userId: string, db: D
               "Name must start with a letter and contain only letters, numbers, and underscores",
             )
             .describe("Secret name to rotate (e.g. OPENAI_API_KEY)."),
-          value: z.string().min(1).max(10000).describe("The new secret value to encrypt and store."),
+          value: z
+            .string()
+            .min(1)
+            .max(10000)
+            .describe("The new secret value to encrypt and store."),
         },
       )
       .meta({ category: "vault", tier: "free" })

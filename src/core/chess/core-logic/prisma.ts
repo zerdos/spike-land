@@ -33,12 +33,19 @@ const notConfigured = (model: string, method: string) => (): never => {
   );
 };
 
-const makeStub = (model: string) => new Proxy({}, {
-  get: (_, method) => notConfigured(model, String(method))
-});
+const makeStub = (model: string) =>
+  new Proxy(
+    {},
+    {
+      get: (_, method) => notConfigured(model, String(method)),
+    },
+  );
 
-const prismaStub: any = new Proxy({}, {
-  get: (_, model) => makeStub(String(model))
-});
+const prismaStub: any = new Proxy(
+  {},
+  {
+    get: (_, model) => makeStub(String(model)),
+  },
+);
 
 export default prismaStub;

@@ -99,16 +99,17 @@ apiKeys.delete("/api/keys/:id", async (c) => {
     return c.json({ error: "Key not found" }, 404);
   }
 
-  await c.env.DB.prepare(
-    `DELETE FROM user_api_key_vault WHERE id = ? AND user_id = ?`,
-  )
+  await c.env.DB.prepare(`DELETE FROM user_api_key_vault WHERE id = ? AND user_id = ?`)
     .bind(keyId, userId)
     .run();
 
   return c.json({ success: true });
 });
 
-const PROVIDER_TEST_URLS: Record<string, { url: string; method: string; headers: Record<string, string> }> = {
+const PROVIDER_TEST_URLS: Record<
+  string,
+  { url: string; method: string; headers: Record<string, string> }
+> = {
   openai: {
     url: "https://api.openai.com/v1/models",
     method: "GET",

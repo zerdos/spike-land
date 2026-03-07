@@ -55,10 +55,7 @@ async function healthHandler(c: Context<{ Bindings: Env }>) {
 
   const statusFields = [r2Status, d1Status];
   if (deep) {
-    statusFields.push(
-      result.authMcp as string,
-      result.mcpService as string,
-    );
+    statusFields.push(result.authMcp as string, result.mcpService as string);
   }
   const overall = statusFields.every((s) => s === "ok") ? "ok" : "degraded";
   result.status = overall;

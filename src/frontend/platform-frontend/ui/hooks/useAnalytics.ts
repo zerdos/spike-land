@@ -29,7 +29,11 @@ function flushEvents() {
   const body = JSON.stringify(payload);
 
   try {
-    if (typeof document !== "undefined" && document.visibilityState === "hidden" && navigator.sendBeacon) {
+    if (
+      typeof document !== "undefined" &&
+      document.visibilityState === "hidden" &&
+      navigator.sendBeacon
+    ) {
       navigator.sendBeacon("/analytics/ingest", new Blob([body], { type: "application/json" }));
     } else {
       fetch("/analytics/ingest", {
@@ -37,14 +41,18 @@ function flushEvents() {
         headers: { "Content-Type": "application/json" },
         body,
         keepalive: true,
-      }).then((res) => {
-        if (res.status === 429) {
-          currentFlushInterval = BACKOFF_INTERVAL_MS;
-          setTimeout(() => { currentFlushInterval = FLUSH_INTERVAL_MS; }, BACKOFF_INTERVAL_MS);
-        }
-      }).catch(() => {
-        // Silently drop — analytics should never disrupt the app
-      });
+      })
+        .then((res) => {
+          if (res.status === 429) {
+            currentFlushInterval = BACKOFF_INTERVAL_MS;
+            setTimeout(() => {
+              currentFlushInterval = FLUSH_INTERVAL_MS;
+            }, BACKOFF_INTERVAL_MS);
+          }
+        })
+        .catch(() => {
+          // Silently drop — analytics should never disrupt the app
+        });
     }
   } catch {
     // Silently drop

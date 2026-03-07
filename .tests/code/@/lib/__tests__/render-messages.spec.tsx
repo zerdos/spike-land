@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { renderMessage, type ToolCallContentPart } from "../../../../../src/frontend/monaco-editor/@/lib/render-messages";
+import {
+  renderMessage,
+  type ToolCallContentPart,
+} from "../../../../../src/frontend/monaco-editor/@/lib/render-messages";
 
 // Extended Message type for testing
 interface Message {

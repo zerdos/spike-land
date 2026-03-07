@@ -7,9 +7,16 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
-    Link: ({ children, className }: { to: string; children: React.ReactNode; className?: string; params?: unknown; search?: unknown }) => (
-      <a className={className}>{children}</a>
-    ),
+    Link: ({
+      children,
+      className,
+    }: {
+      to: string;
+      children: React.ReactNode;
+      className?: string;
+      params?: unknown;
+      search?: unknown;
+    }) => <a className={className}>{children}</a>,
   };
 });
 

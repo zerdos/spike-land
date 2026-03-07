@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { ICodeSession } from "@spike-land-ai/code";
-import { executeFindLines, findLinesTool, findTools } from "../../../../src/edge-api/backend/core-logic/mcp/tools/find-tools";
+import {
+  executeFindLines,
+  findLinesTool,
+  findTools,
+} from "../../../../src/edge-api/backend/core-logic/mcp/tools/find-tools";
 
 const createMockSession = (code: string): ICodeSession =>
   ({
@@ -146,7 +150,7 @@ describe("find-tools", () => {
         // The `String(error)` branch is unreachable (RegExp always throws Error) and is
         // marked /* v8 ignore next */ in the source.
         expect(() =>
-          executeFindLines(createMockSession("const x = 1;"), "test-space", "[invalid", true)
+          executeFindLines(createMockSession("const x = 1;"), "test-space", "[invalid", true),
         ).toThrow("Invalid regex pattern:");
       });
     });

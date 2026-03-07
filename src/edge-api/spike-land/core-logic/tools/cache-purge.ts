@@ -31,7 +31,9 @@ export function registerCachePurgeTools(
             .array(z.string().url())
             .max(30)
             .optional()
-            .describe("Array of full URLs to purge (max 30). Example: ['https://spike.land/assets/app.js']"),
+            .describe(
+              "Array of full URLs to purge (max 30). Example: ['https://spike.land/assets/app.js']",
+            ),
           purge_everything: z
             .boolean()
             .optional()
@@ -65,12 +67,12 @@ export function registerCachePurgeTools(
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...(mcpInternalSecret ? { "X-Internal-Secret": mcpInternalSecret, "X-User-Id": userId } : {}),
+              ...(mcpInternalSecret
+                ? { "X-Internal-Secret": mcpInternalSecret, "X-User-Id": userId }
+                : {}),
             },
             body: JSON.stringify(
-              input.purge_everything
-                ? { purge_everything: true }
-                : { files: input.files },
+              input.purge_everything ? { purge_everything: true } : { files: input.files },
             ),
           }),
         );

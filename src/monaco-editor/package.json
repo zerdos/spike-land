@@ -1,55 +1,55 @@
 {
-	"name": "monaco-editor",
-	"version": "0.55.1",
-	"vscodeRef": "86f5a62f058e3905f74a9fa65d04b2f3b533408e",
-	"private": true,
-	"description": "A browser based code editor",
-	"homepage": "https://github.com/microsoft/monaco-editor",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"scripts": {
-		"lint": "eslint .",
-		"watch": "tsc -w -p ./src",
-		"test": "node --import tsx --test \"src/languages/definitions/*/*.test.ts\""
-	},
-	"typings": "./esm/vs/editor/editor.main.d.ts",
-	"main": "./min/vs/editor/editor.main.js",
-	"module": "./esm/vs/editor/editor.main.js",
-	"exports": {
-		".": {
-			"types": "./esm/vs/index.d.ts",
-			"import": "./esm/vs/index.js",
-			"require": "./min/vs/index.js"
-		},
-		"./*.js": "./esm/vs/*.js",
-		"./*": "./esm/vs/*.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/microsoft/monaco-editor"
-	},
-	"devDependencies": {
-		"@eslint/js": "^10.0.1",
-		"@types/trusted-types": "^2.0.7",
-		"@typescript/vfs": "^1.6.4",
-		"esbuild": "^0.27.3",
-		"esbuild-plugin-alias": "^0.2.1",
-		"eslint": "^10.0.3",
-		"glob": "^13.0.6",
-		"globals": "^17.4.0",
-		"jsonc-parser": "^3.3.1",
-		"monaco-editor-core": "0.56.0-dev-20260212",
-		"tsx": "^4.21.0",
-		"typescript": "^5.9.3",
-		"vscode-css-languageservice": "6.3.10",
-		"vscode-html-languageservice": "5.6.2",
-		"vscode-json-languageservice": "5.7.2",
-		"vscode-languageserver-textdocument": "^1.0.12",
-		"vscode-languageserver-types": "3.17.5",
-		"vscode-uri": "3.1.0"
-	},
-	"alias": {
-		"process": false,
-		"buffer": false
-	}
+  "name": "monaco-editor",
+  "version": "0.55.1",
+  "vscodeRef": "86f5a62f058e3905f74a9fa65d04b2f3b533408e",
+  "private": true,
+  "description": "A browser based code editor",
+  "homepage": "https://github.com/microsoft/monaco-editor",
+  "author": "Microsoft Corporation",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "watch": "tsc -w -p ./src",
+    "test": "node --import tsx --test \"src/languages/definitions/*/*.test.ts\""
+  },
+  "typings": "./esm/vs/editor/editor.main.d.ts",
+  "main": "./min/vs/editor/editor.main.js",
+  "module": "./esm/vs/editor/editor.main.js",
+  "exports": {
+    ".": {
+      "types": "./esm/vs/index.d.ts",
+      "import": "./esm/vs/index.js",
+      "require": "./min/vs/index.js"
+    },
+    "./*.js": "./esm/vs/*.js",
+    "./*": "./esm/vs/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/monaco-editor"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/trusted-types": "^2.0.7",
+    "@typescript/vfs": "^1.6.4",
+    "esbuild": "^0.27.3",
+    "esbuild-plugin-alias": "^0.2.1",
+    "eslint": "^10.0.3",
+    "glob": "^13.0.6",
+    "globals": "^17.4.0",
+    "jsonc-parser": "^3.3.1",
+    "monaco-editor-core": "0.56.0-dev-20260212",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vscode-css-languageservice": "6.3.10",
+    "vscode-html-languageservice": "5.6.2",
+    "vscode-json-languageservice": "5.7.2",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-types": "3.17.5",
+    "vscode-uri": "3.1.0"
+  },
+  "alias": {
+    "process": false,
+    "buffer": false
+  }
 }

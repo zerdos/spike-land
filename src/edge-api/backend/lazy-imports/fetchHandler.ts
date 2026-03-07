@@ -99,8 +99,16 @@ Sitemap: ${new URL(request.url).origin}/sitemap.xml
         start_url: "/",
         lang: "en-US",
         icons: [
-          { src: "/assets/favicons/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-          { src: "/assets/favicons/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "/assets/favicons/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/assets/favicons/android-chrome-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
         ],
       }),
       {

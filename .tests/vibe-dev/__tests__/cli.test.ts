@@ -10,7 +10,9 @@ import { EventEmitter } from "events";
 import type { ChildProcess } from "child_process";
 
 // vi.hoisted runs before vi.mock factories, making variables available in mock factories
-const capturedActions = vi.hoisted(() => ({} as Record<string, (...args: unknown[]) => Promise<void>>));
+const capturedActions = vi.hoisted(
+  () => ({}) as Record<string, (...args: unknown[]) => Promise<void>>,
+);
 
 // Mocked modules - must be before any imports
 vi.mock("child_process", () => ({ spawn: vi.fn() }));
@@ -25,9 +27,7 @@ vi.mock("../../../src/cli/docker-dev/api.js", () => ({
 }));
 vi.mock("../../../src/cli/docker-dev/redis.js", () => ({
   getQueueStats: vi.fn(),
-  getRedisConfig: vi
-    .fn()
-    .mockReturnValue({ url: "redis://localhost:6379", token: "token" }),
+  getRedisConfig: vi.fn().mockReturnValue({ url: "redis://localhost:6379", token: "token" }),
 }));
 vi.mock("../../../src/cli/docker-dev/sync.js", () => ({
   pullCode: vi.fn(),
@@ -53,7 +53,10 @@ vi.mock("commander", async (importOriginal) => {
   // Wrap command() to intercept action() calls
   const origCmd = prog.command.bind(prog);
   prog.command = (nameAndArgs: string, ...args: unknown[]) => {
-    const cmd = (origCmd as (...a: unknown[]) => ReturnType<typeof prog.command>)(nameAndArgs, ...args);
+    const cmd = (origCmd as (...a: unknown[]) => ReturnType<typeof prog.command>)(
+      nameAndArgs,
+      ...args,
+    );
     const origAction = cmd.action.bind(cmd);
     cmd.action = (fn: (...a: unknown[]) => unknown) => {
       const commandName = (nameAndArgs as string).split(" ")[0]!;
@@ -97,10 +100,12 @@ type ActionFn = (options: Record<string, unknown>, cmd?: { args: unknown[] }) =>
 
 function getAction(name: string): ActionFn {
   const fn = capturedActions[name];
-  if (!fn) throw new Error(`Action '${name}' not found. Available: ${Object.keys(capturedActions).join(", ")}`);
+  if (!fn)
+    throw new Error(
+      `Action '${name}' not found. Available: ${Object.keys(capturedActions).join(", ")}`,
+    );
   return fn as ActionFn;
 }
-
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -431,12 +436,10 @@ describe("CLI dev command", () => {
   it("onSync callback logs synced message", async () => {
     let capturedOnSync: ((id: string) => void) | undefined;
     const stopFn = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(watcherModule.startDevMode).mockImplementation(
-      async (_ids, opts) => {
-        capturedOnSync = opts?.onSync;
-        return { stop: stopFn } as never;
-      },
-    );
+    vi.mocked(watcherModule.startDevMode).mockImplementation(async (_ids, opts) => {
+      capturedOnSync = opts?.onSync;
+      return { stop: stopFn } as never;
+    });
 
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const onSpy = vi.spyOn(process, "on").mockImplementation(() => process);
@@ -556,11 +559,7 @@ describe("CLI claude command", () => {
     mockProc.emit("close", 0);
     await exitCalled;
 
-    expect(spawn).toHaveBeenCalledWith(
-      "claude",
-      expect.any(Array),
-      expect.any(Object),
-    );
+    expect(spawn).toHaveBeenCalledWith("claude", expect.any(Array), expect.any(Object));
     exitSpy.mockRestore();
   });
 });

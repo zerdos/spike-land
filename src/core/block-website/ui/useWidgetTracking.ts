@@ -93,10 +93,7 @@ export function useWidgetTracking(
   }, []);
 
   const track = useCallback(
-    (
-      eventType: WidgetEventType,
-      eventData: Record<string, unknown> = {},
-    ) => {
+    (eventType: WidgetEventType, eventData: Record<string, unknown> = {}) => {
       const now = Date.now();
 
       // Prune timestamps outside the rolling 1-minute window

@@ -164,9 +164,9 @@ describe("PostHandler - Tool Schema Validation", () => {
     });
 
     it("should validate that Zod schemas are created from inputSchema", async () => {
-      const JsonSchemaToZodConverter = await import("../../../src/edge-api/backend/core-logic/utils/jsonSchemaToZod").then(
-        (m) => m.JsonSchemaToZodConverter,
-      );
+      const JsonSchemaToZodConverter = await import(
+        "../../../src/edge-api/backend/core-logic/utils/jsonSchemaToZod"
+      ).then((m) => m.JsonSchemaToZodConverter);
       const converter = new JsonSchemaToZodConverter();
 
       const mcpServer = mockCode.getMcpServer();
@@ -358,7 +358,9 @@ describe("PostHandler - Tool Schema Validation", () => {
     });
 
     it("tool execute function catches and rethrows executeTool errors (lines 553-554)", async () => {
-      let capturedTools: Record<string, { execute: (args: Record<string, unknown>) => Promise<unknown> }> | undefined;
+      let capturedTools:
+        | Record<string, { execute: (args: Record<string, unknown>) => Promise<unknown> }>
+        | undefined;
 
       vi.mocked(streamText).mockImplementation((options: Parameters<typeof streamText>[0]) => {
         capturedTools = options.tools as typeof capturedTools;
@@ -394,7 +396,9 @@ describe("PostHandler - Tool Schema Validation", () => {
       if (capturedTools) {
         const toolEntry = Object.values(capturedTools)[0];
         if (toolEntry?.execute) {
-          await expect(toolEntry.execute({ codeSpace: "test" })).rejects.toThrow("Failed to execute");
+          await expect(toolEntry.execute({ codeSpace: "test" })).rejects.toThrow(
+            "Failed to execute",
+          );
           expect(consoleSpy).toHaveBeenCalledWith(
             expect.stringContaining("Error executing tool"),
             expect.any(Error),

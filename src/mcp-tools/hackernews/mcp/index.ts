@@ -8,7 +8,11 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { wrapServerWithLogging, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
+import {
+  wrapServerWithLogging,
+  registerFeedbackTool,
+  createErrorShipper,
+} from "@spike-land-ai/mcp-server-base";
 import { SessionManager } from "../core-logic/session-manager.js";
 import { HNReadClient } from "../core-logic/hn-read-client.js";
 import { HNWriteClient } from "../core-logic/hn-write-client.js";
@@ -27,8 +31,22 @@ const server = new McpServer({
 });
 
 const shipper = createErrorShipper();
-process.on('uncaughtException', (err) => shipper.shipError({ service_name: "hackernews-mcp", message: err.message, stack_trace: err.stack, severity: "high" }));
-process.on('unhandledRejection', (err: unknown) => shipper.shipError({ service_name: "hackernews-mcp", message: err instanceof Error ? err.message : String(err), stack_trace: err instanceof Error ? err.stack : undefined, severity: "high" }));
+process.on("uncaughtException", (err) =>
+  shipper.shipError({
+    service_name: "hackernews-mcp",
+    message: err.message,
+    stack_trace: err.stack,
+    severity: "high",
+  }),
+);
+process.on("unhandledRejection", (err: unknown) =>
+  shipper.shipError({
+    service_name: "hackernews-mcp",
+    message: err instanceof Error ? err.message : String(err),
+    stack_trace: err instanceof Error ? err.stack : undefined,
+    severity: "high",
+  }),
+);
 
 wrapServerWithLogging(server, "hackernews-mcp");
 

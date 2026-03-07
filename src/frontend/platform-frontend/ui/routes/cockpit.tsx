@@ -115,7 +115,10 @@ function RoadmapBoard() {
       {KANBAN_COLS.map((col) => {
         const items = MILESTONES.filter((m) => m.status === col.id);
         return (
-          <div key={col.id} className="rounded-2xl border border-border bg-card dark:glass-card p-4 space-y-3">
+          <div
+            key={col.id}
+            className="rounded-2xl border border-border bg-card dark:glass-card p-4 space-y-3"
+          >
             <div className="flex items-center gap-2">
               <span className={`h-2 w-2 rounded-full ${col.dotClass}`} />
               <h3 className="text-sm font-semibold text-foreground">{col.label}</h3>
@@ -125,10 +128,15 @@ function RoadmapBoard() {
             </div>
             <div className="space-y-2">
               {items.map((m) => (
-                <div key={m.id} className="rounded-lg border border-border bg-background p-3 space-y-1.5">
+                <div
+                  key={m.id}
+                  className="rounded-lg border border-border bg-background p-3 space-y-1.5"
+                >
                   <p className="text-sm font-medium text-foreground leading-snug">{m.title}</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{m.description}</p>
-                  <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${PRIORITY_BADGE[m.priority]}`}>
+                  <span
+                    className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${PRIORITY_BADGE[m.priority]}`}
+                  >
                     {m.priority}
                   </span>
                 </div>
@@ -192,7 +200,7 @@ function CockpitChat() {
         }),
       });
 
-      const data = await res.json() as { content?: string; error?: string };
+      const data = (await res.json()) as { content?: string; error?: string };
       const assistantMsg: Message = {
         id: `a-${Date.now()}`,
         role: "assistant",
@@ -221,7 +229,10 @@ function CockpitChat() {
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card dark:glass-card overflow-hidden flex flex-col" style={{ height: "480px" }}>
+    <div
+      className="rounded-2xl border border-border bg-card dark:glass-card overflow-hidden flex flex-col"
+      style={{ height: "480px" }}
+    >
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="text-sm font-semibold text-foreground">AI Chat</h3>
         <button
@@ -323,12 +334,16 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
         className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[exp.status] ?? "bg-muted text-muted-foreground"}`}>
+          <span
+            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[exp.status] ?? "bg-muted text-muted-foreground"}`}
+          >
             {exp.status}
           </span>
           <div>
             <p className="text-sm font-medium text-foreground">{exp.name}</p>
-            <p className="text-xs text-muted-foreground">{exp.dimension} — {runtimeDays}d running</p>
+            <p className="text-xs text-muted-foreground">
+              {exp.dimension} — {runtimeDays}d running
+            </p>
           </div>
         </div>
         <span className="text-muted-foreground text-xs">{expanded ? "▲" : "▼"}</span>
@@ -351,18 +366,28 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
               {metrics.variants.map((v) => (
                 <tr
                   key={v.variantId}
-                  className={metrics.winner === v.variantId ? "bg-green-50 dark:bg-green-900/10" : ""}
+                  className={
+                    metrics.winner === v.variantId ? "bg-green-50 dark:bg-green-900/10" : ""
+                  }
                 >
                   <td className="py-1.5 pr-2 font-medium text-foreground">
                     {v.variantId}
                     {metrics.winner === v.variantId && (
-                      <span className="ml-1 text-green-600 dark:text-green-400 text-[10px]">winner</span>
+                      <span className="ml-1 text-green-600 dark:text-green-400 text-[10px]">
+                        winner
+                      </span>
                     )}
                   </td>
-                  <td className="text-right py-1.5 px-2 text-muted-foreground">{v.impressions.toLocaleString()}</td>
+                  <td className="text-right py-1.5 px-2 text-muted-foreground">
+                    {v.impressions.toLocaleString()}
+                  </td>
                   <td className="text-right py-1.5 px-2 text-muted-foreground">{v.donations}</td>
-                  <td className="text-right py-1.5 px-2 text-muted-foreground">{(v.donateRate * 100).toFixed(2)}%</td>
-                  <td className="text-right py-1.5 px-2 font-semibold text-foreground">${(v.revenue / 100).toFixed(2)}</td>
+                  <td className="text-right py-1.5 px-2 text-muted-foreground">
+                    {(v.donateRate * 100).toFixed(2)}%
+                  </td>
+                  <td className="text-right py-1.5 px-2 font-semibold text-foreground">
+                    ${(v.revenue / 100).toFixed(2)}
+                  </td>
                   <td className="text-right py-1.5 pl-2 text-muted-foreground">{v.fistbumps}</td>
                 </tr>
               ))}
@@ -404,7 +429,10 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
 }
 
 function ExperimentsDashboard() {
-  const [data, setData] = useState<{ experiments: DashboardExperiment[]; revenue24h: number } | null>(null);
+  const [data, setData] = useState<{
+    experiments: DashboardExperiment[];
+    revenue24h: number;
+  } | null>(null);
 
   useEffect(() => {
     fetch(apiUrl("/experiments/dashboard"))
@@ -421,7 +449,9 @@ function ExperimentsDashboard() {
     <div className="space-y-4">
       <div className="rounded-2xl border border-border bg-card dark:glass-card p-4 flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">24h Experiment Revenue</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            24h Experiment Revenue
+          </p>
           <p className="text-2xl font-bold text-foreground">${data.revenue24h.toFixed(2)}</p>
         </div>
         <span className="text-xs text-muted-foreground">{data.experiments.length} experiments</span>
@@ -451,18 +481,26 @@ function DevHealth() {
         if (!r.ok) return null;
         return r.json() as Promise<ErrorSummary>;
       })
-      .then((data) => { if (data) setErrorSummary(data); })
+      .then((data) => {
+        if (data) setErrorSummary(data);
+      })
       .catch(() => {});
   }, []);
 
   const errorCount = errorSummary?.total ?? "--";
   const errorColor = errorSummary
-    ? errorSummary.total === 0 ? "bg-green-500" : errorSummary.total < 10 ? "bg-amber-500" : "bg-red-500"
+    ? errorSummary.total === 0
+      ? "bg-green-500"
+      : errorSummary.total < 10
+        ? "bg-amber-500"
+        : "bg-red-500"
     : "bg-muted";
   const topCode = errorSummary?.topCodes[0];
   const errorNote = topCode
     ? `Top: ${topCode.error_code} (${topCode.count})`
-    : errorSummary ? "No errors" : "Loading...";
+    : errorSummary
+      ? "No errors"
+      : "Loading...";
 
   const panels = [
     { label: "CI Status", value: "--", note: "Last run: --", color: "bg-muted" },
@@ -475,7 +513,9 @@ function DevHealth() {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {panels.map((p) => (
         <div key={p.label} className="rounded-2xl border border-border bg-card dark:glass-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{p.label}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+            {p.label}
+          </p>
           <div className="flex items-center gap-2">
             <span className={`h-2 w-2 rounded-full ${p.color}`} />
             <span className="text-xl font-bold text-foreground">{p.value}</span>
@@ -496,7 +536,12 @@ interface CockpitMetrics {
   mrr: number;
   recentSignups: Array<{ id: string; email: string; created_at: string }>;
   servicePurchases: number;
-  recentServicePurchases: Array<{ service: string; email: string | null; status: string; created_at: number }>;
+  recentServicePurchases: Array<{
+    service: string;
+    email: string | null;
+    status: string;
+    created_at: number;
+  }>;
 }
 
 function MetricsDashboard() {
@@ -525,8 +570,13 @@ function MetricsDashboard() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((m) => (
-          <div key={m.label} className="rounded-2xl border border-border bg-card dark:glass-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">{m.label}</p>
+          <div
+            key={m.label}
+            className="rounded-2xl border border-border bg-card dark:glass-card p-4"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+              {m.label}
+            </p>
             <p className="text-2xl font-bold text-foreground">{m.value}</p>
           </div>
         ))}
@@ -534,7 +584,9 @@ function MetricsDashboard() {
 
       {data && data.recentSignups.length > 0 && (
         <div className="rounded-2xl border border-border bg-card dark:glass-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Recent Signups</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            Recent Signups
+          </p>
           <div className="space-y-2">
             {data.recentSignups.map((u) => (
               <div key={u.id} className="flex items-center justify-between text-sm">
@@ -550,7 +602,9 @@ function MetricsDashboard() {
 
       {data && data.recentServicePurchases.length > 0 && (
         <div className="rounded-2xl border border-border bg-card dark:glass-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Service Purchases</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            Service Purchases
+          </p>
           <div className="space-y-2">
             {data.recentServicePurchases.map((p, i) => (
               <div key={i} className="flex items-center justify-between text-sm">

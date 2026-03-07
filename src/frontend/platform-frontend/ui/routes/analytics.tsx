@@ -45,7 +45,11 @@ function TimeRangeSelector({
 }) {
   const ranges: TimeRange[] = ["24h", "7d", "30d"];
   return (
-    <div role="group" aria-label="Time range" className="flex gap-1 rounded-lg border border-border bg-muted p-1">
+    <div
+      role="group"
+      aria-label="Time range"
+      className="flex gap-1 rounded-lg border border-border bg-muted p-1"
+    >
       {ranges.map((range) => (
         <button
           key={range}

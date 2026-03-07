@@ -194,7 +194,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const setAttrMutation = mutations.find((m: { type: number }) => m.type === MutationType.SET_ATTRIBUTE);
+      const setAttrMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.SET_ATTRIBUTE,
+      );
       expect(setAttrMutation).toBeDefined();
       expect(setAttrMutation.name).toBe("class");
       expect(setAttrMutation.value).toBe("foo");
@@ -210,7 +212,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const removeAttrMutation = mutations.find((m: { type: number }) => m.type === MutationType.REMOVE_ATTRIBUTE);
+      const removeAttrMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.REMOVE_ATTRIBUTE,
+      );
       expect(removeAttrMutation).toBeDefined();
       expect(removeAttrMutation.name).toBe("class");
     });
@@ -225,7 +229,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const styleMutation = mutations.find((m: { type: number }) => m.type === MutationType.SET_STYLE);
+      const styleMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.SET_STYLE,
+      );
       expect(styleMutation).toBeDefined();
       expect(styleMutation.name).toBe("color");
       expect(styleMutation.value).toBe("red");
@@ -253,7 +259,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const textMutation = mutations.find((m: { type: number }) => m.type === MutationType.SET_TEXT);
+      const textMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.SET_TEXT,
+      );
       expect(textMutation).toBeDefined();
       expect(textMutation.value).toBe("world");
     });
@@ -311,7 +319,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const createMutation = mutations.find((m: { type: number }) => m.type === MutationType.CREATE_ELEMENT);
+      const createMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.CREATE_ELEMENT,
+      );
       expect(createMutation).toBeDefined();
     });
 
@@ -327,7 +337,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const createMutation = mutations.find((m: { type: number }) => m.type === MutationType.CREATE_ELEMENT_NS);
+      const createMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.CREATE_ELEMENT_NS,
+      );
       expect(createMutation).toBeDefined();
     });
 
@@ -343,7 +355,9 @@ describe("WorkerDocument", () => {
       await Promise.resolve();
 
       const mutations = postMessage.mock.calls.flatMap((c) => c[0].mutations);
-      const createMutation = mutations.find((m: { type: number }) => m.type === MutationType.CREATE_TEXT);
+      const createMutation = mutations.find(
+        (m: { type: number }) => m.type === MutationType.CREATE_TEXT,
+      );
       expect(createMutation).toBeDefined();
       expect(createMutation.value).toBe("hello world");
     });

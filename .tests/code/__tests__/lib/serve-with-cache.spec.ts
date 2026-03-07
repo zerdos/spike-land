@@ -66,7 +66,9 @@ describe("serveWithCache", () => {
 
     it("returns false for /live/ paths", () => {
       const { shouldBeCached } = serveWithCache(files, cacheToUse);
-      expect(shouldBeCached(makeRequest("https://example.com/live/myspace/session.json"))).toBe(false);
+      expect(shouldBeCached(makeRequest("https://example.com/live/myspace/session.json"))).toBe(
+        false,
+      );
     });
 
     it("returns false for /my-cms/ paths", () => {
@@ -99,11 +101,7 @@ describe("serveWithCache", () => {
 
     it("returns 404 for requests to unknown files", async () => {
       const { serve } = serveWithCache(files, cacheToUse);
-      const resp = await serve(
-        makeRequest("https://example.com/unknown.js"),
-        vi.fn(),
-        waitUntil,
-      );
+      const resp = await serve(makeRequest("https://example.com/unknown.js"), vi.fn(), waitUntil);
       expect(resp.status).toBe(404);
     });
 
@@ -145,18 +143,12 @@ describe("serveWithCache", () => {
 
     it("returns cached response on second request", async () => {
       const body = "cached content";
-      const assetFetcher = vi.fn().mockResolvedValue(
-        new Response(body, { status: 200 }),
-      );
+      const assetFetcher = vi.fn().mockResolvedValue(new Response(body, { status: 200 }));
       const { serve } = serveWithCache(files, cacheToUse);
       await new Promise((r) => setTimeout(r, 10));
 
       // First request — populates cache
-      await serve(
-        makeRequest("https://example.com/main.abc123.js"),
-        assetFetcher,
-        waitUntil,
-      );
+      await serve(makeRequest("https://example.com/main.abc123.js"), assetFetcher, waitUntil);
 
       // Manually put in cache since waitUntil is mocked
       const cachedResp = new Response(body, { status: 200 });
@@ -172,9 +164,7 @@ describe("serveWithCache", () => {
     });
 
     it("returns error response when assetFetcher returns non-ok response", async () => {
-      const assetFetcher = vi.fn().mockResolvedValue(
-        new Response("not found", { status: 404 }),
-      );
+      const assetFetcher = vi.fn().mockResolvedValue(new Response("not found", { status: 404 }));
       const { serve } = serveWithCache(files, cacheToUse);
       await new Promise((r) => setTimeout(r, 10));
       const resp = await serve(

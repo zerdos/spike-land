@@ -62,11 +62,7 @@ describe("QuizCard", () => {
 
   it("shows success styling on correct answer", () => {
     const { container } = render(
-      <QuizCard
-        {...defaultProps}
-        selectedAnswer={3}
-        result={{ correct: true, conflict: false }}
-      />
+      <QuizCard {...defaultProps} selectedAnswer={3} result={{ correct: true, conflict: false }} />,
     );
     const buttons = container.querySelectorAll("button");
     expect(buttons[3].className).toContain("border-success");
@@ -78,7 +74,7 @@ describe("QuizCard", () => {
         {...defaultProps}
         selectedAnswer={1}
         result={{ correct: false, conflict: false }}
-      />
+      />,
     );
     const buttons = container.querySelectorAll("button");
     expect(buttons[1].className).toContain("border-destructive");
@@ -86,11 +82,7 @@ describe("QuizCard", () => {
 
   it("shows warning styling on conflict answer", () => {
     const { container } = render(
-      <QuizCard
-        {...defaultProps}
-        selectedAnswer={2}
-        result={{ correct: false, conflict: true }}
-      />
+      <QuizCard {...defaultProps} selectedAnswer={2} result={{ correct: false, conflict: true }} />,
     );
     const buttons = container.querySelectorAll("button");
     expect(buttons[2].className).toContain("border-warning");

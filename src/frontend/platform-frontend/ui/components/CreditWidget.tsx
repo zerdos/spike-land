@@ -68,11 +68,11 @@ export function CreditWidget() {
       <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
         <div className="flex items-center gap-2 text-destructive mb-2">
           <AlertTriangle className="size-4" />
-          <h3 className="text-sm font-semibold uppercase tracking-wide">
-            Balance Error
-          </h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide">Balance Error</h3>
         </div>
-        <p className="text-sm text-muted-foreground mb-4">Unable to load your credit balance at this time.</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Unable to load your credit balance at this time.
+        </p>
         <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
           Retry
         </Button>
@@ -84,7 +84,9 @@ export function CreditWidget() {
   const usedPct = isUnlimited ? 0 : Math.min(100, (data.usedToday / data.dailyLimit) * 100);
   const remainingPct = 100 - usedPct;
   const barColor = isUnlimited ? "bg-success" : getBarColor(remainingPct);
-  const textColor = isUnlimited ? "text-success-foreground dark:text-success" : getTextColor(remainingPct);
+  const textColor = isUnlimited
+    ? "text-success-foreground dark:text-success"
+    : getTextColor(remainingPct);
   const resetHours = getResetHours();
 
   return (
@@ -131,13 +133,14 @@ export function CreditWidget() {
       )}
 
       <p className="mb-6 text-[11px] text-muted-foreground bg-muted/30 px-2 py-1 rounded-md w-fit">
-        Resets in <strong>{resetHours} {resetHours === 1 ? "hour" : "hours"}</strong>
+        Resets in{" "}
+        <strong>
+          {resetHours} {resetHours === 1 ? "hour" : "hours"}
+        </strong>
       </p>
 
       <Button asChild className="w-full font-bold">
-        <a href="/settings?tab=billing">
-          Buy More Credits
-        </a>
+        <a href="/settings?tab=billing">Buy More Credits</a>
       </Button>
     </div>
   );

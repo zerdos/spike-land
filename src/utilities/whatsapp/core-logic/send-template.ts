@@ -15,10 +15,7 @@ export function registerSendTemplateTool(server: McpServer, client: WhatsAppClie
       to: z.string().min(1).describe("Recipient phone number in E.164 format"),
       templateName: z.string().min(1).describe("Template name as registered in Meta Business"),
       languageCode: z.string().min(1).describe("Language code (e.g. en_US)"),
-      components: z
-        .string()
-        .optional()
-        .describe("JSON array of template components (optional)"),
+      components: z.string().optional().describe("JSON array of template components (optional)"),
     },
     async ({ to, templateName, languageCode, components }) => {
       let parsedComponents: unknown[] | undefined;

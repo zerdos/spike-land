@@ -1,6 +1,11 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { barGrow, fadeIn } from "../../lib/animations";
-import { COLORS, SPRING_CONFIGS, TYPOGRAPHY, VERITASIUM_COLORS } from "../../../core-logic/constants";
+import {
+  COLORS,
+  SPRING_CONFIGS,
+  TYPOGRAPHY,
+  VERITASIUM_COLORS,
+} from "../../../core-logic/constants";
 
 type ELOChartDiagramProps = {
   delay?: number;

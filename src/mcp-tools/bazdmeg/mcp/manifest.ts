@@ -18,7 +18,6 @@ export function registerManifestTools(server: McpServer): void {
       "Query packages.yaml for package info. Filter by name, kind, or extract specific fields.",
     schema: ManifestQuerySchema.shape,
     handler: async ({ packageName, kind, field }: z.infer<typeof ManifestQuerySchema>) => {
-
       const repoRoot = process.cwd();
       const manifest = await readManifest(repoRoot);
 

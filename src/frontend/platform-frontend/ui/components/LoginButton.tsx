@@ -12,7 +12,7 @@ export function LoginButton() {
 
   useEffect(() => {
     if (!menuOpen) return undefined;
-    
+
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
@@ -68,9 +68,7 @@ export function LoginButton() {
           menuOpen ? "bg-muted border-border" : "border-transparent hover:bg-muted",
           // Dark mode: glass trigger
           "dark:border-white/10 dark:backdrop-blur-sm",
-          menuOpen
-            ? "dark:bg-white/10"
-            : "dark:bg-white/5 dark:hover:bg-white/10",
+          menuOpen ? "dark:bg-white/10" : "dark:bg-white/5 dark:hover:bg-white/10",
         )}
         aria-label={`Account menu for ${user.name ?? user.email ?? "User"}`}
         aria-expanded={menuOpen}
@@ -90,11 +88,14 @@ export function LoginButton() {
           <span className="text-xs font-bold leading-none text-foreground tracking-wider">
             {user.name ?? user.preferred_username ?? "User"}
           </span>
-          <span className="text-[10px] font-medium text-muted-foreground">
-            Pro Member
-          </span>
+          <span className="text-[10px] font-medium text-muted-foreground">Pro Member</span>
         </div>
-        <ChevronDown className={cn("hidden sm:block size-3.5 text-muted-foreground transition-transform duration-200", menuOpen && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "hidden sm:block size-3.5 text-muted-foreground transition-transform duration-200",
+            menuOpen && "rotate-180",
+          )}
+        />
       </button>
 
       {menuOpen && (
@@ -109,7 +110,9 @@ export function LoginButton() {
           )}
         >
           <div className="px-3 py-3 mb-1 border-b border-border/50 dark:border-white/10">
-            <p className="truncate text-sm font-black text-foreground tracking-wider">{user.name ?? "User"}</p>
+            <p className="truncate text-sm font-black text-foreground tracking-wider">
+              {user.name ?? "User"}
+            </p>
             {user.email && (
               <p className="truncate text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                 {user.email}

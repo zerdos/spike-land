@@ -96,9 +96,7 @@ describe("ConfigWatcher", () => {
   });
 
   it("warns but does not throw when config reload fails with non-Error", async () => {
-    const { discoverConfig } = await import(
-      "../../../../src/cli/spike-cli/node-sys/discovery.js"
-    );
+    const { discoverConfig } = await import("../../../../src/cli/spike-cli/node-sys/discovery.js");
     // Reject with a non-Error value to hit the String(err) fallback path
     const nonError: unknown = { message: "not-an-error" };
     vi.mocked(discoverConfig).mockRejectedValueOnce(nonError);
@@ -120,9 +118,7 @@ describe("ConfigWatcher", () => {
   });
 
   it("warns but does not throw when config reload fails", async () => {
-    const { discoverConfig } = await import(
-      "../../../../src/cli/spike-cli/node-sys/discovery.js"
-    );
+    const { discoverConfig } = await import("../../../../src/cli/spike-cli/node-sys/discovery.js");
     vi.mocked(discoverConfig).mockRejectedValueOnce(new Error("reload failed"));
 
     const watcher = new ConfigWatcher({

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'pascal',
-	extensions: ['.pas', '.p', '.pp'],
-	aliases: ['Pascal', 'pas'],
-	mimetypes: ['text/x-pascal-source', 'text/x-pascal'],
-	loader: () => import('./pascal')
+  id: "pascal",
+  extensions: [".pas", ".p", ".pp"],
+  aliases: ["Pascal", "pas"],
+  mimetypes: ["text/x-pascal-source", "text/x-pascal"],
+  loader: () => import("./pascal"),
 });

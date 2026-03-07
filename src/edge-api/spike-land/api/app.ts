@@ -20,7 +20,14 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
     "*",
     cors({
       origin: ["https://spike.land", "https://local.spike.land:5173"],
-      allowHeaders: ["Authorization", "Content-Type", "X-Internal-Secret", "Mcp-Session-Id", "Mcp-Protocol-Version", "Accept"],
+      allowHeaders: [
+        "Authorization",
+        "Content-Type",
+        "X-Internal-Secret",
+        "Mcp-Session-Id",
+        "Mcp-Protocol-Version",
+        "Accept",
+      ],
       allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
       exposeHeaders: ["Mcp-Session-Id"],
       maxAge: 86400,
@@ -28,7 +35,9 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
   );
   app.use("*", logger());
 
-  app.get("/health", (c) => c.json({ status: "ok", service: "spike-land-mcp", timestamp: new Date().toISOString() }));
+  app.get("/health", (c) =>
+    c.json({ status: "ok", service: "spike-land-mcp", timestamp: new Date().toISOString() }),
+  );
 
   // Internal routes (protected by x-internal-secret header)
   app.use("/internal/*", internalAuthMiddleware);
@@ -64,7 +73,7 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
               },
             ],
           }),
-        }).catch((e) => console.error("Failed to ship error to SPIKE_EDGE:", e))
+        }).catch((e) => console.error("Failed to ship error to SPIKE_EDGE:", e)),
       );
     }
     return c.json({ error: "Internal Server Error" }, 500);

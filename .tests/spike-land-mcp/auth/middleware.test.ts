@@ -13,7 +13,8 @@ import { createMockD1, createMockKV } from "../__test-utils__/mock-env";
 let _lookupApiKeyResult: { userId: string } | null = null;
 
 vi.mock("../../../src/edge-api/spike-land/db/auth/api-key", async (importActual) => {
-  const actual = await importActual<typeof import("../../../src/edge-api/spike-land/db/auth/api-key")>();
+  const actual =
+    await importActual<typeof import("../../../src/edge-api/spike-land/db/auth/api-key")>();
   return {
     ...actual,
     lookupApiKey: vi.fn().mockImplementation(async () => _lookupApiKeyResult),

@@ -112,8 +112,8 @@ export function McpShowcaseSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-xl text-muted-foreground mb-20 max-w-2xl font-light leading-relaxed"
         >
-          spike-cli provides MCP tool definitions on-demand. One config connects all your
-          servers — AI agents request only the tools they need, keeping context windows clean.
+          spike-cli provides MCP tool definitions on-demand. One config connects all your servers —
+          AI agents request only the tools they need, keeping context windows clean.
         </motion.p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl relative">

@@ -52,7 +52,9 @@ export function registerShellCommand(program: Command): void {
       await manager.connectAll(config);
 
       const connectedCount = manager.getServerNames().filter((n) => manager.isConnected(n)).length;
-      console.log(`${bold("spike shell")} — ${connectedCount} server(s) connected. Type ${cyan("help")} for commands.\n`);
+      console.log(
+        `${bold("spike shell")} — ${connectedCount} server(s) connected. Type ${cyan("help")} for commands.\n`,
+      );
 
       const aliases = await loadAliases();
       const toolNames = new Set(manager.getAllTools().map((t) => t.namespacedName));

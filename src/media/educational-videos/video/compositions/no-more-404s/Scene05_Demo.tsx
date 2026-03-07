@@ -7,7 +7,12 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { COLORS, SPRING_CONFIGS, TYPOGRAPHY, VERITASIUM_COLORS } from "../../../core-logic/constants";
+import {
+  COLORS,
+  SPRING_CONFIGS,
+  TYPOGRAPHY,
+  VERITASIUM_COLORS,
+} from "../../../core-logic/constants";
 import { typewriter } from "../../lib/animations";
 import { FourOhFourSkull } from "../../components/animations/FourOhFourSkull";
 import { RoutePipelineDiagram } from "../../components/diagrams/RoutePipelineDiagram";

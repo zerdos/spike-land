@@ -30,9 +30,8 @@ function truncateStringParams(
   const result: Record<string, string | number | boolean> = {};
   for (const [key, value] of Object.entries(params)) {
     const truncatedKey = key.slice(0, 40);
-    result[truncatedKey] = typeof value === "string"
-      ? value.slice(0, MAX_STRING_PARAM_LENGTH)
-      : value;
+    result[truncatedKey] =
+      typeof value === "string" ? value.slice(0, MAX_STRING_PARAM_LENGTH) : value;
   }
   return result;
 }

@@ -71,14 +71,14 @@ function Button({
       aria-busy={loading}
       {...props}
     >
-      {asChild
-        ? children
-        : (
-          <>
-            {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
-            {children}
-          </>
-        )}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
+          {children}
+        </>
+      )}
     </Comp>
   );
 }

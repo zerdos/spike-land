@@ -14,7 +14,7 @@ export function startHttpServer(server: McpServer, port: number, host: string) {
       origin: [/^http:\/\/localhost:\d+$/, "https://spike.land"],
       credentials: true,
       exposedHeaders: ["mcp-session-id"],
-    })
+    }),
   );
 
   // Parse JSON bodies for POST requests (except SSE which has its own format)

@@ -139,7 +139,7 @@ describe("chat.ts main export", () => {
       const response = await main.fetch(request, mockEnv, mockCtx);
 
       expect(response.status).toBe(200);
-      const body = await response.json() as { swVersion: string };
+      const body = (await response.json()) as { swVersion: string };
       expect(body.swVersion).toBe("test-hash-123");
     });
 
@@ -156,7 +156,7 @@ describe("chat.ts main export", () => {
       const response = await main.fetch(request, mockEnv, mockCtx);
 
       expect(response.status).toBe(200);
-      const body = await response.json() as { killSwitch: boolean; version: string };
+      const body = (await response.json()) as { killSwitch: boolean; version: string };
       expect(body.killSwitch).toBe(false);
       expect(body.version).toBe("v16");
     });
@@ -247,7 +247,9 @@ describe("chat.ts main export", () => {
 
   describe("anthropic routing", () => {
     it("routes requests with 'anthropic' in URL to handleAnthropicRequest", async () => {
-      const { handleAnthropicRequest } = await import("../../src/edge-api/backend/core-logic/anthropicHandler.js");
+      const { handleAnthropicRequest } = await import(
+        "../../src/edge-api/backend/core-logic/anthropicHandler.js"
+      );
 
       const request = new Request("https://example.com/anthropic/v1/messages");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -259,7 +261,9 @@ describe("chat.ts main export", () => {
 
   describe("openai routing", () => {
     it("routes requests with 'openai' in URL to handleGPT4Request", async () => {
-      const { handleGPT4Request } = await import("../../src/edge-api/backend/core-logic/openaiHandler.js");
+      const { handleGPT4Request } = await import(
+        "../../src/edge-api/backend/core-logic/openaiHandler.js"
+      );
 
       const request = new Request("https://example.com/openai/v1/chat");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -270,7 +274,9 @@ describe("chat.ts main export", () => {
 
   describe("replicate routing", () => {
     it("routes requests with 'replicate' in URL to handleReplicateRequest", async () => {
-      const { handleReplicateRequest } = await import("../../src/edge-api/backend/ai/replicateHandler.js");
+      const { handleReplicateRequest } = await import(
+        "../../src/edge-api/backend/ai/replicateHandler.js"
+      );
 
       const request = new Request("https://example.com/replicate/v1/predictions");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -311,7 +317,9 @@ describe("chat.ts main export", () => {
 
   describe("TURN credentials", () => {
     it("returns TURN credentials for /api/my-turn", async () => {
-      mockFetch.mockResolvedValue(new Response(JSON.stringify({ iceServers: [] }), { status: 200 }));
+      mockFetch.mockResolvedValue(
+        new Response(JSON.stringify({ iceServers: [] }), { status: 200 }),
+      );
 
       const request = new Request("https://example.com/api/my-turn");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -358,7 +366,9 @@ describe("chat.ts main export", () => {
 
   describe("fallthrough to handleMainFetch", () => {
     it("routes unknown paths to handleMainFetch", async () => {
-      const { handleMainFetch } = await import("../../src/edge-api/backend/lazy-imports/mainFetchHandler.js");
+      const { handleMainFetch } = await import(
+        "../../src/edge-api/backend/lazy-imports/mainFetchHandler.js"
+      );
 
       const request = new Request("https://example.com/unknown-path");
       const response = await main.fetch(request, mockEnv, mockCtx);
@@ -397,10 +407,16 @@ describe("chat.ts main export", () => {
       // Make serve actually call the assetFetcher (second argument)
       mockKvServer.isAsset.mockReturnValue(true);
       mockKvServer.serve.mockImplementation(
-        async (_req: Request, assetFetcher: (req: Request, wu: (p: Promise<unknown>) => void) => Promise<Response>, _waitUntil: (p: Promise<unknown>) => void) => {
+        async (
+          _req: Request,
+          assetFetcher: (req: Request, wu: (p: Promise<unknown>) => void) => Promise<Response>,
+          _waitUntil: (p: Promise<unknown>) => void,
+        ) => {
           // Call assetFetcher to cover the anonymous function body
           const r = new Request("https://example.com/test.js");
-          return assetFetcher(r, (p) => { void p; });
+          return assetFetcher(r, (p) => {
+            void p;
+          });
         },
       );
 
@@ -415,7 +431,11 @@ describe("chat.ts main export", () => {
       mockKvServer.isAsset.mockReturnValue(true);
       // Make serve call the waitUntil callback (3rd argument)
       mockKvServer.serve.mockImplementation(
-        async (_req: Request, _assetFetcher: unknown, waitUntilFn: (p: Promise<unknown>) => void) => {
+        async (
+          _req: Request,
+          _assetFetcher: unknown,
+          waitUntilFn: (p: Promise<unknown>) => void,
+        ) => {
           // Call waitUntil with a resolved promise to cover the anonymous function
           waitUntilFn(Promise.resolve());
           return new Response("asset", { status: 200 });

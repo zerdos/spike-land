@@ -64,19 +64,24 @@ blog.get("/api/blog", async (c) => {
 
   let cached: Response | null = null;
   try {
-    cached = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-      const result = await c.env.DB.prepare(
-        `SELECT slug, title, description, primer, date, author, category, tags, featured, draft, hero_image
+    cached = await withEdgeCache(
+      c.req.raw,
+      safeCtx(c),
+      async () => {
+        const result = await c.env.DB.prepare(
+          `SELECT slug, title, description, primer, date, author, category, tags, featured, draft, hero_image
          FROM blog_posts${draftFilter} ORDER BY date DESC`,
-      ).all<BlogPostRow>();
+        ).all<BlogPostRow>();
 
         if (!result.results?.length) return null;
 
-      const posts = result.results.map((row) => rowToPost(row));
-      return new Response(JSON.stringify(posts), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }, { ttl: showDrafts ? 0 : 300, swr: showDrafts ? 0 : 3600 });
+        const posts = result.results.map((row) => rowToPost(row));
+        return new Response(JSON.stringify(posts), {
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+      { ttl: showDrafts ? 0 : 300, swr: showDrafts ? 0 : 3600 },
+    );
   } catch {
     // Cache API unavailable — fall back to direct D1
     const result = await c.env.DB.prepare(
@@ -118,22 +123,27 @@ blog.get("/api/blog/:slug", async (c) => {
 
   let cached: Response | null = null;
   try {
-    cached = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-      const row = await c.env.DB.prepare(
-        `SELECT * FROM blog_posts WHERE slug = ?`,
-      ).bind(slug).first<BlogPostRow>();
+    cached = await withEdgeCache(
+      c.req.raw,
+      safeCtx(c),
+      async () => {
+        const row = await c.env.DB.prepare(`SELECT * FROM blog_posts WHERE slug = ?`)
+          .bind(slug)
+          .first<BlogPostRow>();
 
         if (!row) return null;
 
-      return new Response(JSON.stringify(rowToPost(row, true)), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }, { ttl: showDrafts ? 0 : 300, swr: showDrafts ? 0 : 3600 });
+        return new Response(JSON.stringify(rowToPost(row, true)), {
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+      { ttl: showDrafts ? 0 : 300, swr: showDrafts ? 0 : 3600 },
+    );
   } catch {
     // Cache API unavailable — fall back to direct D1
-    const row = await c.env.DB.prepare(
-      `SELECT * FROM blog_posts WHERE slug = ?`,
-    ).bind(slug).first<BlogPostRow>();
+    const row = await c.env.DB.prepare(`SELECT * FROM blog_posts WHERE slug = ?`)
+      .bind(slug)
+      .first<BlogPostRow>();
 
     if (row) {
       cached = new Response(JSON.stringify(rowToPost(row, true)), {

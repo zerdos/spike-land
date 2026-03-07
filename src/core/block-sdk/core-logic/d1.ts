@@ -114,10 +114,7 @@ function createD1KV(kvNs?: KVNamespace): KVAdapter {
 
 function createD1SQL(db: D1Database): SQLAdapter {
   return {
-    async execute<T extends Row = Row>(
-      query: string,
-      params?: unknown[],
-    ): Promise<QueryResult<T>> {
+    async execute<T extends Row = Row>(query: string, params?: unknown[]): Promise<QueryResult<T>> {
       const stmt = db.prepare(query);
       const bound = params && params.length > 0 ? stmt.bind(...params) : stmt;
 
@@ -131,9 +128,7 @@ function createD1SQL(db: D1Database): SQLAdapter {
       return { rows: [] as T[], rowsAffected: result.meta.changes };
     },
 
-    async batch(
-      queries: Array<{ query: string; params?: unknown[] }>,
-    ): Promise<QueryResult[]> {
+    async batch(queries: Array<{ query: string; params?: unknown[] }>): Promise<QueryResult[]> {
       const stmts = queries.map((q) => {
         const stmt = db.prepare(q.query);
         return q.params && q.params.length > 0 ? stmt.bind(...q.params) : stmt;
@@ -151,12 +146,12 @@ function createD1Blobs(r2?: R2Bucket): BlobAdapter | undefined {
   if (!r2) return undefined;
 
   return {
-    async put(
-      key: string,
-      data: ArrayBuffer | Uint8Array | ReadableStream,
-    ): Promise<void> {
+    async put(key: string, data: ArrayBuffer | Uint8Array | ReadableStream): Promise<void> {
       if (data instanceof Uint8Array) {
-        await r2.put(key, (data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength));
+        await r2.put(
+          key,
+          (data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength),
+        );
       } else {
         await r2.put(key, data as ArrayBuffer | ReadableStream);
       }

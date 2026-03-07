@@ -279,7 +279,8 @@ describe("Code Durable Object — additional coverage", () => {
 
     it("webSocketMessage calls wsHandler.handleMessage when initialized", async () => {
       await initCode(code);
-      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!.value as {
+      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!
+        .value as {
         handleMessage: ReturnType<typeof vi.fn>;
       };
       await code.webSocketMessage(mockWs, "hello");
@@ -288,7 +289,8 @@ describe("Code Durable Object — additional coverage", () => {
 
     it("webSocketMessage initializes session when not yet initialized", async () => {
       // Don't call initCode - Code is not initialized
-      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!.value as {
+      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!
+        .value as {
         handleMessage: ReturnType<typeof vi.fn>;
       };
 
@@ -299,7 +301,8 @@ describe("Code Durable Object — additional coverage", () => {
 
     it("webSocketClose calls wsHandler.handleClose", async () => {
       await initCode(code);
-      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!.value as {
+      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!
+        .value as {
         handleClose: ReturnType<typeof vi.fn>;
       };
       await code.webSocketClose(mockWs, 1000, "done", true);
@@ -308,7 +311,8 @@ describe("Code Durable Object — additional coverage", () => {
 
     it("webSocketError calls wsHandler.handleError", async () => {
       await initCode(code);
-      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!.value as {
+      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!
+        .value as {
         handleError: ReturnType<typeof vi.fn>;
       };
       const err = new Error("ws error");
@@ -361,7 +365,8 @@ describe("Code Durable Object — additional coverage", () => {
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       // Mock storage to return sessionCore with different codeSpace
       (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation((key: string) => {
-        if (key === "session_core") return Promise.resolve({ codeSpace: "wrong-space", messages: [] });
+        if (key === "session_core")
+          return Promise.resolve({ codeSpace: "wrong-space", messages: [] });
         return Promise.resolve(undefined);
       });
 
@@ -380,7 +385,8 @@ describe("Code Durable Object — additional coverage", () => {
 
     it("handles R2 html/css get throwing", async () => {
       (mockState.storage.get as ReturnType<typeof vi.fn>).mockImplementation((key: string) => {
-        if (key === "session_core") return Promise.resolve({ codeSpace: "r2-error-room", messages: [] });
+        if (key === "session_core")
+          return Promise.resolve({ codeSpace: "r2-error-room", messages: [] });
         if (key === "session_code") return Promise.resolve("some code");
         if (key === "session_transpiled") return Promise.resolve("transpiled");
         return Promise.resolve(undefined);
@@ -388,7 +394,10 @@ describe("Code Durable Object — additional coverage", () => {
       (mockEnv.R2.get as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("R2 error"));
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       await code.fetch(new Request("https://example.com/?room=r2-error-room"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Failed to load"), expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Failed to load"),
+        expect.any(Error),
+      );
       consoleSpy.mockRestore();
     });
 
@@ -420,7 +429,8 @@ describe("Code Durable Object — additional coverage", () => {
     it("skips broadcast when hash is unchanged", async () => {
       await initCode(code);
       const session = code.getSession();
-      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!.value as {
+      const wsHandlerInstance = (WebSocketHandler as ReturnType<typeof vi.fn>).mock.results[0]!
+        .value as {
         broadcast: ReturnType<typeof vi.fn>;
       };
       const broadcastBefore = wsHandlerInstance.broadcast.mock.calls.length;
@@ -492,7 +502,9 @@ describe("Code Durable Object — additional coverage", () => {
         codeSpace: "",
         messages: [],
       });
-      await expect((code as unknown as { _saveSession(): Promise<void> })["_saveSession"]()).rejects.toThrow("Cannot save session: codeSpace is missing.");
+      await expect(
+        (code as unknown as { _saveSession(): Promise<void> })["_saveSession"](),
+      ).rejects.toThrow("Cannot save session: codeSpace is missing.");
       consoleSpy.mockRestore();
     });
   });

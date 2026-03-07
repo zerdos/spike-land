@@ -111,16 +111,76 @@ export function registerTtsTools(
       .meta({ category: "tts", tier: "free" })
       .handler(async () => {
         const voices = [
-          { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel", accent: "American", gender: "Female", style: "Calm, narration" },
-          { id: "29vD33N1CtxCmqQRPOHJ", name: "Drew", accent: "American", gender: "Male", style: "Well-rounded" },
-          { id: "2EiwWnXFnvU5JabPnv8n", name: "Clyde", accent: "American", gender: "Male", style: "War veteran, deep" },
-          { id: "AZnzlk1XvdvUeBnXmlld", name: "Domi", accent: "American", gender: "Female", style: "Strong, authoritative" },
-          { id: "EXAVITQu4vr4xnSDxMaL", name: "Bella", accent: "American", gender: "Female", style: "Soft, warm" },
-          { id: "ErXwobaYiN019PkySvjV", name: "Antoni", accent: "American", gender: "Male", style: "Well-rounded" },
-          { id: "MF3mGyEYCl7XYWbV9V6O", name: "Elli", accent: "American", gender: "Female", style: "Emotional, expressive" },
-          { id: "TxGEqnHWrfWFTfGW9XjX", name: "Josh", accent: "American", gender: "Male", style: "Deep, narrative" },
-          { id: "VR6AewLTigWG4xSOukaG", name: "Arnold", accent: "American", gender: "Male", style: "Crisp, authoritative" },
-          { id: "yoZ06aMxZJJ28mfd3POQ", name: "Sam", accent: "American", gender: "Male", style: "Raspy, dynamic" },
+          {
+            id: "21m00Tcm4TlvDq8ikWAM",
+            name: "Rachel",
+            accent: "American",
+            gender: "Female",
+            style: "Calm, narration",
+          },
+          {
+            id: "29vD33N1CtxCmqQRPOHJ",
+            name: "Drew",
+            accent: "American",
+            gender: "Male",
+            style: "Well-rounded",
+          },
+          {
+            id: "2EiwWnXFnvU5JabPnv8n",
+            name: "Clyde",
+            accent: "American",
+            gender: "Male",
+            style: "War veteran, deep",
+          },
+          {
+            id: "AZnzlk1XvdvUeBnXmlld",
+            name: "Domi",
+            accent: "American",
+            gender: "Female",
+            style: "Strong, authoritative",
+          },
+          {
+            id: "EXAVITQu4vr4xnSDxMaL",
+            name: "Bella",
+            accent: "American",
+            gender: "Female",
+            style: "Soft, warm",
+          },
+          {
+            id: "ErXwobaYiN019PkySvjV",
+            name: "Antoni",
+            accent: "American",
+            gender: "Male",
+            style: "Well-rounded",
+          },
+          {
+            id: "MF3mGyEYCl7XYWbV9V6O",
+            name: "Elli",
+            accent: "American",
+            gender: "Female",
+            style: "Emotional, expressive",
+          },
+          {
+            id: "TxGEqnHWrfWFTfGW9XjX",
+            name: "Josh",
+            accent: "American",
+            gender: "Male",
+            style: "Deep, narrative",
+          },
+          {
+            id: "VR6AewLTigWG4xSOukaG",
+            name: "Arnold",
+            accent: "American",
+            gender: "Male",
+            style: "Crisp, authoritative",
+          },
+          {
+            id: "yoZ06aMxZJJ28mfd3POQ",
+            name: "Sam",
+            accent: "American",
+            gender: "Male",
+            style: "Raspy, dynamic",
+          },
         ];
 
         let text = `**Available TTS Voices (${voices.length})**\n\n`;

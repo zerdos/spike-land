@@ -58,9 +58,7 @@ describe("QuizProgress", () => {
   });
 
   it("uses custom masteryThreshold in progress display", () => {
-    const progress = [
-      { concept: "Arrays", mastered: false, correctCount: 1, attempts: 1 },
-    ];
+    const progress = [{ concept: "Arrays", mastered: false, correctCount: 1, attempts: 1 }];
     render(<QuizProgress progress={progress} masteryThreshold={3} />);
     // Shows correctCount/masteryThreshold
     expect(screen.getByText("1/3")).toBeInTheDocument();

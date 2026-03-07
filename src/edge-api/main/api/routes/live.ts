@@ -8,28 +8,37 @@ const live = new Hono<{ Bindings: Env }>();
 live.get("/live/:appId", async (c) => {
   const appId = c.req.param("appId");
 
-  const cached = await withEdgeCache(c.req.raw, safeCtx(c), async () => {
-    const key = `apps/${appId}/bundle.js`;
-    const object = await c.env.R2.get(key);
-    if (!object) return null;
+  const cached = await withEdgeCache(
+    c.req.raw,
+    safeCtx(c),
+    async () => {
+      const key = `apps/${appId}/bundle.js`;
+      const object = await c.env.R2.get(key);
+      if (!object) return null;
 
-    return new Response(object.body, {
-      headers: { "content-type": "application/javascript; charset=utf-8" },
-    });
-  }, { ttl: 60 });
+      return new Response(object.body, {
+        headers: { "content-type": "application/javascript; charset=utf-8" },
+      });
+    },
+    { ttl: 60 },
+  );
 
   if (!cached) return c.json({ error: "App not found" }, 404);
 
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "live_app_view",
-          params: { app_id: appId },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "live_app_view",
+            params: { app_id: appId },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in test environment */ }
+  } catch {
+    /* no ExecutionContext in test environment */
+  }
 
   return cached;
 });

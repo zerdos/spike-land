@@ -42,7 +42,7 @@ export class GoogleAdsAuthClient {
   async authHeaders(): Promise<Record<string, string>> {
     const token = await this.getAccessToken();
     const headers: Record<string, string> = {
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       "developer-token": this.developerToken,
       "Content-Type": "application/json",
     };

@@ -12,7 +12,10 @@ import {
 } from "../../../../src/cli/spike-cli/core-logic/chat/slash-commands.js";
 import { SessionState } from "../../../../src/cli/spike-cli/core-logic/chat/session-state.js";
 import type { SlashCommandContext } from "../../../../src/cli/spike-cli/core-logic/chat/slash-commands.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import type {
+  NamespacedTool,
+  ServerManager,
+} from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 import type { ChatClient, Message } from "../../../../src/cli/spike-cli/core-logic/chat/client.js";
 import { AppRegistryImpl } from "../../../../src/cli/spike-cli/core-logic/chat/app-registry.js";
 import type { AppInfo } from "../../../../src/cli/spike-cli/core-logic/chat/app-registry.js";
@@ -1235,12 +1238,10 @@ describe("handleSlashCommand with readline interface", () => {
     };
     // promptForParam will call rl.question — make it return a value for each param
     let callCount = 0;
-    mockRl.question.mockImplementation(
-      (_prompt: string, callback: (answer: string) => void) => {
-        callCount++;
-        callback(callCount === 1 ? "game_abc" : "e2");
-      },
-    );
+    mockRl.question.mockImplementation((_prompt: string, callback: (answer: string) => void) => {
+      callCount++;
+      callback(callCount === 1 ? "game_abc" : "e2");
+    });
 
     const result = await handleSlashCommand("/chess_make_move", {
       manager,
@@ -1271,11 +1272,9 @@ describe("handleSlashCommand with readline interface", () => {
     const client = createMockClient();
     const mockRl = { question: vi.fn() };
     // promptForParam returns empty string → cancelled
-    mockRl.question.mockImplementation(
-      (_prompt: string, callback: (answer: string) => void) => {
-        callback(""); // empty → cancels
-      },
-    );
+    mockRl.question.mockImplementation((_prompt: string, callback: (answer: string) => void) => {
+      callback(""); // empty → cancels
+    });
 
     const result = await handleSlashCommand("/chess_make_move", {
       manager,

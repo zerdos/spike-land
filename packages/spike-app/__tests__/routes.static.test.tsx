@@ -7,8 +7,18 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     Navigate: ({ to }: { to: string }) => <div data-testid="navigate" data-to={to} />,
-    Link: ({ to, children, className }: { to: string; children: React.ReactNode; className?: string }) => (
-      <a href={to} className={className}>{children}</a>
+    Link: ({
+      to,
+      children,
+      className,
+    }: {
+      to: string;
+      children: React.ReactNode;
+      className?: string;
+    }) => (
+      <a href={to} className={className}>
+        {children}
+      </a>
     ),
   };
 });

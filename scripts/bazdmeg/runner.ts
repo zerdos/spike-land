@@ -32,13 +32,13 @@ function runCheck(name: string, command: string): CheckResult {
     // Vitest may exit non-zero despite all tests passing (e.g. deprecation warnings).
     // Detect this: output contains "X passed" with no "failed" count.
     const allTestsPassed =
-      name === "test" &&
-      /\d+ passed/.test(output) &&
-      !/\d+ failed/.test(output);
+      name === "test" && /\d+ passed/.test(output) && !/\d+ failed/.test(output);
 
     if (allTestsPassed) {
       if (verbose) {
-        console.log(`    [verbose] ${name} PASS (${(duration / 1000).toFixed(1)}s) (exit code ${e.status ?? "?"}, but all tests passed)`);
+        console.log(
+          `    [verbose] ${name} PASS (${(duration / 1000).toFixed(1)}s) (exit code ${e.status ?? "?"}, but all tests passed)`,
+        );
       }
       return {
         name,
@@ -50,7 +50,9 @@ function runCheck(name: string, command: string): CheckResult {
 
     if (verbose) {
       console.log(`    [verbose] ${name} FAIL (${(duration / 1000).toFixed(1)}s)`);
-      console.log(`    [verbose] ${name} output:\n${output.trim().slice(0, 2000)}${output.length > 2000 ? "\n    ... (truncated)" : ""}`);
+      console.log(
+        `    [verbose] ${name} output:\n${output.trim().slice(0, 2000)}${output.length > 2000 ? "\n    ... (truncated)" : ""}`,
+      );
     }
     return {
       name,
@@ -63,12 +65,7 @@ function runCheck(name: string, command: string): CheckResult {
 
 function countErrors(output: string): number {
   // Count lines that look like errors (file:line:col patterns, "error TS", eslint errors)
-  const errorPatterns = [
-    /error TS\d+/g,
-    /\d+ error/g,
-    /✖ \d+ problem/g,
-    /FAIL /g,
-  ];
+  const errorPatterns = [/error TS\d+/g, /\d+ error/g, /✖ \d+ problem/g, /FAIL /g];
   let count = 0;
   for (const pattern of errorPatterns) {
     const matches = output.match(pattern);

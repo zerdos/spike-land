@@ -1,6 +1,11 @@
 import { type FC } from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { COLORS, SPRING_CONFIGS, TYPOGRAPHY, VERITASIUM_COLORS } from "../../../core-logic/constants";
+import {
+  COLORS,
+  SPRING_CONFIGS,
+  TYPOGRAPHY,
+  VERITASIUM_COLORS,
+} from "../../../core-logic/constants";
 import { stagger } from "../../lib/animations";
 
 type NoteEntry = {

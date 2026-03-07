@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { narrate, narrateSection, findElementByRef } from "../../src/core/browser-automation/core-logic/narrate.js";
+import {
+  narrate,
+  narrateSection,
+  findElementByRef,
+} from "../../src/core/browser-automation/core-logic/narrate.js";
 import type { AccessibilityNode } from "../../src/core/browser-automation/core-logic/types.js";
 
 function makeTree(children: AccessibilityNode[]): AccessibilityNode {
@@ -79,17 +83,13 @@ describe("narrate", () => {
   });
 
   it("shows input values", () => {
-    const tree = makeTree([
-      { role: "textbox", name: "Username", value: "john" },
-    ]);
+    const tree = makeTree([{ role: "textbox", name: "Username", value: "john" }]);
     const result = narrate(tree, "Test", "https://test.com");
     expect(result.text).toContain('value: "john"');
   });
 
   it("does not show empty values", () => {
-    const tree = makeTree([
-      { role: "textbox", name: "Username", value: "" },
-    ]);
+    const tree = makeTree([{ role: "textbox", name: "Username", value: "" }]);
     const result = narrate(tree, "Test", "https://test.com");
     expect(result.text).not.toContain("value:");
   });
@@ -98,15 +98,11 @@ describe("narrate", () => {
     const tree = makeTree([
       {
         role: "generic",
-        children: [
-          { role: "button", name: "Click me" },
-        ],
+        children: [{ role: "button", name: "Click me" }],
       },
       {
         role: "presentation",
-        children: [
-          { role: "link", name: "Link inside" },
-        ],
+        children: [{ role: "link", name: "Link inside" }],
       },
     ]);
     const result = narrate(tree, "Test", "https://test.com");
@@ -117,9 +113,7 @@ describe("narrate", () => {
   });
 
   it("narrates static text", () => {
-    const tree = makeTree([
-      { role: "text", name: "Hello world" },
-    ]);
+    const tree = makeTree([{ role: "text", name: "Hello world" }]);
     const result = narrate(tree, "Test", "https://test.com");
     expect(result.text).toContain('[text] "Hello world"');
   });
@@ -128,9 +122,7 @@ describe("narrate", () => {
     const tree = makeTree([
       {
         role: "main",
-        children: [
-          { role: "button", name: "OK" },
-        ],
+        children: [{ role: "button", name: "OK" }],
       },
     ]);
     const result = narrate(tree, "Test", "https://test.com");
@@ -144,9 +136,7 @@ describe("narrate", () => {
   });
 
   it("handles named landmarks", () => {
-    const tree = makeTree([
-      { role: "navigation", name: "Primary", children: [] },
-    ]);
+    const tree = makeTree([{ role: "navigation", name: "Primary", children: [] }]);
     const result = narrate(tree, "Test", "https://test.com");
     expect(result.text).toContain('[navigation landmark "Primary"]');
   });
@@ -156,9 +146,7 @@ describe("narrate", () => {
       {
         role: "list",
         name: "Navigation",
-        children: [
-          { role: "listitem", name: "Item 1" },
-        ],
+        children: [{ role: "listitem", name: "Item 1" }],
       },
     ]);
     const result = narrate(tree, "Test", "https://test.com");
@@ -170,9 +158,7 @@ describe("narrate", () => {
     const tree = makeTree([
       {
         role: "group",
-        children: [
-          { role: "button", name: "Go" },
-        ],
+        children: [{ role: "button", name: "Go" }],
       },
     ]);
     const result = narrate(tree, "Test", "https://test.com");
@@ -206,9 +192,7 @@ describe("narrateSection", () => {
     const tree = makeTree([
       {
         role: "banner",
-        children: [
-          { role: "link", name: "Logo" },
-        ],
+        children: [{ role: "link", name: "Logo" }],
       },
       {
         role: "main",
@@ -227,9 +211,7 @@ describe("narrateSection", () => {
   });
 
   it("returns message when landmark not found", () => {
-    const tree = makeTree([
-      { role: "main", children: [] },
-    ]);
+    const tree = makeTree([{ role: "main", children: [] }]);
     const result = narrateSection(tree, "banner", "Test", "https://test.com");
     expect(result.text).toContain('No "banner" landmark found');
     expect(result.refCount).toBe(0);
@@ -250,9 +232,7 @@ describe("findElementByRef", () => {
   });
 
   it("returns null for non-existent ref", () => {
-    const tree = makeTree([
-      { role: "button", name: "OK" },
-    ]);
+    const tree = makeTree([{ role: "button", name: "OK" }]);
     const node = findElementByRef(tree, 99);
     expect(node).toBeNull();
   });

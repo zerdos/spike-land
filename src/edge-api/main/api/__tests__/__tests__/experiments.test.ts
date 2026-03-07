@@ -107,7 +107,9 @@ describe("POST /api/experiments/assign", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as { assignments: Record<string, { variantId: string; config: Record<string, unknown> }> };
+    const data = (await res.json()) as {
+      assignments: Record<string, { variantId: string; config: Record<string, unknown> }>;
+    };
     expect(data.assignments).toBeDefined();
     const expAssign = data.assignments["exp-test"];
     expect(expAssign).toBeDefined();
@@ -126,12 +128,10 @@ describe("POST /api/experiments/assign", () => {
     const res1 = await app1.request("/api/experiments/assign", opts);
     const res2 = await app2.request("/api/experiments/assign", opts);
 
-    const data1 = await res1.json() as { assignments: Record<string, { variantId: string }> };
-    const data2 = await res2.json() as { assignments: Record<string, { variantId: string }> };
+    const data1 = (await res1.json()) as { assignments: Record<string, { variantId: string }> };
+    const data2 = (await res2.json()) as { assignments: Record<string, { variantId: string }> };
 
-    expect(data1.assignments["exp-test"]!.variantId).toBe(
-      data2.assignments["exp-test"]!.variantId,
-    );
+    expect(data1.assignments["exp-test"]!.variantId).toBe(data2.assignments["exp-test"]!.variantId);
   });
 });
 
@@ -152,7 +152,7 @@ describe("FNV-1a distribution", () => {
         body: JSON.stringify({ clientId: `random-client-${i}-${Math.random()}` }),
       });
 
-      const data = await res.json() as { assignments: Record<string, { variantId: string }> };
+      const data = (await res.json()) as { assignments: Record<string, { variantId: string }> };
       const vid = data.assignments["exp-test"]?.variantId;
       if (vid && counts[vid] !== undefined) counts[vid]++;
     }
@@ -190,7 +190,7 @@ describe("POST /api/experiments/track", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as { accepted: number };
+    const data = (await res.json()) as { accepted: number };
     expect(data.accepted).toBeGreaterThan(0);
   });
 
@@ -223,7 +223,7 @@ describe("POST /api/experiments/track", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as { accepted: number };
+    const data = (await res.json()) as { accepted: number };
     // Only valid event + possible metrics upserts
     expect(data.accepted).toBeGreaterThanOrEqual(1);
   });
@@ -239,7 +239,7 @@ describe("GET /api/experiments/active", () => {
     const res = await app.request("/api/experiments/active");
     expect(res.status).toBe(200);
 
-    const data = await res.json() as { experiments: Array<{ id: string; variants: unknown[] }> };
+    const data = (await res.json()) as { experiments: Array<{ id: string; variants: unknown[] }> };
     expect(data.experiments).toHaveLength(1);
     expect(data.experiments[0]!.id).toBe("exp-test");
     expect(Array.isArray(data.experiments[0]!.variants)).toBe(true);
@@ -288,7 +288,7 @@ describe("GET /api/experiments/dashboard", () => {
       const stmt = {
         bind: vi.fn((..._args: unknown[]) => stmt),
         all: vi.fn(async () => ({ results: callCount === 1 ? [MOCK_EXPERIMENT] : [] })),
-        first: vi.fn(async () => callCount === 2 ? { total: 5000 } : null),
+        first: vi.fn(async () => (callCount === 2 ? { total: 5000 } : null)),
         run: vi.fn(async () => ({ success: true })),
       };
       return stmt;
@@ -298,7 +298,7 @@ describe("GET /api/experiments/dashboard", () => {
     const res = await app.request("/api/experiments/dashboard");
     expect(res.status).toBe(200);
 
-    const data = await res.json() as { experiments: unknown[]; revenue24h: number };
+    const data = (await res.json()) as { experiments: unknown[]; revenue24h: number };
     expect(data.experiments).toBeDefined();
     expect(typeof data.revenue24h).toBe("number");
   });

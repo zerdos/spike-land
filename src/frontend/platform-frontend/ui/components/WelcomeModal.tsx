@@ -1,6 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { Zap, X, ChevronLeft, ChevronRight, Check, Sparkles, Rocket, Code, Image as ImageIcon, BarChart3, Workflow, Boxes, Globe, ShieldCheck } from "lucide-react";
+import {
+  Zap,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Sparkles,
+  Rocket,
+  Code,
+  Image as ImageIcon,
+  BarChart3,
+  Workflow,
+  Boxes,
+  Globe,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "../shared/ui/button";
 import { cn } from "../../styling/cn";
 
@@ -107,13 +122,19 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
         {/* Header */}
         <div className="border-b border-border/50 px-6 py-5 bg-muted/30">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={3}>
+            <div
+              className="flex gap-2"
+              role="progressbar"
+              aria-valuenow={step + 1}
+              aria-valuemin={1}
+              aria-valuemax={3}
+            >
               {([0, 1, 2] as Step[]).map((s) => (
                 <div
                   key={s}
                   className={cn(
                     "h-1.5 w-12 rounded-full transition-all duration-500",
-                    s <= step ? "bg-primary shadow-[0_0_8px_var(--primary-glow)]" : "bg-muted"
+                    s <= step ? "bg-primary shadow-[0_0_8px_var(--primary-glow)]" : "bg-muted",
                   )}
                   aria-current={s === step ? "step" : undefined}
                 />
@@ -143,7 +164,8 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
                   Welcome{userName ? `, ${userName}` : ""}!
                 </h2>
                 <p className="mt-2 text-muted-foreground leading-relaxed">
-                  spike.land is your ultimate AI development playground. Build, test, and deploy with 80+ specialized tools.
+                  spike.land is your ultimate AI development playground. Build, test, and deploy
+                  with 80+ specialized tools.
                 </p>
               </div>
               <ul className="space-y-3 text-sm font-medium text-muted-foreground/80">
@@ -167,7 +189,9 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
             <div className="space-y-5 animate-in slide-in-from-right-4 fade-in duration-300">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">What's your focus?</h2>
-                <p className="text-sm text-muted-foreground mt-1">Select your interests for personalized tool recommendations.</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Select your interests for personalized tool recommendations.
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {INTERESTS.map(({ id, icon: Icon }) => (
@@ -178,10 +202,15 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
                       "flex flex-col items-start gap-2 rounded-2xl border p-4 text-sm font-semibold transition-all duration-200 group",
                       selected.has(id)
                         ? "border-primary bg-primary/5 text-primary shadow-sm"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:bg-muted/50 hover:text-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:bg-muted/50 hover:text-foreground",
                     )}
                   >
-                    <Icon className={cn("size-5 transition-transform group-hover:scale-110", selected.has(id) ? "text-primary" : "text-muted-foreground/50")} />
+                    <Icon
+                      className={cn(
+                        "size-5 transition-transform group-hover:scale-110",
+                        selected.has(id) ? "text-primary" : "text-muted-foreground/50",
+                      )}
+                    />
                     {id}
                   </button>
                 ))}
@@ -193,15 +222,23 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
             <div className="space-y-5 animate-in slide-in-from-right-4 fade-in duration-300">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Top tools for you</h2>
-                <p className="text-sm text-muted-foreground mt-1">Based on your interests, we recommend starting here:</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Based on your interests, we recommend starting here:
+                </p>
               </div>
               <div className="grid gap-3">
-                {(suggestedTools.length > 0 ? suggestedTools : [
-                  { name: "spike-land-mcp", description: "80+ tools in one MCP registry" },
-                  { name: "spike-code", description: "Monaco editor with live preview" },
-                  { name: "claude-chat", description: "Conversational AI powered by Claude" },
-                ]).map((tool) => (
-                  <div key={tool.name} className="flex items-center gap-4 rounded-2xl border border-border bg-background p-4 shadow-sm hover:border-primary/30 transition-colors">
+                {(suggestedTools.length > 0
+                  ? suggestedTools
+                  : [
+                      { name: "spike-land-mcp", description: "80+ tools in one MCP registry" },
+                      { name: "spike-code", description: "Monaco editor with live preview" },
+                      { name: "claude-chat", description: "Conversational AI powered by Claude" },
+                    ]
+                ).map((tool) => (
+                  <div
+                    key={tool.name}
+                    className="flex items-center gap-4 rounded-2xl border border-border bg-background p-4 shadow-sm hover:border-primary/30 transition-colors"
+                  >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted">
                       <Zap className="size-5 text-primary" />
                     </div>
@@ -209,7 +246,11 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
                       <p className="text-sm font-bold text-foreground truncate">{tool.name}</p>
                       <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="ml-auto rounded-full size-8 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-auto rounded-full size-8 shrink-0"
+                    >
                       <ChevronRight className="size-4" />
                     </Button>
                   </div>
@@ -238,7 +279,7 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
               Skip intro
             </button>
           )}
-          
+
           <Button
             onClick={step < 2 ? () => setStep((s) => (s + 1) as Step) : dismiss}
             className="rounded-xl px-8 shadow-lg shadow-primary/20"

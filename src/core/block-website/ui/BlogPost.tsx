@@ -7,7 +7,7 @@ import { apiUrl } from "../core-logic/api";
 import { BlogListView } from "./BlogList";
 import { ExperimentProvider, useExperiment } from "./useExperiment";
 import { useWidgetTracking } from "./useWidgetTracking";
-import { 
+import {
   ChevronLeft,
   Share2,
   Twitter,
@@ -23,9 +23,9 @@ import {
   Info,
   CheckCircle2,
   AlertTriangle,
-  Tag
+  Tag,
 } from "lucide-react";
-import { Button } from "../lazy-imports/button";
+import { Button, buttonVariants } from "../lazy-imports/button";
 import { cn } from "@spike-land-ai/shared";
 
 /**
@@ -33,23 +33,24 @@ import { cn } from "@spike-land-ai/shared";
  * open/close pairs.
  */
 function fixSelfClosingTags(markdown: string): string {
-  return markdown.replace(/<([A-Z][a-zA-Z]*)((?:\s+[a-zA-Z-]+=(?:"[^"]*"|'[^']*'|{[^}]*}))*)\s*\/>/g,
-    (_, tag, attrs) => `<${tag}${attrs}></${tag}>`);
+  return markdown.replace(
+    /<([A-Z][a-zA-Z]*)((?:\s+[a-zA-Z-]+=(?:"[^"]*"|'[^']*'|{[^}]*}))*)\s*\/>/g,
+    (_, tag, attrs) => `<${tag}${attrs}></${tag}>`,
+  );
 }
 
 const DemoFallback = () => (
   <div className="flex flex-col items-center justify-center py-12 bg-muted/30 rounded-3xl border border-border/50">
     <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
-    <p className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">Initializing Demo...</p>
+    <p className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
+      Initializing Demo...
+    </p>
   </div>
 );
 
-function lazyDemo(
-  load: () => Promise<Record<string, unknown>>,
-  name: string
-) {
+function lazyDemo(load: () => Promise<Record<string, unknown>>, name: string) {
   const LazyComp = lazy(() =>
-    load().then((mod) => ({ default: mod[name] as React.ComponentType<Record<string, unknown>> }))
+    load().then((mod) => ({ default: mod[name] as React.ComponentType<Record<string, unknown>> })),
   );
   return function LazyDemoWrapper(props: Record<string, unknown>) {
     return (
@@ -62,7 +63,8 @@ function lazyDemo(
   };
 }
 
-const interactiveImport = () => import("../core-logic/interactive-index.ts") as Promise<Record<string, unknown>>;
+const interactiveImport = () =>
+  import("../core-logic/interactive-index.ts") as Promise<Record<string, unknown>>;
 
 const COMPONENT_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   convergencedemo: lazyDemo(interactiveImport, "ConvergenceDemo"),
@@ -106,23 +108,26 @@ const COMPONENT_MAP: Record<string, React.ComponentType<Record<string, unknown>>
         <Zap className="size-4" />
         {title ?? "The Quick Version"}
       </h3>
-      <div className="text-foreground/80 font-medium space-y-3 leading-relaxed">
-        {children}
-      </div>
+      <div className="text-foreground/80 font-medium space-y-3 leading-relaxed">{children}</div>
     </div>
   ),
   callout: ({ children, type }: { children?: React.ReactNode; type?: string }) => {
-    const isInfo = type === 'info' || !type;
-    const isSuccess = type === 'success';
-    const isWarning = type === 'warning';
-    
+    const isInfo = type === "info" || !type;
+    const isSuccess = type === "success";
+    const isWarning = type === "warning";
+
     return (
-      <div className={cn(
-        "p-6 my-10 rounded-2xl border-l-4 shadow-sm",
-        isInfo && "bg-blue-500/[0.03] border-l-blue-500 border-y border-r border-blue-500/10 text-blue-900 dark:text-blue-100",
-        isSuccess && "bg-emerald-500/[0.03] border-l-emerald-500 border-y border-r border-emerald-500/10 text-emerald-900 dark:text-emerald-100",
-        isWarning && "bg-amber-500/[0.03] border-l-amber-500 border-y border-r border-amber-500/10 text-amber-900 dark:text-amber-100",
-      )}>
+      <div
+        className={cn(
+          "p-6 my-10 rounded-2xl border-l-4 shadow-sm",
+          isInfo &&
+          "bg-blue-500/[0.03] border-l-blue-500 border-y border-r border-blue-500/10 text-blue-900 dark:text-blue-100",
+          isSuccess &&
+          "bg-emerald-500/[0.03] border-l-emerald-500 border-y border-r border-emerald-500/10 text-emerald-900 dark:text-emerald-100",
+          isWarning &&
+          "bg-amber-500/[0.03] border-l-amber-500 border-y border-r border-amber-500/10 text-amber-900 dark:text-amber-100",
+        )}
+      >
         <div className="flex gap-4">
           <div className="shrink-0 mt-1">
             {isInfo && <Info size={20} className="text-blue-500" />}
@@ -144,12 +149,25 @@ const COMPONENT_MAP: Record<string, React.ComponentType<Record<string, unknown>>
         className="rounded-3xl shadow-2xl border border-border/50 mx-auto transition-transform hover:scale-[1.01] duration-500"
         {...rest}
       />
-      {alt && <p className="mt-4 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground/40">{alt}</p>}
+      {alt && (
+        <p className="mt-4 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground/40">
+          {alt}
+        </p>
+      )}
     </div>
   ),
 };
 
-export function BlogPostView({ slug, linkComponent }: { slug: string; linkComponent?: React.ComponentType<{ to: string; className?: string; children: React.ReactNode }> | "a" | undefined }) {
+export function BlogPostView({
+  slug,
+  linkComponent,
+}: {
+  slug: string;
+  linkComponent?:
+  | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+  | "a"
+  | undefined;
+}) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -189,7 +207,9 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
         </div>
         <div className="aspect-[21/9] bg-muted rounded-[3rem]" />
         <div className="space-y-4 pt-12">
-          {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-4 bg-muted rounded w-full" />)}
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-4 bg-muted rounded w-full" />
+          ))}
         </div>
       </div>
     );
@@ -201,40 +221,59 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
         <div className="inline-flex size-20 items-center justify-center rounded-3xl bg-destructive/5 text-destructive mb-8">
           <FileWarning size={40} />
         </div>
-        <h1 className="text-4xl font-black text-foreground tracking-tighter mb-4 leading-none">Story missing in action</h1>
-        <p className="text-muted-foreground mb-10 text-lg">We couldn't find the blog post you're looking for. It might have been archived or moved.</p>
-        <Button variant="default" className="rounded-2xl px-8 font-bold" asChild>
-          <a href="/blog">
-            <ArrowLeft className="mr-2 size-4" />
-            Back to All Stories
-          </a>
-        </Button>
+        <h1 className="text-4xl font-black text-foreground tracking-tighter mb-4 leading-none">
+          Story missing in action
+        </h1>
+        <p className="text-muted-foreground mb-10 text-lg">
+          We couldn't find the blog post you're looking for. It might have been archived or moved.
+        </p>
+        <a
+          href="/blog"
+          className={cn(
+            buttonVariants({ variant: "default" }),
+            "rounded-2xl px-8 font-bold"
+          )}
+        >
+          <ArrowLeft className="mr-2 size-4" />
+          Back to All Stories
+        </a>
       </div>
     );
   }
 
-  const cleanContent = post.content.replace(/!\[[^\]]*\]\(https:\/\/placehold\.co\/[^)]+\)\n?/g, "");
+  const cleanContent = post.content.replace(
+    /!\[[^\]]*\]\(https:\/\/placehold\.co\/[^)]+\)\n?/g,
+    "",
+  );
 
   return (
     <ExperimentProvider>
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-transparent">
-        <div 
-          className="h-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)] transition-all duration-100" 
-          style={{ width: `${scrollProgress}%` }} 
+        <div
+          className="h-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)] transition-all duration-100"
+          style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
       <article className="max-w-4xl mx-auto py-12 px-6 font-sans">
         <div className="mb-12 flex items-center justify-between">
-          <Button variant="ghost" className="rounded-xl text-muted-foreground font-bold hover:text-primary group" asChild>
+          <Button
+            variant="ghost"
+            className="rounded-xl text-muted-foreground font-bold hover:text-primary group"
+            asChild
+          >
             <a href="/blog">
               <ChevronLeft className="mr-1 size-4 transition-transform group-hover:-translate-x-1" />
               Stories
             </a>
           </Button>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-xl text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-xl text-muted-foreground hover:text-foreground"
+            >
               <Share2 size={18} />
             </Button>
           </div>
@@ -262,32 +301,43 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
             </div>
             <div className="flex items-center gap-1.5">
               <Clock size={12} />
-              <time dateTime={post.date}>{new Date(post.date).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+              <time dateTime={post.date}>
+                {new Date(post.date).toLocaleDateString([], {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </time>
             </div>
           </div>
-          
+
           <h1 className="text-5xl sm:text-7xl font-black text-foreground tracking-tighter leading-[0.85] text-balance">
             {post.title}
           </h1>
-          
+
           {post.primer && (
             <p className="text-xl sm:text-2xl text-muted-foreground/80 font-medium leading-relaxed italic border-l-4 border-primary/20 pl-6">
               "{post.primer}"
             </p>
           )}
-          
+
           <div className="flex items-center gap-3 pt-4 border-t border-border/50">
             <div className="size-10 rounded-2xl bg-primary flex items-center justify-center text-xs font-black text-primary-foreground shadow-lg shadow-primary/20">
               {post.author?.[0] || "S"}
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-foreground">{post.author || "Spike land Team"}</p>
-              <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter">Independent Developer & Researcher</p>
+              <p className="text-xs font-black uppercase tracking-widest text-foreground">
+                {post.author || "Spike land Team"}
+              </p>
+              <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                Independent Developer & Researcher
+              </p>
             </div>
           </div>
         </header>
 
-        <div className="prose dark:prose-invert max-w-3xl mx-auto
+        <div
+          className="prose dark:prose-invert max-w-3xl mx-auto
           prose-headings:font-black prose-headings:text-foreground prose-headings:tracking-tighter
           prose-h1:text-4xl prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8
           prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-6
@@ -300,8 +350,15 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
           prose-li:text-muted-foreground prose-li:font-medium
           prose-ul:list-disc prose-ol:list-decimal
           prose-img:rounded-[2.5rem] prose-img:shadow-2xl prose-img:border prose-img:border-border/50
-          selection:bg-primary selection:text-primary-foreground">
-          <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={COMPONENT_MAP as Record<string, React.ComponentType<Record<string, unknown>>>}>
+          selection:bg-primary selection:text-primary-foreground"
+        >
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            components={
+              COMPONENT_MAP as Record<string, React.ComponentType<Record<string, unknown>>>
+            }
+          >
             {fixSelfClosingTags(cleanContent)}
           </Markdown>
         </div>
@@ -311,9 +368,7 @@ export function BlogPostView({ slug, linkComponent }: { slug: string; linkCompon
         </div>
 
         <div className="mt-32 pt-16 border-t border-border/50">
-          <h2 className="text-3xl font-black tracking-tight text-center mb-16">
-            Continue Reading
-          </h2>
+          <h2 className="text-3xl font-black tracking-tight text-center mb-16">Continue Reading</h2>
           <BlogListView linkComponent={linkComponent} limit={3} showHeader={false} />
         </div>
       </article>
@@ -363,7 +418,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
   const [supporters, setSupporters] = useState(0);
   const [bumpAnimating, setBumpAnimating] = useState(false);
   const [donating, setDonating] = useState(false);
-  
+
   const currentStop = SLIDER_STOPS[sliderIdx] || SLIDER_STOPS[0];
   const Icon = currentStop.icon;
 
@@ -374,14 +429,14 @@ function SupportWidget({ post }: { post: BlogPost }) {
 
   useEffect(() => {
     fetch(apiUrl(`/support/engagement/${encodeURIComponent(slug)}`))
-      .then((r) => r.ok ? r.json() as Promise<{ fistBumps: number; supporters: number }> : null)
+      .then((r) => (r.ok ? (r.json() as Promise<{ fistBumps: number; supporters: number }>) : null))
       .then((data) => {
         if (data) {
           setBumpCount(data.fistBumps);
           setSupporters(data.supporters);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [slug]);
 
   const handleBump = useCallback(async () => {
@@ -395,11 +450,13 @@ function SupportWidget({ post }: { post: BlogPost }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, clientId: getClientId() }),
       });
-      const data = await res.json() as { count: number };
+      const data = (await res.json()) as { count: number };
       setBumpCount(data.count);
       setBumped(true);
       localStorage.setItem(`spike_bumped_${slug}`, "1");
-    } catch { /* best-effort — fistbump is non-critical */ }
+    } catch {
+      /* best-effort — fistbump is non-critical */
+    }
   }, [bumped, slug, track]);
 
   const handleDonate = useCallback(async () => {
@@ -413,7 +470,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, amount, clientId: getClientId() }),
       });
-      const data = await res.json() as { url?: string };
+      const data = (await res.json()) as { url?: string };
       if (data.url) {
         track("checkout_started", { amount });
         window.location.href = data.url;
@@ -424,7 +481,10 @@ function SupportWidget({ post }: { post: BlogPost }) {
   }, [currentStop.amount, showCustom, customAmount, slug, track]);
 
   return (
-    <div ref={widgetRef} className="mt-20 p-8 sm:p-12 rounded-[3rem] bg-card border border-border/50 shadow-2xl relative overflow-hidden">
+    <div
+      ref={widgetRef}
+      className="mt-20 p-8 sm:p-12 rounded-[3rem] bg-card border border-border/50 shadow-2xl relative overflow-hidden"
+    >
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
         <Heart size={200} fill="currentColor" />
       </div>
@@ -436,21 +496,28 @@ function SupportWidget({ post }: { post: BlogPost }) {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 mb-12">
-          <Button 
+          <Button
             variant={bumped ? "outline" : "default"}
             className={cn(
               "rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-xs transition-all duration-500",
-              !bumped && "shadow-xl shadow-primary/20 hover:scale-105 active:scale-95"
+              !bumped && "shadow-xl shadow-primary/20 hover:scale-105 active:scale-95",
             )}
             onClick={handleBump}
             disabled={bumped}
           >
-            <Heart className={cn("mr-2 size-4", bumpAnimating && "animate-ping")} fill={bumped ? "currentColor" : "none"} />
+            <Heart
+              className={cn("mr-2 size-4", bumpAnimating && "animate-ping")}
+              fill={bumped ? "currentColor" : "none"}
+            />
             {bumped ? "Sent Love" : "Fist Bump"}
           </Button>
           <div className="flex flex-col justify-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Engagement</p>
-            <p className="text-sm font-bold text-foreground">{bumpCount} fist bumps &middot; {supporters} supporters</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+              Engagement
+            </p>
+            <p className="text-sm font-bold text-foreground">
+              {bumpCount} fist bumps &middot; {supporters} supporters
+            </p>
           </div>
         </div>
 
@@ -461,8 +528,12 @@ function SupportWidget({ post }: { post: BlogPost }) {
                 <Icon className="size-6" />
               </div>
               <div>
-                <p className="text-2xl font-black leading-none">${showCustom ? customAmount || '0' : currentStop.amount}</p>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{currentStop.label}</p>
+                <p className="text-2xl font-black leading-none">
+                  ${showCustom ? customAmount || "0" : currentStop.amount}
+                </p>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                  {currentStop.label}
+                </p>
               </div>
             </div>
             <button
@@ -490,16 +561,20 @@ function SupportWidget({ post }: { post: BlogPost }) {
                 setSliderIdx(idx);
                 track("slider_change", { idx });
               }}
-              onPointerUp={() => track("slider_final", { idx: sliderIdx, amount: SLIDER_STOPS[sliderIdx]?.amount })}
+              onPointerUp={() =>
+                track("slider_final", { idx: sliderIdx, amount: SLIDER_STOPS[sliderIdx]?.amount })
+              }
               className="w-full h-2 bg-border rounded-full appearance-none cursor-pointer accent-primary"
             />
           )}
 
           {showCustom && (
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 font-black">$</span>
-              <input 
-                type="number" 
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 font-black">
+                $
+              </span>
+              <input
+                type="number"
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="0.00"
@@ -512,7 +587,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
             "{currentStop.sub}"
           </p>
 
-          <Button 
+          <Button
             className="w-full rounded-2xl h-14 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20"
             onClick={handleDonate}
             loading={donating}
@@ -523,11 +598,25 @@ function SupportWidget({ post }: { post: BlogPost }) {
         </div>
 
         <div className="mt-12 flex flex-wrap items-center gap-6">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Spread the Word</p>
-          <a href={xIntent} target="_blank" rel="noopener noreferrer" onClick={() => track("share_click", { platform: "x" })} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+            Spread the Word
+          </p>
+          <a
+            href={xIntent}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("share_click", { platform: "x" })}
+            className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+          >
             <Twitter size={14} /> X / Twitter
           </a>
-          <a href={linkedInIntent} target="_blank" rel="noopener noreferrer" onClick={() => track("share_click", { platform: "linkedin" })} className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+          <a
+            href={linkedInIntent}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("share_click", { platform: "linkedin" })}
+            className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+          >
             <Linkedin size={14} /> LinkedIn
           </a>
         </div>

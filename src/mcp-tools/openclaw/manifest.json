@@ -1,10 +1,7 @@
 {
   "name": "openclaw",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base",
-    "node:child_process"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base", "node:child_process"],
   "files": [
     "core-logic/bridge.ts",
     "core-logic/index.ts",

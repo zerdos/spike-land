@@ -41,10 +41,16 @@ function createMockEnv(overrides: Partial<Env> = {}): Env {
       }),
     } as unknown as DurableObjectNamespace,
     AUTH_MCP: {
-      fetch: vi.fn().mockResolvedValue(new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "user-123" } }), { status: 200 })),
+      fetch: vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ session: { id: "s1" }, user: { id: "user-123" } }), {
+          status: 200,
+        }),
+      ),
     } as unknown as Fetcher,
     MCP_SERVICE: {
-      fetch: vi.fn().mockResolvedValue(new Response(JSON.stringify({ tools: [] }), { status: 200 })),
+      fetch: vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ tools: [] }), { status: 200 })),
     } as unknown as Fetcher,
     STRIPE_SECRET_KEY: "sk_test_xxx",
     STRIPE_WEBHOOK_SECRET: "whsec_test",
@@ -109,9 +115,13 @@ describe("CORS middleware via full app", () => {
     app.get("/test", (c) => c.json({ ok: true }));
 
     const env = createMockEnv({ ALLOWED_ORIGINS: "" });
-    const res = await app.request("/test", {
-      headers: { origin: "https://spike.land" },
-    }, env);
+    const res = await app.request(
+      "/test",
+      {
+        headers: { origin: "https://spike.land" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
   });
 
@@ -128,9 +138,13 @@ describe("CORS middleware via full app", () => {
     app.get("/test", (c) => c.json({ ok: true }));
 
     const env = createMockEnv({ ALLOWED_ORIGINS: "https://spike.land,https://dev.spike.land" });
-    const res = await app.request("/test", {
-      headers: { origin: "https://dev.spike.land" },
-    }, env);
+    const res = await app.request(
+      "/test",
+      {
+        headers: { origin: "https://dev.spike.land" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
   });
 });
@@ -201,7 +215,9 @@ describe("Error handler in full app", () => {
     app.onError((err, c) => {
       try {
         c.executionCtx.waitUntil(Promise.resolve());
-      } catch { /* no ctx in tests */ }
+      } catch {
+        /* no ctx in tests */
+      }
       return c.json({ error: "Internal Server Error" }, 500);
     });
     app.get("/boom", () => {
@@ -282,9 +298,11 @@ describe("MCP proxy routes", () => {
     app.get("/mcp/tools", async (c) => {
       const url = new URL("https://mcp.spike.land/tools");
       const requestId = c.get("requestId" as never) as string;
-      const response = await c.env.MCP_SERVICE.fetch(new Request(url.toString(), {
-        headers: { "X-Request-Id": requestId ?? "test-id" },
-      }));
+      const response = await c.env.MCP_SERVICE.fetch(
+        new Request(url.toString(), {
+          headers: { "X-Request-Id": requestId ?? "test-id" },
+        }),
+      );
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
@@ -318,7 +336,15 @@ describe("MCP proxy routes", () => {
       if (!response.ok) {
         return c.json({ error: "Failed to fetch tools" }, 502);
       }
-      const data = await response.json<{ tools: Array<{ name: string; description: string; category?: string; version?: string; stability?: string }> }>();
+      const data = await response.json<{
+        tools: Array<{
+          name: string;
+          description: string;
+          category?: string;
+          version?: string;
+          stability?: string;
+        }>;
+      }>();
       const tools = data.tools ?? [];
 
       // Group by category
@@ -366,9 +392,7 @@ describe("MCP proxy routes", () => {
   it("returns 502 when MCP service is unavailable for store tools", async () => {
     const app = new Hono<{ Bindings: Env }>();
     app.get("/api/store/tools", async (c) => {
-      const response = await c.env.MCP_SERVICE.fetch(
-        new Request("https://mcp.spike.land/tools"),
-      );
+      const response = await c.env.MCP_SERVICE.fetch(new Request("https://mcp.spike.land/tools"));
       if (!response.ok) {
         return c.json({ error: "Failed to fetch tools" }, 502);
       }

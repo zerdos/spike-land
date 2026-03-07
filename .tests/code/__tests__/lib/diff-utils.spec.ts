@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isDiffContent,
-  extractDiffContent,
-  replacePreservingWhitespace,
-} from "@/lib/diff-utils";
+import { isDiffContent, extractDiffContent, replacePreservingWhitespace } from "@/lib/diff-utils";
 
 describe("isDiffContent", () => {
   it("returns true when content contains SEARCH marker", () => {
@@ -128,7 +124,8 @@ describe("replacePreservingWhitespace", () => {
   });
 
   it("handles line-by-line matching for multiline search", () => {
-    const text = "function hello() {\n  return 'hello';\n}\n\nfunction world() {\n  return 'world';\n}";
+    const text =
+      "function hello() {\n  return 'hello';\n}\n\nfunction world() {\n  return 'world';\n}";
     const search = "function hello() {\n  return 'hello';\n}";
     const result = replacePreservingWhitespace(text, search, "function hello() { return 'hi'; }");
     expect(result).toContain("hi");

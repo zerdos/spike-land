@@ -83,10 +83,13 @@ export default {
 
     // Root redirect
     if (url.pathname === "/") {
-      return withCors(new Response(null, {
-        status: 302,
-        headers: { Location: "https://spike.land" },
-      }), request);
+      return withCors(
+        new Response(null, {
+          status: 302,
+          headers: { Location: "https://spike.land" },
+        }),
+        request,
+      );
     }
 
     // Suppress favicon noise

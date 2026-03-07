@@ -123,13 +123,13 @@ describe("stripe-webhook experiment tracking", () => {
     const res = await postWebhook(app, event, { DB: db });
     expect(res.status).toBe(200);
 
-    const json = await res.json() as { received: boolean };
+    const json = (await res.json()) as { received: boolean };
     expect(json.received).toBe(true);
 
     // Verify experiment_assignments was queried
     const prepareCalls = (db.prepare as ReturnType<typeof vi.fn>).mock.calls;
-    const assignmentQuery = prepareCalls.find(
-      (call: string[]) => call[0].includes("experiment_assignments"),
+    const assignmentQuery = prepareCalls.find((call: string[]) =>
+      call[0].includes("experiment_assignments"),
     );
     expect(assignmentQuery).toBeDefined();
 
@@ -241,7 +241,7 @@ describe("stripe-webhook experiment tracking", () => {
     const res = await postWebhook(app, event, { DB: db });
     expect(res.status).toBe(200);
 
-    const json = await res.json() as { received: boolean };
+    const json = (await res.json()) as { received: boolean };
     expect(json.received).toBe(true);
   });
 });

@@ -48,8 +48,12 @@ export function registerShipTools(server: McpServer): void {
     description:
       "Auto-ship: lint → typecheck → test → quality gates → commit → push. Fail-fast on first failure.",
     schema: AutoShipSchema.shape,
-    handler: async ({ commitMessage, packageName: explicitPkg, push = true, dryRun = false }: z.infer<typeof AutoShipSchema>) => {
-
+    handler: async ({
+      commitMessage,
+      packageName: explicitPkg,
+      push = true,
+      dryRun = false,
+    }: z.infer<typeof AutoShipSchema>) => {
       const workspace = getWorkspace();
       const pkgName = explicitPkg ?? workspace?.packageName;
 

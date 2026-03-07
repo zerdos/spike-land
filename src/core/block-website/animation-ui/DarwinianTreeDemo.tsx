@@ -670,11 +670,15 @@ export function DarwinianTreeDemo() {
           <div className="flex gap-4 flex-wrap mt-2">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
-              <span className="text-[11px] font-mono text-muted-foreground">High fitness survives</span>
+              <span className="text-[11px] font-mono text-muted-foreground">
+                High fitness survives
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-              <span className="text-[11px] font-mono text-muted-foreground">Low fitness pruned</span>
+              <span className="text-[11px] font-mono text-muted-foreground">
+                Low fitness pruned
+              </span>
             </div>
           </div>
         </div>

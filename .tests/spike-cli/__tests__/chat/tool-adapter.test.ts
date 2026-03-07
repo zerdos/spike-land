@@ -5,7 +5,10 @@ import {
   getRequiredParams,
   mcpToolsToClaude,
 } from "../../../../src/cli/spike-cli/core-logic/chat/tool-adapter.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import type {
+  NamespacedTool,
+  ServerManager,
+} from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 describe("mcpToolsToClaude", () => {
   it("converts MCP tools to Claude format", () => {

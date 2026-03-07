@@ -7,16 +7,21 @@ import type { Charge, Invoice, Subscription } from "../core-logic/types.js";
 export function registerCustomerTools(server: McpServer, client: StripeClient): void {
   createZodTool(server, {
     name: "stripe_customer_ltv",
-    description: "Calculate customer lifetime value. Provide customer_id for a single customer, or omit for top customers by spend.",
+    description:
+      "Calculate customer lifetime value. Provide customer_id for a single customer, or omit for top customers by spend.",
     schema: {
       customer_id: z.string().optional().describe("Specific customer ID (optional)"),
-      limit: z.number().int().min(1).max(100).default(20).describe("Number of top customers to return"),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .default(20)
+        .describe("Number of top customers to return"),
     },
     async handler({ customer_id, limit = 20 }) {
       if (customer_id) {
-        const result = await tryCatch(
-          client.getAll<Charge>("charges", { customer: customer_id }),
-        );
+        const result = await tryCatch(client.getAll<Charge>("charges", { customer: customer_id }));
 
         if (!result.ok) {
           return errorResult("STRIPE_API_ERROR", result.error.message, true);
@@ -36,16 +41,12 @@ export function registerCustomerTools(server: McpServer, client: StripeClient): 
           first_charge: earliestCharge
             ? new Date(earliestCharge.created * 1000).toISOString()
             : null,
-          last_charge: latestCharge
-            ? new Date(latestCharge.created * 1000).toISOString()
-            : null,
+          last_charge: latestCharge ? new Date(latestCharge.created * 1000).toISOString() : null,
         });
       }
 
       // Top customers by spend
-      const result = await tryCatch(
-        client.getAll<Charge>("charges", {}),
-      );
+      const result = await tryCatch(client.getAll<Charge>("charges", {}));
 
       if (!result.ok) {
         return errorResult("STRIPE_API_ERROR", result.error.message, true);
@@ -63,9 +64,7 @@ export function registerCustomerTools(server: McpServer, client: StripeClient): 
         }
       }
 
-      const sorted = [...customerSpend.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, limit);
+      const sorted = [...customerSpend.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit);
 
       const totalLtv = sorted.reduce((sum, [, spend]) => sum + spend, 0);
 
@@ -109,7 +108,10 @@ export function registerCustomerTools(server: McpServer, client: StripeClient): 
           });
         } else {
           // Some customers may not have upcoming invoices (Stripe returns 404)
-          if (!result.error.message.includes("404") && !result.error.message.includes("invoice_upcoming_none")) {
+          if (
+            !result.error.message.includes("404") &&
+            !result.error.message.includes("invoice_upcoming_none")
+          ) {
             errors.push(`${customerId}: ${result.error.message}`);
           }
         }

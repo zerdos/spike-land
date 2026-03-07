@@ -14,7 +14,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import type { ZodRawShapeCompat, ShapeOutput } from "@modelcontextprotocol/sdk/server/zod-compat.js";
+import type {
+  ZodRawShapeCompat,
+  ShapeOutput,
+} from "@modelcontextprotocol/sdk/server/zod-compat.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -239,9 +242,7 @@ export function wrapServerWithLogging(
   // function itself and detecting the handler (last argument that's a function).
   server.tool = ((...args: unknown[]) => {
     // Find the handler — it's always the last function argument
-    const handlerIdx = args.findIndex(
-      (a, i) => typeof a === "function" && i === args.length - 1,
-    );
+    const handlerIdx = args.findIndex((a, i) => typeof a === "function" && i === args.length - 1);
 
     if (handlerIdx === -1) {
       // No handler found — pass through unchanged
@@ -561,4 +562,3 @@ export function isErrorResult(result: CallToolResult): boolean {
 // ─── Feedback & Error Shipper ────────────────────────────────────────────────
 export * from "./feedback.js";
 export * from "./error-shipper.js";
-

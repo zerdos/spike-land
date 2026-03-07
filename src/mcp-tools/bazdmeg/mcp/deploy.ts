@@ -160,7 +160,6 @@ export function registerDeployTools(server: McpServer): void {
       "Build + generate wrangler.toml + wrangler deploy. Full deploy pipeline for workers.",
     schema: DeployWorkerSchema.shape,
     handler: async ({ packageName, env, dryRun = true }: z.infer<typeof DeployWorkerSchema>) => {
-
       const repoRoot = process.cwd();
       const pkg = await getManifestPackage(packageName, repoRoot);
 

@@ -38,12 +38,20 @@ function doFetch(): Promise<void> {
   fetchPromise = fetch(apiUrl("/pricing"))
     .then(async (res) => {
       if (!res.ok) return;
-      const data = await res.json() as {
+      const data = (await res.json()) as {
         currency: string;
         billedInUsd: boolean;
         pro: { monthlyFormatted: string; annualFormatted: string; annualTotalFormatted: string };
-        business: { monthlyFormatted: string; annualFormatted: string; annualTotalFormatted: string };
-        credits: { starter: { formatted: string }; popular: { formatted: string }; power: { formatted: string } };
+        business: {
+          monthlyFormatted: string;
+          annualFormatted: string;
+          annualTotalFormatted: string;
+        };
+        credits: {
+          starter: { formatted: string };
+          popular: { formatted: string };
+          power: { formatted: string };
+        };
       };
       cachedPricing = {
         currency: data.currency,

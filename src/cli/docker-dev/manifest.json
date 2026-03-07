@@ -1,14 +1,7 @@
 {
   "name": "docker-dev",
   "category": "cli",
-  "dependencies": [
-    "child_process",
-    "chokidar",
-    "commander",
-    "fs",
-    "os",
-    "path"
-  ],
+  "dependencies": ["child_process", "chokidar", "commander", "fs", "os", "path"],
   "files": [
     "core-logic/api.ts",
     "core-logic/cli.ts",

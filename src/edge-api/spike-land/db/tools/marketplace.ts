@@ -47,8 +47,8 @@ export function registerMarketplaceTools(
         {
           name: "search_for_weather_tool",
           input: { query: "weather forecast" },
-          description: "Search the marketplace for weather tools"
-        }
+          description: "Search the marketplace for weather tools",
+        },
       ])
       .handler(async ({ input, ctx }) => {
         const { query, limit } = input;
@@ -83,10 +83,7 @@ export function registerMarketplaceTools(
         let text = `**Marketplace Results (${tools.length} tool(s) matching "${query}"):**\n\n`;
         for (const tool of tools) {
           const author = tool.authorName ?? "Unknown";
-          const price =
-            tool.priceCents > 0
-              ? `$${(tool.priceCents / 100).toFixed(2)}`
-              : "Free";
+          const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
           text += `- **${tool.name}** — ${price}\n`;
           text += `  ${tool.description}\n`;
           text += `  Author: ${author} | Installs: ${tool.installCount} | ID: ${tool.id}\n\n`;
@@ -281,10 +278,7 @@ export function registerMarketplaceTools(
           })
           .from(toolPurchases)
           .where(
-            and(
-              eq(toolPurchases.sellerUserId, ctx.userId),
-              eq(toolPurchases.status, "completed"),
-            ),
+            and(eq(toolPurchases.sellerUserId, ctx.userId), eq(toolPurchases.status, "completed")),
           )
           .groupBy(toolPurchases.toolId);
 
@@ -315,10 +309,7 @@ export function registerMarketplaceTools(
 
         for (const tool of tools) {
           const earnings = earningsMap.get(tool.id);
-          const price =
-            tool.priceCents > 0
-              ? `$${(tool.priceCents / 100).toFixed(2)}`
-              : "Free";
+          const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
           const earned = earnings
             ? `$${(earnings.totalEarnings / 100).toFixed(2)} (${earnings.purchaseCount} sale(s))`
             : "$0.00";
@@ -377,10 +368,7 @@ export function registerMarketplaceTools(
           })
           .where(eq(registeredTools.id, tool_id));
 
-        const priceDisplay =
-          price_cents === 0
-            ? "Free"
-            : `$${(price_cents / 100).toFixed(2)}`;
+        const priceDisplay = price_cents === 0 ? "Free" : `$${(price_cents / 100).toFixed(2)}`;
 
         return textResult(
           `**Price Updated!**\n\n` +

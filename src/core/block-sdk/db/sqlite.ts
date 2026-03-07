@@ -57,15 +57,10 @@ function createSqliteKV(db: InstanceType<typeof Database>): KVAdapter {
 
 function createSqliteSQL(db: InstanceType<typeof Database>): SQLAdapter {
   return {
-    async execute<T extends Row = Row>(
-      query: string,
-      params?: unknown[],
-    ): Promise<QueryResult<T>> {
+    async execute<T extends Row = Row>(query: string, params?: unknown[]): Promise<QueryResult<T>> {
       const trimmed = query.trim().toUpperCase();
       const isSelect =
-        trimmed.startsWith("SELECT") ||
-        trimmed.startsWith("WITH") ||
-        trimmed.startsWith("PRAGMA");
+        trimmed.startsWith("SELECT") || trimmed.startsWith("WITH") || trimmed.startsWith("PRAGMA");
 
       if (isSelect) {
         const rows = db.prepare(query).all(...(params || [])) as T[];
@@ -76,9 +71,7 @@ function createSqliteSQL(db: InstanceType<typeof Database>): SQLAdapter {
       return { rows: [] as T[], rowsAffected: result.changes };
     },
 
-    async batch(
-      queries: Array<{ query: string; params?: unknown[] }>,
-    ): Promise<QueryResult[]> {
+    async batch(queries: Array<{ query: string; params?: unknown[] }>): Promise<QueryResult[]> {
       const results: QueryResult[] = [];
       const txn = db.transaction(() => {
         for (const q of queries) {
@@ -104,15 +97,10 @@ function createSqliteSQL(db: InstanceType<typeof Database>): SQLAdapter {
 }
 
 function createSqliteBlobs(db: InstanceType<typeof Database>): BlobAdapter {
-  db.exec(
-    "CREATE TABLE IF NOT EXISTS __blobs__ (key TEXT PRIMARY KEY, data BLOB NOT NULL)",
-  );
+  db.exec("CREATE TABLE IF NOT EXISTS __blobs__ (key TEXT PRIMARY KEY, data BLOB NOT NULL)");
 
   return {
-    async put(
-      key: string,
-      data: ArrayBuffer | Uint8Array | ReadableStream,
-    ): Promise<void> {
+    async put(key: string, data: ArrayBuffer | Uint8Array | ReadableStream): Promise<void> {
       let buffer: Buffer;
       if (data instanceof ArrayBuffer) {
         buffer = Buffer.from(data);
@@ -136,10 +124,7 @@ function createSqliteBlobs(db: InstanceType<typeof Database>): BlobAdapter {
           offset += chunk.byteLength;
         }
       }
-      db.prepare("INSERT OR REPLACE INTO __blobs__ (key, data) VALUES (?, ?)").run(
-        key,
-        buffer,
-      );
+      db.prepare("INSERT OR REPLACE INTO __blobs__ (key, data) VALUES (?, ?)").run(key, buffer);
     },
     async get(key: string): Promise<ArrayBuffer | null> {
       const row = db.prepare("SELECT data FROM __blobs__ WHERE key = ?").get(key) as

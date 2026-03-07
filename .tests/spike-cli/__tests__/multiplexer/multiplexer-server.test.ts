@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MultiplexerServer } from "../../../../src/cli/spike-cli/core-logic/multiplexer/multiplexer-server.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import type {
+  NamespacedTool,
+  ServerManager,
+} from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 // Mock the MCP SDK Server and transport using class syntax
 const mockConnect = vi.hoisted(() => vi.fn());
@@ -160,7 +163,7 @@ describe("MultiplexerServer", () => {
     new MultiplexerServer(mockManager);
 
     const listToolsHandler = mockSetRequestHandler.mock.calls[0][1] as () => Promise<unknown>;
-    const result = await listToolsHandler() as { tools: Array<{ description: string }> };
+    const result = (await listToolsHandler()) as { tools: Array<{ description: string }> };
 
     expect(result.tools[0].description).toBe("[vitest] ");
   });

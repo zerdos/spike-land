@@ -11,7 +11,8 @@ interface AnthropicTool {
 export const BROWSER_TOOLS: AnthropicTool[] = [
   {
     name: "browser_navigate",
-    description: "Navigate the browser to a URL or spike.land app section. Use internal paths (e.g. /tools) for spike.land pages.",
+    description:
+      "Navigate the browser to a URL or spike.land app section. Use internal paths (e.g. /tools) for spike.land pages.",
     input_schema: {
       type: "object",
       properties: {
@@ -45,7 +46,8 @@ export const BROWSER_TOOLS: AnthropicTool[] = [
   },
   {
     name: "browser_screenshot",
-    description: "Take a screenshot of the current browser viewport. Returns a description of what is visible.",
+    description:
+      "Take a screenshot of the current browser viewport. Returns a description of what is visible.",
     input_schema: {
       type: "object",
       properties: {},
@@ -53,11 +55,15 @@ export const BROWSER_TOOLS: AnthropicTool[] = [
   },
   {
     name: "browser_read_text",
-    description: "Read text content from an element in the browser. Defaults to reading the full page body.",
+    description:
+      "Read text content from an element in the browser. Defaults to reading the full page body.",
     input_schema: {
       type: "object",
       properties: {
-        selector: { type: "string", description: "CSS selector of the element to read (defaults to body)" },
+        selector: {
+          type: "string",
+          description: "CSS selector of the element to read (defaults to body)",
+        },
       },
     },
   },
@@ -89,7 +95,10 @@ export const BROWSER_TOOLS: AnthropicTool[] = [
     input_schema: {
       type: "object",
       properties: {
-        selector: { type: "string", description: "CSS selector to match elements (defaults to all interactive elements)" },
+        selector: {
+          type: "string",
+          description: "CSS selector to match elements (defaults to all interactive elements)",
+        },
       },
     },
   },

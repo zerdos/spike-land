@@ -51,7 +51,10 @@ export function LoginPage() {
         </div>
 
         {error && (
-          <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <div
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
             {error.message}
           </div>
         )}
@@ -88,10 +91,15 @@ export function LoginPage() {
         </div>
 
         <div className="text-center">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground hover:underline">
+          <Link
+            to="/"
+            className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+          >
             Continue as guest
           </Link>
-          <p className="mt-1 text-xs text-muted-foreground">Browse 80+ tools, read docs, and view pricing without signing in</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Browse 80+ tools, read docs, and view pricing without signing in
+          </p>
         </div>
       </div>
     </div>

@@ -132,7 +132,9 @@ describe("SSE server — MCP protocol via /messages", () => {
     await closeServer();
   });
 
-  async function openSseAndGetSessionId(baseUrl: string): Promise<{ sessionId: string; req: http.ClientRequest }> {
+  async function openSseAndGetSessionId(
+    baseUrl: string,
+  ): Promise<{ sessionId: string; req: http.ClientRequest }> {
     return new Promise((resolve, reject) => {
       const req = http.get(`${baseUrl}/sse`, (res) => {
         let buffer = "";
@@ -184,7 +186,11 @@ describe("SSE server — MCP protocol via /messages", () => {
         jsonrpc: "2.0",
         method: "initialize",
         id: 1,
-        params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } },
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "test", version: "1" },
+        },
       }),
     });
 
@@ -218,7 +224,11 @@ describe("SSE server — MCP protocol via /messages", () => {
         jsonrpc: "2.0",
         method: "initialize",
         id: 1,
-        params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } },
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "test", version: "1" },
+        },
       }),
     });
 
@@ -257,7 +267,11 @@ describe("SSE server — MCP protocol via /messages", () => {
         jsonrpc: "2.0",
         method: "initialize",
         id: 1,
-        params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } },
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "test", version: "1" },
+        },
       }),
     });
 
@@ -315,7 +329,11 @@ describe("SSE server — MCP protocol via /messages", () => {
         jsonrpc: "2.0",
         method: "initialize",
         id: 1,
-        params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } },
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "test", version: "1" },
+        },
       }),
     });
 

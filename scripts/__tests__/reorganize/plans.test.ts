@@ -17,7 +17,7 @@ describe("computeMovePlans", () => {
       packageName: "pkg1",
       externalDeps: new Set(["vitest"]),
       relativeImports: new Set(),
-    }
+    },
   ];
 
   const mockCategories = new Map([["pkg1", "frontend"]]);
@@ -43,7 +43,7 @@ describe("computeMovePlans", () => {
     }));
 
     const plans = computeMovePlans(manyNodes, mockCategories, 20);
-    
+
     // Should have sub-split by original subdir (sub0 or sub1)
     expect(plans[0].targetDir).toContain("sub0");
     expect(plans[1].targetDir).toContain("sub1");
@@ -64,16 +64,19 @@ describe("computeMovePlans", () => {
         packageName: "pkg2",
         externalDeps: new Set(),
         relativeImports: new Set(),
-      }
+      },
     ];
-    const categories = new Map([["pkg1", "core"], ["pkg2", "core"]]);
-    
+    const categories = new Map([
+      ["pkg1", "core"],
+      ["pkg2", "core"],
+    ]);
+
     const plans = computeMovePlans(dupNodes, categories);
-    
-    // Since they are in core/pkg1/core-logic and core/pkg2/core-logic, 
+
+    // Since they are in core/pkg1/core-logic and core/pkg2/core-logic,
     // they don't actually collide in the targetDir.
     // Let's force a collision by making them same appName and depGroup.
-    
+
     const sameBucketNodes: FileNode[] = [
       {
         absPath: "/src/pkg1/utils.ts",
@@ -88,9 +91,9 @@ describe("computeMovePlans", () => {
         packageName: "pkg1",
         externalDeps: new Set(),
         relativeImports: new Set(),
-      }
+      },
     ];
-    
+
     const plans2 = computeMovePlans(sameBucketNodes, mockCategories);
     expect(plans2[0].targetFileName).toBe("utils.ts");
     expect(plans2[1].targetFileName).toBe("utils-pkg1.ts");

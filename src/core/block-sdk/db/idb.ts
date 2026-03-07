@@ -123,10 +123,7 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
     });
   }
 
-  async function getStore(
-    table: string,
-    mode: IDBTransactionMode,
-  ): Promise<IDBObjectStore> {
+  async function getStore(table: string, mode: IDBTransactionMode): Promise<IDBObjectStore> {
     const db = await dbPromise;
     return db.transaction(table, mode).objectStore(table);
   }
@@ -160,9 +157,7 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
           // Infer schema from first row
           const cols = Object.keys(rows[0]!);
           const colDefs = cols.map((c) => `"${c}" TEXT`).join(", ");
-          sqliteDb!.run(
-            `CREATE TABLE IF NOT EXISTS "${storeName}" (${colDefs})`,
-          );
+          sqliteDb!.run(`CREATE TABLE IF NOT EXISTS "${storeName}" (${colDefs})`);
 
           // Insert all rows
           const placeholders = cols.map(() => "?").join(", ");
@@ -182,7 +177,9 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
   }
 
   /** Determine the operation type from a SQL statement */
-  function getOperation(sql: string): "create" | "insert" | "select" | "update" | "delete" | "other" {
+  function getOperation(
+    sql: string,
+  ): "create" | "insert" | "select" | "update" | "delete" | "other" {
     const trimmed = sql.trim().toUpperCase();
     if (trimmed.startsWith("CREATE")) return "create";
     if (trimmed.startsWith("INSERT")) return "insert";
@@ -233,7 +230,12 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
     }
   }
 
-  async function syncUpdateToIDB(table: string, db: Database, sql: string, params: unknown[]): Promise<void> {
+  async function syncUpdateToIDB(
+    table: string,
+    db: Database,
+    sql: string,
+    params: unknown[],
+  ): Promise<void> {
     // Re-read updated rows from SQLite and sync to IDB
     // Extract WHERE clause to find which rows were updated
     const whereMatch = sql.match(/WHERE\s+(.+)$/i);
@@ -333,17 +335,17 @@ function createIDBBlobs(dbPromise: Promise<IDBDatabase>): BlobAdapter {
   }
 
   return {
-    async put(
-      key: string,
-      data: ArrayBuffer | Uint8Array | ReadableStream,
-    ): Promise<void> {
+    async put(key: string, data: ArrayBuffer | Uint8Array | ReadableStream): Promise<void> {
       const db = await dbPromise;
       const store = db.transaction("__blobs__", "readwrite").objectStore("__blobs__");
       let buffer: ArrayBuffer;
       if (data instanceof ArrayBuffer) {
         buffer = data;
       } else if (data instanceof Uint8Array) {
-        buffer = (data.buffer as ArrayBuffer).slice(data.byteOffset, data.byteOffset + data.byteLength);
+        buffer = (data.buffer as ArrayBuffer).slice(
+          data.byteOffset,
+          data.byteOffset + data.byteLength,
+        );
       } else {
         const reader = (data as ReadableStream).getReader();
         const chunks: Uint8Array[] = [];

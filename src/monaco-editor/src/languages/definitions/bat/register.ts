@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'bat',
-	extensions: ['.bat', '.cmd'],
-	aliases: ['Batch', 'bat'],
-	loader: () => import('./bat')
+  id: "bat",
+  extensions: [".bat", ".cmd"],
+  aliases: ["Batch", "bat"],
+  loader: () => import("./bat"),
 });

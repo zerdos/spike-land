@@ -30,7 +30,7 @@ const MessageItem = memo(function MessageItem({ msg }: { msg: Message }) {
     <div
       className={cn(
         "group flex w-full flex-col gap-2 mb-4",
-        msg.role === "user" ? "items-end" : "items-start"
+        msg.role === "user" ? "items-end" : "items-start",
       )}
     >
       <div className="flex items-center gap-2 px-1">
@@ -45,11 +45,11 @@ const MessageItem = memo(function MessageItem({ msg }: { msg: Message }) {
           "relative max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm transition-all",
           msg.role === "user"
             ? "bg-primary text-primary-foreground rounded-tr-none"
-            : "bg-card border border-border text-foreground rounded-tl-none hover:border-primary/30"
+            : "bg-card border border-border text-foreground rounded-tl-none hover:border-primary/30",
         )}
       >
         <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-        
+
         {msg.role === "assistant" && (
           <button
             onClick={handleCopy}
@@ -64,10 +64,10 @@ const MessageItem = memo(function MessageItem({ msg }: { msg: Message }) {
           <p
             className={cn(
               "mt-2 text-[10px] font-medium",
-              msg.role === "user" ? "text-primary-foreground/60" : "text-muted-foreground/60"
+              msg.role === "user" ? "text-primary-foreground/60" : "text-muted-foreground/60",
             )}
           >
-            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         )}
       </div>
@@ -141,12 +141,14 @@ export function ChatThread({ messages, onSendMessage, isLoading }: ChatThreadPro
           <div className="flex items-start gap-3 mb-4">
             <div className="flex items-center gap-2 rounded-2xl bg-card border border-border px-4 py-3 shadow-sm">
               <Loader2 className="size-4 animate-spin text-primary" />
-              <span className="text-xs font-medium text-muted-foreground animate-pulse">Assistant is thinking...</span>
+              <span className="text-xs font-medium text-muted-foreground animate-pulse">
+                Assistant is thinking...
+              </span>
             </div>
           </div>
         )}
       </div>
-      
+
       <div className="border-t border-border bg-card p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
         <div className="mx-auto max-w-4xl relative flex items-end gap-2">
           <textarea

@@ -19,7 +19,6 @@ export function registerBuildTools(server: McpServer): void {
       "Run esbuild bundling for a package. Reads packages.yaml to determine build profile.",
     schema: BuildSchema.shape,
     handler: async ({ packageName, kind: kindOverride }) => {
-
       const repoRoot = process.cwd();
       const pkgDir = `${repoRoot}/src/${packageName}`;
 

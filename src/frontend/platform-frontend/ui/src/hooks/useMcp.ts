@@ -44,10 +44,10 @@ export function useMcpToolCall() {
       });
 
       if (!res.ok) throw new Error("Tool execution failed");
-      
+
       const json = await res.json();
       if (json.error) throw new Error(json.error.message || "MCP Error");
-      
+
       return json.result;
     },
   });

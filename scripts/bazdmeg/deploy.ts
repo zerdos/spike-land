@@ -1,13 +1,6 @@
 import { execFileSync, execSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import {
-  readFileSync,
-  writeFileSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  statSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { join, relative, extname } from "node:path";
 import type { DeployState, Phase3Result, VersionInfo } from "./types.js";
 
@@ -122,9 +115,15 @@ function uploadFile(filePath: string, key: string): void {
   execFileSync(
     "yarn",
     [
-      "wrangler", "r2", "object", "put", `${R2_BUCKET}/${key}`,
-      "--file", filePath,
-      "--content-type", contentType,
+      "wrangler",
+      "r2",
+      "object",
+      "put",
+      `${R2_BUCKET}/${key}`,
+      "--file",
+      filePath,
+      "--content-type",
+      contentType,
       "--remote",
     ],
     { cwd: process.cwd(), stdio: ["pipe", "pipe", "pipe"] },
@@ -244,10 +243,9 @@ function smokeTest(): SmokeResult[] {
 
   for (const { url, expect } of endpoints) {
     try {
-      const output = execSync(
-        `curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${url}"`,
-        { encoding: "utf-8" },
-      );
+      const output = execSync(`curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${url}"`, {
+        encoding: "utf-8",
+      });
       const status = parseInt(output.trim(), 10);
       const passed = expect(status);
       results.push({ endpoint: url, passed, status });

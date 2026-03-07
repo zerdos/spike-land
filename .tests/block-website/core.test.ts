@@ -1,9 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  getPosts,
-  getPostBySlug,
-} from "../../src/core/block-website/core-logic/reducers.js";
+import { getPosts, getPostBySlug } from "../../src/core/block-website/core-logic/reducers.js";
 import type { BlogPost } from "../../src/core/block-website/core-logic/types.js";
 
 const BASE = "https://edge.spike.land";
@@ -92,11 +89,7 @@ describe("getPosts", () => {
   });
 
   it("limits the number of posts returned", async () => {
-    const posts = [
-      makePost({ slug: "a" }),
-      makePost({ slug: "b" }),
-      makePost({ slug: "c" }),
-    ];
+    const posts = [makePost({ slug: "a" }), makePost({ slug: "b" }), makePost({ slug: "c" })];
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => posts,

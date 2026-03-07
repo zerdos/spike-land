@@ -21,7 +21,7 @@ export class StripeClient {
     const resp = await this.fetchFn(url.toString(), {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
     });
 
@@ -38,7 +38,7 @@ export class StripeClient {
     const queryParams: Record<string, string> = { ...params, limit: "100" };
 
     for (;;) {
-      const response = await this.get(path, queryParams) as StripeListResponse<T>;
+      const response = (await this.get(path, queryParams)) as StripeListResponse<T>;
       allItems.push(...response.data);
 
       if (!response.has_more || response.data.length === 0) {

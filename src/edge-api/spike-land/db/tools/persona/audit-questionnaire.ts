@@ -24,18 +24,8 @@ const SEGMENTS: Record<string, string[]> = {
     "enterprise-devops",
     "startup-devops",
   ],
-  Business: [
-    "technical-founder",
-    "nontechnical-founder",
-    "growth-leader",
-    "ops-leader",
-  ],
-  Creator: [
-    "content-creator",
-    "hobbyist-creator",
-    "social-gamer",
-    "solo-explorer",
-  ],
+  Business: ["technical-founder", "nontechnical-founder", "growth-leader", "ops-leader"],
+  Creator: ["content-creator", "hobbyist-creator", "social-gamer", "solo-explorer"],
 };
 
 function getSegment(slug: string): string {
@@ -62,9 +52,19 @@ export function registerAuditQuestionnaireTools(
           persona_slug: z.string().describe("Slug of the persona being evaluated"),
           batch_id: z.string().describe("Batch this evaluation belongs to"),
           ux_score: z.number().int().min(1).max(5).describe("UX quality score (1-5)"),
-          content_relevance: z.number().int().min(1).max(5).describe("Content relevance score (1-5)"),
+          content_relevance: z
+            .number()
+            .int()
+            .min(1)
+            .max(5)
+            .describe("Content relevance score (1-5)"),
           cta_compelling: z.number().int().min(1).max(5).describe("CTA effectiveness score (1-5)"),
-          recommended_apps_relevant: z.number().int().min(1).max(5).describe("App recommendations score (1-5)"),
+          recommended_apps_relevant: z
+            .number()
+            .int()
+            .min(1)
+            .max(5)
+            .describe("App recommendations score (1-5)"),
           would_sign_up: z.boolean().describe("Would this persona sign up?"),
           blockers: z.string().optional().describe("Blocking issues found"),
           highlights: z.string().optional().describe("Positive highlights"),
@@ -133,10 +133,10 @@ export function registerAuditQuestionnaireTools(
           .where(eq(personaAuditResults.batchId, input.batch_id));
 
         if (results.length === 0) {
-          return jsonResult(
-            `Batch "${input.batch_id}" exists but has no results yet.`,
-            { batch, results: [] },
-          );
+          return jsonResult(`Batch "${input.batch_id}" exists but has no results yet.`, {
+            batch,
+            results: [],
+          });
         }
 
         const header = "| Persona | UX | Content | CTA | Apps | Sign Up | Blockers |";
@@ -174,11 +174,16 @@ export function registerAuditQuestionnaireTools(
           .where(eq(personaAuditResults.batchId, input.batch_id));
 
         if (results.length === 0) {
-          return jsonResult(`No results found for batch "${input.batch_id}".`, { error: "no_results" });
+          return jsonResult(`No results found for batch "${input.batch_id}".`, {
+            error: "no_results",
+          });
         }
 
         // Group by segment
-        const segmentScores: Record<string, { total: number; ux: number; content: number; cta: number; apps: number; signups: number }> = {};
+        const segmentScores: Record<
+          string,
+          { total: number; ux: number; content: number; cta: number; apps: number; signups: number }
+        > = {};
 
         for (const r of results) {
           const seg = getSegment(r.personaSlug);
@@ -210,7 +215,8 @@ export function registerAuditQuestionnaireTools(
 
         // Best/worst personas by average score
         const scored = results.map((r) => {
-          const avg = (r.uxScore + r.contentRelevance + r.ctaCompelling + r.recommendedAppsRelevant) / 4;
+          const avg =
+            (r.uxScore + r.contentRelevance + r.ctaCompelling + r.recommendedAppsRelevant) / 4;
           const persona = PERSONAS.find((p) => p.slug === r.personaSlug);
           return { slug: r.personaSlug, name: persona ? persona.name : r.personaSlug, avg };
         });

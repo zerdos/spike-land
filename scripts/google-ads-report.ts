@@ -116,9 +116,13 @@ async function main() {
       console.log(`  ${row.campaign.name} [${row.campaign.status}]`);
       console.log(`    Impressions:  ${parseInt(m.impressions || "0", 10).toLocaleString()}`);
       console.log(`    Clicks:       ${parseInt(m.clicks || "0", 10).toLocaleString()}`);
-      console.log(`    CTR:          ${ctr}%  ${parseFloat(ctr) >= 2 ? "(healthy)" : "(below 2% target)"}`);
+      console.log(
+        `    CTR:          ${ctr}%  ${parseFloat(ctr) >= 2 ? "(healthy)" : "(below 2% target)"}`,
+      );
       console.log(`    Cost:         $${costDollars}`);
-      console.log(`    Avg CPC:      $${cpcDollars}  ${parseFloat(cpcDollars) <= 2 ? "(within budget)" : "(above $2 target)"}`);
+      console.log(
+        `    Avg CPC:      $${cpcDollars}  ${parseFloat(cpcDollars) <= 2 ? "(within budget)" : "(above $2 target)"}`,
+      );
       console.log(`    Conversions:  ${parseFloat(m.conversions || "0").toFixed(1)}`);
       if (cpa > 0) console.log(`    Cost/Conv:    $${cpa.toFixed(2)}`);
       console.log();
@@ -148,9 +152,14 @@ async function main() {
     console.log("  " + "-".repeat(72));
     for (const row of searchRows) {
       const term = row.searchTermView.searchTerm.padEnd(40).slice(0, 40);
-      const imp = parseInt(row.metrics.impressions || "0", 10).toString().padStart(6);
-      const clicks = parseInt(row.metrics.clicks || "0", 10).toString().padStart(6);
-      const cost = "$" + (parseInt(row.metrics.costMicros || "0", 10) / 1_000_000).toFixed(2).padStart(7);
+      const imp = parseInt(row.metrics.impressions || "0", 10)
+        .toString()
+        .padStart(6);
+      const clicks = parseInt(row.metrics.clicks || "0", 10)
+        .toString()
+        .padStart(6);
+      const cost =
+        "$" + (parseInt(row.metrics.costMicros || "0", 10) / 1_000_000).toFixed(2).padStart(7);
       console.log(`  ${term}  ${imp}  ${clicks}  ${cost}`);
     }
     console.log();
@@ -176,7 +185,8 @@ async function main() {
     console.log("  No geographic data yet.\n");
   } else {
     for (const row of geoRows) {
-      const id = (row.geographicView as { countryCriterionId?: string })?.countryCriterionId ?? "unknown";
+      const id =
+        (row.geographicView as { countryCriterionId?: string })?.countryCriterionId ?? "unknown";
       const clicks = parseInt(row.metrics.clicks || "0", 10);
       const cost = (parseInt(row.metrics.costMicros || "0", 10) / 1_000_000).toFixed(2);
       console.log(`  Region ${id}: ${clicks} clicks, $${cost} spent`);

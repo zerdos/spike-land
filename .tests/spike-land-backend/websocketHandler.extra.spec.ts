@@ -27,12 +27,14 @@ vi.mock("@spike-land-ai/code", async (importOriginal) => {
   };
 });
 
-function createMockWs(attachment: WsAttachment = {
-  name: null,
-  subscribedTopics: [],
-  blockedMessages: [],
-  swarmAgent: null,
-}): WebSocket {
+function createMockWs(
+  attachment: WsAttachment = {
+    name: null,
+    subscribedTopics: [],
+    blockedMessages: [],
+    swarmAgent: null,
+  },
+): WebSocket {
   return {
     send: vi.fn(),
     close: vi.fn(),
@@ -81,10 +83,7 @@ describe("WebSocketHandler extra coverage", () => {
       getSession: vi.fn().mockReturnValue(mockSession),
       updateAndBroadcastSession: vi.fn().mockResolvedValue(undefined),
     };
-    wsHandler = new WebSocketHandler(
-      mockCode as Code,
-      mockState as unknown as DurableObjectState,
-    );
+    wsHandler = new WebSocketHandler(mockCode as Code, mockState as unknown as DurableObjectState);
   });
 
   describe("binary messages are ignored (line 70)", () => {
@@ -132,8 +131,9 @@ describe("WebSocketHandler extra coverage", () => {
       // Then unsubscribe
       await wsHandler.handleMessage(ws, JSON.stringify({ type: "unsubscribe", topics: ["news"] }));
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const unsubAck = calls.find((m: { action?: string }) => m.action === "unsubscribe");
       expect(unsubAck).toBeDefined();
     });
@@ -141,19 +141,26 @@ describe("WebSocketHandler extra coverage", () => {
     it("handles publish message to subscribers", async () => {
       const subscriberWs = createMockWs();
       allSockets.push(subscriberWs);
-      await wsHandler.handleMessage(subscriberWs, JSON.stringify({ type: "subscribe", topics: ["topic1"] }));
+      await wsHandler.handleMessage(
+        subscriberWs,
+        JSON.stringify({ type: "subscribe", topics: ["topic1"] }),
+      );
 
       const publisherWs = createMockWs();
       allSockets.push(publisherWs);
-      await wsHandler.handleMessage(publisherWs, JSON.stringify({
-        type: "publish",
-        topic: "topic1",
-        data: { value: 42 },
-      }));
+      await wsHandler.handleMessage(
+        publisherWs,
+        JSON.stringify({
+          type: "publish",
+          topic: "topic1",
+          data: { value: 42 },
+        }),
+      );
 
       // subscriber should have received the message
-      const subscriberCalls = (subscriberWs.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const subscriberCalls = (subscriberWs.send as ReturnType<typeof vi.fn>).mock.calls.map(
+        ([msg]: [string]) => JSON.parse(msg),
+      );
       const publishedMsg = subscriberCalls.find((m: { type: string }) => m.type === "message");
       expect(publishedMsg).toBeDefined();
       expect(publishedMsg?.topic).toBe("topic1");
@@ -161,14 +168,18 @@ describe("WebSocketHandler extra coverage", () => {
 
     it("publish to non-existent topic still acks", async () => {
       const ws = createMockWs();
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        type: "publish",
-        topic: "nonexistent",
-        data: "test",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "publish",
+          topic: "nonexistent",
+          data: "test",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const ack = calls.find((m: { action?: string }) => m.action === "publish");
       expect(ack).toBeDefined();
     });
@@ -177,15 +188,19 @@ describe("WebSocketHandler extra coverage", () => {
   describe("swarm_register (lines 156-177)", () => {
     it("registers swarm agent and sends swarm_registered ack", async () => {
       const ws = createMockWs();
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        type: "swarm_register",
-        agent_id: "test-agent",
-        display_name: "Test Agent",
-        capabilities: ["code"],
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "swarm_register",
+          agent_id: "test-agent",
+          display_name: "Test Agent",
+          capabilities: ["code"],
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const registered = calls.find((m: { type: string }) => m.type === "swarm_registered");
       expect(registered).toBeDefined();
       expect(registered?.agent_id).toBe("test-agent");
@@ -197,13 +212,17 @@ describe("WebSocketHandler extra coverage", () => {
       const ws = createMockWs();
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        oldHash: "wrong-hash-value",
-        newCode: "new code",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          oldHash: "wrong-hash-value",
+          newCode: "new code",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const errorMsg = calls.find((m: { type: string }) => m.type === "error");
       expect(errorMsg).toBeDefined();
       expect(errorMsg?.message).toContain("hash mismatch");
@@ -222,13 +241,17 @@ describe("WebSocketHandler extra coverage", () => {
         Promise.reject(new Error("Broadcast failed")),
       );
 
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        oldHash: currentHash,
-        newCode: "updated code",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          oldHash: currentHash,
+          newCode: "updated code",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       // Either an error or ack is sent depending on tryCatch behavior
       expect(calls.length).toBeGreaterThan(0);
     });
@@ -239,13 +262,17 @@ describe("WebSocketHandler extra coverage", () => {
       const ws = createMockWs();
       const currentHash = computeSessionHash(mockSession);
 
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        oldHash: currentHash,
-        newCode: "new code content",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          oldHash: currentHash,
+          newCode: "new code content",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const ackMsg = calls.find((m: { type?: string; hashCode?: string }) => m.hashCode);
       expect(ackMsg).toBeDefined();
     });
@@ -253,27 +280,48 @@ describe("WebSocketHandler extra coverage", () => {
 
   describe("data.target routing (lines 334-344)", () => {
     it("forwards message to target socket by name", async () => {
-      const senderWs = createMockWs({ name: "sender", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
-      const targetWs = createMockWs({ name: "target-user", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: "sender",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
+      const targetWs = createMockWs({
+        name: "target-user",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
 
       allSockets.push(senderWs, targetWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        target: "target-user",
-        data: { message: "hello" },
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          target: "target-user",
+          data: { message: "hello" },
+        }),
+      );
 
       expect(targetWs.send).toHaveBeenCalled();
     });
 
     it("does not forward if target not found", async () => {
-      const senderWs = createMockWs({ name: "sender", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: "sender",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(senderWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        target: "nonexistent-user",
-        data: "hello",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          target: "nonexistent-user",
+          data: "hello",
+        }),
+      );
 
       // sender's send should not be called for routing
       expect(senderWs.send).not.toHaveBeenCalled();
@@ -285,8 +333,9 @@ describe("WebSocketHandler extra coverage", () => {
       const ws = createMockWs();
       await wsHandler.handleMessage(ws, JSON.stringify({ name: "new-name" }));
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls
-        .map(([msg]: [string]) => JSON.parse(msg));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([msg]: [string]) =>
+        JSON.parse(msg),
+      );
       const ackMsg = calls.find((m: { action?: string }) => m.action === "nameUpdate");
       expect(ackMsg).toBeDefined();
       expect(ackMsg?.name).toBe("new-name");
@@ -303,7 +352,12 @@ describe("WebSocketHandler extra coverage", () => {
       });
       allSockets.push(otherWs);
 
-      const ws = createMockWs({ name: null, subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: null,
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
 
       await wsHandler.handleMessage(ws, JSON.stringify({ name: "new-name" }));
@@ -376,17 +430,35 @@ describe("WebSocketHandler extra coverage", () => {
 
   describe("subscribe — topic already in map (line 102 false branch)", () => {
     it("reuses existing topic set when topic already in map", async () => {
-      const ws1 = createMockWs({ name: "user1", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws1 = createMockWs({
+        name: "user1",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws1);
       // First subscribe creates the set
-      await wsHandler.handleMessage(ws1, JSON.stringify({ type: "subscribe", topics: ["shared-topic"] }));
+      await wsHandler.handleMessage(
+        ws1,
+        JSON.stringify({ type: "subscribe", topics: ["shared-topic"] }),
+      );
 
-      const ws2 = createMockWs({ name: "user2", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws2 = createMockWs({
+        name: "user2",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws2);
       // Second subscribe hits the !this.topics.has(topic) FALSE branch
-      await wsHandler.handleMessage(ws2, JSON.stringify({ type: "subscribe", topics: ["shared-topic"] }));
+      await wsHandler.handleMessage(
+        ws2,
+        JSON.stringify({ type: "subscribe", topics: ["shared-topic"] }),
+      );
 
-      const calls = (ws2.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (ws2.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       const ack = calls.find((m: { action?: string }) => m.action === "subscribe");
       expect(ack).toBeDefined();
       expect(ack.topics).toEqual(["shared-topic"]);
@@ -395,11 +467,18 @@ describe("WebSocketHandler extra coverage", () => {
 
   describe("unsubscribe — non-array topics (line 117 false branch)", () => {
     it("treats non-array unsubscribe topics as empty array", async () => {
-      const ws = createMockWs({ name: "user", subscribedTopics: ["topicA"], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: "user",
+        subscribedTopics: ["topicA"],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
       await wsHandler.handleMessage(ws, JSON.stringify({ type: "unsubscribe", topics: "topicA" }));
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       const ack = calls.find((m: { action?: string }) => m.action === "unsubscribe");
       expect(ack).toBeDefined();
       // No topics processed since non-array treated as empty
@@ -409,38 +488,78 @@ describe("WebSocketHandler extra coverage", () => {
 
   describe("swarm_message — from_agent_id fallback chains (line 193)", () => {
     it("uses 'unknown' when sender has no swarmAgent and no name", async () => {
-      const senderWs = createMockWs({ name: null, subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: null,
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(senderWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_message",
-        target_agent_id: "nobody",
-        content: "from unknown",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_message",
+          target_agent_id: "nobody",
+          content: "from unknown",
+        }),
+      );
 
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_message_queued")).toBe(true);
     });
 
     it("uses attachment.name when sender has name but no swarmAgent", async () => {
-      const senderWs = createMockWs({ name: "my-name", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: "my-name",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(senderWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_message",
-        target_agent_id: "nobody",
-        content: "from named",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_message",
+          target_agent_id: "nobody",
+          content: "from named",
+        }),
+      );
 
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_message_queued")).toBe(true);
     });
   });
 
   describe("swarm_message — targetWs found, send throws (line 208 catch)", () => {
     it("sends ack to sender even when targetWs.send throws (safeSend catches internally)", async () => {
-      const senderWs = createMockWs({ name: "sender", subscribedTopics: [], blockedMessages: [], swarmAgent: { agentId: "sender", displayName: "S", capabilities: [], registeredAt: Date.now() } });
-      const targetWs = createMockWs({ name: "target-id", subscribedTopics: [], blockedMessages: [], swarmAgent: { agentId: "target-id", displayName: "T", capabilities: [], registeredAt: Date.now() } });
+      const senderWs = createMockWs({
+        name: "sender",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: {
+          agentId: "sender",
+          displayName: "S",
+          capabilities: [],
+          registeredAt: Date.now(),
+        },
+      });
+      const targetWs = createMockWs({
+        name: "target-id",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: {
+          agentId: "target-id",
+          displayName: "T",
+          capabilities: [],
+          registeredAt: Date.now(),
+        },
+      });
       allSockets.push(senderWs, targetWs);
 
       // Make target's send throw — safeSend will catch this internally and NOT propagate
@@ -448,70 +567,130 @@ describe("WebSocketHandler extra coverage", () => {
         throw new Error("socket closed");
       });
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_message",
-        target_agent_id: "target-id",
-        content: "hello",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_message",
+          target_agent_id: "target-id",
+          content: "hello",
+        }),
+      );
 
       // safeSend catches target send error, so the try block continues and sends ack
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "ack")).toBe(true);
     });
   });
 
   describe("swarm_message offline loop — self-skip (line 221 true branch)", () => {
     it("skips sender socket in offline search loop", async () => {
-      const senderWs = createMockWs({ name: "sender", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
-      const otherWs = createMockWs({ name: "unrelated", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: "sender",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
+      const otherWs = createMockWs({
+        name: "unrelated",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(senderWs, otherWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_message",
-        target_agent_id: "offline-target",
-        content: "test",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_message",
+          target_agent_id: "offline-target",
+          content: "test",
+        }),
+      );
 
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_message_queued")).toBe(true);
     });
   });
 
   describe("swarm_delegate — from_agent_id fallback (line 252)", () => {
     it("uses 'unknown' when delegate sender has no swarmAgent or name", async () => {
-      const ws = createMockWs({ name: null, subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: null,
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
 
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        type: "swarm_delegate",
-        target_agent_id: "nobody",
-        task_description: "do work",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "swarm_delegate",
+          target_agent_id: "nobody",
+          task_description: "do work",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_delegate_queued")).toBe(true);
     });
 
     it("uses attachment.name for delegate sender when no swarmAgent", async () => {
-      const ws = createMockWs({ name: "named-manager", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: "named-manager",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
 
-      await wsHandler.handleMessage(ws, JSON.stringify({
-        type: "swarm_delegate",
-        target_agent_id: "nobody",
-        task_description: "do work",
-        priority: "low",
-      }));
+      await wsHandler.handleMessage(
+        ws,
+        JSON.stringify({
+          type: "swarm_delegate",
+          target_agent_id: "nobody",
+          task_description: "do work",
+          priority: "low",
+        }),
+      );
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_delegate_queued")).toBe(true);
     });
   });
 
   describe("swarm_delegate — targetWs found, send throws (lines 266-275 catch)", () => {
     it("sends ack to sender even when targetWs.send throws (safeSend catches internally)", async () => {
-      const senderWs = createMockWs({ name: "manager", subscribedTopics: [], blockedMessages: [], swarmAgent: { agentId: "manager", displayName: "M", capabilities: [], registeredAt: Date.now() } });
-      const targetWs = createMockWs({ name: "worker", subscribedTopics: [], blockedMessages: [], swarmAgent: { agentId: "worker", displayName: "W", capabilities: [], registeredAt: Date.now() } });
+      const senderWs = createMockWs({
+        name: "manager",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: {
+          agentId: "manager",
+          displayName: "M",
+          capabilities: [],
+          registeredAt: Date.now(),
+        },
+      });
+      const targetWs = createMockWs({
+        name: "worker",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: {
+          agentId: "worker",
+          displayName: "W",
+          capabilities: [],
+          registeredAt: Date.now(),
+        },
+      });
       allSockets.push(senderWs, targetWs);
 
       // Make target's send throw — safeSend catches it internally, outer try block continues
@@ -519,52 +698,95 @@ describe("WebSocketHandler extra coverage", () => {
         throw new Error("closed");
       });
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_delegate",
-        target_agent_id: "worker",
-        task_description: "build it",
-        priority: "high",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_delegate",
+          target_agent_id: "worker",
+          task_description: "build it",
+          priority: "high",
+        }),
+      );
 
       // safeSend catches target send error, so outer try block continues and sends ack
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "ack")).toBe(true);
     });
   });
 
   describe("swarm_delegate offline loop — self-skip (line 279 true branch)", () => {
     it("skips sender socket in swarm_delegate offline loop", async () => {
-      const senderWs = createMockWs({ name: "manager", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
-      const otherWs = createMockWs({ name: "unrelated-worker", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const senderWs = createMockWs({
+        name: "manager",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
+      const otherWs = createMockWs({
+        name: "unrelated-worker",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(senderWs, otherWs);
 
-      await wsHandler.handleMessage(senderWs, JSON.stringify({
-        type: "swarm_delegate",
-        target_agent_id: "missing-worker",
-        task_description: "task",
-      }));
+      await wsHandler.handleMessage(
+        senderWs,
+        JSON.stringify({
+          type: "swarm_delegate",
+          target_agent_id: "missing-worker",
+          task_description: "task",
+        }),
+      );
 
-      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (senderWs.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       expect(calls.some((m: { type: string }) => m.type === "swarm_delegate_queued")).toBe(true);
     });
   });
 
   describe("handleError — delegates to handleClose", () => {
     it("logs error and calls handleClose on WebSocket error", () => {
-      const ws = createMockWs({ name: "user", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: "user",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       wsHandler.handleError(ws, new Error("test error"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("WebSocket error"), expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("WebSocket error"),
+        expect.any(Error),
+      );
       consoleSpy.mockRestore();
     });
   });
 
   describe("getSwarmAgents — returns registered agents", () => {
     it("returns list of agents with swarmAgent info", () => {
-      const ws1 = createMockWs({ name: "agent-1", subscribedTopics: [], blockedMessages: [], swarmAgent: { agentId: "agent-1", displayName: "Agent One", capabilities: ["tool-a"], registeredAt: Date.now() } });
-      const ws2 = createMockWs({ name: "plain-user", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws1 = createMockWs({
+        name: "agent-1",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: {
+          agentId: "agent-1",
+          displayName: "Agent One",
+          capabilities: ["tool-a"],
+          registeredAt: Date.now(),
+        },
+      });
+      const ws2 = createMockWs({
+        name: "plain-user",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws1, ws2);
 
       const agents = wsHandler.getSwarmAgents();
@@ -576,12 +798,19 @@ describe("WebSocketHandler extra coverage", () => {
 
   describe("swarm_list_agents — responds with agents list", () => {
     it("sends swarm_agents_list in response", async () => {
-      const ws = createMockWs({ name: "requester", subscribedTopics: [], blockedMessages: [], swarmAgent: null });
+      const ws = createMockWs({
+        name: "requester",
+        subscribedTopics: [],
+        blockedMessages: [],
+        swarmAgent: null,
+      });
       allSockets.push(ws);
 
       await wsHandler.handleMessage(ws, JSON.stringify({ type: "swarm_list_agents" }));
 
-      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) => JSON.parse(m));
+      const calls = (ws.send as ReturnType<typeof vi.fn>).mock.calls.map(([m]: [string]) =>
+        JSON.parse(m),
+      );
       const agentsList = calls.find((m: { type: string }) => m.type === "swarm_agents_list");
       expect(agentsList).toBeDefined();
       expect(Array.isArray(agentsList.agents)).toBe(true);

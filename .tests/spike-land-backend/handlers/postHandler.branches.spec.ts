@@ -33,7 +33,15 @@ function createMockEnv(overrides: Partial<Env> = {}): Env {
   } as unknown as Env;
 }
 
-function createMockMcpServer(tools = [{ name: "test_tool", description: "A tool", inputSchema: { type: "object" as const, properties: {}, required: [] } }]) {
+function createMockMcpServer(
+  tools = [
+    {
+      name: "test_tool",
+      description: "A tool",
+      inputSchema: { type: "object" as const, properties: {}, required: [] },
+    },
+  ],
+) {
   return {
     tools,
     executeTool: vi.fn().mockResolvedValue({ result: "ok" }),
@@ -42,7 +50,14 @@ function createMockMcpServer(tools = [{ name: "test_tool", description: "A tool"
 
 function createMockCode(mcpServer = createMockMcpServer()): Code {
   return {
-    getSession: vi.fn().mockReturnValue({ codeSpace: "test-space", code: "test", html: "", css: "", transpiled: "", messages: [] }),
+    getSession: vi.fn().mockReturnValue({
+      codeSpace: "test-space",
+      code: "test",
+      html: "",
+      css: "",
+      transpiled: "",
+      messages: [],
+    }),
     getEnv: vi.fn().mockReturnValue({}),
     getMcpServer: vi.fn().mockReturnValue(mcpServer),
   } as unknown as Code;
@@ -84,7 +99,9 @@ describe("PostHandler — branch coverage", () => {
 
   describe("GA tracking branch (line 166)", () => {
     it("fires GA events when GA_MEASUREMENT_ID and GA_API_SECRET are set", async () => {
-      const { hashClientId, sendGA4Events } = await import("../../../src/edge-api/backend/core-logic/lib/ga4.js");
+      const { hashClientId, sendGA4Events } = await import(
+        "../../../src/edge-api/backend/core-logic/lib/ga4.js"
+      );
       const envWithGA = createMockEnv({
         GA_MEASUREMENT_ID: "G-123",
         GA_API_SECRET: "secret",
@@ -144,7 +161,7 @@ describe("PostHandler — branch coverage", () => {
       const response = await handler.handle(request, new URL("https://example.com/messages"));
       expect(response.status).toBe(500);
       // The outer catch returns "Failed to process message" with details: "Unknown error"
-      const data = await response.json() as { error: string; details?: string };
+      const data = (await response.json()) as { error: string; details?: string };
       expect(data.error).toBe("Failed to process message");
       expect(data.details).toBe("Unknown error");
       consoleSpy.mockRestore();
@@ -212,16 +229,16 @@ describe("PostHandler — branch coverage", () => {
         description: "Bad tool",
         inputSchema: { type: "string" as const, properties: {}, required: [] },
       };
-      const mcpServer = createMockMcpServer([invalidTool as unknown as Parameters<typeof createMockMcpServer>[0][0]]);
+      const mcpServer = createMockMcpServer([
+        invalidTool as unknown as Parameters<typeof createMockMcpServer>[0][0],
+      ]);
       const codeWithBadTool = createMockCode(mcpServer);
       const handler = new PostHandler(codeWithBadTool, mockEnv);
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       const request = makeRequest(makeValidBody());
       const response = await handler.handle(request, new URL("https://example.com/messages"));
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("invalid inputSchema.type"),
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("invalid inputSchema.type"));
       consoleSpy.mockRestore();
     });
   });
@@ -235,16 +252,16 @@ describe("PostHandler — branch coverage", () => {
       (streamText as ReturnType<typeof vi.fn>).mockResolvedValue(mockResult);
 
       const noSchemaTool = { name: "no_schema", description: "Tool without schema" };
-      const mcpServer = createMockMcpServer([noSchemaTool as unknown as Parameters<typeof createMockMcpServer>[0][0]]);
+      const mcpServer = createMockMcpServer([
+        noSchemaTool as unknown as Parameters<typeof createMockMcpServer>[0][0],
+      ]);
       const codeWithNoSchema = createMockCode(mcpServer);
       const handler = new PostHandler(codeWithNoSchema, mockEnv);
 
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       const request = makeRequest(makeValidBody());
       await handler.handle(request, new URL("https://example.com/messages"));
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("has no inputSchema"),
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("has no inputSchema"));
       consoleSpy.mockRestore();
     });
   });
@@ -300,9 +317,7 @@ describe("PostHandler — branch coverage", () => {
         messages: [
           {
             role: "user",
-            content: [
-              { type: "image_url", image_url: { url: "https://example.com/image.png" } },
-            ],
+            content: [{ type: "image_url", image_url: { url: "https://example.com/image.png" } }],
           },
         ],
       });
@@ -324,10 +339,7 @@ describe("PostHandler — branch coverage", () => {
         messages: [
           {
             role: "user",
-            content: [
-              "not-an-object",
-              null,
-            ],
+            content: ["not-an-object", null],
           },
         ],
       });

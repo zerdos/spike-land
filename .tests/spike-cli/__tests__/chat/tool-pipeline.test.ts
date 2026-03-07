@@ -144,9 +144,9 @@ describe("timeoutMiddleware", () => {
 
   it("returns error when tool times out", async () => {
     const mw = timeoutMiddleware(10);
-    const next = vi.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve(okResult), 200)),
-    );
+    const next = vi
+      .fn()
+      .mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve(okResult), 200)));
     const result = await mw(makeCtx(), next);
     expect(result.isError).toBe(true);
     expect(result.result).toContain("timed out");
@@ -164,7 +164,8 @@ describe("retryMiddleware", () => {
 
   it("retries on error up to maxRetries", async () => {
     const mw = retryMiddleware(2);
-    const next = vi.fn()
+    const next = vi
+      .fn()
       .mockResolvedValueOnce({ result: "server error", isError: true })
       .mockResolvedValueOnce({ result: "server error", isError: true })
       .mockResolvedValueOnce(okResult);
@@ -212,9 +213,7 @@ describe("cachingMiddleware", () => {
 
   it("does not cache errors", async () => {
     const mw = cachingMiddleware(100, 60000);
-    const next = vi.fn()
-      .mockResolvedValueOnce(errResult)
-      .mockResolvedValueOnce(okResult);
+    const next = vi.fn().mockResolvedValueOnce(errResult).mockResolvedValueOnce(okResult);
     const ctx = makeCtx({ toolName: "server__get_item", input: {} });
 
     const r1 = await mw(ctx, next);
@@ -245,7 +244,11 @@ describe("createToolPipeline", () => {
 
   it("applies validation middleware", async () => {
     const handler = vi.fn().mockResolvedValue(okResult);
-    const pipeline = createToolPipeline(handler, { validation: true, logging: false, timeoutMs: 0 });
+    const pipeline = createToolPipeline(handler, {
+      validation: true,
+      logging: false,
+      timeoutMs: 0,
+    });
     const ctx = makeCtx({
       input: {},
       inputSchema: {
@@ -261,7 +264,11 @@ describe("createToolPipeline", () => {
 
   it("disables validation when option is false", async () => {
     const handler = vi.fn().mockResolvedValue(okResult);
-    const pipeline = createToolPipeline(handler, { validation: false, logging: false, timeoutMs: 0 });
+    const pipeline = createToolPipeline(handler, {
+      validation: false,
+      logging: false,
+      timeoutMs: 0,
+    });
     const ctx = makeCtx({
       input: {},
       inputSchema: { type: "object", required: ["name"], properties: { name: { type: "string" } } },

@@ -21,7 +21,10 @@ interface JsonSchemaProperty {
 
 /** Map a Zod type to a JSON Schema property, unwrapping Optional/Default wrappers. */
 function resolveZodProperty(zodField: unknown): { prop: JsonSchemaProperty; optional: boolean } {
-  let field = zodField as { description?: string; _def?: { typeName?: string; innerType?: unknown; values?: string[]; type?: unknown } };
+  let field = zodField as {
+    description?: string;
+    _def?: { typeName?: string; innerType?: unknown; values?: string[]; type?: unknown };
+  };
   let optional = false;
 
   // Unwrap ZodOptional / ZodDefault
@@ -87,9 +90,13 @@ publicToolsRoute.get("/", async (c) => {
   const tools = definitions.map((t) => {
     if (!t.inputSchema) {
       return {
-        name: t.name, description: t.description, category: t.category,
+        name: t.name,
+        description: t.description,
+        category: t.category,
         inputSchema: { type: "object" as const },
-        version: t.version, stability: t.stability, examples: t.examples,
+        version: t.version,
+        stability: t.stability,
+        examples: t.examples,
       };
     }
 
@@ -105,13 +112,17 @@ publicToolsRoute.get("/", async (c) => {
     }
 
     return {
-      name: t.name, description: t.description, category: t.category,
+      name: t.name,
+      description: t.description,
+      category: t.category,
       inputSchema: {
         type: "object" as const,
         properties,
         ...(required.length > 0 ? { required } : {}),
       },
-      version: t.version, stability: t.stability, examples: t.examples,
+      version: t.version,
+      stability: t.stability,
+      examples: t.examples,
     };
   });
 

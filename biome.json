@@ -32,6 +32,13 @@
     "enabled": false
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.mjs", "**/*.json"]
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.mjs", "**/*.json"],
+    "ignore": [
+      "src/monaco-editor/**",
+      "src/**/dist-vite/**",
+      "src/**/dist/**",
+      "node_modules/**",
+      ".yarn/**"
+    ]
   }
 }

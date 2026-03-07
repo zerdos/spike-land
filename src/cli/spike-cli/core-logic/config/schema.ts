@@ -33,10 +33,18 @@ const toolsetSchema = z.object({
   description: z.string().optional(),
 });
 
+const dynamicToolLoadingSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    alwaysOnPatterns: z.array(z.string()).optional(),
+  })
+  .optional();
+
 export const mcpConfigFileSchema = z.object({
   mcpServers: z.record(z.string(), serverConfigSchema),
   toolsets: z.record(z.string(), toolsetSchema).optional(),
   lazyLoading: z.boolean().optional(),
+  dynamicToolLoading: dynamicToolLoadingSchema,
 });
 
 export type ValidatedMcpConfig = z.infer<typeof mcpConfigFileSchema>;

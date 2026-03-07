@@ -9,7 +9,12 @@
 
 import type { RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { suggestParameters, ToolEmbeddingIndex } from "./embeddings";
-import type { SearchResult, ToolComplexity, ToolDefinition, ToolStability } from "../../lazy-imports/registry";
+import type {
+  SearchResult,
+  ToolComplexity,
+  ToolDefinition,
+  ToolStability,
+} from "../../lazy-imports/registry";
 
 interface TrackedToolRef {
   definition: ToolDefinition;
@@ -20,13 +25,24 @@ export class ToolSearch {
   private embeddingIndex = new ToolEmbeddingIndex();
 
   /** Register a tool in the in-memory TF-IDF embedding index. */
-  index(name: string, category: string, description: string, _version?: string, _stability?: ToolStability): void {
+  index(
+    name: string,
+    category: string,
+    description: string,
+    _version?: string,
+    _stability?: ToolStability,
+  ): void {
     // Embedding index just takes the string inputs for now
     this.embeddingIndex.embed(name, category, description);
   }
 
   /** Keyword search over registered tools. */
-  search(tools: Map<string, TrackedToolRef>, query: string, limit = 10, includeDeprecated = false): SearchResult[] {
+  search(
+    tools: Map<string, TrackedToolRef>,
+    query: string,
+    limit = 10,
+    includeDeprecated = false,
+  ): SearchResult[] {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
     if (terms.length === 0) return [];
 
@@ -34,7 +50,7 @@ export class ToolSearch {
 
     for (const [, { definition, registered }] of tools) {
       if (definition.category === "gateway-meta") continue;
-      
+
       const stability = definition.stability ?? "stable";
       if (!includeDeprecated && stability === "deprecated") continue;
 
@@ -70,7 +86,12 @@ export class ToolSearch {
   }
 
   /** In-memory TF-IDF semantic search (no external API). */
-  searchSemantic(tools: Map<string, TrackedToolRef>, query: string, limit = 10, includeDeprecated = false): SearchResult[] {
+  searchSemantic(
+    tools: Map<string, TrackedToolRef>,
+    query: string,
+    limit = 10,
+    includeDeprecated = false,
+  ): SearchResult[] {
     const results = this.embeddingIndex.search(query, limit);
     if (results.length === 0) return [];
 
@@ -80,16 +101,16 @@ export class ToolSearch {
       .filter((r) => {
         const tracked = tools.get(r.name);
         if (!tracked || tracked.definition.category === "gateway-meta") return false;
-        
+
         const stability = tracked.definition.stability ?? "stable";
         if (!includeDeprecated && stability === "deprecated") return false;
-        
+
         return true;
       })
       .map((r) => {
         const tracked = tools.get(r.name)!;
         const stability = tracked.definition.stability ?? "stable";
-        
+
         return {
           name: tracked.definition.name,
           category: tracked.definition.category,

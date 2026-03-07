@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'apex',
-	extensions: ['.cls'],
-	aliases: ['Apex', 'apex'],
-	mimetypes: ['text/x-apex-source', 'text/x-apex'],
-	loader: () => import('./apex')
+  id: "apex",
+  extensions: [".cls"],
+  aliases: ["Apex", "apex"],
+  mimetypes: ["text/x-apex-source", "text/x-apex"],
+  loader: () => import("./apex"),
 });

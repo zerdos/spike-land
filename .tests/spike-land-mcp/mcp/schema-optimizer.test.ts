@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { optimizeSchema, shortenDescription, measureTokenSavings, getSchemaTokenReport, injectExamplesIntoSchema } from "../../../src/edge-api/spike-land/core-logic/mcp/schema-optimizer";
+import {
+  optimizeSchema,
+  shortenDescription,
+  measureTokenSavings,
+  getSchemaTokenReport,
+  injectExamplesIntoSchema,
+} from "../../../src/edge-api/spike-land/core-logic/mcp/schema-optimizer";
 
 describe("optimizeSchema", () => {
   it("returns a copy without mutating the original", () => {
@@ -748,9 +754,7 @@ describe("measureTokenSavings", () => {
 describe("injectExamplesIntoSchema", () => {
   it("injects examples array into schema", () => {
     const schema = { properties: { name: { type: "string" } } };
-    const examples = [
-      { name: "ex1", input: { name: "Alice" }, description: "A name example" },
-    ];
+    const examples = [{ name: "ex1", input: { name: "Alice" }, description: "A name example" }];
     const result = injectExamplesIntoSchema(schema, examples) as Record<string, unknown>;
     expect(result.examples).toEqual([{ name: "Alice" }]);
   });
@@ -771,14 +775,16 @@ describe("injectExamplesIntoSchema", () => {
   it("extracts only input objects from examples, not name or description", () => {
     const schema = { properties: {} };
     const examples = [
-      { name: "ex1", input: { query: "hello", limit: 5 }, description: "First example", expected_output: "some output" },
+      {
+        name: "ex1",
+        input: { query: "hello", limit: 5 },
+        description: "First example",
+        expected_output: "some output",
+      },
       { name: "ex2", input: { query: "world" }, description: "Second example" },
     ];
     const result = injectExamplesIntoSchema(schema, examples) as Record<string, unknown>;
-    expect(result.examples).toEqual([
-      { query: "hello", limit: 5 },
-      { query: "world" },
-    ]);
+    expect(result.examples).toEqual([{ query: "hello", limit: 5 }, { query: "world" }]);
   });
 
   it("does not mutate the original schema", () => {
@@ -815,7 +821,10 @@ describe("getSchemaTokenReport", () => {
   it("sums token counts across multiple tools", () => {
     const toolA = {
       name: "tool_a",
-      original: { description: "A very long and wordy description that should be shortened for the token report test" },
+      original: {
+        description:
+          "A very long and wordy description that should be shortened for the token report test",
+      },
       optimized: { description: "Long and wordy description that should be shortened for the..." },
     };
     const toolB = {
@@ -849,13 +858,29 @@ describe("getSchemaTokenReport", () => {
     const schemas = [
       {
         name: "alpha",
-        original: { type: "object", description: "An object", required: [] as string[], additionalProperties: true },
-        optimized: optimizeSchema({ type: "object", description: "An object", required: [], additionalProperties: true }),
+        original: {
+          type: "object",
+          description: "An object",
+          required: [] as string[],
+          additionalProperties: true,
+        },
+        optimized: optimizeSchema({
+          type: "object",
+          description: "An object",
+          required: [],
+          additionalProperties: true,
+        }),
       },
       {
         name: "beta",
-        original: { type: "object", properties: { val: { type: "boolean", description: "A boolean" } } },
-        optimized: optimizeSchema({ type: "object", properties: { val: { type: "boolean", description: "A boolean" } } }),
+        original: {
+          type: "object",
+          properties: { val: { type: "boolean", description: "A boolean" } },
+        },
+        optimized: optimizeSchema({
+          type: "object",
+          properties: { val: { type: "boolean", description: "A boolean" } },
+        }),
       },
     ];
     const report = getSchemaTokenReport(schemas);

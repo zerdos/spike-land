@@ -59,9 +59,9 @@ export function Marquee({
         },
         fade && [
           "after:content-[''] after:absolute after:inset-0 after:z-10",
-          !vertical 
-            ? "after:bg-gradient-to-r after:from-background after:via-transparent after:to-background" 
-            : "after:bg-gradient-to-b after:from-background after:via-transparent after:to-background"
+          !vertical
+            ? "after:bg-gradient-to-r after:from-background after:via-transparent after:to-background"
+            : "after:bg-gradient-to-b after:from-background after:via-transparent after:to-background",
         ],
         className,
       )}

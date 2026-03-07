@@ -1,11 +1,7 @@
 {
   "name": "esbuild-wasm",
   "category": "mcp-tools",
-  "dependencies": [
-    "esbuild-wasm",
-    "@spike-land-ai/mcp-server-base",
-    "node:fs"
-  ],
+  "dependencies": ["esbuild-wasm", "@spike-land-ai/mcp-server-base", "node:fs"],
   "files": [
     "core-logic/initialize.ts",
     "core-logic/schemas.ts",

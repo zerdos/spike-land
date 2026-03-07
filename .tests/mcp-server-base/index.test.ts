@@ -420,11 +420,15 @@ describe("wrapServerWithLogging", () => {
     wrapServerWithLogging(server, "test-server", (entry) => logs.push(entry));
 
     // Register a simple tool after wrapping
-    server.tool("ping", "pong tool", {}, async () => ({ content: [{ type: "text" as const, text: "pong" }] }));
+    server.tool("ping", "pong tool", {}, async () => ({
+      content: [{ type: "text" as const, text: "pong" }],
+    }));
 
     // Directly invoke wrapped handler via the mock server pattern
     const mock = createMockServer();
-    wrapServerWithLogging(mock as unknown as McpServerType, "mock-server", (entry) => logs.push(entry));
+    wrapServerWithLogging(mock as unknown as McpServerType, "mock-server", (entry) =>
+      logs.push(entry),
+    );
     mock.tool("greet", "Greeting", {}, async () => textResult("hello"));
 
     const result = await mock.call("greet");
@@ -437,7 +441,9 @@ describe("wrapServerWithLogging", () => {
   it("logs error outcome when handler returns an isError result", async () => {
     const logs: Parameters<NonNullable<Parameters<typeof wrapServerWithLogging>[2]>>[0][] = [];
     const mock = createMockServer();
-    wrapServerWithLogging(mock as unknown as McpServerType, "err-server", (entry) => logs.push(entry));
+    wrapServerWithLogging(mock as unknown as McpServerType, "err-server", (entry) =>
+      logs.push(entry),
+    );
 
     mock.tool("fail-tool", "Fails", {}, async () => errorResult("OOPS", "something bad"));
 
@@ -448,7 +454,9 @@ describe("wrapServerWithLogging", () => {
   it("logs error outcome when handler throws", async () => {
     const logs: Parameters<NonNullable<Parameters<typeof wrapServerWithLogging>[2]>>[0][] = [];
     const mock = createMockServer();
-    wrapServerWithLogging(mock as unknown as McpServerType, "throw-server", (entry) => logs.push(entry));
+    wrapServerWithLogging(mock as unknown as McpServerType, "throw-server", (entry) =>
+      logs.push(entry),
+    );
 
     mock.tool("explode", "Throws", {}, async () => {
       throw new Error("boom");
@@ -465,9 +473,7 @@ describe("wrapServerWithLogging", () => {
     mock.tool("quiet", "Quiet tool", {}, async () => textResult("ok"));
     await mock.call("quiet");
 
-    expect(stderrSpy).toHaveBeenCalledWith(
-      expect.stringContaining("stderr-server/quiet"),
-    );
+    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining("stderr-server/quiet"));
     stderrSpy.mockRestore();
   });
 

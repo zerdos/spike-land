@@ -8,8 +8,22 @@ import { asAlbumHandle, asImageId, asJobId, asPipelineId } from "./types.js";
 import { createErrorShipper } from "@spike-land-ai/mcp-server-base";
 
 const shipper = createErrorShipper();
-process.on('uncaughtException', (err: Error) => shipper.shipError({ service_name: "mcp-image-studio", message: err.message, stack_trace: err.stack, severity: "high" }));
-process.on('unhandledRejection', (err: unknown) => shipper.shipError({ service_name: "mcp-image-studio", message: err instanceof Error ? err.message : String(err), stack_trace: err instanceof Error ? err.stack : undefined, severity: "high" }));
+process.on("uncaughtException", (err: Error) =>
+  shipper.shipError({
+    service_name: "mcp-image-studio",
+    message: err.message,
+    stack_trace: err.stack,
+    severity: "high",
+  }),
+);
+process.on("unhandledRejection", (err: unknown) =>
+  shipper.shipError({
+    service_name: "mcp-image-studio",
+    message: err instanceof Error ? err.message : String(err),
+    stack_trace: err instanceof Error ? err.stack : undefined,
+    severity: "high",
+  }),
+);
 
 // --- 1. Mock the Dependencies so the tools can run without a real DB ---
 
@@ -253,7 +267,9 @@ tools.push({
     },
     required: ["title", "description"],
   },
-  handler: async (args: unknown): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> => {
+  handler: async (
+    args: unknown,
+  ): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> => {
     const input = args as Record<string, unknown>;
     try {
       const response = await fetch("https://spike.land/api/bugbook/report", {
@@ -270,32 +286,43 @@ tools.push({
       const data = await response.json();
       return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
     } catch (err: unknown) {
-      return { content: [{ type: "text", text: `Error: ${(err as Error).message}` }], isError: true };
+      return {
+        content: [{ type: "text", text: `Error: ${(err as Error).message}` }],
+        isError: true,
+      };
     }
   },
 });
 
 // --- 4. Wire tools to Server ---
 
-server.setRequestHandler(ListToolsRequestSchema, async (): Promise<{ tools: { name: string; inputSchema: Record<string, unknown> }[] }> => ({
-  tools: tools.map((t) => ({
-    name: t.name,
-    inputSchema: ((t as ToolDefinition<unknown>).inputSchema as Record<string, unknown>) ?? {
-      type: "object" as const,
-      properties: {},
-    },
-  })),
-}));
+server.setRequestHandler(
+  ListToolsRequestSchema,
+  async (): Promise<{ tools: { name: string; inputSchema: Record<string, unknown> }[] }> => ({
+    tools: tools.map((t) => ({
+      name: t.name,
+      inputSchema: ((t as ToolDefinition<unknown>).inputSchema as Record<string, unknown>) ?? {
+        type: "object" as const,
+        properties: {},
+      },
+    })),
+  }),
+);
 
-server.setRequestHandler(CallToolRequestSchema, async (request: z.infer<typeof CallToolRequestSchema>): Promise<{ content: unknown[]; isError?: boolean }> => {
-  const tool = tools.find((t) => t.name === request.params.name);
-  if (!tool) throw new Error(`Unknown tool: ${request.params.name}`);
-  const result = await Promise.resolve(tool.handler((request.params.arguments ?? {}) as never));
-  return {
-    content: result.content,
-    isError: result.isError,
-  };
-});
+server.setRequestHandler(
+  CallToolRequestSchema,
+  async (
+    request: z.infer<typeof CallToolRequestSchema>,
+  ): Promise<{ content: unknown[]; isError?: boolean }> => {
+    const tool = tools.find((t) => t.name === request.params.name);
+    if (!tool) throw new Error(`Unknown tool: ${request.params.name}`);
+    const result = await Promise.resolve(tool.handler((request.params.arguments ?? {}) as never));
+    return {
+      content: result.content,
+      isError: result.isError,
+    };
+  },
+);
 
 // --- 5. Start Server on Stdio ---
 

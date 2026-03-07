@@ -38,13 +38,17 @@ import { Component } from "../../../../src/core/react-engine/react/ReactBaseClas
 describe("ReactFiber", () => {
   describe("isSimpleFunctionComponent", () => {
     it("returns true for plain function component", () => {
-      function MyComp() { return null; }
+      function MyComp() {
+        return null;
+      }
       expect(isSimpleFunctionComponent(MyComp)).toBe(true);
     });
 
     it("returns false for class components", () => {
       class MyClass extends Component {
-        render() { return null; }
+        render() {
+          return null;
+        }
       }
       expect(isSimpleFunctionComponent(MyClass)).toBe(false);
     });
@@ -56,7 +60,9 @@ describe("ReactFiber", () => {
     });
 
     it("returns false for function with defaultProps", () => {
-      function WithDefaults() { return null; }
+      function WithDefaults() {
+        return null;
+      }
       (WithDefaults as unknown as Record<string, unknown>).defaultProps = {};
       expect(isSimpleFunctionComponent(WithDefaults)).toBe(false);
     });
@@ -108,7 +114,9 @@ describe("ReactFiber", () => {
 
   describe("createFiberFromTypeAndProps", () => {
     it("creates FunctionComponent fiber for function type", () => {
-      function Comp() { return null; }
+      function Comp() {
+        return null;
+      }
       const fiber = createFiberFromTypeAndProps(Comp, null, {}, SyncLane);
       expect(fiber.tag).toBe(FunctionComponent);
       expect(fiber.type).toBe(Comp);
@@ -117,7 +125,9 @@ describe("ReactFiber", () => {
 
     it("creates ClassComponent fiber for class type", () => {
       class MyClass extends Component {
-        render() { return null; }
+        render() {
+          return null;
+        }
       }
       const fiber = createFiberFromTypeAndProps(MyClass, null, {}, SyncLane);
       expect(fiber.tag).toBe(ClassComponent);

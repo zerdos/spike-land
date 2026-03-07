@@ -226,10 +226,13 @@ export function registerPlanGeneratorTools(
 
         const plan = generatePersonaAuditPlan(input.persona_slug);
 
-        return jsonResult(`Generated ${plan.length}-step audit plan for persona "${persona.name}"`, {
-          persona,
-          plan,
-        });
+        return jsonResult(
+          `Generated ${plan.length}-step audit plan for persona "${persona.name}"`,
+          {
+            persona,
+            plan,
+          },
+        );
       }),
   );
 
@@ -259,10 +262,10 @@ export function registerPlanGeneratorTools(
           plan: generatePersonaAuditPlan(persona.slug, batchId),
         }));
 
-        return jsonResult(
-          `Created batch "${batchId}" with ${results.length} persona audit plans`,
-          { batchId, audits: results },
-        );
+        return jsonResult(`Created batch "${batchId}" with ${results.length} persona audit plans`, {
+          batchId,
+          audits: results,
+        });
       }),
   );
 

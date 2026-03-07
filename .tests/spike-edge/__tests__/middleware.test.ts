@@ -65,12 +65,16 @@ describe("authMiddleware", () => {
     app.get("/protected", (c) => c.json({ userId: c.get("userId" as never) }));
 
     const env = createMockEnv();
-    const res = await app.request("/protected", {
-      headers: {
-        "x-internal-secret": "internal-secret-123",
-        "x-user-id": "user-abc",
+    const res = await app.request(
+      "/protected",
+      {
+        headers: {
+          "x-internal-secret": "internal-secret-123",
+          "x-user-id": "user-abc",
+        },
       },
-    }, env);
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ userId: string }>();
     expect(body.userId).toBe("user-abc");
@@ -82,13 +86,17 @@ describe("authMiddleware", () => {
     app.get("/protected", (c) => c.json({ ok: true }));
 
     const env = createMockEnv();
-    const res = await app.request("/protected", {
-      headers: {
-        "x-internal-secret": "wrong-secret",
-        "x-user-id": "user-abc",
-        "cookie": "session=abc",
+    const res = await app.request(
+      "/protected",
+      {
+        headers: {
+          "x-internal-secret": "wrong-secret",
+          "x-user-id": "user-abc",
+          cookie: "session=abc",
+        },
       },
-    }, env);
+      env,
+    );
     // Falls through to cookie-based auth
     // AUTH_MCP returns 200 by default but no session
     expect(res.status).toBe(401);
@@ -101,12 +109,16 @@ describe("authMiddleware", () => {
 
     const env = createMockEnv();
     // Has secret but no x-user-id, and no cookie => 401
-    const res = await app.request("/protected", {
-      headers: {
-        "x-internal-secret": "internal-secret-123",
-        // no x-user-id
+    const res = await app.request(
+      "/protected",
+      {
+        headers: {
+          "x-internal-secret": "internal-secret-123",
+          // no x-user-id
+        },
       },
-    }, env);
+      env,
+    );
     expect(res.status).toBe(401);
   });
 
@@ -120,9 +132,13 @@ describe("authMiddleware", () => {
       new Response("{}", { status: 401 }),
     );
 
-    const res = await app.request("/protected", {
-      headers: { cookie: "session=bad" },
-    }, env);
+    const res = await app.request(
+      "/protected",
+      {
+        headers: { cookie: "session=bad" },
+      },
+      env,
+    );
     expect(res.status).toBe(401);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Invalid or expired session");
@@ -138,9 +154,13 @@ describe("authMiddleware", () => {
       new Response(JSON.stringify({ session: null, user: null }), { status: 200 }),
     );
 
-    const res = await app.request("/protected", {
-      headers: { cookie: "session=abc" },
-    }, env);
+    const res = await app.request(
+      "/protected",
+      {
+        headers: { cookie: "session=abc" },
+      },
+      env,
+    );
     expect(res.status).toBe(401);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Invalid or expired session");
@@ -156,9 +176,13 @@ describe("authMiddleware", () => {
       new Response(JSON.stringify({ session: { id: "sess1" }, user: null }), { status: 200 }),
     );
 
-    const res = await app.request("/protected", {
-      headers: { cookie: "session=abc" },
-    }, env);
+    const res = await app.request(
+      "/protected",
+      {
+        headers: { cookie: "session=abc" },
+      },
+      env,
+    );
     expect(res.status).toBe(401);
   });
 
@@ -169,12 +193,18 @@ describe("authMiddleware", () => {
 
     const env = createMockEnv();
     (env.AUTH_MCP.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user-xyz" } }), { status: 200 }),
+      new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user-xyz" } }), {
+        status: 200,
+      }),
     );
 
-    const res = await app.request("/protected", {
-      headers: { cookie: "session=valid-session" },
-    }, env);
+    const res = await app.request(
+      "/protected",
+      {
+        headers: { cookie: "session=valid-session" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ userId: string }>();
     expect(body.userId).toBe("user-xyz");
@@ -187,12 +217,18 @@ describe("authMiddleware", () => {
 
     const env = createMockEnv();
     (env.AUTH_MCP.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user-bearer" } }), { status: 200 }),
+      new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user-bearer" } }), {
+        status: 200,
+      }),
     );
 
-    const res = await app.request("/protected", {
-      headers: { authorization: "Bearer token123" },
-    }, env);
+    const res = await app.request(
+      "/protected",
+      {
+        headers: { authorization: "Bearer token123" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ userId: string }>();
     expect(body.userId).toBe("user-bearer");
@@ -233,7 +269,8 @@ describe("creditMeterMiddleware", () => {
         all: vi.fn().mockResolvedValue({ results: [] }),
         first: vi.fn().mockImplementation(() => {
           if (sql.includes("access_grants")) return Promise.resolve(null);
-          if (sql.includes("subscriptions")) return Promise.resolve({ plan: "business", status: "active" });
+          if (sql.includes("subscriptions"))
+            return Promise.resolve({ plan: "business", status: "active" });
           return Promise.resolve({ balance: 999, daily_limit: 999999, last_daily_grant: today });
         }),
       })),

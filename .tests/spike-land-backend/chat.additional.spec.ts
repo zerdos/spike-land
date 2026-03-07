@@ -75,9 +75,7 @@ describe("chat.ts additional coverage", () => {
         body: null,
       };
       // First call returns null, second returns content
-      (mockEnv.R2.get as Mock)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValue(mockObject);
+      (mockEnv.R2.get as Mock).mockResolvedValueOnce(null).mockResolvedValue(mockObject);
 
       const request = new Request("https://example.com/my-cms/article");
       const response = await handleCMSIndexRequest(request, mockEnv as unknown as Env);

@@ -461,7 +461,10 @@ export class ImageStudioResolverError extends Error {
 export interface ImageStudioResolvers {
   resolveImage(id: ImageId): Promise<ImageRow>;
   resolveAlbum(handle: AlbumHandle): Promise<AlbumRow>;
-  resolvePipeline(id: PipelineId, opts?: { requireOwnership?: boolean | undefined } | undefined): Promise<PipelineRow>;
+  resolvePipeline(
+    id: PipelineId,
+    opts?: { requireOwnership?: boolean | undefined } | undefined,
+  ): Promise<PipelineRow>;
   resolveJob(id: JobId): Promise<EnhancementJobRow>;
   resolveGenerationJob(id: JobId): Promise<GenerationJobRow>;
   resolveImages(ids: ImageId[]): Promise<ImageRow[]>;
@@ -554,7 +557,9 @@ export interface ImageStudioDeps {
     albumFindByHandle(
       handle: AlbumHandle,
     ): Promise<(AlbumRow & { _count?: { albumImages: number } | undefined }) | null>;
-    albumFindById(id: string): Promise<(AlbumRow & { _count?: { albumImages: number } | undefined }) | null>;
+    albumFindById(
+      id: string,
+    ): Promise<(AlbumRow & { _count?: { albumImages: number } | undefined }) | null>;
     albumFindMany(opts: {
       userId: string;
       limit?: number | undefined;
@@ -663,20 +668,35 @@ export interface ImageStudioDeps {
       seed?: number | undefined;
       outputFormat?: GenerationOutputFormat | undefined;
       numImages?: number | undefined;
-    }): Promise<{ success: boolean; jobId?: string | undefined; creditsCost?: number | undefined; error?: string | undefined }>;
+    }): Promise<{
+      success: boolean;
+      jobId?: string | undefined;
+      creditsCost?: number | undefined;
+      error?: string | undefined;
+    }>;
     createModificationJob(opts: {
       userId: string;
       prompt: string;
       imageData: string;
       mimeType: string;
       tier: EnhancementTier;
-    }): Promise<{ success: boolean; jobId?: string | undefined; creditsCost?: number | undefined; error?: string | undefined }>;
+    }): Promise<{
+      success: boolean;
+      jobId?: string | undefined;
+      creditsCost?: number | undefined;
+      error?: string | undefined;
+    }>;
     createAdvancedGenerationJob?(opts: {
       userId: string;
       prompt: string;
       tier: EnhancementTier;
       options: AdvancedGenerationOptions;
-    }): Promise<{ success: boolean; jobId?: string | undefined; creditsCost?: number | undefined; error?: string | undefined }>;
+    }): Promise<{
+      success: boolean;
+      jobId?: string | undefined;
+      creditsCost?: number | undefined;
+      error?: string | undefined;
+    }>;
     createReferenceGenerationJob?(opts: {
       userId: string;
       prompt: string;
@@ -691,7 +711,12 @@ export interface ImageStudioDeps {
       seed?: number | undefined;
       outputFormat?: GenerationOutputFormat | undefined;
       numImages?: number | undefined;
-    }): Promise<{ success: boolean; jobId?: string | undefined; creditsCost?: number | undefined; error?: string | undefined }>;
+    }): Promise<{
+      success: boolean;
+      jobId?: string | undefined;
+      creditsCost?: number | undefined;
+      error?: string | undefined;
+    }>;
     describeImage?(opts: {
       userId: string;
       imageId: ImageId;

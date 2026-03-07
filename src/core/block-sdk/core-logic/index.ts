@@ -10,11 +10,24 @@
 
 // Core
 export { defineBlock } from "../lazy-imports/define-block.js";
-export type { Block, BlockComponents, BlockContext, BlockDefinition, BlockProcedureContext } from "../lazy-imports/define-block.js";
+export type {
+  Block,
+  BlockComponents,
+  BlockContext,
+  BlockDefinition,
+  BlockProcedureContext,
+} from "../lazy-imports/define-block.js";
 
 // Schema DSL
 export { defineTable, schemaToSQL, schemaTableNames, t, tableToSQL } from "./types.js";
-export type { ColumnBuilder, ColumnDef, ColumnType, IndexDef, SchemaDef, TableDef } from "./types.js";
+export type {
+  ColumnBuilder,
+  ColumnDef,
+  ColumnType,
+  IndexDef,
+  SchemaDef,
+  TableDef,
+} from "./types.js";
 
 // Storage interfaces
 export type {

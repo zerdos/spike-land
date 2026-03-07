@@ -28,7 +28,14 @@ export function registerRealtimeTool(
           string_filter: z
             .object({
               match_type: z
-                .enum(["EXACT", "BEGINS_WITH", "ENDS_WITH", "CONTAINS", "FULL_REGEXP", "PARTIAL_REGEXP"])
+                .enum([
+                  "EXACT",
+                  "BEGINS_WITH",
+                  "ENDS_WITH",
+                  "CONTAINS",
+                  "FULL_REGEXP",
+                  "PARTIAL_REGEXP",
+                ])
                 .optional(),
               value: z.string(),
               case_sensitive: z.boolean().optional(),
@@ -40,7 +47,6 @@ export function registerRealtimeTool(
       limit: z.number().int().min(1).max(100000).default(1000).describe("Max rows to return"),
     },
     handler: async ({ dimensions, metrics, dimension_filter, limit }) => {
-
       const headers = await auth.authHeaders();
       const body: Record<string, unknown> = {
         metrics: metrics.map((m) => ({ name: m })),

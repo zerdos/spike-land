@@ -8,30 +8,17 @@ export interface MonacoCoverProps {
   onClick: () => void;
 }
 
-function getTokenColor(
-  token: Token,
-  theme: MonacoThemeColors,
-): string | undefined {
+function getTokenColor(token: Token, theme: MonacoThemeColors): string | undefined {
   if (token.type === "") return undefined;
   return theme.tokenColors[token.type] ?? undefined;
 }
 
-export const MonacoCover = memo(function MonacoCover({
-  value,
-  isDark,
-  onClick,
-}: MonacoCoverProps) {
+export const MonacoCover = memo(function MonacoCover({ value, isDark, onClick }: MonacoCoverProps) {
   const theme = useMemo(() => getTheme(isDark), [isDark]);
 
-  const normalizedValue = useMemo(
-    () => value.replace(/\t/g, " ".repeat(LAYOUT.tabSize)),
-    [value],
-  );
+  const normalizedValue = useMemo(() => value.replace(/\t/g, " ".repeat(LAYOUT.tabSize)), [value]);
 
-  const tokenizedLines = useMemo(
-    () => tokenizeTypeScript(normalizedValue),
-    [normalizedValue],
-  );
+  const tokenizedLines = useMemo(() => tokenizeTypeScript(normalizedValue), [normalizedValue]);
 
   const lineCount = tokenizedLines.length;
   const gutterWidth = useMemo(() => getGutterWidth(lineCount), [lineCount]);
@@ -129,10 +116,7 @@ export const MonacoCover = memo(function MonacoCover({
             {tokens.map((token: Token, j: number) => {
               const color = getTokenColor(token, theme);
               return (
-                <span
-                  key={j}
-                  style={color !== undefined ? { color } : undefined}
-                >
+                <span key={j} style={color !== undefined ? { color } : undefined}>
                   {token.value}
                 </span>
               );

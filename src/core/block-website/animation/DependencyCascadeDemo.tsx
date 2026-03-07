@@ -293,9 +293,13 @@ function Node({ node, progress, filterId }: { node: NodeDef; progress: number; f
       : "hsl(var(--muted) / 0.8)";
 
   const labelColor =
-    isLit || (node.isRoot && progress >= 0.2) ? "hsl(var(--foreground) / 0.9)" : "hsl(var(--muted-foreground) / 0.8)";
+    isLit || (node.isRoot && progress >= 0.2)
+      ? "hsl(var(--foreground) / 0.9)"
+      : "hsl(var(--muted-foreground) / 0.8)";
   const sublabelColor =
-    isLit || (node.isRoot && progress >= 0.2) ? "rgba(34,211,238,0.7)" : "hsl(var(--muted-foreground) / 0.7)";
+    isLit || (node.isRoot && progress >= 0.2)
+      ? "rgba(34,211,238,0.7)"
+      : "hsl(var(--muted-foreground) / 0.7)";
 
   return (
     <g transform={`translate(${node.x}, ${node.y})`} opacity={appearPhase}>

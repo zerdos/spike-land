@@ -42,16 +42,17 @@ export class ErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="h-10 w-10 animate-pulse" />
             <div className="absolute inset-0 rounded-full bg-destructive/5 animate-ping duration-1000" />
           </div>
-          
+
           <h2 className="text-2xl font-black tracking-tight text-foreground mb-3">
             Ouch! Something broke.
           </h2>
-          
+
           <div className="max-w-md mx-auto space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We've encountered an unexpected error. Our engineers have been notified and are looking into it.
+              We've encountered an unexpected error. Our engineers have been notified and are
+              looking into it.
             </p>
-            
+
             {this.state.error && (
               <div className="rounded-2xl bg-muted dark:bg-white/5 border border-border dark:border-white/10 p-4 text-left overflow-hidden">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-destructive/70 mb-1">

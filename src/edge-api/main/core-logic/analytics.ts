@@ -21,12 +21,7 @@ export function writeAnalyticsEvent(env: Env, event: AnalyticsEvent): void {
 }
 
 /** Track a page view in Analytics Engine. */
-export function trackPageView(
-  env: Env,
-  path: string,
-  userAgent: string,
-  country: string,
-): void {
+export function trackPageView(env: Env, path: string, userAgent: string, country: string): void {
   writeAnalyticsEvent(env, {
     index: "page_view",
     blobs: [path, userAgent.slice(0, 200), country],

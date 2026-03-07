@@ -15,7 +15,13 @@ import type {
   PipelineRow,
   SubjectRow,
 } from "../../../src/mcp-tools/image-studio/types.js";
-import { asAlbumHandle, asImageId, asJobId, asPipelineId, ENHANCEMENT_COSTS } from "../../../src/mcp-tools/image-studio/types.js";
+import {
+  asAlbumHandle,
+  asImageId,
+  asJobId,
+  asPipelineId,
+  ENHANCEMENT_COSTS,
+} from "../../../src/mcp-tools/image-studio/types.js";
 
 /** Create a minimal valid ImageRow for tests */
 export function mockImageRow(overrides: Partial<ImageRow> & { userId: string }): ImageRow {

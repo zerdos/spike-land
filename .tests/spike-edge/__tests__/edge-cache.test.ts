@@ -4,7 +4,10 @@ import type { Context } from "hono";
 
 describe("safeCtx", () => {
   it("returns executionCtx when available", () => {
-    const ctx = { waitUntil: vi.fn(), passThroughOnException: vi.fn() } as unknown as ExecutionContext;
+    const ctx = {
+      waitUntil: vi.fn(),
+      passThroughOnException: vi.fn(),
+    } as unknown as ExecutionContext;
     const honoCtx = { executionCtx: ctx } as unknown as Context;
     expect(safeCtx(honoCtx)).toBe(ctx);
   });
@@ -22,9 +25,11 @@ describe("safeCtx", () => {
 describe("withEdgeCache", () => {
   it("returns fetcher result when cache API unavailable (no caches global)", async () => {
     const request = new Request("https://spike.land/test");
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response("hello", { status: 200, headers: { "content-type": "text/plain" } }),
-    );
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(
+        new Response("hello", { status: 200, headers: { "content-type": "text/plain" } }),
+      );
 
     const result = await withEdgeCache(request, undefined, fetcher, { ttl: 300 });
     expect(result).not.toBeNull();
@@ -56,25 +61,29 @@ describe("withEdgeCache", () => {
   it("adds immutable to Cache-Control when immutable option is true", async () => {
     const request = new Request("https://spike.land/immutable");
     const fetcher = vi.fn().mockResolvedValue(new Response("ok", { status: 200 }));
-    const result = await withEdgeCache(request, undefined, fetcher, { ttl: 31536000, immutable: true });
+    const result = await withEdgeCache(request, undefined, fetcher, {
+      ttl: 31536000,
+      immutable: true,
+    });
     expect(result?.headers.get("Cache-Control")).toContain("immutable");
   });
 
   it("uses custom cacheKey when provided", async () => {
     const request = new Request("https://spike.land/asset.js?version=1");
     const fetcher = vi.fn().mockResolvedValue(new Response("js code", { status: 200 }));
-    const result = await withEdgeCache(
-      request,
-      undefined,
-      fetcher,
-      { ttl: 300, cacheKey: "https://spike.land/asset.js?_cv=v2" },
-    );
+    const result = await withEdgeCache(request, undefined, fetcher, {
+      ttl: 300,
+      cacheKey: "https://spike.land/asset.js?_cv=v2",
+    });
     expect(result).not.toBeNull();
     expect(fetcher).toHaveBeenCalled();
   });
 
   it("uses Cache API when available — returns cached response on hit", async () => {
-    const cachedResponse = new Response("cached!", { status: 200, headers: { "x-cached": "true" } });
+    const cachedResponse = new Response("cached!", {
+      status: 200,
+      headers: { "x-cached": "true" },
+    });
     const mockCache = {
       match: vi.fn().mockResolvedValue(cachedResponse),
       put: vi.fn().mockResolvedValue(undefined),
@@ -106,11 +115,16 @@ describe("withEdgeCache", () => {
     vi.stubGlobal("caches", { default: mockCache });
 
     const waitUntilMock = vi.fn();
-    const ctx = { waitUntil: waitUntilMock, passThroughOnException: vi.fn() } as unknown as ExecutionContext;
+    const ctx = {
+      waitUntil: waitUntilMock,
+      passThroughOnException: vi.fn(),
+    } as unknown as ExecutionContext;
     const request = new Request("https://spike.land/miss");
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response("fresh content", { status: 200, headers: { "content-type": "text/html" } }),
-    );
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(
+        new Response("fresh content", { status: 200, headers: { "content-type": "text/html" } }),
+      );
 
     try {
       const result = await withEdgeCache(request, ctx, fetcher, { ttl: 300 });
@@ -132,17 +146,19 @@ describe("withEdgeCache", () => {
     vi.stubGlobal("caches", { default: mockCache });
 
     const waitUntilMock = vi.fn();
-    const ctx = { waitUntil: waitUntilMock, passThroughOnException: vi.fn() } as unknown as ExecutionContext;
+    const ctx = {
+      waitUntil: waitUntilMock,
+      passThroughOnException: vi.fn(),
+    } as unknown as ExecutionContext;
     const request = new Request("https://spike.land/asset.js");
     const fetcher = vi.fn().mockResolvedValue(new Response("code", { status: 200 }));
 
     try {
-      await withEdgeCache(
-        request,
-        ctx,
-        fetcher,
-        { ttl: 31536000, immutable: true, cacheKey: "https://spike.land/asset.js?_cv=v1" },
-      );
+      await withEdgeCache(request, ctx, fetcher, {
+        ttl: 31536000,
+        immutable: true,
+        cacheKey: "https://spike.land/asset.js?_cv=v1",
+      });
       expect(mockCache.match).toHaveBeenCalledWith(
         expect.objectContaining({ url: "https://spike.land/asset.js?_cv=v1" }),
       );

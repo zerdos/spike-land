@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { Component, PureComponent } from "../../../../src/core/react-engine/react/ReactBaseClasses.js";
+import {
+  Component,
+  PureComponent,
+} from "../../../../src/core/react-engine/react/ReactBaseClasses.js";
 
 describe("Component", () => {
   it("sets props on construction", () => {

@@ -20,7 +20,10 @@ function createMockKV() {
   };
 }
 
-function createMockEnv(mockKV: ReturnType<typeof createMockKV>, overrides: Record<string, unknown> = {}): Env {
+function createMockEnv(
+  mockKV: ReturnType<typeof createMockKV>,
+  overrides: Record<string, unknown> = {},
+): Env {
   return {
     CLAUDE_CODE_OAUTH_TOKEN: "token-1",
     CLAUDE_CODE_OAUTH_TOKEN_2: "token-2",
@@ -85,7 +88,7 @@ describe("handleAnthropicRequest", () => {
       });
 
       const response = await handleAnthropicRequest(request, env);
-      const body = await response.json() as { error: string };
+      const body = (await response.json()) as { error: string };
       expect(body.error).toContain("No auth tokens");
     });
 
@@ -156,18 +159,14 @@ describe("handleAnthropicRequest", () => {
       // First token (token-1) fails with 401, second (token-2) succeeds
       const failResponse = new Response("Unauthorized", { status: 401 });
       const successResponse = new Response("ok", { status: 200 });
-      mockFetch
-        .mockResolvedValueOnce(failResponse)
-        .mockResolvedValueOnce(successResponse);
+      mockFetch.mockResolvedValueOnce(failResponse).mockResolvedValueOnce(successResponse);
 
       await handleAnthropicRequest(request, env);
 
       // Should have persisted the successful index (1) to KV
-      expect(mockKV.put).toHaveBeenCalledWith(
-        "anthropic:last-good-token-idx",
-        "1",
-        { expirationTtl: 3600 },
-      );
+      expect(mockKV.put).toHaveBeenCalledWith("anthropic:last-good-token-idx", "1", {
+        expirationTtl: 3600,
+      });
     });
 
     it("non-401 error does not rotate tokens", async () => {
@@ -187,7 +186,7 @@ describe("handleAnthropicRequest", () => {
       // Only called once because non-401 doesn't rotate
       expect(mockFetch).toHaveBeenCalledTimes(1);
       // Should return an error response
-      const body = await response.json() as { error: string };
+      const body = (await response.json()) as { error: string };
       expect(body.error).toBeDefined();
     });
 
@@ -203,7 +202,7 @@ describe("handleAnthropicRequest", () => {
       mockFetch.mockResolvedValue(new Response("Unauthorized", { status: 401 }));
 
       const response = await handleAnthropicRequest(request, env);
-      const body = await response.json() as { error: string };
+      const body = (await response.json()) as { error: string };
       expect(body.error).toBeDefined();
     });
 
@@ -257,9 +256,7 @@ describe("handleAnthropicRequest", () => {
 
       const failResponse = new Response("Unauthorized", { status: 401 });
       const successResponse = new Response("ok", { status: 200 });
-      mockFetch
-        .mockResolvedValueOnce(failResponse)
-        .mockResolvedValueOnce(successResponse);
+      mockFetch.mockResolvedValueOnce(failResponse).mockResolvedValueOnce(successResponse);
 
       // Should not throw even if KV.put fails
       const response = await handleAnthropicRequest(request, env);
@@ -297,7 +294,7 @@ describe("handleAnthropicRequest", () => {
       const response = await handleAnthropicRequest(request, env);
       // All 3 tokens failed
       expect(mockFetch).toHaveBeenCalledTimes(3);
-      const body = await response.json() as { error: string };
+      const body = (await response.json()) as { error: string };
       expect(body.error).toBeDefined();
     });
 
@@ -315,11 +312,9 @@ describe("handleAnthropicRequest", () => {
 
       const response = await handleAnthropicRequest(request, env);
       expect(response.status).toBe(200);
-      expect(mockKV.put).toHaveBeenCalledWith(
-        "anthropic:last-good-token-idx",
-        "2",
-        { expirationTtl: 3600 },
-      );
+      expect(mockKV.put).toHaveBeenCalledWith("anthropic:last-good-token-idx", "2", {
+        expirationTtl: 3600,
+      });
     });
   });
 });

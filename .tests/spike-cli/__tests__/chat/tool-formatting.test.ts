@@ -97,12 +97,9 @@ describe("formatGroupedTools", () => {
   });
 
   it("shows required param hints when no defaults exist", () => {
-    const tool = makeToolWithSchema(
-      "srv__create_item",
-      "srv",
-      { name: { type: "string" } },
-      ["name"],
-    );
+    const tool = makeToolWithSchema("srv__create_item", "srv", { name: { type: "string" } }, [
+      "name",
+    ]);
     const sessionState = makeSessionState();
     const result = formatGroupedTools([tool], sessionState);
     expect(result).toContain("name required");
@@ -129,10 +126,7 @@ describe("formatGroupedTools", () => {
   });
 
   it("filters by prefix (extracted from tool name)", () => {
-    const tools = [
-      makeTool("srv__create_item", "srv"),
-      makeTool("srv__list_items", "srv"),
-    ];
+    const tools = [makeTool("srv__create_item", "srv"), makeTool("srv__list_items", "srv")];
     const sessionState = makeSessionState();
     // prefix for "create_item" is "create", for "list_items" is "list"
     const result = formatGroupedTools(tools, sessionState, "create");
@@ -263,9 +257,11 @@ describe("formatAppsList", () => {
 
   it("lists apps", () => {
     const mockRegistry = {
-      getAllApps: vi.fn().mockReturnValue([
-        { name: "My App", slug: "myapp", category: "Productivity", tagline: "A great app" },
-      ]),
+      getAllApps: vi
+        .fn()
+        .mockReturnValue([
+          { name: "My App", slug: "myapp", category: "Productivity", tagline: "A great app" },
+        ]),
     } as unknown as AppRegistry;
     const result = formatAppsList(mockRegistry);
     expect(result).toContain("My App");

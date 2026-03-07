@@ -36,8 +36,8 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
   const apiBase = `https://api.github.com/repos/${repo}`;
 
   const headers = {
-    "Authorization": `Bearer ${token}`,
-    "Accept": "application/vnd.github+json",
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
     "Content-Type": "application/json",
     "User-Agent": "spike-land-ai-edge",
@@ -48,14 +48,14 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
   if (!repoRes.ok) {
     return c.json({ error: "Failed to fetch repository info" }, 502);
   }
-  const repoData = await repoRes.json() as { default_branch: string };
+  const repoData = (await repoRes.json()) as { default_branch: string };
   const defaultBranch = repoData.default_branch ?? "main";
 
   const refRes = await fetch(`${apiBase}/git/ref/heads/${defaultBranch}`, { headers });
   if (!refRes.ok) {
     return c.json({ error: "Failed to fetch branch ref" }, 502);
   }
-  const refData = await refRes.json() as { object: { sha: string } };
+  const refData = (await refRes.json()) as { object: { sha: string } };
   const baseSha = refData.object.sha;
 
   // Create new branch
@@ -72,7 +72,7 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
   let existingFileSha: string | undefined;
   const fileRes = await fetch(`${apiBase}/contents/${filePath}?ref=${defaultBranch}`, { headers });
   if (fileRes.ok) {
-    const fileData = await fileRes.json() as { sha: string };
+    const fileData = (await fileRes.json()) as { sha: string };
     existingFileSha = fileData.sha;
   }
 
@@ -107,7 +107,7 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
   if (!prRes.ok) {
     return c.json({ error: "Failed to create pull request" }, 502);
   }
-  const prData = await prRes.json() as { html_url: string; number: number };
+  const prData = (await prRes.json()) as { html_url: string; number: number };
 
   // Add label (best-effort)
   await fetch(`${apiBase}/issues/${prData.number}/labels`, {

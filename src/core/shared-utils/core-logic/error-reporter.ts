@@ -8,11 +8,14 @@ export interface ErrorReport {
 
 export interface ErrorReporter {
   report(error: ErrorReport): void;
-  reportException(error: unknown, extra?: {
-    severity?: "warning" | "error" | "fatal" | undefined;
-    code?: string | undefined;
-    metadata?: Record<string, unknown> | undefined;
-  }): void;
+  reportException(
+    error: unknown,
+    extra?: {
+      severity?: "warning" | "error" | "fatal" | undefined;
+      code?: string | undefined;
+      metadata?: Record<string, unknown> | undefined;
+    },
+  ): void;
 }
 
 export function createErrorReporter(options: {

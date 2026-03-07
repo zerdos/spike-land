@@ -18,7 +18,10 @@ vi.mock("../../../src/mcp-tools/bazdmeg/node-sys/manifest.js", () => ({
 }));
 
 import { hasScript, runCommand } from "../../../src/mcp-tools/bazdmeg/node-sys/shell.js";
-import { getManifestPackage, readManifest } from "../../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
+import {
+  getManifestPackage,
+  readManifest,
+} from "../../../src/mcp-tools/bazdmeg/node-sys/manifest.js";
 import { registerBuildTools } from "../../../src/mcp-tools/bazdmeg/mcp/build.js";
 
 const mockRunCommand = vi.mocked(runCommand);

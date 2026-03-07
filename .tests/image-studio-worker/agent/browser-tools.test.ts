@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { BROWSER_TOOLS, isBrowserTool } from "../../../src/edge-api/image-studio-worker/agent/browser-tools.ts";
+import {
+  BROWSER_TOOLS,
+  isBrowserTool,
+} from "../../../src/edge-api/image-studio-worker/agent/browser-tools.ts";
 
 describe("browser-tools", () => {
   it("exports browser tools definitions", () => {

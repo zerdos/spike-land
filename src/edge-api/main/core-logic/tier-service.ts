@@ -31,10 +31,7 @@ export function mapStripePlanToTier(subscription: StripeSubscriptionForTier): st
 
 type Tier = "free" | "pro" | "business";
 
-export async function resolveEffectiveTier(
-  db: D1Database,
-  userId: string,
-): Promise<Tier> {
+export async function resolveEffectiveTier(db: D1Database, userId: string): Promise<Tier> {
   const now = Date.now();
 
   // 1. Check active Stripe subscription
@@ -65,9 +62,7 @@ export async function resolveEffectiveTier(
 
   // 3. Check BYOK key stored
   const byok = await db
-    .prepare(
-      "SELECT 1 FROM user_api_key_vault WHERE user_id = ? LIMIT 1",
-    )
+    .prepare("SELECT 1 FROM user_api_key_vault WHERE user_id = ? LIMIT 1")
     .bind(userId)
     .first();
 

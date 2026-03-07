@@ -11,7 +11,11 @@
 
 import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
-import { assignVariant, computeConversionRates, evaluateExperiment } from "../../lazy-imports/experiment-engine.js";
+import {
+  assignVariant,
+  computeConversionRates,
+  evaluateExperiment,
+} from "../../lazy-imports/experiment-engine.js";
 import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
 
 const experiments = new Hono<{ Bindings: Env }>();
@@ -307,9 +311,7 @@ experiments.get("/api/experiments/:id/metrics", async (c) => {
   const variants: VariantDef[] = JSON.parse(expRow.variants);
   const byVariant = groupMetricsByVariant(metricsRows.results ?? []);
 
-  const variantMetrics = variants.map((v) =>
-    computeConversionRates(v.id, byVariant[v.id] ?? {}),
-  );
+  const variantMetrics = variants.map((v) => computeConversionRates(v.id, byVariant[v.id] ?? {}));
 
   return c.json({
     experimentId: id,
@@ -331,8 +333,7 @@ experiments.post("/api/experiments/:id/evaluate", async (c) => {
     .bind(id)
     .first<ExperimentRow>();
   if (!exp) return c.json({ error: "Experiment not found" }, 404);
-  if (exp.status !== "active")
-    return c.json({ error: "Experiment not active" }, 400);
+  if (exp.status !== "active") return c.json({ error: "Experiment not active" }, 400);
 
   // Check min 48h runtime
   const runtimeMs = Date.now() - exp.created_at;

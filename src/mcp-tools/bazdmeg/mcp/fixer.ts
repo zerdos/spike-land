@@ -1,16 +1,19 @@
 import { z as zod } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createZodTool, textResult } from "@spike-land-ai/mcp-server-base";
-import {
-  PERSONAS,
-  QUIZ_BANK,
-  createFixerSessionId,
-} from "../core-logic/personas.js";
+import { PERSONAS, QUIZ_BANK, createFixerSessionId } from "../core-logic/personas.js";
 
 const API_BASE = process.env.EDGE_API_BASE_URL || "https://api.spike.land";
 const SECRET = process.env.INTERNAL_SERVICE_SECRET || "dev-internal-secret";
 
-const STAGE_ORDER = ["1_setup", "2_explore", "3_triage", "4_fix", "5_regression", "completed"] as const;
+const STAGE_ORDER = [
+  "1_setup",
+  "2_explore",
+  "3_triage",
+  "4_fix",
+  "5_regression",
+  "completed",
+] as const;
 
 interface SessionResponse {
   session: Record<string, unknown>;
@@ -60,13 +63,16 @@ export function registerFixerTools(server: McpServer): void {
 
       return textResult(
         `## Fixer Session Created: ${sessionId}\n\n` +
-        `**Stage 1: Setup Verification**\n` +
-        `Please answer the following quiz to proceed (need 2/3 to pass).\n\n` +
-        QUIZ_BANK["1_setup"]
-          .map((q, i) => `Q${i + 1}: ${q.question}\nOptions: ${q.options.map((o, j) => `${j}. ${o}`).join(", ")}`)
-          .join("\n\n") +
-        `\n\n## Next Steps\n` +
-        `Call \`bazdmeg_fixer_quiz\` with sessionId "${sessionId}", your agentId, stage "1_setup", and your answers [0-3 indices].`
+          `**Stage 1: Setup Verification**\n` +
+          `Please answer the following quiz to proceed (need 2/3 to pass).\n\n` +
+          QUIZ_BANK["1_setup"]
+            .map(
+              (q, i) =>
+                `Q${i + 1}: ${q.question}\nOptions: ${q.options.map((o, j) => `${j}. ${o}`).join(", ")}`,
+            )
+            .join("\n\n") +
+          `\n\n## Next Steps\n` +
+          `Call \`bazdmeg_fixer_quiz\` with sessionId "${sessionId}", your agentId, stage "1_setup", and your answers [0-3 indices].`,
       );
     },
   });
@@ -103,21 +109,21 @@ export function registerFixerTools(server: McpServer): void {
 
         return textResult(
           `## Agent Assigned: ${args.role}\n\n` +
-          `**Role: Bug Reproduction & Triage**\n\n` +
-          `### Your Mission\n` +
-          `Reproduce bugs reported by Explorer agents using qa-studio tools, then confirm or reject them.\n\n` +
-          `### Tools to Use\n` +
-          `- \`bazdmeg_fixer_status\` — check current findings\n` +
-          `- qa-studio tools (\`web_navigate\`, \`web_click\`, \`web_type\`) — reproduce bugs in browser\n` +
-          `- \`bazdmeg_fixer_report_finding\` — log confirmed reproductions\n` +
-          `- \`bazdmeg_fixer_validate\` — validate fixes in Stage 4\n\n` +
-          `### Process\n` +
-          `1. Get session status to see reported findings\n` +
-          `2. For each finding, attempt to reproduce using qa-studio\n` +
-          `3. If reproducible, confirm via POST /bugbook/:id/confirm\n` +
-          `4. If not reproducible, note conditions in finding description\n\n` +
-          `## Next Steps\n` +
-          `Call \`bazdmeg_fixer_status\` with sessionId "${args.sessionId}" to see current findings.`
+            `**Role: Bug Reproduction & Triage**\n\n` +
+            `### Your Mission\n` +
+            `Reproduce bugs reported by Explorer agents using qa-studio tools, then confirm or reject them.\n\n` +
+            `### Tools to Use\n` +
+            `- \`bazdmeg_fixer_status\` — check current findings\n` +
+            `- qa-studio tools (\`web_navigate\`, \`web_click\`, \`web_type\`) — reproduce bugs in browser\n` +
+            `- \`bazdmeg_fixer_report_finding\` — log confirmed reproductions\n` +
+            `- \`bazdmeg_fixer_validate\` — validate fixes in Stage 4\n\n` +
+            `### Process\n` +
+            `1. Get session status to see reported findings\n` +
+            `2. For each finding, attempt to reproduce using qa-studio\n` +
+            `3. If reproducible, confirm via POST /bugbook/:id/confirm\n` +
+            `4. If not reproducible, note conditions in finding description\n\n` +
+            `## Next Steps\n` +
+            `Call \`bazdmeg_fixer_status\` with sessionId "${args.sessionId}" to see current findings.`,
         );
       }
 
@@ -134,20 +140,20 @@ export function registerFixerTools(server: McpServer): void {
 
         return textResult(
           `## Agent Assigned: ${args.role}\n\n` +
-          `**Role: Error Log Correlation & ELO Monitoring**\n\n` +
-          `### Your Mission\n` +
-          `Correlate error logs with reported bugs and monitor bugbook ELO changes.\n\n` +
-          `### Tools to Use\n` +
-          `- \`bazdmeg_fixer_status\` — check current findings\n` +
-          `- Error log endpoints (\`GET /errors\`, \`GET /errors/summary\`) — fetch error patterns\n` +
-          `- \`bazdmeg_fixer_report_finding\` — report uncaptured errors as findings\n\n` +
-          `### Process\n` +
-          `1. Check error logs for patterns\n` +
-          `2. Cross-reference with reported findings\n` +
-          `3. Report any errors not yet captured as findings\n` +
-          `4. Monitor bugbook ELO for anomalies\n\n` +
-          `## Next Steps\n` +
-          `Call \`bazdmeg_fixer_status\` with sessionId "${args.sessionId}" to see current findings.`
+            `**Role: Error Log Correlation & ELO Monitoring**\n\n` +
+            `### Your Mission\n` +
+            `Correlate error logs with reported bugs and monitor bugbook ELO changes.\n\n` +
+            `### Tools to Use\n` +
+            `- \`bazdmeg_fixer_status\` — check current findings\n` +
+            `- Error log endpoints (\`GET /errors\`, \`GET /errors/summary\`) — fetch error patterns\n` +
+            `- \`bazdmeg_fixer_report_finding\` — report uncaptured errors as findings\n\n` +
+            `### Process\n` +
+            `1. Check error logs for patterns\n` +
+            `2. Cross-reference with reported findings\n` +
+            `3. Report any errors not yet captured as findings\n` +
+            `4. Monitor bugbook ELO for anomalies\n\n` +
+            `## Next Steps\n` +
+            `Call \`bazdmeg_fixer_status\` with sessionId "${args.sessionId}" to see current findings.`,
         );
       }
 
@@ -171,15 +177,15 @@ export function registerFixerTools(server: McpServer): void {
 
       return textResult(
         `## Agent Assigned to ${args.role}\n\n` +
-        `Your Personas:\n` +
-        assigned
-          .map(
-            (p) =>
-              `- **${p?.name}** (${p?.archetype})\n  Level: ${p?.level}\n  Focus: ${p?.focus}\n  Scenarios: ${p?.scenarios.join("; ")}`,
-          )
-          .join("\n\n") +
-        `\n\n## Next Steps\n` +
-        `Begin exploration using your assigned personas. For each scenario, call \`bazdmeg_fixer_report_finding\` when you discover issues.`
+          `Your Personas:\n` +
+          assigned
+            .map(
+              (p) =>
+                `- **${p?.name}** (${p?.archetype})\n  Level: ${p?.level}\n  Focus: ${p?.focus}\n  Scenarios: ${p?.scenarios.join("; ")}`,
+            )
+            .join("\n\n") +
+          `\n\n## Next Steps\n` +
+          `Begin exploration using your assigned personas. For each scenario, call \`bazdmeg_fixer_report_finding\` when you discover issues.`,
       );
     },
   });
@@ -213,9 +219,9 @@ export function registerFixerTools(server: McpServer): void {
       } catch (err) {
         return textResult(
           `ERROR: Bugbook API unreachable — finding logged locally but not linked to bugbook.\n` +
-          `Error: ${err instanceof Error ? err.message : String(err)}\n\n` +
-          `## Next Steps\n` +
-          `Retry \`bazdmeg_fixer_report_finding\` or check API connectivity.`,
+            `Error: ${err instanceof Error ? err.message : String(err)}\n\n` +
+            `## Next Steps\n` +
+            `Retry \`bazdmeg_fixer_report_finding\` or check API connectivity.`,
         );
       }
 
@@ -235,8 +241,8 @@ export function registerFixerTools(server: McpServer): void {
 
       return textResult(
         `Finding reported and linked to Bug: ${bugbookRes.bugId} (Finding ID: ${findingId})\n\n` +
-        `## Next Steps\n` +
-        `Continue exploring with remaining scenarios, or call \`bazdmeg_fixer_quiz\` when exploration is complete.`,
+          `## Next Steps\n` +
+          `Continue exploring with remaining scenarios, or call \`bazdmeg_fixer_quiz\` when exploration is complete.`,
       );
     },
   });
@@ -275,10 +281,11 @@ export function registerFixerTools(server: McpServer): void {
         }),
       });
 
-      const stageIdx = STAGE_ORDER.indexOf(args.stage as typeof STAGE_ORDER[number]);
-      const nextStageName = stageIdx >= 0 && stageIdx < STAGE_ORDER.length - 1
-        ? STAGE_ORDER[stageIdx + 1]
-        : "completed";
+      const stageIdx = STAGE_ORDER.indexOf(args.stage as (typeof STAGE_ORDER)[number]);
+      const nextStageName =
+        stageIdx >= 0 && stageIdx < STAGE_ORDER.length - 1
+          ? STAGE_ORDER[stageIdx + 1]
+          : "completed";
 
       let nextSteps: string;
       if (passed) {
@@ -293,8 +300,8 @@ export function registerFixerTools(server: McpServer): void {
 
       return textResult(
         `Quiz Result for ${args.stage}: ${correct}/${bank.length} correct.\n` +
-        `Status: ${passed ? "PASSED" : "FAILED"}\n\n` +
-        nextSteps,
+          `Status: ${passed ? "PASSED" : "FAILED"}\n\n` +
+          nextSteps,
       );
     },
   });
@@ -324,7 +331,9 @@ export function registerFixerTools(server: McpServer): void {
       });
 
       // Check pass count for this bug after recording
-      const data = await fetchInternal<SessionResponse>(`/internal/fixer/sessions/${args.sessionId}`);
+      const data = await fetchInternal<SessionResponse>(
+        `/internal/fixer/sessions/${args.sessionId}`,
+      );
       const validations = data.validations || [];
       const passCount = validations.filter(
         (v) => v.bug_id === args.bugId && v.verdict === "PASS",
@@ -343,8 +352,8 @@ export function registerFixerTools(server: McpServer): void {
 
       return textResult(
         `Validation ${validationId} recorded as ${args.verdict} for bug ${args.bugId}.\n\n` +
-        `## Next Steps\n` +
-        nextSteps,
+          `## Next Steps\n` +
+          nextSteps,
       );
     },
   });
@@ -357,7 +366,9 @@ export function registerFixerTools(server: McpServer): void {
       sessionId: zod.string(),
     },
     handler: async (args) => {
-      const data = await fetchInternal<SessionResponse>(`/internal/fixer/sessions/${args.sessionId}`);
+      const data = await fetchInternal<SessionResponse>(
+        `/internal/fixer/sessions/${args.sessionId}`,
+      );
       const session = data.session;
       const agents = data.agents || [];
       const findings = data.findings || [];
@@ -432,15 +443,17 @@ export function registerFixerTools(server: McpServer): void {
     },
     handler: async (args) => {
       // Validate stage transition
-      const sessionData = await fetchInternal<SessionResponse>(`/internal/fixer/sessions/${args.sessionId}`);
+      const sessionData = await fetchInternal<SessionResponse>(
+        `/internal/fixer/sessions/${args.sessionId}`,
+      );
       const currentStage = sessionData.session.stage as string;
-      const currentIdx = STAGE_ORDER.indexOf(currentStage as typeof STAGE_ORDER[number]);
-      const nextIdx = STAGE_ORDER.indexOf(args.nextStage as typeof STAGE_ORDER[number]);
+      const currentIdx = STAGE_ORDER.indexOf(currentStage as (typeof STAGE_ORDER)[number]);
+      const nextIdx = STAGE_ORDER.indexOf(args.nextStage as (typeof STAGE_ORDER)[number]);
 
       if (currentIdx === -1 || nextIdx === -1 || nextIdx !== currentIdx + 1) {
         return textResult(
           `ERROR: Invalid stage transition from "${currentStage}" to "${args.nextStage}". ` +
-          `Expected next stage: "${STAGE_ORDER[currentIdx + 1] ?? "none"}".`,
+            `Expected next stage: "${STAGE_ORDER[currentIdx + 1] ?? "none"}".`,
         );
       }
 
@@ -451,16 +464,18 @@ export function registerFixerTools(server: McpServer): void {
 
       const stageGuidance: Record<string, string> = {
         "2_explore": "Assign agents with `bazdmeg_fixer_assign_personas` and begin exploration.",
-        "3_triage": "QA Experts should reproduce and confirm bugs. Log Monitors should correlate error logs.",
+        "3_triage":
+          "QA Experts should reproduce and confirm bugs. Log Monitors should correlate error logs.",
         "4_fix": "Apply fixes and submit for validation with `bazdmeg_fixer_validate`.",
-        "5_regression": "Re-run all 16 scenarios against the Stage 2 baseline. Report regressions as new findings.",
+        "5_regression":
+          "Re-run all 16 scenarios against the Stage 2 baseline. Report regressions as new findings.",
         completed: "Session complete. Generate final report with `bazdmeg_fixer_report`.",
       };
 
       return textResult(
         `Session ${args.sessionId} advanced to stage ${args.nextStage}.\n\n` +
-        `## Next Steps\n` +
-        `Proceed with the activities for stage ${args.nextStage}. ${stageGuidance[args.nextStage] ?? ""}`,
+          `## Next Steps\n` +
+          `Proceed with the activities for stage ${args.nextStage}. ${stageGuidance[args.nextStage] ?? ""}`,
       );
     },
   });
@@ -468,12 +483,15 @@ export function registerFixerTools(server: McpServer): void {
   // ── bazdmeg_fixer_report ─────────────────────────────────────────────
   createZodTool(server, {
     name: "bazdmeg_fixer_report",
-    description: "Generate final regression report comparing current findings with Stage 2 baseline",
+    description:
+      "Generate final regression report comparing current findings with Stage 2 baseline",
     schema: {
       sessionId: zod.string(),
     },
     handler: async (args) => {
-      const data = await fetchInternal<SessionResponse>(`/internal/fixer/sessions/${args.sessionId}`);
+      const data = await fetchInternal<SessionResponse>(
+        `/internal/fixer/sessions/${args.sessionId}`,
+      );
       const session = data.session;
       const findings = data.findings || [];
       const validations = data.validations || [];
@@ -501,9 +519,7 @@ export function registerFixerTools(server: McpServer): void {
         ([, validators]) => validators.length >= 2,
       );
       const allBugIds = [...new Set(findings.map((f) => f.bug_id as string))];
-      const remainingBugs = allBugIds.filter(
-        (id) => !fixedBugs.some(([bugId]) => bugId === id),
-      );
+      const remainingBugs = allBugIds.filter((id) => !fixedBugs.some(([bugId]) => bugId === id));
 
       let report = `## Fixer Session Report: ${args.sessionId}\n\n`;
       report += `**Stage**: ${session.stage} | **Target**: ${session.target}\n`;
@@ -563,9 +579,9 @@ export function registerFixerTools(server: McpServer): void {
       });
       return textResult(
         `## Session Cancelled: ${args.sessionId}\n\n` +
-        (args.reason ? `**Reason**: ${args.reason}\n\n` : "") +
-        `## Next Steps\n` +
-        `Start a new session with \`bazdmeg_fixer_start\` if needed.`,
+          (args.reason ? `**Reason**: ${args.reason}\n\n` : "") +
+          `## Next Steps\n` +
+          `Start a new session with \`bazdmeg_fixer_start\` if needed.`,
       );
     },
   });
@@ -579,7 +595,9 @@ export function registerFixerTools(server: McpServer): void {
       agentId: zod.string(),
     },
     handler: async (args) => {
-      const data = await fetchInternal<SessionResponse>(`/internal/fixer/sessions/${args.sessionId}`);
+      const data = await fetchInternal<SessionResponse>(
+        `/internal/fixer/sessions/${args.sessionId}`,
+      );
       const agents = data.agents || [];
       const agent = agents.find((a) => a.agent_id === args.agentId);
       if (!agent) {
@@ -588,9 +606,7 @@ export function registerFixerTools(server: McpServer): void {
         );
       }
 
-      const findings = (data.findings || []).filter(
-        (f) => f.agent_id === args.agentId,
-      );
+      const findings = (data.findings || []).filter((f) => f.agent_id === args.agentId);
 
       let result = `## Your Assignment\n\n`;
       result += `**Role**: ${agent.role}\n`;

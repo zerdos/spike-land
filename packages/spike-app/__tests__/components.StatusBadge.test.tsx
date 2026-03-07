@@ -4,7 +4,14 @@ import { StatusBadge } from "@/components/StatusBadge";
 import type { AppStatus } from "@/components/StatusBadge";
 
 describe("StatusBadge", () => {
-  const statuses: AppStatus[] = ["prompting", "drafting", "building", "live", "archived", "deleted"];
+  const statuses: AppStatus[] = [
+    "prompting",
+    "drafting",
+    "building",
+    "live",
+    "archived",
+    "deleted",
+  ];
 
   it.each(statuses)("renders status text for %s", (status) => {
     render(<StatusBadge status={status} />);

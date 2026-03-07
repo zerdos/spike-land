@@ -1,9 +1,7 @@
 {
   "name": "google-analytics",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/google-oauth.ts",
     "mcp/index.ts",

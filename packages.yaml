@@ -16,9 +16,9 @@ packages:
     description: Isomorphic Hyper-Block for spike.land marketing and blog
     entry: index.ts
     exports:
-      "./core": ./core/index.ts
+      "./core": ./core-logic/core-index.ts
       "./ui": ./ui/index.ts
-      "./mcp": ./mcp/index.ts
+      "./mcp": ./mcp/mcp-index.ts
     deps: [shared]
     publish:
       registries: [github]
@@ -30,11 +30,11 @@ packages:
     entry: index.ts
     exports:
       ".": ./index.ts
-      "./storage": ./storage/index.ts
-      "./adapters/d1": ./adapters/d1.ts
-      "./adapters/idb": ./adapters/idb.ts
-      "./react": ./react/index.ts
-      "./mcp": ./mcp/index.ts
+      "./storage": ./core-logic/storage-index.ts
+      "./adapters/d1": ./core-logic/d1.ts
+      "./adapters/idb": ./db/idb.ts
+      "./react": ./ui/react-index.ts
+      "./mcp": ./lazy-imports/mcp-index.ts
     deps: [shared, mcp-server-base]
     publish:
       registries: [github]
@@ -63,11 +63,11 @@ packages:
     entry: index.ts
     exports:
       ".": ./index.ts
-      "./types": ./types/index.ts
-      "./constants": ./constants/index.ts
-      "./utils": ./utils/index.ts
-      "./validators": ./validators/index.ts
-      "./schemas": ./schemas/index.ts
+      "./types": ./core-logic/types-index.ts
+      "./constants": ./core-logic/constants-index.ts
+      "./utils": ./core-logic/index.ts
+      "./validators": ./core-logic/validations-index.ts
+      "./schemas": ./core-logic/json-schemas.ts
     publish:
       registries: [github, npm]
 
@@ -84,15 +84,15 @@ packages:
     kind: library
     version: 1.0.0
     description: From-scratch React (Fiber reconciler, scheduler, multi-target rendering)
-    entry: react/index.ts
+    entry: core-logic/react/index.ts
     exports:
-      ".": ./react/index.ts
-      "./jsx-runtime": ./react/jsx-runtime.ts
-      "./jsx-dev-runtime": ./react/jsx-dev-runtime.ts
-      "./react-dom": ./react-dom/index.ts
-      "./react-dom/client": ./react-dom/client.ts
-      "./react-dom/server": ./react-dom/server.ts
-      "./scheduler": ./scheduler/index.ts
+      ".": ./core-logic/react/index.ts
+      "./jsx-runtime": ./core-logic/react/jsx-runtime.ts
+      "./jsx-dev-runtime": ./core-logic/react/jsx-runtime.ts
+      "./react-dom": ./core-logic/react-dom/index.ts
+      "./react-dom/client": ./core-logic/react-dom/client.ts
+      "./react-dom/server": ./core-logic/react-dom/server.ts
+      "./scheduler": ./core-logic/scheduler/index.ts
     publish:
       registries: [github, npm]
 
@@ -111,7 +111,9 @@ packages:
     kind: mcp-server
     version: 0.1.0
     description: MCP server for Google Ads campaign management and reporting
-    entry: index.ts
+    # TODO: index.ts is empty (export {}); mcp/index.ts exports tool definitions only.
+    # A proper McpServer entry (like docker-compose-mcp/index.ts) is needed.
+    entry: mcp/index.ts
     bin: index.js
     deps: [mcp-server-base]
     publish:
@@ -251,7 +253,7 @@ packages:
     binName: state-machine-cli
     exports:
       ".": ./index.ts
-      "./persistence": ./persistence/index.ts
+      "./persistence": ./node-sys/persistence.ts
     publish:
       registries: [github, npm]
 

@@ -1,1 +1,1 @@
-export * from '../../../languages/features/json/json.worker';
+export * from "../../../languages/features/json/json.worker";

@@ -5,7 +5,9 @@ import { CreditWidget } from "../ui/components/CreditWidget";
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -28,7 +30,9 @@ export function DashboardPage() {
           <p className="mt-2 text-sm text-muted-foreground">Connection status</p>
         </Card>
         <Card title="Recent Apps">
-          <p className="text-sm text-muted-foreground">No recent apps yet. Create one to get started.</p>
+          <p className="text-sm text-muted-foreground">
+            No recent apps yet. Create one to get started.
+          </p>
         </Card>
         <Card title="Analytics Overview">
           <div className="space-y-2">

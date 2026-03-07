@@ -404,8 +404,19 @@ export function ModelCascadeDemo() {
                 transform={`translate(${DISPATCHER_X}, ${DISPATCHER_Y})`}
                 opacity={Math.min(1, progress * 3)}
               >
-                <circle r={18} fill="hsl(var(--card))" stroke="hsl(var(--border))" strokeWidth={1.5} />
-                <circle r={24} fill="none" stroke="hsl(var(--border))" strokeWidth={1} strokeDasharray="3 6">
+                <circle
+                  r={18}
+                  fill="hsl(var(--card))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth={1.5}
+                />
+                <circle
+                  r={24}
+                  fill="none"
+                  stroke="hsl(var(--border))"
+                  strokeWidth={1}
+                  strokeDasharray="3 6"
+                >
                   <animateTransform
                     attributeName="transform"
                     type="rotate"
@@ -519,7 +530,9 @@ export function ModelCascadeDemo() {
               >
                 {displayedConfig.label}
               </p>
-              <p className="text-[10px] text-muted-foreground font-mono mb-3">{displayedConfig.tagline}</p>
+              <p className="text-[10px] text-muted-foreground font-mono mb-3">
+                {displayedConfig.tagline}
+              </p>
 
               <div className="flex flex-col gap-2 text-[10px] font-mono">
                 <div className="flex items-center justify-between">
@@ -563,7 +576,9 @@ export function ModelCascadeDemo() {
                       className="w-1 h-1 rounded-full flex-shrink-0"
                       style={{ backgroundColor: displayedConfig.color }}
                     />
-                    <span className="text-[10px] font-mono text-muted-foreground opacity-80">{ex}</span>
+                    <span className="text-[10px] font-mono text-muted-foreground opacity-80">
+                      {ex}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -610,14 +625,22 @@ export function ModelCascadeDemo() {
                 <div className="flex items-center gap-2">
                   <span
                     className="text-[10px] font-mono"
-                    style={{ color: isActive ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground) / 0.7)" }}
+                    style={{
+                      color: isActive
+                        ? "hsl(var(--muted-foreground))"
+                        : "hsl(var(--muted-foreground) / 0.7)",
+                    }}
                   >
                     {cfg.costLabel}
                   </span>
                   <span className="text-[10px] text-muted-foreground opacity-30 font-mono">/</span>
                   <span
                     className="text-[10px] font-mono"
-                    style={{ color: isActive ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground) / 0.7)" }}
+                    style={{
+                      color: isActive
+                        ? "hsl(var(--muted-foreground))"
+                        : "hsl(var(--muted-foreground) / 0.7)",
+                    }}
                   >
                     {cfg.speedLabel}
                   </span>

@@ -12,15 +12,21 @@ export interface RegisterFeedbackToolOptions {
 export function registerFeedbackTool(server: McpServer, options: RegisterFeedbackToolOptions) {
   const toolName = options.toolName ?? "report_bug";
   const baseUrl = options.baseUrl ?? "https://spike.land/api";
-  const description = options.description ?? `Report a bug or provide feedback for ${options.serviceName}`;
+  const description =
+    options.description ?? `Report a bug or provide feedback for ${options.serviceName}`;
 
   createZodTool(server, {
     name: toolName,
     description,
     schema: {
       title: z.string().describe("Short title of the bug or feedback"),
-      description: z.string().describe("Detailed description of the bug, steps to reproduce, or feedback"),
-      severity: z.enum(["low", "medium", "high", "critical"]).optional().describe("Severity of the issue"),
+      description: z
+        .string()
+        .describe("Detailed description of the bug, steps to reproduce, or feedback"),
+      severity: z
+        .enum(["low", "medium", "high", "critical"])
+        .optional()
+        .describe("Severity of the issue"),
       error_code: z.string().optional().describe("Optional error code associated with the bug"),
       metadata: z.string().optional().describe("Optional JSON string with additional metadata"),
     },
@@ -51,7 +57,10 @@ export function registerFeedbackTool(server: McpServer, options: RegisterFeedbac
 
         if (!response.ok) {
           const text = await response.text();
-          return errorResult("FEEDBACK_FAILED", `Failed to submit feedback: ${response.status} ${text}`);
+          return errorResult(
+            "FEEDBACK_FAILED",
+            `Failed to submit feedback: ${response.status} ${text}`,
+          );
         }
 
         const data = await response.json();

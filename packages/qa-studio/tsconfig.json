@@ -8,9 +8,6 @@
     "allowImportingTsExtensions": false,
     "skipLibCheck": true
   },
-  "include": [
-    "index.ts",
-    "../../src/core/browser-automation/mcp/mcp-server.ts"
-  ],
+  "include": ["index.ts", "../../src/core/browser-automation/mcp/mcp-server.ts"],
   "references": []
 }

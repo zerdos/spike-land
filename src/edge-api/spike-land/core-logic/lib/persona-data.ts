@@ -391,12 +391,7 @@ export function getPersonaBySlug(slug: string): OnboardingPersona | null {
 export function getAnswersForPersona(slug: string): boolean[] | null {
   // Brute-force: try all 16 combos (2^4)
   for (let i = 0; i < 16; i++) {
-    const answers = [
-      Boolean(i & 8),
-      Boolean(i & 4),
-      Boolean(i & 2),
-      Boolean(i & 1),
-    ];
+    const answers = [Boolean(i & 8), Boolean(i & 4), Boolean(i & 2), Boolean(i & 1)];
     const persona = getPersonaFromAnswers(answers);
     if (persona?.slug === slug) return answers;
   }

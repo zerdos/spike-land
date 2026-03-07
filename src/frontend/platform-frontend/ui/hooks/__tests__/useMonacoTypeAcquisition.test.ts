@@ -72,9 +72,7 @@ describe("useMonacoTypeAcquisition", () => {
   });
 
   it("does not initialize ATA when monaco is null", () => {
-    const { result } = renderHook(() =>
-      useMonacoTypeAcquisition({ monaco: null, code: "" }),
-    );
+    const { result } = renderHook(() => useMonacoTypeAcquisition({ monaco: null, code: "" }));
     expect(result.current.typesReady).toBe(false);
     expect(setupTypeAcquisitionMock).not.toHaveBeenCalled();
   });
@@ -105,7 +103,10 @@ describe("useMonacoTypeAcquisition", () => {
     const { monaco } = await renderWithMonaco("");
 
     act(() => {
-      capturedDelegate.receivedFile?.("declare module 'react' {}", "node_modules/@types/react/index.d.ts");
+      capturedDelegate.receivedFile?.(
+        "declare module 'react' {}",
+        "node_modules/@types/react/index.d.ts",
+      );
     });
 
     expect(monaco.languages.typescript.typescriptDefaults.addExtraLib).toHaveBeenCalledWith(
@@ -175,7 +176,9 @@ describe("useMonacoTypeAcquisition", () => {
   it("configures diagnostics on Monaco", async () => {
     const { monaco } = await renderWithMonaco("");
 
-    expect(monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions).toHaveBeenCalledWith(
+    expect(
+      monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions,
+    ).toHaveBeenCalledWith(
       expect.objectContaining({
         noSemanticValidation: false,
         noSyntaxValidation: false,

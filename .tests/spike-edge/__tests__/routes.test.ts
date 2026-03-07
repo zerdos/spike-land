@@ -146,7 +146,9 @@ describe("r2 route — GET", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("etag")).toBe('"abc123"');
     expect(res.headers.get("content-type")).toBe("text/plain");
-    expect(res.headers.get("cache-control")).toBe("public, max-age=3600, stale-while-revalidate=3600");
+    expect(res.headers.get("cache-control")).toBe(
+      "public, max-age=3600, stale-while-revalidate=3600",
+    );
   });
 
   it("handles nested key paths correctly", async () => {
@@ -748,7 +750,11 @@ describe("analytics route", () => {
         },
         body: JSON.stringify([
           { source: "web", eventType: "click" },
-          { source: "api", eventType: "tool_call", metadata: { tool: "test", count: 5, flag: true } },
+          {
+            source: "api",
+            eventType: "tool_call",
+            metadata: { tool: "test", count: 5, flag: true },
+          },
           { badField: "invalid" },
           null,
         ]),
@@ -823,7 +829,9 @@ describe("spa route", () => {
     const res = await app.request("/assets/styles.css", {}, env);
     expect(res.status).toBe(200);
     // Non-hashed asset gets standard cache-control with stale-while-revalidate
-    expect(res.headers.get("cache-control")).toBe("public, max-age=3600, stale-while-revalidate=3600");
+    expect(res.headers.get("cache-control")).toBe(
+      "public, max-age=3600, stale-while-revalidate=3600",
+    );
   });
 
   it("serves hashed asset with immutable cache headers", async () => {
@@ -1228,7 +1236,9 @@ describe("app middleware (index.ts)", () => {
     ).fetch(new Request("https://spike.land/health"), env);
 
     expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
-    expect(res.headers.get("Permissions-Policy")).toBe("camera=(), microphone=(), geolocation=(), payment=()");
+    expect(res.headers.get("Permissions-Policy")).toBe(
+      "camera=(), microphone=(), geolocation=(), payment=()",
+    );
     expect(res.headers.get("X-Frame-Options")).toBe("DENY");
   });
 
@@ -1393,11 +1403,14 @@ describe("SPA Cookie Consent", () => {
     app.route("/", spa);
     const env = createMockEnv();
     const mockR2 = vi.fn((key: string) => {
-      if (key === "index.html") return Promise.resolve(makeR2Object("<html><head></head><body></body></html>", "text/html"));
+      if (key === "index.html")
+        return Promise.resolve(
+          makeR2Object("<html><head></head><body></body></html>", "text/html"),
+        );
       return Promise.resolve(null);
     });
     (env.SPA_ASSETS.get as any).mockImplementation(mockR2);
-    
+
     const req = new Request("https://spike.land/about");
     const res = await app.request(req, undefined, env);
     expect(res.status).toBe(200);
@@ -1410,13 +1423,16 @@ describe("SPA Cookie Consent", () => {
     app.route("/", spa);
     const env = createMockEnv();
     const mockR2 = vi.fn((key: string) => {
-      if (key === "index.html") return Promise.resolve(makeR2Object("<html><head></head><body></body></html>", "text/html"));
+      if (key === "index.html")
+        return Promise.resolve(
+          makeR2Object("<html><head></head><body></body></html>", "text/html"),
+        );
       return Promise.resolve(null);
     });
     (env.SPA_ASSETS.get as any).mockImplementation(mockR2);
-    
+
     const req = new Request("https://spike.land/about", {
-      headers: { cookie: "cookie_consent=accepted" }
+      headers: { cookie: "cookie_consent=accepted" },
     });
     const res = await app.request(req, undefined, env);
     expect(res.status).toBe(200);
@@ -1429,10 +1445,14 @@ describe("API 404 Catch-all", () => {
   it("returns JSON 404 for unknown /api/* routes", async () => {
     const { default: appModule } = await import("../../../src/edge-api/main/index.js");
     const env = createMockEnv();
-    const res = await (appModule as any).fetch(new Request("https://spike.land/api/does-not-exist"), env, { waitUntil: () => {}, passThroughOnException: () => {} });
+    const res = await (appModule as any).fetch(
+      new Request("https://spike.land/api/does-not-exist"),
+      env,
+      { waitUntil: () => {}, passThroughOnException: () => {} },
+    );
     expect(res.status).toBe(404);
     expect(res.headers.get("content-type")).toContain("application/json");
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data).toEqual({ error: "Not Found", path: "/api/does-not-exist" });
   });
 });

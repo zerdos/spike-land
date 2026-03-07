@@ -149,15 +149,14 @@ describe("PuppeteerAdapter", () => {
 
     const adapter = new PuppeteerAdapter(mockBinding);
     const page = await adapter.newPage();
-    await expect(page.getByRole("button", { name: "Missing" }).click())
-      .rejects.toThrow("No element found");
+    await expect(page.getByRole("button", { name: "Missing" }).click()).rejects.toThrow(
+      "No element found",
+    );
   });
 
   it("page.getAccessibilityTree uses CDP", async () => {
     mockCdpSend.mockResolvedValue({
-      nodes: [
-        { nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Test" } },
-      ],
+      nodes: [{ nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Test" } }],
     });
 
     const adapter = new PuppeteerAdapter(mockBinding);

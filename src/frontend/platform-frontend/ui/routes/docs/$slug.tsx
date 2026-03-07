@@ -32,7 +32,7 @@ export function DocPage() {
 
   useEffect(() => {
     fetch(apiUrl(`/docs/${slug}`))
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Not found");
         return res.json();
       })
@@ -74,8 +74,12 @@ export function DocPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 space-y-4">
         <h1 className="text-2xl font-bold text-foreground">Document not found</h1>
-        <p className="text-muted-foreground">The requested documentation page could not be found.</p>
-        <Link to="/docs" className="text-primary underline hover:text-primary/80">Back to Documentation</Link>
+        <p className="text-muted-foreground">
+          The requested documentation page could not be found.
+        </p>
+        <Link to="/docs" className="text-primary underline hover:text-primary/80">
+          Back to Documentation
+        </Link>
       </div>
     );
   }
@@ -83,9 +87,24 @@ export function DocPage() {
   // Simple markdown-to-HTML conversion for headings and paragraphs
   const renderContent = (content: string) => {
     return content.split("\n").map((line, i) => {
-      if (line.startsWith("# ")) return <h1 key={i} className="text-3xl font-bold text-foreground mb-4">{line.slice(2)}</h1>;
-      if (line.startsWith("## ")) return <h2 key={i} className="text-2xl font-semibold text-foreground mt-8 mb-3">{line.slice(3)}</h2>;
-      if (line.startsWith("### ")) return <h3 key={i} className="text-xl font-semibold text-foreground mt-6 mb-2">{line.slice(4)}</h3>;
+      if (line.startsWith("# "))
+        return (
+          <h1 key={i} className="text-3xl font-bold text-foreground mb-4">
+            {line.slice(2)}
+          </h1>
+        );
+      if (line.startsWith("## "))
+        return (
+          <h2 key={i} className="text-2xl font-semibold text-foreground mt-8 mb-3">
+            {line.slice(3)}
+          </h2>
+        );
+      if (line.startsWith("### "))
+        return (
+          <h3 key={i} className="text-xl font-semibold text-foreground mt-6 mb-2">
+            {line.slice(4)}
+          </h3>
+        );
       if (line.startsWith("---")) return <hr key={i} className="my-8 border-border" />;
       if (line.trim() === "") return <br key={i} />;
       // Handle links in markdown [text](url)
@@ -94,15 +113,26 @@ export function DocPage() {
         const safeText = escapeHtml(text);
         return `<a href="${safeUrl}" class="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
       });
-      return <p key={i} className="text-foreground leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: withLinks }} />;
+      return (
+        <p
+          key={i}
+          className="text-foreground leading-relaxed mb-2"
+          dangerouslySetInnerHTML={{ __html: withLinks }}
+        />
+      );
     });
   };
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
-        <Link to="/docs" className="hover:text-foreground transition-colors">Docs</Link>
+      <nav
+        className="flex items-center gap-2 text-sm text-muted-foreground"
+        aria-label="Breadcrumb"
+      >
+        <Link to="/docs" className="hover:text-foreground transition-colors">
+          Docs
+        </Link>
         <span aria-hidden="true">/</span>
         <span>{doc.category}</span>
         <span aria-hidden="true">/</span>
@@ -110,13 +140,14 @@ export function DocPage() {
       </nav>
 
       {/* Content */}
-      <article className="prose-like space-y-0">
-        {renderContent(doc.content)}
-      </article>
+      <article className="prose-like space-y-0">{renderContent(doc.content)}</article>
 
       {/* Back link */}
       <div className="pt-8 border-t border-border">
-        <Link to="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link
+          to="/docs"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
           <span aria-hidden="true">&larr;</span> Back to Documentation
         </Link>
       </div>

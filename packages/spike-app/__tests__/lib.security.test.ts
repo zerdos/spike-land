@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { sanitizeUrl, escapeHtml } from "../../../src/frontend/platform-frontend/core-logic/lib/security";
+import {
+  sanitizeUrl,
+  escapeHtml,
+} from "../../../src/frontend/platform-frontend/core-logic/lib/security";
 
 describe("security utils", () => {
   describe("sanitizeUrl", () => {
@@ -42,7 +45,9 @@ describe("security utils", () => {
   describe("escapeHtml", () => {
     it("escapes special characters", () => {
       expect(escapeHtml("<div>")).toBe("&lt;div&gt;");
-      expect(escapeHtml('content with "quotes" and \'single\'')).toBe("content with &quot;quotes&quot; and &#039;single&#039;");
+      expect(escapeHtml("content with \"quotes\" and 'single'")).toBe(
+        "content with &quot;quotes&quot; and &#039;single&#039;",
+      );
       expect(escapeHtml("a & b")).toBe("a &amp; b");
     });
   });

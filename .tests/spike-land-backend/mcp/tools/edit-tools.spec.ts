@@ -249,9 +249,7 @@ describe("edit-tools", () => {
       );
 
       expect(result.replacements).toBe(2);
-      expect(updateSession).toHaveBeenCalledWith(
-        expect.objectContaining({ code: "abcNUMdefNUM" }),
-      );
+      expect(updateSession).toHaveBeenCalledWith(expect.objectContaining({ code: "abcNUMdefNUM" }));
     });
 
     it("handles non-global regex replacement", async () => {
@@ -268,9 +266,7 @@ describe("edit-tools", () => {
 
       // When not global, code reports global match count but only replaces first
       expect(result.replacements).toBeGreaterThanOrEqual(1);
-      expect(updateSession).toHaveBeenCalledWith(
-        expect.objectContaining({ code: "abcNUMdef456" }),
-      );
+      expect(updateSession).toHaveBeenCalledWith(expect.objectContaining({ code: "abcNUMdef456" }));
     });
 
     it("returns no replacements when search not found", async () => {
@@ -483,7 +479,15 @@ describe("edit-tools", () => {
         messages: [],
       };
       // No matches in empty string
-      const result = await executeSearchAndReplace(session, "space", "foo", "bar", false, true, updateSession);
+      const result = await executeSearchAndReplace(
+        session,
+        "space",
+        "foo",
+        "bar",
+        false,
+        true,
+        updateSession,
+      );
       expect(result.replacements).toBe(0);
       expect(result.message).toBe("No matches found");
     });
@@ -494,7 +498,15 @@ describe("edit-tools", () => {
       const updateSession = vi.fn().mockResolvedValue(undefined);
       const session = makeSession("hello world");
       // Regex that matches nothing
-      const result = await executeSearchAndReplace(session, "space", "\\d+", "NUM", true, true, updateSession);
+      const result = await executeSearchAndReplace(
+        session,
+        "space",
+        "\\d+",
+        "NUM",
+        true,
+        true,
+        updateSession,
+      );
       expect(result.replacements).toBe(0);
       expect(result.message).toBe("No matches found");
     });
@@ -504,7 +516,15 @@ describe("edit-tools", () => {
     it("returns 0 replacements when global literal has no matches", async () => {
       const updateSession = vi.fn().mockResolvedValue(undefined);
       const session = makeSession("hello world");
-      const result = await executeSearchAndReplace(session, "space", "zzz", "ZZZ", false, true, updateSession);
+      const result = await executeSearchAndReplace(
+        session,
+        "space",
+        "zzz",
+        "ZZZ",
+        false,
+        true,
+        updateSession,
+      );
       expect(result.replacements).toBe(0);
     });
   });

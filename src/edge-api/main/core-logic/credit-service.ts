@@ -65,7 +65,9 @@ export async function getBalance(
   // Update daily_limit if tier changed
   if (row.daily_limit !== dailyLimit) {
     await db
-      .prepare("UPDATE credit_balances SET daily_limit = ?, updated_at = datetime('now') WHERE user_id = ?")
+      .prepare(
+        "UPDATE credit_balances SET daily_limit = ?, updated_at = datetime('now') WHERE user_id = ?",
+      )
       .bind(dailyLimit, userId)
       .run();
   }

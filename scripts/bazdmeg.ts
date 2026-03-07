@@ -1,16 +1,7 @@
 #!/usr/bin/env tsx
 import { execSync } from "node:child_process";
-import {
-  selectPrompt,
-  recordOutcome,
-  formatRankings,
-  getRatings,
-} from "./bazdmeg/prompt-arena.js";
-import {
-  runAllChecks,
-  getFailureOutput,
-  formatCheckLine,
-} from "./bazdmeg/runner.js";
+import { selectPrompt, recordOutcome, formatRankings, getRatings } from "./bazdmeg/prompt-arena.js";
+import { runAllChecks, getFailureOutput, formatCheckLine } from "./bazdmeg/runner.js";
 import { spawnClaude } from "./bazdmeg/agent.js";
 import {
   getChangedFiles,
@@ -110,7 +101,9 @@ function phase1(
 
     const prompt = selectPrompt("fixer");
     const errorsBefore = suite.errorCount;
-    console.log(`    → Agent fixing errors (${prompt.id}, ELO ${getRatings().prompts[prompt.id]?.elo ?? "?"})...`);
+    console.log(
+      `    → Agent fixing errors (${prompt.id}, ELO ${getRatings().prompts[prompt.id]?.elo ?? "?"})...`,
+    );
 
     const errors = getFailureOutput(suite);
     addLogEvent(log, "phase1", "agent_spawn", {
@@ -173,9 +166,7 @@ function phase2(
     const diffs = getPerFileDiffs(files);
     const reviewPrompt = selectPrompt("reviewer");
     const reviewElo = getRatings().prompts[reviewPrompt.id]?.elo ?? "?";
-    console.log(
-      `  [Cycle ${cycle}] prompt: ${reviewPrompt.id} (ELO ${reviewElo})`,
-    );
+    console.log(`  [Cycle ${cycle}] prompt: ${reviewPrompt.id} (ELO ${reviewElo})`);
 
     addLogEvent(log, "phase2", "review_start", {
       cycle,
@@ -206,19 +197,13 @@ function phase2(
     if (approved.length > 0) {
       const approvedFiles = approved.map((v) => v.file);
       commitFiles(approvedFiles, `chore: auto-reviewed (cycle ${cycle})`);
-      console.log(
-        `    → Committed ${approved.length} file${approved.length > 1 ? "s" : ""}.`,
-      );
+      console.log(`    → Committed ${approved.length} file${approved.length > 1 ? "s" : ""}.`);
     }
 
     // Score reviewer
     const reviewOutcome: Outcome =
       rejected.length === 0 ? "win" : approved.length > 0 ? "draw" : "loss";
-    const { delta: revDelta } = recordOutcome(
-      reviewPrompt.id,
-      runId,
-      reviewOutcome,
-    );
+    const { delta: revDelta } = recordOutcome(reviewPrompt.id, runId, reviewOutcome);
     promptsUsed.push({ promptId: reviewPrompt.id, outcome: reviewOutcome });
 
     // Fix rejected files
@@ -238,11 +223,7 @@ function phase2(
       // Re-run checks after fixer
       const recheck = runAllChecks();
       const fixOutcome: Outcome = recheck.allPassed ? "win" : "draw";
-      const { delta: fixDelta } = recordOutcome(
-        fixerPrompt.id,
-        runId,
-        fixOutcome,
-      );
+      const { delta: fixDelta } = recordOutcome(fixerPrompt.id, runId, fixOutcome);
       promptsUsed.push({ promptId: fixerPrompt.id, outcome: fixOutcome });
 
       addLogEvent(log, "phase2", "fix_outcome", {
@@ -276,13 +257,8 @@ function phase3(log: ReturnType<typeof createRunLog>): Phase3Result {
   addLogEvent(log, "phase3", "start", {});
   const result = runPhase3();
 
-  const workers =
-    result.workersDeployed.length > 0
-      ? result.workersDeployed.join(", ")
-      : "none";
-  console.log(
-    `  SPA: ${result.spaUploaded} upload, ${result.spaSkipped} skip (hash match)`,
-  );
+  const workers = result.workersDeployed.length > 0 ? result.workersDeployed.join(", ") : "none";
+  console.log(`  SPA: ${result.spaUploaded} upload, ${result.spaSkipped} skip (hash match)`);
   console.log(`  Workers: ${workers}`);
   console.log("  ✓ Deployed.\n");
 

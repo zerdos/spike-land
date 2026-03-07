@@ -349,27 +349,21 @@ describe("GitHubClient", () => {
       mockPullsGet.mockResolvedValueOnce({ data: { notAString: true } });
 
       const client = new GitHubClient({ token: "test" });
-      await expect(client.getPRDiff("owner", "repo", 1)).rejects.toThrow(
-        "Failed to get PR diff",
-      );
+      await expect(client.getPRDiff("owner", "repo", 1)).rejects.toThrow("Failed to get PR diff");
     });
 
     it("getPRDiff throws wrapped error on API failure", async () => {
       mockPullsGet.mockRejectedValueOnce(new Error("Not found"));
 
       const client = new GitHubClient({ token: "test" });
-      await expect(client.getPRDiff("owner", "repo", 1)).rejects.toThrow(
-        "Failed to get PR diff",
-      );
+      await expect(client.getPRDiff("owner", "repo", 1)).rejects.toThrow("Failed to get PR diff");
     });
 
     it("getPRFiles throws wrapped error on API failure", async () => {
       mockPullsListFiles.mockRejectedValueOnce(new Error("Forbidden"));
 
       const client = new GitHubClient({ token: "test" });
-      await expect(client.getPRFiles("owner", "repo", 1)).rejects.toThrow(
-        "Failed to get PR files",
-      );
+      await expect(client.getPRFiles("owner", "repo", 1)).rejects.toThrow("Failed to get PR files");
     });
 
     it("submitReview throws wrapped error on API failure", async () => {

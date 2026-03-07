@@ -37,8 +37,7 @@ export function LearnIndexPage() {
             el.remove();
           }
           // Try to get article/main content first, fall back to body
-          const mainContent =
-            doc.querySelector("article") ?? doc.querySelector("main") ?? doc.body;
+          const mainContent = doc.querySelector("article") ?? doc.querySelector("main") ?? doc.body;
           fetchedText = (mainContent?.textContent ?? "")
             .replace(/\s+/g, " ")
             .replace(/\n{3,}/g, "\n\n")
@@ -49,8 +48,7 @@ export function LearnIndexPage() {
           }
         } catch (fetchErr) {
           // If fetch fails (CORS, network, etc.), show a helpful error
-          const msg =
-            fetchErr instanceof Error ? fetchErr.message : "Failed to fetch URL content";
+          const msg = fetchErr instanceof Error ? fetchErr.message : "Failed to fetch URL content";
           setError(
             `${msg}. Try pasting the article text directly using the "Paste Text" tab instead.`,
           );
@@ -82,13 +80,18 @@ export function LearnIndexPage() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">LearnIt Quiz Tool</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          This is an AI-powered learning and quiz tool (not platform documentation). Paste a URL or content, read the article, then prove your understanding through a quiz.
-          Earn a shareable badge when you master all concepts.
+          This is an AI-powered learning and quiz tool (not platform documentation). Paste a URL or
+          content, read the article, then prove your understanding through a quiz. Earn a shareable
+          badge when you master all concepts.
         </p>
       </div>
 
       {/* Input mode tabs */}
-      <div role="tablist" aria-label="Content input mode" className="flex gap-1 rounded-lg border border-border bg-muted p-1">
+      <div
+        role="tablist"
+        aria-label="Content input mode"
+        className="flex gap-1 rounded-lg border border-border bg-muted p-1"
+      >
         <button
           role="tab"
           aria-selected={inputMode === "url"}
@@ -125,7 +128,12 @@ export function LearnIndexPage() {
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         {inputMode === "url" ? (
           <div id="learn-panel-url" role="tabpanel" aria-labelledby="learn-tab-url">
-            <label htmlFor="learn-content-url" className="mb-2 block text-sm font-medium text-foreground">Content URL</label>
+            <label
+              htmlFor="learn-content-url"
+              className="mb-2 block text-sm font-medium text-foreground"
+            >
+              Content URL
+            </label>
             <input
               id="learn-content-url"
               type="url"
@@ -137,7 +145,12 @@ export function LearnIndexPage() {
           </div>
         ) : (
           <div id="learn-panel-text" role="tabpanel" aria-labelledby="learn-tab-text">
-            <label htmlFor="learn-content-text" className="mb-2 block text-sm font-medium text-foreground">Content Text</label>
+            <label
+              htmlFor="learn-content-text"
+              className="mb-2 block text-sm font-medium text-foreground"
+            >
+              Content Text
+            </label>
             <textarea
               id="learn-content-text"
               value={contentText}

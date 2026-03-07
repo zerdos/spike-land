@@ -85,9 +85,7 @@ function writeCache(data: Record<string, ExperimentAssignment>): void {
   }
 }
 
-function mergeConfigs(
-  assignments: Record<string, ExperimentAssignment>,
-): WidgetVariantConfig {
+function mergeConfigs(assignments: Record<string, ExperimentAssignment>): WidgetVariantConfig {
   const merged: WidgetVariantConfig = { ...DEFAULT_CONFIG };
 
   for (const assignment of Object.values(assignments)) {
@@ -120,14 +118,8 @@ const ExperimentContext = createContext<ExperimentContextValue>({
   getVariant: () => null,
 });
 
-export function ExperimentProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [assignments, setAssignments] = useState<
-    Record<string, ExperimentAssignment>
-  >({});
+export function ExperimentProvider({ children }: { children: ReactNode }) {
+  const [assignments, setAssignments] = useState<Record<string, ExperimentAssignment>>({});
   const [config, setConfig] = useState<WidgetVariantConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
 

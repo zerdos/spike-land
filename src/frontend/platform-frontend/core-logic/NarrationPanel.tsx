@@ -1,4 +1,3 @@
-
 interface Props {
   text: string;
   onRefClick: (ref: number) => void;
@@ -7,12 +6,17 @@ interface Props {
 
 export function NarrationPanel({ text, onRefClick, isCalling }: Props) {
   const renderText = () => {
-    if (!text) return <div className="text-muted-foreground italic flex h-full items-center justify-center">No narration available. Enter a URL and click Go.</div>;
-    
+    if (!text)
+      return (
+        <div className="text-muted-foreground italic flex h-full items-center justify-center">
+          No narration available. Enter a URL and click Go.
+        </div>
+      );
+
     // Regex to match [role name ref=N] where 'name' could contain brackets or quotes.
     // simpler match: anything inside brackets that ends with ref=\d+
     const parts = text.split(/(\[[^\]]+ref=\d+\])/g);
-    
+
     return parts.map((part, index) => {
       const match = part.match(/\[(.*?)ref=(\d+)\]/);
       if (match) {
@@ -29,12 +33,16 @@ export function NarrationPanel({ text, onRefClick, isCalling }: Props) {
           </button>
         );
       }
-      return <span key={index} className="whitespace-pre-wrap font-mono text-sm leading-relaxed">{part}</span>;
+      return (
+        <span key={index} className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
+          {part}
+        </span>
+      );
     });
   };
 
   return (
-    <div className={`h-full overflow-auto p-6 bg-background ${isCalling ? 'opacity-70' : ''}`}>
+    <div className={`h-full overflow-auto p-6 bg-background ${isCalling ? "opacity-70" : ""}`}>
       {renderText()}
     </div>
   );

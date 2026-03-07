@@ -1,5 +1,5 @@
-import React from 'react';
-import { vi } from 'vitest';
+import React from "react";
+import { vi } from "vitest";
 
 export const useCurrentFrame = vi.fn(() => 0);
 export const useVideoConfig = vi.fn(() => ({
@@ -22,10 +22,7 @@ export const Sequence = ({ children }: any) => <>{children}</>;
 export const Audio = () => null;
 export const staticFile = (path: string) => path;
 
-export const TransitionSeries = Object.assign(
-  ({ children }: any) => <>{children}</>,
-  {
-    Sequence: ({ children }: any) => <>{children}</>,
-    Transition: () => null,
-  }
-);
+export const TransitionSeries = Object.assign(({ children }: any) => <>{children}</>, {
+  Sequence: ({ children }: any) => <>{children}</>,
+  Transition: () => null,
+});

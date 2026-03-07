@@ -76,10 +76,17 @@ export function registerSubscriptionTools(server: McpServer, client: StripeClien
 
   createZodTool(server, {
     name: "stripe_churn_analysis",
-    description: "Analyze churned (canceled) subscriptions over a period. Note: churn_rate = canceled_in_period / (canceled_in_period + all_active), not a true cohort-based churn rate.",
+    description:
+      "Analyze churned (canceled) subscriptions over a period. Note: churn_rate = canceled_in_period / (canceled_in_period + all_active), not a true cohort-based churn rate.",
     schema: {
-      start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").describe("Start date in YYYY-MM-DD format"),
-      end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").describe("End date in YYYY-MM-DD format"),
+      start_date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
+        .describe("Start date in YYYY-MM-DD format"),
+      end_date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
+        .describe("End date in YYYY-MM-DD format"),
     },
     async handler({ start_date, end_date }) {
       const startUnix = Math.floor(new Date(start_date).getTime() / 1000);
@@ -97,9 +104,7 @@ export function registerSubscriptionTools(server: McpServer, client: StripeClien
             "canceled_at[lte]": String(endUnix),
           }),
         ),
-        tryCatch(
-          client.getAll<Subscription>("subscriptions", { status: "active" }),
-        ),
+        tryCatch(client.getAll<Subscription>("subscriptions", { status: "active" })),
       ]);
 
       if (!canceledResult.ok) {

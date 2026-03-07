@@ -107,10 +107,13 @@ describe("SessionSynchronizer", () => {
 
     it("fetches session and returns code when no session set", async () => {
       const mockData = makeSession({ code: "fetched!" });
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockData),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockData),
+        }),
+      );
       const ss = new SessionSynchronizer("space");
       const code = await ss.getCode();
       expect(code).toBe("fetched!");
@@ -149,7 +152,9 @@ describe("SessionSynchronizer", () => {
       const session = makeSession({ code: "v1" });
       const ss = new SessionSynchronizer("space", session);
       vi.spyOn(console, "error").mockImplementation(() => {});
-      ss.subscribe(() => { throw new Error("subscriber boom"); });
+      ss.subscribe(() => {
+        throw new Error("subscriber boom");
+      });
       expect(() => {
         ss.broadcastSession({ ...makeSession({ code: "v2" }), sender: "user" });
       }).not.toThrow();

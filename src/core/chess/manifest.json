@@ -1,10 +1,7 @@
 {
   "name": "chess",
   "category": "core",
-  "dependencies": [
-    "@spike-land-ai/shared",
-    "chess.js"
-  ],
+  "dependencies": ["@spike-land-ai/shared", "chess.js"],
   "files": [
     "chess-core/engine.ts",
     "core-logic/challenge-manager.ts",

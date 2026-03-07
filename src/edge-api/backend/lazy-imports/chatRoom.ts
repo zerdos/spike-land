@@ -647,10 +647,7 @@ export class Code implements DurableObject {
     });
   }
 
-  async updateAndBroadcastSession(
-    newSession: ICodeSession,
-    excludeWs?: WebSocket,
-  ) {
+  async updateAndBroadcastSession(newSession: ICodeSession, excludeWs?: WebSocket) {
     const oldSession = this.getSession();
     const oldHash = computeSessionHash(oldSession);
     const hashCode = computeSessionHash(newSession);

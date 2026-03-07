@@ -24,15 +24,15 @@ describe("SQLite StorageAdapter", () => {
       } finally {
         // Clean up temp files
         for (const suffix of ["", "-wal", "-shm"]) {
-          try { fs.unlinkSync(dbPath + suffix); } catch {}
+          try {
+            fs.unlinkSync(dbPath + suffix);
+          } catch {}
         }
       }
     });
 
     it("should report memory journal mode for in-memory databases", async () => {
-      const result = await adapter.sql.execute<{ journal_mode: string }>(
-        "PRAGMA journal_mode",
-      );
+      const result = await adapter.sql.execute<{ journal_mode: string }>("PRAGMA journal_mode");
       expect(result.rows[0]!.journal_mode).toBe("memory");
     });
   });
@@ -83,31 +83,19 @@ describe("SQLite StorageAdapter", () => {
 
   describe("SQL adapter", () => {
     it("should execute CREATE TABLE and INSERT", async () => {
-      await adapter.sql.execute(
-        "CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT NOT NULL)",
-      );
-      const result = await adapter.sql.execute(
-        "INSERT INTO items (id, name) VALUES (?, ?)",
-        [1, "foo"],
-      );
+      await adapter.sql.execute("CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT NOT NULL)");
+      const result = await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [
+        1,
+        "foo",
+      ]);
       expect(result.rowsAffected).toBe(1);
     });
 
     it("should execute SELECT", async () => {
-      await adapter.sql.execute(
-        "CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT)",
-      );
-      await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [
-        1,
-        "foo",
-      ]);
-      await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [
-        2,
-        "bar",
-      ]);
-      const result = await adapter.sql.execute<{ id: number; name: string }>(
-        "SELECT * FROM items",
-      );
+      await adapter.sql.execute("CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT)");
+      await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [1, "foo"]);
+      await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [2, "bar"]);
+      const result = await adapter.sql.execute<{ id: number; name: string }>("SELECT * FROM items");
       expect(result.rows).toHaveLength(2);
       expect(result.rows[0]!.name).toBe("foo");
     });
@@ -115,10 +103,10 @@ describe("SQLite StorageAdapter", () => {
     it("should execute UPDATE", async () => {
       await adapter.sql.execute("CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT)");
       await adapter.sql.execute("INSERT INTO items (id, name) VALUES (?, ?)", [1, "foo"]);
-      const result = await adapter.sql.execute(
-        "UPDATE items SET name = ? WHERE id = ?",
-        ["bar", 1],
-      );
+      const result = await adapter.sql.execute("UPDATE items SET name = ? WHERE id = ?", [
+        "bar",
+        1,
+      ]);
       expect(result.rowsAffected).toBe(1);
       const check = await adapter.sql.execute<{ name: string }>(
         "SELECT name FROM items WHERE id = ?",

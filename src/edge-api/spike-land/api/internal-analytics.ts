@@ -17,8 +17,7 @@ const VALID_RANGES: Record<string, number> = {
 function dayEpochForDaysAgo(days: number): number {
   const now = new Date();
   const cutoff = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) -
-      days * 86_400_000,
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - days * 86_400_000,
   );
   return cutoff.getTime();
 }

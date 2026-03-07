@@ -20,7 +20,10 @@ export interface ToolExecResult {
 }
 
 export type ToolHandler = (ctx: ToolCallCtx) => Promise<ToolExecResult>;
-export type ToolMiddleware = (ctx: ToolCallCtx, next: () => Promise<ToolExecResult>) => Promise<ToolExecResult>;
+export type ToolMiddleware = (
+  ctx: ToolCallCtx,
+  next: () => Promise<ToolExecResult>,
+) => Promise<ToolExecResult>;
 
 /**
  * Compose an array of middleware functions with a final handler into a single function.
@@ -272,7 +275,10 @@ export interface ToolExecutorOptions {
 /**
  * Create a pipeline-wrapped tool executor.
  */
-export function createToolPipeline(handler: ToolHandler, options: ToolExecutorOptions = {}): ToolHandler {
+export function createToolPipeline(
+  handler: ToolHandler,
+  options: ToolExecutorOptions = {},
+): ToolHandler {
   const middlewares: ToolMiddleware[] = [];
 
   // Custom middleware first

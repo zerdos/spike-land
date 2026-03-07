@@ -53,12 +53,14 @@ describe("MainThreadApplier", () => {
   });
 
   it("CREATE_ELEMENT_NS mutation creates namespaced element", () => {
-    sendMutations([{
-      type: MutationType.CREATE_ELEMENT_NS,
-      targetId: 2,
-      tagName: "svg",
-      namespace: "http://www.w3.org/2000/svg",
-    }]);
+    sendMutations([
+      {
+        type: MutationType.CREATE_ELEMENT_NS,
+        targetId: 2,
+        tagName: "svg",
+        namespace: "http://www.w3.org/2000/svg",
+      },
+    ]);
     const nodeMap = (applier as unknown as Record<string, unknown>).nodeMap as Map<number, Node>;
     const el = nodeMap.get(2);
     expect(el).toBeDefined();
@@ -125,16 +127,14 @@ describe("MainThreadApplier", () => {
       { type: MutationType.APPEND_CHILD, targetId: 8, parentId: 0 },
     ]);
     expect(container.children).toHaveLength(1);
-    sendMutations([
-      { type: MutationType.REMOVE_CHILD, targetId: 8, parentId: 0 },
-    ]);
+    sendMutations([{ type: MutationType.REMOVE_CHILD, targetId: 8, parentId: 0 }]);
     expect(container.children).toHaveLength(0);
   });
 
   it("REMOVE_CHILD skips when parent/child not found", () => {
-    expect(() => sendMutations([
-      { type: MutationType.REMOVE_CHILD, targetId: 999, parentId: 0 },
-    ])).not.toThrow();
+    expect(() =>
+      sendMutations([{ type: MutationType.REMOVE_CHILD, targetId: 999, parentId: 0 }]),
+    ).not.toThrow();
   });
 
   it("SET_ATTRIBUTE sets attribute on element", () => {

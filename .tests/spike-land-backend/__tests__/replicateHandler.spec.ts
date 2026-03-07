@@ -25,7 +25,10 @@ vi.mock("replicate", () => {
 
 // Import after mocks are set up
 import Replicate from "replicate";
-import { handleReplicateRequest, parseInputFromUrl } from "../../../src/edge-api/backend/ai/replicateHandler.js";
+import {
+  handleReplicateRequest,
+  parseInputFromUrl,
+} from "../../../src/edge-api/backend/ai/replicateHandler.js";
 import { getCacheDefault } from "../../../src/edge-api/backend/core-logic/utils/cache.js";
 
 describe("parseInputFromUrl", () => {
@@ -557,7 +560,7 @@ describe("handleReplicateRequest", () => {
   describe("origin restriction (lines 149-150)", () => {
     it("returns 403 for requests from unauthorized origin", async () => {
       const request = new Request("https://example.com/replicate/test.webp", {
-        headers: { "Origin": "https://unauthorized.com" },
+        headers: { Origin: "https://unauthorized.com" },
       });
       const response = await handleReplicateRequest(request, mockEnv as unknown as Env, mockCtx);
       expect(response.status).toBe(403);
@@ -574,12 +577,14 @@ describe("handleReplicateRequest", () => {
         return mockReplicateInstance;
       });
       const mockImageData = new ArrayBuffer(100);
-      global.fetch = vi.fn().mockResolvedValue(
-        new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
-      );
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
 
       const request = new Request("https://example.com/replicate/test.webp", {
-        headers: { "Origin": "https://sub.spike.land" },
+        headers: { Origin: "https://sub.spike.land" },
       });
       const response = await handleReplicateRequest(request, mockEnv as unknown as Env, mockCtx);
       expect(response.status).not.toBe(403);
@@ -594,12 +599,14 @@ describe("handleReplicateRequest", () => {
         return mockReplicateInstance;
       });
       const mockImageData = new ArrayBuffer(100);
-      global.fetch = vi.fn().mockResolvedValue(
-        new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
-      );
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
 
       const request = new Request("https://example.com/replicate/test.webp", {
-        headers: { "Origin": "http://localhost:3000" },
+        headers: { Origin: "http://localhost:3000" },
       });
       const response = await handleReplicateRequest(request, mockEnv as unknown as Env, mockCtx);
       expect(response.status).not.toBe(403);
@@ -614,9 +621,11 @@ describe("handleReplicateRequest", () => {
         return mockReplicateInstance;
       });
       const mockImageData = new ArrayBuffer(100);
-      global.fetch = vi.fn().mockResolvedValue(
-        new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
-      );
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
 
       // No Origin header — should pass the check since `origin && ...` is false when origin is null
       const request = new Request("https://example.com/replicate/test.webp");
@@ -638,9 +647,11 @@ describe("handleReplicateRequest", () => {
       });
 
       const mockImageData = new ArrayBuffer(100);
-      global.fetch = vi.fn().mockResolvedValue(
-        new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
-      );
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
 
       const params = "prompt=single result test";
       const base64Params = btoa(params);
@@ -664,9 +675,11 @@ describe("handleReplicateRequest", () => {
       });
 
       const mockImageData = new ArrayBuffer(100);
-      global.fetch = vi.fn().mockResolvedValue(
-        new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
-      );
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
 
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 

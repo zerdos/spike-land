@@ -19,11 +19,7 @@ async function hashPhone(phone: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function verifyHmac(
-  body: string,
-  signature: string,
-  secret: string,
-): Promise<boolean> {
+async function verifyHmac(body: string, signature: string, secret: string): Promise<boolean> {
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
@@ -59,9 +55,7 @@ async function checkRateLimit(
   const id = env.LIMITERS.idFromName(key);
   const stub = env.LIMITERS.get(id);
 
-  const resp = await stub.fetch(
-    new Request("https://limiter.internal/", { method: "POST" }),
-  );
+  const resp = await stub.fetch(new Request("https://limiter.internal/", { method: "POST" }));
   const cooldown = Number(await resp.text());
 
   const limit = RATE_LIMITS[tier];
@@ -85,27 +79,20 @@ async function checkRateLimit(
   return { allowed: true, remaining: limit - used };
 }
 
-async function sendWhatsAppReply(
-  env: Env,
-  phone: string,
-  message: string,
-): Promise<void> {
-  await fetch(
-    `https://graph.facebook.com/v21.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "text",
-        text: { body: message },
-      }),
+async function sendWhatsAppReply(env: Env, phone: string, message: string): Promise<void> {
+  await fetch(`https://graph.facebook.com/v21.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: phone,
+      type: "text",
+      text: { body: message },
+    }),
+  });
 }
 
 // --- Linking API (requires authMiddleware applied in index.ts) ---
@@ -167,9 +154,7 @@ whatsapp.post("/whatsapp/link/verify", async (c) => {
     return c.json({ error: "Invalid code" }, 400);
   }
 
-  await c.env.DB.prepare(
-    "UPDATE whatsapp_links SET verified_at = ?, updated_at = ? WHERE id = ?",
-  )
+  await c.env.DB.prepare("UPDATE whatsapp_links SET verified_at = ?, updated_at = ? WHERE id = ?")
     .bind(now, now, link.id)
     .run();
 
@@ -179,9 +164,7 @@ whatsapp.post("/whatsapp/link/verify", async (c) => {
 whatsapp.delete("/whatsapp/link", async (c) => {
   const userId = c.get("userId");
 
-  await c.env.DB.prepare("DELETE FROM whatsapp_links WHERE user_id = ?")
-    .bind(userId)
-    .run();
+  await c.env.DB.prepare("DELETE FROM whatsapp_links WHERE user_id = ?").bind(userId).run();
 
   return c.json({ unlinked: true });
 });
@@ -303,7 +286,9 @@ whatsapp.post("/whatsapp/webhook", async (c) => {
           "Your WhatsApp is not linked to a spike.land account. Visit https://spike.land/settings to link your number.",
         ),
       );
-    } catch { /* no ExecutionContext in tests */ }
+    } catch {
+      /* no ExecutionContext in tests */
+    }
     return c.json({ ok: true, action: "link_invitation_sent" });
   }
 
@@ -322,7 +307,9 @@ whatsapp.post("/whatsapp/webhook", async (c) => {
           recordEloEvent(c.env.DB, userId, "rate_limit_hit", payload.messageId),
         ]),
       );
-    } catch { /* no ExecutionContext in tests */ }
+    } catch {
+      /* no ExecutionContext in tests */
+    }
     return c.json({ ok: true, action: "rate_limited" });
   }
 
@@ -353,19 +340,18 @@ whatsapp.post("/whatsapp/webhook", async (c) => {
     .bind(userId, phoneHash, cmd.name, payload.message.slice(0, 100), now)
     .run();
 
-  const eloWork = cmd.name !== "chat" && cmd.name !== "help"
-    ? recordEloEvent(c.env.DB, userId, "whatsapp_productive_use", payload.messageId)
-    : Promise.resolve();
+  const eloWork =
+    cmd.name !== "chat" && cmd.name !== "help"
+      ? recordEloEvent(c.env.DB, userId, "whatsapp_productive_use", payload.messageId)
+      : Promise.resolve();
 
   try {
     c.executionCtx.waitUntil(
-      Promise.all([
-        logWork,
-        eloWork,
-        sendWhatsAppReply(c.env, payload.phone, reply),
-      ]),
+      Promise.all([logWork, eloWork, sendWhatsAppReply(c.env, payload.phone, reply)]),
     );
-  } catch { /* no ExecutionContext in tests */ }
+  } catch {
+    /* no ExecutionContext in tests */
+  }
 
   return c.json({ ok: true, action: "processed", command: cmd.name });
 });

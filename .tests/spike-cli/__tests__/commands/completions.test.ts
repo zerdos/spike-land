@@ -61,9 +61,7 @@ describe("completions command", () => {
 
       await program.parseAsync(["completions", "uninstall"], { from: "user" });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining("No completions found"),
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining("No completions found"));
     });
 
     it("shows removal confirmation when uninstall returns true", async () => {
@@ -105,9 +103,7 @@ describe("completions command", () => {
         program.parseAsync(["completions", "install"], { from: "user" }),
       ).rejects.toThrow("process.exit called");
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining("permission denied"),
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining("permission denied"));
     });
 
     it("handles install error with non-Error value (line 27 String branch)", async () => {
@@ -121,9 +117,7 @@ describe("completions command", () => {
         program.parseAsync(["completions", "install"], { from: "user" }),
       ).rejects.toThrow("process.exit called");
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining("string error"),
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining("string error"));
     });
   });
 });

@@ -521,7 +521,9 @@ export function StackCollapseDemo() {
         <h3 className="text-foreground text-xl font-semibold tracking-tight">
           Five services collapse into one
         </h3>
-        <p className="text-muted-foreground text-sm font-mono mt-1">Scroll to watch complexity dissolve</p>
+        <p className="text-muted-foreground text-sm font-mono mt-1">
+          Scroll to watch complexity dissolve
+        </p>
       </div>
 
       {/* Canvas */}

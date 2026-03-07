@@ -174,19 +174,21 @@ export function useBlogComments(slug: string) {
     queryFn: async () => {
       const res = await fetch(`/api/blog/${slug}/comments`);
       if (!res.ok) throw new Error("Failed to fetch comments");
-      return res.json() as Promise<Array<{
-        id: string;
-        user_id: string;
-        user_name: string;
-        content: string;
-        anchor_text?: string;
-        position_selector?: string;
-        parent_id?: string;
-        upvotes: number;
-        downvotes: number;
-        score: number;
-        created_at: number;
-      }>>;
+      return res.json() as Promise<
+        Array<{
+          id: string;
+          user_id: string;
+          user_name: string;
+          content: string;
+          anchor_text?: string;
+          position_selector?: string;
+          parent_id?: string;
+          upvotes: number;
+          downvotes: number;
+          score: number;
+          created_at: number;
+        }>
+      >;
     },
     enabled: !!slug,
   });

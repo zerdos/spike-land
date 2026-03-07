@@ -58,30 +58,22 @@ describe("Parser extra branch coverage", () => {
     });
 
     it("throws on unterminated double-quoted string", () => {
-      expect(() => evaluateExpression('"unterminated', {})).toThrow(
-        "unterminated string literal",
-      );
+      expect(() => evaluateExpression('"unterminated', {})).toThrow("unterminated string literal");
     });
 
     it("throws on unterminated single-quoted string", () => {
-      expect(() => evaluateExpression("'unterminated", {})).toThrow(
-        "unterminated string literal",
-      );
+      expect(() => evaluateExpression("'unterminated", {})).toThrow("unterminated string literal");
     });
 
     it("throws on escape at end of double-quoted string (line 195)", () => {
       // String with backslash at the very end (no char after escape)
       // '"hello\' — the backslash is followed by EOF
-      expect(() => evaluateExpression('"hello\\', {})).toThrow(
-        "unterminated string escape",
-      );
+      expect(() => evaluateExpression('"hello\\', {})).toThrow("unterminated string escape");
     });
 
     it("throws on escape at end of single-quoted string (line 214-216)", () => {
       // Single-quote string with backslash at end
-      expect(() => evaluateExpression("'hello\\", {})).toThrow(
-        "unterminated string escape",
-      );
+      expect(() => evaluateExpression("'hello\\", {})).toThrow("unterminated string escape");
     });
 
     it("handles escape sequence inside double-quoted string", () => {

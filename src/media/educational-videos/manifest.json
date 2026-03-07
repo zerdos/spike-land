@@ -1,11 +1,7 @@
 {
   "name": "educational-videos",
   "category": "media",
-  "dependencies": [
-    "@remotion/transitions",
-    "react",
-    "remotion"
-  ],
+  "dependencies": ["@remotion/transitions", "react", "remotion"],
   "files": [
     "core-logic/animation-utils.ts",
     "core-logic/constants.ts",

@@ -37,7 +37,8 @@ export const categoryRules: CategoryRule[] = [
     category: "cli",
   },
   {
-    predicate: (_, originalDeps) => originalDeps.has("playwright") || originalDeps.has("@playwright/test"),
+    predicate: (_, originalDeps) =>
+      originalDeps.has("playwright") || originalDeps.has("@playwright/test"),
     category: "testing",
   },
   {
@@ -110,7 +111,7 @@ const depSemanticMap: Record<string, string> = {
   "tailwind-merge": "styling",
   "class-variance-authority": "styling",
   stripe: "payments",
-  "googleapis": "google-api",
+  googleapis: "google-api",
   puppeteer: "browser-automation",
 };
 
@@ -130,57 +131,24 @@ export function getDependencyGroupName(deps: Set<string>): string {
 
   const tags: string[] = [];
 
-  if (has("playwright") || has("testing-library") || has("vitest"))
-    tags.push("testing");
-  if (
-    has("ai-sdk") ||
-    has("anthropic") ||
-    has("google/genai") ||
-    has("replicate")
-  )
-    tags.push("ai");
-  if (
-    has("drizzle") ||
-    has("sql.js") ||
-    has("sqlite") ||
-    has("better-sqlite3")
-  )
-    tags.push("db");
+  if (has("playwright") || has("testing-library") || has("vitest")) tags.push("testing");
+  if (has("ai-sdk") || has("anthropic") || has("google/genai") || has("replicate")) tags.push("ai");
+  if (has("drizzle") || has("sql.js") || has("sqlite") || has("better-sqlite3")) tags.push("db");
   if (has("hono")) tags.push("api");
   if (has("remotion")) tags.push("video");
-  if (
-    has("commander") ||
-    has("dotenv") ||
-    has("xterm") ||
-    has("readline")
-  )
-    tags.push("cli");
+  if (has("commander") || has("dotenv") || has("xterm") || has("readline")) tags.push("cli");
   if (has("react-three")) tags.push("3d");
   if (has("framer-motion") || has("tw-animate")) tags.push("animation");
   if (has("monaco")) tags.push("editor");
-  if (
-    has("mcp-server-base") ||
-    has("modelcontextprotocol") ||
-    has("mcp-image-studio")
-  )
+  if (has("mcp-server-base") || has("modelcontextprotocol") || has("mcp-image-studio"))
     tags.push("mcp");
   if (has("cloudflare") || has("workbox")) tags.push("edge");
   if (has("better-auth")) tags.push("auth");
   if (has("stripe")) tags.push("payments");
 
   // React / UI
-  if (
-    has("react") ||
-    has("radix-ui") ||
-    has("lucide") ||
-    has("emotion") ||
-    has("tailwindcss")
-  ) {
-    if (
-      !tags.includes("editor") &&
-      !tags.includes("video") &&
-      !tags.includes("3d")
-    ) {
+  if (has("react") || has("radix-ui") || has("lucide") || has("emotion") || has("tailwindcss")) {
+    if (!tags.includes("editor") && !tags.includes("video") && !tags.includes("3d")) {
       tags.push("ui");
     }
   }
@@ -210,10 +178,7 @@ export function getDependencyGroupName(deps: Set<string>): string {
 
 // When dep-group name matches category name, collapse to avoid stutter
 // e.g. cli/spike-cli/cli → cli/spike-cli/core-logic
-export function deduplicateDepGroup(
-  depGroup: string,
-  category: string,
-): string {
+export function deduplicateDepGroup(depGroup: string, category: string): string {
   if (depGroup === category) return "core-logic";
   // Also handle partial matches like "cli" in "cli" category
   const parts = depGroup.split("-");

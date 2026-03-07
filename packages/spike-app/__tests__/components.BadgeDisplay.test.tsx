@@ -68,7 +68,7 @@ describe("BadgeDisplay", () => {
     fireEvent.click(screen.getByText("Copy"));
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        "https://spike.land/learn/badge/abc123"
+        "https://spike.land/learn/badge/abc123",
       );
     });
   });

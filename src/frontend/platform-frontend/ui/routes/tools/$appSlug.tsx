@@ -12,13 +12,15 @@ export function AppSessionPage() {
   const { session, recordToolResult, resetSession, isToolAvailable } = useAppSession(
     appSlug as string,
     app?.graph || {},
-    app?.tools || []
+    app?.tools || [],
   );
 
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">Loading app...</div>
+        <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">
+          Loading app...
+        </div>
       </div>
     );
   }
@@ -27,9 +29,7 @@ export function AppSessionPage() {
     return (
       <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
-          <p className="text-muted-foreground">
-            Unable to load app.
-          </p>
+          <p className="text-muted-foreground">Unable to load app.</p>
           <p className="text-sm text-muted-foreground">
             {error instanceof Error ? error.message : "App not found."}
           </p>
@@ -87,16 +87,23 @@ export function AppSessionPage() {
             </div>
 
             <div className="p-4">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Stored Outputs</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Stored Outputs
+              </h4>
               {Object.keys(session.outputs).length === 0 ? (
                 <p className="text-sm text-muted-foreground italic">No outputs stored yet.</p>
               ) : (
                 <div className="space-y-2">
                   {Object.entries(session.outputs).map(([key, val]) => (
                     <div key={key} className="bg-muted/50 p-2 rounded-lg border border-border/50">
-                      <div className="text-[10px] font-mono font-bold text-primary mb-1 break-all">{key}</div>
-                      <div className="text-xs font-mono text-muted-foreground truncate" title={typeof val === 'object' ? JSON.stringify(val) : String(val)}>
-                        {typeof val === 'object' ? JSON.stringify(val) : String(val)}
+                      <div className="text-[10px] font-mono font-bold text-primary mb-1 break-all">
+                        {key}
+                      </div>
+                      <div
+                        className="text-xs font-mono text-muted-foreground truncate"
+                        title={typeof val === "object" ? JSON.stringify(val) : String(val)}
+                      >
+                        {typeof val === "object" ? JSON.stringify(val) : String(val)}
                       </div>
                     </div>
                   ))}
@@ -105,22 +112,27 @@ export function AppSessionPage() {
             </div>
 
             <div className="p-4 border-t border-border">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">History ({session.history.length})</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                History ({session.history.length})
+              </h4>
               {session.history.length === 0 ? (
                 <p className="text-sm text-muted-foreground italic">No tools executed.</p>
               ) : (
                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2 nice-scrollbar">
-                  {session.history.slice().reverse().map((entry, i) => (
-                    <div key={i} className="text-sm flex gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
-                      <div>
-                        <div className="font-mono font-medium">{entry.tool}</div>
-                        <div className="text-[10px] text-muted-foreground mt-0.5">
-                          {new Date(entry.timestamp).toLocaleTimeString()}
+                  {session.history
+                    .slice()
+                    .reverse()
+                    .map((entry, i) => (
+                      <div key={i} className="text-sm flex gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
+                        <div>
+                          <div className="font-mono font-medium">{entry.tool}</div>
+                          <div className="text-[10px] text-muted-foreground mt-0.5">
+                            {new Date(entry.timestamp).toLocaleTimeString()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </div>

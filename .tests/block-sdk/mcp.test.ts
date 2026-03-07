@@ -18,10 +18,10 @@ const testBlock = defineBlock({
       .tool("add_note", "Add a note", { text: z.string() })
       .handler(async ({ input, ctx: blockCtx }) => {
         const id = blockCtx.nanoid(8);
-        await blockCtx.storage.sql.execute(
-          "INSERT INTO notes (id, text) VALUES (?, ?)",
-          [id, input.text],
-        );
+        await blockCtx.storage.sql.execute("INSERT INTO notes (id, text) VALUES (?, ?)", [
+          id,
+          input.text,
+        ]);
         return { content: [{ type: "text", text: JSON.stringify({ id }) }] };
       }),
     listNotes: ctx.procedure

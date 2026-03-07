@@ -28,7 +28,9 @@ export function ToolResultInline({ result, error }: ToolResultInlineProps) {
   const content = resObj.content || [];
 
   return (
-    <div className={`rounded-lg border p-3 text-sm ${isErrorResult ? "border-destructive/50 bg-destructive/10" : "border-border bg-muted/30"}`}>
+    <div
+      className={`rounded-lg border p-3 text-sm ${isErrorResult ? "border-destructive/50 bg-destructive/10" : "border-border bg-muted/30"}`}
+    >
       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
         {isErrorResult ? (
           <AlertCircle className="w-4 h-4 text-destructive" />
@@ -50,12 +52,16 @@ export function ToolResultInline({ result, error }: ToolResultInlineProps) {
       <div className="space-y-3">
         {content.map((block: Record<string, unknown>, idx: number) => {
           if (block.type === "text") {
-            const textContent = typeof block.text === "object"
-              ? JSON.stringify(block.text, null, 2)
-              : String(block.text);
+            const textContent =
+              typeof block.text === "object"
+                ? JSON.stringify(block.text, null, 2)
+                : String(block.text);
 
             return (
-              <div key={idx} className="font-mono text-xs whitespace-pre-wrap break-words bg-background p-2 rounded border border-border">
+              <div
+                key={idx}
+                className="font-mono text-xs whitespace-pre-wrap break-words bg-background p-2 rounded border border-border"
+              >
                 {textContent}
               </div>
             );
@@ -63,19 +69,26 @@ export function ToolResultInline({ result, error }: ToolResultInlineProps) {
           if (block.type === "image") {
             return (
               <div key={idx} className="bg-background p-2 rounded border border-border">
-                <img src={`data:${String(block.mimeType)};base64,${String(block.data)}`} alt="Tool result" className="max-w-full rounded" />
+                <img
+                  src={`data:${String(block.mimeType)};base64,${String(block.data)}`}
+                  alt="Tool result"
+                  className="max-w-full rounded"
+                />
               </div>
             );
           }
           if (block.type === "resource") {
             const res = block.resource as { uri?: string; text?: string } | undefined;
             return (
-              <div key={idx} className="font-mono text-xs whitespace-pre-wrap break-words bg-background p-2 rounded border border-border">
+              <div
+                key={idx}
+                className="font-mono text-xs whitespace-pre-wrap break-words bg-background p-2 rounded border border-border"
+              >
                 <strong>{String(res?.uri || "Unknown")}</strong>
                 <br />
                 {String(res?.text || "")}
               </div>
-            )
+            );
           }
           return null;
         })}

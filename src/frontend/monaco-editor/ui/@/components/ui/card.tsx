@@ -12,7 +12,8 @@ function Card({ className, interactive, ...props }: CardProps) {
       data-slot="card"
       className={cn(
         "bg-card text-card-foreground flex flex-col gap-6 rounded-3xl border border-border/50 py-6 shadow-sm transition-all duration-300",
-        interactive && "hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 hover:bg-muted/30 cursor-pointer",
+        interactive &&
+          "hover:shadow-xl hover:-translate-y-1 hover:border-primary/20 hover:bg-muted/30 cursor-pointer",
         className,
       )}
       {...props}

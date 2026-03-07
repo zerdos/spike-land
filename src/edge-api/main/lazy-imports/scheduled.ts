@@ -10,7 +10,9 @@ export async function handleScheduled(env: Env): Promise<void> {
   try {
     const result = await env.DB.prepare(
       "SELECT COUNT(*) as count FROM error_logs WHERE created_at >= ? AND severity IN ('error', 'fatal')",
-    ).bind(fifteenMinAgo).first<{ count: number }>();
+    )
+      .bind(fifteenMinAgo)
+      .first<{ count: number }>();
 
     const errorCount = result?.count ?? 0;
     log.info("Error rate check", { errorCount, since: fifteenMinAgo });
@@ -28,7 +30,9 @@ export async function handleScheduled(env: Env): Promise<void> {
         // Record that we sent an alert
         await env.DB.prepare(
           "INSERT INTO error_logs (service_name, error_code, message, severity) VALUES (?, ?, ?, ?)",
-        ).bind("cron", "ALERT", "ERROR_RATE_ALERT_SENT", "info").run();
+        )
+          .bind("cron", "ALERT", "ERROR_RATE_ALERT_SENT", "info")
+          .run();
       }
     }
   } catch (err) {

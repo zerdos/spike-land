@@ -19,7 +19,15 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [authWarning, setAuthWarning] = useState(false);
-  const { messages, sendMessage, isStreaming, error, clearError, clearMessages, submitBrowserResult } = useChat();
+  const {
+    messages,
+    sendMessage,
+    isStreaming,
+    error,
+    clearError,
+    clearMessages,
+    submitBrowserResult,
+  } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,7 +102,9 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
               <div
                 className={cn(
                   "w-2.5 h-2.5 rounded-full",
-                  isDarkMode ? "bg-primary animate-pulse shadow-[0_0_8px_var(--primary-glow)]" : "bg-success",
+                  isDarkMode
+                    ? "bg-primary animate-pulse shadow-[0_0_8px_var(--primary-glow)]"
+                    : "bg-success",
                 )}
               />
               {isDarkMode && (
@@ -116,7 +126,13 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
                   isDarkMode ? "text-white" : "text-foreground",
                 )}
               >
-                spike.land{isDarkMode && <> <span className="text-primary-light">Intelligence</span></>}
+                spike.land
+                {isDarkMode && (
+                  <>
+                    {" "}
+                    <span className="text-primary-light">Intelligence</span>
+                  </>
+                )}
               </h3>
             </div>
           </div>
@@ -190,11 +206,7 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
               <AiChatMessage
                 key={msg.id}
                 message={msg}
-                isStreaming={
-                  isStreaming &&
-                  msg.role === "assistant" &&
-                  idx === messages.length - 1
-                }
+                isStreaming={isStreaming && msg.role === "assistant" && idx === messages.length - 1}
               />
             ))}
           </div>
@@ -274,7 +286,9 @@ export function AiChatWidget({ open, onToggle }: AiChatWidgetProps) {
               rows={1}
               className={cn(
                 "flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm resize-none max-h-32 font-medium placeholder:opacity-40",
-                isDarkMode ? "text-white placeholder:text-primary-light/40" : "text-foreground placeholder:text-muted-foreground",
+                isDarkMode
+                  ? "text-white placeholder:text-primary-light/40"
+                  : "text-foreground placeholder:text-muted-foreground",
               )}
               style={{ minHeight: "44px" }}
             />

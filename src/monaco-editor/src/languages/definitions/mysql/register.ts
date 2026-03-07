@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'mysql',
-	extensions: [],
-	aliases: ['MySQL', 'mysql'],
-	loader: () => import('./mysql')
+  id: "mysql",
+  extensions: [],
+  aliases: ["MySQL", "mysql"],
+  loader: () => import("./mysql"),
 });

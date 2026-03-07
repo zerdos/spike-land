@@ -1,10 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  clearEloCache,
-  ensureUserElo,
-  getUserElo,
-  recordEloEvent,
-} from "../elo-service.js";
+import { clearEloCache, ensureUserElo, getUserElo, recordEloEvent } from "../elo-service.js";
 
 // Mock D1Database
 function createMockDb() {

@@ -88,7 +88,13 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
     log.error(`Error handling ${event.type}`, { error: msg });
-    logWebhookError(db, c.executionCtx, event.type, msg, error instanceof Error ? error.stack ?? null : null);
+    logWebhookError(
+      db,
+      c.executionCtx,
+      event.type,
+      msg,
+      error instanceof Error ? (error.stack ?? null) : null,
+    );
   }
 
   return c.json({ received: true });

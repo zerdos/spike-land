@@ -37,14 +37,24 @@ function createMockCode(session: ICodeSession): Code {
 async function postMcpRequest(
   handler: McpHandler,
   body: unknown,
-): Promise<{ jsonrpc: string; id: number | null; result?: unknown; error?: { code: number; message: string; data?: string } }> {
+): Promise<{
+  jsonrpc: string;
+  id: number | null;
+  result?: unknown;
+  error?: { code: number; message: string; data?: string };
+}> {
   const request = new Request("http://localhost/mcp", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), ["mcp"]);
-  return response.json() as Promise<{ jsonrpc: string; id: number | null; result?: unknown; error?: { code: number; message: string; data?: string } }>;
+  return response.json() as Promise<{
+    jsonrpc: string;
+    id: number | null;
+    result?: unknown;
+    error?: { code: number; message: string; data?: string };
+  }>;
 }
 
 describe("McpHandler — additional branch coverage", () => {
@@ -185,7 +195,10 @@ describe("McpHandler — additional branch coverage", () => {
       const sessionWithGA = makeSession();
       const mockCodeWithGA = createMockCode(sessionWithGA);
       const envWithGA = { GA_MEASUREMENT_ID: "G-123", GA_API_SECRET: "test-secret" };
-      const handlerWithGA = new McpHandler(mockCodeWithGA, envWithGA as unknown as import("../../../src/edge-api/backend/core-logic/env.js").default);
+      const handlerWithGA = new McpHandler(
+        mockCodeWithGA,
+        envWithGA as unknown as import("../../../src/edge-api/backend/core-logic/env.js").default,
+      );
 
       const data = await postMcpRequest(handlerWithGA, {
         jsonrpc: "2.0",
@@ -226,9 +239,11 @@ describe("McpHandler — additional branch coverage", () => {
         headers: { "Content-Type": "application/json" },
         body: "not-json{{",
       });
-      const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), ["mcp"]);
+      const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), [
+        "mcp",
+      ]);
       expect(response.status).toBe(400);
-      const data = await response.json() as { error: { code: number } };
+      const data = (await response.json()) as { error: { code: number } };
       expect(data.error.code).toBe(-32700);
     });
   });
@@ -364,7 +379,9 @@ describe("McpHandler — additional branch coverage", () => {
       const request = new Request("http://localhost/mcp", {
         method: "DELETE",
       });
-      const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), ["mcp"]);
+      const response = await handler.handleRequest(request, new URL("http://localhost/mcp"), [
+        "mcp",
+      ]);
       expect(response.status).toBe(405);
     });
   });

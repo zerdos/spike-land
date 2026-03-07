@@ -101,7 +101,9 @@ function ServerBox({ server, active }: { server: ServerNode; active: boolean }) 
         <span className="text-xs font-mono text-foreground font-bold tracking-tight">
           {server.label}
         </span>
-        <span className="text-[9px] font-mono text-muted-foreground uppercase">{server.sublabel}</span>
+        <span className="text-[9px] font-mono text-muted-foreground uppercase">
+          {server.sublabel}
+        </span>
       </motion.div>
       <AnimatePresence>
         {active && (
@@ -302,7 +304,14 @@ export function SpikeCliDemo() {
               <div key={s.label} className="flex flex-col items-center">
                 <div style={{ height: 12 }} className="w-full flex justify-center">
                   <svg width={2} height={12} className="overflow-visible">
-                    <line x1={0} y1={0} x2={0} y2={12} stroke="hsl(var(--border))" strokeWidth={1} />
+                    <line
+                      x1={0}
+                      y1={0}
+                      x2={0}
+                      y2={12}
+                      stroke="hsl(var(--border))"
+                      strokeWidth={1}
+                    />
                     <motion.line
                       x1={0}
                       y1={0}

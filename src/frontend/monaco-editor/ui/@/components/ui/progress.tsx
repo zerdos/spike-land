@@ -17,19 +17,14 @@ const progressVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
-interface ProgressProps 
+interface ProgressProps
   extends React.ComponentProps<typeof ProgressPrimitive.Root>,
     VariantProps<typeof progressVariants> {}
 
-function Progress({
-  className,
-  value,
-  size,
-  ...props
-}: ProgressProps) {
+function Progress({ className, value, size, ...props }: ProgressProps) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"

@@ -11,7 +11,9 @@ export function ArticleView({ content, collapsed = false, onToggle }: ArticleVie
   return (
     <div className="rounded-xl border border-border bg-card shadow-sm">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Article</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Article
+        </h3>
         {onToggle && (
           <button
             onClick={onToggle}

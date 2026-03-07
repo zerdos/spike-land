@@ -193,16 +193,11 @@ export function formatRankings(): string {
     if (entries.length === 0) continue;
 
     lines.push(`  ${role}:`);
-    const totalMatches = entries.reduce(
-      (sum, [, r]) => sum + r.wins + r.losses + r.draws,
-      0,
-    );
+    const totalMatches = entries.reduce((sum, [, r]) => sum + r.wins + r.losses + r.draws, 0);
 
     for (const [id, r] of entries) {
       const selPct =
-        totalMatches > 0
-          ? Math.round(((r.wins + r.losses + r.draws) / totalMatches) * 100)
-          : 0;
+        totalMatches > 0 ? Math.round(((r.wins + r.losses + r.draws) / totalMatches) * 100) : 0;
       const spark = r.history
         .slice(-8)
         .map((h) => sparkChar(h.delta))

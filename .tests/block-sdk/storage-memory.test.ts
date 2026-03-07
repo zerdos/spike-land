@@ -53,10 +53,7 @@ describe("createMemoryAdapter", () => {
     it("inserts and selects rows", async () => {
       const adapter = createMemoryAdapter();
       await adapter.sql.execute("CREATE TABLE tasks (id TEXT PRIMARY KEY, title TEXT)");
-      await adapter.sql.execute(
-        "INSERT INTO tasks (id, title) VALUES (?, ?)",
-        ["1", "Buy milk"],
-      );
+      await adapter.sql.execute("INSERT INTO tasks (id, title) VALUES (?, ?)", ["1", "Buy milk"]);
       const result = await adapter.sql.execute("SELECT * FROM tasks");
       expect(result.rows).toHaveLength(1);
       expect(result.rows[0]).toEqual({ id: "1", title: "Buy milk" });
@@ -68,10 +65,7 @@ describe("createMemoryAdapter", () => {
       await adapter.sql.execute("INSERT INTO tasks (id, status) VALUES (?, ?)", ["1", "pending"]);
       await adapter.sql.execute("INSERT INTO tasks (id, status) VALUES (?, ?)", ["2", "done"]);
 
-      const result = await adapter.sql.execute(
-        "SELECT * FROM tasks WHERE status = ?",
-        ["pending"],
-      );
+      const result = await adapter.sql.execute("SELECT * FROM tasks WHERE status = ?", ["pending"]);
       expect(result.rows).toHaveLength(1);
       expect(result.rows[0]).toEqual({ id: "1", status: "pending" });
     });
@@ -79,10 +73,11 @@ describe("createMemoryAdapter", () => {
     it("updates rows with WHERE conditions", async () => {
       const adapter = createMemoryAdapter();
       await adapter.sql.execute("CREATE TABLE tasks (id TEXT, status TEXT, assignee TEXT)");
-      await adapter.sql.execute(
-        "INSERT INTO tasks (id, status, assignee) VALUES (?, ?, ?)",
-        ["1", "pending", ""],
-      );
+      await adapter.sql.execute("INSERT INTO tasks (id, status, assignee) VALUES (?, ?, ?)", [
+        "1",
+        "pending",
+        "",
+      ]);
 
       const result = await adapter.sql.execute(
         "UPDATE tasks SET status = ?, assignee = ? WHERE id = ? AND status = ?",
@@ -137,9 +132,9 @@ describe("createMemoryAdapter", () => {
 
     it("throws on unsupported SQL", async () => {
       const adapter = createMemoryAdapter();
-      await expect(
-        adapter.sql.execute("ALTER TABLE foo ADD COLUMN bar TEXT"),
-      ).rejects.toThrow("Unsupported SQL statement");
+      await expect(adapter.sql.execute("ALTER TABLE foo ADD COLUMN bar TEXT")).rejects.toThrow(
+        "Unsupported SQL statement",
+      );
     });
 
     it("drops tables", async () => {
@@ -258,10 +253,10 @@ describe("createMemoryAdapter", () => {
       await adapter.sql.execute("CREATE TABLE t (id TEXT, name TEXT)");
       await adapter.sql.execute("INSERT INTO t (id, name) VALUES (?, ?)", ["1", "old"]);
       // Only provide WHERE params, not SET params - SET values become null
-      await adapter.sql.execute(
-        "UPDATE t SET name = ? WHERE id = ?",
-        [undefined as unknown as string, "1"],
-      );
+      await adapter.sql.execute("UPDATE t SET name = ? WHERE id = ?", [
+        undefined as unknown as string,
+        "1",
+      ]);
       const rows = await adapter.sql.execute("SELECT * FROM t WHERE id = ?", ["1"]);
       // The SET value was undefined/null
       expect(rows.rows[0]).toBeDefined();
@@ -270,9 +265,21 @@ describe("createMemoryAdapter", () => {
     it("SELECT with WHERE AND multiple conditions", async () => {
       const adapter = createMemoryAdapter();
       await adapter.sql.execute("CREATE TABLE t (id TEXT, status TEXT, assignee TEXT)");
-      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", ["1", "active", "alice"]);
-      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", ["2", "active", "bob"]);
-      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", ["3", "done", "alice"]);
+      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", [
+        "1",
+        "active",
+        "alice",
+      ]);
+      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", [
+        "2",
+        "active",
+        "bob",
+      ]);
+      await adapter.sql.execute("INSERT INTO t (id, status, assignee) VALUES (?, ?, ?)", [
+        "3",
+        "done",
+        "alice",
+      ]);
 
       const result = await adapter.sql.execute(
         "SELECT * FROM t WHERE status = ? AND assignee = ?",

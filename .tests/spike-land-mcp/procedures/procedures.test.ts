@@ -6,7 +6,12 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { freeTool, jsonResult, textResult, workspaceTool } from "../../../src/edge-api/spike-land/lazy-imports/procedures-index";
+import {
+  freeTool,
+  jsonResult,
+  textResult,
+  workspaceTool,
+} from "../../../src/edge-api/spike-land/lazy-imports/procedures-index";
 import { createMockD1 } from "../__test-utils__/mock-env";
 import { createDb } from "../../../src/edge-api/spike-land/db/db/db-index";
 import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";

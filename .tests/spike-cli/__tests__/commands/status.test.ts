@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { collectStatus, formatStatus, registerStatusCommand } from "../../../../src/cli/spike-cli/core-logic/commands/status.js";
+import {
+  collectStatus,
+  formatStatus,
+  registerStatusCommand,
+} from "../../../../src/cli/spike-cli/core-logic/commands/status.js";
 
 // Mock UpstreamClient and discoverConfig
 const mockConnect = vi.hoisted(() => vi.fn());

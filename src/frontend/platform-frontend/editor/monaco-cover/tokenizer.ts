@@ -145,18 +145,7 @@ const OPERATOR_CHARS = new Set([
 ]);
 
 // Three-character operators
-const TRI_OPS = new Set([
-  "===",
-  "!==",
-  ">>>",
-  "&&=",
-  "||=",
-  "??=",
-  "<<=",
-  ">>=",
-  "...",
-  "**=",
-]);
+const TRI_OPS = new Set(["===", "!==", ">>>", "&&=", "||=", "??=", "<<=", ">>=", "...", "**="]);
 
 // Two-character operators
 const BI_OPS = new Set([
@@ -190,12 +179,7 @@ const BI_OPS = new Set([
 // ---------------------------------------------------------------------------
 
 function isIdentStart(ch: string): boolean {
-  return (
-    (ch >= "a" && ch <= "z") ||
-    (ch >= "A" && ch <= "Z") ||
-    ch === "_" ||
-    ch === "$"
-  );
+  return (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_" || ch === "$";
 }
 
 function isIdentPart(ch: string): boolean {
@@ -245,12 +229,7 @@ function peek(s: ScanState, offset: number = 0): string {
   return idx < s.line.length ? s.line[idx] : "";
 }
 
-function pushToken(
-  tokens: Token[],
-  s: ScanState,
-  type: string,
-  value: string,
-): void {
+function pushToken(tokens: Token[], s: ScanState, type: string, value: string): void {
   tokens.push({ type, value });
   if (type !== "") {
     s.lastSigValue = value;
@@ -288,11 +267,7 @@ function canStartRegex(tokens: Token[], lastValue: string): boolean {
 // Sub-scanners
 // ---------------------------------------------------------------------------
 
-function consumeSimpleString(
-  tokens: Token[],
-  s: ScanState,
-  quote: string,
-): void {
+function consumeSimpleString(tokens: Token[], s: ScanState, quote: string): void {
   let value = quote;
   s.pos++; // skip opening quote
 
@@ -333,10 +308,7 @@ function consumeSimpleString(
  * - "closed" if we hit the closing backtick
  * - "expression" if we entered a `${...}` expression
  */
-function consumeTemplateBody(
-  tokens: Token[],
-  s: ScanState,
-): "line-end" | "closed" | "expression" {
+function consumeTemplateBody(tokens: Token[], s: ScanState): "line-end" | "closed" | "expression" {
   let value = "";
 
   while (s.pos < s.line.length) {
@@ -440,8 +412,7 @@ function consumeNumber(tokens: Token[], s: ScanState): void {
     if (next === "x") {
       tokenType = "number.hex";
       s.pos += 2;
-      while (s.pos < s.line.length && /[0-9a-fA-F_]/.test(s.line[s.pos]))
-        s.pos++;
+      while (s.pos < s.line.length && /[0-9a-fA-F_]/.test(s.line[s.pos])) s.pos++;
       pushNumber(tokens, s, start, tokenType);
       return;
     }
@@ -470,17 +441,10 @@ function consumeNumber(tokens: Token[], s: ScanState): void {
   }
 
   // Exponent part
-  if (
-    s.pos < s.line.length &&
-    (s.line[s.pos] === "e" || s.line[s.pos] === "E")
-  ) {
+  if (s.pos < s.line.length && (s.line[s.pos] === "e" || s.line[s.pos] === "E")) {
     tokenType = "number.float";
     s.pos++;
-    if (
-      s.pos < s.line.length &&
-      (s.line[s.pos] === "+" || s.line[s.pos] === "-")
-    )
-      s.pos++;
+    if (s.pos < s.line.length && (s.line[s.pos] === "+" || s.line[s.pos] === "-")) s.pos++;
     while (s.pos < s.line.length && /[0-9_]/.test(s.line[s.pos])) s.pos++;
   }
 
@@ -492,12 +456,7 @@ function consumeNumber(tokens: Token[], s: ScanState): void {
   pushNumber(tokens, s, start, tokenType);
 }
 
-function pushNumber(
-  tokens: Token[],
-  s: ScanState,
-  start: number,
-  tokenType: string,
-): void {
+function pushNumber(tokens: Token[], s: ScanState, start: number, tokenType: string): void {
   const value = s.line.substring(start, s.pos);
   tokens.push({ type: tokenType, value });
   s.lastSigValue = value;
@@ -578,8 +537,7 @@ export function tokenizeTypeScript(code: string): Token[][] {
     // ------------------------------------------------------------------
 
     if (s.mlState === ML_BLOCK_COMMENT || s.mlState === ML_DOC_COMMENT) {
-      const tokenType =
-        s.mlState === ML_DOC_COMMENT ? "comment.doc" : "comment";
+      const tokenType = s.mlState === ML_DOC_COMMENT ? "comment.doc" : "comment";
       const endIdx = s.line.indexOf("*/", s.pos);
       if (endIdx === -1) {
         pushToken(tokens, s, tokenType, s.line.substring(s.pos));
@@ -634,12 +592,7 @@ export function tokenizeTypeScript(code: string): Token[][] {
           s.mlState = isDoc ? ML_DOC_COMMENT : ML_BLOCK_COMMENT;
           break;
         }
-        pushToken(
-          tokens,
-          s,
-          tokenType,
-          s.line.substring(s.pos, endIdx + 2),
-        );
+        pushToken(tokens, s, tokenType, s.line.substring(s.pos, endIdx + 2));
         continue;
       }
 

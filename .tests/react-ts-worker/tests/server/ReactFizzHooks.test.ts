@@ -47,7 +47,11 @@ describe("ReactFizzHooks - ServerDispatcher", () => {
     });
 
     it("calls init function when provided", () => {
-      const [state] = ServerDispatcher.useReducer((s: number) => s, 5, (s: number) => s * 2);
+      const [state] = ServerDispatcher.useReducer(
+        (s: number) => s,
+        5,
+        (s: number) => s * 2,
+      );
       expect(state).toBe(10);
     });
 
@@ -137,7 +141,9 @@ describe("ReactFizzHooks - ServerDispatcher", () => {
       expect(isPending).toBe(false);
 
       let called = false;
-      startTransition(() => { called = true; });
+      startTransition(() => {
+        called = true;
+      });
       expect(called).toBe(true);
     });
   });

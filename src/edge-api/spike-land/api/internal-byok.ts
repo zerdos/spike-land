@@ -62,10 +62,7 @@ internalByokRoute.post("/byok/get", async (c) => {
     .select({ encryptedKey: userApiKeyVault.encryptedKey })
     .from(userApiKeyVault)
     .where(
-      and(
-        eq(userApiKeyVault.userId, body.userId),
-        eq(userApiKeyVault.provider, body.provider),
-      ),
+      and(eq(userApiKeyVault.userId, body.userId), eq(userApiKeyVault.provider, body.provider)),
     )
     .limit(1);
 

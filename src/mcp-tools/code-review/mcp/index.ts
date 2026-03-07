@@ -6,7 +6,12 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createMcpServer, startMcpServer, registerFeedbackTool, createErrorShipper } from "@spike-land-ai/mcp-server-base";
+import {
+  createMcpServer,
+  startMcpServer,
+  registerFeedbackTool,
+  createErrorShipper,
+} from "@spike-land-ai/mcp-server-base";
 import { GitHubClient } from "../lazy-imports/client.js";
 import type { DiffSide } from "../core-logic/types.js";
 import {
@@ -274,8 +279,15 @@ export function createServer(githubToken: string): McpServer {
 
 export async function startServer(): Promise<void> {
   const shipper = createErrorShipper();
-  process.on('uncaughtException', (err) => shipper.shipError({ service_name: "spike-review", message: err.message, stack_trace: err.stack, severity: "high" }));
-  process.on('unhandledRejection', (err: unknown) => {
+  process.on("uncaughtException", (err) =>
+    shipper.shipError({
+      service_name: "spike-review",
+      message: err.message,
+      stack_trace: err.stack,
+      severity: "high",
+    }),
+  );
+  process.on("unhandledRejection", (err: unknown) => {
     const message = err instanceof Error ? err.message : String(err);
     const stack_trace = err instanceof Error ? err.stack : undefined;
     shipper.shipError({ service_name: "spike-review", message, stack_trace, severity: "high" });

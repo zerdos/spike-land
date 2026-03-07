@@ -3,9 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  clearBeUniqSessions,
-} from "../../../../src/edge-api/spike-land/core-logic/tools/persona/beuniq";
+import { clearBeUniqSessions } from "../../../../src/edge-api/spike-land/core-logic/tools/persona/beuniq";
 import {
   getPersonaFromAnswers,
   PERSONAS,
@@ -14,7 +12,10 @@ import {
 // Mock registry + freeTool to capture registered handlers
 interface CapturedTool {
   name: string;
-  handler: (args: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => Promise<unknown>;
+  handler: (args: {
+    input: Record<string, unknown>;
+    ctx: Record<string, unknown>;
+  }) => Promise<unknown>;
 }
 
 const capturedTools: CapturedTool[] = [];
@@ -39,12 +40,7 @@ describe("beUniq Quiz", () => {
   describe("persona-data tree walker", () => {
     it("all 16 answer paths produce valid personas", () => {
       for (let i = 0; i < 16; i++) {
-        const answers = [
-          Boolean(i & 8),
-          Boolean(i & 4),
-          Boolean(i & 2),
-          Boolean(i & 1),
-        ];
+        const answers = [Boolean(i & 8), Boolean(i & 4), Boolean(i & 2), Boolean(i & 1)];
         const persona = getPersonaFromAnswers(answers);
         expect(persona).not.toBeNull();
         expect(persona!.id).toBeGreaterThanOrEqual(1);
@@ -57,12 +53,7 @@ describe("beUniq Quiz", () => {
     it("all 16 personas are reachable", () => {
       const reachedIds = new Set<number>();
       for (let i = 0; i < 16; i++) {
-        const answers = [
-          Boolean(i & 8),
-          Boolean(i & 4),
-          Boolean(i & 2),
-          Boolean(i & 1),
-        ];
+        const answers = [Boolean(i & 8), Boolean(i & 4), Boolean(i & 2), Boolean(i & 1)];
         const persona = getPersonaFromAnswers(answers);
         if (persona) reachedIds.add(persona.id);
       }

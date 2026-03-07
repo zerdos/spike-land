@@ -28,17 +28,19 @@ function makeSubscription(overrides: Record<string, unknown> = {}) {
     cancellation_details: null,
     customer: "cus_1",
     items: {
-      data: [{
-        id: "si_1",
-        price: {
-          id: "price_monthly",
-          unit_amount: 2000,
-          currency: "usd",
-          recurring: { interval: "month", interval_count: 1 },
-          nickname: "Pro Monthly",
+      data: [
+        {
+          id: "si_1",
+          price: {
+            id: "price_monthly",
+            unit_amount: 2000,
+            currency: "usd",
+            recurring: { interval: "month", interval_count: 1 },
+            nickname: "Pro Monthly",
+          },
+          quantity: 1,
         },
-        quantity: 1,
-      }],
+      ],
     },
     ...overrides,
   };
@@ -61,13 +63,15 @@ describe("subscription tools", () => {
 
   describe("stripe_mrr", () => {
     it("calculates MRR for monthly subscriptions", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [makeSubscription(), makeSubscription({ id: "sub_2", customer: "cus_2" })],
-          has_more: false,
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [makeSubscription(), makeSubscription({ id: "sub_2", customer: "cus_2" })],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_mrr", {});
       expect(result.isError).toBeUndefined();
@@ -78,28 +82,34 @@ describe("subscription tools", () => {
     });
 
     it("normalizes yearly plans to monthly", async () => {
-      setupClient([{
-        body: {
-          object: "list",
-          data: [makeSubscription({
-            id: "sub_yearly",
-            items: {
-              data: [{
-                id: "si_yearly",
-                price: {
-                  id: "price_yearly",
-                  unit_amount: 24000,
-                  currency: "usd",
-                  recurring: { interval: "year", interval_count: 1 },
-                  nickname: "Pro Yearly",
+      setupClient([
+        {
+          body: {
+            object: "list",
+            data: [
+              makeSubscription({
+                id: "sub_yearly",
+                items: {
+                  data: [
+                    {
+                      id: "si_yearly",
+                      price: {
+                        id: "price_yearly",
+                        unit_amount: 24000,
+                        currency: "usd",
+                        recurring: { interval: "year", interval_count: 1 },
+                        nickname: "Pro Yearly",
+                      },
+                      quantity: 1,
+                    },
+                  ],
                 },
-                quantity: 1,
-              }],
-            },
-          })],
-          has_more: false,
+              }),
+            ],
+            has_more: false,
+          },
         },
-      }]);
+      ]);
 
       const result = await server.call("stripe_mrr", {});
       const data = JSON.parse(result.content[0].text);

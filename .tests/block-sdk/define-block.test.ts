@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  createMemoryAdapter,
-  defineBlock,
-  defineTable,
-  t,
-} from "@spike-land-ai/block-sdk";
+import { createMemoryAdapter, defineBlock, defineTable, t } from "@spike-land-ai/block-sdk";
 import { z } from "zod";
 
 describe("defineBlock", () => {

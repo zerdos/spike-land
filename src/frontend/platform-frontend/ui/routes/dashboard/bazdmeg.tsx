@@ -232,7 +232,9 @@ function ReplaySlider({
           Workspace Replay
         </h3>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">{new Date(current).toLocaleString()}</span>
+          <span className="text-xs text-muted-foreground">
+            {new Date(current).toLocaleString()}
+          </span>
           <button
             onClick={onGoLive}
             className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
@@ -466,11 +468,12 @@ export function BazdmegDashboardPage() {
           value={gatePassRate !== null ? `${gatePassRate}%` : "N/A"}
           subtitle={`${gateEvents.length} checks`}
           {...(gatePassRate !== null && {
-            color: gatePassRate >= 80
-              ? "text-success-foreground"
-              : gatePassRate >= 50
-                ? "text-warning-foreground"
-                : "text-destructive",
+            color:
+              gatePassRate >= 80
+                ? "text-success-foreground"
+                : gatePassRate >= 50
+                  ? "text-warning-foreground"
+                  : "text-destructive",
           })}
         />
         <MetricCard
@@ -500,7 +503,9 @@ export function BazdmegDashboardPage() {
                 >
                   <span className="text-sm font-medium text-foreground">{gate.name}</span>
                   <div className="flex items-center gap-2">
-                    <span className="max-w-48 truncate text-xs text-muted-foreground">{gate.detail}</span>
+                    <span className="max-w-48 truncate text-xs text-muted-foreground">
+                      {gate.detail}
+                    </span>
                     <GateStatusBadge status={gate.status} />
                   </div>
                 </div>
@@ -523,7 +528,10 @@ export function BazdmegDashboardPage() {
               {stuckSignals.map((signal) => {
                 const meta = parseMeta(signal.metadata);
                 return (
-                  <div key={signal.id} className="rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+                  <div
+                    key={signal.id}
+                    className="rounded-lg border border-destructive/30 bg-destructive/10 p-3"
+                  >
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-destructive">
                         {String(meta.workspace ?? "unknown")}
@@ -534,7 +542,9 @@ export function BazdmegDashboardPage() {
                     </div>
                     <p className="mt-1 text-sm text-destructive/90">{String(meta.reason ?? "")}</p>
                     {typeof meta.attemptedAction === "string" && (
-                      <p className="mt-1 text-xs text-destructive/70">Attempted: {meta.attemptedAction}</p>
+                      <p className="mt-1 text-xs text-destructive/70">
+                        Attempted: {meta.attemptedAction}
+                      </p>
                     )}
                   </div>
                 );
@@ -547,7 +557,9 @@ export function BazdmegDashboardPage() {
       {/* Event Log */}
       <div className="rounded-2xl border border-border bg-card dark:glass-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Event Log</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Event Log
+          </h3>
           <select
             value={eventTypeFilter}
             onChange={(e) => setEventTypeFilter(e.target.value)}

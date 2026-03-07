@@ -42,12 +42,7 @@ export const PLAN_DEFINITIONS: PlanDefinition[] = [
     name: "Free",
     tier: "free",
     price: 0,
-    features: [
-      "Up to 5 apps",
-      "25 vault secrets",
-      "Basic AI tools",
-      "Community support",
-    ],
+    features: ["Up to 5 apps", "25 vault secrets", "Basic AI tools", "Community support"],
   },
   {
     name: "Pro",
@@ -101,10 +96,7 @@ export async function getBillingStatus(
     .from(workspaces)
     .innerJoin(
       workspaceMembers,
-      and(
-        eq(workspaceMembers.workspaceId, workspaces.id),
-        eq(workspaceMembers.userId, userId),
-      ),
+      and(eq(workspaceMembers.workspaceId, workspaces.id), eq(workspaceMembers.userId, userId)),
     );
 
   return {
@@ -125,12 +117,7 @@ export async function getActiveSubscription(
       currentPeriodEnd: subscriptions.currentPeriodEnd,
     })
     .from(subscriptions)
-    .where(
-      and(
-        eq(subscriptions.userId, userId),
-        eq(subscriptions.status, "active"),
-      ),
-    )
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
     .limit(1);
 
   return sub[0] ?? null;

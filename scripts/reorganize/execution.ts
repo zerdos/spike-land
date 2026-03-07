@@ -60,13 +60,19 @@ function findMapped(resolvedAbs: string, pathMapping: Map<string, string>): stri
   if (!mapped) {
     if (pathMapping.has(resolvedAbs + ".ts")) mapped = pathMapping.get(resolvedAbs + ".ts");
     else if (pathMapping.has(resolvedAbs + ".tsx")) mapped = pathMapping.get(resolvedAbs + ".tsx");
-    else if (pathMapping.has(resolvedAbs.replace(/\.js$/, ".ts"))) mapped = pathMapping.get(resolvedAbs.replace(/\.js$/, ".ts"));
-    else if (pathMapping.has(resolvedAbs.replace(/\.js$/, ".tsx"))) mapped = pathMapping.get(resolvedAbs.replace(/\.js$/, ".tsx"));
-    else if (pathMapping.has(resolvedAbs + "/index.ts")) mapped = pathMapping.get(resolvedAbs + "/index.ts");
-    else if (pathMapping.has(resolvedAbs + "/index.tsx")) mapped = pathMapping.get(resolvedAbs + "/index.tsx");
+    else if (pathMapping.has(resolvedAbs.replace(/\.js$/, ".ts")))
+      mapped = pathMapping.get(resolvedAbs.replace(/\.js$/, ".ts"));
+    else if (pathMapping.has(resolvedAbs.replace(/\.js$/, ".tsx")))
+      mapped = pathMapping.get(resolvedAbs.replace(/\.js$/, ".tsx"));
+    else if (pathMapping.has(resolvedAbs + "/index.ts"))
+      mapped = pathMapping.get(resolvedAbs + "/index.ts");
+    else if (pathMapping.has(resolvedAbs + "/index.tsx"))
+      mapped = pathMapping.get(resolvedAbs + "/index.tsx");
     // Also try stripping .ts/.tsx extension (imports like "@/lib/utils.ts")
-    else if (resolvedAbs.endsWith(".ts") && pathMapping.has(resolvedAbs)) mapped = pathMapping.get(resolvedAbs);
-    else if (resolvedAbs.endsWith(".tsx") && pathMapping.has(resolvedAbs)) mapped = pathMapping.get(resolvedAbs);
+    else if (resolvedAbs.endsWith(".ts") && pathMapping.has(resolvedAbs))
+      mapped = pathMapping.get(resolvedAbs);
+    else if (resolvedAbs.endsWith(".tsx") && pathMapping.has(resolvedAbs))
+      mapped = pathMapping.get(resolvedAbs);
   }
   return mapped;
 }
@@ -80,7 +86,12 @@ function computeRelative(mapped: string, newDir: string, originalSpec: string): 
   } else if (originalSpec.endsWith(".ts") || originalSpec.endsWith(".tsx")) {
     // Keep the extension as-is (some imports use explicit .ts extensions)
   } else {
-    if ((mapped.endsWith("index.ts") || mapped.endsWith("index.tsx")) && !originalSpec.endsWith("index.ts") && !originalSpec.endsWith("index.tsx") && !originalSpec.endsWith("index.js")) {
+    if (
+      (mapped.endsWith("index.ts") || mapped.endsWith("index.tsx")) &&
+      !originalSpec.endsWith("index.ts") &&
+      !originalSpec.endsWith("index.tsx") &&
+      !originalSpec.endsWith("index.js")
+    ) {
       newRel = newRel.replace(/\/index\.tsx?$/, "");
       if (newRel === "") newRel = ".";
     } else {
@@ -106,31 +117,35 @@ export function rewriteImports(
   };
 
   for (const imp of sourceFile.getImportDeclarations()) {
-     const spec = imp.getModuleSpecifierValue();
-     if (spec) {
-       const newSpec = processSpecifier(spec);
-       if (newSpec !== spec) imp.setModuleSpecifier(newSpec);
-     }
+    const spec = imp.getModuleSpecifierValue();
+    if (spec) {
+      const newSpec = processSpecifier(spec);
+      if (newSpec !== spec) imp.setModuleSpecifier(newSpec);
+    }
   }
   for (const exp of sourceFile.getExportDeclarations()) {
-     if (exp.hasModuleSpecifier()) {
-       const spec = exp.getModuleSpecifierValue();
-       if (spec) {
-         const newSpec = processSpecifier(spec);
-         if (newSpec !== spec) exp.setModuleSpecifier(newSpec);
-       }
-     }
+    if (exp.hasModuleSpecifier()) {
+      const spec = exp.getModuleSpecifierValue();
+      if (spec) {
+        const newSpec = processSpecifier(spec);
+        if (newSpec !== spec) exp.setModuleSpecifier(newSpec);
+      }
+    }
   }
   for (const call of sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression)) {
     if (call.getExpression().getText() === "import") {
       const arg = call.getArguments()[0];
-      if (arg && (arg.getKind() === SyntaxKind.StringLiteral || arg.getKind() === SyntaxKind.NoSubstitutionTemplateLiteral)) {
-         const spec = (arg as StringLiteral | NoSubstitutionTemplateLiteral).getLiteralText();
-         const newSpec = processSpecifier(spec);
-         if (newSpec !== spec) {
-           call.removeArgument(0);
-           call.insertArgument(0, `"${newSpec}"`);
-         }
+      if (
+        arg &&
+        (arg.getKind() === SyntaxKind.StringLiteral ||
+          arg.getKind() === SyntaxKind.NoSubstitutionTemplateLiteral)
+      ) {
+        const spec = (arg as StringLiteral | NoSubstitutionTemplateLiteral).getLiteralText();
+        const newSpec = processSpecifier(spec);
+        if (newSpec !== spec) {
+          call.removeArgument(0);
+          call.insertArgument(0, `"${newSpec}"`);
+        }
       }
     }
   }
@@ -143,7 +158,11 @@ export function rewriteImports(
  * from srcDir to outputDir, preserving package-relative paths.
  * Also rewrites CSS `@source` directives.
  */
-export async function copyAssets(srcDir: string, outputDir: string, pathMapping: Map<string, string>) {
+export async function copyAssets(
+  srcDir: string,
+  outputDir: string,
+  pathMapping: Map<string, string>,
+) {
   const assetFiles = await glob("**/*", {
     cwd: srcDir,
     nodir: true,
@@ -196,7 +215,14 @@ export async function copyAssets(srcDir: string, outputDir: string, pathMapping:
     // For CSS files, rewrite @source directives
     if (relFile.endsWith(".css")) {
       let content = await fs.readFile(srcFile, "utf-8");
-      content = rewriteCssSource(content, path.dirname(srcFile), path.dirname(destFile), srcDir, outputDir, pkgDirMap);
+      content = rewriteCssSource(
+        content,
+        path.dirname(srcFile),
+        path.dirname(destFile),
+        srcDir,
+        outputDir,
+        pkgDirMap,
+      );
       await fs.writeFile(destFile, content, "utf-8");
     } else {
       await fs.copyFile(srcFile, destFile);
@@ -232,12 +258,12 @@ function rewriteCssSource(
     if (targetBase) {
       // Compute the glob suffix (e.g. "**/*.{ts,tsx}")
       const parts = sourcePath.replace(/^[./]*/, "").split("/");
-      const globParts = parts.filter(p => p.includes("*") || p.includes("{"));
+      const globParts = parts.filter((p) => p.includes("*") || p.includes("{"));
       const globSuffix = globParts.join("/");
 
       // Compute the within-package prefix (non-glob path segments after the package name)
       const sourceWithinPkg = relToSrc.split(path.sep).slice(1);
-      const nonGlobParts = sourceWithinPkg.filter(p => !p.includes("*") && !p.includes("{"));
+      const nonGlobParts = sourceWithinPkg.filter((p) => !p.includes("*") && !p.includes("{"));
 
       const newAbsBase = path.join(outputDir, targetBase, ...nonGlobParts);
       let newRelPath = path.relative(newCssDir, newAbsBase);
@@ -283,28 +309,28 @@ export async function updateTsConfigPaths(pathMapping: Map<string, string>, srcD
 
   let changed = false;
   for (const [alias, locations] of Object.entries<string[]>(tsconfig.compilerOptions.paths)) {
-    const newLocs = locations.map(loc => {
+    const newLocs = locations.map((loc) => {
       if (loc.endsWith("/*")) {
-         const baseLoc = loc.slice(0, -2); // remove /*
-         const absBase = path.resolve(process.cwd(), baseLoc);
+        const baseLoc = loc.slice(0, -2); // remove /*
+        const absBase = path.resolve(process.cwd(), baseLoc);
 
-         for (const [oldAbs, newAbs] of pathMapping.entries()) {
-             if (oldAbs.startsWith(absBase + path.sep) || oldAbs.startsWith(absBase + "/")) {
-                 const oldRel = oldAbs.slice(absBase.length + 1);
-                 const newBase = newAbs.slice(0, newAbs.length - oldRel.length - 1);
-                 const relativeToRoot = path.relative(process.cwd(), newBase);
-                 return "./" + relativeToRoot + "/*";
-             }
-         }
-         return loc;
+        for (const [oldAbs, newAbs] of pathMapping.entries()) {
+          if (oldAbs.startsWith(absBase + path.sep) || oldAbs.startsWith(absBase + "/")) {
+            const oldRel = oldAbs.slice(absBase.length + 1);
+            const newBase = newAbs.slice(0, newAbs.length - oldRel.length - 1);
+            const relativeToRoot = path.relative(process.cwd(), newBase);
+            return "./" + relativeToRoot + "/*";
+          }
+        }
+        return loc;
       } else {
-         const absLoc = path.resolve(process.cwd(), loc);
-         const mapped = findMappedPath(absLoc);
+        const absLoc = path.resolve(process.cwd(), loc);
+        const mapped = findMappedPath(absLoc);
 
-         if (mapped) {
-             const relativeToRoot = path.relative(process.cwd(), mapped);
-             return "./" + relativeToRoot;
-         }
+        if (mapped) {
+          const relativeToRoot = path.relative(process.cwd(), mapped);
+          return "./" + relativeToRoot;
+        }
       }
       return loc;
     });
@@ -356,11 +382,13 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
 
   function tryMatch(absLoc: string): string | undefined {
     for (const [oldAbs, newAbs] of pathMapping.entries()) {
-      if (absLoc === oldAbs ||
-          absLoc === oldAbs.replace(/\.ts$/, ".js") ||
-          absLoc.replace(/\.js$/, ".ts") === oldAbs ||
-          absLoc === oldAbs.replace(/\.ts$/, ".d.ts") ||
-          absLoc.replace(/\.tsx?$/, "") === oldAbs.replace(/\.tsx?$/, "")) {
+      if (
+        absLoc === oldAbs ||
+        absLoc === oldAbs.replace(/\.ts$/, ".js") ||
+        absLoc.replace(/\.js$/, ".ts") === oldAbs ||
+        absLoc === oldAbs.replace(/\.ts$/, ".d.ts") ||
+        absLoc.replace(/\.tsx?$/, "") === oldAbs.replace(/\.tsx?$/, "")
+      ) {
         return newAbs;
       }
     }
@@ -379,38 +407,53 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
       let changed = false;
 
       const updatePath = (p: string) => {
-         if (!p.includes("src/") && !p.includes("src-old/")) return p;
-         const absLoc = path.resolve(pkgPath, p);
-         const newAbs = findInMapping(absLoc);
-         if (newAbs) {
-           const rel = path.relative(pkgPath, newAbs);
-           let newP = rel.startsWith(".") ? rel : "./" + rel;
-           if (p.endsWith(".js") && newP.endsWith(".ts")) newP = newP.replace(/\.ts$/, ".js");
-           if (p.endsWith(".d.ts") && newP.endsWith(".ts")) newP = newP.replace(/\.ts$/, ".d.ts");
-           return newP;
-         }
-         return p;
+        if (!p.includes("src/") && !p.includes("src-old/")) return p;
+        const absLoc = path.resolve(pkgPath, p);
+        const newAbs = findInMapping(absLoc);
+        if (newAbs) {
+          const rel = path.relative(pkgPath, newAbs);
+          let newP = rel.startsWith(".") ? rel : "./" + rel;
+          if (p.endsWith(".js") && newP.endsWith(".ts")) newP = newP.replace(/\.ts$/, ".js");
+          if (p.endsWith(".d.ts") && newP.endsWith(".ts")) newP = newP.replace(/\.ts$/, ".d.ts");
+          return newP;
+        }
+        return p;
       };
 
-      if (pkg.main) { const n = updatePath(pkg.main); if (n !== pkg.main) { pkg.main = n; changed = true; } }
-      if (pkg.types) { const n = updatePath(pkg.types); if (n !== pkg.types) { pkg.types = n; changed = true; } }
+      if (pkg.main) {
+        const n = updatePath(pkg.main);
+        if (n !== pkg.main) {
+          pkg.main = n;
+          changed = true;
+        }
+      }
+      if (pkg.types) {
+        const n = updatePath(pkg.types);
+        if (n !== pkg.types) {
+          pkg.types = n;
+          changed = true;
+        }
+      }
       if (pkg.exports) {
-         const traverse = (obj: any) => {
-            for (const key in obj) {
-               if (typeof obj[key] === "string") {
-                  const n = updatePath(obj[key]);
-                  if (n !== obj[key]) { obj[key] = n; changed = true; }
-               } else if (typeof obj[key] === "object") {
-                  traverse(obj[key]);
-               }
+        const traverse = (obj: any) => {
+          for (const key in obj) {
+            if (typeof obj[key] === "string") {
+              const n = updatePath(obj[key]);
+              if (n !== obj[key]) {
+                obj[key] = n;
+                changed = true;
+              }
+            } else if (typeof obj[key] === "object") {
+              traverse(obj[key]);
             }
-         };
-         traverse(pkg.exports);
+          }
+        };
+        traverse(pkg.exports);
       }
 
       if (changed) {
-         await fs.writeFile(pkgJsonPath, JSON.stringify(pkg, null, 2) + "\n");
-         console.log(`Updated ${path.relative(rootDir, pkgJsonPath)}`);
+        await fs.writeFile(pkgJsonPath, JSON.stringify(pkg, null, 2) + "\n");
+        console.log(`Updated ${path.relative(rootDir, pkgJsonPath)}`);
       }
     } catch (e) {}
 
@@ -421,20 +464,20 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
       let changed = false;
 
       content = content.replace(/(?:main|entry)\s*=\s*["']([^"']+)["']/g, (match, p1) => {
-          if (p1.includes("src/") || p1.includes("src-old/")) {
-             const absLoc = path.resolve(pkgPath, p1);
-             const newAbs = findInMapping(absLoc);
-             if (newAbs) {
-               const rel = path.relative(pkgPath, newAbs);
-               changed = true;
-               return match.replace(p1, rel.startsWith(".") ? rel : "./" + rel);
-             }
+        if (p1.includes("src/") || p1.includes("src-old/")) {
+          const absLoc = path.resolve(pkgPath, p1);
+          const newAbs = findInMapping(absLoc);
+          if (newAbs) {
+            const rel = path.relative(pkgPath, newAbs);
+            changed = true;
+            return match.replace(p1, rel.startsWith(".") ? rel : "./" + rel);
           }
-          return match;
+        }
+        return match;
       });
       if (changed) {
-         await fs.writeFile(wranglerPath, content);
-         console.log(`Updated ${path.relative(rootDir, wranglerPath)}`);
+        await fs.writeFile(wranglerPath, content);
+        console.log(`Updated ${path.relative(rootDir, wranglerPath)}`);
       }
     } catch (e) {}
 
@@ -447,36 +490,42 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         let content = await fs.readFile(shimPath, "utf-8");
         let changed = false;
 
-        content = content.replace(/(from\s+["'])([^"']+)(["'])/g, (_match, pre, specifier, post) => {
-          if (!specifier.includes("src/") && !specifier.includes("src-old/")) return _match;
-          const absLoc = path.resolve(pkgPath, specifier);
-          const newAbs = findInMapping(absLoc);
-          if (newAbs) {
-            let rel = path.relative(pkgPath, newAbs);
-            if (!rel.startsWith(".")) rel = "./" + rel;
-            // Preserve original extension convention
-            if (specifier.endsWith(".ts") && !rel.endsWith(".ts") && !rel.endsWith(".tsx")) {
-              rel = rel + ".ts";
+        content = content.replace(
+          /(from\s+["'])([^"']+)(["'])/g,
+          (_match, pre, specifier, post) => {
+            if (!specifier.includes("src/") && !specifier.includes("src-old/")) return _match;
+            const absLoc = path.resolve(pkgPath, specifier);
+            const newAbs = findInMapping(absLoc);
+            if (newAbs) {
+              let rel = path.relative(pkgPath, newAbs);
+              if (!rel.startsWith(".")) rel = "./" + rel;
+              // Preserve original extension convention
+              if (specifier.endsWith(".ts") && !rel.endsWith(".ts") && !rel.endsWith(".tsx")) {
+                rel = rel + ".ts";
+              }
+              changed = true;
+              return `${pre}${rel}${post}`;
             }
-            changed = true;
-            return `${pre}${rel}${post}`;
-          }
-          return _match;
-        });
+            return _match;
+          },
+        );
 
         // Also handle: import "../../src/spike-app/main.tsx"
-        content = content.replace(/(import\s+["'])([^"']+)(["'])/g, (_match, pre, specifier, post) => {
-          if (!specifier.includes("src/") && !specifier.includes("src-old/")) return _match;
-          const absLoc = path.resolve(pkgPath, specifier);
-          const newAbs = findInMapping(absLoc);
-          if (newAbs) {
-            let rel = path.relative(pkgPath, newAbs);
-            if (!rel.startsWith(".")) rel = "./" + rel;
-            changed = true;
-            return `${pre}${rel}${post}`;
-          }
-          return _match;
-        });
+        content = content.replace(
+          /(import\s+["'])([^"']+)(["'])/g,
+          (_match, pre, specifier, post) => {
+            if (!specifier.includes("src/") && !specifier.includes("src-old/")) return _match;
+            const absLoc = path.resolve(pkgPath, specifier);
+            const newAbs = findInMapping(absLoc);
+            if (newAbs) {
+              let rel = path.relative(pkgPath, newAbs);
+              if (!rel.startsWith(".")) rel = "./" + rel;
+              changed = true;
+              return `${pre}${rel}${post}`;
+            }
+            return _match;
+          },
+        );
 
         if (changed) {
           await fs.writeFile(shimPath, content, "utf-8");
@@ -498,7 +547,9 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
           if (!pattern.includes("src/") && !pattern.includes("src-old/")) return pattern;
           // Extract the package directory from the glob pattern
           // e.g., "../../src/spike-app/**/*.ts" → find where spike-app files went
-          const basePattern = pattern.replace(/\*\*\/\*\.\{?[a-z,]+\}?$|\*\*\/\*\.\w+$|\*\*\/\*$/, "").replace(/\/$/, "");
+          const basePattern = pattern
+            .replace(/\*\*\/\*\.\{?[a-z,]+\}?$|\*\*\/\*\.\w+$|\*\*\/\*$/, "")
+            .replace(/\/$/, "");
           if (!basePattern) return pattern;
           const absBase = path.resolve(pkgPath, basePattern);
 
@@ -523,14 +574,20 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
           };
 
           const result = tryResolve(absBase);
-          if (result && result !== pattern) { changed = true; return result; }
+          if (result && result !== pattern) {
+            changed = true;
+            return result;
+          }
 
           // Also try with src-old → src mapping
           if (srcDir) {
             const srcBaseName = path.basename(srcDir);
             const altBase = absBase.replace(/\/src\//, `/${srcBaseName}/`);
             const altResult = tryResolve(altBase);
-            if (altResult && altResult !== pattern) { changed = true; return altResult; }
+            if (altResult && altResult !== pattern) {
+              changed = true;
+              return altResult;
+            }
           }
           return pattern;
         });
@@ -542,7 +599,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
       // Update "paths" entries
       if (tsconfig.compilerOptions?.paths) {
         for (const [alias, locations] of Object.entries<string[]>(tsconfig.compilerOptions.paths)) {
-          const newLocs = locations.map(loc => {
+          const newLocs = locations.map((loc) => {
             if (!loc.includes("src/") && !loc.includes("src-old/")) return loc;
             if (loc.endsWith("/*")) {
               const baseLoc = loc.slice(0, -2);
@@ -621,7 +678,9 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
             if (oldAbs.startsWith(searchBase + "/")) {
               // Found a file under searchBase. Determine the package root
               // by finding the srcDir/<packageName> prefix
-              const srcDirAbs = srcDir ? path.resolve(rootDir, path.basename(srcDir)) : path.resolve(rootDir, "src");
+              const srcDirAbs = srcDir
+                ? path.resolve(rootDir, path.basename(srcDir))
+                : path.resolve(rootDir, "src");
               const relToSrc = path.relative(srcDirAbs, oldAbs);
               const pkgName = relToSrc.split(path.sep)[0];
               const pkgRoot = path.join(srcDirAbs, pkgName);
@@ -661,17 +720,20 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
       };
 
       // Update path references like resolve(import.meta.dirname, "../../src/spike-app/...")
-      content = content.replace(/(resolve\([^,]+,\s*["'])([^"']*(?:src\/|src-old\/)[^"']*)(["'])/g, (_match, pre, refPath, post) => {
-        const absRef = path.resolve(pkgPath, refPath);
-        const resolved = resolveViteRef(absRef);
-        if (resolved) {
-          let rel = path.relative(pkgPath, resolved);
-          if (!rel.startsWith(".")) rel = "./" + rel;
-          changed = true;
-          return `${pre}${rel}${post}`;
-        }
-        return _match;
-      });
+      content = content.replace(
+        /(resolve\([^,]+,\s*["'])([^"']*(?:src\/|src-old\/)[^"']*)(["'])/g,
+        (_match, pre, refPath, post) => {
+          const absRef = path.resolve(pkgPath, refPath);
+          const resolved = resolveViteRef(absRef);
+          if (resolved) {
+            let rel = path.relative(pkgPath, resolved);
+            if (!rel.startsWith(".")) rel = "./" + rel;
+            changed = true;
+            return `${pre}${rel}${post}`;
+          }
+          return _match;
+        },
+      );
 
       if (changed) {
         await fs.writeFile(viteConfigPath, content, "utf-8");
@@ -700,7 +762,7 @@ export async function updatePackageJsonWorkspaces(outputDir: string) {
 }
 
 export async function generateManifests(plans: MovePlan[], outputDir: string) {
-  const appMap = new Map<string, { files: string[], deps: Set<string> }>();
+  const appMap = new Map<string, { files: string[]; deps: Set<string> }>();
 
   for (const p of plans) {
     const parts = p.targetDir.split(path.sep);
@@ -719,10 +781,10 @@ export async function generateManifests(plans: MovePlan[], outputDir: string) {
   for (const [appFolder, data] of appMap.entries()) {
     const manifestPath = path.resolve(outputDir, appFolder, "manifest.json");
     const manifest = {
-       name: path.basename(appFolder),
-       category: path.dirname(appFolder),
-       dependencies: Array.from(data.deps).sort(),
-       files: data.files.sort()
+      name: path.basename(appFolder),
+      category: path.dirname(appFolder),
+      dependencies: Array.from(data.deps).sort(),
+      files: data.files.sort(),
     };
     await fs.mkdir(path.dirname(manifestPath), { recursive: true });
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf-8");
@@ -744,7 +806,8 @@ export async function generateBarrels(outputDir: string, plans: MovePlan[]) {
   const barrelProject = new Project({ useInMemoryFileSystem: true });
 
   for (const d of sortedDirs) {
-    if (d.includes("__tests__") || d.endsWith(".test") || path.basename(d) === "__tests__") continue;
+    if (d.includes("__tests__") || d.endsWith(".test") || path.basename(d) === "__tests__")
+      continue;
 
     const base = path.basename(d);
     if (base === "lazy-imports" || base === "core-logic" || base === "node-sys") continue;
@@ -752,10 +815,11 @@ export async function generateBarrels(outputDir: string, plans: MovePlan[]) {
     const absD = path.resolve(outputDir, d);
     const entries = await fs.readdir(absD, { withFileTypes: true });
 
-    const exportableCount = entries.filter(e => {
+    const exportableCount = entries.filter((e) => {
       if (e.name === "index.ts" || e.name === "index.tsx") return false;
       if (e.name.startsWith("_")) return false;
-      if (e.name.endsWith(".test.ts") || e.name.endsWith(".test.tsx") || e.name.includes(".spec.")) return false;
+      if (e.name.endsWith(".test.ts") || e.name.endsWith(".test.tsx") || e.name.includes(".spec."))
+        return false;
       if (e.isDirectory()) return true;
       return e.name.endsWith(".ts") || e.name.endsWith(".tsx");
     }).length;
@@ -767,29 +831,34 @@ export async function generateBarrels(outputDir: string, plans: MovePlan[]) {
       if (entry.name === "index.ts" || entry.name === "index.tsx") continue;
       if (entry.name.startsWith("_")) continue;
       if (entry.name === "utils.ts" || entry.name === "utils.tsx") continue;
-      if (entry.name.endsWith(".test.ts") || entry.name.endsWith(".test.tsx") || entry.name.includes(".spec.")) continue;
+      if (
+        entry.name.endsWith(".test.ts") ||
+        entry.name.endsWith(".test.tsx") ||
+        entry.name.includes(".spec.")
+      )
+        continue;
 
       const filePath = path.join(absD, entry.name);
 
       if (entry.isDirectory()) {
-         const children = await fs.readdir(filePath).catch(() => []);
-         if (children.some(f => f === "index.ts" || f === "index.tsx")) {
-           barrelContent += `export * from "./${entry.name}";\n`;
-         }
+        const children = await fs.readdir(filePath).catch(() => []);
+        if (children.some((f) => f === "index.ts" || f === "index.tsx")) {
+          barrelContent += `export * from "./${entry.name}";\n`;
+        }
       } else {
-         if (!entry.name.endsWith(".ts") && !entry.name.endsWith(".tsx")) continue;
-         const fileContent = await fs.readFile(filePath, "utf-8");
-         const sf = barrelProject.createSourceFile(filePath, fileContent, { overwrite: true });
-         const exports = sf.getExportDeclarations();
-         const exportedDecs = sf.getExportedDeclarations();
-         if (exports.length > 0 || exportedDecs.size > 0) {
-           const baseName = path.basename(entry.name, path.extname(entry.name));
-           barrelContent += `export * from "./${baseName}";\n`;
-         }
+        if (!entry.name.endsWith(".ts") && !entry.name.endsWith(".tsx")) continue;
+        const fileContent = await fs.readFile(filePath, "utf-8");
+        const sf = barrelProject.createSourceFile(filePath, fileContent, { overwrite: true });
+        const exports = sf.getExportDeclarations();
+        const exportedDecs = sf.getExportedDeclarations();
+        if (exports.length > 0 || exportedDecs.size > 0) {
+          const baseName = path.basename(entry.name, path.extname(entry.name));
+          barrelContent += `export * from "./${baseName}";\n`;
+        }
       }
     }
     if (barrelContent) {
-       await fs.writeFile(path.join(absD, "index.ts"), barrelContent, "utf-8");
+      await fs.writeFile(path.join(absD, "index.ts"), barrelContent, "utf-8");
     }
   }
 }

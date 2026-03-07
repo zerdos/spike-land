@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/smartSelect/browser/smartSelect';
+import "monaco-editor-core/esm/vs/editor/contrib/smartSelect/browser/smartSelect";

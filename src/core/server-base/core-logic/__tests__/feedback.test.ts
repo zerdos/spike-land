@@ -27,15 +27,18 @@ describe("registerFeedbackTool", () => {
     expect(result.isError).toBeFalsy();
     expect(result.content[0].text).toContain("bug-123");
 
-    expect(fetch).toHaveBeenCalledWith("https://spike.land/api/bugbook/report", expect.objectContaining({
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_name: "test-service",
-        title: "Test bug",
-        description: "It is broken",
+    expect(fetch).toHaveBeenCalledWith(
+      "https://spike.land/api/bugbook/report",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service_name: "test-service",
+          title: "Test bug",
+          description: "It is broken",
+        }),
       }),
-    }));
+    );
   });
 
   it("handles fetch errors", async () => {

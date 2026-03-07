@@ -12,7 +12,7 @@ export function reportDryRun(plans: MovePlan[]) {
     const cat = p.targetDir.split(path.sep)[0];
     catStats.set(cat, (catStats.get(cat) || 0) + 1);
   }
-  
+
   console.log(`\nCategory breakdown:`);
   for (const [cat, count] of [...catStats.entries()].sort((a, b) => b[1] - a[1])) {
     const pct = ((count / plans.length) * 100).toFixed(1);

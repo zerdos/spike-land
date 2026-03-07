@@ -6,7 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createMockServer } from "../__test-utils__/mock-server.js";
 import { registerContextTools } from "../../../src/mcp-tools/bazdmeg/mcp/context.js";
-import { enterWorkspace, resetWorkspaceState } from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
+import {
+  enterWorkspace,
+  resetWorkspaceState,
+} from "../../../src/mcp-tools/bazdmeg/node-sys/workspace-state.js";
 import { createFakeMonorepo } from "../__test-utils__/fixtures.js";
 import { unlink } from "node:fs/promises";
 import * as bundleModule from "../../../src/mcp-tools/bazdmeg/node-sys/context-bundle.js";

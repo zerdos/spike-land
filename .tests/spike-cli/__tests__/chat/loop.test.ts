@@ -1,7 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type AgentLoopContext, runAgentLoop } from "../../../../src/cli/spike-cli/core-logic/chat/loop.js";
-import type { ChatClient, ContentBlock, Message } from "../../../../src/cli/spike-cli/core-logic/chat/client.js";
-import type { NamespacedTool, ServerManager } from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
+import {
+  type AgentLoopContext,
+  runAgentLoop,
+} from "../../../../src/cli/spike-cli/core-logic/chat/loop.js";
+import type {
+  ChatClient,
+  ContentBlock,
+  Message,
+} from "../../../../src/cli/spike-cli/core-logic/chat/client.js";
+import type {
+  NamespacedTool,
+  ServerManager,
+} from "../../../../src/cli/spike-cli/core-logic/multiplexer/server-manager.js";
 
 function createMockStream(content: ContentBlock[]) {
   const handlers = new Map<string, (...args: unknown[]) => void>();

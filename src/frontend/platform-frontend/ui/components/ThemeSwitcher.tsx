@@ -51,14 +51,19 @@ function Sun({ rs }: { rs: number }) {
       <circle r="5" fill="#f0a500" />
       {RAYS.map((deg) => {
         const r = (deg * Math.PI) / 180;
-        const c = Math.cos(r), ss = Math.sin(r);
+        const c = Math.cos(r),
+          ss = Math.sin(r);
         const len = 4.2 * Math.max(0, rs);
         return (
           <line
             key={deg}
-            x1={c * 7} y1={ss * 7}
-            x2={c * (7 + len)} y2={ss * (7 + len)}
-            stroke="#f0a500" strokeWidth="2.1" strokeLinecap="round"
+            x1={c * 7}
+            y1={ss * 7}
+            x2={c * (7 + len)}
+            y2={ss * (7 + len)}
+            stroke="#f0a500"
+            strokeWidth="2.1"
+            strokeLinecap="round"
             opacity={Math.max(0, rs)}
           />
         );
@@ -71,18 +76,13 @@ function Moon({ sa }: { sa: number }) {
   const pts = [
     { x: 5.5, y: -7.5, r: 1.1 },
     { x: 9, y: -1.5, r: 0.8 },
-    { x: 3.5, y: 4, r: 0.85 }
+    { x: 3.5, y: 4, r: 0.85 },
   ];
   return (
     <svg width="22" height="22" viewBox="-11 -11 22 22" style={{ overflow: "visible" }}>
       <path d="M0,-8 A8,8 0 1,0 8,0 A5.5,5.5 0 1,1 0,-8 Z" fill="#c8cfee" />
       {pts.map((p, i) => (
-        <circle
-          key={i}
-          cx={p.x} cy={p.y} r={p.r}
-          fill="#a8b0d8"
-          opacity={Math.max(0, sa)}
-        />
+        <circle key={i} cx={p.x} cy={p.y} r={p.r} fill="#a8b0d8" opacity={Math.max(0, sa)} />
       ))}
     </svg>
   );
@@ -122,19 +122,21 @@ export function ThemeSwitcher({ theme, setTheme }: ThemeSwitcherProps) {
     triggerViewTransition(buttonRef, doToggle);
   }, [isDark, setTheme, prefersReduced]);
 
-  const cssVars = isDark ? {
-    "--trk": "#141b30",
-    "--accent": "#4d6fff",
-    "--thumb": "#e4e8f8",
-    "--shad": "rgba(77,111,255,.55)",
-    "--glow": "rgba(77,111,255,.18)"
-  } : {
-    "--trk": "#e4ddd0",
-    "--accent": "#f0a500",
-    "--thumb": "#fffdf8",
-    "--shad": "rgba(240,165,0,.40)",
-    "--glow": "rgba(240,165,0,.22)"
-  };
+  const cssVars = isDark
+    ? {
+        "--trk": "#141b30",
+        "--accent": "#4d6fff",
+        "--thumb": "#e4e8f8",
+        "--shad": "rgba(77,111,255,.55)",
+        "--glow": "rgba(77,111,255,.18)",
+      }
+    : {
+        "--trk": "#e4ddd0",
+        "--accent": "#f0a500",
+        "--thumb": "#fffdf8",
+        "--shad": "rgba(240,165,0,.40)",
+        "--glow": "rgba(240,165,0,.22)",
+      };
 
   return (
     <button

@@ -1060,10 +1060,8 @@ describe("processMessage additional paths", () => {
 
   it("catches downloadCodeToLocal error and continues processing", async () => {
     // downloadCodeToLocal will throw (fetch fails)
-    mockFetch
-      .mockRejectedValueOnce(new Error("Network error")) // for downloadCodeToLocal
-      // createTempMcpConfig won't use fetch, spawnClaudeCode result
-      ;
+    mockFetch.mockRejectedValueOnce(new Error("Network error")); // for downloadCodeToLocal
+    // createTempMcpConfig won't use fetch, spawnClaudeCode result
 
     const proc = makeMockProcess();
     vi.mocked(spawn).mockImplementation(() => {
@@ -1153,11 +1151,10 @@ describe("processMessage additional paths", () => {
 
   it("syncs final code to server when localFilePath and codespaceId set", async () => {
     // Make download succeed so localFilePath is set
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ code: "const x = 1;" }),
-      });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ code: "const x = 1;" }),
+    });
 
     const proc = makeMockProcess();
     vi.mocked(spawn).mockImplementation(() => {
@@ -1199,11 +1196,10 @@ describe("processMessage additional paths", () => {
   });
 
   it("handles final sync error gracefully", async () => {
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ code: "const x = 1;" }),
-      });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ code: "const x = 1;" }),
+    });
 
     const proc = makeMockProcess();
     vi.mocked(spawn).mockImplementation(() => {
@@ -1244,11 +1240,10 @@ describe("processMessage additional paths", () => {
   });
 
   it("handles non-Error thrown in final sync (String fallback)", async () => {
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ code: "const x = 1;" }),
-      });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ code: "const x = 1;" }),
+    });
 
     const proc = makeMockProcess();
     vi.mocked(spawn).mockImplementation(() => {
@@ -1440,7 +1435,10 @@ describe("processMessage mcpConfigPath false branch and codespace_update without
           input: {},
         });
         const resultLine = JSON.stringify({ type: "result", result: "updated" });
-        (proc.stdout as EventEmitter).emit("data", Buffer.from(toolEvent + "\n" + resultLine + "\n"));
+        (proc.stdout as EventEmitter).emit(
+          "data",
+          Buffer.from(toolEvent + "\n" + resultLine + "\n"),
+        );
         proc.emit("close", 0);
       });
       return proc as unknown as ReturnType<typeof spawn>;
@@ -1493,9 +1491,9 @@ describe("processApp non-Error thrown branch", () => {
   it("uses 'Unknown error' string when non-Error is thrown", async () => {
     vi.mocked(api.getAppContext).mockRejectedValue("plain string, not Error");
 
-    await expect(
-      agent.processApp(mockRedisConfig as never, mockApiConfig, "app1"),
-    ).rejects.toBe("plain string, not Error");
+    await expect(agent.processApp(mockRedisConfig as never, mockApiConfig, "app1")).rejects.toBe(
+      "plain string, not Error",
+    );
 
     expect(redis.setAgentWorking).toHaveBeenCalledWith(mockRedisConfig, "app1", false);
   });

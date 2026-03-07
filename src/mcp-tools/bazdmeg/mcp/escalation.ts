@@ -20,8 +20,11 @@ export function registerEscalationTools(server: McpServer): void {
     description:
       "Declare that you are stuck — writes signal file and logs to telemetry for overseeing agent",
     schema: SignalStuckSchema.shape,
-    handler: async ({ reason, attemptedAction, suggestedContext }: z.infer<typeof SignalStuckSchema>) => {
-
+    handler: async ({
+      reason,
+      attemptedAction,
+      suggestedContext,
+    }: z.infer<typeof SignalStuckSchema>) => {
       const workspace = getWorkspace();
       const timestamp = new Date().toISOString();
 

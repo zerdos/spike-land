@@ -1,6 +1,6 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
-vi.mock('remotion', () => ({
+vi.mock("remotion", () => ({
   useCurrentFrame: vi.fn(() => 0),
   useVideoConfig: vi.fn(() => ({
     width: 1920,
@@ -21,11 +21,11 @@ vi.mock('remotion', () => ({
     bezier: vi.fn(() => (x: any) => x),
   },
   AbsoluteFill: ({ children, style }: any) => {
-    const React = require('react');
-    return React.createElement('div', { style }, children);
+    const React = require("react");
+    return React.createElement("div", { style }, children);
   },
   Sequence: ({ children }: any) => {
-    const React = require('react');
+    const React = require("react");
     return React.createElement(React.Fragment, null, children);
   },
   Audio: () => null,
@@ -33,36 +33,36 @@ vi.mock('remotion', () => ({
   Img: () => null,
   Series: Object.assign(
     ({ children }: any) => {
-      const React = require('react');
+      const React = require("react");
       return React.createElement(React.Fragment, null, children);
     },
     {
       Sequence: ({ children }: any) => {
-        const React = require('react');
+        const React = require("react");
         return React.createElement(React.Fragment, null, children);
       },
-    }
+    },
   ),
   staticFile: (path: string) => path,
 }));
 
-vi.mock('@remotion/transitions', () => ({
+vi.mock("@remotion/transitions", () => ({
   TransitionSeries: Object.assign(
     ({ children }: any) => {
-      const React = require('react');
+      const React = require("react");
       return React.createElement(React.Fragment, null, children);
     },
     {
       Sequence: ({ children }: any) => {
-        const React = require('react');
+        const React = require("react");
         return React.createElement(React.Fragment, null, children);
       },
       Transition: () => null,
-    }
+    },
   ),
   linearTiming: vi.fn(),
 }));
 
-vi.mock('@remotion/transitions/fade', () => ({
+vi.mock("@remotion/transitions/fade", () => ({
   fade: vi.fn(),
 }));

@@ -1,9 +1,7 @@
 import { Heart, Twitter, Linkedin } from "lucide-react";
-import { Button } from "../lazy-imports/button";
-import {
-  getPersonaSlug,
-  getContentVariant,
-} from "../core-logic/persona-content-variants";
+import { buttonVariants } from "../lazy-imports/button";
+import { cn } from "@spike-land-ai/shared";
+import { getPersonaSlug, getContentVariant } from "../core-logic/persona-content-variants";
 
 export function PersonalizedSupportBox() {
   const personaSlug = getPersonaSlug();
@@ -21,33 +19,33 @@ export function PersonalizedSupportBox() {
       </div>
 
       <div className="max-w-2xl relative z-10">
-        <h3 className="text-3xl font-black tracking-tight mb-4">
-          Support the Journey
-        </h3>
+        <h3 className="text-3xl font-black tracking-tight mb-4">Support the Journey</h3>
 
         <p className="text-lg text-muted-foreground/80 font-medium leading-relaxed mb-10">
           {variant.supportCopy}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-12">
-          <Button
-            variant="default"
-            className="rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-transform"
-            asChild
+          <a
+            href="/support"
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-transform"
+            )}
           >
-            <a href="/support">
-              <Heart className="mr-2 size-4" />
-              Support Development
-            </a>
-          </Button>
+            <Heart className="mr-2 size-4" />
+            Support Development
+          </a>
 
-          <Button
-            variant="ghost"
-            className="rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-xs"
-            asChild
+          <a
+            href="/about"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-xs"
+            )}
           >
-            <a href="/about">Learn More</a>
-          </Button>
+            Learn More
+          </a>
         </div>
 
         <div className="flex flex-wrap items-center gap-6">

@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { error, isVerbose, log, setVerbose, warn } from "../../../../src/cli/spike-cli/core-logic/util/logger.js";
+import {
+  error,
+  isVerbose,
+  log,
+  setVerbose,
+  warn,
+} from "../../../../src/cli/spike-cli/core-logic/util/logger.js";
 
 describe("logger", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;

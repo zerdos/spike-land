@@ -4,15 +4,15 @@ import { useMcpTools } from "../../src/hooks/useMcp";
 
 const CATEGORY_ICONS: Record<string, string> = {
   "File System": "📁",
-  "Database": "🗄️",
-  "Web": "🌐",
-  "Code": "💻",
-  "AI": "🤖",
-  "Analytics": "📊",
-  "Auth": "🔐",
-  "Messaging": "💬",
-  "Storage": "☁️",
-  "General": "⚙️",
+  Database: "🗄️",
+  Web: "🌐",
+  Code: "💻",
+  AI: "🤖",
+  Analytics: "📊",
+  Auth: "🔐",
+  Messaging: "💬",
+  Storage: "☁️",
+  General: "⚙️",
 };
 
 function getCategoryIcon(category: string): string {
@@ -47,13 +47,11 @@ export function McpPage() {
             {isLoading ? "Loading..." : `${totalTools}+ tools live`}
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            80+ AI Tools,{" "}
-            <span className="text-primary">One Protocol</span>
+            80+ AI Tools, <span className="text-primary">One Protocol</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            spike.land's MCP registry gives every AI model instant access to web
-            search, databases, code execution, and more — through a single,
-            authenticated connection.
+            spike.land's MCP registry gives every AI model instant access to web search, databases,
+            code execution, and more — through a single, authenticated connection.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
@@ -90,10 +88,7 @@ export function McpPage() {
               body: "OAuth 2.0 device flow authentication means your credentials never leave your device. Fine-grained scopes control exactly what tools each client can use.",
             },
           ].map(({ title, body }) => (
-            <div
-              key={title}
-              className="rounded-xl border border-border bg-card p-6 shadow-sm"
-            >
+            <div key={title} className="rounded-xl border border-border bg-card p-6 shadow-sm">
               <h3 className="font-semibold text-foreground">{title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{body}</p>
             </div>
@@ -105,10 +100,7 @@ export function McpPage() {
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-foreground">Tool Categories</h2>
-          <Link
-            to="/tools"
-            className="text-sm font-medium text-primary hover:underline"
-          >
+          <Link to="/tools" className="text-sm font-medium text-primary hover:underline">
             View all <span aria-hidden="true">→</span>
           </Link>
         </div>
@@ -124,7 +116,11 @@ export function McpPage() {
           </div>
         ) : isError ? (
           <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-            Unable to load categories. <Link to="/tools" className="text-primary hover:underline">Browse tools directly</Link>.
+            Unable to load categories.{" "}
+            <Link to="/tools" className="text-primary hover:underline">
+              Browse tools directly
+            </Link>
+            .
           </div>
         ) : categories.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -134,7 +130,9 @@ export function McpPage() {
                 to="/tools"
                 className="group flex items-center gap-4 rounded-2xl border border-border bg-card dark:glass-card p-5 shadow-sm transition hover:shadow-md hover:scale-[1.01] hover:border-primary/30"
               >
-                <span className="text-2xl" aria-hidden="true">{getCategoryIcon(category)}</span>
+                <span className="text-2xl" aria-hidden="true">
+                  {getCategoryIcon(category)}
+                </span>
                 <div>
                   <p className="font-medium text-foreground group-hover:text-primary transition-colors">
                     {category}
@@ -148,7 +146,11 @@ export function McpPage() {
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-            Unable to load categories. <Link to="/tools" className="text-primary hover:underline">Browse tools directly</Link>.
+            Unable to load categories.{" "}
+            <Link to="/tools" className="text-primary hover:underline">
+              Browse tools directly
+            </Link>
+            .
           </div>
         )}
       </section>
@@ -185,8 +187,8 @@ export function McpPage() {
             </div>
             <h3 className="font-semibold text-foreground">API Keys</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Generate a long-lived API key in your settings and pass it as a
-              Bearer token — ideal for server-to-server integrations.
+              Generate a long-lived API key in your settings and pass it as a Bearer token — ideal
+              for server-to-server integrations.
             </p>
             <Link
               to="/settings"
@@ -203,8 +205,8 @@ export function McpPage() {
             </div>
             <h3 className="font-semibold text-foreground">SDK Integration</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Use the MCP TypeScript SDK or any compatible client library.
-              Full documentation covers all transports and auth flows.
+              Use the MCP TypeScript SDK or any compatible client library. Full documentation covers
+              all transports and auth flows.
             </p>
             <Link
               to="/docs"
@@ -218,9 +220,7 @@ export function McpPage() {
 
       {/* CTA */}
       <section className="rounded-2xl border border-border bg-card px-8 py-12 text-center shadow-sm space-y-5">
-        <h2 className="text-2xl font-bold text-foreground">
-          Ready to give your AI superpowers?
-        </h2>
+        <h2 className="text-2xl font-bold text-foreground">Ready to give your AI superpowers?</h2>
         <p className="text-muted-foreground">
           Connect in minutes. No credit card required for the free tier.
         </p>

@@ -7,10 +7,9 @@ import {
   grantBugBounty,
 } from "../../../src/edge-api/main/core-logic/elo-service.js";
 
-function buildDB(overrides: {
-  existingRow?: Record<string, unknown> | null;
-  batchResult?: unknown[];
-} = {}) {
+function buildDB(
+  overrides: { existingRow?: Record<string, unknown> | null; batchResult?: unknown[] } = {},
+) {
   const runMock = vi.fn().mockResolvedValue({});
   const batchMock = vi.fn().mockResolvedValue(overrides.batchResult ?? []);
 
@@ -314,7 +313,8 @@ describe("grantBugBounty", () => {
 
     // Should call INSERT INTO access_grants
     const insertCalls = (prepareMock as ReturnType<typeof vi.fn>).mock.calls.filter(
-      (args: unknown[]) => typeof args[0] === "string" && (args[0] as string).includes("access_grants"),
+      (args: unknown[]) =>
+        typeof args[0] === "string" && (args[0] as string).includes("access_grants"),
     );
     expect(insertCalls.length).toBeGreaterThan(0);
     // Should call batch for ELO event

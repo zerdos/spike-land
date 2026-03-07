@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockServer, createMockAdsClient } from "../__test-utils__/index.js";
 import type { MockMcpServer } from "../__test-utils__/index.js";
-import { registerCampaignTools, microsToCurrency, currencyToMicros } from "../../../src/mcp-tools/google-ads/tools/campaigns.js";
+import {
+  registerCampaignTools,
+  microsToCurrency,
+  currencyToMicros,
+} from "../../../src/mcp-tools/google-ads/tools/campaigns.js";
 import type { GoogleAdsClient } from "../../../src/mcp-tools/google-ads/clients/ads-client.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
@@ -13,10 +17,7 @@ describe("campaign tools", () => {
     vi.clearAllMocks();
     server = createMockServer();
     mockClient = createMockAdsClient();
-    registerCampaignTools(
-      server as unknown as McpServer,
-      mockClient as unknown as GoogleAdsClient,
-    );
+    registerCampaignTools(server as unknown as McpServer, mockClient as unknown as GoogleAdsClient);
   });
 
   it("registers all four campaign tools", () => {
@@ -32,7 +33,12 @@ describe("campaign tools", () => {
     it("returns campaigns from search results", async () => {
       mockClient.search = vi.fn().mockResolvedValue([
         {
-          campaign: { id: "123", name: "Test Campaign", status: "ENABLED", advertisingChannelType: "SEARCH" },
+          campaign: {
+            id: "123",
+            name: "Test Campaign",
+            status: "ENABLED",
+            advertisingChannelType: "SEARCH",
+          },
           campaignBudget: { amountMicros: "50000000" },
           metrics: { impressions: "1000", clicks: "50", costMicros: "25000000" },
         },
@@ -118,9 +124,11 @@ describe("campaign tools", () => {
     });
 
     it("updates budget when budget_amount provided", async () => {
-      mockClient.search = vi.fn().mockResolvedValue([
-        { campaignBudget: { resourceName: "customers/123/campaignBudgets/456" } },
-      ]);
+      mockClient.search = vi
+        .fn()
+        .mockResolvedValue([
+          { campaignBudget: { resourceName: "customers/123/campaignBudgets/456" } },
+        ]);
       mockClient.mutate = vi.fn().mockResolvedValue({ mutateOperationResponses: [] });
       const result = await server.call("ads_update_campaign", {
         campaign_id: "789",

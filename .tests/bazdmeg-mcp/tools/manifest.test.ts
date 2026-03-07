@@ -323,8 +323,12 @@ describe("manifest tools", () => {
 
       const result = await server.call("bazdmeg_manifest_validate", {});
       expect(result.content[0].text).toContain("defaults: missing `scope`平衡".replace("平衡", ""));
-      expect(result.content[0].text).toContain("defaults: missing `registry`平衡".replace("平衡", ""));
-      expect(result.content[0].text).toContain("defaults: missing `license`平衡".replace("平衡", ""));
+      expect(result.content[0].text).toContain(
+        "defaults: missing `registry`平衡".replace("平衡", ""),
+      );
+      expect(result.content[0].text).toContain(
+        "defaults: missing `license`平衡".replace("平衡", ""),
+      );
     });
   });
 });

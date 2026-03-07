@@ -14,7 +14,9 @@ vi.mock("node:os", async (importOriginal) => {
   };
 });
 
-const { registerAliasCommand } = await import("../../../../src/cli/spike-cli/core-logic/commands/alias.js");
+const { registerAliasCommand } = await import(
+  "../../../../src/cli/spike-cli/core-logic/commands/alias.js"
+);
 const { Command } = await import("commander");
 const { loadAliases } = await import("../../../../src/cli/spike-cli/node-sys/store.js");
 

@@ -1,10 +1,7 @@
 {
   "name": "statecharts",
   "category": "core",
-  "dependencies": [
-    "node:crypto",
-    "node:readline"
-  ],
+  "dependencies": ["node:crypto", "node:readline"],
   "files": [
     "cli/cli.ts",
     "core-logic/index.ts",

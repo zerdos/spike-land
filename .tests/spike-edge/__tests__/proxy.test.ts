@@ -18,7 +18,9 @@ function createMockEnv(overrides: Partial<Env> = {}): Env {
     } as unknown as D1Database,
     AUTH_MCP: { fetch: vi.fn() } as unknown as Fetcher,
     MCP_SERVICE: {
-      fetch: vi.fn().mockResolvedValue(new Response(JSON.stringify({ key: null }), { status: 200 })),
+      fetch: vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ key: null }), { status: 200 })),
     } as unknown as Fetcher,
     LIMITERS: {} as DurableObjectNamespace,
     STRIPE_SECRET_KEY: "sk_test_xxx",
@@ -69,11 +71,15 @@ describe("POST /proxy/stripe", () => {
   it("returns 400 for invalid body (missing url)", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({ data: "no url" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({ data: "no url" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("url is required");
@@ -82,11 +88,15 @@ describe("POST /proxy/stripe", () => {
   it("returns 400 for non-Stripe URL", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://evil.com/steal" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://evil.com/steal" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("Invalid Stripe");
@@ -95,22 +105,30 @@ describe("POST /proxy/stripe", () => {
   it("returns 405 for non-POST method", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.stripe.com/v1/charges", method: "GET" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.stripe.com/v1/charges", method: "GET" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(405);
   });
 
   it("proxies valid Stripe request with authorization header", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.stripe.com/v1/payment_intents" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.stripe.com/v1/payment_intents" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     expect(mockFetch).toHaveBeenCalled();
     const [[url, options]] = mockFetch.mock.calls;
@@ -121,19 +139,23 @@ describe("POST /proxy/stripe", () => {
   it("sanitizes caller headers — only allows safe headers", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({
-        url: "https://api.stripe.com/v1/charges",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded",
-          "Authorization": "Bearer hacker-token", // should be stripped
-          "x-request-id": "req-123", // allowed
-          "x-evil-header": "injected", // should be stripped
-        },
-      }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          url: "https://api.stripe.com/v1/charges",
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+            Authorization: "Bearer hacker-token", // should be stripped
+            "x-request-id": "req-123", // allowed
+            "x-evil-header": "injected", // should be stripped
+          },
+        }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     const [[, options]] = mockFetch.mock.calls;
     expect(options.headers["Authorization"]).toContain("sk_test_xxx"); // platform key used
     expect(options.headers["x-evil-header"]).toBeUndefined();
@@ -143,14 +165,18 @@ describe("POST /proxy/stripe", () => {
   it("passes body when provided", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    await app.request("/proxy/stripe", {
-      method: "POST",
-      body: JSON.stringify({
-        url: "https://api.stripe.com/v1/payment_intents",
-        body: { amount: 100, currency: "usd" },
-      }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    await app.request(
+      "/proxy/stripe",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          url: "https://api.stripe.com/v1/payment_intents",
+          body: { amount: 100, currency: "usd" },
+        }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     const [[, options]] = mockFetch.mock.calls;
     expect(options.body).toContain("amount");
   });
@@ -178,22 +204,30 @@ describe("POST /proxy/ai", () => {
   it("returns 400 for invalid body", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: "{}",
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: "{}",
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 400 for non-AI URL", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://evil.com/steal" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://evil.com/steal" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("Invalid AI API");
@@ -202,22 +236,30 @@ describe("POST /proxy/ai", () => {
   it("returns 405 for non-POST method to AI", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages", method: "GET" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages", method: "GET" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(405);
   });
 
   it("proxies Anthropic request with x-api-key header", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const [[, options]] = mockFetch.mock.calls;
     expect(options.headers["x-api-key"]).toBe("claude-token");
@@ -226,11 +268,15 @@ describe("POST /proxy/ai", () => {
   it("proxies Gemini request with Bearer Authorization", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://generativelanguage.googleapis.com/v1/models" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://generativelanguage.googleapis.com/v1/models" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const [[, options]] = mockFetch.mock.calls;
     expect(options.headers["Authorization"]).toContain("gemini-key");
@@ -239,9 +285,11 @@ describe("POST /proxy/ai", () => {
   it("uses BYOK key when MCP_SERVICE returns one", async () => {
     const env = createMockEnv({
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ key: "byok-user-key" }), { status: 200 }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(
+            new Response(JSON.stringify({ key: "byok-user-key" }), { status: 200 }),
+          ),
       } as unknown as Fetcher,
     });
     const app = new Hono<{ Bindings: Env }>();
@@ -250,11 +298,15 @@ describe("POST /proxy/ai", () => {
       await next();
     });
     app.route("/", proxy);
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     // The BYOK key should be used
     const [[, options]] = mockFetch.mock.calls;
@@ -264,9 +316,9 @@ describe("POST /proxy/ai", () => {
   it("falls back to platform key when BYOK resolves null", async () => {
     const env = createMockEnv({
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ key: null }), { status: 200 }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({ key: null }), { status: 200 })),
       } as unknown as Fetcher,
     });
     const app = new Hono<{ Bindings: Env }>();
@@ -275,11 +327,15 @@ describe("POST /proxy/ai", () => {
       await next();
     });
     app.route("/", proxy);
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const [[, options]] = mockFetch.mock.calls;
     expect(options.headers["x-api-key"]).toBe("claude-token");
@@ -289,9 +345,9 @@ describe("POST /proxy/ai", () => {
     const env = createMockEnv({
       CLAUDE_OAUTH_TOKEN: "",
       MCP_SERVICE: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ key: null }), { status: 200 }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({ key: null }), { status: 200 })),
       } as unknown as Fetcher,
     });
     const app = new Hono<{ Bindings: Env }>();
@@ -300,11 +356,15 @@ describe("POST /proxy/ai", () => {
       await next();
     });
     app.route("/", proxy);
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(503);
   });
 
@@ -320,11 +380,15 @@ describe("POST /proxy/ai", () => {
       await next();
     });
     app.route("/", proxy);
-    const res = await app.request("/proxy/ai", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/ai",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.anthropic.com/v1/messages" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     // Falls back to platform claude-token
     const [[, options]] = mockFetch.mock.calls;
@@ -354,22 +418,30 @@ describe("POST /proxy/github", () => {
   it("returns 400 for invalid body", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/github", {
-      method: "POST",
-      body: "{}",
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/github",
+      {
+        method: "POST",
+        body: "{}",
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 400 for non-GitHub URL", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/github", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://evil.com" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/github",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://evil.com" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("Invalid GitHub");
@@ -378,22 +450,33 @@ describe("POST /proxy/github", () => {
   it("returns 405 for disallowed method (DELETE)", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/github", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.github.com/repos", method: "DELETE" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/github",
+      {
+        method: "POST",
+        body: JSON.stringify({ url: "https://api.github.com/repos", method: "DELETE" }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(405);
   });
 
   it("proxies GET request to GitHub with token", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/github", {
-      method: "POST",
-      body: JSON.stringify({ url: "https://api.github.com/repos/spike-land/spike-land", method: "GET" }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/proxy/github",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          url: "https://api.github.com/repos/spike-land/spike-land",
+          method: "GET",
+        }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const [[, options]] = mockFetch.mock.calls;
     expect(options.headers.Authorization).toContain("ghp_xxx");
@@ -404,15 +487,19 @@ describe("POST /proxy/github", () => {
   it("proxies POST request to GitHub", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/proxy/github", {
-      method: "POST",
-      body: JSON.stringify({
-        url: "https://api.github.com/repos/spike-land/spike-land/issues",
+    const res = await app.request(
+      "/proxy/github",
+      {
         method: "POST",
-        body: { title: "Test issue" },
-      }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+        body: JSON.stringify({
+          url: "https://api.github.com/repos/spike-land/spike-land/issues",
+          method: "POST",
+          body: { title: "Test issue" },
+        }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const [[, options]] = mockFetch.mock.calls;
     expect(options.method).toBe("POST");

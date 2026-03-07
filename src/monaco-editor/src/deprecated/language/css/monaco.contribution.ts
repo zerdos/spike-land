@@ -1,1 +1,1 @@
-export * from '../../../languages/features/css/register';
+export * from "../../../languages/features/css/register";

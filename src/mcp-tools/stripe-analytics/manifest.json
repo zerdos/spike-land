@@ -1,9 +1,7 @@
 {
   "name": "stripe-analytics",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/stripe-client.ts",
     "core-logic/types.ts",

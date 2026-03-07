@@ -254,7 +254,14 @@ export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
     "Browser automation and test execution with screenshots, accessibility audits, and network analysis",
 };
 
-export type CategoryAudience = "app-building" | "ai-automation" | "labs" | "learning" | "platform" | "domain" | "infrastructure";
+export type CategoryAudience =
+  | "app-building"
+  | "ai-automation"
+  | "labs"
+  | "learning"
+  | "platform"
+  | "domain"
+  | "infrastructure";
 
 export const CATEGORY_AUDIENCES: Record<string, CategoryAudience> = {
   // App Building

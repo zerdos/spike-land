@@ -16,7 +16,7 @@ describe("createRoot", () => {
 
   it("throws if container is falsy", () => {
     expect(() => createRoot(null as unknown as Element)).toThrow(
-      "createRoot(...): Target container is not a DOM element."
+      "createRoot(...): Target container is not a DOM element.",
     );
   });
 
@@ -45,8 +45,7 @@ describe("createRoot", () => {
   });
 
   it("renders a function component", async () => {
-    const Greeting = ({ name }: { name: string }) =>
-      createElement("h1", null, `Hello, ${name}!`);
+    const Greeting = ({ name }: { name: string }) => createElement("h1", null, `Hello, ${name}!`);
     const root = createRoot(container);
     root.render(createElement(Greeting, { name: "React" }));
     await new Promise((r) => queueMicrotask(r as () => void));
@@ -58,7 +57,7 @@ describe("createRoot", () => {
       "ul",
       null,
       createElement("li", { key: "a" }, "Item A"),
-      createElement("li", { key: "b" }, "Item B")
+      createElement("li", { key: "b" }, "Item B"),
     );
     const root = createRoot(container);
     root.render(el);
@@ -68,8 +67,7 @@ describe("createRoot", () => {
   });
 
   it("renders a function component", async () => {
-    const Greeting = ({ name }: { name: string }) =>
-      createElement("h1", null, `Hello, ${name}!`);
+    const Greeting = ({ name }: { name: string }) => createElement("h1", null, `Hello, ${name}!`);
     const root = createRoot(container);
     root.render(createElement(Greeting, { name: "React" }));
     await new Promise((r) => queueMicrotask(r as () => void));

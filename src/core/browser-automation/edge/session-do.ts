@@ -10,7 +10,13 @@ import { DurableObject } from "cloudflare:workers";
 import type { Env } from "../core-logic/env.js";
 import type { BrowserPage } from "../core-logic/adapter.js";
 import { PuppeteerAdapter } from "./adapter-puppeteer.js";
-import { narrate, narrateCompact, narrateCompactSection, narrateSection, findElementByRef } from "../core-logic/narrate.js";
+import {
+  narrate,
+  narrateCompact,
+  narrateCompactSection,
+  narrateSection,
+  findElementByRef,
+} from "../core-logic/narrate.js";
 import type { AccessibilityNode } from "../core-logic/types.js";
 
 interface TabState {
@@ -99,7 +105,10 @@ export class BrowserSessionDO extends DurableObject<Env> {
     return this.readPage("compact");
   }
 
-  async readPage(detail: "compact" | "full" | "landmark" = "compact", landmark?: string): Promise<string> {
+  async readPage(
+    detail: "compact" | "full" | "landmark" = "compact",
+    landmark?: string,
+  ): Promise<string> {
     await this.resetAlarm();
     const snapshot = await this.getSnapshot();
     if (!snapshot) return "No active browser tab. Use web_navigate first.";
@@ -121,7 +130,10 @@ export class BrowserSessionDO extends DurableObject<Env> {
     if (ref !== undefined) {
       const node = findElementByRef(snapshot.tree, ref);
       if (!node) return `No element with ref=${ref}.`;
-      const locator = snapshot.page.getByRole(node.role, node.name !== undefined ? { name: node.name } : undefined);
+      const locator = snapshot.page.getByRole(
+        node.role,
+        node.name !== undefined ? { name: node.name } : undefined,
+      );
       await locator.click();
     } else if (role) {
       const opts = name ? { name } : undefined;
@@ -166,7 +178,9 @@ export class BrowserSessionDO extends DurableObject<Env> {
       targetName = node.name;
     }
 
-    await snapshot.page.getByRole(role, targetName ? { name: targetName } : undefined).selectOption(option);
+    await snapshot.page
+      .getByRole(role, targetName ? { name: targetName } : undefined)
+      .selectOption(option);
     return this.readPage("compact");
   }
 

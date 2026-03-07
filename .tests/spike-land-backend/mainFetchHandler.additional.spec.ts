@@ -223,7 +223,9 @@ describe("mainFetchHandler additional coverage", () => {
     });
 
     it("ignores non-GET methods to /health endpoint", async () => {
-      vi.mocked(handleFetchApi).mockResolvedValue(new Response("Method Not Allowed", { status: 405 }));
+      vi.mocked(handleFetchApi).mockResolvedValue(
+        new Response("Method Not Allowed", { status: 405 }),
+      );
       const request = new Request("https://example.com/health", { method: "POST" });
       const response = await handleMainFetch(request, mockEnv, mockCtx);
 

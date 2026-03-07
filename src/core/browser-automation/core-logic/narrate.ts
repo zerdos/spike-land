@@ -41,11 +41,7 @@ const LANDMARK_ROLES = new Set([
 ]);
 
 /** Roles to skip entirely (decorative / structural noise) */
-const SKIP_ROLES = new Set([
-  "none",
-  "presentation",
-  "generic",
-]);
+const SKIP_ROLES = new Set(["none", "presentation", "generic"]);
 
 interface NarrationState {
   nextRef: number;
@@ -66,11 +62,7 @@ function getStates(node: AccessibilityNode): string[] {
   return states;
 }
 
-function formatElement(
-  node: AccessibilityNode,
-  ref: number | undefined,
-  depth: number,
-): string {
+function formatElement(node: AccessibilityNode, ref: number | undefined, depth: number): string {
   const indent = "  ".repeat(depth);
   const parts: string[] = [];
 
@@ -185,11 +177,7 @@ function narrateNode(
 /**
  * Convert an accessibility tree into narrated text.
  */
-export function narrate(
-  tree: AccessibilityNode,
-  title: string,
-  url: string,
-): NarrationResult {
+export function narrate(tree: AccessibilityNode, title: string, url: string): NarrationResult {
   const state: NarrationState = {
     nextRef: 1,
     elements: [],
@@ -259,15 +247,9 @@ export function narrateSection(
   };
 }
 
-function findLandmark(
-  node: AccessibilityNode,
-  name: string,
-): AccessibilityNode | null {
+function findLandmark(node: AccessibilityNode, name: string): AccessibilityNode | null {
   const normalizedName = name.toLowerCase();
-  if (
-    LANDMARK_ROLES.has(node.role) &&
-    node.role.toLowerCase() === normalizedName
-  ) {
+  if (LANDMARK_ROLES.has(node.role) && node.role.toLowerCase() === normalizedName) {
     return node;
   }
   for (const child of node.children ?? []) {
@@ -322,9 +304,7 @@ function compactStates(node: AccessibilityNode): string {
 
 function compactInteractive(node: AccessibilityNode, ref: number): string {
   const name = node.name ? ` ${truncate(node.name, 40)}` : "";
-  const val = node.value !== undefined && node.value !== ""
-    ? `="${truncate(node.value, 30)}"`
-    : "";
+  const val = node.value !== undefined && node.value !== "" ? `="${truncate(node.value, 30)}"` : "";
   const states = compactStates(node);
   return `${name}${val}${states} ref=${ref}`;
 }
@@ -339,7 +319,14 @@ function narrateCompactNode(
 ): void {
   if (shouldSkip(node)) {
     for (const child of node.children ?? []) {
-      narrateCompactNode(child, state, depth, lines, node.children ?? [], (node.children ?? []).indexOf(child));
+      narrateCompactNode(
+        child,
+        state,
+        depth,
+        lines,
+        node.children ?? [],
+        (node.children ?? []).indexOf(child),
+      );
     }
     return;
   }
@@ -371,14 +358,23 @@ function narrateCompactNode(
     });
 
     // Collapse consecutive interactive siblings on the same line
-    const isGroupable = node.role !== "heading" && node.role !== "textbox" &&
-      node.role !== "searchbox" && node.role !== "combobox" &&
-      node.role !== "slider" && node.role !== "spinbutton";
+    const isGroupable =
+      node.role !== "heading" &&
+      node.role !== "textbox" &&
+      node.role !== "searchbox" &&
+      node.role !== "combobox" &&
+      node.role !== "slider" &&
+      node.role !== "spinbutton";
 
     if (isGroupable && siblingIndex > 0) {
       const prev = siblings[siblingIndex - 1];
-      if (prev && shouldAssignRef(prev.role) && prev.role !== "heading" &&
-          prev.role !== "textbox" && prev.role !== "searchbox") {
+      if (
+        prev &&
+        shouldAssignRef(prev.role) &&
+        prev.role !== "heading" &&
+        prev.role !== "textbox" &&
+        prev.role !== "searchbox"
+      ) {
         // Append to previous line with pipe separator
         const lastLine = lines[lines.length - 1];
         if (lastLine && !lastLine.endsWith("]")) {
@@ -388,9 +384,10 @@ function narrateCompactNode(
       }
     }
 
-    const role = node.role === "heading"
-      ? `[${HEADING_SHORT[node.level ?? 1] ?? `h${node.level}`}]`
-      : `[${node.role}]`;
+    const role =
+      node.role === "heading"
+        ? `[${HEADING_SHORT[node.level ?? 1] ?? `h${node.level}`}]`
+        : `[${node.role}]`;
     lines.push(`${indent}${role}${compactInteractive(node, ref)}`);
     return;
   }
@@ -497,10 +494,7 @@ export function narrateCompactSection(
  * Find an accessibility node by its ref number.
  * Rebuilds the ref map by re-walking the tree.
  */
-export function findElementByRef(
-  tree: AccessibilityNode,
-  ref: number,
-): AccessibilityNode | null {
+export function findElementByRef(tree: AccessibilityNode, ref: number): AccessibilityNode | null {
   const state: NarrationState = {
     nextRef: 1,
     elements: [],

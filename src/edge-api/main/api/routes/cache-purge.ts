@@ -14,16 +14,14 @@ cachePurge.post("/api/cache/purge", async (c) => {
     return c.json({ error: "Maximum 30 files per request" }, 400);
   }
 
-  const payload = body.purge_everything
-    ? { purge_everything: true }
-    : { files: body.files };
+  const payload = body.purge_everything ? { purge_everything: true } : { files: body.files };
 
   const resp = await fetch(
     `https://api.cloudflare.com/client/v4/zones/${c.env.CF_ZONE_ID}/purge_cache`,
     {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${c.env.CF_CACHE_PURGE_TOKEN}`,
+        Authorization: `Bearer ${c.env.CF_CACHE_PURGE_TOKEN}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),

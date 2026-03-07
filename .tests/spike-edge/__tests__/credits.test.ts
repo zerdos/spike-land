@@ -66,7 +66,12 @@ describe("credits — GET /api/credits/balance", () => {
     const app = makeApp("user1");
     const res = await app.request("/api/credits/balance", {}, env);
     expect(res.status).toBe(200);
-    const body = await res.json<{ balance: number; dailyLimit: number; tier: string; usedToday: number }>();
+    const body = await res.json<{
+      balance: number;
+      dailyLimit: number;
+      tier: string;
+      usedToday: number;
+    }>();
     expect(body.balance).toBe(45);
     expect(body.dailyLimit).toBe(50);
     expect(typeof body.tier).toBe("string");
@@ -77,44 +82,60 @@ describe("credits — POST /api/credits/purchase", () => {
   it("returns 401 when no userId", async () => {
     const app = makeApp();
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(401);
   });
 
   it("returns 503 when no Stripe key", async () => {
     const app = makeApp("user1");
     const env = createMockEnv({ STRIPE_SECRET_KEY: "" });
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(503);
   });
 
   it("returns 400 for invalid JSON body", async () => {
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: "not json",
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: "not json",
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 400 for invalid pack size", async () => {
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 999 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 999 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("Invalid pack");
@@ -122,32 +143,40 @@ describe("credits — POST /api/credits/purchase", () => {
   });
 
   it("returns 502 when Stripe price lookup fails", async () => {
-    globalThis.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ error: "not found" }), { status: 404 }),
-    );
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ error: "not found" }), { status: 404 }));
 
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(502);
   });
 
   it("returns 404 when no price found for pack", async () => {
-    globalThis.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ data: [] }), { status: 200 }),
-    );
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ data: [] }), { status: 200 }));
 
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(404);
   });
 
@@ -157,19 +186,29 @@ describe("credits — POST /api/credits/purchase", () => {
       fetchCallCount++;
       if (fetchCallCount === 1) {
         // Stripe price lookup
-        return Promise.resolve(new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }));
+        return Promise.resolve(
+          new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }),
+        );
       }
       // Checkout session creation
-      return Promise.resolve(new Response(JSON.stringify({ url: "https://checkout.stripe.com/session" }), { status: 200 }));
+      return Promise.resolve(
+        new Response(JSON.stringify({ url: "https://checkout.stripe.com/session" }), {
+          status: 200,
+        }),
+      );
     });
 
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ url: string }>();
     expect(body.url).toContain("stripe.com");
@@ -180,18 +219,26 @@ describe("credits — POST /api/credits/purchase", () => {
     globalThis.fetch = vi.fn().mockImplementation(() => {
       fetchCallCount++;
       if (fetchCallCount === 1) {
-        return Promise.resolve(new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }));
+        return Promise.resolve(
+          new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }),
+        );
       }
-      return Promise.resolve(new Response(JSON.stringify({ error: "session failed" }), { status: 500 }));
+      return Promise.resolve(
+        new Response(JSON.stringify({ error: "session failed" }), { status: 500 }),
+      );
     });
 
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 2500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 2500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(502);
   });
 
@@ -200,18 +247,26 @@ describe("credits — POST /api/credits/purchase", () => {
     globalThis.fetch = vi.fn().mockImplementation(() => {
       fetchCallCount++;
       if (fetchCallCount === 1) {
-        return Promise.resolve(new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }));
+        return Promise.resolve(
+          new Response(JSON.stringify({ data: [{ id: "price_abc" }] }), { status: 200 }),
+        );
       }
-      return Promise.resolve(new Response(JSON.stringify({ id: "cs_123" /* no url */ }), { status: 200 }));
+      return Promise.resolve(
+        new Response(JSON.stringify({ id: "cs_123" /* no url */ }), { status: 200 }),
+      );
     });
 
     const app = makeApp("user1");
     const env = createMockEnv();
-    const res = await app.request("/api/credits/purchase", {
-      method: "POST",
-      body: JSON.stringify({ pack: 7500 }),
-      headers: { "Content-Type": "application/json" },
-    }, env);
+    const res = await app.request(
+      "/api/credits/purchase",
+      {
+        method: "POST",
+        body: JSON.stringify({ pack: 7500 }),
+        headers: { "Content-Type": "application/json" },
+      },
+      env,
+    );
     expect(res.status).toBe(502);
   });
 });

@@ -94,7 +94,11 @@ function NodeDot({ node, phase, phaseProgress, isLast }: NodeDotProps) {
   const isGuilt = phase === "guilt";
   const isAcceptance = phase === "acceptance";
 
-  const dotColor = isAcceptance ? node.acceptColor : isGuilt ? node.guiltColor : "hsl(var(--muted-foreground))";
+  const dotColor = isAcceptance
+    ? node.acceptColor
+    : isGuilt
+      ? node.guiltColor
+      : "hsl(var(--muted-foreground))";
 
   const glowShadow =
     isAcceptance && isLast
@@ -180,7 +184,11 @@ type NodeLabelProps = {
 function NodeLabel({ node, phase, phaseProgress }: NodeLabelProps) {
   const isHidden = phase === "hidden";
   const isAcceptance = phase === "acceptance";
-  const color = isAcceptance ? node.acceptColor : phase === "guilt" ? node.guiltColor : "hsl(var(--muted-foreground))";
+  const color = isAcceptance
+    ? node.acceptColor
+    : phase === "guilt"
+      ? node.guiltColor
+      : "hsl(var(--muted-foreground))";
 
   return (
     <motion.div

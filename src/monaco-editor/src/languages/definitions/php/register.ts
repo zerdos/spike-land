@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'php',
-	extensions: ['.php', '.php4', '.php5', '.phtml', '.ctp'],
-	aliases: ['PHP', 'php'],
-	mimetypes: ['application/x-php'],
-	loader: () => import('./php')
+  id: "php",
+  extensions: [".php", ".php4", ".php5", ".phtml", ".ctp"],
+  aliases: ["PHP", "php"],
+  mimetypes: ["application/x-php"],
+  loader: () => import("./php"),
 });

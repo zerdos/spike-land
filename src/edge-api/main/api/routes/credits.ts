@@ -58,10 +58,7 @@ credits.post("/api/credits/purchase", async (c) => {
   const pack = CREDIT_PACKS.find((p) => p.credits === body.pack);
   if (!pack) {
     const validPacks = CREDIT_PACKS.map((p) => p.credits);
-    return c.json(
-      { error: `Invalid pack. Must be one of: ${validPacks.join(", ")}` },
-      400,
-    );
+    return c.json({ error: `Invalid pack. Must be one of: ${validPacks.join(", ")}` }, 400);
   }
 
   // Look up Stripe price by lookup key
@@ -112,11 +109,7 @@ credits.post("/api/credits/purchase", async (c) => {
 /** GET /internal/credits/balance/:userId — internal service binding endpoint. */
 credits.get("/internal/credits/balance/:userId", async (c) => {
   const secret = c.req.header("x-internal-secret");
-  if (
-    !secret ||
-    !c.env.INTERNAL_SERVICE_SECRET ||
-    secret !== c.env.INTERNAL_SERVICE_SECRET
-  ) {
+  if (!secret || !c.env.INTERNAL_SERVICE_SECRET || secret !== c.env.INTERNAL_SERVICE_SECRET) {
     return c.json({ error: "Unauthorized" }, 401);
   }
   const userId = c.req.param("userId");

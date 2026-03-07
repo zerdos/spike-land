@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { jsonResult } from "../../mcp/types.js";
 import { tryCatch } from "../../mcp/try-catch.js";
-import { imageProcedure, withOwnership, withResolves } from "../../lazy-imports/image-middleware.js";
+import {
+  imageProcedure,
+  withOwnership,
+  withResolves,
+} from "../../lazy-imports/image-middleware.js";
 
 export const versionsTool = imageProcedure
   .use(withResolves({ image_id: "image" }))

@@ -9,7 +9,7 @@ publicAppsRoute.get("/", async (c) => {
     `SELECT slug, name, description, emoji, tool_count, sort_order
      FROM mcp_apps
      WHERE status = 'live'
-     ORDER BY sort_order ASC`
+     ORDER BY sort_order ASC`,
   ).all();
 
   const apps = result.results ?? [];
@@ -24,8 +24,10 @@ publicAppsRoute.get("/:slug", async (c) => {
   const row = await c.env.DB.prepare(
     `SELECT slug, name, description, emoji, status, tools, graph, markdown, tool_count, sort_order
      FROM mcp_apps
-     WHERE slug = ?`
-  ).bind(slug).first();
+     WHERE slug = ?`,
+  )
+    .bind(slug)
+    .first();
 
   if (!row) {
     return c.json({ error: "App not found" }, 404);
@@ -34,8 +36,16 @@ publicAppsRoute.get("/:slug", async (c) => {
   let tools = [];
   let graph = {};
 
-  try { tools = JSON.parse(row.tools as string); } catch (e) { console.error(`Failed to parse 'tools' for app ${slug}`, e); }
-  try { graph = JSON.parse(row.graph as string); } catch (e) { console.error(`Failed to parse 'graph' for app ${slug}`, e); }
+  try {
+    tools = JSON.parse(row.tools as string);
+  } catch (e) {
+    console.error(`Failed to parse 'tools' for app ${slug}`, e);
+  }
+  try {
+    graph = JSON.parse(row.graph as string);
+  } catch (e) {
+    console.error(`Failed to parse 'graph' for app ${slug}`, e);
+  }
 
   const app = {
     slug: row.slug,

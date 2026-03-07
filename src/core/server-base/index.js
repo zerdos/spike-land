@@ -25,18 +25,18 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
  * ```
  */
 export class McpError extends Error {
-    code;
-    retryable;
-    cause;
-    constructor(code, message, retryable = false, cause) {
-        super(message);
-        this.name = "McpError";
-        this.code = code;
-        this.retryable = retryable;
-        if (cause !== undefined) {
-            this.cause = cause;
-        }
+  code;
+  retryable;
+  cause;
+  constructor(code, message, retryable = false, cause) {
+    super(message);
+    this.name = "McpError";
+    this.code = code;
+    this.retryable = retryable;
+    if (cause !== undefined) {
+      this.cause = cause;
     }
+  }
 }
 // ─── Result Helpers ───────────────────────────────────────────────────────────
 /**
@@ -44,16 +44,16 @@ export class McpError extends Error {
  * overwhelming the LLM context window.
  */
 export function textResult(text) {
-    const MAX = 8_192;
-    const truncated = text.length > MAX ? text.slice(0, MAX) + "\n...(truncated)" : text;
-    return { content: [{ type: "text", text: truncated }] };
+  const MAX = 8_192;
+  const truncated = text.length > MAX ? text.slice(0, MAX) + "\n...(truncated)" : text;
+  return { content: [{ type: "text", text: truncated }] };
 }
 /**
  * Build a successful result from any JSON-serialisable value.
  * Pretty-prints with 2-space indentation.
  */
 export function jsonResult(data) {
-    return textResult(JSON.stringify(data, null, 2));
+  return textResult(JSON.stringify(data, null, 2));
 }
 /**
  * Build a standard error result.
@@ -68,15 +68,15 @@ export function jsonResult(data) {
  * ```
  */
 export function errorResult(code, message, retryable = false) {
-    return {
-        content: [
-            {
-                type: "text",
-                text: `**Error: ${code}**\n${message}\n**Retryable:** ${retryable}`,
-            },
-        ],
-        isError: true,
-    };
+  return {
+    content: [
+      {
+        type: "text",
+        text: `**Error: ${code}**\n${message}\n**Retryable:** ${retryable}`,
+      },
+    ],
+    isError: true,
+  };
 }
 /**
  * Convert any caught value into a standard error CallToolResult.
@@ -94,31 +94,31 @@ export function errorResult(code, message, retryable = false) {
  * ```
  */
 export function formatError(err) {
-    if (err instanceof McpError) {
-        return errorResult(err.code, err.message, err.retryable);
-    }
-    const message = err instanceof Error ? err.message : String(err);
-    return errorResult("INTERNAL_ERROR", message, false);
+  if (err instanceof McpError) {
+    return errorResult(err.code, err.message, err.retryable);
+  }
+  const message = err instanceof Error ? err.message : String(err);
+  return errorResult("INTERNAL_ERROR", message, false);
 }
 export function ok(data) {
-    return {
-        ok: true,
-        data,
-        unwrap: () => data,
-        map: (fn) => ok(fn(data)),
-        flatMap: (fn) => fn(data),
-    };
+  return {
+    ok: true,
+    data,
+    unwrap: () => data,
+    map: (fn) => ok(fn(data)),
+    flatMap: (fn) => fn(data),
+  };
 }
 export function fail(error) {
-    return {
-        ok: false,
-        error,
-        unwrap: () => {
-            throw error;
-        },
-        map: () => fail(error),
-        flatMap: () => fail(error),
-    };
+  return {
+    ok: false,
+    error,
+    unwrap: () => {
+      throw error;
+    },
+    map: () => fail(error),
+    flatMap: () => fail(error),
+  };
 }
 /**
  * Async wrapper — returns `Result<T>` with `ok` discriminant.
@@ -130,13 +130,12 @@ export function fail(error) {
  * ```
  */
 export async function tryCatch(promise) {
-    try {
-        const data = await promise;
-        return ok(data);
-    }
-    catch (err) {
-        return fail(err instanceof Error ? err : new Error(String(err)));
-    }
+  try {
+    const data = await promise;
+    return ok(data);
+  } catch (err) {
+    return fail(err instanceof Error ? err : new Error(String(err)));
+  }
 }
 /**
  * Wrap an McpServer so that every `tool()` registration gets timing/outcome
@@ -151,55 +150,49 @@ export async function tryCatch(promise) {
  * ```
  */
 export function wrapServerWithLogging(server, serverName, onLog) {
-    const originalTool = server.tool.bind(server);
-    // McpServer.tool() has multiple overloads. We intercept by wrapping the
-    // function itself and detecting the handler (last argument that's a function).
-    server.tool = ((...args) => {
-        // Find the handler — it's always the last function argument
-        const handlerIdx = args.findIndex((a, i) => typeof a === "function" && i === args.length - 1);
-        if (handlerIdx === -1) {
-            // No handler found — pass through unchanged
-            return originalTool(...args);
+  const originalTool = server.tool.bind(server);
+  // McpServer.tool() has multiple overloads. We intercept by wrapping the
+  // function itself and detecting the handler (last argument that's a function).
+  server.tool = (...args) => {
+    // Find the handler — it's always the last function argument
+    const handlerIdx = args.findIndex((a, i) => typeof a === "function" && i === args.length - 1);
+    if (handlerIdx === -1) {
+      // No handler found — pass through unchanged
+      return originalTool(...args);
+    }
+    const toolName = typeof args[0] === "string" ? args[0] : "unknown";
+    const originalHandler = args[handlerIdx];
+    const wrappedHandler = async (...handlerArgs) => {
+      const start = Date.now();
+      let outcome = "success";
+      try {
+        const result = await originalHandler(...handlerArgs);
+        if (result && typeof result === "object" && "isError" in result && result.isError) {
+          outcome = "error";
         }
-        const toolName = typeof args[0] === "string" ? args[0] : "unknown";
-        const originalHandler = args[handlerIdx];
-        const wrappedHandler = async (...handlerArgs) => {
-            const start = Date.now();
-            let outcome = "success";
-            try {
-                const result = await originalHandler(...handlerArgs);
-                if (result &&
-                    typeof result === "object" &&
-                    "isError" in result &&
-                    result.isError) {
-                    outcome = "error";
-                }
-                return result;
-            }
-            catch (err) {
-                outcome = "error";
-                throw err;
-            }
-            finally {
-                const durationMs = Date.now() - start;
-                const entry = {
-                    server: serverName,
-                    tool: toolName,
-                    durationMs,
-                    outcome,
-                };
-                if (onLog) {
-                    onLog(entry);
-                }
-                else {
-                    console.error(`[mcp-analytics] ${serverName}/${toolName} ${outcome} ${durationMs}ms`);
-                }
-            }
+        return result;
+      } catch (err) {
+        outcome = "error";
+        throw err;
+      } finally {
+        const durationMs = Date.now() - start;
+        const entry = {
+          server: serverName,
+          tool: toolName,
+          durationMs,
+          outcome,
         };
-        const newArgs = [...args];
-        newArgs[handlerIdx] = wrappedHandler;
-        return originalTool(...newArgs);
-    });
+        if (onLog) {
+          onLog(entry);
+        } else {
+          console.error(`[mcp-analytics] ${serverName}/${toolName} ${outcome} ${durationMs}ms`);
+        }
+      }
+    };
+    const newArgs = [...args];
+    newArgs[handlerIdx] = wrappedHandler;
+    return originalTool(...newArgs);
+  };
 }
 // ─── Server Factory ───────────────────────────────────────────────────────────
 /**
@@ -216,10 +209,10 @@ export function wrapServerWithLogging(server, serverName, onLog) {
  * ```
  */
 export function createMcpServer(config) {
-    return new McpServer({
-        name: config.name,
-        version: config.version,
-    });
+  return new McpServer({
+    name: config.name,
+    version: config.version,
+  });
 }
 /**
  * Connect the server to stdio and await the connection.
@@ -232,8 +225,8 @@ export function createMcpServer(config) {
  * ```
  */
 export async function startMcpServer(server) {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
 }
 /**
  * Register a Zod-validated tool on an `McpServer`.
@@ -255,20 +248,19 @@ export async function startMcpServer(server) {
  * ```
  */
 export function createZodTool(server, options) {
-    const { name, description, schema, handler } = options;
-    // server.tool() uses complex conditional types (ToolCallback<TSchema>) that
-    // cannot be directly satisfied by our simplified handler signature. At runtime
-    // the callback receives a plain object for args; the two-step cast through
-    // unknown is safe and semantically correct.
-    const wrappedHandler = async (args) => {
-        try {
-            return await handler(args);
-        }
-        catch (err) {
-            return formatError(err);
-        }
-    };
-    server.tool(name, description, schema, wrappedHandler);
+  const { name, description, schema, handler } = options;
+  // server.tool() uses complex conditional types (ToolCallback<TSchema>) that
+  // cannot be directly satisfied by our simplified handler signature. At runtime
+  // the callback receives a plain object for args; the two-step cast through
+  // unknown is safe and semantically correct.
+  const wrappedHandler = async (args) => {
+    try {
+      return await handler(args);
+    } catch (err) {
+      return formatError(err);
+    }
+  };
+  server.tool(name, description, schema, wrappedHandler);
 }
 /**
  * Create a mock MCP server suitable for unit tests.
@@ -285,32 +277,32 @@ export function createZodTool(server, options) {
  * ```
  */
 export function createMockServer() {
-    const handlers = new Map();
-    const tool = (name, _description, _schema, handler) => {
-        handlers.set(name, handler);
-    };
-    const call = async (name, args = {}) => {
-        const handler = handlers.get(name);
-        if (!handler) {
-            throw new Error(`Tool "${name}" not registered on mock server`);
-        }
-        return handler(args);
-    };
-    return { tool, handlers, call };
+  const handlers = new Map();
+  const tool = (name, _description, _schema, handler) => {
+    handlers.set(name, handler);
+  };
+  const call = async (name, args = {}) => {
+    const handler = handlers.get(name);
+    if (!handler) {
+      throw new Error(`Tool "${name}" not registered on mock server`);
+    }
+    return handler(args);
+  };
+  return { tool, handlers, call };
 }
 export function createMockRegistry() {
-    const handlers = new Map();
-    const register = (def) => {
-        handlers.set(def.name, def.handler);
-    };
-    const call = async (name, args = {}) => {
-        const handler = handlers.get(name);
-        if (!handler) {
-            throw new Error(`Mock tool handler not found for "${name}"`);
-        }
-        return handler(args);
-    };
-    return { register, handlers, call };
+  const handlers = new Map();
+  const register = (def) => {
+    handlers.set(def.name, def.handler);
+  };
+  const call = async (name, args = {}) => {
+    const handler = handlers.get(name);
+    if (!handler) {
+      throw new Error(`Mock tool handler not found for "${name}"`);
+    }
+    return handler(args);
+  };
+  return { register, handlers, call };
 }
 // ─── Convenience re-exports ───────────────────────────────────────────────────
 /**
@@ -321,13 +313,13 @@ export function createMockRegistry() {
  * ```
  */
 export function getText(result) {
-    return result.content[0]?.text ?? "";
+  return result.content[0]?.text ?? "";
 }
 /**
  * True if the tool result represents an error.
  */
 export function isErrorResult(result) {
-    return result.isError === true;
+  return result.isError === true;
 }
 // ─── Feedback & Error Shipper ────────────────────────────────────────────────
 export * from "./feedback.js";

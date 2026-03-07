@@ -101,11 +101,7 @@ import { registerAuditQuestionnaireTools } from "../../db/tools/persona/audit-qu
  * Safely call a register function, catching and logging errors.
  * Uses a generic call signature to avoid `as any` on each invocation.
  */
-function safeRegister(
-  fn: (...args: never[]) => void,
-  label: string,
-  ...args: unknown[]
-): void {
+function safeRegister(fn: (...args: never[]) => void, label: string, ...args: unknown[]): void {
   try {
     (fn as (...a: unknown[]) => void)(...args);
   } catch (err) {
@@ -135,7 +131,15 @@ export async function registerAllTools(
   safeRegister(registerAuthTools, "registerAuthTools", registry, userId, db);
   safeRegister(registerWorkspacesTools, "registerWorkspacesTools", registry, userId, db);
   safeRegister(registerBillingTools, "registerBillingTools", registry, userId, db);
-  safeRegister(registerVaultTools, "registerVaultTools", registry, userId, db, env?.kv, env?.vaultSecret);
+  safeRegister(
+    registerVaultTools,
+    "registerVaultTools",
+    registry,
+    userId,
+    db,
+    env?.kv,
+    env?.vaultSecret,
+  );
   safeRegister(registerStorageTools, "registerStorageTools", registry, userId, db, env?.spaAssets);
   safeRegister(registerBoxesTools, "registerBoxesTools", registry, userId, db);
   safeRegister(registerRemindersTools, "registerRemindersTools", registry, userId, db);
@@ -171,11 +175,29 @@ export async function registerAllTools(
   safeRegister(registerBazdmegTools, "registerBazdmegTools", registry, userId, db);
   safeRegister(registerBazdmegMemoryTools, "registerBazdmegMemoryTools", registry, userId, db);
   safeRegister(registerBazdmegWorkflowTools, "registerBazdmegWorkflowTools", registry, userId, db);
-  safeRegister(registerBazdmegTelemetryTools, "registerBazdmegTelemetryTools", registry, userId, db);
+  safeRegister(
+    registerBazdmegTelemetryTools,
+    "registerBazdmegTelemetryTools",
+    registry,
+    userId,
+    db,
+  );
   safeRegister(registerBazdmegGatesTools, "registerBazdmegGatesTools", registry, userId, db);
-  safeRegister(registerBazdmegSkillSyncTools, "registerBazdmegSkillSyncTools", registry, userId, db);
+  safeRegister(
+    registerBazdmegSkillSyncTools,
+    "registerBazdmegSkillSyncTools",
+    registry,
+    userId,
+    db,
+  );
   safeRegister(registerReactionsTools, "registerReactionsTools", registry, userId, db);
-  safeRegister(registerContextArchitectTools, "registerContextArchitectTools", registry, userId, db);
+  safeRegister(
+    registerContextArchitectTools,
+    "registerContextArchitectTools",
+    registry,
+    userId,
+    db,
+  );
   safeRegister(registerSandboxTools, "registerSandboxTools", registry, userId, db);
   safeRegister(registerOrchestratorTools, "registerOrchestratorTools", registry, userId, db);
   safeRegister(registerLieDetectorTools, "registerLieDetectorTools", registry, userId, db);
@@ -184,10 +206,22 @@ export async function registerAllTools(
   safeRegister(registerDecisionsTools, "registerDecisionsTools", registry, userId, db);
   safeRegister(registerSwarmTools, "registerSwarmTools", registry, userId, db);
   safeRegister(registerSwarmMonitoringTools, "registerSwarmMonitoringTools", registry, userId, db);
-  safeRegister(registerMcpObservabilityTools, "registerMcpObservabilityTools", registry, userId, db);
+  safeRegister(
+    registerMcpObservabilityTools,
+    "registerMcpObservabilityTools",
+    registry,
+    userId,
+    db,
+  );
   safeRegister(registerErrorQueryTools, "registerErrorQueryTools", registry, userId, db);
   safeRegister(registerGitHubAdminTools, "registerGitHubAdminTools", registry, userId, db);
-  safeRegister(registerGitHubIssueSearchTools, "registerGitHubIssueSearchTools", registry, userId, db);
+  safeRegister(
+    registerGitHubIssueSearchTools,
+    "registerGitHubIssueSearchTools",
+    registry,
+    userId,
+    db,
+  );
   safeRegister(registerAuditTools, "registerAuditTools", registry, userId, db);
   safeRegister(registerCrdtTools, "registerCrdtTools", registry, userId, db);
   safeRegister(registerNetsimTools, "registerNetsimTools", registry, userId, db);
@@ -203,10 +237,40 @@ export async function registerAllTools(
   safeRegister(registerEsbuildTools, "registerEsbuildTools", registry, userId, db);
   safeRegister(registerBuildFromGithubTools, "registerBuildFromGithubTools", registry, userId, db);
   safeRegister(registerQuizTools, "registerQuizTools", registry, userId, db, env);
-  safeRegister(registerCachePurgeTools, "registerCachePurgeTools", registry, userId, db, env?.spikeEdge, env?.mcpInternalSecret);
-  safeRegister(registerBugbookFeedbackTools, "registerBugbookFeedbackTools", registry, userId, db, env?.spikeEdge, env?.mcpInternalSecret);
-  safeRegister(registerByokTools, "registerByokTools", registry, userId, db, env?.kv, env?.vaultSecret);
+  safeRegister(
+    registerCachePurgeTools,
+    "registerCachePurgeTools",
+    registry,
+    userId,
+    db,
+    env?.spikeEdge,
+    env?.mcpInternalSecret,
+  );
+  safeRegister(
+    registerBugbookFeedbackTools,
+    "registerBugbookFeedbackTools",
+    registry,
+    userId,
+    db,
+    env?.spikeEdge,
+    env?.mcpInternalSecret,
+  );
+  safeRegister(
+    registerByokTools,
+    "registerByokTools",
+    registry,
+    userId,
+    db,
+    env?.kv,
+    env?.vaultSecret,
+  );
   safeRegister(registerBeUniqTools, "registerBeUniqTools", registry, userId, db);
   safeRegister(registerPlanGeneratorTools, "registerPlanGeneratorTools", registry, userId, db);
-  safeRegister(registerAuditQuestionnaireTools, "registerAuditQuestionnaireTools", registry, userId, db);
+  safeRegister(
+    registerAuditQuestionnaireTools,
+    "registerAuditQuestionnaireTools",
+    registry,
+    userId,
+    db,
+  );
 }

@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/colorPicker/browser/colorPickerContribution';
+import "monaco-editor-core/esm/vs/editor/contrib/colorPicker/browser/colorPickerContribution";

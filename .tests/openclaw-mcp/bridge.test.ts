@@ -18,9 +18,9 @@ describe("createMcpBridge", () => {
 
     const tools = bridge.listTools();
     expect(tools).toHaveLength(2);
-    expect(tools.map(t => t.name)).toContain("chat");
-    expect(tools.map(t => t.name)).toContain("openclaw_feedback");
-    const chatTool = tools.find(t => t.name === "chat")!;
+    expect(tools.map((t) => t.name)).toContain("chat");
+    expect(tools.map((t) => t.name)).toContain("openclaw_feedback");
+    const chatTool = tools.find((t) => t.name === "chat")!;
     expect(chatTool.description).toContain("OpenClaw");
   });
 
@@ -64,8 +64,8 @@ describe("createMcpBridge", () => {
     const tools = bridge.listTools();
 
     expect(tools).toHaveLength(2);
-    expect(tools.map(t => t.name)).toContain("chat");
-    expect(tools.map(t => t.name)).toContain("openclaw_feedback");
+    expect(tools.map((t) => t.name)).toContain("chat");
+    expect(tools.map((t) => t.name)).toContain("openclaw_feedback");
   });
 
   it("loadGatewayTools() is idempotent", async () => {
@@ -469,10 +469,13 @@ describe("createMcpBridge", () => {
 
   it("openclaw_feedback tool sends report to API", async () => {
     const transport = mockTransport();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ id: "bug-123" }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: "bug-123" }),
+      }),
+    );
 
     const bridge = createMcpBridge({
       transport,
@@ -498,10 +501,13 @@ describe("createMcpBridge", () => {
 
   it("openclaw_feedback returns error on fetch failure", async () => {
     const transport = mockTransport();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: false,
-      text: async () => "API Error",
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        text: async () => "API Error",
+      }),
+    );
 
     const bridge = createMcpBridge({
       transport,

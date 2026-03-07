@@ -1,15 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getBalance, deductCredit, purchaseCredits, getUsedToday } from "../../../src/edge-api/main/core-logic/credit-service.js";
+import {
+  getBalance,
+  deductCredit,
+  purchaseCredits,
+  getUsedToday,
+} from "../../../src/edge-api/main/core-logic/credit-service.js";
 
 /**
  * Build a mock D1Database that simulates the credit_balances table.
  */
-function createMockDB(options: {
-  tier?: string;
-  balance?: number;
-  lastDailyGrant?: string | null;
-  dailyLimit?: number;
-} = {}) {
+function createMockDB(
+  options: {
+    tier?: string;
+    balance?: number;
+    lastDailyGrant?: string | null;
+    dailyLimit?: number;
+  } = {},
+) {
   const today = new Date().toISOString().slice(0, 10);
   const tier = options.tier ?? "free";
   const balance = options.balance ?? 0;
@@ -47,7 +54,11 @@ function createMockDB(options: {
           return Promise.resolve({ balance });
         }
         if (sql.includes("credit_balances")) {
-          return Promise.resolve({ balance, daily_limit: dailyLimit, last_daily_grant: lastDailyGrant });
+          return Promise.resolve({
+            balance,
+            daily_limit: dailyLimit,
+            last_daily_grant: lastDailyGrant,
+          });
         }
         if (sql.includes("credit_ledger") && sql.includes("SUM")) {
           return Promise.resolve({ used: 5 });
@@ -81,7 +92,10 @@ describe("getBalance", () => {
         return Promise.resolve(null);
       }),
     }));
-    const db = { prepare: prepareMock, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+    const db = {
+      prepare: prepareMock,
+      batch: vi.fn().mockResolvedValue([]),
+    } as unknown as D1Database;
     const result = await getBalance(db, "user1");
     expect(result.balance).toBe(30);
     expect(result.dailyLimit).toBe(50);
@@ -126,7 +140,10 @@ describe("getBalance", () => {
       all: vi.fn().mockResolvedValue({ results: [] }),
     }));
 
-    const db = { prepare: prepareMock, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+    const db = {
+      prepare: prepareMock,
+      batch: vi.fn().mockResolvedValue([]),
+    } as unknown as D1Database;
     const result = await getBalance(db, "new-user");
     expect(result.balance).toBe(0);
     expect(result.lastDailyGrant).toBeNull();
@@ -140,7 +157,8 @@ describe("getBalance", () => {
       run: runMock,
       first: vi.fn().mockImplementation(() => {
         if (sql.includes("access_grants")) return Promise.resolve(null);
-        if (sql.includes("subscriptions")) return Promise.resolve({ plan: "pro", status: "active" });
+        if (sql.includes("subscriptions"))
+          return Promise.resolve({ plan: "pro", status: "active" });
         if (sql.includes("credit_balances")) {
           return Promise.resolve({ balance: 100, daily_limit: 50, last_daily_grant: today }); // old limit was 50, now should be 500
         }
@@ -149,7 +167,10 @@ describe("getBalance", () => {
       all: vi.fn().mockResolvedValue({ results: [] }),
     }));
 
-    const db = { prepare: prepareMock, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+    const db = {
+      prepare: prepareMock,
+      batch: vi.fn().mockResolvedValue([]),
+    } as unknown as D1Database;
     const result = await getBalance(db, "user-pro");
     // tier is pro => daily_limit should be 500, but stored as 50 => triggers update
     expect(result.dailyLimit).toBe(500);
@@ -196,7 +217,10 @@ describe("deductCredit", () => {
       all: vi.fn().mockResolvedValue({ results: [] }),
     }));
 
-    const db = { prepare: prepareMock, batch: vi.fn().mockResolvedValue([]) } as unknown as D1Database;
+    const db = {
+      prepare: prepareMock,
+      batch: vi.fn().mockResolvedValue([]),
+    } as unknown as D1Database;
     await expect(deductCredit(db, "user1", 5, "test")).rejects.toThrow("insufficient_credits");
   });
 

@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { isRetryableError, withRetry } from "../../../../src/cli/spike-cli/core-logic/chat/retry.js";
+import {
+  isRetryableError,
+  withRetry,
+} from "../../../../src/cli/spike-cli/core-logic/chat/retry.js";
 
 describe("isRetryableError", () => {
   it("returns true for 429 errors", () => {
@@ -54,7 +57,8 @@ describe("withRetry", () => {
   });
 
   it("retries on retryable errors", async () => {
-    const fn = vi.fn()
+    const fn = vi
+      .fn()
       .mockRejectedValueOnce(new Error("429 Too Many Requests"))
       .mockResolvedValueOnce("success");
 
@@ -87,7 +91,8 @@ describe("withRetry", () => {
       return originalSetTimeout(fn as TimerHandler, 0);
     });
 
-    const fnMock = vi.fn()
+    const fnMock = vi
+      .fn()
       .mockRejectedValueOnce(new Error("429"))
       .mockRejectedValueOnce(new Error("429"))
       .mockResolvedValue("ok");

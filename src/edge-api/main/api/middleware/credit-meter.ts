@@ -14,7 +14,10 @@ import { createLogger } from "@spike-land-ai/shared";
 
 const log = createLogger("spike-edge");
 
-export const creditMeterMiddleware: MiddlewareHandler<{ Bindings: Env; Variables: Variables }> = async (c, next) => {
+export const creditMeterMiddleware: MiddlewareHandler<{
+  Bindings: Env;
+  Variables: Variables;
+}> = async (c, next) => {
   const userId = c.get("userId") as string | undefined;
 
   // No userId — auth middleware should have already rejected, but be defensive

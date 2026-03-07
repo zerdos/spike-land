@@ -199,9 +199,7 @@ export function CodeCategorizerQuiz() {
   const hasAnswered = currentSelection !== null;
   const isLast = currentIdx === QUESTIONS.length - 1;
 
-  const score = selected.filter(
-    (ans, i) => ans === QUESTIONS[i]!.correct,
-  ).length;
+  const score = selected.filter((ans, i) => ans === QUESTIONS[i]!.correct).length;
 
   const handleSelect = useCallback(
     (category: Category) => {
@@ -251,18 +249,14 @@ export function CodeCategorizerQuiz() {
                 key={q.id}
                 className={cn(
                   "flex items-center justify-between rounded-xl px-4 py-2 text-sm font-bold",
-                  correct
-                    ? "bg-emerald-500/10 text-emerald-400"
-                    : "bg-red-500/10 text-red-400",
+                  correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400",
                 )}
               >
                 <span>Q{q.id}</span>
                 {correct ? (
                   <CheckCircle2 className="h-4 w-4" />
                 ) : (
-                  <span className="text-xs">
-                    {CATEGORY_LABELS[q.correct]}
-                  </span>
+                  <span className="text-xs">{CATEGORY_LABELS[q.correct]}</span>
                 )}
               </div>
             );
@@ -294,11 +288,7 @@ export function CodeCategorizerQuiz() {
               key={i}
               className={cn(
                 "h-1.5 w-6 rounded-full transition-colors",
-                i < currentIdx
-                  ? "bg-emerald-500"
-                  : i === currentIdx
-                    ? "bg-primary"
-                    : "bg-border",
+                i < currentIdx ? "bg-emerald-500" : i === currentIdx ? "bg-primary" : "bg-border",
               )}
             />
           ))}
@@ -318,9 +308,7 @@ export function CodeCategorizerQuiz() {
           {currentQuestion.code.split("\n").map((line, lineIdx) => (
             <span key={lineIdx} className="block">
               {line
-                .split(
-                  /(import|from|export|const|function|interface|type|return|while|if)\b/,
-                )
+                .split(/(import|from|export|const|function|interface|type|return|while|if)\b/)
                 .map((part, partIdx) => {
                   if (
                     [
@@ -387,12 +375,8 @@ export function CodeCategorizerQuiz() {
               )}
             >
               <span>{CATEGORY_LABELS[category]}</span>
-              {hasAnswered && isCorrect && (
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-              )}
-              {hasAnswered && isSelected && !isCorrect && (
-                <XCircle className="h-4 w-4 shrink-0" />
-              )}
+              {hasAnswered && isCorrect && <CheckCircle2 className="h-4 w-4 shrink-0" />}
+              {hasAnswered && isSelected && !isCorrect && <XCircle className="h-4 w-4 shrink-0" />}
             </button>
           );
         })}

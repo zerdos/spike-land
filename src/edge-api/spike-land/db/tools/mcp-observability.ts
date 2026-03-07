@@ -38,7 +38,10 @@ export function registerMcpObservabilityTools(
         const [totals] = await ctx.db
           .select({
             total: count(),
-            errors: sql<number>`sum(case when ${skillUsageEvents.outcome} = 'error' then 1 else 0 end)`.mapWith(Number),
+            errors:
+              sql<number>`sum(case when ${skillUsageEvents.outcome} = 'error' then 1 else 0 end)`.mapWith(
+                Number,
+              ),
           })
           .from(skillUsageEvents)
           .where(gte(skillUsageEvents.createdAt, sinceTs));
@@ -54,10 +57,7 @@ export function registerMcpObservabilityTools(
           })
           .from(skillUsageEvents)
           .where(
-            and(
-              eq(skillUsageEvents.outcome, "error"),
-              gte(skillUsageEvents.createdAt, sinceTs),
-            ),
+            and(eq(skillUsageEvents.outcome, "error"), gte(skillUsageEvents.createdAt, sinceTs)),
           )
           .groupBy(skillUsageEvents.skillName)
           .orderBy(sql`count(*) DESC`)
@@ -81,18 +81,10 @@ export function registerMcpObservabilityTools(
 
   registry.registerBuilt(
     freeTool(userId, db)
-      .tool(
-        "observability_latency",
-        "Get tool latency statistics from daily rollup data.",
-        {
-          days: z
-            .number()
-            .optional()
-            .default(7)
-            .describe("Number of days to look back (default 7)."),
-          tool_name: z.string().optional().describe("Filter by specific tool name."),
-        },
-      )
+      .tool("observability_latency", "Get tool latency statistics from daily rollup data.", {
+        days: z.number().optional().default(7).describe("Number of days to look back (default 7)."),
+        tool_name: z.string().optional().describe("Filter by specific tool name."),
+      })
       .meta({ category: "mcp-observability", tier: "free" })
       .handler(async ({ input, ctx }) => {
         const { days, tool_name } = input;
@@ -110,7 +102,9 @@ export function registerMcpObservabilityTools(
           .from(toolCallDaily)
           .where(and(...conditions))
           .groupBy(toolCallDaily.toolName)
-          .orderBy(desc(sql`sum(${toolCallDaily.totalMs}) / nullif(sum(${toolCallDaily.callCount}), 0)`))
+          .orderBy(
+            desc(sql`sum(${toolCallDaily.totalMs}) / nullif(sum(${toolCallDaily.callCount}), 0)`),
+          )
           .limit(20);
 
         if (rows.length === 0) {
@@ -123,9 +117,7 @@ export function registerMcpObservabilityTools(
           return `- **${r.toolName}**: avg ${avgMs}ms (${calls} calls)`;
         });
 
-        return textResult(
-          `**Tool Latency (last ${days}d)**\n\n` + lines.join("\n"),
-        );
+        return textResult(`**Tool Latency (last ${days}d)**\n\n` + lines.join("\n"));
       }),
   );
 }

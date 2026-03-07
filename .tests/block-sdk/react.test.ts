@@ -19,19 +19,17 @@ const testBlock = defineBlock({
       .tool("add_item", "Add item", { label: z.string() })
       .handler(async ({ input, ctx: blockCtx }) => {
         const id = blockCtx.nanoid(8);
-        await blockCtx.storage.sql.execute(
-          "INSERT INTO items (id, label, done) VALUES (?, ?, ?)",
-          [id, input.label, 0],
-        );
+        await blockCtx.storage.sql.execute("INSERT INTO items (id, label, done) VALUES (?, ?, ?)", [
+          id,
+          input.label,
+          0,
+        ]);
         return { content: [{ type: "text", text: JSON.stringify({ id, label: input.label }) }] };
       }),
     toggleItem: ctx.procedure
       .tool("toggle_item", "Toggle done", { id: z.string() })
       .handler(async ({ input, ctx: blockCtx }) => {
-        await blockCtx.storage.sql.execute(
-          "UPDATE items SET done = ? WHERE id = ?",
-          [1, input.id],
-        );
+        await blockCtx.storage.sql.execute("UPDATE items SET done = ? WHERE id = ?", [1, input.id]);
         return { content: [{ type: "text", text: JSON.stringify({ toggled: true }) }] };
       }),
   }),
@@ -67,9 +65,7 @@ describe("createBlockClient", () => {
     await testBlock.initialize(storage);
 
     const client = createBlockClient(testBlock, storage, { userId: "user-1" });
-    await expect(
-      client.call("nonExistent" as never, {}),
-    ).rejects.toThrow("Unknown procedure");
+    await expect(client.call("nonExistent" as never, {})).rejects.toThrow("Unknown procedure");
   });
 
   it("query reads from storage", async () => {
@@ -105,8 +101,12 @@ describe("createBlockClient", () => {
   });
 
   describe("subscribe", () => {
-    beforeEach(() => { vi.useFakeTimers(); });
-    afterEach(() => { vi.useRealTimers(); });
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
 
     it("returns a subscription handle", async () => {
       const storage = createMemoryAdapter();
@@ -299,8 +299,12 @@ describe("createBlockHooks", () => {
 });
 
 describe("subscribe - multiple listeners", () => {
-  beforeEach(() => { vi.useFakeTimers(); });
-  afterEach(() => { vi.useRealTimers(); });
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("multiple listeners on same subscription all get notified", async () => {
     const storage = createMemoryAdapter();

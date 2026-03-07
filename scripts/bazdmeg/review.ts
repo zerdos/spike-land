@@ -12,10 +12,10 @@ export function getChangedFiles(): string[] {
       encoding: "utf-8",
       cwd: process.cwd(),
     }).trim();
-    const untracked = execSync(
-      "git ls-files --others --exclude-standard",
-      { encoding: "utf-8", cwd: process.cwd() },
-    ).trim();
+    const untracked = execSync("git ls-files --others --exclude-standard", {
+      encoding: "utf-8",
+      cwd: process.cwd(),
+    }).trim();
 
     const all = new Set<string>();
     for (const line of [tracked, staged, untracked].join("\n").split("\n")) {

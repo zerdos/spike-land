@@ -10,12 +10,7 @@
  */
 
 import { GitHubClient } from "../lazy-imports/client.js";
-import {
-  computeOverallStatus,
-  formatGateResults,
-  getBuiltinRules,
-  runGates,
-} from "./engine.js";
+import { computeOverallStatus, formatGateResults, getBuiltinRules, runGates } from "./engine.js";
 import type { RuleContext } from "./engine.js";
 import { buildReviewPrompt } from "./prompts.js";
 import type { PRContext } from "./webhook-handler.js";

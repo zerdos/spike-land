@@ -91,7 +91,9 @@ describe("crop", () => {
   });
 
   it("should return error for unknown preset", async () => {
-    const parsed = (await import("../../../src/mcp-tools/image-studio/tools/crop.js")).CropInputSchema.safeParse({
+    const parsed = (
+      await import("../../../src/mcp-tools/image-studio/tools/crop.js")
+    ).CropInputSchema.safeParse({
       image_id: "img-1",
       preset: "tiktok_vertical" as unknown as string,
     });

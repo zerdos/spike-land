@@ -54,7 +54,11 @@ async function encryptValue(userId: string, value: string, vaultSecret: string):
   return btoa(JSON.stringify(envelope));
 }
 
-async function decryptValue(userId: string, encrypted: string, vaultSecret: string): Promise<string> {
+async function decryptValue(
+  userId: string,
+  encrypted: string,
+  vaultSecret: string,
+): Promise<string> {
   const encoder = new TextEncoder();
   const parsed = JSON.parse(atob(encrypted)) as {
     v?: number;
@@ -89,7 +93,10 @@ async function decryptValue(userId: string, encrypted: string, vaultSecret: stri
 
 // ─── Provider validation endpoints ──────────────────────────────────────────
 
-const PROVIDER_TEST_CONFIG: Record<string, { url: string; method: string; headers: (key: string) => Record<string, string>; body?: string }> = {
+const PROVIDER_TEST_CONFIG: Record<
+  string,
+  { url: string; method: string; headers: (key: string) => Record<string, string>; body?: string }
+> = {
   anthropic: {
     url: "https://api.anthropic.com/v1/messages",
     method: "POST",
@@ -98,7 +105,11 @@ const PROVIDER_TEST_CONFIG: Record<string, { url: string; method: string; header
       "content-type": "application/json",
       "anthropic-version": "2023-06-01",
     }),
-    body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1, messages: [{ role: "user", content: "hi" }] }),
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1,
+      messages: [{ role: "user", content: "hi" }],
+    }),
   },
   openai: {
     url: "https://api.openai.com/v1/models",
@@ -176,7 +187,10 @@ export function registerByokTools(
           );
         } catch (error) {
           const msg = error instanceof Error ? error.message : "Unknown error";
-          return { content: [{ type: "text" as const, text: `Error storing key: ${msg}` }], isError: true };
+          return {
+            content: [{ type: "text" as const, text: `Error storing key: ${msg}` }],
+            isError: true,
+          };
         }
       }),
   );
@@ -215,7 +229,10 @@ export function registerByokTools(
           return textResult(text);
         } catch (error) {
           const msg = error instanceof Error ? error.message : "Unknown error";
-          return { content: [{ type: "text" as const, text: `Error listing keys: ${msg}` }], isError: true };
+          return {
+            content: [{ type: "text" as const, text: `Error listing keys: ${msg}` }],
+            isError: true,
+          };
         }
       }),
   );
@@ -223,13 +240,9 @@ export function registerByokTools(
   // byok_delete_key
   registry.registerBuilt(
     t
-      .tool(
-        "byok_delete_key",
-        "Delete a stored BYOK API key for an AI provider.",
-        {
-          provider: z.enum(PROVIDERS).describe("AI provider whose key to delete."),
-        },
-      )
+      .tool("byok_delete_key", "Delete a stored BYOK API key for an AI provider.", {
+        provider: z.enum(PROVIDERS).describe("AI provider whose key to delete."),
+      })
       .meta({ category: "byok", tier: "free" })
       .handler(async ({ input, ctx }) => {
         try {
@@ -265,7 +278,10 @@ export function registerByokTools(
           );
         } catch (error) {
           const msg = error instanceof Error ? error.message : "Unknown error";
-          return { content: [{ type: "text" as const, text: `Error deleting key: ${msg}` }], isError: true };
+          return {
+            content: [{ type: "text" as const, text: `Error deleting key: ${msg}` }],
+            isError: true,
+          };
         }
       }),
   );
@@ -296,7 +312,12 @@ export function registerByokTools(
 
           if (row.length === 0 || !row[0]) {
             return {
-              content: [{ type: "text" as const, text: `No ${input.provider} key found. Use \`byok_store_key\` first.` }],
+              content: [
+                {
+                  type: "text" as const,
+                  text: `No ${input.provider} key found. Use \`byok_store_key\` first.`,
+                },
+              ],
               isError: true,
             };
           }
@@ -324,15 +345,20 @@ export function registerByokTools(
 
           const errorBody = await response.text().catch(() => "Unknown error");
           return {
-            content: [{
-              type: "text" as const,
-              text: `**BYOK Key Invalid**\n\n**Provider:** ${input.provider}\n**Status:** ${response.status}\n**Error:** ${errorBody.slice(0, 500)}`,
-            }],
+            content: [
+              {
+                type: "text" as const,
+                text: `**BYOK Key Invalid**\n\n**Provider:** ${input.provider}\n**Status:** ${response.status}\n**Error:** ${errorBody.slice(0, 500)}`,
+              },
+            ],
             isError: true,
           };
         } catch (error) {
           const msg = error instanceof Error ? error.message : "Unknown error";
-          return { content: [{ type: "text" as const, text: `Error testing key: ${msg}` }], isError: true };
+          return {
+            content: [{ type: "text" as const, text: `Error testing key: ${msg}` }],
+            isError: true,
+          };
         }
       }),
   );

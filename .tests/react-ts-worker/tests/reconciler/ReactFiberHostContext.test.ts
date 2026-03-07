@@ -7,7 +7,10 @@ import {
   pushHostContext,
   popHostContext,
 } from "../../../../src/core/react-engine/reconciler/ReactFiberHostContext.js";
-import type { Fiber, FiberRoot } from "../../../../src/core/react-engine/reconciler/ReactFiberTypes.js";
+import type {
+  Fiber,
+  FiberRoot,
+} from "../../../../src/core/react-engine/reconciler/ReactFiberTypes.js";
 import { DOMHostConfig } from "../../../../src/core/react-engine/host-config/DOMHostConfig.js";
 import { HostRoot } from "../../../../src/core/react-engine/reconciler/ReactWorkTags.js";
 
@@ -100,7 +103,9 @@ describe("ReactFiberHostContext", () => {
       // Function component fiber (type is a function)
       const fnFiber = {
         ...makeChildFiber(rootFiber, "div"),
-        type: function MyComp() { return null; },
+        type: function MyComp() {
+          return null;
+        },
       } as unknown as Fiber;
 
       expect(() => pushHostContext(fnFiber)).not.toThrow();

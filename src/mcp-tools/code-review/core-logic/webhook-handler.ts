@@ -140,8 +140,8 @@ export async function handleWebhook(
   }
 
   const pr = payload.pull_request; /* v8 ignore next */
-  if (!pr) /* v8 ignore start */ {
-    return { status: 400, body: "Missing pull_request payload" };
+  if (!pr) {
+    /* v8 ignore start */ return { status: 400, body: "Missing pull_request payload" };
   } /* v8 ignore stop */
   const context: PRContext = {
     owner: pr.base.repo.owner.login,

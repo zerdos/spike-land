@@ -50,7 +50,8 @@ export class ServiceRegistry {
 
   async listServices(): Promise<ServiceInfo[]> {
     const containers = await this.dockerGet<DockerContainer[]>(
-      "/containers/json?all=true&filters=" + encodeURIComponent(JSON.stringify({ label: ["spike.service"] })),
+      "/containers/json?all=true&filters=" +
+        encodeURIComponent(JSON.stringify({ label: ["spike.service"] })),
     );
 
     return containers.map((c) => {

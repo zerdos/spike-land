@@ -438,9 +438,9 @@ describe("Engine extra coverage", () => {
   describe("createMachine with duplicate ID", () => {
     it("throws when creating machine with existing ID", () => {
       const machine = createMachine({ name: "First Machine", userId: "u1", id: "fixed-id" });
-      expect(() =>
-        createMachine({ name: "Duplicate", userId: "u1", id: "fixed-id" }),
-      ).toThrow("already exists");
+      expect(() => createMachine({ name: "Duplicate", userId: "u1", id: "fixed-id" })).toThrow(
+        "already exists",
+      );
     });
   });
 

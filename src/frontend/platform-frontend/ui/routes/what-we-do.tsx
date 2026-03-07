@@ -216,7 +216,10 @@ function useCounter(target: number, active: boolean, duration = 1200) {
 
   useEffect(() => {
     if (!active) return;
-    if (target === 0) { setCount(0); return; }
+    if (target === 0) {
+      setCount(0);
+      return;
+    }
     const start = performance.now();
     let raf: number;
     const tick = (now: number) => {
@@ -388,8 +391,7 @@ function DotGrid() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0"
       style={{
-        backgroundImage:
-          "radial-gradient(circle, currentColor 1px, transparent 1px)",
+        backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
         backgroundSize: "28px 28px",
         opacity: 0.04,
       }}
@@ -442,7 +444,11 @@ export function WhatWeDoPage() {
         >
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
           MCP-First Platform
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.5s" }} aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+            style={{ animationDelay: "0.5s" }}
+            aria-hidden="true"
+          />
         </div>
 
         {/* Main headline */}
@@ -475,8 +481,8 @@ export function WhatWeDoPage() {
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          80+ production-ready MCP tools across 11 domains — deployed globally
-          on Cloudflare Workers with zero cold starts and full TypeScript safety.
+          80+ production-ready MCP tools across 11 domains — deployed globally on Cloudflare Workers
+          with zero cold starts and full TypeScript safety.
         </p>
 
         {/* Hero CTA buttons */}
@@ -519,7 +525,9 @@ export function WhatWeDoPage() {
           )}
           aria-hidden="true"
         >
-          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Scroll</span>
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Scroll
+          </span>
           <div className="h-6 w-px bg-gradient-to-b from-muted-foreground to-transparent animate-pulse" />
         </div>
       </section>
@@ -548,10 +556,7 @@ export function WhatWeDoPage() {
       {/* ------------------------------------------------------------------ */}
       {/* DOMAIN CARDS                                                        */}
       {/* ------------------------------------------------------------------ */}
-      <section
-        className="relative px-4 pb-24"
-        aria-labelledby="domains-heading"
-      >
+      <section className="relative px-4 pb-24" aria-labelledby="domains-heading">
         <div className="mx-auto max-w-6xl">
           {/* Section header */}
           <div
@@ -572,20 +577,15 @@ export function WhatWeDoPage() {
               </span>
             </h2>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Each domain is a fully-equipped toolkit. Hover a card to see what
-              the tools actually do.
+              Each domain is a fully-equipped toolkit. Hover a card to see what the tools actually
+              do.
             </p>
           </div>
 
           {/* Grid */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {DOMAINS.map((domain, i) => (
-              <DomainCard
-                key={domain.id}
-                domain={domain}
-                index={i}
-                visible={cardsVisible}
-              />
+              <DomainCard key={domain.id} domain={domain} index={i} visible={cardsVisible} />
             ))}
           </div>
 
@@ -663,11 +663,7 @@ export function WhatWeDoPage() {
       {/* ------------------------------------------------------------------ */}
       {/* CTA                                                                 */}
       {/* ------------------------------------------------------------------ */}
-      <section
-        ref={ctaRef}
-        className="relative px-4 pb-24"
-        aria-labelledby="cta-heading"
-      >
+      <section ref={ctaRef} className="relative px-4 pb-24" aria-labelledby="cta-heading">
         <div
           className={cn(
             "mx-auto max-w-3xl rounded-2xl border border-primary/30 bg-card/60 backdrop-blur-sm px-8 py-14 text-center",
@@ -692,8 +688,8 @@ export function WhatWeDoPage() {
             ?
           </h2>
           <p className="relative mt-4 text-muted-foreground max-w-lg mx-auto">
-            Browse every tool in the registry, or jump straight into VibeCoder
-            and start building AI-assisted apps in seconds.
+            Browse every tool in the registry, or jump straight into VibeCoder and start building
+            AI-assisted apps in seconds.
           </p>
 
           <div className="relative mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
@@ -723,7 +719,8 @@ export function WhatWeDoPage() {
 
           {/* Micro-trust signals */}
           <p className="relative mt-6 text-xs text-muted-foreground">
-            No credit card required &nbsp;&middot;&nbsp; Free plan available &nbsp;&middot;&nbsp; Edge-deployed globally
+            No credit card required &nbsp;&middot;&nbsp; Free plan available &nbsp;&middot;&nbsp;
+            Edge-deployed globally
           </p>
         </div>
       </section>

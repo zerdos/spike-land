@@ -7,9 +7,19 @@ import { Button } from "../lazy-imports/button";
 import { cn } from "@spike-land-ai/shared";
 import { apiUrl } from "../core-logic/api";
 
-function MonacoEditorWrapper({ value, onChange }: { value: string, onChange: (v: string) => void }) {
+function MonacoEditorWrapper({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<{ getValue(): string; dispose(): void; onDidChangeModelContent(cb: () => void): void } | null>(null);
+  const editorRef = useRef<{
+    getValue(): string;
+    dispose(): void;
+    onDidChangeModelContent(cb: () => void): void;
+  } | null>(null);
   const onChangeRef = useRef(onChange);
   const valueRef = useRef(value);
   onChangeRef.current = onChange;
@@ -19,26 +29,28 @@ function MonacoEditorWrapper({ value, onChange }: { value: string, onChange: (v:
     if (!containerRef.current) return;
     let isMounted = true;
 
-    import("monaco-editor").then((monaco) => {
-      if (!isMounted) return;
-      editorRef.current = monaco.editor.create(containerRef.current!, {
-        value: valueRef.current,
-        language: "markdown",
-        theme: "vs-dark",
-        minimap: { enabled: false },
-        wordWrap: "on",
-        fontSize: 13,
-        lineNumbers: "on",
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-      });
+    import("monaco-editor")
+      .then((monaco) => {
+        if (!isMounted) return;
+        editorRef.current = monaco.editor.create(containerRef.current!, {
+          value: valueRef.current,
+          language: "markdown",
+          theme: "vs-dark",
+          minimap: { enabled: false },
+          wordWrap: "on",
+          fontSize: 13,
+          lineNumbers: "on",
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+        });
 
-      editorRef.current.onDidChangeModelContent(() => {
-        onChangeRef.current(editorRef.current!.getValue());
+        editorRef.current.onDidChangeModelContent(() => {
+          onChangeRef.current(editorRef.current!.getValue());
+        });
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to load monaco-editor", err);
       });
-    }).catch((err: unknown) => {
-      console.error("Failed to load monaco-editor", err);
-    });
 
     return () => {
       isMounted = false;
@@ -69,10 +81,7 @@ interface ContentCreatorModeProps {
 
 type ToastState = { message: string; type: "success" | "error" } | null;
 
-export function ContentCreatorMode({
-  slug,
-  initialContent = "",
-}: ContentCreatorModeProps) {
+export function ContentCreatorMode({ slug, initialContent = "" }: ContentCreatorModeProps) {
   const [content, setContent] = useState(initialContent);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
@@ -108,12 +117,8 @@ export function ContentCreatorMode({
       <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-card shrink-0">
         <div className="flex items-center gap-3">
           <Pencil size={18} className="text-primary" />
-          <span className="text-sm font-black uppercase tracking-widest">
-            Content Creator Mode
-          </span>
-          <span className="text-xs font-bold text-muted-foreground/60 font-mono">
-            /{slug}
-          </span>
+          <span className="text-sm font-black uppercase tracking-widest">Content Creator Mode</span>
+          <span className="text-xs font-bold text-muted-foreground/60 font-mono">/{slug}</span>
         </div>
         <div className="flex items-center gap-3">
           <Button
@@ -188,17 +193,16 @@ export function ContentCreatorMode({
             </span>
           </div>
           <div className="flex-1 overflow-y-auto p-6">
-            <div className="prose dark:prose-invert max-w-none
+            <div
+              className="prose dark:prose-invert max-w-none
               prose-headings:font-black prose-headings:tracking-tighter
               prose-p:text-muted-foreground prose-p:leading-relaxed
               prose-a:text-primary prose-a:no-underline hover:prose-a:underline
               prose-strong:text-foreground prose-strong:font-black
               prose-code:text-primary prose-code:bg-primary/[0.05] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:before:content-none prose-code:after:content-none
-              prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border/50 prose-pre:rounded-2xl">
-              <Markdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-              >
+              prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border/50 prose-pre:rounded-2xl"
+            >
+              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {content}
               </Markdown>
             </div>
@@ -234,9 +238,7 @@ export function DevModeFAB({ slug, initialContent }: DevModeFABProps) {
 
   return (
     <>
-      {open && (
-        <ContentCreatorMode slug={slug} initialContent={initialContent} />
-      )}
+      {open && <ContentCreatorMode slug={slug} initialContent={initialContent} />}
       {!open && (
         <button
           onClick={() => setOpen(true)}

@@ -6,24 +6,14 @@
     "allowImportingTsExtensions": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "../../src/frontend/platform-frontend/*"
-      ],
-      "@spike-land-ai/block-website/ui": [
-        "../../src/core/block-website/core-logic/ui-index.ts"
-      ],
+      "@/*": ["../../src/frontend/platform-frontend/*"],
+      "@spike-land-ai/block-website/ui": ["../../src/core/block-website/core-logic/ui-index.ts"],
       "@spike-land-ai/block-website/core": [
         "../../src/core/block-website/core-logic/core-index.ts"
       ],
-      "@spike-land-ai/block-website/mcp": [
-        "../../src/core/block-website/mcp/mcp-index.ts"
-      ],
-      "@spike-land-ai/block-website": [
-        "../../src/core/block-website/index.ts"
-      ],
-      "@spike-land-ai/shared": [
-        "../../src/core/shared-utils/core-logic/index.ts"
-      ]
+      "@spike-land-ai/block-website/mcp": ["../../src/core/block-website/mcp/mcp-index.ts"],
+      "@spike-land-ai/block-website": ["../../src/core/block-website/index.ts"],
+      "@spike-land-ai/shared": ["../../src/core/shared-utils/core-logic/index.ts"]
     }
   },
   "include": [

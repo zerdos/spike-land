@@ -248,7 +248,9 @@ describe("SSE server — /messages endpoint", () => {
 describe("HTTP server — createMcpServer", () => {
   it("creates a server with ListTools handler that returns tools from manager", async () => {
     const manager = makeManager();
-    const { createMcpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { createMcpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     const server = createMcpServer(manager);
     expect(server).toBeDefined();
     // The server is a valid MCP Server instance
@@ -269,7 +271,9 @@ describe("HTTP server — createMcpServer", () => {
       callTool: vi.fn().mockResolvedValue({ content: [{ type: "text", text: "ok" }] }),
     } as unknown as ServerManager;
 
-    const { createMcpServer } = await import("../../../../src/cli/spike-cli/node-sys/http-server.js");
+    const { createMcpServer } = await import(
+      "../../../../src/cli/spike-cli/node-sys/http-server.js"
+    );
     const server = createMcpServer(managerWithUndescribed);
     expect(server).toBeDefined();
   });
@@ -294,7 +298,7 @@ describe("HTTP server — POST /mcp session creation and GET", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -319,7 +323,7 @@ describe("HTTP server — POST /mcp session creation and GET", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -348,7 +352,7 @@ describe("HTTP server — POST /mcp session creation and GET", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: "",
     });
@@ -361,7 +365,7 @@ describe("HTTP server — POST /mcp session creation and GET", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: "not-valid-json",
     });
@@ -392,7 +396,7 @@ describe("HTTP server — tools/call invokes manager.callTool", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -414,7 +418,7 @@ describe("HTTP server — tools/call invokes manager.callTool", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
         "mcp-session-id": sessionId!,
       },
       body: JSON.stringify({
@@ -429,7 +433,7 @@ describe("HTTP server — tools/call invokes manager.callTool", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
         "mcp-session-id": sessionId!,
       },
       body: JSON.stringify({
@@ -452,7 +456,7 @@ describe("HTTP server — tools/call invokes manager.callTool", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -506,7 +510,7 @@ describe("HTTP server — POST /mcp reuses existing session", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
       },
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -527,7 +531,7 @@ describe("HTTP server — POST /mcp reuses existing session", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        Accept: "application/json, text/event-stream",
         "mcp-session-id": sessionId!,
       },
       body: JSON.stringify({

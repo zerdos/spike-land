@@ -31,7 +31,9 @@ export function BugbookDetailPage() {
   if (isError || !data?.bug) {
     return (
       <div className="space-y-4">
-        <Link to="/bugbook" className="text-primary hover:underline"><span aria-hidden="true">&larr;</span> Back to Bugbook</Link>
+        <Link to="/bugbook" className="text-primary hover:underline">
+          <span aria-hidden="true">&larr;</span> Back to Bugbook
+        </Link>
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-6 text-center text-destructive">
           Bug not found.
         </div>
@@ -45,7 +47,9 @@ export function BugbookDetailPage() {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
-        <Link to="/bugbook" className="text-primary hover:underline">Bugbook</Link>
+        <Link to="/bugbook" className="text-primary hover:underline">
+          Bugbook
+        </Link>
         <span className="text-muted-foreground">/</span>
         <span className="text-muted-foreground truncate max-w-xs">{bug.title}</span>
       </div>
@@ -66,10 +70,14 @@ export function BugbookDetailPage() {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor[bug.status] ?? ""}`}>
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor[bug.status] ?? ""}`}
+          >
             {bug.status}
           </span>
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${severityColor[bug.severity] ?? ""}`}>
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${severityColor[bug.severity] ?? ""}`}
+          >
             {bug.severity}
           </span>
           <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
@@ -109,12 +117,20 @@ export function BugbookDetailPage() {
           </h2>
           <div className="space-y-2">
             {eloHistory.map((entry, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm">
+              <div
+                key={i}
+                className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm"
+              >
                 <span className="text-foreground">{entry.reason.replace(/_/g, " ")}</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground">{entry.old_elo} &rarr; {entry.new_elo}</span>
-                  <span className={`font-medium ${entry.change_amount >= 0 ? "text-success-foreground" : "text-destructive"}`}>
-                    {entry.change_amount >= 0 ? "+" : ""}{entry.change_amount}
+                  <span className="text-muted-foreground">
+                    {entry.old_elo} &rarr; {entry.new_elo}
+                  </span>
+                  <span
+                    className={`font-medium ${entry.change_amount >= 0 ? "text-success-foreground" : "text-destructive"}`}
+                  >
+                    {entry.change_amount >= 0 ? "+" : ""}
+                    {entry.change_amount}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {new Date(entry.created_at).toLocaleDateString()}
@@ -139,7 +155,9 @@ export function BugbookDetailPage() {
               <div key={report.id} className="rounded-lg border border-border p-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm text-foreground">{report.description}</p>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${severityColor[report.severity] ?? ""}`}>
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${severityColor[report.severity] ?? ""}`}
+                  >
                     {report.severity}
                   </span>
                 </div>

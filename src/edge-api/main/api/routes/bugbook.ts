@@ -2,8 +2,17 @@ import { Hono } from "hono";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { calculateBugEloChange } from "../../lazy-imports/elo.js";
-import { ensureUserElo, getUserElo, recordEloEvent, type EloEventType } from "../../core-logic/elo-service.js";
-import { ensureAgentElo, getAgentElo, recordAgentEloEvent } from "../../core-logic/agent-elo-service.js";
+import {
+  ensureUserElo,
+  getUserElo,
+  recordEloEvent,
+  type EloEventType,
+} from "../../core-logic/elo-service.js";
+import {
+  ensureAgentElo,
+  getAgentElo,
+  recordAgentEloEvent,
+} from "../../core-logic/agent-elo-service.js";
 import { eloThrottleMiddleware } from "../middleware/elo-throttle.js";
 import {
   buildBugListQuery,
@@ -32,8 +41,12 @@ bugbook.get("/bugbook", async (c) => {
   const countQ = buildBugCountQuery({ status, category });
 
   const [result, countResult] = await Promise.all([
-    c.env.DB.prepare(listQ.sql).bind(...listQ.params).all(),
-    c.env.DB.prepare(countQ.sql).bind(...countQ.params).first<{ total: number }>(),
+    c.env.DB.prepare(listQ.sql)
+      .bind(...listQ.params)
+      .all(),
+    c.env.DB.prepare(countQ.sql)
+      .bind(...countQ.params)
+      .first<{ total: number }>(),
   ]);
 
   return c.json({
@@ -51,10 +64,14 @@ bugbook.get("/bugbook/leaderboard", async (c) => {
   const [bugs, reporters] = await Promise.all([
     c.env.DB.prepare(
       "SELECT id, title, category, status, severity, elo, report_count FROM bugs WHERE status IN ('CANDIDATE', 'ACTIVE') ORDER BY elo DESC LIMIT ?",
-    ).bind(limit).all(),
+    )
+      .bind(limit)
+      .all(),
     c.env.DB.prepare(
       "SELECT user_id, elo, tier, event_count FROM user_elo ORDER BY elo DESC LIMIT ?",
-    ).bind(limit).all(),
+    )
+      .bind(limit)
+      .all(),
   ]);
 
   return c.json({
@@ -68,7 +85,9 @@ bugbook.get("/bugbook/reporters", async (c) => {
   const limit = Math.min(parseInt(c.req.query("limit") ?? "25", 10), 100);
   const result = await c.env.DB.prepare(
     "SELECT user_id, elo, tier, event_count FROM user_elo ORDER BY elo DESC LIMIT ?",
-  ).bind(limit).all();
+  )
+    .bind(limit)
+    .all();
   return c.json(result.results);
 });
 
@@ -80,10 +99,14 @@ bugbook.get("/bugbook/:id", async (c) => {
     c.env.DB.prepare("SELECT * FROM bugs WHERE id = ?").bind(bugId).first(),
     c.env.DB.prepare(
       "SELECT id, reporter_id, service_name, description, severity, created_at FROM bug_reports WHERE bug_id = ? ORDER BY created_at DESC LIMIT 50",
-    ).bind(bugId).all(),
+    )
+      .bind(bugId)
+      .all(),
     c.env.DB.prepare(
       "SELECT old_elo, new_elo, change_amount, reason, created_at FROM bug_elo_history WHERE bug_id = ? ORDER BY created_at DESC LIMIT 20",
-    ).bind(bugId).all(),
+    )
+      .bind(bugId)
+      .all(),
   ]);
 
   if (!bug) {
@@ -128,12 +151,16 @@ bugbook.post("/bugbook/report", authMiddleware, eloThrottleMiddleware, async (c)
 
   if (body.error_code) {
     const q = buildFindExistingBugByError(body.service_name, body.error_code);
-    existingBug = await c.env.DB.prepare(q.sql).bind(...q.params).first();
+    existingBug = await c.env.DB.prepare(q.sql)
+      .bind(...q.params)
+      .first();
   }
 
   if (!existingBug) {
     const q = buildFindExistingBugByTitle(body.title, body.service_name);
-    existingBug = await c.env.DB.prepare(q.sql).bind(...q.params).first();
+    existingBug = await c.env.DB.prepare(q.sql)
+      .bind(...q.params)
+      .first();
   }
 
   let bugId: string;
@@ -144,29 +171,48 @@ bugbook.post("/bugbook/report", authMiddleware, eloThrottleMiddleware, async (c)
     isNewBug = false;
 
     const bumpQ = buildBumpBugReportCount(now, bugId);
-    await c.env.DB.prepare(bumpQ.sql).bind(...bumpQ.params).run();
+    await c.env.DB.prepare(bumpQ.sql)
+      .bind(...bumpQ.params)
+      .run();
   } else {
-    const insertQ = buildInsertBug(body.title, body.description, body.service_name, severity, body.error_code);
-    const result = await c.env.DB.prepare(insertQ.sql).bind(...insertQ.params).first<{ id: string }>();
+    const insertQ = buildInsertBug(
+      body.title,
+      body.description,
+      body.service_name,
+      severity,
+      body.error_code,
+    );
+    const result = await c.env.DB.prepare(insertQ.sql)
+      .bind(...insertQ.params)
+      .first<{ id: string }>();
 
     bugId = result!.id;
     isNewBug = true;
   }
 
   const reportQ = buildInsertBugReport(
-    bugId, userId, body.service_name, body.description,
-    body.reproduction_steps ?? null, severity, body.metadata,
+    bugId,
+    userId,
+    body.service_name,
+    body.description,
+    body.reproduction_steps ?? null,
+    severity,
+    body.metadata,
   );
-  await c.env.DB.prepare(reportQ.sql).bind(...reportQ.params).run();
+  await c.env.DB.prepare(reportQ.sql)
+    .bind(...reportQ.params)
+    .run();
 
   // Bug-vs-Bug ELO: pick a random same-category competitor
   const compQ = buildRandomCompetitor(body.service_name, bugId);
-  const competitor = await c.env.DB.prepare(compQ.sql).bind(...compQ.params).first<{ id: string; elo: number; report_count: number }>();
+  const competitor = await c.env.DB.prepare(compQ.sql)
+    .bind(...compQ.params)
+    .first<{ id: string; elo: number; report_count: number }>();
 
   if (competitor) {
-    const currentBug = await c.env.DB.prepare(
-      "SELECT elo, report_count FROM bugs WHERE id = ?",
-    ).bind(bugId).first<{ elo: number; report_count: number }>();
+    const currentBug = await c.env.DB.prepare("SELECT elo, report_count FROM bugs WHERE id = ?")
+      .bind(bugId)
+      .first<{ elo: number; report_count: number }>();
 
     if (currentBug) {
       const eloResult = calculateBugEloChange(
@@ -177,11 +223,23 @@ bugbook.post("/bugbook/report", authMiddleware, eloThrottleMiddleware, async (c)
       );
 
       await c.env.DB.batch([
-        c.env.DB.prepare("UPDATE bugs SET elo = ? WHERE id = ?").bind(eloResult.winnerNewElo, bugId),
-        c.env.DB.prepare("UPDATE bugs SET elo = ? WHERE id = ?").bind(eloResult.loserNewElo, competitor.id),
+        c.env.DB.prepare("UPDATE bugs SET elo = ? WHERE id = ?").bind(
+          eloResult.winnerNewElo,
+          bugId,
+        ),
+        c.env.DB.prepare("UPDATE bugs SET elo = ? WHERE id = ?").bind(
+          eloResult.loserNewElo,
+          competitor.id,
+        ),
         c.env.DB.prepare(
           "INSERT INTO bug_elo_history (bug_id, old_elo, new_elo, change_amount, reason, opponent_bug_id) VALUES (?, ?, ?, ?, 'new_report', ?)",
-        ).bind(bugId, currentBug.elo, eloResult.winnerNewElo, eloResult.winnerChange, competitor.id),
+        ).bind(
+          bugId,
+          currentBug.elo,
+          eloResult.winnerNewElo,
+          eloResult.winnerChange,
+          competitor.id,
+        ),
         c.env.DB.prepare(
           "INSERT INTO bug_elo_history (bug_id, old_elo, new_elo, change_amount, reason, opponent_bug_id) VALUES (?, ?, ?, ?, 'competitor_loss', ?)",
         ).bind(competitor.id, competitor.elo, eloResult.loserNewElo, eloResult.loserChange, bugId),
@@ -191,14 +249,22 @@ bugbook.post("/bugbook/report", authMiddleware, eloThrottleMiddleware, async (c)
 
   // User ELO: reward for reporting
   const eloEvent = isNewBug ? "report_valid_bug" : "bug_confirmed";
-  const eloResult = await recordEloEvent(c.env.DB, userId, eloEvent as "report_valid_bug" | "bug_confirmed", bugId);
-
-  return c.json({
+  const eloResult = await recordEloEvent(
+    c.env.DB,
+    userId,
+    eloEvent as "report_valid_bug" | "bug_confirmed",
     bugId,
-    isNewBug,
-    status: isNewBug ? "CANDIDATE" : (existingBug?.status ?? "ACTIVE"),
-    userElo: { newElo: eloResult.newElo, delta: eloResult.delta, tier: eloResult.tier },
-  }, 201);
+  );
+
+  return c.json(
+    {
+      bugId,
+      isNewBug,
+      status: isNewBug ? "CANDIDATE" : (existingBug?.status ?? "ACTIVE"),
+      userElo: { newElo: eloResult.newElo, delta: eloResult.delta, tier: eloResult.tier },
+    },
+    201,
+  );
 });
 
 /** POST /bugbook/:id/confirm — confirm an existing bug. */
@@ -214,7 +280,9 @@ bugbook.post("/bugbook/:id/confirm", authMiddleware, eloThrottleMiddleware, asyn
   // Check if user already reported this bug
   const existing = await c.env.DB.prepare(
     "SELECT id FROM bug_reports WHERE bug_id = ? AND reporter_id = ? LIMIT 1",
-  ).bind(bugId, userId).first();
+  )
+    .bind(bugId, userId)
+    .first();
 
   if (existing) {
     return c.json({ error: "You have already reported this bug" }, 409);
@@ -247,9 +315,9 @@ bugbook.patch("/bugbook/:id/fix", authMiddleware, async (c) => {
     return c.json({ error: "Bug not found" }, 404);
   }
 
-  await c.env.DB.prepare(
-    "UPDATE bugs SET status = 'FIXED', fixed_at = ? WHERE id = ?",
-  ).bind(now, bugId).run();
+  await c.env.DB.prepare("UPDATE bugs SET status = 'FIXED', fixed_at = ? WHERE id = ?")
+    .bind(now, bugId)
+    .run();
 
   return c.json({ bugId, status: "FIXED" });
 });
@@ -265,7 +333,9 @@ bugbook.get("/bugbook/my-reports", authMiddleware, async (c) => {
               b.title as bug_title, b.status as bug_status, b.elo as bug_elo
        FROM bug_reports br JOIN bugs b ON br.bug_id = b.id
        WHERE br.reporter_id = ? ORDER BY br.created_at DESC LIMIT ?`,
-    ).bind(userId, limit).all(),
+    )
+      .bind(userId, limit)
+      .all(),
     getUserElo(c.env.DB, userId),
   ]);
 
@@ -305,8 +375,12 @@ bugbook.post("/internal/elo/event", async (c) => {
   }
 
   const validTypes = new Set([
-    "report_valid_bug", "bug_confirmed", "successful_tool_use",
-    "false_bug_report", "rate_limit_hit", "abuse_flag",
+    "report_valid_bug",
+    "bug_confirmed",
+    "successful_tool_use",
+    "false_bug_report",
+    "rate_limit_hit",
+    "abuse_flag",
   ]);
 
   if (!validTypes.has(body.eventType)) {
@@ -355,8 +429,12 @@ bugbook.post("/internal/agent-elo/event", async (c) => {
   }
 
   const validTypes = new Set([
-    "report_valid_bug", "bug_confirmed", "successful_tool_use",
-    "false_bug_report", "rate_limit_hit", "abuse_flag",
+    "report_valid_bug",
+    "bug_confirmed",
+    "successful_tool_use",
+    "false_bug_report",
+    "rate_limit_hit",
+    "abuse_flag",
   ]);
 
   if (!validTypes.has(body.eventType)) {

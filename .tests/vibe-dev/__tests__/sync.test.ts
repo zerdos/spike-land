@@ -30,9 +30,7 @@ describe("Sync Module", () => {
     });
 
     await freshSync.pullCode("code1");
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining("testing.spike.land"),
-    );
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("testing.spike.land"));
   });
 
   describe("pullCode", () => {

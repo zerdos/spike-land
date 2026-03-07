@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'wgsl',
-	extensions: ['.wgsl'],
-	aliases: ['WebGPU Shading Language', 'WGSL', 'wgsl'],
-	loader: () => import('./wgsl')
+  id: "wgsl",
+  extensions: [".wgsl"],
+  aliases: ["WebGPU Shading Language", "WGSL", "wgsl"],
+  loader: () => import("./wgsl"),
 });

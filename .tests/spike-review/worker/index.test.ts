@@ -101,7 +101,7 @@ describe("Worker fetch handler", () => {
         body: "Skipped: draft PR",
       });
 
-      const req = makeRequest("https://example.com/webhook", "POST", '{}');
+      const req = makeRequest("https://example.com/webhook", "POST", "{}");
       const res = await worker.fetch(req, mockEnv, mockCtx);
 
       const body = await res.json();
@@ -123,7 +123,7 @@ describe("Worker fetch handler", () => {
         context: prContext,
       });
 
-      const req = makeRequest("https://example.com/webhook", "POST", '{}');
+      const req = makeRequest("https://example.com/webhook", "POST", "{}");
       await worker.fetch(req, mockEnv, mockCtx);
 
       expect(mockCtx.waitUntil).toHaveBeenCalledTimes(1);
@@ -135,7 +135,7 @@ describe("Worker fetch handler", () => {
         body: "Ignored event",
       });
 
-      const req = makeRequest("https://example.com/webhook", "POST", '{}');
+      const req = makeRequest("https://example.com/webhook", "POST", "{}");
       await worker.fetch(req, mockEnv, mockCtx);
 
       expect(mockCtx.waitUntil).not.toHaveBeenCalled();
@@ -147,7 +147,7 @@ describe("Worker fetch handler", () => {
         body: "Invalid signature",
       });
 
-      const req = makeRequest("https://example.com/webhook", "POST", '{}');
+      const req = makeRequest("https://example.com/webhook", "POST", "{}");
       const res = await worker.fetch(req, mockEnv, mockCtx);
 
       expect(res.status).toBe(401);
@@ -170,7 +170,7 @@ describe("Worker fetch handler", () => {
 
       mockRunReviewJob.mockRejectedValue(new Error("Job failed"));
 
-      const req = makeRequest("https://example.com/webhook", "POST", '{}');
+      const req = makeRequest("https://example.com/webhook", "POST", "{}");
       await worker.fetch(req, mockEnv, mockCtx);
 
       // The waitUntil promise should handle the error internally (console.error)

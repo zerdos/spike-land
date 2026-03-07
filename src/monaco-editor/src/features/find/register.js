@@ -1,1 +1,1 @@
-import 'monaco-editor-core/esm/vs/editor/contrib/find/browser/findController';
+import "monaco-editor-core/esm/vs/editor/contrib/find/browser/findController";

@@ -65,16 +65,19 @@ export async function ensureUserElo(db: D1Database, userId: string): Promise<Use
   if (cached) return cached;
 
   // Try to fetch existing row
-  const row = await db.prepare(
-    "SELECT user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM user_elo WHERE user_id = ?",
-  ).bind(userId).first<{
-    user_id: string;
-    elo: number;
-    event_count: number;
-    daily_gains: number;
-    daily_reset_at: number;
-    tier: string;
-  }>();
+  const row = await db
+    .prepare(
+      "SELECT user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM user_elo WHERE user_id = ?",
+    )
+    .bind(userId)
+    .first<{
+      user_id: string;
+      elo: number;
+      event_count: number;
+      daily_gains: number;
+      daily_reset_at: number;
+      tier: string;
+    }>();
 
   if (row) {
     const data: UserElo = {
@@ -92,9 +95,12 @@ export async function ensureUserElo(db: D1Database, userId: string): Promise<Use
   // Create new user with default ELO
   const now = Date.now();
   const tier = eloToTier(DEFAULT_ELO);
-  await db.prepare(
-    "INSERT INTO user_elo (user_id, elo, event_count, daily_gains, daily_reset_at, tier, created_at, updated_at) VALUES (?, ?, 0, 0, ?, ?, ?, ?)",
-  ).bind(userId, DEFAULT_ELO, now, tier, now, now).run();
+  await db
+    .prepare(
+      "INSERT INTO user_elo (user_id, elo, event_count, daily_gains, daily_reset_at, tier, created_at, updated_at) VALUES (?, ?, 0, 0, ?, ?, ?, ?)",
+    )
+    .bind(userId, DEFAULT_ELO, now, tier, now, now)
+    .run();
 
   const data: UserElo = {
     userId,
@@ -167,12 +173,16 @@ export async function recordEloEvent(
 
   // Update user_elo and insert elo_events in a batch
   await db.batch([
-    db.prepare(
-      "UPDATE user_elo SET elo = ?, event_count = event_count + 1, daily_gains = ?, daily_reset_at = ?, tier = ?, updated_at = ? WHERE user_id = ?",
-    ).bind(newElo, dailyGains, dailyResetAt, newTier, now, userId),
-    db.prepare(
-      "INSERT INTO elo_events (id, user_id, event_type, delta, old_elo, new_elo, reference_id, created_at) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?)",
-    ).bind(userId, eventType, baseDelta, user.elo, newElo, referenceId ?? null, now),
+    db
+      .prepare(
+        "UPDATE user_elo SET elo = ?, event_count = event_count + 1, daily_gains = ?, daily_reset_at = ?, tier = ?, updated_at = ? WHERE user_id = ?",
+      )
+      .bind(newElo, dailyGains, dailyResetAt, newTier, now, userId),
+    db
+      .prepare(
+        "INSERT INTO elo_events (id, user_id, event_type, delta, old_elo, new_elo, reference_id, created_at) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?)",
+      )
+      .bind(userId, eventType, baseDelta, user.elo, newElo, referenceId ?? null, now),
   ]);
 
   invalidateCache(userId);
@@ -185,16 +195,19 @@ export async function getUserElo(db: D1Database, userId: string): Promise<UserEl
   const cached = getCached(userId);
   if (cached) return cached;
 
-  const row = await db.prepare(
-    "SELECT user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM user_elo WHERE user_id = ?",
-  ).bind(userId).first<{
-    user_id: string;
-    elo: number;
-    event_count: number;
-    daily_gains: number;
-    daily_reset_at: number;
-    tier: string;
-  }>();
+  const row = await db
+    .prepare(
+      "SELECT user_id, elo, event_count, daily_gains, daily_reset_at, tier FROM user_elo WHERE user_id = ?",
+    )
+    .bind(userId)
+    .first<{
+      user_id: string;
+      elo: number;
+      event_count: number;
+      daily_gains: number;
+      daily_reset_at: number;
+      tier: string;
+    }>();
 
   if (!row) return null;
 
@@ -222,11 +235,7 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
  * - Inserts an access_grant with tier="pro" expiring in 7 days
  * - Records a "bug_bounty_granted" ELO event
  */
-export async function grantBugBounty(
-  db: D1Database,
-  userId: string,
-  bugId: string,
-): Promise<void> {
+export async function grantBugBounty(db: D1Database, userId: string, bugId: string): Promise<void> {
   const now = Date.now();
   const expiresAt = now + SEVEN_DAYS_MS;
 

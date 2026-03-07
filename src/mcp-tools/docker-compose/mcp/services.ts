@@ -10,7 +10,8 @@ export function registerServiceTools(server: McpServer): void {
 
   createZodTool(server, {
     name: "docker_compose_list_services",
-    description: "List all spike.land Docker Compose services with their status, subdomain, port, and type",
+    description:
+      "List all spike.land Docker Compose services with their status, subdomain, port, and type",
     schema: {},
     async handler() {
       const result = await tryCatch(registry.listServices());
@@ -27,14 +28,18 @@ export function registerServiceTools(server: McpServer): void {
     },
     async handler({ service }) {
       const servicesResult = await tryCatch(registry.listServices());
-      if (!servicesResult.ok) return errorResult("DOCKER_ERROR", servicesResult.error.message, true);
+      if (!servicesResult.ok)
+        return errorResult("DOCKER_ERROR", servicesResult.error.message, true);
 
-      const svc = servicesResult.data.find(
-        (s) => s.name === service || s.subdomain === service,
-      );
+      const svc = servicesResult.data.find((s) => s.name === service || s.subdomain === service);
       if (!svc) return errorResult("NOT_FOUND", `Service "${service}" not found`);
       if (svc.status !== "running") {
-        return jsonResult({ service: svc.name, healthy: false, latencyMs: 0, error: `Service is ${svc.status}` });
+        return jsonResult({
+          service: svc.name,
+          healthy: false,
+          latencyMs: 0,
+          error: `Service is ${svc.status}`,
+        });
       }
 
       const health = await checker.check(svc.name, svc.name, svc.port);

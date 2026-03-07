@@ -45,7 +45,12 @@ const STAGES = [
       { id: "2.5", title: "Enhance API Key Encryption", status: "todo", source: "Security" },
       { id: "2.6", title: "Enhance Rate Limiter Reliability", status: "todo", source: "Security" },
       { id: "2.7", title: "Wire KPI Dashboard to D1 Data", status: "todo", source: "Business" },
-      { id: "2.8", title: "List on MCP Registries (Smithery, Glama)", status: "todo", source: "Growth" },
+      {
+        id: "2.8",
+        title: "List on MCP Registries (Smithery, Glama)",
+        status: "todo",
+        source: "Growth",
+      },
       { id: "2.9", title: "Product Hunt / HN Launch", status: "todo" },
       { id: "2.10", title: "Collapse Navigation to 5-7 Links", status: "todo", source: "Product" },
       { id: "2.11", title: "Launch Developer Community", status: "todo" },
@@ -63,9 +68,19 @@ const STAGES = [
       { id: "3.1", title: "Complete Stripe Integration", status: "todo" },
       { id: "3.2", title: "Ship API Access Tier ($49/mo)", status: "todo", source: "Growth" },
       { id: "3.3", title: "Enhance Content Security Policy", status: "todo", source: "Security" },
-      { id: "3.4", title: "Enhance Secret Comparison Security", status: "todo", source: "Security" },
+      {
+        id: "3.4",
+        title: "Enhance Secret Comparison Security",
+        status: "todo",
+        source: "Security",
+      },
       { id: "3.5", title: "Add Onboarding Wizard for spike-cli", status: "todo", source: "DX" },
-      { id: "3.6", title: "Bootstrap to 50 Paying Customers", status: "todo", source: "Fundraising" },
+      {
+        id: "3.6",
+        title: "Bootstrap to 50 Paying Customers",
+        status: "todo",
+        source: "Fundraising",
+      },
       { id: "3.7", title: "GDPR Article 30 Compliance Register", status: "todo", source: "Legal" },
       { id: "3.8", title: "Establish Partnerships", status: "todo" },
       { id: "3.9", title: "Add D1 Disk Quota Alerting (18/25GB)", status: "todo", source: "Infra" },
@@ -79,7 +94,12 @@ const STAGES = [
     solidBg: "bg-amber-500",
     border: "border-amber-500/20",
     tasks: [
-      { id: "4.1", title: "SEIS Raise (after 50 paying customers)", status: "todo", source: "Fundraising" },
+      {
+        id: "4.1",
+        title: "SEIS Raise (after 50 paying customers)",
+        status: "todo",
+        source: "Fundraising",
+      },
       { id: "4.2", title: "Expand Tool Catalog to 1,000+", status: "todo" },
       { id: "4.3", title: "Launch Marketplace (70/30 revenue share)", status: "todo" },
       { id: "4.4", title: "Build Agent Orchestration Layer", status: "todo" },
@@ -109,7 +129,11 @@ const QUIZ_QUESTIONS = [
     options: [
       { id: "A", text: "Write a Vitest unit test that mocks window.location.hostname" },
       { id: "B", text: "Deploy to production and check" },
-      { id: "C", text: "Access the URL on both local.spike.land and spike.land and verify behavior", correct: true },
+      {
+        id: "C",
+        text: "Access the URL on both local.spike.land and spike.land and verify behavior",
+        correct: true,
+      },
       { id: "D", text: "Check the TypeScript compiler output" },
     ],
   },
@@ -129,7 +153,11 @@ const QUIZ_QUESTIONS = [
     options: [
       { id: "A", text: "Yes, we need a checkbox UI library" },
       { id: "B", text: "Yes, we need @tanstack/react-query for state" },
-      { id: "C", text: "No, it only uses React hooks and existing Tailwind classes", correct: true },
+      {
+        id: "C",
+        text: "No, it only uses React hooks and existing Tailwind classes",
+        correct: true,
+      },
       { id: "D", text: "Yes, we need localStorage polyfill" },
     ],
   },
@@ -138,7 +166,11 @@ const QUIZ_QUESTIONS = [
     text: "What if the hostname guard uses import.meta.env instead of window.location?",
     options: [
       { id: "A", text: "It works the same way" },
-      { id: "B", text: "It fails at build time because env vars are inlined by Vite", correct: true },
+      {
+        id: "B",
+        text: "It fails at build time because env vars are inlined by Vite",
+        correct: true,
+      },
       { id: "C", text: "It works but is slower" },
       { id: "D", text: "It only works in development mode" },
     ],
@@ -149,7 +181,11 @@ const QUIZ_QUESTIONS = [
     options: [
       { id: "A", text: "Check the Cloudflare Workers logs" },
       { id: "B", text: "The route doesn't exist in the production build" },
-      { id: "C", text: "Visit https://spike.land/spike-land-start-checklist and verify it redirects to /", correct: true },
+      {
+        id: "C",
+        text: "Visit https://spike.land/spike-land-start-checklist and verify it redirects to /",
+        correct: true,
+      },
       { id: "D", text: "Run npm run build and grep the output" },
     ],
   },
@@ -168,8 +204,8 @@ export function SpikeLandStartChecklistPage() {
       else {
         // Pre-check "done" tasks
         const initialTasks: Record<string, boolean> = {};
-        STAGES.forEach(stage => {
-          stage.tasks.forEach(task => {
+        STAGES.forEach((stage) => {
+          stage.tasks.forEach((task) => {
             if (task.status === "done") initialTasks[task.id] = true;
           });
         });
@@ -193,14 +229,14 @@ export function SpikeLandStartChecklistPage() {
   }, [completedTasks, quizAnswers, isLoaded]);
 
   const toggleTask = (taskId: string) => {
-    setCompletedTasks(prev => ({
+    setCompletedTasks((prev) => ({
       ...prev,
       [taskId]: !prev[taskId],
     }));
   };
 
   const handleQuizAnswer = (questionId: number, optionId: string) => {
-    setQuizAnswers(prev => ({
+    setQuizAnswers((prev) => ({
       ...prev,
       [questionId]: optionId,
     }));
@@ -212,7 +248,7 @@ export function SpikeLandStartChecklistPage() {
 
   const quizScore = QUIZ_QUESTIONS.reduce((score, q) => {
     const selected = quizAnswers[q.id];
-    const isCorrect = q.options.find(o => o.id === selected)?.correct;
+    const isCorrect = q.options.find((o) => o.id === selected)?.correct;
     return isCorrect ? score + 1 : score;
   }, 0);
   const isQuizPassed = quizScore >= 5;
@@ -240,11 +276,14 @@ export function SpikeLandStartChecklistPage() {
       <div className="space-y-8">
         {STAGES.map((stage) => {
           const stageTotal = stage.tasks.length;
-          const stageCompleted = stage.tasks.filter(t => completedTasks[t.id]).length;
+          const stageCompleted = stage.tasks.filter((t) => completedTasks[t.id]).length;
           const stageProgress = (stageCompleted / stageTotal) * 100;
 
           return (
-            <div key={stage.number} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div
+              key={stage.number}
+              className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+            >
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">
                   Stage {stage.number}: <span className={stage.color}>{stage.title}</span>
@@ -275,12 +314,24 @@ export function SpikeLandStartChecklistPage() {
                       <div className="pt-1">
                         <div
                           className={`flex h-5 w-5 items-center justify-center rounded border ${
-                            isChecked ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"
+                            isChecked
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-muted-foreground/30"
                           }`}
                         >
                           {isChecked && (
-                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            <svg
+                              className="h-3 w-3"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M5 13l4 4L19 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -288,11 +339,15 @@ export function SpikeLandStartChecklistPage() {
                       <div className="flex-grow">
                         <div className="flex items-center gap-3 flex-wrap">
                           <span className="font-mono text-xs text-muted-foreground">{task.id}</span>
-                          <span className={`text-base font-medium ${isChecked ? "text-muted-foreground line-through" : ""}`}>
+                          <span
+                            className={`text-base font-medium ${isChecked ? "text-muted-foreground line-through" : ""}`}
+                          >
                             {task.title}
                           </span>
                           {task.source && (
-                            <span className={`rounded-full ${stage.bg} px-2 py-0.5 text-xs font-semibold ${stage.color}`}>
+                            <span
+                              className={`rounded-full ${stage.bg} px-2 py-0.5 text-xs font-semibold ${stage.color}`}
+                            >
                               {task.source}
                             </span>
                           )}
@@ -326,12 +381,17 @@ export function SpikeLandStartChecklistPage() {
                     const isSelected = answered === opt.id;
                     const isCorrectOption = opt.correct;
                     const showCorrectness = !!answered;
-                    
+
                     let btnClass = "border-border hover:bg-muted/50";
                     if (showCorrectness) {
-                      if (isSelected && isCorrectOption) btnClass = "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
-                      else if (isSelected && !isCorrectOption) btnClass = "border-red-500 bg-red-500/10 text-red-600 dark:text-red-400";
-                      else if (isCorrectOption) btnClass = "border-emerald-500/50 border-dashed text-emerald-600 dark:text-emerald-400";
+                      if (isSelected && isCorrectOption)
+                        btnClass =
+                          "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+                      else if (isSelected && !isCorrectOption)
+                        btnClass = "border-red-500 bg-red-500/10 text-red-600 dark:text-red-400";
+                      else if (isCorrectOption)
+                        btnClass =
+                          "border-emerald-500/50 border-dashed text-emerald-600 dark:text-emerald-400";
                     }
 
                     return (
@@ -352,10 +412,16 @@ export function SpikeLandStartChecklistPage() {
         </div>
 
         {Object.keys(quizAnswers).length === QUIZ_QUESTIONS.length && (
-          <div className={`mt-8 rounded-xl p-6 text-center ${isQuizPassed ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-red-500/10 text-red-600 dark:text-red-400"}`}>
-            <div className="text-3xl font-bold mb-2">{quizScore} / {QUIZ_QUESTIONS.length}</div>
+          <div
+            className={`mt-8 rounded-xl p-6 text-center ${isQuizPassed ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-red-500/10 text-red-600 dark:text-red-400"}`}
+          >
+            <div className="text-3xl font-bold mb-2">
+              {quizScore} / {QUIZ_QUESTIONS.length}
+            </div>
             <div className="text-lg font-medium">
-              {isQuizPassed ? "Ready to implement. Proceed with confidence." : "Review the codebase before proceeding."}
+              {isQuizPassed
+                ? "Ready to implement. Proceed with confidence."
+                : "Review the codebase before proceeding."}
             </div>
           </div>
         )}

@@ -164,7 +164,9 @@ describe("deviceCodeLogin", () => {
     const os = await import("node:os");
     const platformSpy = vi.spyOn(os, "platform").mockReturnValue("linux" as NodeJS.Platform);
     const childProcess = await import("node:child_process");
-    const execFileSpy = vi.spyOn(childProcess, "execFile").mockImplementation(() => ({}) as ReturnType<typeof childProcess.execFile>);
+    const execFileSpy = vi
+      .spyOn(childProcess, "execFile")
+      .mockImplementation(() => ({}) as ReturnType<typeof childProcess.execFile>);
 
     mockRegisterResponse();
     mockDeviceCodeResponse();
@@ -216,9 +218,9 @@ describe("deviceCodeLogin", () => {
     const os = await import("node:os");
     const platformSpy = vi.spyOn(os, "platform").mockReturnValue("win32" as NodeJS.Platform);
     const childProcess = await import("node:child_process");
-    const execFileSpy = vi.spyOn(childProcess, "execFile").mockImplementation(
-      () => ({}) as ReturnType<typeof childProcess.execFile>,
-    );
+    const execFileSpy = vi
+      .spyOn(childProcess, "execFile")
+      .mockImplementation(() => ({}) as ReturnType<typeof childProcess.execFile>);
 
     mockRegisterResponse();
     mockDeviceCodeResponse();

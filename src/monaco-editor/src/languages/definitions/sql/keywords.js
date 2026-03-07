@@ -15,19 +15,19 @@ console.log(`'${keywords.join("',\n'")}'`);
 
 /** @param {Set<string>} set @param {string[]} arr */
 function addArrToSet(set, arr) {
-	for (const el of arr) {
-		set.add(el);
-	}
+  for (const el of arr) {
+    set.add(el);
+  }
 }
 
 /** @param {Set<string>} set @returns {string[]} */
 function setToArr(set) {
-	return Array.from(set);
+  return Array.from(set);
 }
 
 function getMicrosoftSQLKeywords() {
-	// https://docs.microsoft.com/en-us/sql/t-sql/language-elements/reserved-keywords-transact-sql?view=sql-server-ver15
-	return `
+  // https://docs.microsoft.com/en-us/sql/t-sql/language-elements/reserved-keywords-transact-sql?view=sql-server-ver15
+  return `
 		ADD
 		EXTERNAL
 		PROCEDURE
@@ -449,14 +449,14 @@ function getMicrosoftSQLKeywords() {
 		ZONE
 		EXCEPTION
 	`
-		.split(/\r\n|\r|\n/)
-		.map((t) => t.trim())
-		.filter((t) => !!t);
+    .split(/\r\n|\r|\n/)
+    .map((t) => t.trim())
+    .filter((t) => !!t);
 }
 
 function getSQLiteKeywords() {
-	// https://www.sqlite.org/lang_keywords.html
-	return `
+  // https://www.sqlite.org/lang_keywords.html
+  return `
 		ABORT
 		ACTION
 		ADD
@@ -605,14 +605,14 @@ function getSQLiteKeywords() {
 		WITH
 		WITHOUT
 	`
-		.split(/\r\n|\r|\n/)
-		.map((t) => t.trim())
-		.filter((t) => !!t);
+    .split(/\r\n|\r|\n/)
+    .map((t) => t.trim())
+    .filter((t) => !!t);
 }
 
 function getSnowflakeSQLKeywords() {
-	// https://docs.snowflake.com/en/sql-reference/reserved-keywords
-	return `
+  // https://docs.snowflake.com/en/sql-reference/reserved-keywords
+  return `
 		ACCOUNT
 		ALL
 		ALTER
@@ -706,7 +706,7 @@ function getSnowflakeSQLKeywords() {
 		WINDOW
 		WITH
 	`
-		.split(/\r\n|\r|\n/)
-		.map((t) => t.trim())
-		.filter((t) => !!t);
+    .split(/\r\n|\r|\n/)
+    .map((t) => t.trim())
+    .filter((t) => !!t);
 }

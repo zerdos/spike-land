@@ -169,10 +169,7 @@ describe("sortByDateDesc", () => {
   });
 
   it("does not mutate original array", () => {
-    const posts = [
-      { date: "2026-01-01" },
-      { date: "2026-03-01" },
-    ] as BlogPost[];
+    const posts = [{ date: "2026-01-01" }, { date: "2026-03-01" }] as BlogPost[];
 
     sortByDateDesc(posts);
     expect(posts[0].date).toBe("2026-01-01");

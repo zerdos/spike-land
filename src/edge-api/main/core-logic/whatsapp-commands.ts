@@ -46,7 +46,14 @@ export function parseCommand(message: string): ParsedCommand {
   const args = (match[2] ?? "").trim();
 
   const validCommands: CommandName[] = [
-    "help", "bug", "bugs", "tools", "use", "key", "subscribe", "status",
+    "help",
+    "bug",
+    "bugs",
+    "tools",
+    "use",
+    "key",
+    "subscribe",
+    "status",
   ];
 
   if (validCommands.includes(name as CommandName)) {
@@ -69,10 +76,7 @@ const HELP_TEXT = `Available commands:
 
 Or just type a message to chat with AI (pro+ only).`;
 
-export async function dispatchCommand(
-  cmd: ParsedCommand,
-  ctx: CommandContext,
-): Promise<string> {
+export async function dispatchCommand(cmd: ParsedCommand, ctx: CommandContext): Promise<string> {
   switch (cmd.name) {
     case "help":
       return HELP_TEXT;
@@ -213,7 +217,7 @@ async function handleUse(args: string, ctx: CommandContext): Promise<string> {
   try {
     toolArgs = JSON.parse(toolArgsStr);
   } catch {
-    return "Invalid JSON arguments. Usage: /use <tool> {\"key\": \"value\"}";
+    return 'Invalid JSON arguments. Usage: /use <tool> {"key": "value"}';
   }
 
   const rpcBody = JSON.stringify({
@@ -238,7 +242,10 @@ async function handleUse(args: string, ctx: CommandContext): Promise<string> {
     return `Failed to execute tool "${toolName}".`;
   }
 
-  const result = await resp.json<{ result?: { content?: Array<{ text?: string }> }; error?: { message?: string } }>();
+  const result = await resp.json<{
+    result?: { content?: Array<{ text?: string }> };
+    error?: { message?: string };
+  }>();
 
   if (result?.error) {
     return `Error: ${result.error.message ?? "Unknown error"}`;
@@ -354,6 +361,5 @@ async function handleChat(message: string, ctx: CommandContext): Promise<string>
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
   }>();
 
-  return result?.candidates?.[0]?.content?.parts?.[0]?.text
-    ?? "No response from chat service.";
+  return result?.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response from chat service.";
 }

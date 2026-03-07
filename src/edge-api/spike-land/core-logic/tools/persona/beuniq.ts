@@ -74,14 +74,14 @@ function formatPersona(p: OnboardingPersona) {
 
 // ─── Registration ────────────────────────────────────────────────────────────
 
-export function registerBeUniqTools(
-  registry: ToolRegistry,
-  userId: string,
-  db: DrizzleDB,
-): void {
+export function registerBeUniqTools(registry: ToolRegistry, userId: string, db: DrizzleDB): void {
   registry.registerBuilt(
     freeTool(userId, db)
-      .tool("beuniq_start", "Start a beUniq onboarding quiz session. Returns the first yes/no question.", {})
+      .tool(
+        "beuniq_start",
+        "Start a beUniq onboarding quiz session. Returns the first yes/no question.",
+        {},
+      )
       .meta({ category: "persona", tier: "free" })
       .handler(async () => {
         cleanupSessions();
@@ -110,10 +110,14 @@ export function registerBeUniqTools(
 
   registry.registerBuilt(
     freeTool(userId, db)
-      .tool("beuniq_answer", "Answer the current beUniq quiz question with yes (true) or no (false).", {
-        session_id: z.string().describe("The beUniq session ID from beuniq_start."),
-        answer: z.boolean().describe("true for yes, false for no."),
-      })
+      .tool(
+        "beuniq_answer",
+        "Answer the current beUniq quiz question with yes (true) or no (false).",
+        {
+          session_id: z.string().describe("The beUniq session ID from beuniq_start."),
+          answer: z.boolean().describe("true for yes, false for no."),
+        },
+      )
       .meta({ category: "persona", tier: "free" })
       .handler(async ({ input }) => {
         const session = sessions.get(input.session_id);
@@ -162,7 +166,9 @@ export function registerBeUniqTools(
         const session = sessions.get(input.session_id);
         if (!session) throw new Error(`Session ${input.session_id} not found`);
         if (!session.completed || !session.persona) {
-          throw new Error(`Session ${input.session_id} is not yet completed. Answer all 4 questions first.`);
+          throw new Error(
+            `Session ${input.session_id} is not yet completed. Answer all 4 questions first.`,
+          );
         }
 
         return jsonResult(`Persona: ${session.persona.name}`, {

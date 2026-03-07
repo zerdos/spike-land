@@ -1,9 +1,7 @@
 {
   "name": "whatsapp",
   "category": "utilities",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/index.ts",
     "core-logic/list-templates.ts",

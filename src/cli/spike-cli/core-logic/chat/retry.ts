@@ -51,10 +51,7 @@ export function isRetryableError(error: unknown): boolean {
 /**
  * Execute an async function with retry logic for transient errors.
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {},
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const maxRetries = options.maxRetries ?? 3;
   const initialDelayMs = options.initialDelayMs ?? 1000;
   const maxDelayMs = options.maxDelayMs ?? 60000;
@@ -72,7 +69,9 @@ export async function withRetry<T>(
       }
 
       const delay = calculateBackoff(attempt, { initialDelayMs, maxDelayMs });
-      log(`Retryable error (attempt ${attempt + 1}/${maxRetries}), retrying in ${delay}ms: ${lastError.message}`);
+      log(
+        `Retryable error (attempt ${attempt + 1}/${maxRetries}), retrying in ${delay}ms: ${lastError.message}`,
+      );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }

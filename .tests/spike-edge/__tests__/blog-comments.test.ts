@@ -19,7 +19,9 @@ function createMockEnv(
   const prepareMock = vi.fn().mockReturnValue({
     bind: vi.fn().mockReturnThis(),
     first: dbFirstImpl ? vi.fn().mockImplementation(dbFirstImpl) : vi.fn().mockResolvedValue(null),
-    all: dbAllImpl ? vi.fn().mockImplementation(dbAllImpl) : vi.fn().mockResolvedValue({ results: [] }),
+    all: dbAllImpl
+      ? vi.fn().mockImplementation(dbAllImpl)
+      : vi.fn().mockResolvedValue({ results: [] }),
     run: vi.fn().mockResolvedValue({}),
   });
 
@@ -30,10 +32,9 @@ function createMockEnv(
     } as unknown as D1Database,
     AUTH_MCP: {
       fetch: vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ session: { id: "sess1" }, user: { id: userId } }),
-          { status: 200 },
-        ),
+        new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: userId } }), {
+          status: 200,
+        }),
       ),
     } as unknown as Fetcher,
     INTERNAL_SERVICE_SECRET: "internal-secret-123",
@@ -48,9 +49,8 @@ function makeApp() {
 
 describe("blogComments — GET /blog/:slug/comments", () => {
   it("returns list of comments", async () => {
-    const env = createMockEnv(
-      undefined,
-      () => Promise.resolve({ results: [{ id: "c1", content: "Great post!" }] }),
+    const env = createMockEnv(undefined, () =>
+      Promise.resolve({ results: [{ id: "c1", content: "Great post!" }] }),
     );
     const app = makeApp();
     const res = await app.request("/blog/my-post/comments", {}, env);
@@ -73,11 +73,15 @@ describe("blogComments — POST /blog/:slug/comments", () => {
   it("returns 400 when content or user_name missing", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/blog/my-post/comments", {
-      method: "POST",
-      body: JSON.stringify({ content: "", user_name: "Alice" }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/my-post/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({ content: "", user_name: "Alice" }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("required");
@@ -86,11 +90,15 @@ describe("blogComments — POST /blog/:slug/comments", () => {
   it("returns 400 when comment too long", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/blog/my-post/comments", {
-      method: "POST",
-      body: JSON.stringify({ content: "a".repeat(5001), user_name: "Alice" }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/my-post/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({ content: "a".repeat(5001), user_name: "Alice" }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
     expect(body.error).toContain("too long");
@@ -99,11 +107,15 @@ describe("blogComments — POST /blog/:slug/comments", () => {
   it("returns 404 when parent comment not found", async () => {
     const env = createMockEnv(() => Promise.resolve(null));
     const app = makeApp();
-    const res = await app.request("/blog/my-post/comments", {
-      method: "POST",
-      body: JSON.stringify({ content: "Reply", user_name: "Alice", parent_id: "nonexistent" }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/my-post/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({ content: "Reply", user_name: "Alice", parent_id: "nonexistent" }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(404);
   });
 
@@ -111,11 +123,15 @@ describe("blogComments — POST /blog/:slug/comments", () => {
     const firstMock = vi.fn().mockResolvedValue({ id: "c-new", created_at: Date.now() });
     const env = createMockEnv(() => firstMock());
     const app = makeApp();
-    const res = await app.request("/blog/my-post/comments", {
-      method: "POST",
-      body: JSON.stringify({ content: "Nice post!", user_name: "Alice" }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/my-post/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({ content: "Nice post!", user_name: "Alice" }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(201);
   });
 
@@ -127,11 +143,15 @@ describe("blogComments — POST /blog/:slug/comments", () => {
       return Promise.resolve({ id: "c-reply", created_at: Date.now() });
     });
     const app = makeApp();
-    const res = await app.request("/blog/my-post/comments", {
-      method: "POST",
-      body: JSON.stringify({ content: "I agree!", user_name: "Bob", parent_id: "parent-id" }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/my-post/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({ content: "I agree!", user_name: "Bob", parent_id: "parent-id" }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(201);
   });
 });
@@ -140,33 +160,45 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
   it("returns 400 for invalid vote value", async () => {
     const env = createMockEnv();
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 0 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 0 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 404 when comment not found", async () => {
     const env = createMockEnv(() => Promise.resolve(null));
     const app = makeApp();
-    const res = await app.request("/blog/comments/nonexistent/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/nonexistent/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(404);
   });
 
   it("returns 403 when user votes on own comment", async () => {
     const env = createMockEnv(() => Promise.resolve({ id: "c1", user_id: "user1", score: 0 }));
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(403);
   });
 
@@ -179,11 +211,15 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
       return Promise.resolve({ score: 5 });
     });
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(409);
   });
 
@@ -196,11 +232,15 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
       return Promise.resolve({ score: 4 });
     });
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
   });
 
@@ -213,11 +253,15 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
       return Promise.resolve({ score: 4 });
     });
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: 1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: 1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ score: number }>();
     expect(body.score).toBe(4);
@@ -234,13 +278,18 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
         bind: vi.fn().mockReturnThis(),
         first: vi.fn().mockImplementation(() => {
           callCount++;
-          if (callCount === 1) return Promise.resolve({ id: "c1", user_id: "other-user", score: -9 });
+          if (callCount === 1)
+            return Promise.resolve({ id: "c1", user_id: "other-user", score: -9 });
           if (callCount === 2) return Promise.resolve(null); // no existing vote
           if (callCount === 3) return Promise.resolve({ score: -10 }); // crossed threshold
           // user_elo for ELO penalty
           return Promise.resolve({
-            user_id: "other-user", elo: 1200, event_count: 0, daily_gains: 0,
-            daily_reset_at: Date.now(), tier: "pro",
+            user_id: "other-user",
+            elo: 1200,
+            event_count: 0,
+            daily_gains: 0,
+            daily_reset_at: Date.now(),
+            tier: "pro",
           });
         }),
         all: vi.fn().mockResolvedValue({ results: [] }),
@@ -252,18 +301,24 @@ describe("blogComments — POST /blog/comments/:commentId/vote", () => {
       DB: { prepare: prepareMock, batch: batchMock } as unknown as D1Database,
       AUTH_MCP: {
         fetch: vi.fn().mockResolvedValue(
-          new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user1" } }), { status: 200 }),
+          new Response(JSON.stringify({ session: { id: "sess1" }, user: { id: "user1" } }), {
+            status: 200,
+          }),
         ),
       } as unknown as Fetcher,
       INTERNAL_SERVICE_SECRET: "internal-secret-123",
     } as unknown as Env;
 
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1/vote", {
-      method: "POST",
-      body: JSON.stringify({ vote: -1 }),
-      headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1/vote",
+      {
+        method: "POST",
+        body: JSON.stringify({ vote: -1 }),
+        headers: { "Content-Type": "application/json", cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ eloPenaltyApplied: boolean }>();
     expect(body.eloPenaltyApplied).toBe(true);
@@ -274,30 +329,42 @@ describe("blogComments — DELETE /blog/comments/:commentId", () => {
   it("returns 404 when comment not found", async () => {
     const env = createMockEnv(() => Promise.resolve(null));
     const app = makeApp();
-    const res = await app.request("/blog/comments/nonexistent", {
-      method: "DELETE",
-      headers: { cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/nonexistent",
+      {
+        method: "DELETE",
+        headers: { cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(404);
   });
 
   it("returns 403 when user is not comment owner", async () => {
     const env = createMockEnv(() => Promise.resolve({ user_id: "other-user" }));
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1", {
-      method: "DELETE",
-      headers: { cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1",
+      {
+        method: "DELETE",
+        headers: { cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(403);
   });
 
   it("deletes own comment", async () => {
     const env = createMockEnv(() => Promise.resolve({ user_id: "user1" }));
     const app = makeApp();
-    const res = await app.request("/blog/comments/c1", {
-      method: "DELETE",
-      headers: { cookie: AUTH_COOKIE },
-    }, env);
+    const res = await app.request(
+      "/blog/comments/c1",
+      {
+        method: "DELETE",
+        headers: { cookie: AUTH_COOKIE },
+      },
+      env,
+    );
     expect(res.status).toBe(200);
     const body = await res.json<{ deleted: boolean }>();
     expect(body.deleted).toBe(true);

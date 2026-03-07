@@ -5,12 +5,22 @@ import * as alias from "../../src/cli/spike-cli/core-logic/commands/alias.js";
 import { main } from "../../src/cli/spike-cli/core-logic/cli.js";
 
 // Mock the commands so we don't trigger real logic
-vi.mock("../../src/cli/spike-cli/core-logic/commands/auth", () => ({ registerAuthCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/core-logic/commands/alias", () => ({ registerAliasCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/core-logic/commands/completions", () => ({ registerCompletionsCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/core-logic/commands/registry", () => ({ registerRegistryCommand: vi.fn() }));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/auth", () => ({
+  registerAuthCommand: vi.fn(),
+}));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/alias", () => ({
+  registerAliasCommand: vi.fn(),
+}));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/completions", () => ({
+  registerCompletionsCommand: vi.fn(),
+}));
+vi.mock("../../src/cli/spike-cli/core-logic/commands/registry", () => ({
+  registerRegistryCommand: vi.fn(),
+}));
 vi.mock("../../src/cli/spike-cli/ai-cli/agent", () => ({ registerAgentCommand: vi.fn() }));
-vi.mock("../../src/cli/spike-cli/node-sys/store", () => ({ loadAliases: vi.fn().mockResolvedValue({ commands: {} }) }));
+vi.mock("../../src/cli/spike-cli/node-sys/store", () => ({
+  loadAliases: vi.fn().mockResolvedValue({ commands: {} }),
+}));
 
 describe("cli", () => {
   const originalArgv = process.argv;
@@ -74,9 +84,11 @@ describe("cli", () => {
         | undefined;
       if (hooks?.["preAction"]) {
         for (const hook of hooks["preAction"]) {
-          hook(Object.assign(Object.create(program), {
-            opts: () => ({ verbose: true }),
-          }));
+          hook(
+            Object.assign(Object.create(program), {
+              opts: () => ({ verbose: true }),
+            }),
+          );
         }
       }
       return program as unknown as typeof program;

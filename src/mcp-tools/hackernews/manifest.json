@@ -1,9 +1,7 @@
 {
   "name": "hackernews",
   "category": "mcp-tools",
-  "dependencies": [
-    "@spike-land-ai/mcp-server-base"
-  ],
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/auth.ts",
     "core-logic/comment.ts",

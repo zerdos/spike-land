@@ -11,11 +11,7 @@ import { makeEnv } from "../core-logic/lib/esbuild-make-env";
 
 export { wasmFile };
 
-const {
-  build: esmBuild,
-  initialize,
-  transform,
-} = esbuildWasm as typeof import("esbuild-wasm");
+const { build: esmBuild, initialize, transform } = esbuildWasm as typeof import("esbuild-wasm");
 
 export type MyBuildOptions = BuildOptions & {
   codeSpace: string;

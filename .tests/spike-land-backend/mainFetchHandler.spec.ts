@@ -169,7 +169,11 @@ describe("MainFetchHandler", () => {
 
       const response = await handleMainFetch(mockRequest, mockEnv as Env, mockCtx);
 
-      expect(handleErrors).toHaveBeenCalledWith(mockRequest, expect.any(Function), expect.any(Object));
+      expect(handleErrors).toHaveBeenCalledWith(
+        mockRequest,
+        expect.any(Function),
+        expect.any(Object),
+      );
       expect(await response.text()).toBe("Handled response");
     });
 

@@ -40,25 +40,30 @@ support.post("/api/support/fistbump", async (c) => {
   const now = Date.now();
 
   try {
-    await db.prepare(
-      "INSERT INTO blog_engagement (id, slug, client_id, type, created_at) VALUES (?, ?, ?, 'fistbump', ?)",
-    ).bind(id, slug, clientId, now).run();
+    await db
+      .prepare(
+        "INSERT INTO blog_engagement (id, slug, client_id, type, created_at) VALUES (?, ?, ?, 'fistbump', ?)",
+      )
+      .bind(id, slug, clientId, now)
+      .run();
   } catch (err) {
     const msg = err instanceof Error ? err.message : "";
     // UNIQUE constraint = already bumped
     if (msg.includes("UNIQUE")) {
-      const count = await db.prepare(
-        "SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'",
-      ).bind(slug).first<{ cnt: number }>();
+      const count = await db
+        .prepare("SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'")
+        .bind(slug)
+        .first<{ cnt: number }>();
       return c.json({ count: count?.cnt ?? 0, alreadyBumped: true });
     }
     log.error("fistbump error", { error: msg });
     return c.json({ error: "Failed to record fist bump" }, 500);
   }
 
-  const count = await db.prepare(
-    "SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'",
-  ).bind(slug).first<{ cnt: number }>();
+  const count = await db
+    .prepare("SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'")
+    .bind(slug)
+    .first<{ cnt: number }>();
 
   return c.json({ count: count?.cnt ?? 1 });
 });
@@ -74,12 +79,16 @@ support.get("/api/support/engagement/:slug", async (c) => {
   const db = c.env.DB;
 
   const [fistBumps, donations] = await Promise.all([
-    db.prepare(
-      "SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'",
-    ).bind(slug).first<{ cnt: number }>(),
-    db.prepare(
-      "SELECT COUNT(*) as cnt FROM support_donations WHERE slug = ? AND status = 'completed'",
-    ).bind(slug).first<{ cnt: number }>(),
+    db
+      .prepare("SELECT COUNT(*) as cnt FROM blog_engagement WHERE slug = ? AND type = 'fistbump'")
+      .bind(slug)
+      .first<{ cnt: number }>(),
+    db
+      .prepare(
+        "SELECT COUNT(*) as cnt FROM support_donations WHERE slug = ? AND status = 'completed'",
+      )
+      .bind(slug)
+      .first<{ cnt: number }>(),
   ]);
 
   c.header("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
@@ -124,7 +133,8 @@ support.post("/api/support/donate", async (c) => {
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": amountCents.toString(),
     "line_items[0][price_data][product_data][name]": `Support spike.land — $${amount}`,
-    "line_items[0][price_data][product_data][description]": "One-time support for independent open-source development",
+    "line_items[0][price_data][product_data][description]":
+      "One-time support for independent open-source development",
     "line_items[0][quantity]": "1",
     success_url: `https://spike.land/blog/${encodeURIComponent(slug)}?supported=1`,
     cancel_url: `https://spike.land/blog/${encodeURIComponent(slug)}`,
@@ -155,9 +165,12 @@ support.post("/api/support/donate", async (c) => {
   const donationId = crypto.randomUUID();
   const sessionId = data.id as string;
   try {
-    await db.prepare(
-      "INSERT INTO support_donations (id, slug, amount_cents, stripe_session_id, status, created_at) VALUES (?, ?, ?, ?, 'pending', ?)",
-    ).bind(donationId, slug, amountCents, sessionId, Date.now()).run();
+    await db
+      .prepare(
+        "INSERT INTO support_donations (id, slug, amount_cents, stripe_session_id, status, created_at) VALUES (?, ?, ?, ?, 'pending', ?)",
+      )
+      .bind(donationId, slug, amountCents, sessionId, Date.now())
+      .run();
   } catch (err) {
     log.error("donation record error", { error: err instanceof Error ? err.message : String(err) });
   }

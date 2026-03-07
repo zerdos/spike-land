@@ -54,7 +54,7 @@ describe("ReactFiberFlags", () => {
     for (const flag of flags) {
       expect(flag > 0).toBe(true);
       // Check that it's a power of 2 (single bit)
-      expect((flag & (flag - 1))).toBe(0);
+      expect(flag & (flag - 1)).toBe(0);
     }
   });
 
@@ -148,7 +148,7 @@ describe("ReactFiberFlags", () => {
     it("can remove flags with bitwise AND and NOT", () => {
       const combined = Placement | Update;
       const withoutPlacement = combined & ~Placement;
-      expect((withoutPlacement & Placement)).toBe(0);
+      expect(withoutPlacement & Placement).toBe(0);
       expect((withoutPlacement & Update) !== 0).toBe(true);
     });
   });

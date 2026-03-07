@@ -12,7 +12,10 @@ import {
   useState,
 } from "../../../../src/core/react-engine/react/ReactHooks.js";
 import ReactSharedInternals from "../../../../src/core/react-engine/react/ReactSharedInternals.js";
-import type { Dispatcher, ReactContext } from "../../../../src/core/react-engine/react/ReactTypes.js";
+import type {
+  Dispatcher,
+  ReactContext,
+} from "../../../../src/core/react-engine/react/ReactTypes.js";
 import { createContext } from "../../../../src/core/react-engine/react/ReactContext.js";
 
 function makeDispatcher(overrides: Partial<Dispatcher> = {}): Dispatcher {

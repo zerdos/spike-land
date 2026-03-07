@@ -1,13 +1,14 @@
 // Mock for @spike-land-ai/code
 export const routes = {};
-export const HTML = '<html><head>// IMPORTMAP</head><body><div id="embed"></div><!-- Inline LINK for initial theme --><script src="/start.mjs"></script></body></html>';
+export const HTML =
+  '<html><head>// IMPORTMAP</head><body><div id="embed"></div><!-- Inline LINK for initial theme --><script src="/start.mjs"></script></body></html>';
 export const importMap = { imports: { react: "https://esm.sh/react" } };
 export function importMapReplace(code) {
   return `replaced:${code}`;
 }
 export function tryCatch(fn) {
   try {
-    const result = typeof fn === 'function' ? fn() : fn;
+    const result = typeof fn === "function" ? fn() : fn;
     return { ok: true, data: result };
   } catch (error) {
     return { ok: false, error };

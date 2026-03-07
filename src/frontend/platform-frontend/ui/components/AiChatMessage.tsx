@@ -27,13 +27,7 @@ function relativeTime(ts: number): string {
   return `${diffDay}d ago`;
 }
 
-function RelativeTimestamp({
-  timestamp,
-  className,
-}: {
-  timestamp: number;
-  className?: string;
-}) {
+function RelativeTimestamp({ timestamp, className }: { timestamp: number; className?: string }) {
   const [label, setLabel] = useState(() => relativeTime(timestamp));
 
   useEffect(() => {
@@ -70,8 +64,8 @@ function CopyButton({ text, isUser }: { text: string; isUser: boolean }) {
             ? "hover:bg-black/10 text-black/50 hover:text-black"
             : "hover:bg-white/5 text-white/30 hover:text-white"
           : isUser
-          ? "hover:bg-black/10 text-primary-foreground/60 hover:text-primary-foreground"
-          : "hover:bg-muted text-muted-foreground hover:text-foreground",
+            ? "hover:bg-black/10 text-primary-foreground/60 hover:text-primary-foreground"
+            : "hover:bg-muted text-muted-foreground hover:text-foreground",
       )}
       aria-label="Copy message"
     >
@@ -87,12 +81,15 @@ function CopyButton({ text, isUser }: { text: string; isUser: boolean }) {
 function CodeBlockCopyButton({ code, isDarkMode }: { code: string; isDarkMode: boolean }) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [code]);
+  const handleCopy = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    },
+    [code],
+  );
 
   return (
     <button
@@ -115,16 +112,11 @@ function CodeBlockCopyButton({ code, isDarkMode }: { code: string; isDarkMode: b
 // Tool call card
 // ---------------------------------------------------------------------------
 
-function ToolCallCard({
-  tc,
-}: {
-  tc: NonNullable<ChatMessageType["toolCalls"]>[number];
-}) {
+function ToolCallCard({ tc }: { tc: NonNullable<ChatMessageType["toolCalls"]>[number] }) {
   const { isDarkMode } = useDarkMode();
   const [expanded, setExpanded] = useState(false);
   const isImage =
-    tc.result !== undefined &&
-    /https?:\/\/.*\.(png|jpg|jpeg|webp|gif)/i.test(tc.result);
+    tc.result !== undefined && /https?:\/\/.*\.(png|jpg|jpeg|webp|gif)/i.test(tc.result);
   const imageUrl = isImage
     ? tc.result!.match(/https?:\/\/[^\s"]+\.(png|jpg|jpeg|webp|gif)/i)?.[0]
     : null;
@@ -133,9 +125,7 @@ function ToolCallCard({
     <div
       className={cn(
         "mt-3 rounded-2xl border text-[11px] overflow-hidden transition-all",
-        isDarkMode
-          ? "dark:glass-card border-primary/10"
-          : "bg-muted border-border",
+        isDarkMode ? "dark:glass-card border-primary/10" : "bg-muted border-border",
       )}
     >
       <button
@@ -151,12 +141,7 @@ function ToolCallCard({
             isDarkMode ? "bg-primary/10" : "bg-success/10",
           )}
         >
-          <Wrench
-            className={cn(
-              "w-3 h-3",
-              isDarkMode ? "text-primary" : "text-success",
-            )}
-          />
+          <Wrench className={cn("w-3 h-3", isDarkMode ? "text-primary" : "text-success")} />
         </div>
         <span
           className={cn(
@@ -177,9 +162,7 @@ function ToolCallCard({
             Active
           </span>
         )}
-        {tc.status === "error" && (
-          <AlertCircle className="ml-auto w-3.5 h-3.5 text-destructive" />
-        )}
+        {tc.status === "error" && <AlertCircle className="ml-auto w-3.5 h-3.5 text-destructive" />}
         {tc.status === "done" && (
           <div className="ml-auto">
             {expanded ? (
@@ -204,9 +187,7 @@ function ToolCallCard({
         <div
           className={cn(
             "px-4 py-4 border-t",
-            isDarkMode
-              ? "border-primary/10 bg-black/30"
-              : "border-border bg-background/50",
+            isDarkMode ? "border-primary/10 bg-black/30" : "border-border bg-background/50",
           )}
         >
           {imageUrl && (
@@ -224,9 +205,7 @@ function ToolCallCard({
               isDarkMode ? "text-gray-500" : "text-muted-foreground",
             )}
           >
-            {tc.result.length > 1000
-              ? `${tc.result.slice(0, 1000)}...`
-              : tc.result}
+            {tc.result.length > 1000 ? `${tc.result.slice(0, 1000)}...` : tc.result}
           </pre>
         </div>
       )}
@@ -323,9 +302,7 @@ function MessageContent({
               <pre
                 className={cn(
                   "p-4 text-[12px] leading-relaxed overflow-x-auto font-mono",
-                  isDarkMode
-                    ? "bg-black/40 text-gray-300"
-                    : "bg-muted/60 text-foreground",
+                  isDarkMode ? "bg-black/40 text-gray-300" : "bg-muted/60 text-foreground",
                 )}
               >
                 <code>{code}</code>
@@ -335,9 +312,7 @@ function MessageContent({
         }
 
         // Inline markdown: bold, italic, inline-code, links
-        const parts = segment.split(
-          /(`[^`]+`|\*\*.*?\*\*|_.*?_|\[.*?\]\(.*?\))/g,
-        );
+        const parts = segment.split(/(`[^`]+`|\*\*.*?\*\*|_.*?_|\[.*?\]\(.*?\))/g);
 
         return (
           <span key={segIdx}>
@@ -350,9 +325,7 @@ function MessageContent({
                     key={i}
                     className={cn(
                       "px-1.5 py-0.5 rounded-md text-[11px] font-mono",
-                      isDarkMode
-                        ? "bg-white/10 text-primary-light"
-                        : "bg-muted text-foreground",
+                      isDarkMode ? "bg-white/10 text-primary-light" : "bg-muted text-foreground",
                     )}
                   >
                     {code}
@@ -366,8 +339,7 @@ function MessageContent({
                     key={i}
                     className={cn(
                       isUser ? "font-black" : "font-bold",
-                      !isUser &&
-                        (isDarkMode ? "text-white" : "text-foreground"),
+                      !isUser && (isDarkMode ? "text-white" : "text-foreground"),
                     )}
                   >
                     {part.slice(2, -2)}
@@ -406,9 +378,7 @@ function MessageContent({
               }
               // Plain text — attach streaming cursor to final segment's last part
               const isLastPart =
-                isStreaming &&
-                segIdx === segments.length - 1 &&
-                i === parts.length - 1;
+                isStreaming && segIdx === segments.length - 1 && i === parts.length - 1;
               return (
                 <span key={i}>
                   {part}
@@ -433,14 +403,11 @@ export const AiChatMessage = memo(function AiChatMessage({
 }: AiChatMessageProps) {
   const { isDarkMode } = useDarkMode();
   const isUser = message.role === "user";
-  const isEmpty =
-    !message.content &&
-    (!message.toolCalls || message.toolCalls.length === 0);
+  const isEmpty = !message.content && (!message.toolCalls || message.toolCalls.length === 0);
 
   // A streaming assistant message that already has content: show cursor but
   // not LoadingDots. An empty streaming message still shows LoadingDots.
-  const showStreamingCursor =
-    isStreaming && !isUser && !!message.content;
+  const showStreamingCursor = isStreaming && !isUser && !!message.content;
 
   return (
     <div className={cn("flex group", isUser ? "justify-end" : "justify-start")}>
@@ -452,8 +419,8 @@ export const AiChatMessage = memo(function AiChatMessage({
               ? "bg-primary text-primary-foreground rounded-3xl rounded-tr-lg shadow-[0_10px_30px_var(--primary-glow)]"
               : "dark:glass-card text-gray-200 rounded-3xl rounded-tl-lg"
             : isUser
-            ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
-            : "bg-card border border-border text-card-foreground rounded-2xl rounded-tl-sm",
+              ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
+              : "bg-card border border-border text-card-foreground rounded-2xl rounded-tl-sm",
         )}
       >
         {isEmpty ? (
@@ -463,10 +430,7 @@ export const AiChatMessage = memo(function AiChatMessage({
             <div className="flex-1 space-y-3 overflow-hidden">
               {message.content && (
                 <div
-                  className={cn(
-                    "text-sm",
-                    isUser ? "font-bold" : "font-medium leading-relaxed",
-                  )}
+                  className={cn("text-sm", isUser ? "font-bold" : "font-medium leading-relaxed")}
                 >
                   <MessageContent
                     text={message.content}
@@ -498,8 +462,8 @@ export const AiChatMessage = memo(function AiChatMessage({
             isUser
               ? "text-primary-foreground/80 text-right"
               : isDarkMode
-              ? "text-primary-light/60"
-              : "text-muted-foreground",
+                ? "text-primary-light/60"
+                : "text-muted-foreground",
           )}
         />
       </div>

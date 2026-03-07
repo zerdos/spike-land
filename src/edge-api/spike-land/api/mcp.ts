@@ -38,11 +38,14 @@ mcpRoute.post("/", async (c) => {
 
   try {
     if (agentId) {
-      const res = await c.env.SPIKE_EDGE.fetch(`https://edge.spike.land/internal/agent-elo/${agentId}`, {
-        headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
-      });
+      const res = await c.env.SPIKE_EDGE.fetch(
+        `https://edge.spike.land/internal/agent-elo/${agentId}`,
+        {
+          headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
+        },
+      );
       if (res.ok) {
-        const data = await res.json() as { elo: number; tier: "free" | "pro" | "business" };
+        const data = (await res.json()) as { elo: number; tier: "free" | "pro" | "business" };
         callerElo = data.elo;
         callerTier = data.tier;
         isAgent = true;
@@ -52,7 +55,7 @@ mcpRoute.post("/", async (c) => {
         headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
       });
       if (res.ok) {
-        const data = await res.json() as { elo: number; tier: "free" | "pro" | "business" };
+        const data = (await res.json()) as { elo: number; tier: "free" | "pro" | "business" };
         callerElo = data.elo;
         callerTier = data.tier;
       }
@@ -62,7 +65,13 @@ mcpRoute.post("/", async (c) => {
   }
 
   // Rate limit by userId (120 req/60s)
-  const { isLimited, resetAt } = await checkRateLimit(`mcp-rpc:${userId}`, c.env.KV, 120, 60000, eloRateMultiplier(callerElo));
+  const { isLimited, resetAt } = await checkRateLimit(
+    `mcp-rpc:${userId}`,
+    c.env.KV,
+    120,
+    60000,
+    eloRateMultiplier(callerElo),
+  );
   if (isLimited) {
     return c.json(
       {
@@ -104,11 +113,14 @@ mcpRoute.post("/", async (c) => {
     spikeEdge: c.env.SPIKE_EDGE,
     spaAssets: c.env.SPA_ASSETS,
   });
-  
+
   // Set caller ELO for tool gating
   const mcpWithRegistry = mcpServer as unknown as Record<string, unknown>;
   if (mcpWithRegistry.registry) {
-    const reg = mcpWithRegistry.registry as { setCallerElo(elo: number, tier: string, isAgent: boolean): void; setCallerRole(role: string): void };
+    const reg = mcpWithRegistry.registry as {
+      setCallerElo(elo: number, tier: string, isAgent: boolean): void;
+      setCallerRole(role: string): void;
+    };
     reg.setCallerElo(callerElo, callerTier, isAgent);
     // Set caller role for RBAC
     const userRole = (c.var as Record<string, unknown>).userRole as string | undefined;
@@ -185,7 +197,9 @@ mcpRoute.post("/", async (c) => {
     const isFlagged = await detectAbuse(c.env.KV, agentId ?? userId, outcome);
     if (isFlagged) {
       const endpoint = isAgent ? "/internal/agent-elo/event" : "/internal/elo/event";
-      const payload = isAgent ? { agentId, ownerUserId: userId, eventType: "abuse_flag" } : { userId, eventType: "abuse_flag" };
+      const payload = isAgent
+        ? { agentId, ownerUserId: userId, eventType: "abuse_flag" }
+        : { userId, eventType: "abuse_flag" };
       c.executionCtx.waitUntil(
         c.env.SPIKE_EDGE.fetch(`https://edge.spike.land${endpoint}`, {
           method: "POST",
@@ -194,7 +208,7 @@ mcpRoute.post("/", async (c) => {
             "x-internal-secret": c.env.MCP_INTERNAL_SECRET,
           },
           body: JSON.stringify(payload),
-        }).catch((err) => console.error("[mcp] Failed to report abuse:", err))
+        }).catch((err) => console.error("[mcp] Failed to report abuse:", err)),
       );
     }
 

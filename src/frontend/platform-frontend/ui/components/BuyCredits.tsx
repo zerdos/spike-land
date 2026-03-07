@@ -57,7 +57,7 @@ function PackCard({ pack }: { pack: CreditPack }) {
         "relative flex flex-col rounded-3xl border p-8 transition-all duration-300 group",
         pack.highlighted
           ? "border-primary bg-primary/5 shadow-xl shadow-primary/10 ring-1 ring-primary/20 scale-105 z-10"
-          : "border-border bg-card hover:border-primary/20 hover:shadow-lg"
+          : "border-border bg-card hover:border-primary/20 hover:shadow-lg",
       )}
     >
       {pack.highlighted && (
@@ -68,20 +68,28 @@ function PackCard({ pack }: { pack: CreditPack }) {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <div className={cn(
-          "p-3 rounded-2xl transition-colors",
-          pack.highlighted ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-        )}>
+        <div
+          className={cn(
+            "p-3 rounded-2xl transition-colors",
+            pack.highlighted
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+          )}
+        >
           <Icon className="size-6" />
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Pack</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
+            Pack
+          </p>
           <h3 className="text-xl font-black tracking-tight text-foreground">{pack.label}</h3>
         </div>
       </div>
 
       <div className="flex items-baseline gap-1 mb-1">
-        <span className="text-4xl font-black tracking-tighter text-foreground">{pack.formattedPrice}</span>
+        <span className="text-4xl font-black tracking-tighter text-foreground">
+          {pack.formattedPrice}
+        </span>
       </div>
       <p className="text-xs font-bold text-muted-foreground/40 mb-6 uppercase tracking-wider">
         ${perCredit} per credit
@@ -120,7 +128,7 @@ function PackCard({ pack }: { pack: CreditPack }) {
         variant={pack.highlighted ? "default" : "outline"}
         className={cn(
           "w-full rounded-2xl h-12 font-black uppercase tracking-widest text-xs transition-transform active:scale-95 shadow-md",
-          pack.highlighted && "shadow-primary/20"
+          pack.highlighted && "shadow-primary/20",
         )}
       >
         <CreditCard className="mr-2 size-4" />
@@ -134,9 +142,33 @@ export function BuyCredits() {
   const { pricing } = usePricing();
 
   const PACKS: CreditPack[] = [
-    { id: "starter", label: "Starter", price: 5, formattedPrice: pricing.credits.starter, credits: 500, highlighted: false, icon: Coins },
-    { id: "popular", label: "Popular", price: 20, formattedPrice: pricing.credits.popular, credits: 2500, highlighted: true, icon: Zap },
-    { id: "power", label: "Power", price: 50, formattedPrice: pricing.credits.power, credits: 7500, highlighted: false, icon: Trophy },
+    {
+      id: "starter",
+      label: "Starter",
+      price: 5,
+      formattedPrice: pricing.credits.starter,
+      credits: 500,
+      highlighted: false,
+      icon: Coins,
+    },
+    {
+      id: "popular",
+      label: "Popular",
+      price: 20,
+      formattedPrice: pricing.credits.popular,
+      credits: 2500,
+      highlighted: true,
+      icon: Zap,
+    },
+    {
+      id: "power",
+      label: "Power",
+      price: 50,
+      formattedPrice: pricing.credits.power,
+      credits: 7500,
+      highlighted: false,
+      icon: Trophy,
+    },
   ];
 
   return (
@@ -149,7 +181,8 @@ export function BuyCredits() {
           Power Up Your Apps
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Need more throughput? Purchase credits to enable high-frequency AI tool calls across the entire platform. Credits are added instantly to your balance.
+          Need more throughput? Purchase credits to enable high-frequency AI tool calls across the
+          entire platform. Credits are added instantly to your balance.
         </p>
       </div>
 

@@ -30,17 +30,23 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         "billing_create_checkout",
         "Create a Stripe checkout session URL for subscribing to a paid plan.",
         {
-          tier: z.enum(["pro", "business"]).describe("Subscription tier to purchase: pro or business."),
+          tier: z
+            .enum(["pro", "business"])
+            .describe("Subscription tier to purchase: pro or business."),
           success_url: z
             .string()
             .url()
             .optional()
-            .describe("URL to redirect to after successful checkout. Defaults to spike.land settings."),
+            .describe(
+              "URL to redirect to after successful checkout. Defaults to spike.land settings.",
+            ),
           cancel_url: z
             .string()
             .url()
             .optional()
-            .describe("URL to redirect to if the user cancels checkout. Defaults to spike.land pricing."),
+            .describe(
+              "URL to redirect to if the user cancels checkout. Defaults to spike.land pricing.",
+            ),
         },
       )
       .meta({ category: "billing", tier: "free" })
@@ -48,12 +54,17 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         const successUrl = input.success_url ?? "https://spike.land/settings?tab=billing&success=1";
         const cancelUrl = input.cancel_url ?? "https://spike.land/pricing";
 
-        const ALLOWED_URL_PATTERN = /^https:\/\/(spike\.land|edge\.spike\.land|testing\.spike\.land)(\/|$)/;
+        const ALLOWED_URL_PATTERN =
+          /^https:\/\/(spike\.land|edge\.spike\.land|testing\.spike\.land)(\/|$)/;
         if (input.success_url && !ALLOWED_URL_PATTERN.test(input.success_url)) {
-          return textResult("**Error:** success_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).");
+          return textResult(
+            "**Error:** success_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).",
+          );
         }
         if (input.cancel_url && !ALLOWED_URL_PATTERN.test(input.cancel_url)) {
-          return textResult("**Error:** cancel_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).");
+          return textResult(
+            "**Error:** cancel_url must be a spike.land URL (https://spike.land/... or https://edge.spike.land/...).",
+          );
         }
 
         return textResult(
@@ -86,7 +97,12 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         "billing_cancel_subscription",
         "Cancel your active subscription. Your access continues until the end of the current billing period.",
         {
-          confirm: z.boolean().default(false).describe("Set to true to execute cancellation. When false (default), returns a preview of what will happen."),
+          confirm: z
+            .boolean()
+            .default(false)
+            .describe(
+              "Set to true to execute cancellation. When false (default), returns a preview of what will happen.",
+            ),
         },
       )
       .meta({ category: "billing", tier: "free" })
@@ -94,7 +110,9 @@ export function registerBillingTools(registry: ToolRegistry, userId: string, db:
         const sub = await getActiveSubscription(ctx.db, ctx.userId);
 
         if (!sub) {
-          return textResult("**No Active Subscription**\n\nYou don't have an active subscription to cancel.");
+          return textResult(
+            "**No Active Subscription**\n\nYou don't have an active subscription to cancel.",
+          );
         }
 
         if (!input.confirm) {

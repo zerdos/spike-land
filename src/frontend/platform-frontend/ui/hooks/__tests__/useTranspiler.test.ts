@@ -44,7 +44,7 @@ describe("useTranspiler", () => {
 
     expect(result.current.html).toContain("<!DOCTYPE html>");
     expect(result.current.html).toContain("createRoot");
-    expect(result.current.html).toContain('globalThis.process ??= { env: {} };');
+    expect(result.current.html).toContain("globalThis.process ??= { env: {} };");
     expect(result.current.error).toBeNull();
   });
 
@@ -105,10 +105,9 @@ describe("useTranspiler", () => {
   it("debounces rapid code changes", async () => {
     fetchMock.mockResolvedValue(new Response("const x = 1;", { status: 200 }));
 
-    const { rerender } = renderHook(
-      ({ source }: { source: string }) => useTranspiler(source, 50),
-      { initialProps: { source: "v1" } },
-    );
+    const { rerender } = renderHook(({ source }: { source: string }) => useTranspiler(source, 50), {
+      initialProps: { source: "v1" },
+    });
 
     // Rapid changes — each should cancel the previous debounce
     rerender({ source: "v2" });

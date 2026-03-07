@@ -216,7 +216,9 @@ export function MCPTerminalDemo() {
         <div className="p-5 min-h-72 flex flex-col gap-5">
           {/* Request */}
           <div>
-            <div className="text-[10px] text-muted-foreground mb-1 uppercase tracking-widest">Request</div>
+            <div className="text-[10px] text-muted-foreground mb-1 uppercase tracking-widest">
+              Request
+            </div>
             <div className="text-foreground whitespace-pre leading-relaxed">
               {highlight(typed)}
               {playing && !paused && (

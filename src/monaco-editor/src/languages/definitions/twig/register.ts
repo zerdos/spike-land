@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerLanguage } from '../_.contribution';
+import { registerLanguage } from "../_.contribution";
 
 registerLanguage({
-	id: 'twig',
-	extensions: ['.twig'],
-	aliases: ['Twig', 'twig'],
-	mimetypes: ['text/x-twig'],
-	loader: () => import('./twig')
+  id: "twig",
+  extensions: [".twig"],
+  aliases: ["Twig", "twig"],
+  mimetypes: ["text/x-twig"],
+  loader: () => import("./twig"),
 });

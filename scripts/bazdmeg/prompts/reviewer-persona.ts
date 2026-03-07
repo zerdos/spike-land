@@ -5,7 +5,7 @@ const reviewerPersona: PromptVariant = {
   role: "reviewer",
   render: (ctx: PromptContext) => {
     const persona = ctx.persona || { name: "Senior Engineer", description: "Standard reviewer" };
-    
+
     return `You are reviewing code as a specific persona:
 NAME: ${persona.name}
 DESCRIPTION: ${persona.description}

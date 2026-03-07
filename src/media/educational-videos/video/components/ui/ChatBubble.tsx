@@ -165,7 +165,7 @@ export function TypingIndicator({ delay = 0 }: { delay?: number }) {
         }}
       >
         {[0, 1, 2].map((i) => {
-          const dotProgress = Math.sin((frame * 0.15) - i * 0.5);
+          const dotProgress = Math.sin(frame * 0.15 - i * 0.5);
           const dotOpacity = interpolate(dotProgress, [-1, 1], [0.3, 1]);
           const dotY = interpolate(dotProgress, [-1, 1], [2, -2]);
 

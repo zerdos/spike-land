@@ -14,11 +14,14 @@ export { BrowserSessionDO } from "../edge/session-do.js";
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.use("*", cors({
-  origin: ["https://spike.land"],
-  credentials: true,
-  exposeHeaders: ["mcp-session-id"],
-}));
+app.use(
+  "*",
+  cors({
+    origin: ["https://spike.land"],
+    credentials: true,
+    exposeHeaders: ["mcp-session-id"],
+  }),
+);
 
 function getSessionDO(env: Env, sessionId: string) {
   const id = env.BROWSER_SESSION.idFromName(sessionId);

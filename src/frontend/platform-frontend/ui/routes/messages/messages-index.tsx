@@ -41,7 +41,9 @@ export function MessagesIndexPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className={`text-sm ${conv.unread ? "font-semibold text-foreground" : "font-medium text-foreground"}`}>
+                <span
+                  className={`text-sm ${conv.unread ? "font-semibold text-foreground" : "font-medium text-foreground"}`}
+                >
                   {conv.name}
                 </span>
                 <span className="text-xs text-muted-foreground">{conv.time}</span>

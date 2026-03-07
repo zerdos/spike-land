@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { asImageId, errorResult, jsonResult, toolEvent } from "../../mcp/types.js";
 import { tryCatch } from "../../mcp/try-catch.js";
-import { imageProcedure, withOwnership, withResolves } from "../../lazy-imports/image-middleware.js";
+import {
+  imageProcedure,
+  withOwnership,
+  withResolves,
+} from "../../lazy-imports/image-middleware.js";
 
 export const albumReorderTool = imageProcedure
   .use(withResolves({ album_handle: "album" }))

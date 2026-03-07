@@ -1,16 +1,13 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { 
-  mapTestToSource, 
-  getFileHash, 
-  loadCache, 
-  saveCache, 
-  runVitestWithCoverage 
+import {
+  mapTestToSource,
+  getFileHash,
+  loadCache,
+  saveCache,
+  runVitestWithCoverage,
 } from "../node-sys/logic.js";
 
 const CACHE_PATH = "incremental-coverage.json";
@@ -24,7 +21,7 @@ const server = new Server(
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 const RunTestSchema = z.object({
@@ -67,7 +64,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     ]);
 
     const existing = cache[testFilePath];
-    if (!force && existing && existing.testHash === testHash && existing.sourceHash === srcHash && existing.success) {
+    if (
+      !force &&
+      existing &&
+      existing.testHash === testHash &&
+      existing.sourceHash === srcHash &&
+      existing.success
+    ) {
       return {
         content: [
           {

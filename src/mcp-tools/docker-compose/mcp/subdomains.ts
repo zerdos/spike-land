@@ -8,7 +8,8 @@ export function registerSubdomainTools(server: McpServer): void {
 
   createZodTool(server, {
     name: "docker_compose_register_subdomain",
-    description: "Register a subdomain route in Caddy reverse proxy (e.g. api.spike.local -> api:8080)",
+    description:
+      "Register a subdomain route in Caddy reverse proxy (e.g. api.spike.local -> api:8080)",
     schema: {
       subdomain: z.string().describe("Subdomain prefix (e.g. 'api' for api.spike.local)"),
       upstream: z.string().describe("Upstream container/host name"),
@@ -17,7 +18,12 @@ export function registerSubdomainTools(server: McpServer): void {
     async handler({ subdomain, upstream, port }) {
       const result = await tryCatch(caddy.addRoute(subdomain, upstream, port));
       if (!result.ok) return errorResult("CADDY_ERROR", result.error.message, true);
-      return jsonResult({ registered: true, subdomain: `${subdomain}.spike.local`, upstream, port });
+      return jsonResult({
+        registered: true,
+        subdomain: `${subdomain}.spike.local`,
+        upstream,
+        port,
+      });
     },
   });
 

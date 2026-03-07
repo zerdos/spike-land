@@ -2,15 +2,27 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { createZodTool, errorResult, jsonResult, tryCatch } from "@spike-land-ai/mcp-server-base";
 import type { StripeClient } from "../core-logic/stripe-client.js";
-import type { BalanceTransaction, Dispute, Payout, StripeListResponse } from "../core-logic/types.js";
+import type {
+  BalanceTransaction,
+  Dispute,
+  Payout,
+  StripeListResponse,
+} from "../core-logic/types.js";
 
 export function registerRevenueTools(server: McpServer, client: StripeClient): void {
   createZodTool(server, {
     name: "stripe_revenue_summary",
-    description: "Fetch balance transactions for a period and aggregate revenue by type (charge, refund, fee, payout)",
+    description:
+      "Fetch balance transactions for a period and aggregate revenue by type (charge, refund, fee, payout)",
     schema: {
-      start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").describe("Start date in YYYY-MM-DD format"),
-      end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").describe("End date in YYYY-MM-DD format"),
+      start_date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
+        .describe("Start date in YYYY-MM-DD format"),
+      end_date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
+        .describe("End date in YYYY-MM-DD format"),
       currency: z.string().default("usd").describe("Currency code (default: usd)"),
     },
     async handler({ start_date, end_date, currency }) {
@@ -25,7 +37,7 @@ export function registerRevenueTools(server: McpServer, client: StripeClient): v
         client.getAll<BalanceTransaction>("balance_transactions", {
           "created[gte]": String(startUnix),
           "created[lte]": String(endUnix),
-          "currency": currency,
+          currency: currency,
         }),
       );
 
@@ -78,7 +90,10 @@ export function registerRevenueTools(server: McpServer, client: StripeClient): v
     description: "Fetch payout history from Stripe",
     schema: {
       limit: z.number().int().min(1).max(100).default(10).describe("Number of payouts to fetch"),
-      status: z.enum(["paid", "pending", "in_transit", "canceled", "failed"]).optional().describe("Filter by payout status"),
+      status: z
+        .enum(["paid", "pending", "in_transit", "canceled", "failed"])
+        .optional()
+        .describe("Filter by payout status"),
     },
     async handler({ limit = 10, status }) {
       const params: Record<string, string> = {
@@ -117,7 +132,10 @@ export function registerRevenueTools(server: McpServer, client: StripeClient): v
     name: "stripe_dispute_summary",
     description: "Fetch and summarize disputes from Stripe",
     schema: {
-      status: z.enum(["needs_response", "under_review", "won", "lost"]).optional().describe("Filter by dispute status"),
+      status: z
+        .enum(["needs_response", "under_review", "won", "lost"])
+        .optional()
+        .describe("Filter by dispute status"),
     },
     async handler({ status }) {
       const params: Record<string, string> = {};
@@ -125,9 +143,7 @@ export function registerRevenueTools(server: McpServer, client: StripeClient): v
         params.status = status;
       }
 
-      const result = await tryCatch(
-        client.getAll<Dispute>("disputes", params),
-      );
+      const result = await tryCatch(client.getAll<Dispute>("disputes", params));
 
       if (!result.ok) {
         return errorResult("STRIPE_API_ERROR", result.error.message, true);

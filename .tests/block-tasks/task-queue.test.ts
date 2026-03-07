@@ -38,7 +38,10 @@ describe("taskQueue block", () => {
 
     it("create_task creates a pending task", async () => {
       const { procs } = await setup();
-      const result = await procs.createTask.handler({ title: "Fix bug", description: "Fix the login bug" });
+      const result = await procs.createTask.handler({
+        title: "Fix bug",
+        description: "Fix the login bug",
+      });
 
       expect(result.isError).toBeUndefined();
       const task = JSON.parse(result.content[0]!.text!) as Task;
@@ -81,7 +84,10 @@ describe("taskQueue block", () => {
 
     it("get_task returns a specific task", async () => {
       const { procs } = await setup();
-      const createResult = await procs.createTask.handler({ title: "My Task", description: "details" });
+      const createResult = await procs.createTask.handler({
+        title: "My Task",
+        description: "details",
+      });
       const created = JSON.parse(createResult.content[0]!.text!) as Task;
 
       const getResult = await procs.getTask.handler({ taskId: created.id });
@@ -150,7 +156,10 @@ describe("taskQueue block", () => {
 
       // Create as alice, claim as alice
       const aliceProcs = taskQueue.createProcedures(storage, "alice");
-      const createResult = await aliceProcs.createTask.handler({ title: "Alice's task", description: "" });
+      const createResult = await aliceProcs.createTask.handler({
+        title: "Alice's task",
+        description: "",
+      });
       const task = JSON.parse(createResult.content[0]!.text!) as Task;
       await aliceProcs.claimTask.handler({ taskId: task.id });
 
