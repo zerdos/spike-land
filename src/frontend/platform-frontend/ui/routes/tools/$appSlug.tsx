@@ -8,7 +8,7 @@ import { Link } from "@tanstack/react-router";
 export function AppSessionPage() {
   const { appSlug } = useParams({ strict: false });
   const { data: app, isLoading, isError, error } = useApp(appSlug as string);
-  
+
   const { session, recordToolResult, resetSession, isToolAvailable } = useAppSession(
     appSlug as string,
     app?.graph || {},
@@ -85,7 +85,7 @@ export function AppSessionPage() {
                 <RotateCcw className="w-4 h-4" />
               </button>
             </div>
-            
+
             <div className="p-4">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Stored Outputs</h4>
               {Object.keys(session.outputs).length === 0 ? (

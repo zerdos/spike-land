@@ -1,4 +1,4 @@
-import { type FormEvent, useState, useEffect, useCallback } from "react";
+import { type FormEvent, useState, useEffect, useCallback, useRef } from "react";
 import { apiUrl } from "../../../../core-logic/api";
 
 interface JsonSchemaProperty {
@@ -9,7 +9,7 @@ interface JsonSchemaProperty {
   items?: JsonSchemaProperty; // For arrays
 }
 
-interface JsonSchema {
+export interface JsonSchema {
   type: "object";
   properties?: Record<string, JsonSchemaProperty>;
   required?: string[];
@@ -20,11 +20,12 @@ interface JsonSchemaFormProps {
   onChange: (data: Record<string, unknown>) => void;
   onSubmit: () => void;
   isPending?: boolean;
+  initialData?: Record<string, unknown>;
 }
 
-export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSchemaFormProps) {
+export function JsonSchemaForm({ schema, onChange, onSubmit, isPending, initialData }: JsonSchemaFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [urlOptions, setUrlOptions] = useState<{url: string, label: string}[]>([]);
+  const [urlOptions, setUrlOptions] = useState<{ url: string, label: string }[]>([]);
 
   useEffect(() => {
     if (schema.properties?.content_url) {
@@ -32,43 +33,47 @@ export function JsonSchemaForm({ schema, onChange, onSubmit, isPending }: JsonSc
         fetch(apiUrl("/blog")).then(res => res.ok ? res.json() : []).catch(() => []),
         fetch(apiUrl("/learnit/recent?limit=20")).then(res => res.ok ? res.json() : []).catch(() => [])
       ]).then(([blogs, learnits]) => {
-         const options: {url: string, label: string}[] = [];
-         if (Array.isArray(blogs)) {
-           blogs.forEach((b: { slug: string; title: string }) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
-         }
-         if (Array.isArray(learnits)) {
-           learnits.forEach((l: { slug: string; title: string }) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
-         }
-         setUrlOptions(options);
+        const options: { url: string, label: string }[] = [];
+        if (Array.isArray(blogs)) {
+          blogs.forEach((b: { slug: string; title: string }) => options.push({ url: `https://spike.land/blog/${b.slug}`, label: `Blog: ${b.title}` }));
+        }
+        if (Array.isArray(learnits)) {
+          learnits.forEach((l: { slug: string; title: string }) => options.push({ url: `https://spike.land/learnit/${l.slug}`, label: `LearnIt: ${l.title}` }));
+        }
+        setUrlOptions(options);
       });
     }
   }, [schema]);
 
   const stableOnChange = useCallback(onChange, [onChange]);
+  const appliedRef = useRef<string>("");
 
   useEffect(() => {
-    // Initialize defaults
-    const initialData: Record<string, unknown> = {};
+    const defaults: Record<string, unknown> = {};
     if (schema.properties) {
       Object.entries(schema.properties).forEach(([key, prop]) => {
         if (prop.default !== undefined) {
-          initialData[key] = prop.default;
+          defaults[key] = prop.default;
         } else if (prop.type === "boolean") {
-          initialData[key] = false;
+          defaults[key] = false;
         } else if (prop.type === "string" && prop.enum && prop.enum.length > 0) {
-          initialData[key] = prop.enum[0]; // Select first enum by default
+          defaults[key] = prop.enum[0];
         } else if (prop.type === "string") {
-          initialData[key] = "";
+          defaults[key] = "";
         } else if (prop.type === "number" || prop.type === "integer") {
-          initialData[key] = 0;
+          defaults[key] = 0;
         } else if (prop.type === "array") {
-          initialData[key] = [];
+          defaults[key] = [];
         }
       });
     }
-    setFormData(initialData);
-    stableOnChange(initialData);
-  }, [schema, stableOnChange]);
+    const merged = { ...defaults, ...(initialData ?? {}) };
+    const key = JSON.stringify(merged);
+    if (key === appliedRef.current) return;
+    appliedRef.current = key;
+    setFormData(merged);
+    stableOnChange(merged);
+  }, [schema, stableOnChange, initialData]);
 
   const handleChange = (key: string, value: unknown) => {
     const newData = { ...formData, [key]: value };

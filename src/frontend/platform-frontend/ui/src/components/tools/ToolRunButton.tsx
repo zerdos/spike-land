@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronRight, Lock, Unlock } from "lucide-react";
-import { JsonSchemaForm } from "./JsonSchemaForm";
+import { JsonSchemaForm, type JsonSchema } from "./JsonSchemaForm";
 import { ToolResultInline } from "./ToolResultInline";
-import { useMcpToolCall } from "../../hooks/useMcp";
+import { useMcpToolCall, useMcpTools } from "../../hooks/useMcp";
 
 interface ToolRunButtonProps {
   toolName: string;
@@ -22,9 +22,13 @@ export function ToolRunButton({
 }: ToolRunButtonProps) {
   const [expanded, setExpanded] = useState(false);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
-  
+
   const { mutate: callTool, isPending, data: result, error } = useMcpToolCall();
+  const { data: toolsData } = useMcpTools();
   const [lastResult, setLastResult] = useState<unknown>(null);
+
+  const toolDefinition = toolsData?.tools?.find(t => t.name === toolName);
+  const toolSchema = toolDefinition?.inputSchema || { type: "object" };
 
   // Pre-fill inputs based on session
   useEffect(() => {
@@ -83,13 +87,13 @@ export function ToolRunButton({
       {expanded && isAvailable && (
         <div className="p-4 border-t border-border bg-background">
           <JsonSchemaForm
-            schema={{ type: "object" }}
+            schema={toolSchema as JsonSchema}
             onChange={setFormData}
             onSubmit={() => handleSubmit(formData)}
             isPending={isPending}
             initialData={formData}
           />
-          
+
           {(lastResult || error) && (
             <div className="mt-4 pt-4 border-t border-border">
               <ToolResultInline result={lastResult} error={error} />
