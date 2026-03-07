@@ -47,8 +47,8 @@ publicAppsRoute.get("/:slug", async (c) => {
     tools,
     graph,
     markdown: row.markdown,
-    toolCount: row.tool_count,
-    sortOrder: row.sort_order,
+    tool_count: row.tool_count,
+    sort_order: row.sort_order,
   };
 
   const response = c.json(app);
