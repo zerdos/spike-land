@@ -199,7 +199,7 @@ export function LandingHero() {
                                 className="w-full inset-0"
                             >
                                 <Link
-                                    href="/store"
+                                    href="/blog"
                                     onClick={() => setThemeDirectly("light")}
                                     className="block w-full sm:w-auto px-8 py-4 text-lg font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2
                                         bg-background border border-border/50 text-foreground hover:bg-muted/50 hover:border-border hover:shadow-sm focus:ring-foreground

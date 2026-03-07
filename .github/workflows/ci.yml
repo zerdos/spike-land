@@ -213,7 +213,8 @@ jobs:
           echo "--- Wave 2: spike-land-backend, spike-edge (parallel) ---"
           (cd packages/spike-land-backend && npm run deploy) &
           PID_BACKEND=$!
-          (cd packages/spike-edge && npm run deploy) &
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          (cd packages/spike-edge && npx wrangler deploy --minify --var CACHE_VERSION:"$SHORT_SHA") &
           PID_EDGE=$!
 
           wait $PID_BACKEND || { echo "FATAL: spike-land-backend deploy failed"; exit 1; }
@@ -221,6 +222,9 @@ jobs:
           echo "Wave 2 complete."
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Build spike-app SPA
+        run: cd packages/spike-app && npm run build
 
       - name: Deploy spike-app SPA
         run: bash packages/spike-app/deploy.sh
@@ -254,6 +258,17 @@ jobs:
           smoke_check "https://image-studio-mcp.spike.land/health" "image-studio-mcp healthy"
           smoke_check "https://spike.land/" "SPA serving"
           echo "All smoke tests passed."
+
+      - name: Verify deployed version
+        run: |
+          sleep 5
+          DEPLOYED_SHA=$(curl -sf https://spike.land/api/version | jq -r '.sha // ""' 2>/dev/null || echo "")
+          HEAD_SHA=$(git rev-parse HEAD)
+          if [ "$DEPLOYED_SHA" != "$HEAD_SHA" ]; then
+            echo "WARNING: Deployed SHA ($DEPLOYED_SHA) does not match HEAD ($HEAD_SHA)"
+          else
+            echo "Verified: deployed SHA matches HEAD ($HEAD_SHA)"
+          fi
 
       - name: Rollback on failure
         if: failure()

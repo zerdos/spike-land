@@ -97,7 +97,7 @@ export default defineConfig(() => ({
         secure: true,
       },
       "/analytics": {
-        target: "https://api.spike.land",
+        target: "https://spike.land",
         changeOrigin: true,
         secure: true,
       },

@@ -91,7 +91,13 @@ function LocalMonacoEditor({
       }
 
       const uri = monaco.Uri.parse(`file:///${props.fileName || 'file.tsx'}`);
-      const model = monaco.editor.createModel(props.value, props.language, uri);
+      let model = (monaco.editor as any).getModel(uri);
+      if (!model) {
+        model = monaco.editor.createModel(props.value, props.language, uri);
+      } else {
+        model.setValue(props.value);
+        (monaco.editor as any).setModelLanguage(model, props.language || 'typescript');
+      }
 
       editorRef.current = monaco.editor.create(containerRef.current!, {
         model,
@@ -247,11 +253,10 @@ export function CodeEditor({
     if (!tsDefaults) return;
 
     tsDefaults.setCompilerOptions({
-      target: 99, // ScriptTarget.ESNext
+      target: 9, // ScriptTarget.ES2022
       module: 99, // ModuleKind.ESNext
       moduleResolution: 2, // ModuleResolutionKind.NodeJs
-      jsx: 4, // JsxEmit.ReactJSX
-      jsxImportSource: "react",
+      jsx: 2, // JsxEmit.React
       allowNonTsExtensions: true,
       allowSyntheticDefaultImports: true,
       esModuleInterop: true,
