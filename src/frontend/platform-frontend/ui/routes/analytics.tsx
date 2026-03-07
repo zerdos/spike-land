@@ -15,6 +15,7 @@ interface AnalyticsSummary {
   uniqueUsers: number;
   eventsByType: Array<{ event_type: string; count: number }>;
   toolUsage: Array<{ tool_name: string; count: number }>;
+  blogViews?: Array<{ slug: string; count: number }>;
 }
 
 function MetricCard({
@@ -81,10 +82,10 @@ export function AnalyticsPage() {
       ]);
 
       if (summaryRes.ok) {
-        setSummary(await summaryRes.json() as AnalyticsSummary);
+        setSummary((await summaryRes.json()) as AnalyticsSummary);
       }
       if (eventsRes.ok) {
-        setRecentEvents(await eventsRes.json() as PlatformEvent[]);
+        setRecentEvents((await eventsRes.json()) as PlatformEvent[]);
       }
     } catch {
       // Network error — keep existing data
@@ -97,9 +98,8 @@ export function AnalyticsPage() {
     fetchData(timeRange);
   }, [timeRange, fetchData]);
 
-  const toolInvocations = summary?.eventsByType.find(
-    (e) => e.event_type === "tool_use",
-  )?.count ?? 0;
+  const toolInvocations =
+    summary?.eventsByType.find((e) => e.event_type === "tool_use")?.count ?? 0;
 
   return (
     <div className="space-y-6">
@@ -132,6 +132,41 @@ export function AnalyticsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Blog Views */}
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Top Articles
+          </h3>
+          {!summary?.blogViews?.length ? (
+            <div className="flex h-48 items-center justify-center rounded-2xl border-2 border-dashed border-border text-muted-foreground">
+              {loading ? "Loading..." : "No blog views yet"}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {summary.blogViews.slice(0, 10).map((view) => (
+                <div
+                  key={view.slug}
+                  className="flex items-center justify-between rounded-2xl bg-muted px-3 py-2"
+                >
+                  <span className="text-sm font-medium text-foreground">{view.slug}</span>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-2 rounded-full bg-primary"
+                      style={{
+                        width: `${Math.max(
+                          12,
+                          (view.count / (summary.blogViews?.[0]?.count ?? 1)) * 120,
+                        )}px`,
+                      }}
+                    />
+                    <span className="text-xs text-muted-foreground">{view.count}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Tool Usage */}
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">

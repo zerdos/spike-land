@@ -24,7 +24,11 @@ interface BlogPostRow {
 
 function rowToPost(row: BlogPostRow, includeContent = false) {
   let tags: unknown = [];
-  try { tags = JSON.parse(row.tags); } catch { /* default to empty */ }
+  try {
+    tags = JSON.parse(row.tags);
+  } catch {
+    /* default to empty */
+  }
 
   const post: Record<string, unknown> = {
     slug: row.slug,
@@ -66,7 +70,7 @@ blog.get("/api/blog", async (c) => {
          FROM blog_posts${draftFilter} ORDER BY date DESC`,
       ).all<BlogPostRow>();
 
-      if (!result.results?.length) return null;
+        if (!result.results?.length) return null;
 
       const posts = result.results.map((row) => rowToPost(row));
       return new Response(JSON.stringify(posts), {
@@ -93,13 +97,17 @@ blog.get("/api/blog", async (c) => {
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "blog_index",
-          params: { page_path: "/api/blog" },
-        }])
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "blog_index",
+            params: { page_path: "/api/blog" },
+          },
+        ]),
       ),
     );
-  } catch { /* no ExecutionContext in some environments */ }
+  } catch {
+    /* no ExecutionContext in some environments */
+  }
 
   return cached;
 });
@@ -116,7 +124,7 @@ blog.get("/api/blog/:slug", async (c) => {
         `SELECT * FROM blog_posts WHERE slug = ?${draftFilter}`,
       ).bind(slug).first<BlogPostRow>();
 
-      if (!row) return null;
+        if (!row) return null;
 
       return new Response(JSON.stringify(rowToPost(row, true)), {
         headers: { "Content-Type": "application/json" },
@@ -139,14 +147,26 @@ blog.get("/api/blog/:slug", async (c) => {
 
   try {
     c.executionCtx.waitUntil(
-      getClientId(c.req.raw).then((clientId) =>
-        sendGA4Events(c.env, clientId, [{
-          name: "blog_view",
-          params: { page_path: `/api/blog/${slug}`, slug },
-        }])
-      ),
+      getClientId(c.req.raw).then((clientId) => {
+        const ga4Promise = sendGA4Events(c.env, clientId, [
+          {
+            name: "blog_view",
+            params: { page_path: `/api/blog/${slug}`, slug },
+          },
+        ]);
+
+        const dbPromise = c.env.DB.prepare(
+          "INSERT INTO analytics_events (source, event_type, metadata, client_id) VALUES (?, ?, ?, ?)",
+        )
+          .bind("platform-frontend", "blog_view", JSON.stringify({ slug }), clientId)
+          .run();
+
+        return Promise.all([ga4Promise, dbPromise]);
+      }),
     );
-  } catch { /* no ExecutionContext in some environments */ }
+  } catch {
+    /* no ExecutionContext in some environments */
+  }
 
   return cached;
 });
