@@ -138,6 +138,17 @@ const nameOverrides: Record<string, string> = {
   "state-machine": "statecharts",
   "vibe-dev": "docker-dev",
   "spike-review": "code-review",
+  "bazdmeg-mcp": "bazdmeg",
+  "google-analytics-mcp": "google-analytics",
+  "google-ads-mcp": "google-ads",
+  "stripe-analytics-mcp": "stripe-analytics",
+  "docker-compose-mcp": "docker-compose",
+  "esbuild-wasm-mcp": "esbuild-wasm",
+  "hackernews-mcp": "hackernews",
+  "mcp-image-studio": "image-studio",
+  "openclaw-mcp": "openclaw",
+  "spike-land-mcp": "spike-land",
+  "mcp-auth": "auth",
 };
 
 /**

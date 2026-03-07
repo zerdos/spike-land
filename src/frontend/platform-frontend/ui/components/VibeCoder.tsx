@@ -512,7 +512,7 @@ function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className 
             </div>
           }
         >
-          <CodeEditor value={code} onChange={onChange} />
+          <CodeEditor value={code} onChange={onChange} fileName="App.tsx" />
         </Suspense>
       </div>
     </div>

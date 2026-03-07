@@ -27,6 +27,7 @@ function LocalMonacoEditor({
   value,
   language,
   theme,
+  fileName,
   onChange,
   options,
   onMount,
@@ -46,9 +47,17 @@ function LocalMonacoEditor({
         beforeMount(monaco);
       }
 
+      const uri = monaco.Uri.parse(`file:///${fileName || 'file.tsx'}`);
+      let model = monaco.editor.getModel(uri);
+      if (!model) {
+        model = monaco.editor.createModel(value, language, uri);
+      } else {
+        model.setValue(value);
+        monaco.editor.setModelLanguage(model, language);
+      }
+
       editorRef.current = monaco.editor.create(containerRef.current!, {
-        value,
-        language,
+        model,
         theme,
         ...options,
       });
@@ -327,6 +336,7 @@ export function CodeEditor({
               language={resolvedLanguage}
               theme={monacoTheme}
               value={value}
+              fileName={fileName}
               onChange={handleChange}
               beforeMount={handleBeforeMount}
               onMount={handleMount}
