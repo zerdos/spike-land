@@ -148,9 +148,9 @@ function LocalMonacoEditor({
 /** Map file extensions to Monaco language identifiers. */
 const EXTENSION_LANGUAGE_MAP: Record<string, string> = {
   ts: "typescript",
-  tsx: "typescriptreact",
+  tsx: "typescript",
   js: "javascript",
-  jsx: "javascriptreact",
+  jsx: "javascript",
   css: "css",
   scss: "scss",
   less: "less",

@@ -440,9 +440,10 @@ interface CodePanelProps {
   isDarkMode: boolean;
   isStreaming?: boolean;
   className?: string;
+  fileName?: string;
 }
 
-function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className }: CodePanelProps) {
+function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className, fileName }: CodePanelProps) {
   return (
     <div
       className={cn(
@@ -512,7 +513,7 @@ function CodePanel({ code, onChange, isDarkMode, isStreaming = false, className 
             </div>
           }
         >
-          <CodeEditor value={code} onChange={onChange} fileName="App.tsx" />
+          <CodeEditor value={code} onChange={onChange} fileName={fileName || "App.tsx"} />
         </Suspense>
       </div>
     </div>
@@ -863,6 +864,7 @@ export function VibeCoder({ initialCode = DEFAULT_CODE, appId }: VibeCoderProps)
               isDarkMode={isDarkMode}
               isStreaming={isStreaming}
               className="h-full"
+              fileName="App.tsx"
             />
           </div>
         </div>
