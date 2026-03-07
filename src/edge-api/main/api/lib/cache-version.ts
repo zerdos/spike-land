@@ -23,7 +23,8 @@ export async function getCacheVersion(spaAssets: R2Bucket): Promise<string> {
     }
 
     // Fallback: timestamp-based (changes every 5 min at worst)
-    cachedVersion = Math.floor(now / TTL_MS).toString(36);
-    expiresAt = now + TTL_MS;
+    const bucket = Math.floor(now / TTL_MS);
+    cachedVersion = bucket.toString(36);
+    expiresAt = (bucket + 1) * TTL_MS;
     return cachedVersion;
 }
