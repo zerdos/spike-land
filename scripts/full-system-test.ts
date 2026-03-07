@@ -63,7 +63,7 @@ async function runTest() {
     await checkPage("/about", "About spike.land");
 
     // 3. Dynamic content
-    await checkPage("/what-we-do", "80+ MCP tools");
+    await checkPage("/what-we-do", "80+ production-ready MCP tools");
 
     // 4. Test interactivity (Search)
     await page.click('button[aria-label="Search site"]');
