@@ -49,14 +49,14 @@ export function TryItNow() {
               Connect your AI to the entire platform instantly. Zero config, no npm install required.
             </p>
 
-            <div className="rounded-xl overflow-hidden border border-[#334155] shadow-2xl bg-[#0f172a]">
-              <div className="flex overflow-x-auto border-b border-[#334155] bg-[#0f172a]">
+            <div className="rounded-xl overflow-hidden border border-border dark:border-[#334155] shadow-2xl bg-muted dark:bg-[#0f172a]">
+              <div className="flex overflow-x-auto border-b border-border dark:border-[#334155] bg-muted dark:bg-[#0f172a]">
                 <button
                   onClick={() => setActiveTab("claude-code")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "claude-code"
-                      ? "border-cyan-400 text-cyan-400 bg-white/5"
-                      : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      ? "border-primary text-primary dark:border-cyan-400 dark:text-cyan-400 bg-foreground/5"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   Claude Code
@@ -65,8 +65,8 @@ export function TryItNow() {
                   onClick={() => setActiveTab("cursor")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "cursor"
-                      ? "border-cyan-400 text-cyan-400 bg-white/5"
-                      : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      ? "border-primary text-primary dark:border-cyan-400 dark:text-cyan-400 bg-foreground/5"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   Cursor
@@ -75,8 +75,8 @@ export function TryItNow() {
                   onClick={() => setActiveTab("vscode")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "vscode"
-                      ? "border-cyan-400 text-cyan-400 bg-white/5"
-                      : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      ? "border-primary text-primary dark:border-cyan-400 dark:text-cyan-400 bg-foreground/5"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   VS Code
@@ -87,26 +87,26 @@ export function TryItNow() {
                 <div className="font-mono text-sm overflow-x-auto w-full">
                   {activeTab === "claude-code" && (
                     <div className="flex gap-2">
-                      <span className="text-cyan-400 shrink-0">$</span>
-                      <span className="text-slate-200 break-all">claude mcp add spike-land --transport http https://spike.land/mcp</span>
+                      <span className="text-primary dark:text-cyan-400 shrink-0">$</span>
+                      <span className="text-foreground dark:text-slate-200 break-all">claude mcp add spike-land --transport http https://spike.land/mcp</span>
                     </div>
                   )}
                   {activeTab === "cursor" && (
                     <div className="flex flex-col gap-1">
-                      <span className="text-slate-400 text-xs mb-1">Add to Cursor Settings → MCP</span>
-                      <span className="text-slate-200 break-all">{getCommand()}</span>
+                      <span className="text-muted-foreground text-xs mb-1">Add to Cursor Settings → MCP</span>
+                      <span className="text-foreground dark:text-slate-200 break-all">{getCommand()}</span>
                     </div>
                   )}
                   {activeTab === "vscode" && (
                     <div className="flex flex-col gap-1">
-                      <span className="text-slate-400 text-xs mb-1">Add to .vscode/mcp.json</span>
-                      <span className="text-slate-200 break-all">{getCommand()}</span>
+                      <span className="text-muted-foreground text-xs mb-1">Add to .vscode/mcp.json</span>
+                      <span className="text-foreground dark:text-slate-200 break-all">{getCommand()}</span>
                     </div>
                   )}
                 </div>
                 <button
                   onClick={handleCopy}
-                  className="shrink-0 flex items-center justify-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 text-slate-200 rounded-md transition-colors text-sm font-medium w-full sm:w-auto"
+                  className="shrink-0 flex items-center justify-center gap-2 px-3 py-2 bg-muted-foreground/10 hover:bg-muted-foreground/20 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-slate-200 rounded-md transition-colors text-sm font-medium w-full sm:w-auto"
                 >
                   {copied ? (
                     <>

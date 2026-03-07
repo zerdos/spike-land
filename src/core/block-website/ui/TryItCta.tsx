@@ -26,15 +26,15 @@ export function TryItCta() {
         </h2>
         
         <div className="max-w-2xl mx-auto mb-6">
-          <div className="rounded-xl overflow-hidden border border-[#334155] shadow-lg bg-[#0f172a] p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="rounded-xl overflow-hidden border border-border dark:border-[#334155] shadow-lg bg-muted dark:bg-[#0f172a] p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="font-mono text-sm overflow-x-auto w-full text-left flex gap-2">
-              <span className="text-cyan-400 shrink-0">$</span>
-              <span className="text-slate-200 break-all">{command}</span>
+              <span className="text-primary dark:text-cyan-400 shrink-0">$</span>
+              <span className="text-foreground dark:text-slate-200 break-all">{command}</span>
             </div>
             <button
               onClick={handleCopy}
               aria-label="Copy command to clipboard"
-              className="shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-slate-200 rounded-md transition-colors text-sm font-medium w-full sm:w-auto"
+              className="shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-muted-foreground/10 hover:bg-muted-foreground/20 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-slate-200 rounded-md transition-colors text-sm font-medium w-full sm:w-auto"
             >
               {copied ? (
                 <>
