@@ -11,13 +11,13 @@
 
 ## 1. Executive Summary
 
-SPIKE LAND LTD is a UK-incorporated technology company building a managed MCP (Model Context Protocol) platform. The platform enables developers and AI-native teams to discover, run, and manage AI tools through one hosted system instead of stitching together separate MCP servers and services. 
+SPIKE LAND LTD is a UK-incorporated technology company building a managed MCP (Model Context Protocol) platform. The platform enables developers and AI-native teams to discover, run, and manage AI tools through one hosted system rather than stitching together separate MCP servers and services. 
 
-The product is live in beta at spike.land, featuring a working CLI (`spike-cli`), a web dashboard, and integrated hosted tools deployed on a global edge network (Cloudflare Business, fixed at $250/mo).* 
+The product is live in beta at spike.land, featuring a working CLI (`spike-cli`), a web dashboard, and a managed hosted tool layer deployed on a global edge network. The company is pre-revenue, with Stripe integration near completion and a full commercial launch planned following product hardening. 
 
-The company is pre-revenue, with Stripe integration near completion and a full commercial launch planned following product hardening. The SEIS raise of up to £250,000 will be used to accelerate go-to-market, expand the hosted tool ecosystem, and fund early hiring in growth and customer success.
+The SEIS raise of up to £250,000 will be used to accelerate go-to-market, expand the hosted tool ecosystem, and fund early hiring in growth and customer success.
 
-*\*Note: 86 tools are natively hosted and managed by Spike Land; an additional 450+ tools are accessible via our MCP multiplexer connecting to third-party servers, bringing the total ecosystem to 533+ tools.*
+*\*Note: The beta platform currently includes 86 natively hosted MCP tools, with broader access to additional third-party tools through a multiplexer architecture.*
 
 **The company is SEIS-eligible: incorporated December 2025, no prior investment, fewer than 25 employees, gross assets under £350,000, carrying on a qualifying software development trade.**
 
@@ -38,18 +38,18 @@ The company is pre-revenue, with Stripe integration near completion and a full c
 | Corporate Structure | Independent entity; no subsidiaries |
 | Funding History | No prior fundraising; no shares issued under SEIS/EIS |
 
-**Founder background**: Zoltan Erdos is a full-stack engineer with 10+ years of experience, bringing rigorous enterprise engineering background (formerly at VMO2) to his work. What began as a highly technical open-source side project is now architecturally ready to scale into a commercial platform. While the company is proudly UK-incorporated, the founder maintains geographic and structural agility, remaining open to relocating headquarters to emerging European tech hubs (such as Hungary) if it strategically benefits capital efficiency and growth. He built the entire initial platform using AI-assisted development, demonstrating the technical execution capability required to build tools for the emerging AI developer market.
+**Founder background**: Zoltan Erdos is a full-stack engineer with 10+ years of experience, bringing rigorous enterprise engineering background (formerly at VMO2) to his work. What began as a highly technical open-source side project is now architecturally ready to scale into a commercial platform. He built the initial platform end-to-end using AI-assisted development, demonstrating both technical execution capability and deep familiarity with developer tooling, platform architecture, and emerging AI workflows.
 
 ---
 
-## 3. Technical Readiness & Open Source Status
+## 3. Product Readiness & Technical Status
 
 While the company is pre-revenue and focusing strictly on product completion before launching community growth initiatives, it has heavily de-risked the technical execution model.
 
 - **Product Status**: Public beta launched in March 2026. Core infrastructure and edge database are 100% operational and ready to scale.
-- **Tool Ecosystem**: 86 natively hosted MCP tools are integrated and functional on the platform, with multiplexer support extending access to 533+ tools overall.
+- **Tool Ecosystem**: 86 natively hosted MCP tools are integrated and functional on the platform, with multiplexer support extending access to 450+ third-party tools (533+ total tools reachable across the ecosystem).
 - **Access Channels**: `spike-cli` is published and functional; web dashboard is live.
-- **Open Source Foundation**: The core platform architecture is entirely open-sourced, serving as a transparent technical proof-of-concept for the developer market.
+- **Open Source Foundation**: Selected core platform components and architecture are open-sourced to support developer adoption, transparency, and ecosystem trust. The company retains ownership of its commercial platform, product integration layer, hosting infrastructure, billing workflows, and go-to-market execution.
 - **Commercial Readiness**: Stripe billing infrastructure is near completion (Subscription checkout complete, webhook provisioning in progress).
 
 ---
@@ -61,7 +61,7 @@ While the company is pre-revenue and focusing strictly on product completion bef
 Developers building with AI face two compounding problems:
 
 1. **Fragmented tooling** — The average developer uses 8+ SaaS tools daily (deployment, monitoring, QA, etc.). Each requires separate authentication, billing, and integration work.
-2. **No managed MCP registry** — The Model Context Protocol (Anthropic, 2024) is becoming the standard for AI-tool interaction. However, developers currently must build, host, and secure their own MCP servers. There is no central, managed registry that handles authentication, rate limiting, and billing out of the box.
+2. **No managed MCP registry** — The Model Context Protocol (Anthropic, 2024) is emerging as a standard for AI-tool interaction. However, developers currently have limited options for a managed MCP platform that combines hosted tools, authentication, rate limiting, and billing in one offering. Developers currently must build, host, and secure their own MCP servers.
 
 ### 4.2 Solution
 
@@ -156,8 +156,8 @@ The company believes its current combination of hosted MCP tooling, CLI access, 
 
 ### 10.1 Key Assumptions
 - Year 1 focuses on controlled growth, product hardening, and establishing baseline retention.
-- Core hosting infrastructure utilizes the Cloudflare Business tier at a predictable $250/mo fixed cost, providing enterprise-grade performance without usage-based billing surprises.
-- **Important Note on Capital Use**: The £250,000 SEIS raise is explicitly intended to *accelerate growth*. While baseline infrastructure costs are lean, the P&L reflects strategic burn as capital is deployed into Go-To-Market campaigns and key hires (Growth Lead, CS/Eng) starting mid-Year 1.
+- Core hosting infrastructure uses Cloudflare, offering a highly capital-efficient baseline with predictable scaling costs as usage grows.
+- **Important Note on Capital Use**: The £250,000 SEIS raise is explicitly intended to *accelerate growth*. While baseline infrastructure costs are lean, the P&L reflects strategic burn as capital is deployed into Go-To-Market campaigns and key hires (Growth Lead, CS/Eng) starting mid-Year 1. Approximately £103k of SEIS capital is projected to be deployed in Year 1, with the remaining ~£147k carried into Year 2 to fund the second phase of hiring and marketplace expansion.
 - **Sensitivity / Downside Scenario**: If paid conversion reaches only 2.5% (125 users) instead of the targeted 5%, Year 1 revenue would be approximately £21k. Even in this scenario, the company's capitalized runway would effortlessly extend well through Year 2, providing ample time to iterate on product-market fit without existential risk.
 
 ### 10.2 Year 1 Profit & Loss — Monthly Detail (M1-M12)
@@ -178,7 +178,23 @@ The company believes its current combination of hosted MCP tooling, CLI access, 
 | M12 | 228 | 7,980 | 1,436 | 6,544 | 12,000 | -5,456 |
 | **Total**| | **£42,832** | **£7,710** | **£35,122** | **£95,000** | **-£59,878** |
 
-### 10.3 Year-End Balance Sheet & Cash Summary
+*\*Notes on Y1 P&L:* 
+- *COGS (modeled at 18% of revenue) includes Stripe processing fees (2.9%), third-party API pass-through costs, and LLM inference costs for AI credits.*
+- *OpEx reflects the founder, infrastructure, and SaaS tooling in M1-M5. The ramp from M6+ reflects the introduction of a dedicated Growth Lead hire and increased GTM spend.*
+
+### 10.3 Post-Raise Multi-Year Financial Summary
+
+To demonstrate the path from SEIS-funded strategic burn to eventual profitability, the following table summarizes the three-year P&L trajectory feeding the balance sheet.
+
+| Metric | Year 1 | Year 2 (Forecast) | Year 3 (Forecast) |
+|---|---|---|---|
+| **Revenue** | £42,832 | £150,000 | £400,000 |
+| **COGS** (18%) | £7,710 | £27,000 | £72,000 |
+| **Gross Profit** | £35,122 | £123,000 | £328,000 |
+| **OpEx** | £95,000 | £113,000 | £178,000 |
+| **EBIT / Net Income** | **-£59,878** | **£10,000** | **£150,000** |
+
+### 10.4 Year-End Balance Sheet & Cash Summary
 
 | Item | Year 1 | Year 2 (Forecast) | Year 3 (Forecast) |
 |------|--------|-------------------|-------------------|
@@ -186,7 +202,7 @@ The company believes its current combination of hosted MCP tooling, CLI access, 
 | Other Assets | £3,000 | £10,000 | £28,000 |
 | **Total Assets** | **£193,122** | **£210,122** | **£358,122** |
 | | | | |
-| Liabilities | £3,000 | £10,000 | £8,000 |
+| Liabilities* | £3,000 | £10,000 | £8,000 |
 | **Net Assets** | **£190,122** | **£200,122** | **£350,122** |
 | | | | |
 | **Equity** | | | |
@@ -195,7 +211,7 @@ The company believes its current combination of hosted MCP tooling, CLI access, 
 | Retained Earnings | -£59,879 | -£49,879 | £100,121 |
 | **Total Equity** | **£190,122** | **£200,122** | **£350,122** |
 
-*\*Note: Share Premium figure represents the forecast position post-SEIS raise.*
+*\*Note: Liabilities consist primarily of accrued expenses and short-term trade creditors. Share Premium figure represents the forecast position post-SEIS raise.*
 
 ---
 
