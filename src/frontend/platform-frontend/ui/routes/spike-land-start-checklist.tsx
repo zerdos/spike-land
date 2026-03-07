@@ -4,7 +4,7 @@ interface Task {
   id: string;
   title: string;
   desc?: string;
-  status: "done" | "partial" | "todo";
+  status: "done" | "todo";
   source?: string;
 }
 
@@ -14,6 +14,7 @@ const STAGES = [
     title: "Foundation & Validation",
     color: "text-cyan-400",
     bg: "bg-cyan-500/10",
+    solidBg: "bg-cyan-500",
     border: "border-cyan-500/20",
     tasks: [
       { id: "1.1", title: "Validate Core Problem", status: "done" },
@@ -22,7 +23,7 @@ const STAGES = [
       { id: "1.4", title: "Establish Legal Entity & IP", status: "done" },
       { id: "1.5", title: "Choose Business Model", status: "done" },
       { id: "1.6", title: "Set Up Dev Infrastructure", status: "done" },
-      { id: "1.7", title: "Build Landing Page & Waitlist", status: "partial" },
+      { id: "1.7", title: "Build Landing Page & Waitlist", status: "todo" },
       { id: "1.8", title: "ICO Registration", status: "todo", source: "Legal" },
       { id: "1.9", title: "Add Root LICENSE File (MIT)", status: "todo", source: "Legal" },
       { id: "1.10", title: "DPA with Cloudflare", status: "todo", source: "Legal" },
@@ -34,20 +35,21 @@ const STAGES = [
     title: "Build & Launch",
     color: "text-fuchsia-400",
     bg: "bg-fuchsia-500/10",
+    solidBg: "bg-fuchsia-500",
     border: "border-fuchsia-500/20",
     tasks: [
       { id: "2.1", title: "Ship MVP — Lazy MCP Multiplexer", status: "done" },
       { id: "2.2", title: "Publish spike-cli to Public npm", status: "todo", source: "DX" },
-      { id: "2.3", title: "Publish Documentation & Tutorials", status: "partial" },
+      { id: "2.3", title: "Publish Documentation & Tutorials", status: "todo" },
       { id: "2.4", title: "Integrate Auth & Usage Tracking", status: "done" },
-      { id: "2.5", title: "Fix BYOK API Key Encryption", status: "todo", source: "Security" },
-      { id: "2.6", title: "Fix Rate Limiter DO Hibernation Bug", status: "todo", source: "Security" },
+      { id: "2.5", title: "Enhance API Key Encryption", status: "todo", source: "Security" },
+      { id: "2.6", title: "Enhance Rate Limiter Reliability", status: "todo", source: "Security" },
       { id: "2.7", title: "Wire KPI Dashboard to D1 Data", status: "todo", source: "Business" },
       { id: "2.8", title: "List on MCP Registries (Smithery, Glama)", status: "todo", source: "Growth" },
       { id: "2.9", title: "Product Hunt / HN Launch", status: "todo" },
       { id: "2.10", title: "Collapse Navigation to 5-7 Links", status: "todo", source: "Product" },
       { id: "2.11", title: "Launch Developer Community", status: "todo" },
-      { id: "2.12", title: "Set Up KPI Dashboard", status: "partial" },
+      { id: "2.12", title: "Set Up KPI Dashboard", status: "todo" },
     ] as Task[],
   },
   {
@@ -55,12 +57,13 @@ const STAGES = [
     title: "Harden & Monetize",
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
+    solidBg: "bg-emerald-500",
     border: "border-emerald-500/20",
     tasks: [
-      { id: "3.1", title: "Complete Stripe Integration", status: "partial" },
+      { id: "3.1", title: "Complete Stripe Integration", status: "todo" },
       { id: "3.2", title: "Ship API Access Tier ($49/mo)", status: "todo", source: "Growth" },
-      { id: "3.3", title: "Remove CSP unsafe-inline", status: "todo", source: "Security" },
-      { id: "3.4", title: "Fix Timing-Unsafe Secret Comparison", status: "todo", source: "Security" },
+      { id: "3.3", title: "Enhance Content Security Policy", status: "todo", source: "Security" },
+      { id: "3.4", title: "Enhance Secret Comparison Security", status: "todo", source: "Security" },
       { id: "3.5", title: "Add Onboarding Wizard for spike-cli", status: "todo", source: "DX" },
       { id: "3.6", title: "Bootstrap to 50 Paying Customers", status: "todo", source: "Fundraising" },
       { id: "3.7", title: "GDPR Article 30 Compliance Register", status: "todo", source: "Legal" },
@@ -73,6 +76,7 @@ const STAGES = [
     title: "Scale & Grow",
     color: "text-amber-400",
     bg: "bg-amber-500/10",
+    solidBg: "bg-amber-500",
     border: "border-amber-500/20",
     tasks: [
       { id: "4.1", title: "SEIS Raise (after 50 paying customers)", status: "todo", source: "Fundraising" },
@@ -248,7 +252,7 @@ export function SpikeLandStartChecklistPage() {
                 <div className="mt-4 flex items-center gap-4">
                   <div className="h-2 w-full flex-grow overflow-hidden rounded-full bg-muted">
                     <div
-                      className={`h-full ${stage.bg.replace('/10', '')} transition-all duration-300`}
+                      className={`h-full ${stage.solidBg} transition-all duration-300`}
                       style={{ width: `${stageProgress}%` }}
                     />
                   </div>
@@ -262,9 +266,10 @@ export function SpikeLandStartChecklistPage() {
                 {stage.tasks.map((task) => {
                   const isChecked = !!completedTasks[task.id];
                   return (
-                    <div
+                    <button
                       key={task.id}
-                      className="group flex cursor-pointer items-start gap-4 rounded-lg border border-transparent p-3 hover:bg-muted/50 transition-colors"
+                      type="button"
+                      className="group flex w-full cursor-pointer items-start gap-4 rounded-lg border border-transparent p-3 text-left hover:bg-muted/50 transition-colors"
                       onClick={() => toggleTask(task.id)}
                     >
                       <div className="pt-1">
@@ -293,7 +298,7 @@ export function SpikeLandStartChecklistPage() {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
