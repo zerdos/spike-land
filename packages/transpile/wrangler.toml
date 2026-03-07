@@ -6,8 +6,6 @@ name = "esbuild"
 compatibility_date = "2025-07-12"
 compatibility_flags = ["nodejs_compat"]
 main = "index.ts"
-
-[env.production]
 routes = [{ pattern = "js.spike.land", custom_domain = true }]
 
 # Redirect Vite-specific ?url WASM import to worker-compatible version

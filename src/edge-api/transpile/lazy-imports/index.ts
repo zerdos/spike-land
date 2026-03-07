@@ -1,4 +1,4 @@
-import { build, transpile } from "@spike-land-ai/code/src/@/lib/transpile";
+import { build, transpile } from "../../../frontend/monaco-editor/concurrency/transpile";
 // Import WASM directly for Cloudflare Workers (wrangler CompiledWasm rule).
 // The Vite ?url import in the code package doesn't work in wrangler's bundler.
 import wasmModule from "esbuild-wasm/esbuild.wasm";
