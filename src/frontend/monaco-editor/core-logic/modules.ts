@@ -1,4 +1,3 @@
-/// <reference path="./monaco-typings.d.ts" />
 import { importMap, importMapReplace } from "./lib/importmap-utils.ts";
 export type {
   ImageData,
