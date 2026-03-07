@@ -10,6 +10,10 @@ main = "index.ts"
 [env.production]
 routes = [{ pattern = "js.spike.land", custom_domain = true }]
 
+# Redirect Vite-specific ?url WASM import to worker-compatible version
+[alias]
+"esbuild-wasm/esbuild.wasm?url" = "../../src/edge-api/transpile/lazy-imports/esbuild-wasm-cf.ts"
+
 [[rules]]
 type = "CompiledWasm"
 globs = ["**/*.wasm"]
