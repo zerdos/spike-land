@@ -1,3 +1,4 @@
+import "./fonts.css";
 import { type FC, type ReactNode } from "react";
 import { AbsoluteFill, Composition, Folder } from "remotion";
 import {

@@ -41,7 +41,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
           fontSize: 22,
           fontWeight: 700,
           color: COLORS.textPrimary,
-          fontFamily: "Inter, sans-serif",
+          fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
           textAlign: "center",
           marginBottom: 24,
           opacity: headerProgress,
@@ -66,7 +66,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
             fontSize: 13,
             fontWeight: 600,
             color: COLORS.textMuted,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
           }}
@@ -79,7 +79,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
             fontSize: 13,
             fontWeight: 600,
             color: COLORS.textMuted,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
             textAlign: "center",
@@ -93,7 +93,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
             fontSize: 13,
             fontWeight: 600,
             color: COLORS.cyan,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
             textAlign: "center",
@@ -136,7 +136,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
                 fontSize: 16,
                 fontWeight: 600,
                 color: COLORS.textPrimary,
-                fontFamily: "Inter, sans-serif",
+                fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
               }}
             >
               {row.label}
@@ -149,7 +149,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
                 fontSize: 16,
                 fontWeight: 500,
                 color: COLORS.error,
-                fontFamily: "JetBrains Mono, monospace",
+                fontFamily: "JetBrains Mono, ui-monospace, monospace",
                 textAlign: "center",
                 opacity: 0.7,
               }}
@@ -164,7 +164,7 @@ export const ComparisonTable: FC<ComparisonTableProps> = ({ delay = 0, rows = DE
                 fontSize: 16,
                 fontWeight: 700,
                 color: COLORS.cyan,
-                fontFamily: "JetBrains Mono, monospace",
+                fontFamily: "JetBrains Mono, ui-monospace, monospace",
                 textAlign: "center",
                 textShadow: `0 0 ${8 * afterGlow}px ${COLORS.cyan}60`,
               }}

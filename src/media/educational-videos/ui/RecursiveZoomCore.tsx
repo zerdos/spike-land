@@ -175,7 +175,7 @@ export const RecursiveZoomCore: FC<RecursiveZoomCoreProps> = ({
       preserveAspectRatio="xMidYMid meet"
       style={{
         background: COLORS.darkBg,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
       }}
     >
       <defs>
@@ -292,7 +292,7 @@ export const RecursiveZoomCore: FC<RecursiveZoomCoreProps> = ({
           y={70}
           fill={COLORS.textMuted}
           fontSize={14}
-          fontFamily="JetBrains Mono, monospace"
+          fontFamily="JetBrains Mono, ui-monospace, monospace"
         >
           ZOOM SCALE:{" "}
           <tspan fill={COLORS.cyan}>
@@ -304,7 +304,7 @@ export const RecursiveZoomCore: FC<RecursiveZoomCoreProps> = ({
           y={100}
           fill={COLORS.textMuted}
           fontSize={14}
-          fontFamily="JetBrains Mono, monospace"
+          fontFamily="JetBrains Mono, ui-monospace, monospace"
         >
           CURRENT SEED:{" "}
           <tspan fill={COLORS.cyan}>{LAYER_CYCLE[currentLevelInt % LAYER_CYCLE.length]}</tspan>

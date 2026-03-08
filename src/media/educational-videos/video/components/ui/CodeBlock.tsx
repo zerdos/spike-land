@@ -142,7 +142,7 @@ export function CodeBlock({
         borderRadius: 8,
         overflow: "hidden",
         border: `1px solid ${borderColor}`,
-        fontFamily: "JetBrains Mono, monospace",
+        fontFamily: "JetBrains Mono, ui-monospace, monospace",
       }}
     >
       {/* Header bar */}

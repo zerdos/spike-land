@@ -46,7 +46,7 @@ export function KineticText({
         fontSize,
         fontWeight: 700,
         color,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
         opacity,
         transform,
       }}

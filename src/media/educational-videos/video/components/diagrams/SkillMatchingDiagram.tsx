@@ -153,7 +153,7 @@ export const SkillMatchingDiagram: FC<SkillMatchingDiagramProps> = ({
           style={{
             fontSize: 16,
             color: COLORS.textSecondary,
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "JetBrains Mono, ui-monospace, monospace",
             overflow: "hidden",
             whiteSpace: "nowrap",
           }}
@@ -195,7 +195,7 @@ export const SkillMatchingDiagram: FC<SkillMatchingDiagramProps> = ({
                 fontSize: 14,
                 fontWeight: 600,
                 color: isMatch ? color : COLORS.textMuted,
-                fontFamily: "JetBrains Mono, monospace",
+                fontFamily: "JetBrains Mono, ui-monospace, monospace",
               }}
             >
               {kw}
@@ -308,7 +308,7 @@ export const SkillMatchingDiagram: FC<SkillMatchingDiagramProps> = ({
               fontSize: 15,
               fontWeight: 600,
               color: isMatched ? skill.color : COLORS.textSecondary,
-              fontFamily: "Inter, sans-serif",
+              fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
               transform: `scale(${cardProgress})`,
               opacity: matchFade,
               boxShadow: isMatched ? `0 0 20px ${skill.color}25` : "none",

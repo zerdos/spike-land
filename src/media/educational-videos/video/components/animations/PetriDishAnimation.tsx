@@ -150,7 +150,7 @@ export function PetriDishAnimation({ organisms, delay = 0 }: PetriDishAnimationP
                   textAnchor="middle"
                   fill={COLORS.textPrimary}
                   fontSize={Math.min(12, radius * 0.6)}
-                  fontFamily="JetBrains Mono, monospace"
+                  fontFamily="JetBrains Mono, ui-monospace, monospace"
                   opacity={fadeOpacity * entrance}
                 >
                   {org.label}
@@ -167,7 +167,7 @@ export function PetriDishAnimation({ organisms, delay = 0 }: PetriDishAnimationP
           textAnchor="middle"
           fill={COLORS.textSecondary}
           fontSize={16}
-          fontFamily="Inter, sans-serif"
+          fontFamily="Rubik, ui-sans-serif, system-ui, sans-serif"
         >
           Learning Notes — Petri Dish
         </text>

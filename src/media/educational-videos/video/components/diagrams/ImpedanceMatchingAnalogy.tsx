@@ -60,7 +60,7 @@ export const ImpedanceMatchingAnalogy: FC<ImpedanceMatchingAnalogyProps> = ({
             fontSize: 20,
             fontWeight: 700,
             color: COLORS.purple,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
           }}
         >
           Source
@@ -69,7 +69,7 @@ export const ImpedanceMatchingAnalogy: FC<ImpedanceMatchingAnalogyProps> = ({
           style={{
             fontSize: 13,
             color: COLORS.textMuted,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
           }}
         >
           (Prompt)
@@ -101,7 +101,7 @@ export const ImpedanceMatchingAnalogy: FC<ImpedanceMatchingAnalogyProps> = ({
             fontSize: 20,
             fontWeight: 700,
             color: COLORS.cyan,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
           }}
         >
           Load
@@ -110,7 +110,7 @@ export const ImpedanceMatchingAnalogy: FC<ImpedanceMatchingAnalogyProps> = ({
           style={{
             fontSize: 13,
             color: COLORS.textMuted,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
           }}
         >
           (Task)
@@ -239,7 +239,7 @@ export const ImpedanceMatchingAnalogy: FC<ImpedanceMatchingAnalogyProps> = ({
           fontSize: 15,
           fontWeight: 700,
           color: statusColor,
-          fontFamily: "JetBrains Mono, monospace",
+          fontFamily: "JetBrains Mono, ui-monospace, monospace",
           opacity: interpolate(frame, [delay + 25, delay + 40], [0, 1], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",

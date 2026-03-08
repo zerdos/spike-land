@@ -1,5 +1,5 @@
 import { type FC, Fragment } from "react";
-import { COLORS } from "../core-logic/constants";
+import { COLORS, VERITASIUM_COLORS } from "../core-logic/constants";
 
 export type FiveLayerStackCoreProps = {
   revealCount: number;
@@ -7,36 +7,35 @@ export type FiveLayerStackCoreProps = {
   className?: string;
 };
 
-// Cybernetic, editorial color palette for layers
 const LAYERS = [
   {
     label: "Identity",
     description: "Who the agent is",
-    color: "#0ea5e9", // Sky 500
+    color: COLORS.accent,
     group: "conserved" as const,
   },
   {
     label: "Knowledge",
     description: "What it knows",
-    color: "#3b82f6", // Blue 500
+    color: VERITASIUM_COLORS.generating,
     group: "conserved" as const,
   },
   {
     label: "Examples",
     description: "How it learned",
-    color: "#6366f1", // Indigo 500
+    color: COLORS.primary,
     group: "conserved" as const,
   },
   {
     label: "Constraints",
     description: "Rules & guardrails",
-    color: "#8b5cf6", // Violet 500
+    color: VERITASIUM_COLORS.planning,
     group: "dynamic" as const,
   },
   {
     label: "Tools",
     description: "What it can do",
-    color: "#d946ef", // Fuchsia 500
+    color: COLORS.fuchsia,
     group: "dynamic" as const,
   },
 ];
@@ -59,7 +58,7 @@ export const FiveLayerStackCore: FC<FiveLayerStackCoreProps> = ({
         position: "relative",
         height: 600, // Fixed height for the isometric stack
         perspective: 1200,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
       }}
     >
       {/* Background isometric grid */}
@@ -86,8 +85,8 @@ export const FiveLayerStackCore: FC<FiveLayerStackCoreProps> = ({
           position: "absolute",
           width: 4,
           height: "80%",
-          background: "linear-gradient(to bottom, transparent, #0ea5e9, #d946ef, transparent)",
-          boxShadow: "0 0 20px #0ea5e9, 0 0 40px #d946ef",
+          background: `linear-gradient(to bottom, transparent, ${COLORS.accent}, ${COLORS.fuchsia}, transparent)`,
+          boxShadow: `0 0 20px ${COLORS.accent}, 0 0 40px ${COLORS.fuchsia}`,
           left: "50%",
           transform: "translateX(-50%)",
           opacity: clamp((progress - 0.5) * 2, 0, 1),
@@ -246,7 +245,7 @@ export const FiveLayerStackCore: FC<FiveLayerStackCoreProps> = ({
                   style={{
                     color: COLORS.textMuted,
                     fontSize: 13,
-                    fontFamily: "JetBrains Mono, monospace",
+                    fontFamily: "JetBrains Mono, ui-monospace, monospace",
                   }}
                 >
                   // {layer.description}
@@ -260,7 +259,7 @@ export const FiveLayerStackCore: FC<FiveLayerStackCoreProps> = ({
                     border: `1px solid ${layer.color}40`,
                     color: layer.color,
                     fontSize: 10,
-                    fontFamily: "JetBrains Mono, monospace",
+                    fontFamily: "JetBrains Mono, ui-monospace, monospace",
                     fontWeight: "bold",
                   }}
                 >
@@ -297,7 +296,7 @@ export const FiveLayerStackCore: FC<FiveLayerStackCoreProps> = ({
             <div
               style={{
                 color: COLORS.cyan,
-                fontFamily: "JetBrains Mono, monospace",
+                fontFamily: "JetBrains Mono, ui-monospace, monospace",
                 fontSize: 11,
                 background: "rgba(10,15,20,0.8)",
                 padding: "4px 12px",

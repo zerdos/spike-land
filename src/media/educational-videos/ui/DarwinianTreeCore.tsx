@@ -21,10 +21,9 @@ type Branch = {
   delayOffset: number;
 };
 
-// Colors for the new aesthetic
-const C_SURVIVE = "#3b82f6"; // Blue 500
-const C_FAIL = "#ef4444"; // Red 500
-const C_LEARN = "#10b981"; // Emerald 500
+const C_SURVIVE = COLORS.primary;
+const C_FAIL = COLORS.error;
+const C_LEARN = COLORS.success;
 
 function buildTree(generations: number): Branch[] {
   const branches: Branch[] = [];
@@ -151,7 +150,7 @@ export const DarwinianTreeCore: FC<DarwinianTreeCoreProps> = ({
       preserveAspectRatio="xMidYMid meet"
       style={{
         background: COLORS.darkBg,
-        fontFamily: "JetBrains Mono, monospace",
+        fontFamily: "JetBrains Mono, ui-monospace, monospace",
       }}
     >
       <defs>
@@ -286,7 +285,7 @@ export const DarwinianTreeCore: FC<DarwinianTreeCoreProps> = ({
                 <path
                   d={pathData}
                   fill="none"
-                  stroke="#fff"
+                  stroke={COLORS.textPrimary}
                   strokeWidth={2}
                   strokeDasharray={`10 ${pathLength}`}
                   strokeDashoffset={-pathLength * dataPacketP}

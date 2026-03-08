@@ -3,7 +3,10 @@ import { type FC, useId } from "react";
 const clamp = (val: number, min: number, max: number): number => Math.min(Math.max(val, min), max);
 
 const COLORS = {
+  accent: "hsl(var(--accent, 187 100% 50%))",
   cyan: "#00E5FF",
+  success: "hsl(var(--success, 150 90% 35%))",
+  error: "hsl(var(--destructive, 0 84% 60%))",
   darkBg: "transparent",
   darkBorder: "hsl(var(--border))",
   textPrimary: "hsl(var(--foreground))",
@@ -91,7 +94,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
 
   const isHighConfidence = mean > 0.7;
   const isLowConfidence = mean < 0.4 && total > 2;
-  const themeColor = isHighConfidence ? "#10b981" : isLowConfidence ? "#ef4444" : "#3b82f6";
+  const themeColor = isHighConfidence ? COLORS.success : isLowConfidence ? COLORS.error : COLORS.accent;
 
   return (
     <svg
@@ -102,7 +105,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
       preserveAspectRatio="xMidYMid meet"
       style={{
         background: COLORS.darkBg,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
         ...style,
       }}
     >
@@ -161,7 +164,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
               textAnchor="middle"
               fill={COLORS.textMuted}
               fontSize={14}
-              fontFamily="JetBrains Mono, monospace"
+              fontFamily="JetBrains Mono, ui-monospace, monospace"
             >
               {tick * 100}%
             </text>
@@ -212,7 +215,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
               fill={COLORS.textPrimary}
               fontSize={18}
               fontWeight="bold"
-              fontFamily="JetBrains Mono, monospace"
+              fontFamily="JetBrains Mono, ui-monospace, monospace"
             >
               {(mean * 100).toFixed(1)}%
             </text>
@@ -258,7 +261,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={80}
             fill={COLORS.textMuted}
             fontSize={14}
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
             className="uppercase"
           >
             SUCCESSES
@@ -266,11 +269,11 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
           <text
             x={270}
             y={80}
-            fill="#10b981"
+            fill={COLORS.success}
             fontSize={24}
             fontWeight="bold"
             textAnchor="end"
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
           >
             {successes}
           </text>
@@ -280,7 +283,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={120}
             fill={COLORS.textMuted}
             fontSize={14}
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
             className="uppercase"
           >
             FAILURES
@@ -288,11 +291,11 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
           <text
             x={270}
             y={120}
-            fill="#ef4444"
+            fill={COLORS.error}
             fontSize={24}
             fontWeight="bold"
             textAnchor="end"
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
           >
             {failures}
           </text>
@@ -311,7 +314,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={170}
             fill={COLORS.cyan}
             fontSize={14}
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
             className="uppercase"
           >
             OBSERVED P(θ)
@@ -323,7 +326,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             fontSize={18}
             fontWeight="bold"
             textAnchor="end"
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
           >
             {total > 0 ? (successes / total).toFixed(3) : "0.000"}
           </text>
@@ -341,7 +344,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={25}
             fill={COLORS.textMuted}
             fontSize={12}
-            fontFamily="JetBrains Mono, monospace"
+            fontFamily="JetBrains Mono, ui-monospace, monospace"
           >
             0xBETA
           </text>
@@ -350,7 +353,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={70}
             fill={COLORS.textSecondary}
             fontSize={14}
-            fontFamily="Inter, sans-serif"
+            fontFamily="Rubik, ui-sans-serif, system-ui, sans-serif"
           >
             Bayesian updating shifts the
           </text>
@@ -359,7 +362,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={95}
             fill={COLORS.textSecondary}
             fontSize={14}
-            fontFamily="Inter, sans-serif"
+            fontFamily="Rubik, ui-sans-serif, system-ui, sans-serif"
           >
             probability distribution as
           </text>
@@ -368,7 +371,7 @@ export const BayesianConfidenceCore: FC<BayesianConfidenceCoreProps> = ({
             y={120}
             fill={COLORS.textSecondary}
             fontSize={14}
-            fontFamily="Inter, sans-serif"
+            fontFamily="Rubik, ui-sans-serif, system-ui, sans-serif"
           >
             evidence accumulates.
           </text>

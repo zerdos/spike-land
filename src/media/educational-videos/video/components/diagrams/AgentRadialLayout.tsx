@@ -122,7 +122,7 @@ export const AgentRadialLayout: FC<AgentRadialLayoutProps> = ({ delay = 0 }) => 
                 fontSize: 28,
                 fontWeight: 700,
                 color: agent.color,
-                fontFamily: "Inter, sans-serif",
+                fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
               }}
             >
               {agent.num}
@@ -135,7 +135,7 @@ export const AgentRadialLayout: FC<AgentRadialLayoutProps> = ({ delay = 0 }) => 
                 whiteSpace: "nowrap",
                 fontSize: 14,
                 color: COLORS.textSecondary,
-                fontFamily: "Inter, sans-serif",
+                fontFamily: "Rubik, ui-sans-serif, system-ui, sans-serif",
                 textAlign: "center",
               }}
             >

@@ -113,7 +113,7 @@ function CenterLabel({ glowOp }: CenterLabelProps) {
         textAnchor="middle"
         fill="#22d3ee"
         fontSize={8}
-        fontFamily="JetBrains Mono, monospace"
+        fontFamily="JetBrains Mono, ui-monospace, monospace"
         fontWeight="bold"
         letterSpacing={1}
       >
@@ -125,7 +125,7 @@ function CenterLabel({ glowOp }: CenterLabelProps) {
         textAnchor="middle"
         fill="#22d3ee"
         fontSize={8}
-        fontFamily="JetBrains Mono, monospace"
+        fontFamily="JetBrains Mono, ui-monospace, monospace"
         fontWeight="bold"
         letterSpacing={1}
       >
@@ -229,7 +229,7 @@ function VennSvg({ progress, reducedMotion }: VennSvgProps) {
                 textAnchor="middle"
                 fill={c.textColor}
                 fontSize={13}
-                fontFamily="JetBrains Mono, monospace"
+                fontFamily="JetBrains Mono, ui-monospace, monospace"
                 fontWeight="bold"
                 letterSpacing={0.5}
               >
