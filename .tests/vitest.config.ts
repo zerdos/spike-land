@@ -395,6 +395,7 @@ const packages: Record<string, PkgConfig> = {
   "whatsapp-mcp": {
     tier: 2,
     pool: "forks",
+    includeTests: [src("utilities/whatsapp/__tests__/**/*.test.ts")],
   },
 };
 
