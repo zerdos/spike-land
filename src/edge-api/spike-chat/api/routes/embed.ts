@@ -64,21 +64,39 @@ embedRouter.get("/:workspace/:channel", async (c) => {
           const name = isGuest ? 'Visitor' : userId;
           const letter = name.charAt(0).toUpperCase();
           const color = isGuest ? 'bg-slate-700' : 'bg-blue-500';
-          
-          const msgHtml = \`
-            <div class="flex items-start gap-3 animate-fade-in">
-              <div class="w-8 h-8 rounded-full \${color} flex items-center justify-center font-bold text-sm">\${letter}</div>
-              <div>
-                <div class="flex items-baseline gap-2">
-                  <span class="font-semibold text-sm">\${name}</span>
-                  <span class="text-xs text-slate-400">Just now</span>
-                </div>
-                <p class="text-sm mt-1 text-slate-300">\${text}</p>
-              </div>
-            </div>
-          \`;
-          
-          messagesDiv.insertAdjacentHTML('beforeend', msgHtml);
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex items-start gap-3 animate-fade-in';
+
+          const avatar = document.createElement('div');
+          avatar.className = 'w-8 h-8 rounded-full ' + color + ' flex items-center justify-center font-bold text-sm';
+          avatar.textContent = letter;
+
+          const content = document.createElement('div');
+          const header = document.createElement('div');
+          header.className = 'flex items-baseline gap-2';
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'font-semibold text-sm';
+          nameSpan.textContent = name;
+
+          const timeSpan = document.createElement('span');
+          timeSpan.className = 'text-xs text-slate-400';
+          timeSpan.textContent = 'Just now';
+
+          header.appendChild(nameSpan);
+          header.appendChild(timeSpan);
+
+          const body = document.createElement('p');
+          body.className = 'text-sm mt-1 text-slate-300';
+          body.textContent = text;
+
+          content.appendChild(header);
+          content.appendChild(body);
+          wrapper.appendChild(avatar);
+          wrapper.appendChild(content);
+
+          messagesDiv.appendChild(wrapper);
           messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 

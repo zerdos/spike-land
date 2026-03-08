@@ -1,5 +1,5 @@
 /* v8 ignore start */
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 export const channels = sqliteTable("channels", {
   id: text("id").primaryKey(),
@@ -11,7 +11,9 @@ export const channels = sqliteTable("channels", {
   isArchived: integer("isArchived", { mode: "boolean" }).default(false).notNull(),
   metadata: text("metadata", { mode: "json" }),
   createdAt: integer("createdAt").notNull(),
-});
+}, (t) => ({
+  workspaceIdIdx: index("channels_workspace_id_idx").on(t.workspaceId),
+}));
 
 export const channelMembers = sqliteTable("channel_members", {
   channelId: text("channelId").notNull().references(() => channels.id),
@@ -19,9 +21,9 @@ export const channelMembers = sqliteTable("channel_members", {
   role: text("role").notNull().default("member"),
   isMuted: integer("isMuted", { mode: "boolean" }).default(false).notNull(),
   notifyPreference: text("notifyPreference").notNull().default("all"),
-  joinedAt: integer("createdAt").notNull(),
+  joinedAt: integer("joined_at").notNull(),
 }, (t) => ({
-  unq: unique().on(t.channelId, t.userId),
+  pk: primaryKey({ columns: [t.channelId, t.userId] }),
 }));
 
 export const messages = sqliteTable("messages", {
@@ -36,7 +38,11 @@ export const messages = sqliteTable("messages", {
   replyCount: integer("replyCount").default(0).notNull(),
   reactionSummary: text("reactionSummary", { mode: "json" }),
   createdAt: integer("createdAt").notNull(),
-});
+}, (t) => ({
+  channelIdIdx: index("messages_channel_id_idx").on(t.channelId),
+  threadIdIdx: index("messages_thread_id_idx").on(t.threadId),
+  userIdIdx: index("messages_user_id_idx").on(t.userId),
+}));
 
 export const reactions = sqliteTable("reactions", {
   id: text("id").primaryKey(),
@@ -46,6 +52,7 @@ export const reactions = sqliteTable("reactions", {
   createdAt: integer("createdAt").notNull(),
 }, (t) => ({
   unq: unique().on(t.messageId, t.userId, t.emoji),
+  messageIdIdx: index("reactions_message_id_idx").on(t.messageId),
 }));
 
 export const readCursors = sqliteTable("read_cursors", {
@@ -54,7 +61,7 @@ export const readCursors = sqliteTable("read_cursors", {
   lastReadMessageId: text("lastReadMessageId").notNull(),
   updatedAt: integer("updatedAt").notNull(),
 }, (t) => ({
-  unq: unique().on(t.userId, t.channelId),
+  pk: primaryKey({ columns: [t.userId, t.channelId] }),
 }));
 
 export const pins = sqliteTable("pins", {
@@ -75,6 +82,7 @@ export const bookmarks = sqliteTable("bookmarks", {
   createdAt: integer("createdAt").notNull(),
 }, (t) => ({
   unq: unique().on(t.userId, t.messageId),
+  userIdIdx: index("bookmarks_user_id_idx").on(t.userId),
 }));
 
 export const webhooks = sqliteTable("webhooks", {
@@ -85,7 +93,9 @@ export const webhooks = sqliteTable("webhooks", {
   url: text("url"),
   token: text("token").notNull(),
   createdAt: integer("createdAt").notNull(),
-});
+}, (t) => ({
+  workspaceIdIdx: index("webhooks_workspace_id_idx").on(t.workspaceId),
+}));
 
 export const agentProfiles = sqliteTable("agent_profiles", {
   id: text("id").primaryKey(),

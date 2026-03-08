@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ceebbd47-4c97-47d4-b310-9a2c69ef7421",
+  "id": "6374ac91-7b57-498b-959c-72eb05f79652",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent_profiles": {
@@ -89,6 +89,13 @@
         }
       },
       "indexes": {
+        "bookmarks_user_id_idx": {
+          "name": "bookmarks_user_id_idx",
+          "columns": [
+            "userId"
+          ],
+          "isUnique": false
+        },
         "bookmarks_userId_messageId_unique": {
           "name": "bookmarks_userId_messageId_unique",
           "columns": [
@@ -158,24 +165,15 @@
           "autoincrement": false,
           "default": "'all'"
         },
-        "createdAt": {
-          "name": "createdAt",
+        "joined_at": {
+          "name": "joined_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {
-        "channel_members_channelId_userId_unique": {
-          "name": "channel_members_channelId_userId_unique",
-          "columns": [
-            "channelId",
-            "userId"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "channel_members_channelId_channels_id_fk": {
           "name": "channel_members_channelId_channels_id_fk",
@@ -191,7 +189,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "channel_members_channelId_userId_pk": {
+          "columns": [
+            "channelId",
+            "userId"
+          ],
+          "name": "channel_members_channelId_userId_pk"
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -263,7 +269,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "channels_workspace_id_idx": {
+          "name": "channels_workspace_id_idx",
+          "columns": [
+            "workspaceId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -352,7 +366,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "messages_channel_id_idx": {
+          "name": "messages_channel_id_idx",
+          "columns": [
+            "channelId"
+          ],
+          "isUnique": false
+        },
+        "messages_thread_id_idx": {
+          "name": "messages_thread_id_idx",
+          "columns": [
+            "threadId"
+          ],
+          "isUnique": false
+        },
+        "messages_user_id_idx": {
+          "name": "messages_user_id_idx",
+          "columns": [
+            "userId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "messages_channelId_channels_id_fk": {
           "name": "messages_channelId_channels_id_fk",
@@ -493,6 +529,13 @@
         }
       },
       "indexes": {
+        "reactions_message_id_idx": {
+          "name": "reactions_message_id_idx",
+          "columns": [
+            "messageId"
+          ],
+          "isUnique": false
+        },
         "reactions_messageId_userId_emoji_unique": {
           "name": "reactions_messageId_userId_emoji_unique",
           "columns": [
@@ -554,16 +597,7 @@
           "autoincrement": false
         }
       },
-      "indexes": {
-        "read_cursors_userId_channelId_unique": {
-          "name": "read_cursors_userId_channelId_unique",
-          "columns": [
-            "userId",
-            "channelId"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "read_cursors_channelId_channels_id_fk": {
           "name": "read_cursors_channelId_channels_id_fk",
@@ -579,7 +613,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "read_cursors_userId_channelId_pk": {
+          "columns": [
+            "userId",
+            "channelId"
+          ],
+          "name": "read_cursors_userId_channelId_pk"
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -697,7 +739,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "webhooks_workspace_id_idx": {
+          "name": "webhooks_workspace_id_idx",
+          "columns": [
+            "workspaceId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "webhooks_channelId_channels_id_fk": {
           "name": "webhooks_channelId_channels_id_fk",

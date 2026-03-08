@@ -18,7 +18,7 @@ export async function authMiddleware(
     const isGuest = c.req.header("x-guest-access") === "true";
     if (isGuest) {
       c.set("isGuest", true);
-      c.set("userId", "visitor-" + Math.random().toString(36).substring(7));
+      c.set("userId", "visitor-" + crypto.randomUUID());
       return next();
     }
     return c.json({ error: "Authentication required" }, 401);
