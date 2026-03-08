@@ -64,7 +64,11 @@ function buildPreviewHtml(transpiledCode: string): string {
       "react": "https://esm.sh/react@19",
       "react/": "https://esm.sh/react@19/",
       "react-dom": "https://esm.sh/react-dom@19",
-      "react-dom/": "https://esm.sh/react-dom@19/"
+      "react-dom/": "https://esm.sh/react-dom@19/",
+      "@emotion/react/jsx-runtime": "https://esm.sh/@emotion/react@11/jsx-runtime",
+      "@emotion/react/jsx-dev-runtime": "https://esm.sh/@emotion/react@11/jsx-dev-runtime",
+      "@emotion/react": "https://esm.sh/@emotion/react@11",
+      "@emotion/styled": "https://esm.sh/@emotion/styled@11"
     }
   }
   </script>
