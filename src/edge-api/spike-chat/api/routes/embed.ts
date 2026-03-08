@@ -34,7 +34,7 @@ embedRouter.get("/:workspace/:channel", async (c) => {
   // Define the WS URL logic in script
   const scriptContent = `
         const channelId = "${channelId}";
-        const wsUrl = \`\${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//\${window.location.host}/api/v1/channels/\${channelId}/ws?userId=visitor-\${Math.random().toString(36).substring(7)}&displayName=Visitor\`;
+        const wsUrl = \`\${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//\${window.location.host}/api/v1/channels/\${channelId}/ws?userId=visitor-\${crypto.randomUUID()}&displayName=Visitor\`;
         
         let ws;
         function connect() {
