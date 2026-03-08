@@ -216,6 +216,34 @@ function withAlpha(hex: string, alpha: number): string {
   return rgbaToHex(r, g, b, alpha);
 }
 
+function mixColors(primary: string, secondary: string, primaryWeight: number): string {
+  const a = hexToRgb(primary);
+  const b = hexToRgb(secondary);
+  const secondaryWeight = 1 - primaryWeight;
+
+  return rgbaToHex(
+    a.r * primaryWeight + b.r * secondaryWeight,
+    a.g * primaryWeight + b.g * secondaryWeight,
+    a.b * primaryWeight + b.b * secondaryWeight,
+  );
+}
+
+function createSyntaxPalette(tokens: PlatformThemeTokens, isDark: boolean) {
+  if (isDark) {
+    return {
+      accent: tokens.chatAccent,
+      accentLight: tokens.chatAccentLight,
+      accentSoft: tokens.chatAccentLight,
+    };
+  }
+
+  return {
+    accent: mixColors(tokens.chatAccent, tokens.foreground, 0.6),
+    accentLight: mixColors(tokens.chatAccentLight, tokens.foreground, 0.52),
+    accentSoft: mixColors(tokens.chatAccentLight, tokens.foreground, 0.42),
+  };
+}
+
 function fallbackTokens(isDark: boolean): PlatformThemeTokens {
   return {
     background: isDark ? TOKEN_CONFIG.background.dark : TOKEN_CONFIG.background.light,
@@ -281,6 +309,8 @@ function readThemeTokens(isDark: boolean): PlatformThemeTokens {
 }
 
 export function createThemeColors(tokens: PlatformThemeTokens, isDark: boolean): MonacoThemeColors {
+  const syntax = createSyntaxPalette(tokens, isDark);
+
   return {
     background: tokens.background,
     foreground: tokens.foreground,
@@ -289,31 +319,31 @@ export function createThemeColors(tokens: PlatformThemeTokens, isDark: boolean):
     lineHighlight: withAlpha(tokens.chatAccent, isDark ? 0.08 : 0.06),
     selection: withAlpha(tokens.chatAccent, isDark ? 0.2 : 0.14),
     tokenColors: {
-      keyword: tokens.chatAccent,
-      "keyword.flow": tokens.chatAccentLight,
-      string: tokens.chatAccentLight,
-      "string.escape": tokens.chatAccent,
-      number: tokens.chatAccentLight,
-      "number.float": tokens.chatAccentLight,
-      "number.hex": tokens.chatAccent,
+      keyword: syntax.accent,
+      "keyword.flow": syntax.accentLight,
+      string: syntax.accentLight,
+      "string.escape": syntax.accent,
+      number: syntax.accentLight,
+      "number.float": syntax.accentLight,
+      "number.hex": syntax.accent,
       comment: tokens.mutedForeground,
       "comment.doc": tokens.mutedForeground,
-      type: tokens.chatAccentLight,
-      "type.identifier": tokens.chatAccentLight,
+      type: syntax.accentLight,
+      "type.identifier": syntax.accentLight,
       variable: tokens.foreground,
-      "variable.parameter": tokens.chatAccentLight,
+      "variable.parameter": syntax.accentSoft,
       identifier: tokens.foreground,
-      function: tokens.chatAccent,
+      function: syntax.accent,
       delimiter: withAlpha(tokens.foreground, isDark ? 0.8 : 0.9),
       "delimiter.bracket": withAlpha(tokens.foreground, isDark ? 0.8 : 0.9),
       bracket: withAlpha(tokens.foreground, isDark ? 0.85 : 0.95),
-      regexp: tokens.chatAccentLight,
+      regexp: syntax.accentLight,
       annotation: tokens.destructiveForeground,
-      tag: tokens.chatAccent,
-      "attribute.name": tokens.chatAccentLight,
+      tag: syntax.accent,
+      "attribute.name": syntax.accentSoft,
       "attribute.value": tokens.foreground,
       invalid: tokens.destructiveForeground,
-      "meta.tag": tokens.chatAccent,
+      "meta.tag": syntax.accent,
     },
   };
 }
@@ -323,8 +353,10 @@ export function createMonacoThemeData(
   isDark: boolean,
 ): MonacoEditor.IStandaloneThemeData {
   const coverTheme = createThemeColors(tokens, isDark);
-  const accent = tokens.chatAccent.replace(/^#/, "");
-  const accentLight = tokens.chatAccentLight.replace(/^#/, "");
+  const syntax = createSyntaxPalette(tokens, isDark);
+  const accent = syntax.accent.replace(/^#/, "");
+  const accentLight = syntax.accentLight.replace(/^#/, "");
+  const accentSoft = syntax.accentSoft.replace(/^#/, "");
 
   return {
     base: isDark ? "vs-dark" : "vs",
@@ -343,7 +375,7 @@ export function createMonacoThemeData(
       { token: "number", foreground: accentLight },
       { token: "boolean", foreground: accent, fontStyle: "bold" },
       { token: "tag", foreground: accent },
-      { token: "attribute.name", foreground: accentLight },
+      { token: "attribute.name", foreground: accentSoft },
       { token: "attribute.value", foreground: tokens.foreground.replace(/^#/, "") },
       { token: "variable", foreground: tokens.foreground.replace(/^#/, "") },
       { token: "identifier", foreground: tokens.foreground.replace(/^#/, "") },

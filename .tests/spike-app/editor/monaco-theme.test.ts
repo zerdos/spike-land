@@ -44,8 +44,8 @@ describe("platform Monaco theme", () => {
     expect(theme.background).toBe("#f9fafb");
     expect(theme.foreground).toBe("#111827");
     expect(theme.activeLineNumber).toBe("#111827");
-    expect(theme.tokenColors.keyword).toBe("#f0a500");
-    expect(theme.tokenColors.string).toBe("#f6c453");
+    expect(theme.tokenColors.keyword).toBe("#976d10");
+    expect(theme.tokenColors.string).toBe("#88713e");
   });
 
   it("maps dark design tokens into the Monaco theme data", () => {
