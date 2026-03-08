@@ -11,7 +11,7 @@ const mockPrisma = vi.hoisted(() => ({
   $executeRaw: vi.fn(),
 }));
 
-vi.mock("@/lib/prisma", () => ({ default: mockPrisma }));
+vi.mock("@/core-logic/prisma", () => ({ default: mockPrisma }));
 
 import {
   createPlayer,

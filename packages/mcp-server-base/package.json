@@ -10,6 +10,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     }
   },
@@ -29,8 +30,8 @@
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup index.ts --format esm,cjs --dts --watch",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
@@ -46,6 +47,8 @@
     "@types/node": "25.3.5",
     "@vitest/coverage-v8": "4.0.18",
     "eslint": "10.0.3",
+    "tsup": "8.5.1",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
     "typescript-eslint": "8.56.1",
     "vitest": "4.0.18",

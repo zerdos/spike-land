@@ -4433,6 +4433,8 @@ __metadata:
     "@types/node": "npm:25.3.5"
     "@vitest/coverage-v8": "npm:4.0.18"
     eslint: "npm:10.0.3"
+    tsup: "npm:8.5.1"
+    tsx: "npm:4.21.0"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.56.1"
     vitest: "npm:4.0.18"
@@ -15689,6 +15691,7 @@ __metadata:
     sonner: "npm:^2.0.7"
     tailwind-merge: "npm:^3.5.0"
     ts-morph: "npm:^27.0.2"
+    tsup: "npm:^8.5.1"
     tsx: "npm:^4.21.0"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.56.1"
@@ -16573,7 +16576,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:8.5.1":
+"tsup@npm:8.5.1, tsup@npm:^8.5.1":
   version: 8.5.1
   resolution: "tsup@npm:8.5.1"
   dependencies:
