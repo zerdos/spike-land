@@ -236,7 +236,7 @@ export function CodeEditor({
   });
 
   // Derive Monaco theme: explicit prop overrides auto-detection.
-  const monacoTheme = theme ?? (isDarkMode ? "vs-dark" : "vs");
+  const monacoTheme = theme ?? SPIKE_PLATFORM_MONACO_THEME;
 
   // Auto-detect language from fileName extension; fall back to the prop.
   const resolvedLanguage = useMemo(() => detectLanguage(fileName, language), [fileName, language]);
@@ -262,6 +262,10 @@ export function CodeEditor({
   }, [value]);
 
   const handleBeforeMount = useCallback((monaco: MonacoModule) => {
+    if (monacoTheme === SPIKE_PLATFORM_MONACO_THEME) {
+      definePlatformMonacoTheme(monaco as unknown as { editor: MonacoModule["editor"] }, isDarkMode);
+    }
+
     // Local monaco package exports typescript directly on the root object
     const typescript = monaco?.typescript || monaco?.languages?.typescript;
     if (!typescript) return;
@@ -294,7 +298,7 @@ export function CodeEditor({
 
     // Enable automatic type acquisition for the editor model
     tsDefaults.setEagerModelSync(true);
-  }, []);
+  }, [isDarkMode, monacoTheme]);
 
   // Focus the editor as soon as it mounts so users can type immediately.
   const handleMount = useCallback((editor: MonacoEditorInstance, monaco: MonacoModule) => {
@@ -384,11 +388,7 @@ export function CodeEditor({
       {/* Editor area */}
       <div className="min-h-0 flex-1 relative bg-background">
         {!isEditing ? (
-          <MonacoCover
-            value={value}
-            isDark={monacoTheme === "vs-dark"}
-            onClick={() => setIsEditing(true)}
-          />
+          <MonacoCover value={value} isDark={isDarkMode} onClick={() => setIsEditing(true)} />
         ) : (
           <Suspense fallback={<LoadingSpinner />}>
             <LocalMonacoEditor
