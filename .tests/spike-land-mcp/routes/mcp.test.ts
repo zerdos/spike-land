@@ -226,42 +226,33 @@ describe("GET /mcp (mcpRoute handler)", () => {
   });
 
   it("supports SSE connection with auth", async () => {
+    _transportHandleRequest = async () =>
+      new Response("data: {}\n\n", {
+        status: 200,
+        headers: new Headers({ "Content-Type": "text/event-stream" }),
+      });
+
     const app = await buildTestApp();
     const env = mockEnv();
 
-    // Mock the transport to return 400 Bad Request to simulate an uninitialized server
-    _transportHandleRequest = async () =>
-      new Response(JSON.stringify({ error: "Bad Request" }), {
-        status: 400,
-        headers: new Headers({ "Content-Type": "application/json" }),
-      });
-
-    // In stateful transport mode, an uninitialized server returns 400 Bad Request
-    // on a GET request because it hasn't received the "initialize" POST.
-    // However, it correctly returns this validation error rather than the 405 error
-    // it returned previously before SSE was enabled.
+    // In stateful transport mode, the SDK handles the SSE connection upgrade
+    // and returns 200 OK with the text/event-stream content type upon successful
+    // connection, regardless of whether an "initialize" POST has been received yet.
     const res = await app.request(
       "/",
       {
         method: "GET",
         headers: {
           Authorization: "Bearer valid-test-token",
-          Accept: "text/event-stream"
+          Accept: "text/event-stream",
         },
       },
       env,
       { waitUntil: () => {} },
     );
 
-    expect(res.status).toBe(400);
-    expect(res.headers.get("content-type")).toContain("application/json");
-
-    // Reset back to default
-    _transportHandleRequest = async () =>
-      new Response(JSON.stringify({ jsonrpc: "2.0", result: { tools: [] }, id: 1 }), {
-        status: 200,
-        headers: new Headers({ "Content-Type": "application/json" }),
-      });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/event-stream");
   });
 
   it("returns 401 from route handler when no Authorization header (covers line 206)", async () => {
