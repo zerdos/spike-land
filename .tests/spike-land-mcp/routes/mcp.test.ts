@@ -227,21 +227,24 @@ describe("GET /mcp (mcpRoute handler)", () => {
 
   it("supports SSE connection with auth", async () => {
     _transportHandleRequest = async () =>
-      new Response(
-        "data: connected\n\n",
-        { status: 200, headers: new Headers({ "Content-Type": "text/event-stream" }) },
-      );
+      new Response("data: {}\n\n", {
+        status: 200,
+        headers: new Headers({ "Content-Type": "text/event-stream" }),
+      });
 
     const app = await buildTestApp();
     const env = mockEnv();
 
+    // In stateful transport mode, the SDK handles the SSE connection upgrade
+    // and returns 200 OK with the text/event-stream content type upon successful
+    // connection, regardless of whether an "initialize" POST has been received yet.
     const res = await app.request(
       "/",
       {
         method: "GET",
         headers: {
           Authorization: "Bearer valid-test-token",
-          Accept: "text/event-stream"
+          Accept: "text/event-stream",
         },
       },
       env,
