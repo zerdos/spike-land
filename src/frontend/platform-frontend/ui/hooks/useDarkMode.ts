@@ -4,10 +4,15 @@ export type ThemePreference = "light" | "dark";
 
 const STORAGE_KEY = "theme-preference";
 
+function isThemePreference(value: string | null): value is ThemePreference {
+  return value === "light" || value === "dark";
+}
+
 const getInitialTheme = (): ThemePreference => {
   if (typeof window === "undefined") return "light";
+
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
+  if (isThemePreference(stored)) return stored;
   return "light";
 };
 
@@ -18,6 +23,17 @@ const applyTheme = (isDark: boolean) => {
   root.classList.toggle("light", !isDark);
 };
 
+const dispatchThemeChange = (theme: ThemePreference) => {
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(
+    new StorageEvent("storage", {
+      key: STORAGE_KEY,
+      newValue: theme,
+    }),
+  );
+};
+
 export const useDarkMode = () => {
   const [theme, setThemeState] = useState<ThemePreference>(getInitialTheme);
   const isDarkMode = theme === "dark";
@@ -26,6 +42,7 @@ export const useDarkMode = () => {
     setThemeState(newTheme);
     localStorage.setItem(STORAGE_KEY, newTheme);
     applyTheme(newTheme === "dark");
+    dispatchThemeChange(newTheme);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -35,6 +52,18 @@ export const useDarkMode = () => {
   useEffect(() => {
     applyTheme(isDarkMode);
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || !isThemePreference(event.newValue)) return;
+      setThemeState(event.newValue);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   return { isDarkMode, theme, setTheme, toggleTheme };
 };
