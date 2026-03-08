@@ -217,6 +217,9 @@ jobs:
 
       - name: Build spike-app SPA
         run: cd packages/spike-app && npm run build
+        env:
+          VITE_GOOGLE_ADS_ID: GT-TQK4WH8K
+          VITE_GTM_ID: GT-TQK4WH8K
 
       - name: Deploy spike-app SPA
         run: bash packages/spike-app/deploy.sh

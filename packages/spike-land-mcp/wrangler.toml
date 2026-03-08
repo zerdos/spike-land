@@ -27,6 +27,8 @@ service = "spike-edge"
 [vars]
 APP_ENV = "development"
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"
+VITE_GOOGLE_ADS_ID = "GT-TQK4WH8K"
+VITE_GTM_ID = "GT-TQK4WH8K"
 # GA_API_SECRET must be set as a secret: wrangler secret put GA_API_SECRET
 
 [[routes]]
