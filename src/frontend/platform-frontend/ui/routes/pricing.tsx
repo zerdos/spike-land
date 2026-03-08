@@ -93,7 +93,7 @@ function makePlans(pricing: import("../hooks/usePricing").PricingData): PricingP
         { text: "Custom integrations" },
       ],
       cta: "Contact Sales",
-      ctaHref: "mailto:enterprise@spike.land",
+      ctaHref: "mailto:zoltan.erdos@spike.land",
       highlighted: false,
     },
   ];
@@ -386,7 +386,7 @@ export function PricingPage() {
       <p className="text-center text-sm text-muted-foreground">
         Need a custom plan?{" "}
         <a
-          href="mailto:enterprise@spike.land"
+          href="mailto:zoltan.erdos@spike.land"
           className="text-primary underline hover:text-primary/80"
         >
           Talk to our team
@@ -402,7 +402,7 @@ export function PricingPage() {
         <br />
         Students and educators:{" "}
         <a
-          href="mailto:education@spike.land"
+          href="mailto:zoltan.erdos@spike.land"
           className="text-primary underline hover:text-primary/80"
         >
           Contact us for academic pricing
