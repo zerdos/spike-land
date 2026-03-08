@@ -4,6 +4,7 @@ import { cn } from "../styling/cn";
 import { useDarkMode } from "../ui/hooks/useDarkMode";
 import { useMonacoTypeAcquisition } from "../ui/hooks/useMonacoTypeAcquisition";
 import { MonacoCover } from "./monaco-cover/MonacoCover";
+import { definePlatformMonacoTheme, SPIKE_PLATFORM_MONACO_THEME } from "./monaco-cover/theme";
 
 import EditorWorker from "../../../monaco-editor/src/deprecated/editor/editor.worker?worker";
 import TsWorker from "../../../monaco-editor/src/languages/features/typescript/ts.worker?worker";
@@ -146,7 +147,16 @@ function LocalMonacoEditor({
   useEffect(() => {
     if (editorRef.current) {
       import("monaco-editor").then((monaco) => {
-        monaco.editor.setTheme(theme);
+        const themeToApply = theme ?? "vs";
+
+        if (themeToApply === SPIKE_PLATFORM_MONACO_THEME) {
+          definePlatformMonacoTheme(
+            monaco as unknown as { editor: MonacoModule["editor"] },
+            document.documentElement.classList.contains("dark"),
+          );
+        }
+
+        monaco.editor.setTheme(themeToApply);
         const model = editorRef.current.getModel();
         if (model) {
           monaco.editor.setModelLanguage(model, language);
@@ -192,7 +202,7 @@ export interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
   language?: string;
-  theme?: "vs-dark" | "vs";
+  theme?: string;
   readOnly?: boolean;
   height?: string;
   fileName?: string;
