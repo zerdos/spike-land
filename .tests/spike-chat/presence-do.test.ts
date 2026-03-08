@@ -19,6 +19,7 @@ describe("PresenceDurableObject", () => {
     };
     env = {} as Env;
     doInstance = new PresenceDurableObject(mockState, env);
+    (doInstance as any).ctx = mockState;
     
     global.WebSocketPair = vi.fn().mockImplementation(() => {
       return {

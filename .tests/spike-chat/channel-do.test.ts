@@ -14,6 +14,7 @@ describe("ChannelDurableObject", () => {
     };
     env = {} as Env;
     doInstance = new ChannelDurableObject(mockState, env);
+    (doInstance as any).ctx = mockState;
     
     // Mock global WebSocketPair
     global.WebSocketPair = vi.fn().mockImplementation(() => {

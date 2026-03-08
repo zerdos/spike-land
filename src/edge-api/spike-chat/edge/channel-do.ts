@@ -70,7 +70,7 @@ export class ChannelDurableObject extends DurableObject {
   }
 
   // --- Hibernation API handlers ---
-  async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
+  override async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
     if (typeof msg !== "string") return;
 
     try {
@@ -110,14 +110,14 @@ export class ChannelDurableObject extends DurableObject {
     this.broadcast(JSON.stringify({ type: "typing", users: Array.from(this.typingUsers) }));
   }
 
-  async webSocketClose(ws: WebSocket, code: number, reason: string, wasClean: boolean) {
+  override async webSocketClose(ws: WebSocket, code: number, reason: string, wasClean: boolean) {
     const attachment = ws.deserializeAttachment() as WsAttachment | null;
     if (attachment) {
       this.clearTyping(attachment.userId);
     }
   }
 
-  async webSocketError(ws: WebSocket, error: unknown) {
+  override async webSocketError(ws: WebSocket, error: unknown) {
     const attachment = ws.deserializeAttachment() as WsAttachment | null;
     if (attachment) {
       this.clearTyping(attachment.userId);

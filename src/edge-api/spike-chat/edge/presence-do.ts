@@ -85,7 +85,7 @@ export class PresenceDurableObject extends DurableObject {
     }
   }
 
-  async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
+  override async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
     if (typeof msg !== "string") return;
 
     try {
@@ -106,7 +106,7 @@ export class PresenceDurableObject extends DurableObject {
     }
   }
 
-  async webSocketClose(ws: WebSocket) {
+  override async webSocketClose(ws: WebSocket) {
     const attachment = ws.deserializeAttachment() as { userId: string } | null;
     if (attachment) {
       // Check if user has other active websockets
@@ -117,7 +117,7 @@ export class PresenceDurableObject extends DurableObject {
     }
   }
 
-  async webSocketError(ws: WebSocket) {
+  override async webSocketError(ws: WebSocket) {
     const attachment = ws.deserializeAttachment() as { userId: string } | null;
     if (attachment) {
       const userSockets = this.ctx.getWebSockets(attachment.userId);
