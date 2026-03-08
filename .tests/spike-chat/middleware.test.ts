@@ -56,6 +56,27 @@ describe("authMiddleware", () => {
     expect(next).toHaveBeenCalled();
   });
 
+  it("validates session via AUTH_MCP with authHeader", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ session: {}, user: { id: "user-1" } }),
+    });
+    const c = {
+      req: {
+        header: (name: string) => name === "authorization" ? "Bearer 123" : null,
+      },
+      env: {
+        AUTH_MCP: { fetch: mockFetch },
+      },
+      set: vi.fn(),
+    } as unknown as Context;
+    const next = vi.fn();
+
+    await authMiddleware(c as any, next);
+    expect(mockFetch).toHaveBeenCalled();
+    expect(c.set).toHaveBeenCalledWith("userId", "user-1");
+  });
+
   it("returns 401 if AUTH_MCP returns !ok", async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: false,

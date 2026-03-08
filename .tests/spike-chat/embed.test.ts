@@ -25,7 +25,10 @@ describe("embedRouter", () => {
             // we can return a mock that is an array for channel and has an orderBy/limit chain for messages
             const result: any = [{ id: "chan1", workspaceId: "workspace-1", slug: "channel-1" }];
             result.orderBy = () => ({
-              limit: () => [{ id: "msg1", content: "hello", userId: "visitor-1", createdAt: 123 }]
+              limit: () => [
+                { id: "msg1", content: "hello", userId: "visitor-1", createdAt: 123 },
+                { id: "msg2", content: "hello2", userId: "user-1", createdAt: 124 }
+              ]
             });
             return result;
           }
