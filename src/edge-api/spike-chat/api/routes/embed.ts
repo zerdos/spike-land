@@ -135,9 +135,80 @@ embedRouter.get("/:workspace/:channel", async (c) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Spike Chat - ${channelSlug}</title>
-      <script src="https://cdn.tailwindcss.com"></script>
       <style>
+        /* Base reset */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: system-ui, -apple-system, sans-serif; background: transparent; }
+
+        /* Layout */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1 1 0%; }
+        .items-start { align-items: flex-start; }
+        .items-center { align-items: center; }
+        .items-baseline { align-items: baseline; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .h-screen { height: 100vh; }
+        .overflow-y-auto { overflow-y: auto; }
+        .p-4 { padding: 1rem; }
+        .p-3 { padding: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+
+        /* Sizing */
+        .w-8 { width: 2rem; }
+        .h-8 { height: 2rem; }
+        .w-full { width: 100%; }
+
+        /* Typography */
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .uppercase { text-transform: uppercase; }
+
+        /* Colors */
+        .text-slate-100 { color: #f1f5f9; }
+        .text-slate-200 { color: #e2e8f0; }
+        .text-slate-300 { color: #cbd5e1; }
+        .text-slate-400 { color: #94a3b8; }
+        .text-white { color: #ffffff; }
+        .bg-slate-700 { background-color: #334155; }
+        .bg-slate-800 { background-color: #1e293b; }
+        .bg-slate-900\/90 { background-color: rgba(15, 23, 42, 0.9); }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .hover\:bg-blue-500:hover { background-color: #3b82f6; }
+        .border-slate-700 { border-color: #334155; }
+        .border-slate-800 { border-color: #1e293b; }
+        .border-t { border-top-width: 1px; border-top-style: solid; }
+
+        /* Shape & spacing helpers */
+        .rounded-full { border-radius: 9999px; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .border { border-width: 1px; border-style: solid; }
+
+        /* Focus states */
+        .focus\:outline-none:focus { outline: none; }
+        .focus\:border-blue-500:focus { border-color: #3b82f6; }
+        .focus\:ring-1:focus { box-shadow: 0 0 0 1px #3b82f6; }
+        .focus\:ring-blue-500:focus { --ring-color: #3b82f6; }
+
+        /* Transitions */
+        .transition-colors { transition-property: color, background-color, border-color; transition-duration: 150ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+
+        /* Element resets */
+        input { background: none; border: none; color: inherit; font: inherit; }
+        button { cursor: pointer; border: none; font: inherit; }
       </style>
     </head>
     <body class="flex flex-col h-screen text-slate-100 bg-slate-900/90">
