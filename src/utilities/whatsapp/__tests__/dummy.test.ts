@@ -1,1 +1,7 @@
-import { describe, it, expect } from "vitest";\n\ndescribe("whatsapp-mcp dummy", () => {\n  it("should pass", () => {\n    expect(true).toBe(true);\n  });\n});
+import { describe, it, expect } from "vitest";
+
+describe("whatsapp-mcp dummy", () => {
+  it("should pass", () => {
+    expect(true).toBe(true);
+  });
+});
