@@ -162,6 +162,12 @@
 
   --info-bg: #ecfeff;
   --info-fg: #0891b2;
+
+  --chat-bg: #fffaf0;
+  --chat-surface: #ffffff;
+  --chat-accent: #f0a500;
+  --chat-accent-light: #f6c453;
+  --chat-success: #16a34a;
 }
 
 /* Dark theme mapped to Obsidian & Amber Neon */
@@ -286,6 +292,38 @@
 
 .dark .nice-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.monaco-editor .spike-jsx-tag {
+  color: color-mix(in srgb, var(--chat-accent-light) 88%, var(--fg) 12%) !important;
+}
+
+.monaco-editor .spike-jsx-attr {
+  color: color-mix(in srgb, var(--chat-accent) 78%, var(--fg) 22%) !important;
+}
+
+.monaco-editor .spike-jsx-attr-value {
+  color: color-mix(in srgb, var(--chat-accent-light) 72%, var(--fg) 28%) !important;
+}
+
+.monaco-editor .spike-tailwind-variant {
+  color: color-mix(in srgb, var(--chat-accent-light) 62%, var(--fg) 38%) !important;
+}
+
+.monaco-editor .spike-tailwind-layout {
+  color: color-mix(in srgb, var(--chat-accent-light) 82%, var(--fg) 18%) !important;
+}
+
+.monaco-editor .spike-tailwind-spacing {
+  color: color-mix(in srgb, var(--chat-accent) 84%, var(--fg) 16%) !important;
+}
+
+.monaco-editor .spike-tailwind-color {
+  color: var(--chat-accent-light) !important;
+}
+
+.monaco-editor .spike-tailwind-utility {
+  color: var(--chat-accent) !important;
 }
 
 /* ThemeSwitcher toggle — moved from inline <style> to prevent layout shift */
