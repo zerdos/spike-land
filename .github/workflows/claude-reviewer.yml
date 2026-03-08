@@ -1,0 +1,104 @@
+name: Claude AI PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install @anthropic-ai/sdk --no-save
+
+      - name: Run Claude Review
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          cat << 'EOF' > review.js
+          const { Anthropic } = require('@anthropic-ai/sdk');
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+
+          async function run() {
+            if (!process.env.ANTHROPIC_API_KEY) {
+              console.log('ANTHROPIC_API_KEY not set. Skipping review.');
+              return;
+            }
+
+            const anthropic = new Anthropic({
+              apiKey: process.env.ANTHROPIC_API_KEY,
+            });
+
+            // Get PR diff
+            const diff = execSync(`gh pr diff ${process.env.PR_NUMBER}`).toString();
+            
+            let processGuidelines = '';
+            try {
+              processGuidelines = fs.readFileSync('docs/archive/JULES_PROCESS_OBSERVATIONS_AND_FUTURE_IMPROVEMENTS.md', 'utf8');
+            } catch (e) {
+              console.log('Could not read guidelines file:', e.message);
+            }
+
+            const prompt = `You are an expert AI code reviewer.
+          Review the following PR diff.
+          You must verify if the PR addresses or respects the guidelines and observations in this document:
+          <document>
+          ${processGuidelines}
+          </document>
+          
+          <diff>
+          ${diff}
+          </diff>
+          
+          If the PR looks good, requires no changes, and aligns with the document, output exactly "APPROVE".
+          Otherwise, provide a detailed review commenting on what needs to be changed. Refer explicitly to the provided document.`;
+
+            const response = await anthropic.messages.create({
+              model: "claude-3-7-sonnet-20250219",
+              max_tokens: 4000,
+              messages: [{ role: "user", content: prompt }]
+            });
+
+            const reply = response.content[0].text.trim();
+
+            if (reply === 'APPROVE') {
+              console.log('Approving and merging PR...');
+              execSync(`gh pr review ${process.env.PR_NUMBER} --approve --body "LGTM! The code respects the Jules process observations."`);
+              try {
+                // Try to merge the PR
+                execSync(`gh pr merge ${process.env.PR_NUMBER} --squash`);
+              } catch (e) {
+                console.log('Could not merge PR automatically:', e.message);
+                try {
+                  // Fallback to enable auto-merge
+                  execSync(`gh pr merge ${process.env.PR_NUMBER} --squash --auto`);
+                } catch (e2) {
+                  console.log('Could not enable auto-merge either:', e2.message);
+                }
+              }
+            } else {
+              console.log('Requesting changes...');
+              fs.writeFileSync('reply.txt', reply);
+              execSync(`gh pr review ${process.env.PR_NUMBER} --request-changes --body-file reply.txt`);
+            }
+          }
+
+          run().catch(console.error);
+          EOF
+          node review.js
