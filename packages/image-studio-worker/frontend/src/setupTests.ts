@@ -1,5 +1,10 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import { vi, afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+
+afterEach(() => {
+  cleanup();
+});
 
 // Mock resize observer
 global.ResizeObserver = class ResizeObserver {
