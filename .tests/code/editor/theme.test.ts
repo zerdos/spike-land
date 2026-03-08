@@ -1,13 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-vi.mock("monaco-editor", () => ({
-  editor: {
-    defineTheme: vi.fn(),
-    setTheme: vi.fn(),
-  },
-}));
-
-import { createSpikeLandMonacoTheme } from "../../../src/frontend/monaco-editor/editor/theme";
+import { createSpikeLandMonacoTheme } from "../../../src/frontend/monaco-editor/editor/theme-palette";
 
 function createStyleReader(tokens: Record<string, string>) {
   return {
