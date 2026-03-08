@@ -295,34 +295,66 @@
 }
 
 .monaco-editor .spike-jsx-tag {
-  color: color-mix(in srgb, var(--chat-accent-light) 88%, var(--fg) 12%) !important;
+  color: color-mix(in srgb, var(--chat-accent) 58%, var(--fg) 42%) !important;
 }
 
 .monaco-editor .spike-jsx-attr {
-  color: color-mix(in srgb, var(--chat-accent) 78%, var(--fg) 22%) !important;
+  color: color-mix(in srgb, var(--chat-accent) 62%, var(--fg) 38%) !important;
 }
 
 .monaco-editor .spike-jsx-attr-value {
-  color: color-mix(in srgb, var(--chat-accent-light) 72%, var(--fg) 28%) !important;
+  color: color-mix(in srgb, var(--chat-accent-light) 48%, var(--fg) 52%) !important;
 }
 
 .monaco-editor .spike-tailwind-variant {
-  color: color-mix(in srgb, var(--chat-accent-light) 62%, var(--fg) 38%) !important;
+  color: color-mix(in srgb, var(--chat-accent-light) 42%, var(--fg) 58%) !important;
 }
 
 .monaco-editor .spike-tailwind-layout {
-  color: color-mix(in srgb, var(--chat-accent-light) 82%, var(--fg) 18%) !important;
+  color: color-mix(in srgb, var(--chat-accent-light) 54%, var(--fg) 46%) !important;
 }
 
 .monaco-editor .spike-tailwind-spacing {
-  color: color-mix(in srgb, var(--chat-accent) 84%, var(--fg) 16%) !important;
+  color: color-mix(in srgb, var(--chat-accent) 66%, var(--fg) 34%) !important;
 }
 
 .monaco-editor .spike-tailwind-color {
-  color: var(--chat-accent-light) !important;
+  color: color-mix(in srgb, var(--chat-accent) 72%, var(--fg) 28%) !important;
 }
 
 .monaco-editor .spike-tailwind-utility {
+  color: color-mix(in srgb, var(--chat-accent) 62%, var(--fg) 38%) !important;
+}
+
+.dark .monaco-editor .spike-jsx-tag {
+  color: color-mix(in srgb, var(--chat-accent-light) 88%, var(--fg) 12%) !important;
+}
+
+.dark .monaco-editor .spike-jsx-attr {
+  color: color-mix(in srgb, var(--chat-accent) 78%, var(--fg) 22%) !important;
+}
+
+.dark .monaco-editor .spike-jsx-attr-value {
+  color: color-mix(in srgb, var(--chat-accent-light) 72%, var(--fg) 28%) !important;
+}
+
+.dark .monaco-editor .spike-tailwind-variant {
+  color: color-mix(in srgb, var(--chat-accent-light) 62%, var(--fg) 38%) !important;
+}
+
+.dark .monaco-editor .spike-tailwind-layout {
+  color: color-mix(in srgb, var(--chat-accent-light) 82%, var(--fg) 18%) !important;
+}
+
+.dark .monaco-editor .spike-tailwind-spacing {
+  color: color-mix(in srgb, var(--chat-accent) 84%, var(--fg) 16%) !important;
+}
+
+.dark .monaco-editor .spike-tailwind-color {
+  color: var(--chat-accent-light) !important;
+}
+
+.dark .monaco-editor .spike-tailwind-utility {
   color: var(--chat-accent) !important;
 }
 
