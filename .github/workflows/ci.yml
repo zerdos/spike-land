@@ -262,6 +262,7 @@ jobs:
           smoke_check "https://mcp.spike.land/health" "spike-land-mcp healthy" || ((FAIL_COUNT++))
           smoke_check "https://auth-mcp.spike.land/health" "mcp-auth healthy" || ((FAIL_COUNT++))
           smoke_check "https://image-studio-mcp.spike.land/health" "image-studio-mcp healthy" || ((FAIL_COUNT++))
+          smoke_check "https://status.spike.land/health" "status healthy" || ((FAIL_COUNT++))
           
           # SPA test check
           for i in 1 2 3; do
