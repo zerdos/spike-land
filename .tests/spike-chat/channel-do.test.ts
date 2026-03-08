@@ -117,6 +117,9 @@ describe("ChannelDurableObject", () => {
     // start again (clears timeout)
     await doInstance.webSocketMessage(mockWs as any, JSON.stringify({ type: "typing_start" }));
     
+    // advance timer to trigger the timeout
+    vi.advanceTimersByTime(5000);
+    
     // stop
     await doInstance.webSocketMessage(mockWs as any, JSON.stringify({ type: "typing_stop" }));
     expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify({ type: "typing", users: [] }));
