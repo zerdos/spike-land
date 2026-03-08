@@ -145,6 +145,8 @@ const packages: Record<string, PkgConfig> = {
     aliases: {
       react: src("core/react-engine/core-logic/react/index.ts"),
       "react-dom": src("core/react-engine/core-logic/react-dom/client.ts"),
+      "react/jsx-dev-runtime": src("core/react-engine/core-logic/react/jsx-runtime.ts"),
+      "react/jsx-runtime": src("core/react-engine/core-logic/react/jsx-runtime.ts"),
     },
     includeSrc: [
       src("core/block-website/core-logic/**/*.ts"),
@@ -274,6 +276,7 @@ const packages: Record<string, PkgConfig> = {
 
   "spike-chat": {
     tier: 1,
+    aliases: { "cloudflare:workers": src("edge-api/main/core-logic/cloudflare-workers.ts") },
     coverageExclude: [],
   },
 
