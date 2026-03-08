@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Navigate } from "@tanstack/react-router";
 import { useAnalytics } from "../hooks/useAnalytics";
 import { useAuth } from "../hooks/useAuth";
-import { trackSignUpConversion } from "../../core-logic/google-ads";
+import { trackSignUpConversion } from "../../core-logic/google-tag";
 
 export function CallbackPage() {
   const { trackEvent } = useAnalytics();

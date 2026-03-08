@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { trackPageView as trackGa4PageView } from "../../core-logic/google-tag";
 
 interface QueuedEvent {
   event: string;
@@ -111,6 +112,7 @@ export function useAnalytics() {
         path,
         sessionDuration: Date.now() - sessionStart.current,
       });
+      trackGa4PageView(path);
     });
 
     const onVisibilityChange = () => {

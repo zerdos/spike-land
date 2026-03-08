@@ -12,7 +12,7 @@ import { MessageCircle } from "lucide-react";
 import { AiChatWidget } from "../components/AiChatWidget";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
 import { apiUrl } from "../../core-logic/api";
-import { initGoogleAds, initGtm } from "../../core-logic/google-ads";
+import { initGoogleTag } from "../../core-logic/google-tag";
 
 const DEFAULT_TITLE = "spike.land - MCP-First AI Development Platform";
 const DEFAULT_DESCRIPTION =
@@ -220,8 +220,7 @@ export function RootLayout() {
   useEffect(() => {
     injectJsonLd("jsonld-organization", ORGANIZATION_JSON_LD);
     injectJsonLd("jsonld-webapp", WEB_APP_JSON_LD);
-    initGoogleAds();
-    initGtm();
+    initGoogleTag();
 
     if (!document.querySelector('link[type="application/rss+xml"]')) {
       const rssLink = document.createElement("link");

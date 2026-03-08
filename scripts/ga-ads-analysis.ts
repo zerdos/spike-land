@@ -15,11 +15,11 @@
  *   GA4_PROPERTY_ID, GOOGLE_ADS_CUSTOMER_ID, GOOGLE_ADS_DEVELOPER_TOKEN
  */
 
+import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { GoogleAuthClient } from "../src/mcp-tools/google-analytics/core-logic/google-oauth.js";
-import { GoogleAdsAuthClient } from "../src/mcp-tools/google-ads/core-logic/google-oauth.js";
 import { GoogleAdsClient } from "../src/mcp-tools/google-ads/core-logic/ads-client.js";
 
 const __dirname = import.meta.dirname ?? dirname(fileURLToPath(import.meta.url));
@@ -82,15 +82,62 @@ const gaAuth = new GoogleAuthClient({
   refreshToken: GOOGLE_REFRESH_TOKEN,
 });
 
-const adsAuth = new GoogleAdsAuthClient({
-  clientId: GOOGLE_CLIENT_ID,
-  clientSecret: GOOGLE_CLIENT_SECRET,
-  refreshToken: GOOGLE_REFRESH_TOKEN,
+// Google Ads auth: use gcloud ADC token (the OAuth refresh token causes 500s
+// with the Ads API due to client/account linkage issues, but gcloud ADC works).
+class GcloudAdsAuthClient {
+  private readonly developerToken: string;
+  private readonly customerId: string;
+  private cachedToken: string | null = null;
+  private tokenExpiresAt = 0;
+
+  constructor(opts: { developerToken: string; customerId: string }) {
+    this.developerToken = opts.developerToken;
+    this.customerId = opts.customerId.replace(/-/g, "");
+  }
+
+  getCustomerId(): string {
+    return this.customerId;
+  }
+
+  async authHeaders(): Promise<Record<string, string>> {
+    const token = this.getAccessToken();
+    return {
+      Authorization: `Bearer ${token}`,
+      "developer-token": this.developerToken,
+      "Content-Type": "application/json",
+    };
+  }
+
+  private getAccessToken(): string {
+    const now = Date.now();
+    if (this.cachedToken && now < this.tokenExpiresAt - 60_000) {
+      return this.cachedToken;
+    }
+    try {
+      this.cachedToken = execSync(
+        "gcloud auth application-default print-access-token 2>/dev/null",
+        { encoding: "utf-8" },
+      ).trim();
+      // ADC tokens last ~1 hour
+      this.tokenExpiresAt = now + 50 * 60 * 1000;
+      return this.cachedToken;
+    } catch {
+      throw new Error(
+        "Failed to get gcloud ADC token. Run:\n" +
+        "  gcloud auth application-default login \\\n" +
+        '    --client-id-file=scripts/google-client-secret.json \\\n' +
+        '    --scopes="https://www.googleapis.com/auth/adwords,https://www.googleapis.com/auth/analytics.readonly"',
+      );
+    }
+  }
+}
+
+const adsAuth = new GcloudAdsAuthClient({
   developerToken: GOOGLE_ADS_DEVELOPER_TOKEN,
   customerId: GOOGLE_ADS_CUSTOMER_ID,
 });
 
-const adsClient = new GoogleAdsClient(adsAuth);
+const adsClient = new GoogleAdsClient(adsAuth as any);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -1036,6 +1083,11 @@ function formatMarkdownReport(results: AgentResult[], recs: Recommendation[]): s
 async function main() {
   console.error("Starting 16-agent analysis...");
   console.error(`Date range: ${START} to ${END} (${DAYS} days)\n`);
+
+  // Pre-warm auth tokens to avoid concurrent refresh race conditions
+  console.error("Pre-warming auth tokens...");
+  await gaAuth.getAccessToken();
+  console.error("  GA4 token ready");
 
   // Phase 1: Run agents 1-14 in parallel
   console.error("Phase 1: Running 14 API queries in parallel...");

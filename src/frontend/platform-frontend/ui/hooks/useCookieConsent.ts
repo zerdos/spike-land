@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { updateConsent } from "../../core-logic/google-tag";
 
 type ConsentState = boolean | null;
 
@@ -32,6 +33,7 @@ export function useCookieConsent(): CookieConsentHook {
     localStorage.setItem(STORAGE_KEY, "accepted");
     setConsentCookie("accepted");
     setConsentGiven(true);
+    updateConsent();
   };
 
   const reject = (): void => {

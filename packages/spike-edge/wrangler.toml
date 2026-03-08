@@ -32,8 +32,6 @@ migrations_dir = "db/migrations"
 
 [vars]
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"
-VITE_GOOGLE_ADS_ID = "GT-TQK4WH8K"
-VITE_GTM_ID = "GT-TQK4WH8K"
 
 [[services]]
 binding = "AUTH_MCP"

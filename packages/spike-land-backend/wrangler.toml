@@ -19,8 +19,6 @@ kv_namespaces = [
 
 [vars]
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"
-VITE_GOOGLE_ADS_ID = "GT-TQK4WH8K"
-VITE_GTM_ID = "GT-TQK4WH8K"
 
 [durable_objects]
 bindings = [
@@ -58,8 +56,6 @@ kv_namespaces = [
 
 [env.testing.vars]
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"
-VITE_GOOGLE_ADS_ID = "GT-TQK4WH8K"
-VITE_GTM_ID = "GT-TQK4WH8K"
 
 [[env.testing.migrations]]
 tag = "v1"
