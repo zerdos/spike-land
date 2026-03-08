@@ -235,19 +235,38 @@ async function fetchTranspiledCode(source: string, originToUse: string): Promise
   return text;
 }
 
-export function useTranspiler(source: string, debounceMs = 300): TranspileResult {
+export function useTranspiler(
+  source: string,
+  debounceMs = 300,
+  isDarkMode = false,
+): TranspileResult {
   const [result, setResult] = useState<TranspileResult>({
     html: null,
     error: null,
     isTranspiling: false,
   });
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const lastTranspiledRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!lastTranspiledRef.current) return;
+
+    setResult((prev) => {
+      if (prev.error) return prev;
+
+      return {
+        ...prev,
+        html: buildPreviewHtml(lastTranspiledRef.current!, isDarkMode),
+      };
+    });
+  }, [isDarkMode]);
 
   // Debounced transpilation
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (!source.trim()) {
+      lastTranspiledRef.current = null;
       setResult({ html: null, error: null, isTranspiling: false });
       return;
     }
