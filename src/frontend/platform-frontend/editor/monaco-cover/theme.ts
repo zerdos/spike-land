@@ -34,7 +34,6 @@ interface PlatformThemeTokens {
   input: string;
   primary: string;
   primaryLight: string;
-  accentBackground: string;
   accentForeground: string;
   destructiveForeground: string;
 }
@@ -104,12 +103,6 @@ const TOKEN_CONFIG: Record<ThemeTokenName, ThemeTokenConfig> = {
     property: "color",
     light: "#60a5fa",
     dark: "#fcd34d",
-  },
-  accentBackground: {
-    cssVar: "--accent-bg",
-    property: "backgroundColor",
-    light: "#f0f9ff",
-    dark: "#101321",
   },
   accentForeground: {
     cssVar: "--accent-fg",
@@ -220,9 +213,6 @@ function fallbackTokens(isDark: boolean): PlatformThemeTokens {
     input: isDark ? TOKEN_CONFIG.input.dark : TOKEN_CONFIG.input.light,
     primary: isDark ? TOKEN_CONFIG.primary.dark : TOKEN_CONFIG.primary.light,
     primaryLight: isDark ? TOKEN_CONFIG.primaryLight.dark : TOKEN_CONFIG.primaryLight.light,
-    accentBackground: isDark
-      ? TOKEN_CONFIG.accentBackground.dark
-      : TOKEN_CONFIG.accentBackground.light,
     accentForeground: isDark
       ? TOKEN_CONFIG.accentForeground.dark
       : TOKEN_CONFIG.accentForeground.light,
@@ -242,7 +232,7 @@ function resolveCssVarColor(config: ThemeTokenConfig, fallback: string): string 
   probe.style.pointerEvents = "none";
   probe.style.opacity = "0";
   probe.style.inset = "0";
-  probe.style.setProperty(config.property, `var(${config.cssVar})`);
+  probe.style[config.property] = `var(${config.cssVar})`;
 
   document.body.appendChild(probe);
   const computed = getComputedStyle(probe)[config.property];
@@ -264,7 +254,6 @@ function readThemeTokens(isDark: boolean): PlatformThemeTokens {
     input: resolveCssVarColor(TOKEN_CONFIG.input, defaults.input),
     primary: resolveCssVarColor(TOKEN_CONFIG.primary, defaults.primary),
     primaryLight: resolveCssVarColor(TOKEN_CONFIG.primaryLight, defaults.primaryLight),
-    accentBackground: resolveCssVarColor(TOKEN_CONFIG.accentBackground, defaults.accentBackground),
     accentForeground: resolveCssVarColor(TOKEN_CONFIG.accentForeground, defaults.accentForeground),
     destructiveForeground: resolveCssVarColor(
       TOKEN_CONFIG.destructiveForeground,
@@ -412,7 +401,11 @@ export function createMonacoThemeData(
 }
 
 export function definePlatformMonacoTheme(
-  monaco: Pick<MonacoEditor, "editor">,
+  monaco: {
+    editor: {
+      defineTheme: (name: string, data: MonacoEditor.IStandaloneThemeData) => void;
+    };
+  },
   isDark: boolean,
 ): string {
   const tokens = readThemeTokens(isDark);
