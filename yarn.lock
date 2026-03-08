@@ -15010,6 +15010,8 @@ __metadata:
     "@tanstack/react-query": "npm:^5.90.21"
     "@tanstack/react-router": "npm:^1.166.2"
     "@tanstack/router-cli": "npm:^1.166.2"
+    "@types/cors": "npm:^2.8.19"
+    "@types/express": "npm:^5.0.6"
     "@types/mime-types": "npm:^3.0.1"
     "@types/node": "npm:25.3.5"
     "@vitest/coverage-v8": "npm:4.0.18"
