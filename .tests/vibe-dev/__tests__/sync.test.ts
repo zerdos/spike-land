@@ -3,13 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 describe("Sync Module", () => {
   const originalFetch = global.fetch;
   const mockFetch = vi.fn();
-  let sync: typeof import("../../../src/cli/docker-dev/sync.js");
+  let sync: typeof import("../../../src/cli/docker-dev/core-logic/sync.js");
 
   beforeEach(async () => {
     vi.resetModules();
     global.fetch = mockFetch;
     process.env.TESTING_SPIKE_LAND_URL = "https://test-server";
-    sync = await import("../../../src/cli/docker-dev/sync.js");
+    sync = await import("../../../src/cli/docker-dev/core-logic/sync.js");
   });
 
   afterEach(() => {
@@ -21,7 +21,7 @@ describe("Sync Module", () => {
   it("uses default testing.spike.land URL when env var not set", async () => {
     vi.resetModules();
     delete process.env.TESTING_SPIKE_LAND_URL;
-    const freshSync = await import("../../../src/cli/docker-dev/sync.js");
+    const freshSync = await import("../../../src/cli/docker-dev/core-logic/sync.js");
     global.fetch = mockFetch;
 
     mockFetch.mockResolvedValue({
@@ -148,7 +148,7 @@ describe("Sync Module", () => {
     it("covers the empty string fallback when both code fields absent", async () => {
       vi.resetModules();
       process.env.TESTING_SPIKE_LAND_URL = "https://test-server";
-      const freshSync = await import("../../../src/cli/docker-dev/sync.js");
+      const freshSync = await import("../../../src/cli/docker-dev/core-logic/sync.js");
       global.fetch = mockFetch;
 
       mockFetch.mockResolvedValue({

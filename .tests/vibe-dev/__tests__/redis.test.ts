@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import * as redis from "../../../src/cli/docker-dev/redis.js";
+import * as redis from "../../../src/cli/docker-dev/core-logic/redis.js";
 
 describe("Redis Client", () => {
   const mockConfig = {

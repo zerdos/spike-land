@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createGeminiGeneration } from "../../../src/edge-api/image-studio-worker/deps/generation.ts";
+import { createGeminiGeneration } from "../../../src/edge-api/image-studio-worker/ai-mcp/generation.ts";
 
 vi.mock("@google/genai", () => {
   return {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createD1Db } from "../../../src/edge-api/image-studio-worker/deps/db.ts";
+import { createD1Db } from "../../../src/edge-api/image-studio-worker/mcp/db.ts";
 
 describe("db", () => {
   const createMockDb = () => {

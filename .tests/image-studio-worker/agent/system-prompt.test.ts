@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SYSTEM_PROMPT } from "../../../src/edge-api/image-studio-worker/agent/system-prompt.ts";
+import { SYSTEM_PROMPT } from "../../../src/edge-api/image-studio-worker/core-logic/system-prompt.ts";
 
 describe("system-prompt", () => {
   it("exports the prompt string", () => {

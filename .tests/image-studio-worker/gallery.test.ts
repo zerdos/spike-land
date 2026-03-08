@@ -6,14 +6,14 @@ describe("EventBus", () => {
   beforeEach(async () => {
     // Clear state between tests by clearing the singleton
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
     eventBus.clear();
   });
 
   it("should emit and receive events", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler = vi.fn();
@@ -31,7 +31,7 @@ describe("EventBus", () => {
 
   it("should handle multiple subscribers", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler1 = vi.fn();
@@ -54,7 +54,7 @@ describe("EventBus", () => {
 
   it("should not throw on emit with no handlers", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
     expect(() => eventBus.emit("gallery:updated", { reason: "delete" })).not.toThrow();
     eventBus.clear();
@@ -62,7 +62,7 @@ describe("EventBus", () => {
 
   it("should unsubscribe a single handler while keeping others", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler1 = vi.fn();
@@ -83,7 +83,7 @@ describe("EventBus", () => {
 
   it("should handle image:generated events", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler = vi.fn();
@@ -106,7 +106,7 @@ describe("EventBus", () => {
 
   it("should handle image:deleted events", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler = vi.fn();
@@ -121,7 +121,7 @@ describe("EventBus", () => {
 
   it("should handle album events", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const createdHandler = vi.fn();
@@ -144,7 +144,7 @@ describe("EventBus", () => {
 
   it("should not invoke handlers removed via off()", async () => {
     const { eventBus } = await import(
-      "../../src/edge-api/image-studio-worker/frontend/src/services/event-bus.ts"
+      "../../packages/image-studio-worker/frontend/src/services/event-bus.ts"
     );
 
     const handler = vi.fn();
@@ -162,7 +162,7 @@ describe("EventBus", () => {
 
 describe("Shared Types", () => {
   it("should export gallery types", async () => {
-    const types = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const types = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
     expect(types).toBeDefined();
   });
 
@@ -191,7 +191,7 @@ describe("Shared Types", () => {
   });
 
   it("should have ChatSSEEvent types with gallery_update", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
     // Verify that gallery_update is a valid event type by constructing a conforming object
     const event = {
       type: "gallery_update" as const,
@@ -209,7 +209,7 @@ describe("Gallery DB Helpers", () => {
   describe("getOrCreateDefaultAlbum", () => {
     it("creates a new default album when none exists", async () => {
       const { getOrCreateDefaultAlbum } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const mockRun = vi.fn().mockResolvedValue({ meta: { changes: 1 } });
@@ -233,7 +233,7 @@ describe("Gallery DB Helpers", () => {
 
     it("returns an existing default album when one exists", async () => {
       const { getOrCreateDefaultAlbum } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const existing = {
@@ -256,7 +256,7 @@ describe("Gallery DB Helpers", () => {
 
     it("generates unique handle per user", async () => {
       const { getOrCreateDefaultAlbum } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const makeDb = () =>
@@ -302,7 +302,7 @@ describe("Gallery DB Helpers", () => {
 
     it("returns paginated results with no next cursor when under limit", async () => {
       const { galleryRecentImages } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const mockImages = Array.from({ length: 5 }, (_, i) => makeImageRow(i));
@@ -325,7 +325,7 @@ describe("Gallery DB Helpers", () => {
 
     it("returns next cursor when results exceed limit", async () => {
       const { galleryRecentImages } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       // Return limit+1 rows to indicate there are more
@@ -351,7 +351,7 @@ describe("Gallery DB Helpers", () => {
 
     it("maps D1 row integers to typed ImageRow values", async () => {
       const { galleryRecentImages } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const mockImages = [
@@ -380,7 +380,7 @@ describe("Gallery DB Helpers", () => {
 
     it("handles empty results", async () => {
       const { galleryRecentImages } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const mockDb = {
@@ -399,7 +399,7 @@ describe("Gallery DB Helpers", () => {
 
     it("uses default limit of 50 when not specified", async () => {
       const { galleryRecentImages } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const prepareMock = vi.fn().mockReturnValue({
@@ -419,7 +419,7 @@ describe("Gallery DB Helpers", () => {
   describe("addImageToDefaultAlbum", () => {
     it("gets or creates the default album and inserts the image", async () => {
       const { addImageToDefaultAlbum } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const albumRow = { id: "alb-default", handle: "gallery-user12-abcdef" };
@@ -445,7 +445,7 @@ describe("Gallery DB Helpers", () => {
 
     it("silently ignores duplicate image insertion (UNIQUE constraint)", async () => {
       const { addImageToDefaultAlbum } = await import(
-        "../../src/edge-api/image-studio-worker/deps/db.ts"
+        "../../src/edge-api/image-studio-worker/mcp/db.ts"
       );
 
       const mockDb = {
@@ -476,27 +476,27 @@ describe("Gallery DB Helpers", () => {
 
 describe("nanoid", () => {
   it("generates a string of the correct length", async () => {
-    const { nanoid } = await import("../../src/edge-api/image-studio-worker/deps/nanoid.ts");
+    const { nanoid } = await import("../../src/edge-api/image-studio-worker/core-logic/nanoid.ts");
     const id = nanoid();
     expect(typeof id).toBe("string");
     expect(id).toHaveLength(21);
   });
 
   it("generates a string of custom length", async () => {
-    const { nanoid } = await import("../../src/edge-api/image-studio-worker/deps/nanoid.ts");
+    const { nanoid } = await import("../../src/edge-api/image-studio-worker/core-logic/nanoid.ts");
     const id = nanoid(10);
     expect(id).toHaveLength(10);
   });
 
   it("generates unique IDs", async () => {
-    const { nanoid } = await import("../../src/edge-api/image-studio-worker/deps/nanoid.ts");
+    const { nanoid } = await import("../../src/edge-api/image-studio-worker/core-logic/nanoid.ts");
     const ids = new Set(Array.from({ length: 100 }, () => nanoid()));
     // All 100 should be unique
     expect(ids.size).toBe(100);
   });
 
   it("only contains alphanumeric characters from the expected alphabet", async () => {
-    const { nanoid } = await import("../../src/edge-api/image-studio-worker/deps/nanoid.ts");
+    const { nanoid } = await import("../../src/edge-api/image-studio-worker/core-logic/nanoid.ts");
     const id = nanoid(50);
     expect(id).toMatch(/^[0-9a-z]+$/);
   });

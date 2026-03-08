@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import * as api from "../../../src/cli/docker-dev/api.js";
+import * as api from "../../../src/cli/docker-dev/core-logic/api.js";
 
 describe("API Client", () => {
   const mockConfig = {

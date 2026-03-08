@@ -51,7 +51,7 @@ describe("Chat Handler SSE Events", () => {
   });
 
   it("should construct a valid GalleryUpdateEvent object", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
 
     const event = {
       type: "gallery_update" as const,
@@ -65,7 +65,7 @@ describe("Chat Handler SSE Events", () => {
   });
 
   it("should construct a valid TextDeltaEvent object", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
 
     const event = {
       type: "text_delta" as const,
@@ -77,7 +77,7 @@ describe("Chat Handler SSE Events", () => {
   });
 
   it("should construct a valid ToolCallStartEvent object", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
 
     const event = {
       type: "tool_call_start" as const,
@@ -91,7 +91,7 @@ describe("Chat Handler SSE Events", () => {
   });
 
   it("should construct a valid BrowserCommandEvent object", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
 
     const requestId = `br-${Date.now()}-abc123`;
     const event = {
@@ -106,7 +106,7 @@ describe("Chat Handler SSE Events", () => {
   });
 
   it("should construct a valid ErrorEvent object", async () => {
-    const {} = await import("../../src/edge-api/image-studio-worker/shared-types.ts");
+    const {} = await import("../../src/edge-api/image-studio-worker/core-logic/shared-types.ts");
 
     const event = {
       type: "error" as const,

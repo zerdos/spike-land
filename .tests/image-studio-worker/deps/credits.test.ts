@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createD1Credits } from "../../../src/edge-api/image-studio-worker/deps/credits.ts";
+import { createD1Credits } from "../../../src/edge-api/image-studio-worker/mcp/credits.ts";
 import { nanoid } from "../../../src/edge-api/image-studio-worker/deps/nanoid.ts";
 
 describe("credits", () => {
