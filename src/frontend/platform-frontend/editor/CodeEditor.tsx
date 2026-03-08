@@ -4,6 +4,7 @@ import { cn } from "../styling/cn";
 import { useDarkMode } from "../ui/hooks/useDarkMode";
 import { useMonacoTypeAcquisition } from "../ui/hooks/useMonacoTypeAcquisition";
 import { definePlatformMonacoTheme, SPIKE_PLATFORM_MONACO_THEME } from "./monaco-cover/theme";
+import { collectEditorHighlightSegments } from "./tsx-highlighting";
 
 import EditorWorker from "../../../monaco-editor/src/deprecated/editor/editor.worker?worker";
 import TsWorker from "../../../monaco-editor/src/languages/features/typescript/ts.worker?worker";
@@ -40,9 +41,28 @@ interface MonacoEditorInstance {
   setValue(value: string): void;
   dispose(): void;
   focus(): void;
-  getModel(): { uri: { path: string } } | null;
+  getModel(): MonacoModel | null;
   onDidChangeModelContent(cb: () => void): void;
+  deltaDecorations(
+    oldDecorations: string[],
+    newDecorations: Array<{
+      range: MonacoRangeLike;
+      options: { inlineClassName: string };
+    }>,
+  ): string[];
   updateOptions(options: Record<string, unknown>): void;
+}
+
+interface MonacoModel {
+  uri: { path: string };
+  getPositionAt(offset: number): { lineNumber: number; column: number };
+}
+
+interface MonacoRangeLike {
+  startLineNumber: number;
+  startColumn: number;
+  endLineNumber: number;
+  endColumn: number;
 }
 
 interface MonacoModule {
@@ -79,6 +99,7 @@ function LocalMonacoEditor({
 }: LocalMonacoEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<MonacoEditorInstance | null>(null);
+  const decorationIdsRef = useRef<string[]>([]);
   const [isReady, setIsReady] = useState(false);
   const propsRef = useRef({
     value,
@@ -102,6 +123,38 @@ function LocalMonacoEditor({
     onMount,
     beforeMount,
   };
+
+  const applyHighlightDecorations = useCallback(
+    (code: string) => {
+      if (!editorRef.current) return;
+
+      const model = editorRef.current.getModel();
+      if (!model) return;
+
+      const decorations = collectEditorHighlightSegments(code, propsRef.current.fileName).map(
+        (segment) => {
+          const start = model.getPositionAt(segment.startOffset);
+          const end = model.getPositionAt(segment.endOffset);
+
+          return {
+            range: {
+              startLineNumber: start.lineNumber,
+              startColumn: start.column,
+              endLineNumber: end.lineNumber,
+              endColumn: end.column,
+            },
+            options: { inlineClassName: segment.className },
+          };
+        },
+      );
+
+      decorationIdsRef.current = editorRef.current.deltaDecorations(
+        decorationIdsRef.current,
+        decorations,
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -137,9 +190,12 @@ function LocalMonacoEditor({
         }
 
         editorRef.current.onDidChangeModelContent(() => {
-          propsRef.current.onChange?.(editorRef.current!.getValue());
+          const currentValue = editorRef.current!.getValue();
+          applyHighlightDecorations(currentValue);
+          propsRef.current.onChange?.(currentValue);
         });
 
+        applyHighlightDecorations(props.value);
         setIsReady(true);
       })
       .catch((err: unknown) => {
@@ -149,16 +205,21 @@ function LocalMonacoEditor({
     return () => {
       isMounted = false;
       if (editorRef.current) {
+        decorationIdsRef.current = editorRef.current.deltaDecorations(decorationIdsRef.current, []);
         editorRef.current.dispose();
       }
     };
-  }, []); // Run once on mount
+  }, [applyHighlightDecorations]); // Run once on mount
 
   useEffect(() => {
     if (editorRef.current && editorRef.current.getValue() !== value) {
       editorRef.current.setValue(value);
     }
   }, [value]);
+
+  useEffect(() => {
+    applyHighlightDecorations(value);
+  }, [applyHighlightDecorations, fileName, value]);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -436,10 +497,12 @@ export function CodeEditor({
             renderWhitespace: "selection",
             smoothScrolling: true,
             cursorBlinking: "smooth",
+            fixedOverflowWidgets: true,
+            hover: { above: false, delay: 250, sticky: true },
             overviewRulerBorder: false,
             overviewRulerLanes: 0,
             hideCursorInOverviewRuler: true,
-            padding: { top: 12, bottom: 12 },
+            padding: { top: 18, bottom: 14 },
             bracketPairColorization: { enabled: true },
             guides: { bracketPairs: true, indentation: false },
             suggest: { showKeywords: true },
