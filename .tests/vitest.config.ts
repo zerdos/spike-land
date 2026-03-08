@@ -256,7 +256,10 @@ const packages: Record<string, PkgConfig> = {
     tier: 3,
     env: "jsdom",
     setup: [tests("spike-app/test-setup.ts")],
-    aliases: { "@": src("frontend/platform-frontend") },
+    aliases: {
+      "@": src("frontend/platform-frontend"),
+      "monaco-editor": src("monaco-editor/src/index.ts"),
+    },
     includeTests: [tests("spike-app/**/*.test.ts"), tests("spike-app/**/*.test.tsx")],
     includeSrc: [
       src("frontend/platform-frontend/**/*.ts"),
