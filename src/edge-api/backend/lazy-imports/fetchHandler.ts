@@ -8,7 +8,7 @@ const ESM_CDN = "https://esm.sh";
 /** Redirect with CORS headers so cross-origin module imports can follow the redirect. */
 function corsRedirect(target: string, requestUrl: string): Response {
   const origin = new URL(requestUrl).origin;
-  const isAllowedOrigin = true;
+
 
   return new Response(null, {
     status: 302,
