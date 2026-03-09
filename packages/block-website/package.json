@@ -28,7 +28,7 @@
   "dependencies": {
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "@spike-land-ai/shared": "workspace:*",
-    "framer-motion": "^12.35.0",
+    "framer-motion": "^12.35.1",
     "lucide-react": "^0.577.0",
     "monaco-editor": "workspace:*",
     "react-markdown": "^10.1.0",

@@ -29,7 +29,7 @@
     "wrangler": "4.71.0"
   },
   "dependencies": {
-    "@spike-land-ai/code": "*",
+    "@spike-land-ai/code": "^0.9.58",
     "esbuild-wasm": "*"
   },
   "source": "./index.ts"
