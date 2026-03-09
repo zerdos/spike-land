@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiUrl, mcpUrl } from "../../core-logic/api";
+import {
+  getShowcaseAppDetail,
+  getShowcaseAppSummaries,
+  mergeShowcaseApps,
+} from "../apps/showcase-apps";
 
 export interface McpAppSummary {
   slug: string;
@@ -286,6 +291,8 @@ function buildFallbackAppsFromTools(data: StoreToolsResponse): McpAppSummary[] {
     .sort((left, right) => left.sort_order - right.sort_order);
 }
 
+const showcaseAppSummaries = getShowcaseAppSummaries().map(normalizeAppSummary);
+
 async function fetchPublicApps(): Promise<McpAppSummary[]> {
   const response = await fetch(mcpUrl("/apps"));
   if (!response.ok) {
@@ -311,14 +318,15 @@ export function useApps() {
     queryFn: async (): Promise<McpAppSummary[]> => {
       try {
         const apps = await fetchPublicApps();
-        if (apps.length > 0) {
-          return apps;
+        const mergedApps = mergeShowcaseApps(apps, showcaseAppSummaries);
+        if (mergedApps.length > 0) {
+          return mergedApps;
         }
       } catch {
         // Fall back to inferred app grouping when the public apps endpoint is unavailable.
       }
 
-      return buildFallbackAppsFromTools(await fetchStoreTools());
+      return mergeShowcaseApps(buildFallbackAppsFromTools(await fetchStoreTools()), showcaseAppSummaries);
     },
   });
 }
@@ -367,6 +375,25 @@ export function useApp(slug: string) {
         }
       } catch {
         // Fall through to inferred app reconstruction from the tool registry.
+      }
+
+      const showcaseApp = getShowcaseAppDetail(slug);
+      if (showcaseApp) {
+        return {
+          ...showcaseApp,
+          category: inferAppCategory([
+            showcaseApp.category,
+            showcaseApp.slug,
+            showcaseApp.name,
+            showcaseApp.description,
+            ...showcaseApp.tools,
+          ]),
+          tags: showcaseApp.tags ?? [],
+          tagline: showcaseApp.tagline ?? "",
+          pricing: showcaseApp.pricing ?? "free",
+          is_featured: showcaseApp.is_featured ?? false,
+          is_new: showcaseApp.is_new ?? false,
+        };
       }
 
       const data = await fetchStoreTools();

@@ -51,36 +51,38 @@ export function AppShowcase() {
   const browseCopy = useDevModeCopy("Browse all tools", "Inspect all capabilities");
 
   return (
-    <section aria-labelledby="showcase-heading" className="py-20 sm:py-24 border-t border-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <header className="mb-16 text-center max-w-3xl mx-auto">
+    <section aria-labelledby="showcase-heading" className="rubik-container-wide rubik-section-compact border-t border-border">
+      <div>
+        <header className="mx-auto mb-12 max-w-3xl text-center">
           <h2
             id="showcase-heading"
-            className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-4"
+            className="mb-4 text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl"
           >
             {headingCopy.text}
           </h2>
-          <p className="text-lg text-muted-foreground">{bodyCopy.text}</p>
+          <p className="rubik-lede mx-auto">{bodyCopy.text}</p>
         </header>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
-            <div key={category.name} className="flex flex-col">
-              <h3 className="text-xl font-semibold mb-2 text-foreground">{category.name}</h3>
-              <p className="text-sm text-muted-foreground mb-6">{category.description}</p>
+            <div key={category.name} className="rubik-panel flex flex-col p-6">
+              <h3 className="mb-2 text-xl font-semibold tracking-[-0.03em] text-foreground">
+                {category.name}
+              </h3>
+              <p className="mb-6 text-sm leading-7 text-muted-foreground">{category.description}</p>
 
               <ul className="space-y-3 flex-1">
                 {category.apps.map((app) => (
                   <li key={app.name}>
                     <Link
                       href={`/tools/${app.name}`}
-                      className="block p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/40 hover:border-border hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 group"
+                      className="group block rounded-2xl border border-border bg-background/80 p-4 transition-[border-color,box-shadow] duration-200 hover:border-primary/24 hover:shadow-[var(--panel-shadow)]"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl" role="img" aria-label={app.name}>
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-muted text-xl" role="img" aria-label={app.name}>
                           {app.icon}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-foreground group-hover:underline underline-offset-4 decoration-muted-foreground/50">
+                          <div className="font-medium tracking-[-0.02em] text-foreground group-hover:text-primary">
                             {app.label}
                           </div>
                           <div className="text-sm text-muted-foreground mt-0.5 truncate">
@@ -99,7 +101,7 @@ export function AppShowcase() {
         <div className="mt-16 text-center">
           <Link
             href="/tools"
-            className="inline-flex items-center justify-center px-6 py-3 border border-border/50 bg-background text-foreground text-sm font-medium rounded-xl hover:bg-muted/30 hover:border-border hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
+            className="inline-flex items-center justify-center rounded-[calc(var(--radius-control)-0.1rem)] border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/24 hover:text-primary"
           >
             {browseCopy.text} &rarr;
           </Link>

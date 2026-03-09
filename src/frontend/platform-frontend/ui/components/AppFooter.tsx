@@ -5,7 +5,10 @@ export function AppFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 px-4 pb-8 pt-8" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 500px" }}>
+    <footer
+      className="mt-24 px-4 pb-8 pt-8"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 500px" }}
+    >
       <div className="rubik-container space-y-6">
         <div className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
@@ -18,8 +21,8 @@ export function AppFooter() {
                 One product layer for chat, tools, docs, and deployment.
               </h2>
               <p className="rubik-lede">
-                spike.land turns MCP capability into real software surfaces with shared auth,
-                observability, and edge-native runtime defaults.
+                spike.land turns MCP capability into real software surfaces with
+                shared auth, observability, and edge-native runtime defaults.
               </p>
             </div>
           </div>
@@ -44,7 +47,7 @@ export function AppFooter() {
           <div className="grid gap-10 lg:grid-cols-[1.35fr_repeat(3,minmax(0,1fr))]">
             <div className="space-y-5">
               <Link to="/" className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-card text-sm font-black tracking-[-0.08em] text-foreground">
+                <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground">
                   SL
                 </div>
                 <div>
@@ -58,8 +61,8 @@ export function AppFooter() {
               </Link>
 
               <p className="max-w-sm text-sm leading-7 text-muted-foreground">
-                Build apps, tools, and operational workflows with one design system and one runtime
-                model.
+                Build apps, tools, and operational workflows with one design
+                system and one runtime model.
               </p>
 
               <div className="flex items-center gap-3">
@@ -100,22 +103,34 @@ export function AppFooter() {
               </p>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/apps" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/apps"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Packages
                   </Link>
                 </li>
                 <li>
-                  <Link to="/store" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/store"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     App Store
                   </Link>
                 </li>
                 <li>
-                  <Link to="/pricing" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/pricing"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/vibe-code" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/vibe-code"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Vibe Code
                   </Link>
                 </li>
@@ -128,17 +143,26 @@ export function AppFooter() {
               </p>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/docs" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/docs"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Documentation
                   </Link>
                 </li>
                 <li>
-                  <Link to="/blog" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/blog"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Blog
                   </Link>
                 </li>
                 <li>
-                  <Link to="/about" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/about"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     About
                   </Link>
                 </li>
@@ -159,12 +183,18 @@ export function AppFooter() {
               </p>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/privacy" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/privacy"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms" className="text-muted-foreground transition-colors hover:text-primary">
+                  <Link
+                    to="/terms"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     Terms of Service
                   </Link>
                 </li>
@@ -197,10 +227,11 @@ export function AppFooter() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold tracking-[0.04em] text-muted-foreground">
-                &copy; {currentYear} SPIKE LAND LTD. Built for edge-native AI product surfaces.
+                &copy; {currentYear} SPIKE LAND LTD. Built for edge-native AI
+                product surfaces.
               </p>
               <p className="text-xs text-muted-foreground/80">
-                London-built. Global by default.
+                Brighton-built. Global by default.
               </p>
             </div>
 

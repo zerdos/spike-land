@@ -188,49 +188,48 @@ function PlanCard({
   const displayPrice = annual ? plan.annualPrice : plan.monthlyPrice;
   const planId = `plan-${plan.name.toLowerCase()}`;
 
-  const buttonClass = `mt-8 block w-full rounded-lg px-6 py-2.5 text-center text-sm font-semibold transition ${plan.highlighted
-      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-      : isFree
-        ? "border border-border text-muted-foreground hover:bg-muted/50"
-        : "bg-muted text-foreground hover:bg-muted/80"
+  const buttonClass = `mt-8 block w-full rounded-[calc(var(--radius-control)-0.1rem)] border px-6 py-3 text-center text-sm font-semibold transition ${plan.highlighted
+    ? "border-transparent bg-foreground text-background hover:bg-foreground/92"
+    : isFree
+      ? "border-border bg-background text-foreground hover:border-primary/24 hover:text-primary"
+      : "border-border bg-secondary text-foreground hover:border-primary/24 hover:bg-secondary/88"
     }`;
 
   return (
     <div
       aria-labelledby={planId}
-      className={`flex flex-col rounded-2xl border p-6 shadow-sm ${plan.highlighted
-          ? "border-primary bg-primary/5 ring-2 ring-primary"
-          : "border-border bg-card"
-        }`}
+      className={`flex h-full flex-col p-6 ${plan.highlighted ? "rubik-panel-strong" : "rubik-panel"}`}
     >
       {plan.highlighted && (
-        <span className="mb-4 self-start rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+        <span className="rubik-chip rubik-chip-accent mb-4 self-start">
           Most Popular
         </span>
       )}
 
-      <h2 id={planId} className="text-xl font-bold text-foreground">
+      <h2 id={planId} className="text-xl font-semibold tracking-[-0.03em] text-foreground">
         {plan.name}
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+      <p className="mt-2 text-sm leading-7 text-muted-foreground">{plan.description}</p>
 
       <div className="mt-4">
-        <span className="text-3xl font-extrabold text-foreground">{displayPrice}</span>
+        <span className="text-3xl font-semibold tracking-[-0.05em] text-foreground">{displayPrice}</span>
         {plan.period && <span className="text-base text-muted-foreground">{plan.period}</span>}
         {annual && !isFree && (
-          <p className="mt-0.5 text-xs text-muted-foreground">{plan.annualTotal} billed annually</p>
+          <p className="mt-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            {plan.annualTotal} billed annually
+          </p>
         )}
       </div>
 
       {annual && !isFree && (
-        <span className="mt-2 self-start rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+        <span className="mt-3 inline-flex self-start rounded-full border border-success/20 bg-success/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-success-foreground">
           Save 20%
         </span>
       )}
 
-      <ul className="mt-6 flex-1 space-y-2">
+      <ul className="mt-6 flex-1 space-y-3">
         {plan.features.map((f) => (
-          <li key={f.text} className="flex items-start gap-2 text-sm text-foreground">
+          <li key={f.text} className="flex items-start gap-2 text-sm leading-7 text-foreground">
             <svg
               className="mt-0.5 h-4 w-4 shrink-0 text-primary"
               fill="none"
@@ -276,7 +275,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
   const panelId = `faq-${question.slice(0, 20).replace(/\W+/g, "-").toLowerCase()}`;
 
   return (
-    <div className="border-b border-border py-4">
+    <div className="border-b border-border py-4 last:border-b-0">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -312,22 +311,33 @@ export function PricingPage() {
   const PLANS = makePlans(pricing);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 px-4 py-10">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold text-foreground">Simple, Transparent Pricing</h1>
-        <p className="text-muted-foreground max-w-xl mx-auto">
-          Choose the plan that fits your workflow. From free to enterprise-grade.
-        </p>
-        <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+    <div className="rubik-container rubik-page rubik-stack">
+      <section className="rubik-panel-strong space-y-6 p-6 text-center sm:p-8">
+        <div className="space-y-4">
+          <span className="rubik-eyebrow">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            Pricing
+          </span>
+          <div className="space-y-3">
+            <h1 className="text-4xl font-semibold tracking-[-0.06em] text-foreground sm:text-5xl">
+              Transparent pricing for shipping MCP-native software.
+            </h1>
+            <p className="rubik-lede mx-auto">
+              Start free, scale into pro workflows, and keep enterprise controls available when
+              your product surface becomes infrastructure.
+            </p>
+          </div>
+        </div>
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-success/20 bg-success/70 px-4 py-2 text-sm font-medium text-success-foreground">
           Launch pricing: £1/mo with code <span className="font-mono font-bold">LAUNCH97</span> —
           14-day free trial included
         </div>
 
-        {/* Billing toggle */}
         <div
           role="radiogroup"
           aria-label="Billing frequency"
-          className="mt-6 inline-flex items-center gap-3 rounded-full border border-border bg-muted p-1"
+          className="mx-auto inline-flex items-center gap-3 rounded-full border border-border bg-muted p-1"
           onKeyDown={(e) => {
             if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
               e.preventDefault();
@@ -345,7 +355,7 @@ export function PricingPage() {
             aria-checked={!annual}
             tabIndex={!annual ? 0 : -1}
             onClick={() => setAnnual(false)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${!annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${!annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
           >
             Monthly
@@ -356,7 +366,7 @@ export function PricingPage() {
             aria-checked={annual}
             tabIndex={annual ? 0 : -1}
             onClick={() => setAnnual(true)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
           >
             Annual
@@ -365,9 +375,9 @@ export function PricingPage() {
             </span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {PLANS.map((plan) => (
           <PlanCard
             key={plan.name}
@@ -407,8 +417,8 @@ export function PricingPage() {
       </p>
 
       {/* FAQ */}
-      <div className="mx-auto max-w-2xl">
-        <h2 className="mb-6 text-center text-2xl font-bold text-foreground">
+      <div className="rubik-panel mx-auto max-w-3xl p-6 sm:p-8">
+        <h2 className="mb-6 text-center text-2xl font-semibold tracking-[-0.04em] text-foreground">
           Frequently Asked Questions
         </h2>
         <div>

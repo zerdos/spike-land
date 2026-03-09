@@ -54,12 +54,14 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
           toolresult: ({ node: _node, ...props }: { node?: unknown; [key: string]: unknown }) => {
             const name = (props as Record<string, string>).name || "unknown";
             return (
-              <div className="my-4 rounded-lg border border-border bg-muted/30 p-4">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="rubik-panel my-5 p-4">
+                <div className="mb-2 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-xs font-mono font-bold text-primary">{name}</span>
+                  <span className="text-xs font-mono font-semibold uppercase tracking-[0.12em] text-primary">
+                    {name}
+                  </span>
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm leading-7 text-muted-foreground">
                   {(props as Record<string, ReactNode>).children || "Loading result..."}
                 </div>
               </div>
@@ -88,23 +90,29 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
             }
 
             return (
-              <pre className="my-4 overflow-x-auto rounded-lg border border-border bg-muted/50 p-4">
+              <pre className="rubik-signal-rail my-5 overflow-x-auto rounded-[calc(var(--radius-panel)-0.2rem)] p-4 text-sm">
                 {children}
               </pre>
             );
           },
           // Style standard markdown elements
           h1: ({ children }) => (
-            <h1 className="text-3xl font-bold text-foreground mt-8 mb-4">{children}</h1>
+            <h1 className="mt-10 mb-4 text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
+              {children}
+            </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-2xl font-semibold text-foreground mt-6 mb-3">{children}</h2>
+            <h2 className="mt-8 mb-3 text-2xl font-semibold tracking-[-0.04em] text-foreground">
+              {children}
+            </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-xl font-semibold text-foreground mt-4 mb-2">{children}</h3>
+            <h3 className="mt-6 mb-2 text-xl font-semibold tracking-[-0.03em] text-foreground">
+              {children}
+            </h3>
           ),
           p: ({ children }) => (
-            <p className="text-sm text-foreground/90 leading-relaxed mb-3">{children}</p>
+            <p className="mb-4 text-[0.97rem] leading-8 text-foreground/90">{children}</p>
           ),
           code: ({ children, className: codeClassName }) => {
             const isBlock = codeClassName?.startsWith("language-");
@@ -112,7 +120,7 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
               return <code className="text-xs font-mono text-foreground">{children}</code>;
             }
             return (
-              <code className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono text-primary">
+              <code className="rounded-md border border-border bg-muted px-1.5 py-0.5 text-xs font-mono text-primary">
                 {children}
               </code>
             );
@@ -131,12 +139,17 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
             <td className="px-3 py-2 border-b border-border/50 text-sm">{children}</td>
           ),
           a: ({ href, children }) => (
-            <a href={href} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+            <a
+              href={href}
+              className="font-medium text-primary hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {children}
             </a>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-2 border-primary pl-4 my-4 italic text-muted-foreground">
+            <blockquote className="my-5 border-l-2 border-primary pl-4 italic text-muted-foreground">
               {children}
             </blockquote>
           ),
@@ -156,13 +169,18 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
   }
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
-        <FileText className="w-4 h-4 text-muted-foreground" />
-        <span className="font-semibold text-sm">MDX &mdash; {appSlug}</span>
+    <div className={`rubik-panel flex h-full flex-col overflow-hidden ${className}`}>
+      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-semibold tracking-[-0.02em]">MDX &mdash; {appSlug}</span>
+        </div>
+        <span className="rubik-chip px-2.5 py-1 text-[10px]">editorial surface</span>
       </div>
-      <div className="flex-1 overflow-y-auto p-6 max-w-3xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-3xl p-6 sm:p-8">
         {renderedContent}
+        </div>
       </div>
     </div>
   );

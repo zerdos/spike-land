@@ -1,7 +1,13 @@
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Settings, LogOut, ChevronDown, CreditCard, Loader2 } from "lucide-react";
+import {
+  Settings,
+  LogOut,
+  ChevronDown,
+  CreditCard,
+  Loader2,
+} from "lucide-react";
 import { Button } from "../shared/ui/button";
 import { cn } from "../../styling/cn";
 
@@ -31,7 +37,7 @@ export function LoginButton() {
 
   if (isLoading) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted dark:bg-white/5 dark:border dark:border-white/10 dark:backdrop-blur-sm animate-pulse">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card/88 shadow-[var(--panel-shadow)] animate-pulse">
         <Loader2 className="size-4 animate-spin text-muted-foreground/50" />
       </div>
     );
@@ -42,8 +48,8 @@ export function LoginButton() {
       <Button
         onClick={() => login()}
         className={cn(
-          "rounded-2xl px-5 font-bold shadow-lg tracking-widest text-[0.9rem]",
-          "shadow-primary/20",
+          "rounded-[calc(var(--radius-control)-0.1rem)] px-5 text-[0.78rem] font-semibold uppercase tracking-[0.16em]",
+          "shadow-[0_18px_40px_color-mix(in_srgb,var(--primary-color)_18%,transparent)]",
         )}
       >
         Sign in
@@ -63,12 +69,10 @@ export function LoginButton() {
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={cn(
-          "flex items-center gap-2 rounded-2xl p-1 sm:pr-3 transition-all duration-200 border",
-          // Light mode
-          menuOpen ? "bg-muted border-border" : "border-transparent hover:bg-muted",
-          // Dark mode: glass trigger
-          "dark:border-white/10 dark:backdrop-blur-sm",
-          menuOpen ? "dark:bg-white/10" : "dark:bg-white/5 dark:hover:bg-white/10",
+          "flex items-center gap-2 rounded-2xl border px-1 py-1 shadow-[var(--panel-shadow)] transition-[border-color,background-color,box-shadow] duration-200 sm:pr-3",
+          menuOpen
+            ? "border-primary/20 bg-card"
+            : "border-border bg-card/82 hover:border-primary/18 hover:bg-card",
         )}
         aria-label={`Account menu for ${user.name ?? user.email ?? "User"}`}
         aria-expanded={menuOpen}
@@ -76,19 +80,25 @@ export function LoginButton() {
       >
         <div className="relative">
           {user.picture ? (
-            <img src={user.picture} alt="" className="h-8 w-8 rounded-xl object-cover shadow-sm" />
+            <img
+              src={user.picture}
+              alt=""
+              className="h-8 w-8 rounded-xl object-cover shadow-sm"
+            />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-[10px] font-black text-primary-foreground shadow-inner">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-[0.68rem] font-semibold tracking-[0.08em] text-primary-foreground shadow-[0_10px_24px_color-mix(in_srgb,var(--primary-color)_24%,transparent)]">
               {initials}
             </div>
           )}
           <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
         </div>
         <div className="hidden flex-col items-start sm:flex">
-          <span className="text-xs font-bold leading-none text-foreground tracking-wider">
+          <span className="text-xs font-semibold leading-none tracking-[-0.02em] text-foreground">
             {user.name ?? user.preferred_username ?? "User"}
           </span>
-          <span className="text-[10px] font-medium text-muted-foreground">Pro Member</span>
+          <span className="text-[10px] font-medium text-muted-foreground">
+            Pro Member
+          </span>
         </div>
         <ChevronDown
           className={cn(
@@ -102,19 +112,15 @@ export function LoginButton() {
         <div
           role="menu"
           className={cn(
-            "absolute right-0 top-full z-[100] mt-2 w-56 origin-top-right rounded-2xl p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-200",
-            // Light mode
-            "border border-border bg-card",
-            // Dark mode: glass panel
-            "dark:glass-card dark:backdrop-blur-md",
+            "rubik-panel absolute right-0 top-full z-[100] mt-2 w-56 origin-top-right rounded-[var(--radius-panel)] p-1.5 animate-in fade-in zoom-in-95 duration-200",
           )}
         >
-          <div className="px-3 py-3 mb-1 border-b border-border/50 dark:border-white/10">
-            <p className="truncate text-sm font-black text-foreground tracking-wider">
+          <div className="mb-1 border-b border-border/50 px-3 py-3">
+            <p className="truncate text-sm font-semibold tracking-[-0.03em] text-foreground">
               {user.name ?? "User"}
             </p>
             {user.email && (
-              <p className="truncate text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="truncate text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                 {user.email}
               </p>
             )}
@@ -126,9 +132,7 @@ export function LoginButton() {
               role="menuitem"
               onClick={() => setMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 text-sm font-bold text-muted-foreground rounded-xl transition-all duration-200 tracking-wider",
-                "hover:bg-muted hover:text-foreground",
-                "dark:hover:bg-white/10 dark:hover:text-white",
+                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium tracking-[0.01em] text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground",
               )}
             >
               <Settings className="size-4" />
@@ -140,9 +144,7 @@ export function LoginButton() {
               role="menuitem"
               onClick={() => setMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 text-sm font-bold text-muted-foreground rounded-xl transition-all duration-200 tracking-wider",
-                "hover:bg-muted hover:text-foreground",
-                "dark:hover:bg-white/10 dark:hover:text-white",
+                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium tracking-[0.01em] text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground",
               )}
             >
               <CreditCard className="size-4" />
@@ -156,9 +158,7 @@ export function LoginButton() {
                 logout();
               }}
               className={cn(
-                "flex w-full items-center gap-3 px-3 py-2 text-sm font-bold text-destructive rounded-xl transition-all duration-200 tracking-wider",
-                "hover:bg-destructive/5",
-                "dark:text-red-400 dark:hover:bg-red-500/10",
+                "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium tracking-[0.01em] text-destructive transition-colors duration-200 hover:bg-destructive/5",
               )}
             >
               <LogOut className="size-4" />

@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { Link } from "../lazy-imports/link";
 import { TOTAL_TOOL_COUNT } from "./LandingHero";
 import { useDevModeCopy } from "./useDevModeCopy";
+import { commandSurfaceVars } from "./commandSurfaceTheme";
 
 export function TryItNow() {
-  const [activeTab, setActiveTab] = useState<"claude-code" | "cursor" | "vscode">("claude-code");
+  const [activeTab, setActiveTab] = useState<
+    "claude-code" | "cursor" | "vscode"
+  >("claude-code");
   const [copied, setCopied] = useState(false);
   const headingCopy = useDevModeCopy(
     "Try spike.land in one command",
@@ -18,8 +21,14 @@ export function TryItNow() {
     "This installs the spike.land CLI or configures your editor. Requires Node.js 18+.",
     "This attaches the hosted MCP endpoint and developer tooling surface. Requires Node.js 18+.",
   );
-  const nextCopy = useDevModeCopy("What happens next:", "What the agent changes next:");
-  const browseCopy = useDevModeCopy("Browse all tools", "Browse the runtime surface");
+  const nextCopy = useDevModeCopy(
+    "What happens next:",
+    "What the agent changes next:",
+  );
+  const browseCopy = useDevModeCopy(
+    "Browse all tools",
+    "Browse the runtime surface",
+  );
 
   const getCommand = () => {
     switch (activeTab) {
@@ -72,14 +81,17 @@ export function TryItNow() {
               {bodyCopy.text}
             </p>
 
-            <div className="rounded-xl overflow-hidden border border-border/50 shadow-2xl bg-obsidian-950">
-              <div className="flex overflow-x-auto border-b border-border/50 bg-obsidian-900/50">
+            <div
+              className="overflow-hidden rounded-xl border shadow-2xl [background:var(--command-surface-bg)]"
+              style={commandSurfaceVars}
+            >
+              <div className="flex overflow-x-auto border-b [border-color:var(--command-surface-border)] [background:var(--command-surface-tab-bg)]">
                 <button
                   onClick={() => setActiveTab("claude-code")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "claude-code"
-                      ? "border-primary text-primary bg-primary/5"
-                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "[border-color:var(--command-surface-active-text)] [color:var(--command-surface-active-text)] [background:var(--command-surface-active-bg)]"
+                      : "border-transparent [color:var(--command-surface-muted)] hover:[color:var(--command-surface-fg)] hover:[background:var(--command-surface-hover-bg)]"
                   }`}
                 >
                   Claude Code
@@ -88,8 +100,8 @@ export function TryItNow() {
                   onClick={() => setActiveTab("cursor")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "cursor"
-                      ? "border-primary text-primary bg-primary/5"
-                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "[border-color:var(--command-surface-active-text)] [color:var(--command-surface-active-text)] [background:var(--command-surface-active-bg)]"
+                      : "border-transparent [color:var(--command-surface-muted)] hover:[color:var(--command-surface-fg)] hover:[background:var(--command-surface-hover-bg)]"
                   }`}
                 >
                   Cursor
@@ -98,8 +110,8 @@ export function TryItNow() {
                   onClick={() => setActiveTab("vscode")}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === "vscode"
-                      ? "border-primary text-primary bg-primary/5"
-                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "[border-color:var(--command-surface-active-text)] [color:var(--command-surface-active-text)] [background:var(--command-surface-active-bg)]"
+                      : "border-transparent [color:var(--command-surface-muted)] hover:[color:var(--command-surface-fg)] hover:[background:var(--command-surface-hover-bg)]"
                   }`}
                 >
                   VS Code
@@ -111,31 +123,36 @@ export function TryItNow() {
                   {activeTab === "claude-code" && (
                     <div className="flex gap-2">
                       <span className="text-primary shrink-0">$</span>
-                      <span className="text-foreground break-all">
-                        claude mcp add spike-land --transport http https://spike.land/mcp
+                      <span className="break-all [color:var(--command-surface-code)]">
+                        claude mcp add spike-land --transport http
+                        https://spike.land/mcp
                       </span>
                     </div>
                   )}
                   {activeTab === "cursor" && (
                     <div className="flex flex-col gap-1">
-                      <span className="text-muted-foreground text-xs mb-1">
+                      <span className="mb-1 text-xs [color:var(--command-surface-muted)]">
                         Add to Cursor Settings → MCP
                       </span>
-                      <span className="text-foreground break-all">{getCommand()}</span>
+                      <span className="break-all [color:var(--command-surface-code)]">
+                        {getCommand()}
+                      </span>
                     </div>
                   )}
                   {activeTab === "vscode" && (
                     <div className="flex flex-col gap-1">
-                      <span className="text-muted-foreground text-xs mb-1">
+                      <span className="mb-1 text-xs [color:var(--command-surface-muted)]">
                         Add to .vscode/mcp.json
                       </span>
-                      <span className="text-foreground break-all">{getCommand()}</span>
+                      <span className="break-all [color:var(--command-surface-code)]">
+                        {getCommand()}
+                      </span>
                     </div>
                   )}
                 </div>
                 <button
                   onClick={handleCopy}
-                  className="shrink-0 flex items-center justify-center gap-2 px-3 py-2 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-md transition-colors text-sm font-medium w-full sm:w-auto"
+                  className="shrink-0 flex w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors [background:var(--command-surface-button-bg)] [border-color:var(--command-surface-button-border)] [color:var(--command-surface-fg)] hover:[background:var(--command-surface-button-bg-hover)] sm:w-auto"
                 >
                   {copied ? (
                     <>
@@ -182,21 +199,28 @@ export function TryItNow() {
           </div>
 
           <div className="p-6 sm:p-8 bg-muted/30">
-            <h3 className="font-semibold text-foreground mb-4">{nextCopy.text}</h3>
-            <ol className="space-y-3 mb-8 text-muted-foreground text-sm list-decimal list-inside ml-1">
-              <li>Registers spike.land as an MCP server with your AI client.</li>
-              <li>First use will automatically open your browser for a quick 1-click approval.</li>
+            <h3 className="font-semibold text-foreground mb-4">
+              {nextCopy.text}
+            </h3>
+            <ol className="mb-8 ml-1 list-inside list-decimal space-y-3 text-sm text-foreground/72">
+              <li>
+                Registers spike.land as an MCP server with your AI client.
+              </li>
+              <li>
+                First use will automatically open your browser for a quick
+                1-click approval.
+              </li>
               <li>Instant access to all tools. Try asking your AI:</li>
             </ol>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-              <div className="bg-background border border-border rounded-lg p-3 text-sm shadow-sm text-muted-foreground">
+              <div className="rounded-lg border border-border bg-background p-3 text-sm text-foreground/72 shadow-sm">
                 "Search for code review tools"
               </div>
-              <div className="bg-background border border-border rounded-lg p-3 text-sm shadow-sm text-muted-foreground">
+              <div className="rounded-lg border border-border bg-background p-3 text-sm text-foreground/72 shadow-sm">
                 "Generate a chess game and challenge alice"
               </div>
-              <div className="bg-background border border-border rounded-lg p-3 text-sm shadow-sm text-muted-foreground">
+              <div className="rounded-lg border border-border bg-background p-3 text-sm text-foreground/72 shadow-sm">
                 "Create an AI image of a mountain at sunset"
               </div>
             </div>
@@ -207,7 +231,10 @@ export function TryItNow() {
                 className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors group"
               >
                 {browseCopy.text}
-                <span className="group-hover:translate-x-1 transition-transform" aria-hidden="true">
+                <span
+                  className="group-hover:translate-x-1 transition-transform"
+                  aria-hidden="true"
+                >
                   &rarr;
                 </span>
               </Link>

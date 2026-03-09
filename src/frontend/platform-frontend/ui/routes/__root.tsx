@@ -20,7 +20,10 @@ const DEFAULT_DESCRIPTION =
 const DEFAULT_OG_IMAGE = "https://spike.land/og-image.png";
 const SITE_URL = "https://spike.land";
 
-const ROUTE_META: Record<string, { title: string; description: string; ogImage?: string }> = {
+const ROUTE_META: Record<
+  string,
+  { title: string; description: string; ogImage?: string }
+> = {
   "/": {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
@@ -97,7 +100,8 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/settings": {
     title: "Settings - spike.land",
-    description: "Configure your spike.land account, billing, API keys, and preferences.",
+    description:
+      "Configure your spike.land account, billing, API keys, and preferences.",
   },
   "/build": {
     title: "vibe-code - Chat-Native MCP App Builder | spike.land",
@@ -116,7 +120,8 @@ const ROUTE_META: Record<string, { title: string; description: string; ogImage?:
   },
   "/version": {
     title: "Version - spike.land",
-    description: "View build version, deployed assets, and download links for spike.land.",
+    description:
+      "View build version, deployed assets, and download links for spike.land.",
   },
   "/what-we-do": {
     title: "What We Do - spike.land | MCP-First AI Platform",
@@ -149,7 +154,8 @@ const WEB_APP_JSON_LD = JSON.stringify({
       name: "Free",
       price: "0",
       priceCurrency: "USD",
-      description: "50 requests per day, free-tier tools, bug reporting, community support",
+      description:
+        "50 requests per day, free-tier tools, bug reporting, community support",
     },
     {
       "@type": "Offer",
@@ -271,34 +277,54 @@ export function RootLayout() {
 
     document.title = meta.title;
 
-    const descEl = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const descEl = document.querySelector<HTMLMetaElement>(
+      'meta[name="description"]',
+    );
     if (descEl) descEl.content = meta.description;
 
-    const ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+    const ogTitle = document.querySelector<HTMLMetaElement>(
+      'meta[property="og:title"]',
+    );
     if (ogTitle) ogTitle.content = meta.title;
 
-    const ogDesc = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+    const ogDesc = document.querySelector<HTMLMetaElement>(
+      'meta[property="og:description"]',
+    );
     if (ogDesc) ogDesc.content = meta.description;
 
-    const ogImg = document.querySelector<HTMLMetaElement>('meta[property="og:image"]');
+    const ogImg = document.querySelector<HTMLMetaElement>(
+      'meta[property="og:image"]',
+    );
     if (ogImg) ogImg.content = ogImage;
 
-    const twTitle = document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]');
+    const twTitle = document.querySelector<HTMLMetaElement>(
+      'meta[name="twitter:title"]',
+    );
     if (twTitle) twTitle.content = meta.title;
 
-    const twDesc = document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]');
+    const twDesc = document.querySelector<HTMLMetaElement>(
+      'meta[name="twitter:description"]',
+    );
     if (twDesc) twDesc.content = meta.description;
 
-    const twImg = document.querySelector<HTMLMetaElement>('meta[name="twitter:image"]');
+    const twImg = document.querySelector<HTMLMetaElement>(
+      'meta[name="twitter:image"]',
+    );
     if (twImg) twImg.content = ogImage;
 
-    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const canonical = document.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]',
+    );
     if (canonical) canonical.href = canonicalUrl;
 
-    const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+    const ogUrl = document.querySelector<HTMLMetaElement>(
+      'meta[property="og:url"]',
+    );
     if (ogUrl) ogUrl.content = canonicalUrl;
 
-    let ogLocale = document.querySelector<HTMLMetaElement>('meta[property="og:locale"]');
+    let ogLocale = document.querySelector<HTMLMetaElement>(
+      'meta[property="og:locale"]',
+    );
     if (!ogLocale) {
       ogLocale = document.createElement("meta");
       ogLocale.setAttribute("property", "og:locale");
@@ -348,7 +374,7 @@ export function RootLayout() {
           <div className="rubik-container flex h-[4.5rem] items-center justify-between gap-6">
             <div className="flex min-w-0 items-center gap-5">
               <Link to="/" className="flex min-w-0 items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-card text-sm font-black tracking-[-0.08em] shadow-[var(--panel-shadow)]">
+                <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
                   SL
                 </div>
                 <div className="min-w-0">
@@ -360,7 +386,10 @@ export function RootLayout() {
                   </p>
                 </div>
               </Link>
-              <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
+              <nav
+                className="hidden lg:flex items-center gap-1.5"
+                aria-label="Main navigation"
+              >
                 {navLinks.map(({ to, label }) => (
                   <Link
                     key={to}
@@ -382,13 +411,19 @@ export function RootLayout() {
                 <span className="h-2 w-2 rounded-full bg-primary" />
                 80+ tools online
               </div>
-              {isDeveloper && <ThemeSwitcher theme={theme} setTheme={setTheme} />}
+              {isDeveloper && (
+                <ThemeSwitcher theme={theme} setTheme={setTheme} />
+              )}
               <LoginButton />
               {/* Mobile hamburger */}
               <button
                 type="button"
                 className="flex items-center justify-center rounded-2xl border border-border bg-card p-3 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
-                aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-label={
+                  mobileNavOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+                }
                 aria-expanded={mobileNavOpen}
                 aria-controls="mobile-nav"
                 onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -439,7 +474,10 @@ export function RootLayout() {
             aria-modal="true"
             aria-label="Mobile navigation"
           >
-            <nav aria-label="Mobile navigation links" className="rubik-panel p-4">
+            <nav
+              aria-label="Mobile navigation links"
+              className="rubik-panel p-4"
+            >
               {navLinks.map(({ to, label }) => (
                 <Link
                   key={to}
@@ -463,8 +501,8 @@ export function RootLayout() {
             <div className="p-8 text-center">
               <h1>JavaScript Required</h1>
               <p>
-                spike.land requires JavaScript to run. Please enable JavaScript in your browser
-                settings.
+                spike.land requires JavaScript to run. Please enable JavaScript
+                in your browser settings.
               </p>
             </div>
           </noscript>

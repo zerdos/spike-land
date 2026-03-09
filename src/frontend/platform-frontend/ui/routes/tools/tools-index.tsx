@@ -51,7 +51,7 @@ export function ToolsIndexPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="rubik-container rubik-page flex h-64 items-center justify-center">
         <div role="status" aria-live="polite" className="text-muted-foreground animate-pulse">
           Loading apps...
         </div>
@@ -61,11 +61,11 @@ export function ToolsIndexPage() {
 
   if (isError) {
     return (
-      <div className="space-y-6">
+      <div className="rubik-container rubik-page rubik-stack">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">MCP Apps</h1>
+          <h1 className="text-3xl font-semibold tracking-[-0.05em] text-foreground">MCP Apps</h1>
         </div>
-        <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
+        <div className="rubik-panel space-y-4 p-8 text-center">
           <p className="text-muted-foreground">Unable to load apps. Please try again later.</p>
           <p className="text-sm text-muted-foreground">
             {error instanceof Error ? error.message : "An unexpected error occurred."}
@@ -82,27 +82,36 @@ export function ToolsIndexPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">MCP Apps</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Interactive stateful workflows powered by MCP tools.
-          </p>
+    <div className="rubik-container rubik-page rubik-stack">
+      <section className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl space-y-4">
+          <span className="rubik-eyebrow">
+            <Sparkles className="h-3.5 w-3.5" />
+            MCP Apps
+          </span>
+          <div className="space-y-3">
+            <h1 className="text-4xl font-semibold tracking-[-0.06em] text-foreground sm:text-5xl">
+              Browse app families before you dive into a specific tool surface.
+            </h1>
+            <p className="rubik-lede">
+              Each category groups stateful MCP workflows by capability so chat, terminal, docs,
+              and runtime views stay legible.
+            </p>
+          </div>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">
-          <Sparkles className="w-3.5 h-3.5" />
-          {apps?.length || 0} Apps
+        <span className="rubik-chip rubik-chip-accent">
+          <Sparkles className="h-3.5 w-3.5" />
+          {apps?.length || 0} apps
         </span>
-      </div>
+      </section>
 
       {!apps || apps.length === 0 ? (
-        <div className="rounded-xl border border-border border-dashed p-12 text-center text-muted-foreground">
+        <div className="rubik-panel border-dashed p-12 text-center text-muted-foreground">
           No apps available at the moment.
         </div>
       ) : (
         <div className="space-y-8">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm leading-7 text-muted-foreground">
             Browse app families first. Once you pick a category, the grid below only shows the MCP
             apps inside that category.
           </p>
@@ -116,7 +125,7 @@ export function ToolsIndexPage() {
                   key={group.category}
                   type="button"
                   onClick={() => selectCategory(group.category)}
-                  className="rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-0.5"
+                  className="rounded-[var(--radius-panel)] border p-5 text-left transition-[border-color,box-shadow] duration-200"
                   style={{
                     borderColor: isActive
                       ? "color-mix(in srgb, var(--primary-color) 45%, transparent)"
@@ -124,11 +133,12 @@ export function ToolsIndexPage() {
                     background: isActive
                       ? "linear-gradient(180deg, color-mix(in srgb, var(--primary-color) 8%, var(--card-bg)), color-mix(in srgb, var(--card-bg) 92%, transparent))"
                       : "linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 96%, transparent), color-mix(in srgb, var(--muted-bg) 58%, transparent))",
+                    boxShadow: isActive ? "var(--panel-shadow-strong)" : "var(--panel-shadow)",
                   }}
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-lg font-bold text-foreground">{group.category}</h2>
-                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary ring-1 ring-inset ring-primary/20">
+                    <h2 className="text-lg font-semibold tracking-[-0.03em] text-foreground">{group.category}</h2>
+                    <span className="rubik-chip rubik-chip-accent px-2.5 py-1 text-[11px]">
                       {group.apps.length} app{group.apps.length === 1 ? "" : "s"}
                     </span>
                   </div>
@@ -145,13 +155,13 @@ export function ToolsIndexPage() {
             <section className="space-y-4">
               <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">{activeGroup.category}</h2>
+                  <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground">{activeGroup.category}</h2>
                   <p className="text-sm text-muted-foreground">
                     {CATEGORY_DESCRIPTIONS[activeGroup.category] ??
                       "A grouped set of MCP apps built around a shared capability family."}
                   </p>
                 </div>
-                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary ring-1 ring-inset ring-primary/20">
+                <span className="rubik-chip rubik-chip-accent px-2.5 py-1 text-[11px]">
                   Active Category
                 </span>
               </div>
@@ -164,14 +174,14 @@ export function ToolsIndexPage() {
                     params={{
                       appSlug: app.slug,
                     }}
-                    className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:scale-[1.01] hover:border-primary/40 hover:shadow-md"
+                    className="rubik-panel group flex flex-col p-6 transition-[border-color,box-shadow] duration-200 hover:border-primary/30 hover:shadow-[var(--panel-shadow-strong)]"
                   >
                     <div className="mb-4 flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 text-2xl transition-transform group-hover:scale-110">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-muted text-2xl">
                         {app.emoji || "🔧"}
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-foreground transition-colors group-hover:text-primary">
+                        <h3 className="text-lg font-semibold tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
                           {app.name}
                         </h3>
                         <p className="text-xs font-medium text-muted-foreground">
@@ -181,7 +191,7 @@ export function ToolsIndexPage() {
                     </div>
 
                     <div className="mb-4">
-                      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary ring-1 ring-inset ring-primary/20">
+                      <span className="rubik-chip rubik-chip-accent px-2.5 py-1 text-[11px]">
                         {activeGroup.category}
                       </span>
                     </div>

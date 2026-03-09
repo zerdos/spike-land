@@ -48,22 +48,28 @@ const mcpTools: McpToolEntry[] = [
 
 export function AppsIndexPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">MCP Packages</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Package-level implementation surfaces behind spike.land MCP apps.
-          </p>
+    <div className="rubik-container rubik-page rubik-stack">
+      <section className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl space-y-4">
+          <span className="rubik-eyebrow">Package atlas</span>
+          <div className="space-y-3">
+            <h1 className="text-4xl font-semibold tracking-[-0.06em] text-foreground sm:text-5xl">
+              Browse the MCP packages behind spike.land app surfaces.
+            </h1>
+            <p className="rubik-lede">
+              Inspect source-facing packages, compare runtime capability, and jump into the
+              product shell that wraps each tool family.
+            </p>
+          </div>
         </div>
         <Link
           to="/packages/new"
           search={{ prompt: "" }}
-          className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+          className="inline-flex items-center justify-center rounded-[calc(var(--radius-control)-0.1rem)] border border-transparent bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/92"
         >
           Create Package
         </Link>
-      </div>
+      </section>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {mcpTools.map((tool) => (
           <AppCard

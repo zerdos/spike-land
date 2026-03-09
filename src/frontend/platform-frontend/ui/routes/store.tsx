@@ -10,48 +10,57 @@ function AppCard({ app, featured = false }: { app: McpAppSummary; featured?: boo
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card dark:glass-card p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:scale-[1.01] hover:border-primary/30 hover:shadow-primary/10",
-        featured && "ring-1 ring-primary/20",
+        "rubik-panel h-full p-5 transition-[border-color,box-shadow] duration-200 hover:border-primary/26 hover:shadow-[var(--panel-shadow-strong)]",
+        featured && "border-primary/24 shadow-[var(--panel-shadow-strong)]",
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-2xl">
-            {app.emoji || "🔧"}
+      <div className="flex h-full flex-col gap-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted text-2xl">
+              {app.emoji || "🔧"}
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-semibold leading-tight tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
+                {app.name}
+              </h3>
+              {app.tagline && (
+                <p className="mt-2 text-sm font-medium text-foreground/80">{app.tagline}</p>
+              )}
+            </div>
           </div>
-          <h3 className="font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
-            {app.name}
-          </h3>
-        </div>
-        <div className="flex items-center gap-2">
-          {app.is_new && (
-            <span className="rounded-full bg-success/20 px-2 py-0.5 text-[10px] font-medium text-success-foreground border border-success/30">
-              new
+          <div className="flex items-center gap-2">
+            {app.is_new && (
+              <span className="rubik-chip border-success/20 bg-success/70 px-2 py-1 text-[10px] text-success-foreground">
+                new
+              </span>
+            )}
+            <span className="rubik-chip rubik-chip-accent px-2 py-1 text-[10px]">
+              {pricingLabel}
             </span>
-          )}
-          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary border border-primary/20">
-            {pricingLabel}
-          </span>
+          </div>
         </div>
-      </div>
-      {app.tagline && (
-        <p className="mt-3 text-sm font-medium text-foreground/80">{app.tagline}</p>
-      )}
-      {app.description && (
-        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground leading-relaxed">
-          {app.description}
-        </p>
-      )}
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">
-          {app.category}
-        </span>
-        <span>{app.tool_count} {app.tool_count === 1 ? "tool" : "tools"}</span>
-        {app.tags.slice(0, 2).map((tag) => (
-          <span key={tag} className="rounded-full border border-border px-2 py-0.5">
-            {tag}
-          </span>
-        ))}
+
+        {app.description && (
+          <p className="line-clamp-3 text-sm leading-7 text-muted-foreground">
+            {app.description}
+          </p>
+        )}
+
+        <div className="mt-auto space-y-4">
+          <div className="rubik-divider" />
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="rounded-full border border-border bg-muted px-2.5 py-1 font-medium text-muted-foreground">
+              {app.category}
+            </span>
+            <span>{app.tool_count} {app.tool_count === 1 ? "tool" : "tools"}</span>
+            {app.tags.slice(0, 2).map((tag) => (
+              <span key={tag} className="rounded-full border border-border px-2.5 py-1">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -88,13 +97,13 @@ export function StorePage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-foreground">App Store</h1>
+      <div className="rubik-container rubik-page rubik-stack">
+        <h1 className="text-3xl font-semibold tracking-[-0.05em] text-foreground">App Store</h1>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-32 rounded-2xl border border-border bg-muted dark:glass-card animate-pulse"
+              className="h-32 animate-pulse rounded-[var(--radius-panel)] border border-border bg-muted"
             />
           ))}
         </div>
@@ -104,9 +113,9 @@ export function StorePage() {
 
   if (isError) {
     return (
-      <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-foreground">App Store</h1>
-        <div className="rounded-2xl border border-border bg-card dark:glass-card shadow-sm p-8 text-center space-y-4">
+      <div className="rubik-container rubik-page rubik-stack">
+        <h1 className="text-3xl font-semibold tracking-[-0.05em] text-foreground">App Store</h1>
+        <div className="rubik-panel space-y-4 p-8 text-center">
           <p className="text-muted-foreground">
             We couldn't load the app catalog right now. This might be a temporary issue.
           </p>
@@ -115,7 +124,7 @@ export function StorePage() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="rounded-lg bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+            className="rounded-lg border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
           >
             Try again
           </button>
@@ -125,24 +134,37 @@ export function StorePage() {
   }
 
   return (
-    <div className="space-y-8 p-4 sm:p-6 max-w-7xl mx-auto">
-      <div className="rounded-2xl border border-border bg-card dark:glass-card shadow-sm p-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">App Store</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Discover, install, rate, and review AI applications.
-          </p>
+    <div className="rubik-container rubik-page rubik-stack">
+      <section className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl space-y-4">
+          <span className="rubik-eyebrow">
+            <Sparkles className="h-3.5 w-3.5" />
+            App Store
+          </span>
+          <div className="space-y-3">
+            <h1 className="text-4xl font-semibold tracking-[-0.06em] text-foreground sm:text-5xl">
+              Browse product-shaped MCP apps, not disconnected tool listings.
+            </h1>
+            <p className="rubik-lede">
+              Discover public app surfaces, compare capability families, and jump straight into
+              the package or runtime view that matters.
+            </p>
+          </div>
         </div>
-        <span className="text-sm font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
-          {filteredData.total} apps
-        </span>
-      </div>
+
+        <div className="flex flex-wrap gap-3">
+          <span className="rubik-chip rubik-chip-accent">{filteredData.total} apps</span>
+          <span className="rubik-chip">chat • terminal • docs • runtime</span>
+        </div>
+      </section>
 
       {filteredData.featured.length > 0 && (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Featured Apps</h2>
+            <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">
+              Featured Apps
+            </h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredData.featured.map((app) => (
@@ -160,10 +182,12 @@ export function StorePage() {
       )}
 
       {filteredData.newest.length > 0 && (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Clock3 className="h-4 w-4 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">New This Week</h2>
+            <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">
+              New This Week
+            </h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredData.newest.map((app) => (
@@ -181,11 +205,18 @@ export function StorePage() {
       )}
 
       {filteredData.categories.map((group) => (
-        <section key={group.category} className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">{group.category}</h2>
+        <section key={group.category} className="space-y-4">
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">
+            {group.category}
+          </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {group.apps.map((app) => (
-              <Link key={app.slug} to="/apps/$appSlug" params={{ appSlug: app.slug }} className="group block">
+              <Link
+                key={app.slug}
+                to="/apps/$appSlug"
+                params={{ appSlug: app.slug }}
+                className="group block"
+              >
                 <AppCard app={app} />
               </Link>
             ))}
@@ -194,7 +225,7 @@ export function StorePage() {
       ))}
 
       {filteredData.featured.length === 0 && filteredData.categories.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border bg-card dark:glass-card p-12 text-center text-muted-foreground">
+        <div className="rubik-panel border-dashed p-12 text-center text-muted-foreground">
           No apps found in the public catalog.
         </div>
       )}

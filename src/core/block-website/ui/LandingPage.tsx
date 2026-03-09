@@ -26,12 +26,18 @@ export function LandingPage() {
     "spike.land is strongest when it feels like one coherent operating layer for agentic work. This section turns the message into a simple sequence: connect, compose, deploy.",
     "The same page pivots into implementation language in place: connect the endpoint, compose the toolchain, deploy the runtime. No route swap, no new screen.",
   );
-  const howHeading = useDevModeCopy("How it actually works", "What the runtime is patching");
+  const howHeading = useDevModeCopy(
+    "How it actually works",
+    "What the runtime is patching",
+  );
   const howBody = useDevModeCopy(
     "spike.land connects your AI assistant to real-world tools using the Model Context Protocol.",
     "spike.land is swapping from explorer copy into builder copy while keeping the same MCP-backed surface live.",
   );
-  const updatesHeading = useDevModeCopy("Latest Intelligence", "Latest implementation notes");
+  const updatesHeading = useDevModeCopy(
+    "Latest Intelligence",
+    "Latest implementation notes",
+  );
   const updatesBody = useDevModeCopy(
     "Insights from the edge of AI development.",
     "Signals from the edge runtime, product experiments, and shipping notes.",
@@ -42,28 +48,28 @@ export function LandingPage() {
     <div className="font-sans text-foreground selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary/40 dark:selection:text-primary-light">
       <LandingHero />
 
-      <div className="space-y-24 pb-32 sm:space-y-36">
+      <div className="rubik-stack pb-24 sm:pb-32">
         <section className="relative">
           <TryItNow />
         </section>
 
         <section
           aria-labelledby="platform-rhythm-heading"
-          className="relative overflow-hidden px-4 sm:px-6"
+          className="rubik-container-wide relative overflow-hidden"
         >
           <div className="absolute inset-x-8 top-8 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-          <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-[2rem] border border-border/60 bg-card/80 p-8 backdrop-blur-sm">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="rubik-panel p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Platform rhythm
               </p>
               <h2
                 id="platform-rhythm-heading"
-                className="mt-4 max-w-xl text-4xl font-black tracking-tight sm:text-5xl"
+                className="mt-4 max-w-xl text-4xl font-semibold tracking-[-0.05em] sm:text-5xl"
               >
                 {platformRhythmHeading.text}
               </h2>
-              <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">
+              <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
                 {platformRhythmBody.text}
               </p>
             </div>
@@ -88,13 +94,17 @@ export function LandingPage() {
               ].map((step) => (
                 <div
                   key={step.title}
-                  className="rounded-[2rem] border border-border/60 bg-muted/30 p-6"
+                  className="rubik-panel rubik-panel-muted p-6"
                 >
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <div className="rubik-icon-badge size-12 rounded-2xl">
                     <step.icon className="size-5" />
                   </div>
-                  <h3 className="mt-5 text-xl font-black tracking-tight">{step.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{step.copy}</p>
+                  <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    {step.copy}
+                  </p>
                 </div>
               ))}
             </div>
@@ -111,30 +121,33 @@ export function LandingPage() {
 
         <section
           aria-labelledby="features-heading"
-          className="py-32 border-y border-border/50 bg-muted/30 dark:bg-transparent relative overflow-hidden"
+          className="rubik-section relative overflow-hidden border-y border-border/50 bg-muted/30 dark:bg-transparent"
         >
           {/* Decorative radial gradient — dark mode only */}
-          <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(15,23,42,0.9)_0%,rgba(79,70,229,0.15)_50%,rgba(20,184,166,0.1)_100%)]" />
+          <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(15,23,42,0.92)_0%,rgba(76,105,255,0.12)_50%,rgba(81,213,255,0.08)_100%)]" />
           {/* Decorative glow orb */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none dark:bg-primary/10" />
 
-          <div className="relative z-10 mx-auto max-w-5xl px-6">
-            <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
+          <div className="rubik-container relative z-10">
+            <div className="mx-auto mb-16 max-w-3xl space-y-4 text-center">
               <h2
                 id="features-heading"
-                className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground text-balance leading-none"
+                className="text-balance text-4xl font-semibold leading-none tracking-[-0.06em] text-foreground sm:text-6xl"
               >
                 {howHeading.text.split("actually").length > 1 ? (
                   <>
                     {howHeading.text.split("actually")[0]}
                     <span className="text-primary italic">actually</span>
-                    {howHeading.text.split("actually").slice(1).join("actually")}
+                    {howHeading.text
+                      .split("actually")
+                      .slice(1)
+                      .join("actually")}
                   </>
                 ) : (
                   howHeading.text
                 )}
               </h2>
-              <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+              <p className="text-lg font-medium leading-8 text-muted-foreground sm:text-xl">
                 {howBody.text}{" "}
                 <span className="text-foreground font-bold underline decoration-primary/30 dark:decoration-primary/40 decoration-4 underline-offset-4">
                   Model Context Protocol
@@ -165,19 +178,19 @@ export function LandingPage() {
               ].map((feature, i) => (
                 <div
                   key={i}
-                  className="group p-8 rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2
-                             bg-card border border-border/50 shadow-xl hover:border-primary/30
-                             dark:bg-white/5 dark:border-white/10 dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] dark:backdrop-blur-[16px] dark:hover:border-primary/40 dark:hover:shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(20,184,166,0.1)]"
+                  className="rubik-panel group p-8 transition-[border-color,box-shadow] duration-300 hover:border-primary/26 hover:shadow-[var(--panel-shadow-strong)]"
                 >
                   <div
                     className={cn(
-                      "size-14 rounded-2xl bg-muted dark:bg-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform",
+                      "rubik-icon-badge mb-6 size-14 rounded-2xl group-hover:border-primary/30",
                       feature.color,
                     )}
                   >
                     <feature.icon size={28} aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-black mb-4 tracking-tight">{feature.title}</h3>
+                  <h3 className="mb-4 text-xl font-semibold tracking-[-0.03em]">
+                    {feature.title}
+                  </h3>
                   <p className="text-muted-foreground leading-relaxed font-medium text-sm">
                     {feature.desc}
                   </p>
@@ -198,33 +211,32 @@ export function LandingPage() {
                   desc: "The core value proposition stays legible whether someone arrives from open-source, app discovery, or enterprise deployment.",
                 },
               ].map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-[1.75rem] border border-border/50 bg-card/70 p-6 shadow-lg"
-                >
+                <div key={item.title} className="rubik-panel p-6">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className="rubik-icon-badge size-10 rounded-xl">
                       <item.icon className="size-4" />
                     </div>
-                    <h3 className="text-lg font-black tracking-tight">{item.title}</h3>
+                    <h3 className="text-lg font-semibold tracking-[-0.03em]">
+                      {item.title}
+                    </h3>
                   </div>
-                  <p className="mt-4 text-sm leading-7 text-muted-foreground">{item.desc}</p>
+                  <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                    {item.desc}
+                  </p>
                 </div>
               ))}
             </div>
 
             {/* CTA strip */}
-            <div
-              className="mt-20 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-8
-                            bg-primary/5 border border-primary/10
-                            dark:bg-white/5 dark:border-white/10 dark:backdrop-blur-[16px] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)]"
-            >
+            <div className="rubik-panel-strong mt-16 flex flex-col items-start justify-between gap-8 p-8 md:flex-row md:items-center">
               <div className="flex items-center gap-4">
-                <div className="size-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground glow-primary">
+                <div className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground glow-primary">
                   <Zap size={20} fill="currentColor" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="font-black text-foreground">Ready to start building?</p>
+                  <p className="font-semibold tracking-[-0.03em] text-foreground">
+                    Ready to start building?
+                  </p>
                   <p className="text-sm text-muted-foreground font-medium">
                     Join 5,000+ developers building on the edge.
                   </p>
@@ -232,9 +244,7 @@ export function LandingPage() {
               </div>
               <Link
                 href="/apps/new"
-                className="px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-xl
-                           bg-foreground text-background
-                           dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-light glow-primary"
+                className="rounded-[calc(var(--radius-control)-0.1rem)] bg-foreground px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/92 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-light glow-primary"
               >
                 Create your first tool
               </Link>
@@ -242,13 +252,16 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section aria-labelledby="updates-heading" className="py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <header className="mb-16 flex items-end justify-between border-b border-border/50 pb-8">
+        <section
+          aria-labelledby="updates-heading"
+          className="rubik-container-wide rubik-section-compact"
+        >
+          <div>
+            <header className="mb-12 flex items-end justify-between border-b border-border/50 pb-8">
               <div className="space-y-2">
                 <h2
                   id="updates-heading"
-                  className="text-4xl sm:text-5xl font-black tracking-tighter text-foreground"
+                  className="text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl"
                 >
                   {updatesHeading.text}
                 </h2>
@@ -258,7 +271,7 @@ export function LandingPage() {
               </div>
               <Link
                 href="/blog"
-                className="hidden sm:flex items-center gap-2 text-sm font-black uppercase tracking-widest text-primary hover:gap-4 transition-all"
+                className="rubik-kicker-link hidden items-center text-[0.76rem] font-semibold uppercase tracking-[0.16em] sm:inline-flex"
               >
                 {archiveCopy.text}
                 <ArrowRight size={16} aria-hidden="true" />
@@ -270,8 +283,7 @@ export function LandingPage() {
             <div className="mt-12 sm:hidden">
               <Link
                 href="/blog"
-                className="flex items-center justify-center gap-2 p-4 rounded-2xl font-black uppercase tracking-widest text-xs text-foreground
-                           bg-muted dark:bg-white/10 dark:border dark:border-white/10 dark:backdrop-blur-[16px]"
+                className="rubik-panel rubik-panel-muted flex items-center justify-center gap-2 p-4 text-[0.76rem] font-semibold uppercase tracking-[0.16em] text-foreground"
               >
                 {archiveCopy.text}
                 <ArrowRight size={16} aria-hidden="true" />

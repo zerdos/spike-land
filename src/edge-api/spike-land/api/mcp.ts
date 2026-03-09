@@ -121,6 +121,58 @@ async function disposeSession(session: McpSessionState): Promise<void> {
   await session.mcpServer.close();
 }
 
+function isInternalProxyRequest(
+  c: Context<{ Bindings: Env; Variables: AuthVariables }>,
+  userId: string,
+): boolean {
+  return (
+    c.req.header("X-Internal-Secret") === c.env.MCP_INTERNAL_SECRET &&
+    c.req.header("X-User-Id") === userId
+  );
+}
+
+async function handleStatelessPost(
+  c: Context<{ Bindings: Env; Variables: AuthVariables }>,
+  userId: string,
+  db: AuthVariables["db"],
+  body: unknown,
+  headers: Headers,
+  callerElo: number,
+  callerTier: CallerTier,
+  isAgent: boolean,
+  userRole?: string,
+): Promise<Response> {
+  const enabledCategories = await loadEnabledCategories(userId, c.env.KV);
+  const mcpServer = await createMcpServer(userId, db, {
+    enabledCategories,
+    kv: c.env.KV,
+    vaultSecret: c.env.VAULT_SECRET,
+    mcpInternalSecret: c.env.MCP_INTERNAL_SECRET,
+    spikeEdge: c.env.SPIKE_EDGE,
+    spaAssets: c.env.SPA_ASSETS,
+  });
+
+  applyCallerContext(mcpServer, callerElo, callerTier, isAgent, userRole);
+
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    enableJsonResponse: true,
+  });
+
+  await mcpServer.connect(transport);
+
+  const mcpRequest = new Request(c.req.url, {
+    method: "POST",
+    headers,
+    body: null,
+  });
+
+  try {
+    return await transport.handleRequest(mcpRequest, { parsedBody: body });
+  } finally {
+    await mcpServer.close();
+  }
+}
+
 mcpRoute.get("/health", (c) => {
   return c.json({ status: "ok", version: "1.0.0" });
 });
@@ -241,30 +293,31 @@ mcpRoute.post("/", async (c) => {
   const rpcMethod = (body as { method?: string })?.method ?? "unknown";
   const sessionId = c.req.header("Mcp-Session-Id");
   const isInitializeRequest = rpcMethod === "initialize";
+  const isInternalRequest = isInternalProxyRequest(c, userId);
 
   let session = sessionId ? mcpSessions.get(sessionId) : undefined;
   const isNewSession = !session && !sessionId && isInitializeRequest;
 
   if (session && session.userId !== userId) {
-    return jsonRpcError(404, -32001, "Session not found");
+    session = undefined;
   }
 
   if (!session) {
-    if (sessionId) {
+    if (sessionId && !isInternalRequest) {
       return jsonRpcError(404, -32001, "Session not found");
     }
-    if (!isInitializeRequest) {
+    if (!sessionId && !isInitializeRequest && !isInternalRequest) {
       return jsonRpcError(400, -32000, "Bad Request: Server not initialized");
     }
-    try {
-      session = await createSession(c, userId, db);
-    } catch (error) {
-      console.error("MCP session creation error", error);
-      return jsonRpcError(500, -32603, "Internal error");
+    if (isInitializeRequest && (!sessionId || isInternalRequest)) {
+      try {
+        session = await createSession(c, userId, db);
+      } catch (error) {
+        console.error("MCP session creation error", error);
+        return jsonRpcError(500, -32603, "Internal error");
+      }
     }
   }
-
-  applyCallerContext(session.mcpServer, callerElo, callerTier, isAgent, userRole);
 
   // Normalize Accept header for MCP spec compliance
   const headers = new Headers(c.req.raw.headers);
@@ -272,6 +325,142 @@ mcpRoute.post("/", async (c) => {
   if (!accept.includes("application/json") || !accept.includes("text/event-stream")) {
     headers.set("Accept", "application/json, text/event-stream");
   }
+
+  if (!session && !isInitializeRequest) {
+    if (!isInternalRequest) {
+      return sessionId
+        ? jsonRpcError(404, -32001, "Session not found")
+        : jsonRpcError(400, -32000, "Bad Request: Server not initialized");
+    }
+
+    try {
+      const response = await handleStatelessPost(
+        c,
+        userId,
+        db,
+        body,
+        headers,
+        callerElo,
+        callerTier,
+        isAgent,
+        userRole,
+      );
+
+      const durationMs = Date.now() - startTime;
+      const isToolCall = rpcMethod === "tools/call";
+      const toolName = isToolCall
+        ? ((body as { params?: { name?: string } })?.params?.name ?? "unknown")
+        : undefined;
+
+      let outcome: "success" | "error" = response.status >= 400 ? "error" : "success";
+      let responseBody: string | null = null;
+      if (isToolCall && outcome === "success") {
+        try {
+          responseBody = await response.text();
+        } catch {
+          // Keep responseBody null when the body stream fails.
+        }
+        if (responseBody) {
+          try {
+            const parsed = JSON.parse(responseBody) as Record<string, unknown>;
+            if ("error" in parsed) {
+              outcome = "error";
+            } else if (
+              parsed.result &&
+              typeof parsed.result === "object" &&
+              (parsed.result as Record<string, unknown>).isError
+            ) {
+              outcome = "error";
+            }
+          } catch {
+            // JSON parse failed — keep outcome as success
+          }
+        }
+      }
+
+      const isFlagged = await detectAbuse(c.env.KV, agentId ?? userId, outcome);
+      if (isFlagged) {
+        const endpoint = isAgent ? "/internal/agent-elo/event" : "/internal/elo/event";
+        const payload = isAgent
+          ? { agentId, ownerUserId: userId, eventType: "abuse_flag" }
+          : { userId, eventType: "abuse_flag" };
+        c.executionCtx.waitUntil(
+          c.env.SPIKE_EDGE.fetch(`https://edge.spike.land${endpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-internal-secret": c.env.MCP_INTERNAL_SECRET,
+            },
+            body: JSON.stringify(payload),
+          }).catch((err) => console.error("[mcp] Failed to report abuse:", err)),
+        );
+      }
+
+      const ga4Events: GA4Event[] = [
+        { name: "mcp_request", params: { method: rpcMethod, user_id: userId, duration_ms: durationMs } },
+      ];
+      if (isToolCall && toolName) {
+        ga4Events.push({
+          name: "mcp_tool_call",
+          params: {
+            tool_name: toolName,
+            server_name: "spike-land-mcp",
+            outcome,
+            user_id: userId,
+            duration_ms: durationMs,
+          },
+        });
+      }
+      c.executionCtx.waitUntil(
+        hashClientId(userId)
+          .then((clientId) => sendGA4Events(c.env, clientId, ga4Events))
+          .catch((err) => console.error("[GA4] Failed to send events:", err)),
+      );
+
+      if (isToolCall && toolName) {
+        c.executionCtx.waitUntil(
+          recordSkillCall(
+            c.env.DB,
+            {
+              userId,
+              toolName,
+              serverName: "spike-land-mcp",
+              outcome,
+              durationMs,
+            },
+            c.env.SPIKE_EDGE,
+          ).catch((err) => console.error("[skill-tracker] Failed to record:", err)),
+        );
+      }
+
+      const platformEvents: AnalyticsEvent[] = [
+        {
+          source: "spike-land-mcp",
+          eventType: "mcp_request",
+          metadata: { method: rpcMethod, durationMs },
+        },
+      ];
+      if (isToolCall && toolName) {
+        platformEvents.push({
+          source: "spike-land-mcp",
+          eventType: "tool_use",
+          metadata: { toolName, serverName: "spike-land-mcp", outcome, durationMs },
+        });
+      }
+      c.executionCtx.waitUntil(trackPlatformEvents(c.env.SPIKE_EDGE, platformEvents));
+
+      const finalBody = responseBody ?? response.body;
+      return new Response(finalBody, {
+        status: response.status,
+        headers: new Headers(response.headers),
+      });
+    } catch (error) {
+      console.error("MCP stateless fallback error", error);
+      return jsonRpcError(500, -32603, "Internal error");
+    }
+  }
+
+  applyCallerContext(session.mcpServer, callerElo, callerTier, isAgent, userRole);
 
   // parsedBody is passed directly to handleRequest, so no need to serialize body
   const mcpRequest = new Request(c.req.url, {

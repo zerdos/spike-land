@@ -29,6 +29,26 @@ For embedded previews, prefer **density over sprawl**. A preview should feel
 like a complete instrument panel, not a full marketing page crammed into a
 smaller box.
 
+## Reference Pattern: Proof-First Product Pages
+
+When the target quality bar feels closer to WorkOS than generic SaaS, use this
+pattern:
+
+- **Proof before prose**: pair the main headline with one strong evidence panel,
+  runtime strip, or product-shaped console. Do not rely on copy alone.
+- **Accent budget**: use the accent color on one primary CTA and one active or
+  status signal per viewport. If everything glows, nothing leads.
+- **One geometry system**: keep radii tight and predictable. Repeated `rounded`
+  values should collapse into a small scale, not page-by-page improvisation.
+- **Typography carries hierarchy**: use weight, tracking, and line length before
+  adding extra color, badges, or dividers.
+- **Trust surfaces matter**: nav, footer, pricing, and technical sidebars should
+  look like the same product as the hero. They are not decorative leftovers.
+- **Motion should reveal state**: scanning lines, staged reveals, or subtle
+  sweeps are good; floaty hover bounces on every card are not.
+- **Asymmetry with discipline**: one large focal panel plus smaller support
+  panels usually beats a grid of identical giant cards.
+
 ### Typography Stack
 
 | Role | Font | Weight Range | Usage |

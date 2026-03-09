@@ -84,12 +84,11 @@ export function LandingHero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 font-sans"
+      className="rubik-container-wide rubik-section-compact relative overflow-hidden pb-16 pt-10 font-sans sm:pb-20 sm:pt-14"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[24rem] w-[24rem] -translate-x-1/2 rounded-full bg-primary/12 blur-3xl" />
-        <div className="absolute right-0 top-24 h-48 w-48 rounded-full bg-primary/8 blur-3xl" />
-        <div className="absolute left-0 top-40 h-40 w-40 rounded-full bg-foreground/6 blur-3xl" />
+        <div className="absolute left-[18%] top-0 h-56 w-56 rounded-full bg-primary/10 blur-[90px]" />
+        <div className="absolute right-[8%] top-24 h-48 w-48 rounded-full bg-info/20 blur-[110px]" />
         {isTransitioning && (
           <>
             <div className="absolute inset-x-0 top-0 h-px bg-primary/60 shadow-[0_0_24px_var(--primary-glow)] animate-pulse" />
@@ -104,7 +103,7 @@ export function LandingHero() {
         )}
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+      <div className="relative grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div className="flex flex-col items-start text-left">
           <div className="relative mb-6 h-8 w-full">
             <AnimatePresence mode="wait">
@@ -115,7 +114,7 @@ export function LandingHero() {
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10, filter: "blur(4px)", position: "absolute" }}
                   transition={{ duration: 0.4 }}
-                  className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-black tracking-[0.22em] text-primary-light glow-primary"
+                  className="rubik-eyebrow border-primary/30 bg-primary/12 text-primary shadow-[var(--panel-shadow)]"
                 >
                   <Sparkles className="size-3.5" />
                   {badgeCopy.text}
@@ -127,7 +126,7 @@ export function LandingHero() {
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: 10, filter: "blur(4px)", position: "absolute" }}
                   transition={{ duration: 0.4 }}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/80 px-4 py-1.5 text-xs font-black tracking-[0.22em] text-muted-foreground backdrop-blur-sm"
+                  className="rubik-eyebrow"
                 >
                   <Globe2 className="size-3.5" />
                   {badgeCopy.text}
@@ -209,11 +208,11 @@ export function LandingHero() {
               onClick={handleDevToggle}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full rounded-2xl px-8 py-4 text-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto
+              className={`w-full rounded-[calc(var(--radius-control)-0.1rem)] px-6 py-3 text-base font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto
                         ${
                           isDeveloper
                             ? "ring-2 ring-primary/30 bg-primary text-primary-foreground hover:bg-primary-light focus:ring-primary glow-primary"
-                            : "bg-foreground text-background hover:opacity-90 hover:shadow-lg focus:ring-foreground dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-light dark:focus:ring-primary glow-primary"
+                            : "bg-foreground text-background hover:bg-foreground/92 focus:ring-foreground dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-light dark:focus:ring-primary glow-primary"
                         }`}
               aria-pressed={isDeveloper}
             >
@@ -238,9 +237,7 @@ export function LandingHero() {
                     <Link
                       href="/blog"
                       onClick={() => setThemeDirectly("light")}
-                      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border/70 bg-background px-8 py-4 text-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 hover:bg-muted/50 hover:border-border hover:shadow-sm focus:ring-foreground sm:w-auto
-                                        bg-background border border-border/50 text-foreground hover:bg-muted/50 hover:border-border hover:shadow-sm focus:ring-foreground
-                                        dark:bg-white/10 dark:border-white/20 dark:text-white dark:hover:bg-white/15 dark:backdrop-blur-md dark:focus:ring-white/30"
+                      className="flex w-full items-center justify-center gap-2 rounded-[calc(var(--radius-control)-0.1rem)] border border-border bg-background px-6 py-3 text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 hover:border-primary/24 hover:text-primary focus:ring-foreground sm:w-auto dark:bg-white/10 dark:border-white/20 dark:text-white dark:hover:bg-white/15 dark:backdrop-blur-md dark:focus:ring-white/30"
                     >
                       I&apos;m exploring
                       <ArrowRight className="size-4" />
@@ -257,9 +254,8 @@ export function LandingHero() {
                   >
                     <Link
                       href="/vibe-code"
-                      className="block w-full rounded-2xl px-8 py-4 text-center text-lg font-extrabold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 hover:shadow-lg hover:shadow-primary/20 focus:ring-primary sm:w-auto
-                                        bg-primary text-primary-foreground hover:bg-primary-light glow-primary focus:ring-primary hover:shadow-lg hover:shadow-primary/20"
-                      style={{ fontVariationSettings: '"wght" 800' }}
+                      className="block w-full rounded-[calc(var(--radius-control)-0.1rem)] bg-primary px-6 py-3 text-center text-base font-semibold text-primary-foreground transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:w-auto hover:bg-primary-light glow-primary"
+                      style={{ fontVariationSettings: '"wght" 720' }}
                     >
                       Vibe Code Online Now
                     </Link>
@@ -275,7 +271,7 @@ export function LandingHero() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary"
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -292,14 +288,11 @@ export function LandingHero() {
               { icon: Code2, label: "Custom tools", value: "Build or generate your own" },
               { icon: Globe2, label: "Edge runtime", value: "Deploy globally by default" },
             ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-border/60 bg-card/80 p-4 backdrop-blur-sm"
-              >
-                <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div key={item.label} className="rubik-panel p-4">
+                <div className="rubik-icon-badge mb-3 size-10 rounded-xl">
                   <item.icon className="size-4" />
                 </div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   {item.label}
                 </p>
                 <p className="mt-2 text-sm font-medium text-foreground">{item.value}</p>
@@ -309,36 +302,36 @@ export function LandingHero() {
         </div>
 
         <div className="relative">
-          <div className="absolute inset-6 rounded-[2rem] bg-primary/10 blur-3xl" />
-          <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-6 rounded-[var(--radius-panel-lg)] bg-primary/10 blur-[110px]" />
+          <div className="rubik-panel-strong relative overflow-hidden rounded-[var(--radius-panel-lg)] p-6">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   Live surface
                 </p>
-                <p className="mt-2 text-2xl font-black tracking-tight">Agent system console</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">Agent system console</p>
               </div>
-              <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+              <div className="rubik-chip rubik-chip-accent">
                 MCP online
               </div>
             </div>
 
             <div className="grid gap-4">
-              <div className="rounded-[1.5rem] border border-border/50 bg-background/80 p-4">
-                <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+              <div className="rubik-panel p-4">
+                <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   <span className="size-2 rounded-full bg-emerald-400" />
                   {runtimeLabel.text}
                 </div>
                 <div className="space-y-3 font-mono text-sm text-foreground">
-                  <div className="flex items-center justify-between rounded-xl bg-muted/60 px-3 py-2">
+                  <div className="rubik-signal-rail flex items-center justify-between rounded-2xl px-3 py-2">
                     <span>registry.connect()</span>
                     <span className="text-primary">{isDeveloper ? "patched" : "ready"}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-xl bg-muted/60 px-3 py-2">
+                  <div className="rubik-signal-rail flex items-center justify-between rounded-2xl px-3 py-2">
                     <span>edge.deploy()</span>
                     <span className="text-primary">{isDeveloper ? "live build" : "4 regions"}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-xl bg-muted/60 px-3 py-2">
+                  <div className="rubik-signal-rail flex items-center justify-between rounded-2xl px-3 py-2">
                     <span>agent.invoke("qa-studio")</span>
                     <span className="text-primary">{isDeveloper ? "mutating" : "live"}</span>
                   </div>
@@ -346,11 +339,11 @@ export function LandingHero() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.5rem] border border-border/50 bg-muted/40 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="rubik-panel rubik-panel-muted p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {inventoryLabel.text}
                   </p>
-                  <p className="mt-3 text-4xl font-black tracking-tight text-foreground">
+                  <p className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-foreground">
                     {isDeveloper ? "Edge+" : `${TOTAL_TOOL_COUNT}+`}
                   </p>
                   <p className="mt-2 text-sm text-muted-foreground">
@@ -358,11 +351,11 @@ export function LandingHero() {
                   </p>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-border/50 bg-muted/40 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="rubik-panel rubik-panel-muted p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {modeLabel.text}
                   </p>
-                  <p className="mt-3 text-lg font-bold text-foreground">
+                  <p className="mt-3 text-lg font-semibold tracking-[-0.03em] text-foreground">
                     {isDeveloper
                       ? "Enabled for builder workflows"
                       : "Toggle for deeper product surface"}
@@ -378,7 +371,7 @@ export function LandingHero() {
       </div>
 
       <dl
-        className="relative mx-auto mt-16 flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-4 border-t border-border/60 pt-8 text-sm text-muted-foreground"
+        className="rubik-panel relative mt-16 flex flex-wrap items-center gap-x-3 gap-y-4 p-5 text-sm text-muted-foreground sm:p-6"
         aria-label="Platform Statistics"
       >
         {stars != null && (

@@ -23,7 +23,13 @@ function hashSlug(slug: string): number {
   return Math.abs(hash);
 }
 
-function CardImage({ post, className = "" }: { post: BlogMeta; className?: string }) {
+function CardImage({
+  post,
+  className = "",
+}: {
+  post: BlogMeta;
+  className?: string;
+}) {
   const safeHeroImage = sanitizeBlogImageSrc(post.heroImage);
 
   if (safeHeroImage) {
@@ -55,7 +61,7 @@ function CardImage({ post, className = "" }: { post: BlogMeta; className?: strin
       <div className="absolute -right-4 -bottom-4 opacity-5 rotate-12">
         <BookOpen size={120} />
       </div>
-      <span className="text-2xl sm:text-3xl font-black tracking-tight leading-[1.1] relative z-10">
+      <span className="relative z-10 text-2xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-3xl">
         {post.title}
       </span>
     </div>
@@ -68,21 +74,28 @@ function FeaturedCard({
 }: {
   post: BlogMeta;
   LinkComp:
-    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | React.ComponentType<{
+        to: string;
+        className?: string;
+        children: React.ReactNode;
+      }>
     | "a";
 }) {
   const content = (
     <div className="flex flex-col lg:flex-row h-full">
-      <CardImage post={post} className="lg:w-3/5 lg:h-full aspect-[16/9] lg:aspect-auto" />
-      <div className="p-8 lg:p-12 lg:w-2/5 flex flex-col justify-center bg-card">
-        <div className="flex flex-wrap items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+      <CardImage
+        post={post}
+        className="lg:w-3/5 lg:h-full aspect-[16/9] lg:aspect-auto"
+      />
+      <div className="flex w-full flex-col justify-center bg-card p-8 lg:w-2/5 lg:p-12">
+        <div className="mb-6 flex flex-wrap items-center gap-4 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {post.draft && (
-            <span className="bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-500/20">
+            <span className="rubik-chip border-warning/20 bg-warning/70 px-3 py-1 text-warning-foreground">
               Draft
             </span>
           )}
           {post.category && (
-            <span className="bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
+            <span className="rubik-chip rubik-chip-accent px-3 py-1">
               {post.category}
             </span>
           )}
@@ -98,17 +111,17 @@ function FeaturedCard({
           </div>
         </div>
 
-        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] text-foreground mb-6 group-hover:text-primary transition-colors tracking-tighter">
+        <h3 className="mb-6 text-3xl font-semibold leading-[0.95] tracking-[-0.05em] text-foreground transition-colors group-hover:text-primary sm:text-4xl lg:text-5xl">
           {post.title}
         </h3>
 
         {post.primer && (
-          <p className="text-lg text-muted-foreground leading-relaxed mb-8 line-clamp-3 font-medium">
+          <p className="mb-8 line-clamp-3 text-lg font-medium leading-8 text-muted-foreground">
             {post.primer}
           </p>
         )}
 
-        <div className="mt-auto flex items-center gap-2 text-sm font-black text-primary uppercase tracking-widest group-hover:gap-4 transition-all">
+        <div className="rubik-kicker-link mt-auto text-[0.78rem] font-semibold uppercase tracking-[0.16em]">
           Read Full Story
           <ArrowRight className="size-4" />
         </div>
@@ -117,7 +130,7 @@ function FeaturedCard({
   );
 
   return (
-    <article className="group relative bg-card rounded-[2.5rem] border border-border/50 shadow-2xl hover:border-primary/30 transition-all duration-500 overflow-hidden mb-16 ring-1 ring-border/5">
+    <article className="rubik-panel group relative mb-16 overflow-hidden rounded-[var(--radius-panel-lg)] transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/30 hover:shadow-[var(--panel-shadow-strong)]">
       {LinkComp === "a" ? (
         <a href={`/blog/${post.slug}`} className="block h-full w-full">
           {content}
@@ -137,17 +150,21 @@ function BlogCard({
 }: {
   post: BlogMeta;
   LinkComp:
-    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | React.ComponentType<{
+        to: string;
+        className?: string;
+        children: React.ReactNode;
+      }>
     | "a";
 }) {
   const content = (
     <>
       <CardImage post={post} className="aspect-[16/10]" />
-      <div className="p-6 sm:p-8 flex flex-col flex-1">
-        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-4">
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
+        <div className="mb-4 flex items-center gap-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {post.draft && (
             <>
-              <span className="text-amber-600 dark:text-amber-400">Draft</span>
+              <span className="text-warning-foreground">Draft</span>
               <span className="opacity-30">&middot;</span>
             </>
           )}
@@ -158,24 +175,24 @@ function BlogCard({
           <span>5 min read</span>
         </div>
 
-        <h3 className="text-xl font-black leading-tight text-foreground group-hover:text-primary transition-colors mb-4 line-clamp-2 tracking-tight">
+        <h3 className="mb-4 line-clamp-2 text-xl font-semibold leading-tight tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
           {post.title}
         </h3>
 
         {post.primer && (
-          <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-2 font-medium opacity-80">
+          <p className="mb-6 line-clamp-2 text-sm font-medium leading-7 text-muted-foreground">
             {post.primer}
           </p>
         )}
 
-        <div className="mt-auto pt-6 border-t border-border/50 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/70">
-            <div className="size-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-black text-muted-foreground">
+        <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-6">
+          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <div className="rubik-icon-badge size-6 rounded-full text-[10px] font-semibold text-muted-foreground">
               {post.author?.[0] || "S"}
             </div>
             <span>{post.author || "Spike Team"}</span>
           </div>
-          <div className="size-8 rounded-full bg-muted group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center transition-all duration-300">
+          <div className="rubik-icon-badge size-8 rounded-full text-muted-foreground transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
             <ArrowRight className="size-4" />
           </div>
         </div>
@@ -184,13 +201,19 @@ function BlogCard({
   );
 
   return (
-    <article className="group relative bg-card rounded-[2rem] border border-border/50 shadow-sm hover:border-primary/20 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col">
+    <article className="rubik-panel group relative flex h-full flex-col overflow-hidden transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/24 hover:shadow-[var(--panel-shadow-strong)] hover:-translate-y-0.5">
       {LinkComp === "a" ? (
-        <a href={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+        <a
+          href={`/blog/${post.slug}`}
+          className="block h-full w-full flex flex-col flex-1"
+        >
           {content}
         </a>
       ) : (
-        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+        <LinkComp
+          to={`/blog/${post.slug}`}
+          className="block h-full w-full flex flex-col flex-1"
+        >
           {content}
         </LinkComp>
       )}
@@ -204,7 +227,11 @@ export function BlogListView({
   showHeader = true,
 }: {
   linkComponent?:
-    | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
+    | React.ComponentType<{
+        to: string;
+        className?: string;
+        children: React.ReactNode;
+      }>
     | "a"
     | undefined;
   limit?: number | undefined;
@@ -224,7 +251,8 @@ export function BlogListView({
           const r = await fetch(apiUrl("/blog"));
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           const data = (await r.json()) as unknown;
-          if (!Array.isArray(data)) throw new Error("Unexpected response shape");
+          if (!Array.isArray(data))
+            throw new Error("Unexpected response shape");
           if (cancelled) return;
           const posts = data as BlogMeta[];
           if (limit) {
@@ -257,9 +285,11 @@ export function BlogListView({
 
   if (loading) {
     return (
-      <div className={cn("max-w-7xl mx-auto px-6 font-sans", showHeader && "py-20")}>
+      <div
+        className={cn("rubik-container font-sans", showHeader && "rubik-page")}
+      >
         {showHeader && (
-          <div className="text-center max-w-2xl mx-auto mb-20 animate-pulse">
+          <div className="mx-auto mb-20 max-w-2xl animate-pulse text-center">
             <div className="h-4 bg-muted rounded w-24 mx-auto mb-6" />
             <div className="h-12 bg-muted rounded w-3/4 mx-auto mb-6" />
             <div className="h-6 bg-muted rounded w-1/2 mx-auto" />
@@ -267,11 +297,14 @@ export function BlogListView({
         )}
         <div
           aria-busy="true"
-          className="animate-pulse bg-muted/30 rounded-[2.5rem] h-[400px] mb-12"
+          className="rubik-panel mb-12 h-[400px] animate-pulse bg-muted/30"
         />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-muted/30 rounded-[2rem] h-[350px]" />
+            <div
+              key={i}
+              className="rubik-panel h-[350px] animate-pulse bg-muted/30"
+            />
           ))}
         </div>
       </div>
@@ -280,20 +313,24 @@ export function BlogListView({
 
   if (error && posts.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto py-20 px-6 text-center">
-        <div className="inline-flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-6">
-          <Tag size={32} />
+      <div className="rubik-container rubik-page text-center">
+        <div className="rubik-panel mx-auto max-w-xl p-8">
+          <div className="mb-6 inline-flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <Tag size={32} />
+          </div>
+          <h2 className="mb-2 text-2xl font-semibold tracking-[-0.04em] text-foreground">
+            Failed to load stories
+          </h2>
+          <p className="mb-8 text-muted-foreground">
+            Our edge network is having trouble reaching the blog database.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-[calc(var(--radius-control)-0.1rem)] bg-foreground px-8 py-3 text-[0.76rem] font-semibold uppercase tracking-[0.16em] text-background transition-colors hover:bg-foreground/92 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-light"
+          >
+            Try again
+          </button>
         </div>
-        <h2 className="text-2xl font-black tracking-tight mb-2">Failed to load stories</h2>
-        <p className="text-muted-foreground mb-8">
-          Our edge network is having trouble reaching the blog database.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:shadow-lg transition-all"
-        >
-          Try again
-        </button>
       </div>
     );
   }
@@ -302,18 +339,21 @@ export function BlogListView({
   const [featured, ...rest] = posts;
 
   return (
-    <div className={cn("max-w-7xl mx-auto px-6 font-sans", showHeader && "py-20")}>
+    <div
+      className={cn("rubik-container font-sans", showHeader && "rubik-page")}
+    >
       {showHeader && (
-        <div className="text-center max-w-4xl mx-auto mb-24 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-primary/10">
+        <div className="mx-auto mb-24 max-w-4xl space-y-6 text-center">
+          <div className="rubik-eyebrow border-primary/14 bg-primary/10 text-primary">
             <Clock className="size-3" />
             <span>Latest Updates</span>
           </div>
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-foreground tracking-tighter leading-[0.85]">
+          <h1 className="text-5xl font-semibold leading-[0.85] tracking-[-0.06em] text-foreground sm:text-7xl lg:text-8xl">
             The <span className="text-primary italic">Spike.land</span> Blog
           </h1>
-          <p className="text-xl sm:text-2xl text-muted-foreground font-medium leading-relaxed max-w-2xl mx-auto">
-            Deep dives into autonomous agents, edge computing, and the Model Context Protocol.
+          <p className="mx-auto max-w-2xl text-xl font-medium leading-8 text-muted-foreground sm:text-2xl">
+            Deep dives into autonomous agents, edge computing, and the Model
+            Context Protocol.
           </p>
         </div>
       )}

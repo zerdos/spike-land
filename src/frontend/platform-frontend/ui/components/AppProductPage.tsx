@@ -101,10 +101,10 @@ export function AppProductPage({ appId }: AppProductPageProps) {
   };
 
   return (
-    <div className="flex flex-col space-y-12 p-6 lg:p-16 max-w-7xl mx-auto">
+    <div className="rubik-container rubik-page rubik-stack">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
-        <Link to="/packages" className="hover:text-primary transition-colors">
+      <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <Link to="/packages" className="transition-colors hover:text-primary">
           Packages
         </Link>
         <ChevronRight className="size-3" />
@@ -112,27 +112,35 @@ export function AppProductPage({ appId }: AppProductPageProps) {
       </nav>
 
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-        <div className="space-y-6 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary border border-primary/10">
+      <section className="rubik-panel-strong flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl space-y-6">
+          <div className="rubik-eyebrow">
             <Terminal className="h-3.5 w-3.5" />
             <span>MCP Tool Package</span>
           </div>
-          <h1 className="text-5xl lg:text-7xl font-black tracking-tight text-foreground leading-[0.9]">
-            {meta.name}
-          </h1>
-          <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-            {meta.description}
-          </p>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-semibold leading-none tracking-[-0.06em] text-foreground sm:text-6xl">
+              {meta.name}
+            </h1>
+            <p className="rubik-lede text-base sm:text-lg">
+              {meta.description}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="rubik-chip">Cloudflare runtime</span>
+            <span className="rubik-chip rubik-chip-accent">{meta.toolNames.length || 4} tool methods</span>
+            <span className="rubik-chip">{meta.packagePath}</span>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 shrink-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <Button
             size="lg"
             onClick={() => {
               window.dispatchEvent(new CustomEvent("change-tab", { detail: "Terminal" }));
             }}
-            className="rounded-2xl h-14 px-8 text-lg font-bold shadow-xl shadow-primary/20"
+            className="h-12 rounded-[calc(var(--radius-control)-0.1rem)] px-6"
           >
             <Terminal className="mr-2 h-5 w-5" />
             Open Terminal
@@ -142,7 +150,7 @@ export function AppProductPage({ appId }: AppProductPageProps) {
               variant="outline"
               size="lg"
               asChild
-              className="rounded-2xl h-14 px-8 text-lg font-bold"
+              className="h-12 rounded-[calc(var(--radius-control)-0.1rem)] px-6"
             >
               <Link to="/packages/qa-studio/ui">
                 <Layout className="mr-2 h-5 w-5" />
@@ -151,128 +159,145 @@ export function AppProductPage({ appId }: AppProductPageProps) {
             </Button>
           )}
         </div>
-      </div>
+      </section>
 
       {/* Tools Section */}
       {meta.toolNames.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="h-px flex-1 bg-border" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
-              Available Tool Methods
-            </h2>
-            <div className="h-px flex-1 bg-border" />
+        <section className="rubik-panel p-6 sm:p-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-xl space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Available tool methods
+              </p>
+              <h2 className="text-2xl font-semibold tracking-[-0.05em] text-foreground">
+                Methods that define this product surface
+              </h2>
+              <p className="text-sm leading-7 text-muted-foreground">
+                The terminal, chat, and generated app layers all route into the same MCP method
+                contract.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {meta.toolNames.map((name) => (
+                <code
+                  key={name}
+                  className="rounded-2xl border border-border bg-background/80 px-4 py-2 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+                >
+                  {name}()
+                </code>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {meta.toolNames.map((name) => (
-              <code
-                key={name}
-                className="rounded-xl bg-muted/50 border border-border px-4 py-2 text-sm font-mono text-foreground hover:border-primary/30 transition-colors cursor-default"
-              >
-                {name}()
-              </code>
-            ))}
-          </div>
-        </div>
+        </section>
       )}
 
       {/* Main Content Grid */}
-      <div className="grid gap-12 lg:grid-cols-3">
-        {/* Capabilities Column */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl font-black tracking-tight">Capabilities</h2>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.75fr)]">
+        <section className="space-y-6">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Capabilities
+            </p>
+            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-foreground">
+              Product-shaped primitives, not just raw endpoints
+            </h2>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             {meta.capabilities.map((capability, i) => {
               const Icon = CAPABILITY_ICONS[i % CAPABILITY_ICONS.length]!;
               return (
-                <div
-                  key={i}
-                  className="group flex items-start gap-4 rounded-3xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:border-primary/20"
-                >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                    <Icon className="h-6 w-6" />
+                <div key={i} className="rubik-panel p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="rubik-icon-badge">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm leading-7 text-muted-foreground">{capability}</p>
                   </div>
-                  <p className="text-sm font-medium leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors">
-                    {capability}
-                  </p>
                 </div>
               );
             })}
           </div>
-        </div>
+        </section>
 
-        {/* Sidebar Info */}
-        <div className="space-y-8">
-          <div className="rounded-3xl border border-border bg-muted/30 p-8 space-y-6">
-            <h3 className="text-sm font-black uppercase tracking-widest text-foreground/40">
-              Technical Details
-            </h3>
+        <aside className="space-y-5">
+          <div className="rubik-panel p-6 sm:p-7">
+            <div className="space-y-5">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Technical Details
+              </h3>
 
-            <div className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
-                  Package
-                </span>
-                <div className="flex items-center gap-2 text-sm font-mono text-foreground break-all">
-                  <Package className="size-3.5 text-primary" />
-                  @spike-land-ai/{appId}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Package
+                  </span>
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground break-all">
+                    <Package className="size-3.5 text-primary" />
+                    @spike-land-ai/{appId}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Source Path
+                  </span>
+                  <div className="flex items-center gap-2 text-sm font-mono text-foreground break-all">
+                    <Github className="size-3.5 text-primary" />
+                    {meta.packagePath}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Architecture
+                  </span>
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Globe className="size-3.5 text-primary" />
+                    MCP Edge Module
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Runtime
+                  </span>
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Cpu className="size-3.5 text-primary" />
+                    Cloudflare Workers
+                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
-                  Source Path
-                </span>
-                <div className="flex items-center gap-2 text-sm font-mono text-foreground break-all">
-                  <Github className="size-3.5 text-primary" />
-                  {meta.packagePath}
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
-                  Architecture
-                </span>
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Globe className="size-3.5 text-primary" />
-                  MCP Edge Module
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
-                  Runtime
-                </span>
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Cpu className="size-3.5 text-primary" />
-                  Cloudflare Workers
-                </div>
-              </div>
+              <Button variant="outline" className="w-full" asChild>
+                <a
+                  href={`https://github.com/spike-land-ai/spike-land-ai/tree/main/${meta.packagePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Github className="mr-2 size-4" />
+                  View Source
+                </a>
+              </Button>
             </div>
-
-            <Button variant="outline" className="w-full rounded-2xl font-bold" asChild>
-              <a
-                href={`https://github.com/spike-land-ai/spike-land-ai/tree/main/${meta.packagePath}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github className="mr-2 size-4" />
-                View Source
-              </a>
-            </Button>
           </div>
 
-          <div className="rounded-3xl border border-primary/10 bg-primary/5 p-8 text-center space-y-4">
-            <div className="bg-primary/10 size-12 rounded-2xl flex items-center justify-center mx-auto text-primary">
-              <Zap className="size-6" />
+          <div className="rubik-panel-muted rubik-panel p-6 text-left">
+            <div className="space-y-3">
+              <div className="rubik-icon-badge h-12 w-12">
+                <Zap className="size-5" />
+              </div>
+              <h4 className="text-lg font-semibold tracking-[-0.03em] text-foreground">
+                Need customization?
+              </h4>
+              <p className="text-sm leading-7 text-muted-foreground">
+                Fork the package, keep the interface contract, and tailor the tool surface to your
+                own workflow.
+              </p>
             </div>
-            <h4 className="text-sm font-bold text-primary">Need customization?</h4>
-            <p className="text-xs text-primary/60 leading-relaxed">
-              This package is open source. You can fork it and deploy your own version with custom
-              tools.
-            </p>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
