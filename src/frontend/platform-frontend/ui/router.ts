@@ -319,7 +319,7 @@ const agencyRoute = createRoute({
 const agencyPortfolioRoute = createRoute({
   getParentRoute: () => agencyRoute,
   path: "portfolio",
-  component: withSuspense(() => import("../../../app/agency/portfolio/page"), "PortfolioPage"),
+  component: withSuspense(() => import("./agency/PortfolioPage"), "PortfolioPage"),
 });
 
 // MCP routes
@@ -350,7 +350,7 @@ const cockpitRoute = createRoute({
 const bazdmegRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/bazdmeg",
-  component: withSuspense(() => import("../../../app/bazdmeg/page"), "BazdmegPage"),
+  component: withSuspense(() => import("./bazdmeg/BazdmegPage"), "BazdmegPage"),
 });
 
 const whatWeDoRoute = createRoute({
