@@ -93,20 +93,63 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # ---------------------------------------------------------------------------
 # Get changed files
 # ---------------------------------------------------------------------------
-changed_files=$(git -C "$REPO_ROOT" diff --name-only "$BASE_REF" "$HEAD_REF" 2>/dev/null) || {
-  echo "ERROR: git diff failed (base=$BASE_REF head=$HEAD_REF)" >&2
-  exit 0
-}
+if [ "$HEAD_REF" = "WORKTREE" ]; then
+  tracked_changes=$(git -C "$REPO_ROOT" diff --name-only "$BASE_REF" 2>/dev/null) || {
+    echo "ERROR: git diff failed (base=$BASE_REF head=$HEAD_REF)" >&2
+    exit 0
+  }
+  untracked_changes=$(git -C "$REPO_ROOT" ls-files --others --exclude-standard 2>/dev/null) || {
+    echo "ERROR: git ls-files failed for untracked files" >&2
+    exit 0
+  }
+  changed_files=$(printf "%s\n%s\n" "$tracked_changes" "$untracked_changes" | awk 'NF' | sort -u)
+else
+  changed_files=$(git -C "$REPO_ROOT" diff --name-only "$BASE_REF" "$HEAD_REF" 2>/dev/null) || {
+    echo "ERROR: git diff failed (base=$BASE_REF head=$HEAD_REF)" >&2
+    exit 0
+  }
+fi
 
 if [ -z "$changed_files" ]; then
   echo "NO_CHANGES"
   exit 0
 fi
 
+root_package_json_requires_all() {
+  if ! echo "$changed_files" | grep -qx 'package.json'; then
+    return 1
+  fi
+
+  if [ "$HEAD_REF" = "WORKTREE" ]; then
+    package_diff=$(git -C "$REPO_ROOT" diff -U0 "$BASE_REF" -- package.json 2>/dev/null) || {
+      return 0
+    }
+  else
+    package_diff=$(git -C "$REPO_ROOT" diff -U0 "$BASE_REF" "$HEAD_REF" -- package.json 2>/dev/null) || {
+      return 0
+    }
+  fi
+
+  if [ -z "$package_diff" ]; then
+    return 1
+  fi
+
+  if echo "$package_diff" | grep -qE '^[+-][[:space:]]*"(dependencies|devDependencies|peerDependencies|optionalDependencies|resolutions|dependenciesMeta|workspaces|packageManager|engines|volta)"'; then
+    return 0
+  fi
+
+  return 1
+}
+
 # ---------------------------------------------------------------------------
 # Check for config-level ALL triggers first
 # ---------------------------------------------------------------------------
-if echo "$changed_files" | grep -qE '^(\.tests/vitest\.config\.ts|package\.json|yarn\.lock|\.yarnrc\.yml)$'; then
+if echo "$changed_files" | grep -qE '^(\.tests/vitest\.config\.ts|yarn\.lock|\.yarnrc\.yml)$'; then
+  echo "ALL"
+  exit 0
+fi
+
+if root_package_json_requires_all; then
   echo "ALL"
   exit 0
 fi

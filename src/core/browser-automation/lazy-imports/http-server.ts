@@ -5,13 +5,21 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Keep track of active transports to route messages
 const transports = new Map<string, SSEServerTransport>();
+const LOCAL_BROWSER_ORIGIN_PATTERN =
+  /^https?:\/\/(?:localhost|127\.0\.0\.1|local\.spike\.land)(:\d+)?$/i;
+
+export function isAllowedQaStudioOrigin(origin: string | undefined) {
+  return origin === undefined || origin === "https://spike.land" || LOCAL_BROWSER_ORIGIN_PATTERN.test(origin);
+}
 
 export function startHttpServer(server: McpServer, port: number, host: string) {
   const app = express();
 
   app.use(
     cors({
-      origin: [/^http:\/\/localhost:\d+$/, "https://spike.land"],
+      origin(origin, callback) {
+        callback(null, isAllowedQaStudioOrigin(origin));
+      },
       credentials: true,
       exposedHeaders: ["mcp-session-id"],
     }),

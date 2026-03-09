@@ -334,7 +334,7 @@ export function RootLayout() {
   }, [pathname, searchStr]);
 
   return (
-    <div className="app-shell flex min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="app-shell relative flex min-h-screen overflow-x-hidden bg-background text-foreground">
       {/* Skip to main content link for keyboard/screen reader users */}
       <a
         href="#main-content"
@@ -344,22 +344,32 @@ export function RootLayout() {
       </a>
 
       <div className="flex flex-1 flex-col min-w-0">
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-card/80 backdrop-blur-xl px-6">
-          <div className="flex flex-1 items-center justify-between">
-            <div className="flex items-center gap-8">
-              <Link to="/" className="text-xl font-bold">
-                spike.land
+        <header className="sticky top-0 z-30 border-b border-border/80 bg-background/86 backdrop-blur-xl">
+          <div className="rubik-container flex h-[4.5rem] items-center justify-between gap-6">
+            <div className="flex min-w-0 items-center gap-5">
+              <Link to="/" className="flex min-w-0 items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-card text-sm font-black tracking-[-0.08em] shadow-[var(--panel-shadow)]">
+                  SL
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-[0.95rem] font-semibold tracking-[-0.03em] text-foreground">
+                    spike.land
+                  </p>
+                  <p className="hidden text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground md:block">
+                    MCP-native platform
+                  </p>
+                </div>
               </Link>
-              <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
+              <nav className="hidden lg:flex items-center gap-1.5" aria-label="Main navigation">
                 {navLinks.map(({ to, label }) => (
                   <Link
                     key={to}
                     to={to}
                     aria-current={pathname === to ? "page" : undefined}
-                    className={`text-sm font-medium transition-colors hover:text-foreground ${
+                    className={`rounded-full px-3 py-2 text-[0.82rem] font-medium tracking-[0.01em] transition-colors ${
                       pathname === to
-                        ? "text-foreground underline underline-offset-4 decoration-primary/50"
-                        : "text-muted-foreground"
+                        ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
+                        : "text-muted-foreground hover:bg-card/80 hover:text-foreground"
                     }`}
                   >
                     {label}
@@ -367,13 +377,17 @@ export function RootLayout() {
                 ))}
               </nav>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground xl:inline-flex">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                80+ tools online
+              </div>
               {isDeveloper && <ThemeSwitcher theme={theme} setTheme={setTheme} />}
               <LoginButton />
               {/* Mobile hamburger */}
               <button
                 type="button"
-                className="lg:hidden flex items-center justify-center rounded-md p-3 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="flex items-center justify-center rounded-2xl border border-border bg-card p-3 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
                 aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
                 aria-expanded={mobileNavOpen}
                 aria-controls="mobile-nav"
@@ -420,18 +434,20 @@ export function RootLayout() {
           <div
             ref={mobileNavRef}
             id="mobile-nav"
-            className="lg:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-xl flex flex-col pt-20 px-6 gap-4"
+            className="fixed inset-0 z-40 flex flex-col gap-4 bg-background/95 px-6 pt-20 backdrop-blur-xl lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
           >
-            <nav aria-label="Mobile navigation links">
+            <nav aria-label="Mobile navigation links" className="rubik-panel p-4">
               {navLinks.map(({ to, label }) => (
                 <Link
                   key={to}
                   to={to}
-                  className={`block py-3 text-lg font-medium border-b border-border transition-colors hover:text-foreground ${
-                    pathname === to ? "text-foreground" : "text-muted-foreground"
+                  className={`block rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
+                    pathname === to
+                      ? "bg-background text-foreground shadow-[var(--panel-shadow)]"
+                      : "text-muted-foreground hover:bg-background hover:text-foreground"
                   }`}
                   onClick={() => setMobileNavOpen(false)}
                 >
@@ -442,7 +458,7 @@ export function RootLayout() {
           </div>
         )}
 
-        <main id="main-content" className="flex-1 overflow-x-hidden">
+        <main id="main-content" className="flex-1 overflow-x-hidden pb-8">
           <noscript>
             <div className="p-8 text-center">
               <h1>JavaScript Required</h1>

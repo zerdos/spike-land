@@ -71,7 +71,7 @@ export function QaStudioPage() {
 
   const handleGetTabs = async () => {
     try {
-      const result = await mcp.callTool("web_tabs", {});
+      const result = await mcp.callTool("web_tabs", { action: "list" });
       if (result.content[0]?.text) {
         try {
           setTabsData(JSON.parse(result.content[0].text));

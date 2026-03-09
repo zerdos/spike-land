@@ -11,7 +11,8 @@
 **Spike Land is an open MCP app store where developers vibe code full-stack
 apps, publish them, and run them across edge-hosted, cross-origin, and offline
 surfaces -- powered by Spike, your personalized AI assistant with 533+ tools
-accessible via CLI, web chat, WhatsApp, and Telegram.**
+accessible today via CLI and web chat, with WhatsApp in beta and Telegram
+planned.**
 
 spike-cli lets you build, deploy, and manage applications from the command line.
 The web platform provides a visual dashboard. Every capability is exposed as an
@@ -45,7 +46,8 @@ then using that loop to improve spike.land itself.
 
 1. **MCP-native architecture with multi-channel access** - 533+ tools callable
    by any AI agent via standard protocol, accessible through spike-cli (CLI),
-   web chat, WhatsApp, and Telegram. No competitor offers this breadth of access
+   web chat, and an in-progress channel expansion that already includes
+   WhatsApp building blocks. No competitor offers this breadth of access
    channels.
 2. **Open app-store distribution with multi-surface apps** - Build full-stack
    apps with AI assistance, publish them into the catalog, and distribute them
@@ -60,7 +62,8 @@ then using that loop to improve spike.land itself.
    SEIS/EIS eligible
 
 **Positioning**: Open MCP app store with managed runtime **Core Product**:
-spike-cli (MCP multiplexer CLI), Spike web chat, WhatsApp & Telegram bots
+spike-cli (MCP multiplexer CLI), Spike web chat, WhatsApp beta integration, and
+Telegram on the roadmap
 **Supporting Tools**: App Store, vibe coding, real-time code editor,
 feedback-driven QA/review, offline bundling, Cloudflare deployment guides
 **Target Market**: Developers, AI agent builders, solo founders, small teams
@@ -82,7 +85,7 @@ feedback-driven QA/review, offline bundling, Cloudflare deployment guides
 | **CleanSweep**         | Production | ADHD-friendly gamified cleaning, 14 MCP tools                                                          |
 | **Career Navigator**   | Production | Skills assessment, ESCO taxonomy, salary data                                                          |
 | **Auth**               | Production | Better Auth (GitHub, Google, Facebook, Apple)                                                          |
-| **Stripe**             | 75%        | Subscriptions + one-time payments                                                                      |
+| **Stripe**             | 85%        | Subscriptions, annual billing, and one-time credit purchases live; API usage billing still pending     |
 | **Dev Workflow Tools** | Production | 5 MCP tools for local development                                                                      |
 | **Security**           | Hardened   | Durable Object rate limiting, command injection prevention                                               |
 | **Feedback Loop**      | Beta       | Generate -> transpile -> render -> review loop with structured failure handling and learning-note direction |
@@ -207,14 +210,14 @@ Merge all credits into "Spike Credits":
 
 ### In Progress
 
-#### Phase 5: Stripe Integration (75%)
+#### Phase 5: Stripe Integration (85%)
 
 - [x] Payment intent creation
 - [x] Webhook handling
 - [x] Subscription management
-- [ ] Annual billing with 20% discount
+- [x] Annual billing with 20% discount
 - [ ] Metered billing for API usage
-- [ ] Credit pack one-time purchases ($10 for 500 credits)
+- [x] Credit pack one-time purchases ($5/$20/$50 packs)
 
 #### Phase 10: Recent Feature Completions (February 2026)
 
@@ -234,7 +237,7 @@ Merge all credits into "Spike Credits":
 - [x] Cache system tests
 - [x] Social engagement fetcher tests
 
-#### Phase 11: Tech Debt Reduction (60%)
+#### Phase 11: Tech Debt Reduction (100%)
 
 - [x] Full repo audit
 - [x] 8 stale smoke test issues closed
@@ -244,7 +247,7 @@ Merge all credits into "Spike Credits":
 - [x] Dead code removal (~420 files removed)
 - [x] Logger refactoring (~300 files)
 - [x] Remove unused deps from src/code (extracted to external repo)
-- [ ] Increase test coverage to 80% (from ~30%)
+- [x] Increase test coverage to 80% (from ~30%)
 
 ### Upcoming
 
@@ -255,16 +258,16 @@ spike.land apps and skills
 
 | Task | Priority | Status |
 | --- | --- | --- |
-| Open submissions with review gates | Critical | Planned |
-| Shared SDK v1 documentation | Critical | Planned |
-| Cross-origin MCP integration guides | High | In progress |
-| Multi-surface app metadata and frontend contracts | High | Planned |
+| Open submissions with review gates | Critical | In progress |
+| Shared SDK v1 documentation | Critical | In progress |
+| Cross-origin MCP integration guides | High | Done |
+| Multi-surface app metadata and frontend contracts | High | In progress |
 | Typed tool contract -> surface compiler | Critical | In progress |
 | Offline browser bundle path | High | In progress |
 | Typed-to-MDX universal runner | High | In progress |
-| Session-aware generated app surfaces | Medium | Planned |
+| Session-aware generated app surfaces | Medium | In progress |
 | Render primitives for forms, tables, media, links, and action bars | High | Planned |
-| Store security and sandbox docs | High | In progress |
+| Store security and sandbox docs | High | Done |
 | Performance budgets per store surface | Medium | Planned |
 
 #### Phase 13: Multi-Channel Assistant Surfaces (Q1-Q2 2026)
@@ -273,7 +276,7 @@ spike.land apps and skills
 
 | Task                                                        | Priority | Status      |
 | ----------------------------------------------------------- | -------- | ----------- |
-| WhatsApp Business API integration                           | Critical | Planned     |
+| WhatsApp Business API integration                           | Critical | In progress |
 | Telegram Bot API integration                                | Critical | Planned     |
 | Unified message routing (web chat, WhatsApp, Telegram, CLI) | Critical | Planned     |
 | Web chat deepening toward Slack-like workspace utility      | High     | Planned     |
@@ -293,10 +296,10 @@ across surfaces.
 
 | Task                                                | Priority | Status          |
 | --------------------------------------------------- | -------- | --------------- |
-| API rate limiting per account                       | Critical | Planned         |
-| API key management UI                               | Critical | Partially built |
-| Usage metering (calls tracked in DB)                | Critical | Planned         |
-| Developer documentation                             | High     | Planned         |
+| API rate limiting per account                       | Critical | Done            |
+| API key management UI                               | Critical | Done            |
+| Usage metering (calls tracked in DB)                | Critical | Done            |
+| Developer documentation                             | High     | In progress     |
 | MCP marketplace listings (Smithery, Glama, LobeHub) | High     | Planned         |
 | Third-party tool submission workflow                | High     | Planned         |
 | Tool review and approval pipeline                   | Medium   | Planned         |
@@ -405,11 +408,12 @@ experiment-detected regressions and variant failures.
 | Railway        | $5+/mo   | No      | Yes                 | No                           | 533+ tools + vibe coding  |
 | Render         | $7+/mo   | No      | Yes                 | No                           | AI-first deployment       |
 | Replit         | $25+/mo  | No      | No                  | No                           | MCP registry + CLI        |
-| **Spike Land** | $0-99/mo | **Yes** | **Yes (spike-cli)** | **Yes (WhatsApp, Telegram)** | Full platform + self-improving loop |
+| **Spike Land** | $0-99/mo | **Yes** | **Yes (spike-cli)** | **Partial (web, CLI, WhatsApp beta)** | Full platform + self-improving loop |
 
 **No deployment platform offers a programmable AI agent with 533+ MCP tools,
-multi-surface apps, and a feedback-driven loop accessible via CLI, web,
-WhatsApp, and Telegram.** This is the differentiator.
+multi-surface apps, and a feedback-driven loop already accessible via CLI and
+web, with WhatsApp in beta and further channels on the roadmap.** This is the
+differentiator.
 
 ---
 

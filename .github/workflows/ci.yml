@@ -62,7 +62,13 @@ jobs:
           cache: yarn
 
       - run: yarn install
-      - run: yarn test:src
+      - name: Run changed tests
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            bash scripts/test-changed.sh --base origin/main --head HEAD
+          else
+            bash scripts/test-changed.sh --base HEAD~1 --head HEAD
+          fi
 
   build:
     needs: [typecheck, lint, test]

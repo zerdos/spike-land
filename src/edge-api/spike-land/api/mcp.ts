@@ -6,6 +6,7 @@
  * DELETE /mcp -- Session termination
  */
 import { Hono } from "hono";
+import type { Context } from "hono";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { eq, and, sql } from "drizzle-orm";
 import type { Env } from "../core-logic/env";
@@ -20,6 +21,19 @@ import type { AnalyticsEvent } from "../core-logic/lib/analytics";
 import { recordSkillCall } from "../core-logic/lib/skill-tracker";
 import { detectAbuse } from "../core-logic/middleware/abuse-detector";
 import { toolCallDaily, subscriptions } from "../db/db/schema";
+
+type CallerTier = "free" | "pro" | "business";
+
+interface McpSessionState {
+  sessionId: string;
+  userId: string;
+  mcpServer: Awaited<ReturnType<typeof createMcpServer>>;
+  transport: WebStandardStreamableHTTPServerTransport;
+}
+
+// Cloudflare Workers keep module state per isolate, which is sufficient for
+// streamable HTTP MCP session affinity within the handling isolate.
+const mcpSessions = new Map<string, McpSessionState>();
 
 function eloRateMultiplier(elo: number): number {
   if (elo < 500) return 4;
@@ -37,6 +51,76 @@ const FREE_TIER_DAILY_LIMIT = 50;
 
 export const mcpRoute = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
+function jsonRpcError(status: number, code: number, message: string): Response {
+  return Response.json(
+    {
+      jsonrpc: "2.0",
+      error: { code, message },
+      id: null,
+    },
+    { status },
+  );
+}
+
+function applyCallerContext(
+  mcpServer: Awaited<ReturnType<typeof createMcpServer>>,
+  callerElo: number,
+  callerTier: CallerTier,
+  isAgent: boolean,
+  userRole?: string,
+): void {
+  const mcpWithRegistry = mcpServer as unknown as Record<string, unknown>;
+  if (!mcpWithRegistry.registry) {
+    return;
+  }
+
+  const reg = mcpWithRegistry.registry as {
+    setCallerElo(elo: number, tier: CallerTier, isAgent: boolean): void;
+    setCallerRole(role: string): void;
+  };
+
+  reg.setCallerElo(callerElo, callerTier, isAgent);
+  if (userRole) {
+    reg.setCallerRole(userRole);
+  }
+}
+
+async function createSession(
+  c: Context<{ Bindings: Env; Variables: AuthVariables }>,
+  userId: string,
+  db: AuthVariables["db"],
+): Promise<McpSessionState> {
+  const enabledCategories = await loadEnabledCategories(userId, c.env.KV);
+  const mcpServer = await createMcpServer(userId, db, {
+    enabledCategories,
+    kv: c.env.KV,
+    vaultSecret: c.env.VAULT_SECRET,
+    mcpInternalSecret: c.env.MCP_INTERNAL_SECRET,
+    spikeEdge: c.env.SPIKE_EDGE,
+    spaAssets: c.env.SPA_ASSETS,
+  });
+
+  const sessionId = crypto.randomUUID();
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    sessionIdGenerator: () => sessionId,
+    enableJsonResponse: true,
+    onsessionclosed: (closedSessionId) => {
+      mcpSessions.delete(closedSessionId);
+    },
+  });
+
+  await mcpServer.connect(transport);
+
+  const session = { sessionId, userId, mcpServer, transport };
+  mcpSessions.set(sessionId, session);
+  return session;
+}
+
+async function disposeSession(session: McpSessionState): Promise<void> {
+  mcpSessions.delete(session.sessionId);
+  await session.mcpServer.close();
+}
+
 mcpRoute.get("/health", (c) => {
   return c.json({ status: "ok", version: "1.0.0" });
 });
@@ -44,10 +128,11 @@ mcpRoute.get("/health", (c) => {
 mcpRoute.post("/", async (c) => {
   const userId = c.var.userId;
   const db = c.var.db;
+  const userRole = c.var.userRole;
   const agentId = c.req.header("X-Agent-Id");
 
   let callerElo = 1200;
-  let callerTier: "free" | "pro" | "business" = "free";
+  let callerTier: CallerTier = "free";
   let isAgent = false;
 
   try {
@@ -149,45 +234,37 @@ mcpRoute.post("/", async (c) => {
   try {
     body = await c.req.json();
   } catch {
-    return c.json(
-      {
-        jsonrpc: "2.0",
-        error: { code: -32700, message: "Parse error" },
-        id: null,
-      },
-      400,
-    );
+    return jsonRpcError(400, -32700, "Parse error");
   }
 
   const startTime = Date.now();
+  const rpcMethod = (body as { method?: string })?.method ?? "unknown";
+  const sessionId = c.req.header("Mcp-Session-Id");
+  const isInitializeRequest = rpcMethod === "initialize";
 
-  // Load persisted categories from KV
-  const enabledCategories = await loadEnabledCategories(userId, c.env.KV);
+  let session = sessionId ? mcpSessions.get(sessionId) : undefined;
+  const isNewSession = !session && !sessionId && isInitializeRequest;
 
-  // Create MCP server for this user
-  const mcpServer = await createMcpServer(userId, db, {
-    enabledCategories,
-    kv: c.env.KV,
-    vaultSecret: c.env.VAULT_SECRET,
-    mcpInternalSecret: c.env.MCP_INTERNAL_SECRET,
-    spikeEdge: c.env.SPIKE_EDGE,
-    spaAssets: c.env.SPA_ASSETS,
-  });
+  if (session && session.userId !== userId) {
+    return jsonRpcError(404, -32001, "Session not found");
+  }
 
-  // Set caller ELO for tool gating
-  const mcpWithRegistry = mcpServer as unknown as Record<string, unknown>;
-  if (mcpWithRegistry.registry) {
-    const reg = mcpWithRegistry.registry as {
-      setCallerElo(elo: number, tier: string, isAgent: boolean): void;
-      setCallerRole(role: string): void;
-    };
-    reg.setCallerElo(callerElo, callerTier, isAgent);
-    // Set caller role for RBAC
-    const userRole = (c.var as Record<string, unknown>).userRole as string | undefined;
-    if (userRole) {
-      reg.setCallerRole(userRole);
+  if (!session) {
+    if (sessionId) {
+      return jsonRpcError(404, -32001, "Session not found");
+    }
+    if (!isInitializeRequest) {
+      return jsonRpcError(400, -32000, "Bad Request: Server not initialized");
+    }
+    try {
+      session = await createSession(c, userId, db);
+    } catch (error) {
+      console.error("MCP session creation error", error);
+      return jsonRpcError(500, -32603, "Internal error");
     }
   }
+
+  applyCallerContext(session.mcpServer, callerElo, callerTier, isAgent, userRole);
 
   // Normalize Accept header for MCP spec compliance
   const headers = new Headers(c.req.raw.headers);
@@ -203,24 +280,18 @@ mcpRoute.post("/", async (c) => {
     body: null,
   });
 
-  const sessionId = c.req.header("Mcp-Session-Id");
-
-  // Stateful transport — supports both SSE streaming and JSON depending on headers
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: () => sessionId ?? crypto.randomUUID(),
-  });
-
-  await mcpServer.connect(transport);
-
   try {
-    const response = await transport.handleRequest(mcpRequest, {
+    const response = await session.transport.handleRequest(mcpRequest, {
       parsedBody: body,
     });
 
+    if (isNewSession && response.status >= 400 && session) {
+      await disposeSession(session);
+    }
+
     // Track MCP request via GA4 and platform analytics
     const durationMs = Date.now() - startTime;
-    const method = (body as { method?: string })?.method ?? "unknown";
-    const isToolCall = method === "tools/call";
+    const isToolCall = rpcMethod === "tools/call";
     const toolName = isToolCall
       ? ((body as { params?: { name?: string } })?.params?.name ?? "unknown")
       : undefined;
@@ -276,7 +347,7 @@ mcpRoute.post("/", async (c) => {
 
     // 1. Send to GA4
     const ga4Events: GA4Event[] = [
-      { name: "mcp_request", params: { method, user_id: userId, duration_ms: durationMs } },
+      { name: "mcp_request", params: { method: rpcMethod, user_id: userId, duration_ms: durationMs } },
     ];
     if (isToolCall && toolName) {
       ga4Events.push({
@@ -315,7 +386,11 @@ mcpRoute.post("/", async (c) => {
 
     // 3. Send to platform analytics (D1 via spike-edge)
     const platformEvents: AnalyticsEvent[] = [
-      { source: "spike-land-mcp", eventType: "mcp_request", metadata: { method, durationMs } },
+      {
+        source: "spike-land-mcp",
+        eventType: "mcp_request",
+        metadata: { method: rpcMethod, durationMs },
+      },
     ];
     if (isToolCall && toolName) {
       platformEvents.push({
@@ -330,50 +405,28 @@ mcpRoute.post("/", async (c) => {
     const finalBody = responseBody ?? response.body;
     return new Response(finalBody, {
       status: response.status,
-      headers: Object.fromEntries(
-        Array.from(response.headers as unknown as Iterable<[string, string]>),
-      ),
+      headers: new Headers(response.headers),
     });
   } catch (error) {
+    if (isNewSession && session) {
+      await disposeSession(session);
+    }
     console.error("MCP request error", error);
-    return c.json(
-      {
-        jsonrpc: "2.0",
-        error: { code: -32603, message: "Internal error" },
-        id: null,
-      },
-      500,
-    );
-  } finally {
-    await mcpServer.close();
+    return jsonRpcError(500, -32603, "Internal error");
   }
 });
 
 mcpRoute.get("/", async (c) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const sessionId = c.req.header("Mcp-Session-Id");
+  if (!sessionId) {
+    return jsonRpcError(400, -32000, "Bad Request: Mcp-Session-Id header is required");
   }
 
   const userId = c.var.userId;
-  const db = c.var.db;
-
-  const enabledCategories = await loadEnabledCategories(userId, c.env.KV);
-  const mcpServer = await createMcpServer(userId, db, {
-    enabledCategories,
-    kv: c.env.KV,
-    vaultSecret: c.env.VAULT_SECRET,
-    mcpInternalSecret: c.env.MCP_INTERNAL_SECRET,
-    spikeEdge: c.env.SPIKE_EDGE,
-    spaAssets: c.env.SPA_ASSETS,
-  });
-
-  const sessionId = c.req.header("Mcp-Session-Id");
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: () => sessionId ?? crypto.randomUUID(),
-  });
-
-  await mcpServer.connect(transport);
+  const session = mcpSessions.get(sessionId);
+  if (!session || session.userId !== userId) {
+    return jsonRpcError(404, -32001, "Session not found");
+  }
 
   const headers = new Headers(c.req.raw.headers);
   const accept = headers.get("Accept") ?? "";
@@ -387,7 +440,31 @@ mcpRoute.get("/", async (c) => {
     body: null,
   });
 
-  return transport.handleRequest(req);
+  return session.transport.handleRequest(req);
 });
 
-mcpRoute.delete("/", () => Response.json({ ok: true }));
+mcpRoute.delete("/", async (c) => {
+  const sessionId = c.req.header("Mcp-Session-Id");
+  if (!sessionId) {
+    return jsonRpcError(400, -32000, "Bad Request: Mcp-Session-Id header is required");
+  }
+
+  const session = mcpSessions.get(sessionId);
+  if (!session || session.userId !== c.var.userId) {
+    return jsonRpcError(404, -32001, "Session not found");
+  }
+
+  const headers = new Headers(c.req.raw.headers);
+  const accept = headers.get("Accept") ?? "";
+  if (!accept.includes("application/json") || !accept.includes("text/event-stream")) {
+    headers.set("Accept", "application/json, text/event-stream");
+  }
+
+  const req = new Request(c.req.url, {
+    method: "DELETE",
+    headers,
+    body: null,
+  });
+
+  return session.transport.handleRequest(req);
+});

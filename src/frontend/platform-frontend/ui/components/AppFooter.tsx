@@ -5,199 +5,217 @@ export function AppFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer
-      className="bg-card/80 backdrop-blur-xl border-t border-border py-16 px-6 mt-32 overflow-hidden relative"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 500px" }}
-    >
-      {/* Decorative background element */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
-          <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-6 min-h-[160px]">
-            <Link
-              to="/"
-              className="text-2xl font-black tracking-tighter text-foreground flex items-center gap-2 group"
-            >
-              <div className="bg-primary size-8 rounded-lg flex items-center justify-center text-primary-foreground group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">
-                S
-              </div>
-              spike.land
-            </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-              The world's first MCP-native AI development platform. Build, deploy, and scale
-              high-performance agents and tools at the edge.
-            </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/spike-land-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-muted dark:bg-white/5 border border-border dark:border-white/10 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
-                aria-label="Visit our GitHub"
-              >
-                <Github className="size-5" />
-              </a>
-              <a
-                href="https://x.com/ai_spike_land"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-muted dark:bg-white/5 border border-border dark:border-white/10 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
-                aria-label="Follow us on Twitter"
-              >
-                <Twitter className="size-5" />
-              </a>
-              <a
-                href="mailto:zoltan.erdos@spike.land"
-                className="p-2 rounded-full bg-muted dark:bg-white/5 border border-border dark:border-white/10 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
-                aria-label="Email us"
-              >
-                <Mail className="size-5" />
-              </a>
+    <footer className="mt-24 px-4 pb-8 pt-8" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 500px" }}>
+      <div className="rubik-container space-y-6">
+        <div className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl space-y-4">
+            <span className="rubik-eyebrow">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              Ship enterprise-ready app surfaces
+            </span>
+            <div className="space-y-3">
+              <h2 className="text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
+                One product layer for chat, tools, docs, and deployment.
+              </h2>
+              <p className="rubik-lede">
+                spike.land turns MCP capability into real software surfaces with shared auth,
+                observability, and edge-native runtime defaults.
+              </p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Platform
-            </p>
-            <ul className="space-y-3 text-sm font-medium">
-              <li>
-                <Link
-                  to="/apps"
-                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  Apps <span className="text-xs bg-primary/10 px-1 rounded text-primary">New</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/pricing"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/store"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Store
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/packages"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Packages
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Resources
-            </p>
-            <ul className="space-y-3 text-sm font-medium">
-              <li>
-                <Link
-                  to="/docs"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/blog"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://status.spike.land"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  System Status
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Legal
-            </p>
-            <ul className="space-y-3 text-sm font-medium">
-              <li>
-                <Link
-                  to="/privacy"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/terms"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/security"
-                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-                >
-                  <ShieldCheck className="size-3.5" /> Security
-                </Link>
-              </li>
-            </ul>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              to="/store"
+              className="inline-flex items-center justify-center rounded-[calc(var(--radius-control)-0.1rem)] border border-transparent bg-foreground px-5 py-3 text-sm font-semibold text-background shadow-[0_18px_40px_color-mix(in_srgb,var(--fg)_12%,transparent)] transition-colors hover:bg-foreground/92"
+            >
+              Browse apps
+            </Link>
+            <Link
+              to="/docs"
+              className="inline-flex items-center justify-center rounded-[calc(var(--radius-control)-0.1rem)] border border-border bg-background/85 px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/28 hover:text-primary"
+            >
+              Read docs
+            </Link>
           </div>
         </div>
 
-        <div className="mt-20 pt-8 border-t border-border dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col items-center md:items-start gap-1">
-            <p className="text-xs font-bold text-muted-foreground/60 tracking-tight">
-              &copy; {currentYear} SPIKE LAND LTD. Built with passion on Cloudflare Workers.
-            </p>
-            <p className="text-xs text-muted-foreground/40">
-              Handcrafted in Europe. Global reach via Edge Computing.
-            </p>
+        <div className="rubik-panel p-6 sm:p-8">
+          <div className="grid gap-10 lg:grid-cols-[1.35fr_repeat(3,minmax(0,1fr))]">
+            <div className="space-y-5">
+              <Link to="/" className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-card text-sm font-black tracking-[-0.08em] text-foreground">
+                  SL
+                </div>
+                <div>
+                  <p className="text-lg font-semibold tracking-[-0.04em] text-foreground">
+                    spike.land
+                  </p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    MCP-native AI platform
+                  </p>
+                </div>
+              </Link>
+
+              <p className="max-w-sm text-sm leading-7 text-muted-foreground">
+                Build apps, tools, and operational workflows with one design system and one runtime
+                model.
+              </p>
+
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://github.com/spike-land-ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                  aria-label="Visit our GitHub"
+                >
+                  <Github className="size-4" />
+                  <span className="sr-only">GitHub</span>
+                </a>
+                <a
+                  href="https://x.com/ai_spike_land"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                  aria-label="Follow us on Twitter"
+                >
+                  <Twitter className="size-4" />
+                  <span className="sr-only">Twitter</span>
+                </a>
+                <a
+                  href="mailto:zoltan.erdos@spike.land"
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                  aria-label="Email us"
+                >
+                  <Mail className="size-4" />
+                  <span className="sr-only">Email</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Product
+              </p>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link to="/apps" className="text-muted-foreground transition-colors hover:text-primary">
+                    Packages
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/store" className="text-muted-foreground transition-colors hover:text-primary">
+                    App Store
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing" className="text-muted-foreground transition-colors hover:text-primary">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/vibe-code" className="text-muted-foreground transition-colors hover:text-primary">
+                    Vibe Code
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Resources
+              </p>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link to="/docs" className="text-muted-foreground transition-colors hover:text-primary">
+                    Documentation
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/blog" className="text-muted-foreground transition-colors hover:text-primary">
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" className="text-muted-foreground transition-colors hover:text-primary">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="https://status.spike.land"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    System Status
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Trust
+              </p>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link to="/privacy" className="text-muted-foreground transition-colors hover:text-primary">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="text-muted-foreground transition-colors hover:text-primary">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/security"
+                    className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    <ShieldCheck className="size-3.5" />
+                    Security
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/spike-land-ai/spike-land-ai/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    <ExternalLink className="size-3.5" />
+                    Changelog
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a
-              href="https://github.com/spike-land-ai/spike-land-ai/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-bold text-muted-foreground hover:text-primary transition-all flex items-center gap-1.5 bg-muted dark:bg-white/5 border border-border dark:border-white/10 px-3 py-1.5 rounded-full"
-            >
-              <ExternalLink className="size-3" />
-              Changelog
-            </a>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/5 border border-success/10">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success/40 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
-              </span>
-              <span className="text-xs font-bold text-success dark:text-success uppercase tracking-tighter">
-                All Systems Live
-              </span>
+          <div className="rubik-divider my-6" />
+
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold tracking-[0.04em] text-muted-foreground">
+                &copy; {currentYear} SPIKE LAND LTD. Built for edge-native AI product surfaces.
+              </p>
+              <p className="text-xs text-muted-foreground/80">
+                London-built. Global by default.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="https://status.spike.land"
+                role="status"
+                className="inline-flex items-center gap-2 rounded-full border border-success/20 bg-success/70 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-success-foreground"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success/40 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-success"></span>
+                </span>
+                Status healthy
+              </a>
             </div>
           </div>
         </div>

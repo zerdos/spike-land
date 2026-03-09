@@ -18,6 +18,15 @@
 @theme {
   --font-sans: "Rubik", "Rubik Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Rubik", "Rubik Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-control: 1rem;
+  --radius-panel: 1.5rem;
+  --radius-panel-lg: 2rem;
+
+  --page-max: 72rem;
+  --page-max-wide: 78rem;
+  --section-space: 6rem;
 
   /* Obsidian Core - Deep midnight blue-purple */
   --color-obsidian-950: #0a0c14;
@@ -92,6 +101,18 @@
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 0%, var(--surface-spot-1), transparent 28%),
+      radial-gradient(circle at 88% 4%, var(--surface-spot-2), transparent 22%),
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-spot-3) 90%, transparent), transparent 22%),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg) 86%, white 14%) 0%,
+        var(--bg) 42%,
+        color-mix(in srgb, var(--bg) 92%, black 8%) 100%
+      );
+    color: var(--fg);
+    min-height: 100vh;
   }
 
   /* Fluid typography map using clamp
@@ -99,137 +120,320 @@
   h1,
   .text-fluid-h1 {
     font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
-    line-height: 1.2;
-    font-weight: 800;
+    line-height: 1.03;
+    font-weight: 780;
     /* Use variable font weight scaling via standard properties */
-    font-variation-settings: "wght" 800;
+    font-variation-settings: "wght" 780;
+    letter-spacing: -0.05em;
   }
 
   h2,
   .text-fluid-h2 {
     font-size: clamp(2rem, 3.5vw + 0.5rem, 3rem);
-    line-height: 1.25;
-    font-weight: 700;
-    font-variation-settings: "wght" 700;
+    line-height: 1.08;
+    font-weight: 690;
+    font-variation-settings: "wght" 690;
+    letter-spacing: -0.045em;
   }
 
   h3,
   .text-fluid-h3 {
     font-size: clamp(1.5rem, 2.5vw + 0.3rem, 2rem);
-    line-height: 1.3;
+    line-height: 1.16;
     font-weight: 600;
     font-variation-settings: "wght" 600;
+    letter-spacing: -0.03em;
   }
 
   .text-fluid-base {
     font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
-    line-height: 1.6;
+    line-height: 1.7;
     font-variation-settings: "wght" 400;
   }
 }
 
 /* Light theme (default) */
 :root {
-  --bg: #f9fafb;
-  --fg: #111827;
-  --card-bg: #ffffff;
-  --card-fg: #111827;
-  --muted-bg: #f3f4f6;
-  --muted-fg: #4b5563;
-  --border-color: #e5e7eb;
-  --input-color: #d1d5db;
-  --ring-color: #2563eb;
+  --bg: #edf2f9;
+  --fg: #0f1728;
+  --card-bg: #fbfdff;
+  --card-fg: #0f1728;
+  --muted-bg: #eef3f9;
+  --muted-fg: #5f6f89;
+  --border-color: #d8e1ed;
+  --input-color: #c4cedf;
+  --ring-color: #5678ff;
 
-  --primary-color: #2563eb;
-  --primary-fg: #ffffff;
-  --primary-light: #60a5fa;
-  --primary-glow: rgba(37, 99, 235, 0.3);
+  --primary-color: #4c69ff;
+  --primary-fg: #f8fbff;
+  --primary-light: #7d94ff;
+  --primary-glow: rgba(76, 105, 255, 0.16);
 
-  --secondary-bg: #f1f5f9;
-  --secondary-fg: #475569;
+  --secondary-bg: #e7eef9;
+  --secondary-fg: #2b3953;
 
-  --accent-bg: #f0f9ff;
-  --accent-fg: #1e40af;
+  --accent-bg: #eaf0ff;
+  --accent-fg: #3551cb;
 
-  --destructive-bg: #fef2f2;
-  --destructive-fg: #dc2626;
+  --destructive-bg: #fff0f2;
+  --destructive-fg: #c93c5c;
 
-  --success-bg: #f0fdf4;
-  --success-fg: #16a34a;
+  --success-bg: #eefbf5;
+  --success-fg: #10865a;
 
-  --warning-bg: #fffbeb;
-  --warning-fg: #d97706;
+  --warning-bg: #fff8ea;
+  --warning-fg: #b46d10;
 
-  --info-bg: #ecfeff;
-  --info-fg: #0891b2;
+  --info-bg: #eaf6ff;
+  --info-fg: #0b79a7;
 
-  --chat-bg: #fffaf0;
-  --chat-surface: #ffffff;
-  --chat-accent: #f0a500;
-  --chat-accent-light: #f6c453;
-  --chat-success: #16a34a;
+  --chat-bg: #eff4fb;
+  --chat-surface: #fbfdff;
+  --chat-accent: #4c69ff;
+  --chat-accent-light: #90a3ff;
+  --chat-success: #10865a;
+
+  --surface-spot-1: rgba(76, 105, 255, 0.14);
+  --surface-spot-2: rgba(0, 177, 204, 0.09);
+  --surface-spot-3: rgba(15, 23, 42, 0.05);
+  --panel-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.07),
+    0 3px 12px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  --panel-shadow-strong:
+    0 30px 80px rgba(48, 77, 191, 0.12),
+    0 6px 18px rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  --ease-default: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 240ms;
 }
 
-/* Dark theme mapped to Obsidian & Amber Neon */
+/* Dark theme mapped to graphite surfaces and cobalt accents */
 .dark {
-  --bg: var(--color-obsidian-950);
-  --fg: #e2e8f0;
-  /* softer text equivalent to text-gray-200 */
-  --card-bg: rgba(255, 255, 255, 0.05);
-  /* keep some visual separation */
-  --card-fg: #f8fafc;
-  --muted-bg: rgba(255, 255, 255, 0.08);
-  --muted-fg: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --input-color: rgba(255, 255, 255, 0.12);
-  --ring-color: var(--color-amber-neon);
+  --bg: #060b15;
+  --fg: #eef4ff;
+  --card-bg: #0d1524;
+  --card-fg: #eef4ff;
+  --muted-bg: #121c2e;
+  --muted-fg: #90a0bd;
+  --border-color: rgba(158, 173, 213, 0.18);
+  --input-color: rgba(158, 173, 213, 0.24);
+  --ring-color: #8ea2ff;
 
-  --primary-color: var(--color-amber-neon);
-  --primary-fg: #000000;
-  --primary-light: #fcd34d;
-  --primary-glow: var(--color-amber-glow);
+  --primary-color: #8ea2ff;
+  --primary-fg: #08111f;
+  --primary-light: #c2cbff;
+  --primary-glow: rgba(142, 162, 255, 0.24);
 
-  --secondary-bg: rgba(255, 255, 255, 0.08);
-  --secondary-fg: #cbd5e1;
+  --secondary-bg: rgba(255, 255, 255, 0.06);
+  --secondary-fg: #dde7ff;
 
-  --accent-bg: var(--color-obsidian-900);
-  --accent-fg: var(--color-accent-300);
+  --accent-bg: #17243a;
+  --accent-fg: #bac7ff;
 
-  --destructive-bg: #450a0a;
-  --destructive-fg: #fca5a5;
+  --destructive-bg: #37131e;
+  --destructive-fg: #ffb4c6;
 
-  --success-bg: rgba(0, 255, 204, 0.1);
-  --success-fg: var(--color-emerald-neon);
+  --success-bg: #102c22;
+  --success-fg: #7fe6b3;
 
-  --warning-bg: #451a03;
-  --warning-fg: #fcd34d;
+  --warning-bg: #3b2a0d;
+  --warning-fg: #ffd889;
 
-  --info-bg: #083344;
-  --info-fg: #67e8f9;
+  --info-bg: #10283a;
+  --info-fg: #9bd6ff;
 
-  /* Chat widget - image-studio glassmorphism aesthetic */
-  --chat-bg: var(--color-obsidian-950);
-  --chat-surface: var(--color-obsidian-900);
-  --chat-accent: var(--color-amber-neon);
-  --chat-accent-light: #fcd34d;
-  --chat-success: var(--color-emerald-neon);
+  --chat-bg: #08111d;
+  --chat-surface: #10192b;
+  --chat-accent: #9aabff;
+  --chat-accent-light: #d2daff;
+  --chat-success: #87e6ba;
+
+  --surface-spot-1: rgba(103, 120, 255, 0.18);
+  --surface-spot-2: rgba(81, 213, 255, 0.08);
+  --surface-spot-3: rgba(255, 255, 255, 0.05);
+  --panel-shadow:
+    0 28px 88px rgba(0, 0, 0, 0.38),
+    0 2px 10px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --panel-shadow-strong:
+    0 34px 100px rgba(68, 89, 197, 0.22),
+    0 2px 12px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Rich radial gradient background for dark mode (Obsidian core) */
-.dark body {
-  background: radial-gradient(ellipse at top left, var(--color-obsidian-800), var(--color-obsidian-900), var(--color-obsidian-950));
-  min-height: 100vh;
+@layer components {
+  .rubik-container {
+    width: min(calc(100% - 2rem), var(--page-max));
+    margin-inline: auto;
+  }
+
+  .rubik-container-wide {
+    width: min(calc(100% - 2rem), var(--page-max-wide));
+    margin-inline: auto;
+  }
+
+  .rubik-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.75rem, 5vw, var(--section-space));
+  }
+
+  .rubik-page {
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .rubik-section {
+    padding-block: clamp(3.5rem, 6vw, var(--section-space));
+  }
+
+  .rubik-section-compact {
+    padding-block: clamp(2.25rem, 4vw, 3.5rem);
+  }
+
+  .rubik-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--border-color) 86%, transparent);
+    background: color-mix(in srgb, var(--card-bg) 72%, transparent);
+    padding: 0.55rem 0.95rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-fg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .rubik-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);
+    background: color-mix(in srgb, var(--muted-bg) 82%, transparent);
+    padding: 0.5rem 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-fg);
+  }
+
+  .rubik-chip-accent {
+    border-color: color-mix(in srgb, var(--primary-color) 22%, var(--border-color));
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
+    color: var(--primary-color);
+  }
+
+  .rubik-panel {
+    border-radius: var(--radius-panel);
+    border: 1px solid color-mix(in srgb, var(--border-color) 90%, transparent);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--card-bg) 92%, white 8%) 0%,
+        color-mix(in srgb, var(--muted-bg) 28%, var(--card-bg) 72%) 100%
+      );
+    box-shadow: var(--panel-shadow);
+  }
+
+  .dark .rubik-panel {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--card-bg) 96%, white 4%) 0%,
+        color-mix(in srgb, var(--muted-bg) 20%, var(--card-bg) 80%) 100%
+      );
+  }
+
+  .rubik-panel-strong {
+    border-color: color-mix(in srgb, var(--primary-color) 24%, var(--border-color));
+    background:
+      radial-gradient(circle at top right, color-mix(in srgb, var(--primary-color) 14%, transparent), transparent 40%),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--card-bg) 78%, var(--primary-color) 22%) 0%,
+        color-mix(in srgb, var(--card-bg) 94%, transparent) 70%
+      );
+    box-shadow: var(--panel-shadow-strong);
+  }
+
+  .rubik-panel-muted {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--muted-bg) 88%, transparent),
+        color-mix(in srgb, var(--card-bg) 80%, transparent)
+      );
+  }
+
+  .rubik-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--border-color) 75%, transparent);
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
+    color: var(--primary-color);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .rubik-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--border-color) 96%, transparent) 20%,
+      color-mix(in srgb, var(--border-color) 96%, transparent) 80%,
+      transparent 100%
+    );
+  }
+
+  .rubik-lede {
+    max-width: 44rem;
+    color: color-mix(in srgb, var(--muted-fg) 92%, var(--fg) 8%);
+    font-size: clamp(1rem, 0.55vw + 0.95rem, 1.125rem);
+    line-height: 1.72;
+  }
+
+  .rubik-signal-rail {
+    border-radius: calc(var(--radius-panel) - 0.2rem);
+    border: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);
+    background: color-mix(in srgb, var(--muted-bg) 84%, transparent);
+    font-family: var(--font-mono);
+  }
+
+  .rubik-kicker-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    transition:
+      color var(--duration-fast) var(--ease-default),
+      transform var(--duration-fast) var(--ease-default);
+  }
+
+  .rubik-kicker-link:hover {
+    transform: translateX(2px);
+  }
 }
 
 /* Chat widget utilities */
 .glass-panel {
-  background: rgba(16, 19, 33, 0.6);
-  /* Equivalent to bg-obsidian-900/60 */
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  /* shadow-2xl equivalent */
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid color-mix(in srgb, var(--border-color) 82%, transparent);
+  box-shadow: var(--panel-shadow);
 }
 
 /* Primary pulse glow animation for the floating chat button */
@@ -247,23 +451,32 @@
 
 /* Utility: primary glow shadow */
 .glow-primary {
-  box-shadow: 0 0 20px var(--primary-glow);
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--primary-color) 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--primary-color) 20%, transparent);
 }
 
 /* Glassmorphism card for dark mode */
 .dark .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  transition: all 0.5s ease;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-bg) 96%, white 4%) 0%,
+      color-mix(in srgb, var(--muted-bg) 18%, var(--card-bg) 82%) 100%
+    );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid color-mix(in srgb, var(--border-color) 92%, transparent);
+  box-shadow: var(--panel-shadow);
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
 }
 
 .dark .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-  /* hover:shadow-xl hover:shadow-black/20 */
+  border-color: color-mix(in srgb, var(--primary-color) 24%, var(--border-color));
+  box-shadow: var(--panel-shadow-strong);
 }
 
 .neon-border-amber {

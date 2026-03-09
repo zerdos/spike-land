@@ -5,20 +5,29 @@ type AppStatus = "prompting" | "drafting" | "building" | "live" | "archived" | "
 
 const statusConfig: Record<AppStatus, { color: string; icon: ReactNode }> = {
   prompting: {
-    color: "bg-warning text-warning-foreground",
+    color: "border border-warning/20 bg-warning/70 text-warning-foreground",
     icon: <HelpCircle className="size-3" />,
   },
-  drafting: { color: "bg-info text-info-foreground", icon: <Pencil className="size-3" /> },
+  drafting: {
+    color: "border border-info/20 bg-info/70 text-info-foreground",
+    icon: <Pencil className="size-3" />,
+  },
   building: {
-    color: "bg-warning text-warning-foreground",
+    color: "border border-warning/20 bg-warning/70 text-warning-foreground",
     icon: <Settings className="size-3 animate-spin-slow" />,
   },
   live: {
-    color: "bg-success text-success-foreground",
+    color: "border border-success/20 bg-success/70 text-success-foreground",
     icon: <Circle className="size-3 fill-current" />,
   },
-  archived: { color: "bg-muted text-muted-foreground", icon: <Square className="size-3" /> },
-  deleted: { color: "bg-destructive text-destructive-foreground", icon: <X className="size-3" /> },
+  archived: {
+    color: "border border-border bg-muted/80 text-muted-foreground",
+    icon: <Square className="size-3" />,
+  },
+  deleted: {
+    color: "border border-destructive/20 bg-destructive/70 text-destructive-foreground",
+    icon: <X className="size-3" />,
+  },
 };
 
 interface StatusBadgeProps {
@@ -31,7 +40,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     <span
       role="status"
       aria-label={`Status: ${status}`}
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${config.color}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] transition-colors ${config.color}`}
     >
       {config.icon}
       <span className="capitalize">{status}</span>
