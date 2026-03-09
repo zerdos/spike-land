@@ -214,6 +214,7 @@ RUN set -e && yarn vitest run --project=google-analytics-mcp --coverage=false &&
 
 # ── test-google-ads-mcp ──────────────────────────────────────────────────────
 FROM config AS test-google-ads-mcp
+COPY src/core/server-base/ src/core/server-base/
 COPY src/mcp-tools/google-ads/ src/mcp-tools/google-ads/
 RUN set -e && yarn vitest run --project=google-ads-mcp --coverage=false && touch /.ok
 
