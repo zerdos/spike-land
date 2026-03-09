@@ -318,9 +318,9 @@ export function registerSkillStoreTools(
             .optional()
             .default(0)
             .describe("Display sort order (lower = earlier)."),
-          isActive: z.boolean().optional().default(true).describe("Whether the skill is active."),
+          isActive: z.coerce.boolean().optional().default(true).describe("Whether the skill is active."),
           isFeatured: z
-            .boolean()
+            .coerce.boolean()
             .optional()
             .default(false)
             .describe("Whether the skill is featured."),
@@ -399,8 +399,8 @@ export function registerSkillStoreTools(
             .optional()
             .describe("Searchable tags (up to 20)."),
           sortOrder: z.number().int().min(0).optional().describe("Display sort order."),
-          isActive: z.boolean().optional().describe("Whether the skill is active."),
-          isFeatured: z.boolean().optional().describe("Whether the skill is featured."),
+          isActive: z.coerce.boolean().optional().describe("Whether the skill is active."),
+          isFeatured: z.coerce.boolean().optional().describe("Whether the skill is featured."),
         },
       )
       .meta({ category: "skill-store", tier: "free" })

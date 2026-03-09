@@ -38,7 +38,7 @@ export function registerRealtimeTool(
                 ])
                 .optional(),
               value: z.string(),
-              case_sensitive: z.boolean().optional(),
+              case_sensitive: z.coerce.boolean().optional(),
             })
             .optional(),
         })

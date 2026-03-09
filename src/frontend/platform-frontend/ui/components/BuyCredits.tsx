@@ -20,7 +20,7 @@ async function purchaseCredits(credits: number): Promise<void> {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credits }),
+    body: JSON.stringify({ pack: credits }),
   });
 
   if (!res.ok) {

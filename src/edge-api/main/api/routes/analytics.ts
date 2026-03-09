@@ -186,6 +186,30 @@ analytics.get("/analytics/summary", async (c) => {
   });
 });
 
+analytics.get("/analytics/funnel", async (c) => {
+  const cutoffMs = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
+  const result = await c.env.DB.prepare(
+    `SELECT
+       event_type,
+       COUNT(*) as count,
+       COUNT(DISTINCT client_id) as unique_users,
+       date(created_at / 1000, 'unixepoch') as day
+     FROM analytics_events
+     WHERE event_type IN (
+       'signup_completed', 'mcp_server_connected',
+       'first_tool_call', 'second_session', 'upgrade_completed'
+     )
+     AND created_at > ?
+     GROUP BY event_type, day
+     ORDER BY day DESC`,
+  )
+    .bind(cutoffMs)
+    .all();
+
+  return c.json(result.results);
+});
+
 // ─── MCP Analytics Proxy (to spike-land-mcp internal API) ────────────────────
 
 analytics.get("/analytics/mcp/tools", async (c) => {

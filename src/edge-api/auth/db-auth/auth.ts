@@ -85,6 +85,26 @@ export function createAuth(env: Env) {
         ? { apple: { clientId: env.APPLE_CLIENT_ID, clientSecret: env.APPLE_CLIENT_SECRET } }
         : {}),
     },
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            const appUrl = env.APP_URL ?? "https://spike.land";
+            fetch(`${appUrl}/analytics/ingest`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify([
+                {
+                  source: "auth",
+                  eventType: "signup_completed",
+                  metadata: { userId: user.id, email: user.email },
+                },
+              ]),
+            }).catch(() => {});
+          },
+        },
+      },
+    },
     plugins: [
       magicLink({
         sendMagicLink: async () => {

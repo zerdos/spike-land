@@ -285,7 +285,7 @@ independent platform is now, before one of them acquires or copies the model."
 
 ---
 
-## Part 4: Proof Points to Build in 90 Days
+## Part 4: Proof Points to Build in 90 Days  
 
 The following table maps each investor concern to a specific deliverable with
 a 90-day deadline.

@@ -30,7 +30,7 @@ export function registerEsbuildTools(
         {
           code: z.string().min(1).describe("Source code to transpile."),
           loader: z.enum(LOADER_ENUM).optional().default("tsx").describe("Source language loader."),
-          minify: z.boolean().optional().default(false).describe("Whether to minify the output."),
+          minify: z.coerce.boolean().optional().default(false).describe("Whether to minify the output."),
           jsx_import_source: z
             .string()
             .optional()

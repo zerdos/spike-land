@@ -31,7 +31,7 @@ const CreateResumeSchema = z.object({
 const MatchJobsSchema = z.object({
   resume_id: z.string().describe("Resume ID returned by career_create_resume"),
   location: z.string().optional().describe("Preferred job location (city or country)"),
-  remote_only: z.boolean().optional().describe("Filter to remote positions only"),
+  remote_only: z.coerce.boolean().optional().describe("Filter to remote positions only"),
 });
 
 const LearningPathSchema = z.object({

@@ -24,7 +24,7 @@ export function registerBlogTools(
       .tool("blog_list_posts", "List published blog posts with optional filters.", {
         category: z.string().optional().describe("Filter by category."),
         tag: z.string().optional().describe("Filter by tag."),
-        featured: z.boolean().optional().describe("Filter featured posts only."),
+        featured: z.coerce.boolean().optional().describe("Filter featured posts only."),
         limit: z.number().int().min(1).max(100).optional().describe("Max results (default 20)."),
         offset: z.number().int().min(0).optional().describe("Offset for pagination (default 0)."),
       })

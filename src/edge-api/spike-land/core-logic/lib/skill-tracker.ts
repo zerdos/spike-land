@@ -23,7 +23,11 @@ function dayEpoch(nowMs: number): number {
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
-export async function recordSkillCall(db: D1Database, record: SkillCallRecord): Promise<void> {
+export async function recordSkillCall(
+  db: D1Database,
+  record: SkillCallRecord,
+  spikeEdge?: Fetcher,
+): Promise<void> {
   const now = Date.now();
   const day = dayEpoch(now);
   const id = crypto.randomUUID();
@@ -69,4 +73,51 @@ export async function recordSkillCall(db: D1Database, record: SkillCallRecord): 
       )
       .bind(record.toolName, record.serverName, record.userId, day),
   ]);
+
+  if (spikeEdge) {
+    const [totalRows, distinctDays] = await Promise.all([
+      db
+        .prepare(`SELECT COUNT(*) as cnt FROM tool_user_daily WHERE user_id = ?`)
+        .bind(record.userId)
+        .first<{ cnt: number }>(),
+      db
+        .prepare(`SELECT COUNT(DISTINCT day) as days FROM tool_user_daily WHERE user_id = ?`)
+        .bind(record.userId)
+        .first<{ days: number }>(),
+    ]);
+
+    const events: Array<{ source: string; eventType: string; metadata: Record<string, unknown> }> =
+      [];
+
+    if (totalRows?.cnt === 1) {
+      events.push({
+        source: "mcp",
+        eventType: "mcp_server_connected",
+        metadata: { userId: record.userId },
+      });
+      events.push({
+        source: "mcp",
+        eventType: "first_tool_call",
+        metadata: { userId: record.userId, toolName: record.toolName },
+      });
+    }
+
+    if (distinctDays?.days === 2) {
+      events.push({
+        source: "mcp",
+        eventType: "second_session",
+        metadata: { userId: record.userId },
+      });
+    }
+
+    if (events.length > 0) {
+      spikeEdge
+        .fetch("https://spike.land/analytics/ingest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(events),
+        })
+        .catch(() => {});
+    }
+  }
 }

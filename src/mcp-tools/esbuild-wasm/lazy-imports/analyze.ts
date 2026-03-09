@@ -8,7 +8,7 @@ const AnalyzeSchema = {
   metafile: z
     .string()
     .describe("JSON metafile string from esbuild_wasm_build (with metafile: true)"),
-  verbose: z.boolean().optional().describe("Show all imports, not just top-level"),
+  verbose: z.coerce.boolean().optional().describe("Show all imports, not just top-level"),
 };
 
 export function registerAnalyzeTool(server: McpServer): void {

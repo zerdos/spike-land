@@ -12,7 +12,7 @@ export const bulkDeleteTool = imageProcedure
       .min(1)
       .max(20)
       .describe("IDs of images to delete"),
-    confirm: z.boolean().describe("Must be true to confirm permanent deletion"),
+    confirm: z.coerce.boolean().describe("Must be true to confirm permanent deletion"),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     if (!input.confirm) {

@@ -6,7 +6,7 @@ import { imageProcedure } from "../../lazy-imports/image-middleware.js";
 export const subjectDeleteTool = imageProcedure
   .tool("subject_delete", "Delete a registered subject by ID", {
     subject_id: z.string().describe("ID of the subject to delete"),
-    confirm: z.boolean().describe("Must be true to confirm deletion"),
+    confirm: z.coerce.boolean().describe("Must be true to confirm deletion"),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     if (!input.confirm) {

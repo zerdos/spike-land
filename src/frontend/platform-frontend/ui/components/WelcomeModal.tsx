@@ -9,6 +9,7 @@ import {
   Sparkles,
   Rocket,
   Code,
+  Copy,
   Image as ImageIcon,
   BarChart3,
   Workflow,
@@ -19,7 +20,8 @@ import {
 import { Button } from "../shared/ui/button";
 import { cn } from "../../styling/cn";
 
-const STORAGE_KEY = "spike_welcome_shown";
+const STORAGE_KEY = "spike_onboarding_shown";
+const MCP_INSTALL_COMMAND = "claude mcp add spike-land --transport http https://spike.land/mcp";
 
 const INTERESTS = [
   { id: "AI Chat & Assistants", icon: Sparkles },
@@ -77,6 +79,7 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -84,10 +87,31 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
     }
   }, []);
 
+  const trackAnalytics = useCallback((eventType: string, metadata?: Record<string, unknown>) => {
+    fetch("/analytics/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "onboarding", eventType, metadata }),
+    }).catch(() => {
+      // best-effort — never block UI
+    });
+  }, []);
+
   const dismiss = useCallback(() => {
     localStorage.setItem(STORAGE_KEY, "1");
     setOpen(false);
-  }, []);
+    trackAnalytics("onboarding_completed", { finalStep: step });
+  }, [step, trackAnalytics]);
+
+  const copyCommand = useCallback(() => {
+    navigator.clipboard.writeText(MCP_INSTALL_COMMAND).then(() => {
+      setCopied(true);
+      trackAnalytics("mcp_install_command_copied");
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // clipboard API unavailable — silently ignore
+    });
+  }, [trackAnalytics]);
 
   const trapRef = useFocusTrap(open, dismiss);
 
@@ -182,6 +206,39 @@ export function WelcomeModal({ userName }: WelcomeModalProps) {
                   </li>
                 ))}
               </ul>
+
+              {/* MCP install command */}
+              <div className="mt-4 rounded-xl border border-border bg-muted/40 p-4">
+                <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Add to Claude in one command
+                </p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 min-w-0 truncate text-xs font-mono text-foreground bg-background rounded-lg px-3 py-2 border border-border">
+                    {MCP_INSTALL_COMMAND}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={copyCommand}
+                    className="shrink-0 rounded-lg size-8"
+                    aria-label="Copy install command"
+                  >
+                    {copied ? (
+                      <Check className="size-4 text-green-500" />
+                    ) : (
+                      <Copy className="size-4" />
+                    )}
+                  </Button>
+                </div>
+                <a
+                  href="https://spike.land/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-xs text-primary hover:underline"
+                >
+                  View setup docs
+                </a>
+              </div>
             </div>
           )}
 

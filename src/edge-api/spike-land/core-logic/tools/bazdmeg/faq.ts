@@ -30,7 +30,7 @@ export function registerBazdmegFaqTools(
           .optional()
           .describe("Filter by category (e.g., 'general', 'methodology', 'testing')."),
         include_unpublished: z
-          .boolean()
+          .coerce.boolean()
           .optional()
           .default(false)
           .describe("Include unpublished entries (admin only)."),
@@ -106,7 +106,7 @@ export function registerBazdmegFaqTools(
         answer: z.string().optional().describe("Updated answer text."),
         category: z.string().optional().describe("Updated category."),
         sort_order: z.number().optional().describe("Updated sort order."),
-        is_published: z.boolean().optional().describe("Whether the entry is published."),
+        is_published: z.coerce.boolean().optional().describe("Whether the entry is published."),
       })
       .meta({ category: "bazdmeg", tier: "free" })
       .handler(async ({ input }) => {

@@ -16,11 +16,11 @@ const DimensionFilterSchema = z
           .enum(["EXACT", "BEGINS_WITH", "ENDS_WITH", "CONTAINS", "FULL_REGEXP", "PARTIAL_REGEXP"])
           .optional(),
         value: z.string(),
-        case_sensitive: z.boolean().optional(),
+        case_sensitive: z.coerce.boolean().optional(),
       })
       .optional(),
     in_list_filter: z
-      .object({ values: z.array(z.string()), case_sensitive: z.boolean().optional() })
+      .object({ values: z.array(z.string()), case_sensitive: z.coerce.boolean().optional() })
       .optional(),
   })
   .describe("Filter for a single dimension");

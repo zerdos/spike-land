@@ -41,6 +41,7 @@ import { registerStoreInstallTools } from "../tools/store/install";
 import { registerStoreSearchTools } from "../tools/store/search";
 import { registerStoreSkillsTools } from "../tools/store/skills";
 import { registerStoreAbTools } from "../tools/store/ab";
+import { registerExperimentEvaluatorTools } from "../tools/store/experiment-evaluator";
 import { registerAgentManagementTools } from "../../db/tools/agent-management";
 import { registerAgentInboxTools } from "../../db/tools/agent-inbox";
 import { registerCapabilitiesTools } from "../../db/tools/capabilities";
@@ -158,6 +159,7 @@ export async function registerAllTools(
   safeRegister(registerStoreSearchTools, "registerStoreSearchTools", registry, userId, db);
   safeRegister(registerStoreSkillsTools, "registerStoreSkillsTools", registry, userId, db);
   safeRegister(registerStoreAbTools, "registerStoreAbTools", registry, userId, db);
+  safeRegister(registerExperimentEvaluatorTools, "registerExperimentEvaluatorTools", registry, userId, db);
   safeRegister(registerAgentManagementTools, "registerAgentManagementTools", registry, userId, db);
   safeRegister(registerAgentInboxTools, "registerAgentInboxTools", registry, userId, db);
   safeRegister(registerCapabilitiesTools, "registerCapabilitiesTools", registry, userId, db);

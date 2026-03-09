@@ -5,6 +5,7 @@ import { useAnalytics } from "../hooks/useAnalytics";
 import { useToast } from "../components/Toast";
 import { usePricing } from "../hooks/usePricing";
 import { AuthGuard } from "../components/AuthGuard";
+import { CreditWidget } from "../components/CreditWidget";
 import { apiUrl } from "../../core-logic/api";
 import { UI_ANIMATIONS } from "@spike-land-ai/shared/constants";
 
@@ -422,12 +423,6 @@ interface BillingStatus {
   usage: number;
 }
 
-const USAGE_LIMITS: Record<Plan, number> = {
-  free: 50,
-  pro: 500,
-  business: 5000,
-};
-
 const planColors: Record<Plan, string> = {
   free: "bg-muted text-muted-foreground",
   pro: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
@@ -516,9 +511,6 @@ function BillingTab() {
 
   const plan = billing?.plan ?? "free";
   const status = billing?.status ?? "active";
-  const usage = billing?.usage ?? 0;
-  const usageLimit = USAGE_LIMITS[plan];
-  const usagePct = Math.min((usage / usageLimit) * 100, 100);
   const periodEnd = billing?.currentPeriodEnd
     ? new Date(billing.currentPeriodEnd * 1000).toLocaleDateString()
     : null;
@@ -574,22 +566,8 @@ function BillingTab() {
         </div>
       </div>
 
-      {/* Usage stats */}
-      <div className="rounded-lg border border-border bg-background p-4 space-y-2">
-        <p className="text-sm font-medium text-foreground">Usage — Current Period</p>
-        <div className="flex items-center gap-3">
-          <div className="flex-1 rounded-full bg-muted h-2 overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${usagePct >= 90 ? "bg-destructive" : "bg-primary"}`}
-              style={{ width: `${usagePct}%` }}
-            />
-          </div>
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {usage} / {usageLimit} messages
-          </span>
-        </div>
-        {periodEnd && <p className="text-xs text-muted-foreground">Resets {periodEnd}</p>}
-      </div>
+      {/* Credit balance */}
+      <CreditWidget />
 
       {/* Manage subscription (paid plans) */}
       {plan !== "free" && (

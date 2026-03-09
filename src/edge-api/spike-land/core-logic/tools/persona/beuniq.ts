@@ -115,7 +115,7 @@ export function registerBeUniqTools(registry: ToolRegistry, userId: string, db: 
         "Answer the current beUniq quiz question with yes (true) or no (false).",
         {
           session_id: z.string().describe("The beUniq session ID from beuniq_start."),
-          answer: z.boolean().describe("true for yes, false for no."),
+          answer: z.coerce.boolean().describe("true for yes, false for no."),
         },
       )
       .meta({ category: "persona", tier: "free" })

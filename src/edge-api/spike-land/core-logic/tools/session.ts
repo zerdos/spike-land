@@ -94,8 +94,8 @@ export function registerSessionTools(registry: ToolRegistry, userId: string, db:
           .object({
             maxIterations: z.number().optional(),
             timeoutMs: z.number().optional(),
-            autoDispatch: z.boolean().optional(),
-            requireReview: z.boolean().optional(),
+            autoDispatch: z.coerce.boolean().optional(),
+            requireReview: z.coerce.boolean().optional(),
           })
           .optional()
           .describe("Session configuration."),

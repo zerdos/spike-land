@@ -45,7 +45,7 @@ export const deleteTool = imageProcedure
   .tool("delete", "Delete an image from the library", {
     image_id: z.string().describe("ID of the image to delete"),
     confirm: z
-      .boolean()
+      .coerce.boolean()
       .refine((val) => val === true, "Set confirm=true to delete the image permanently")
       .describe("Must be true to confirm permanent deletion"),
   })
@@ -67,7 +67,7 @@ export function createDeleteTool(
     .tool("delete", "Delete an image from the library", {
       image_id: z.string().describe("ID of the image to delete"),
       confirm: z
-        .boolean()
+        .coerce.boolean()
         .refine((val) => val === true, "Set confirm=true to delete the image permanently")
         .describe("Must be true to confirm permanent deletion"),
     })

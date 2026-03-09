@@ -127,12 +127,12 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
       }),
   );
 
-  // sandbox_exec
+  // sandbox_preview
   registry.registerBuilt(
     t
       .tool(
-        "sandbox_exec",
-        "SIMULATED EXECUTION ONLY — no code actually runs. Returns synthetic stdout/stderr for prototyping tool invocation patterns. For real execution, use spike.land platform directly.",
+        "sandbox_preview",
+        "SIMULATED EXECUTION PREVIEW — no code actually runs. Returns synthetic stdout/stderr for prototyping tool invocation patterns. For real execution, use spike.land platform directly.",
         {
           sandbox_id: z.string().min(1).describe("The sandbox ID"),
           code: z.string().min(1).describe("Code to execute"),

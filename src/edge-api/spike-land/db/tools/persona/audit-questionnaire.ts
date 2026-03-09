@@ -65,7 +65,7 @@ export function registerAuditQuestionnaireTools(
             .min(1)
             .max(5)
             .describe("App recommendations score (1-5)"),
-          would_sign_up: z.boolean().describe("Would this persona sign up?"),
+          would_sign_up: z.coerce.boolean().describe("Would this persona sign up?"),
           blockers: z.string().optional().describe("Blocking issues found"),
           highlights: z.string().optional().describe("Positive highlights"),
           accessibility_issues: z.array(z.string()).optional().describe("A11y issues found"),

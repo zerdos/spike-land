@@ -28,7 +28,7 @@ export const analyzeTool = imageProcedure
       .enum(DETAIL_LEVEL_VALUES)
       .describe("Level of detail: brief, detailed, or alt_text")
       .optional(),
-    include_palette: z.boolean().describe("If true, extract dominant color palette").optional(),
+    include_palette: z.coerce.boolean().describe("If true, extract dominant color palette").optional(),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     const { userId, deps } = ctx;

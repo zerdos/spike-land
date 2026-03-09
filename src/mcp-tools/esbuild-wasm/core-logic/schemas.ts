@@ -44,10 +44,10 @@ export const CommonSchema = {
     .optional()
     .describe("Target environment(s) (e.g. es2020, esnext, chrome100)"),
   platform: PlatformEnum.optional().describe("Target platform"),
-  minify: z.boolean().optional().describe("Minify whitespace, syntax, and identifiers"),
-  minifyWhitespace: z.boolean().optional().describe("Minify whitespace only"),
-  minifyIdentifiers: z.boolean().optional().describe("Minify identifiers only"),
-  minifySyntax: z.boolean().optional().describe("Minify syntax only"),
+  minify: z.coerce.boolean().optional().describe("Minify whitespace, syntax, and identifiers"),
+  minifyWhitespace: z.coerce.boolean().optional().describe("Minify whitespace only"),
+  minifyIdentifiers: z.coerce.boolean().optional().describe("Minify identifiers only"),
+  minifySyntax: z.coerce.boolean().optional().describe("Minify syntax only"),
   define: z
     .record(z.string(), z.string())
     .optional()
@@ -56,7 +56,7 @@ export const CommonSchema = {
     .array(z.string())
     .optional()
     .describe('Function calls to mark as pure for tree shaking (e.g. ["console.log"])'),
-  keepNames: z.boolean().optional().describe("Preserve .name on functions and classes"),
+  keepNames: z.coerce.boolean().optional().describe("Preserve .name on functions and classes"),
   drop: z.array(DropEnum).optional().describe("Remove console/debugger statements"),
   dropLabels: z
     .array(z.string())
@@ -64,7 +64,7 @@ export const CommonSchema = {
     .describe("Remove labeled statements with these labels"),
   charset: CharsetEnum.optional().describe("Output character set (default: ascii)"),
   lineLimit: z.number().optional().describe("Soft line width limit for wrapping"),
-  treeShaking: z.boolean().optional().describe("Enable tree shaking"),
+  treeShaking: z.coerce.boolean().optional().describe("Enable tree shaking"),
   ignoreAnnotations: z
     .boolean()
     .optional()
@@ -73,13 +73,13 @@ export const CommonSchema = {
   jsxFactory: z.string().optional().describe("JSX factory function (e.g. React.createElement)"),
   jsxFragment: z.string().optional().describe("JSX fragment (e.g. React.Fragment)"),
   jsxImportSource: z.string().optional().describe("JSX import source for automatic runtime"),
-  jsxDev: z.boolean().optional().describe("Use development JSX runtime"),
-  jsxSideEffects: z.boolean().optional().describe("Do not treat JSX as side-effect free"),
+  jsxDev: z.coerce.boolean().optional().describe("Use development JSX runtime"),
+  jsxSideEffects: z.coerce.boolean().optional().describe("Do not treat JSX as side-effect free"),
   sourcemap: SourcemapEnum.optional().describe(
     "Source map mode (true, 'linked', 'inline', 'external', 'both')",
   ),
   sourceRoot: z.string().optional().describe("Source root for source maps"),
-  sourcesContent: z.boolean().optional().describe("Include sources content in source maps"),
+  sourcesContent: z.coerce.boolean().optional().describe("Include sources content in source maps"),
   legalComments: LegalCommentsEnum.optional().describe(
     "How to handle legal comments (/* @license */)",
   ),
@@ -96,7 +96,7 @@ export const CommonSchema = {
     .string()
     .optional()
     .describe("Regex pattern for property names to exclude from mangling"),
-  mangleQuoted: z.boolean().optional().describe("Also mangle quoted property names"),
+  mangleQuoted: z.coerce.boolean().optional().describe("Also mangle quoted property names"),
   mangleCache: z
     .record(z.string(), z.union([z.string(), z.literal(false)]))
     .optional()
@@ -107,7 +107,7 @@ export const CommonSchema = {
     .record(z.string(), LogLevelEnum)
     .optional()
     .describe("Override log level for specific message IDs"),
-  color: z.boolean().optional().describe("Enable ANSI color in log messages"),
+  color: z.coerce.boolean().optional().describe("Enable ANSI color in log messages"),
 };
 
 /** Options specific to build/context (file-based) APIs */
@@ -115,9 +115,9 @@ export const BuildOnlySchema = {
   entryPoints: z
     .union([z.array(z.string()), z.record(z.string(), z.string())])
     .describe("Entry points: array of file paths or {outName: filePath} record"),
-  bundle: z.boolean().optional().describe("Bundle imports into output (default: true)"),
-  splitting: z.boolean().optional().describe("Enable code splitting (ESM only)"),
-  metafile: z.boolean().optional().describe("Include bundle analysis metafile"),
+  bundle: z.coerce.boolean().optional().describe("Bundle imports into output (default: true)"),
+  splitting: z.coerce.boolean().optional().describe("Enable code splitting (ESM only)"),
+  metafile: z.coerce.boolean().optional().describe("Include bundle analysis metafile"),
   outdir: z.string().optional().describe("Output directory for multiple entry points"),
   outfile: z.string().optional().describe("Output file for single entry point"),
   outbase: z.string().optional().describe("Base path for output file names"),
@@ -153,7 +153,7 @@ export const BuildOnlySchema = {
     .array(z.string())
     .optional()
     .describe('Package.json export conditions (e.g. ["development", "module"])'),
-  preserveSymlinks: z.boolean().optional().describe("Do not resolve symlinks"),
+  preserveSymlinks: z.coerce.boolean().optional().describe("Do not resolve symlinks"),
   nodePaths: z.array(z.string()).optional().describe("Additional module resolution paths"),
   tsconfig: z.string().optional().describe("Path to tsconfig.json"),
   loader: z
@@ -181,8 +181,8 @@ export const BuildOnlySchema = {
     })
     .optional()
     .describe("Use stdin as entry point instead of files"),
-  write: z.boolean().optional().describe("Write output files to disk"),
-  allowOverwrite: z.boolean().optional().describe("Allow output files to overwrite input files"),
+  write: z.coerce.boolean().optional().describe("Write output files to disk"),
+  allowOverwrite: z.coerce.boolean().optional().describe("Allow output files to overwrite input files"),
   absWorkingDir: z.string().optional().describe("Absolute working directory path"),
 };
 

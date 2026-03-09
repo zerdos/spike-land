@@ -7,6 +7,7 @@
  */
 import { Hono } from "hono";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { eq, and, sql } from "drizzle-orm";
 import type { Env } from "../core-logic/env";
 import type { AuthVariables } from "./middleware";
 import { createMcpServer } from "../core-logic/mcp/server";
@@ -18,6 +19,7 @@ import { trackPlatformEvents } from "../core-logic/lib/analytics";
 import type { AnalyticsEvent } from "../core-logic/lib/analytics";
 import { recordSkillCall } from "../core-logic/lib/skill-tracker";
 import { detectAbuse } from "../core-logic/middleware/abuse-detector";
+import { toolCallDaily, subscriptions } from "../db/db/schema";
 
 function eloRateMultiplier(elo: number): number {
   if (elo < 500) return 4;
@@ -25,7 +27,19 @@ function eloRateMultiplier(elo: number): number {
   return 1;
 }
 
+/** UTC epoch (ms) for the start of today — matches toolCallDaily.day key. */
+function todayEpoch(): number {
+  const d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+const FREE_TIER_DAILY_LIMIT = 50;
+
 export const mcpRoute = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
+
+mcpRoute.get("/health", (c) => {
+  return c.json({ status: "ok", version: "1.0.0" });
+});
 
 mcpRoute.post("/", async (c) => {
   const userId = c.var.userId;
@@ -82,6 +96,52 @@ mcpRoute.post("/", async (c) => {
       429,
       { "Retry-After": String(Math.ceil((resetAt - Date.now()) / 1000)) },
     );
+  }
+
+  // ── Daily call limit for free-tier users ────────────────────────────────
+  // Only enforce for authenticated (non-anonymous) users on the free plan.
+  if (userId !== "anonymous" && callerTier === "free") {
+    try {
+      // Check for an active paid subscription in D1 (in case callerTier from
+      // spike-edge is stale or the user has a direct DB subscription record).
+      const subRow = await db
+        .select({ plan: subscriptions.plan, status: subscriptions.status })
+        .from(subscriptions)
+        .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
+        .limit(1);
+
+      const isPaid =
+        subRow.length > 0 &&
+        subRow[0] !== undefined &&
+        (subRow[0].plan === "pro" || subRow[0].plan === "business");
+
+      if (!isPaid) {
+        const day = todayEpoch();
+        const usageRow = await db
+          .select({ total: sql<number>`SUM(call_count)` })
+          .from(toolCallDaily)
+          .where(and(eq(toolCallDaily.userId, userId), eq(toolCallDaily.day, day)));
+
+        const usedToday = usageRow[0]?.total ?? 0;
+        if (usedToday >= FREE_TIER_DAILY_LIMIT) {
+          return c.json(
+            {
+              jsonrpc: "2.0",
+              error: {
+                code: -32000,
+                message:
+                  "Daily limit reached. Upgrade to Pro for unlimited calls. Visit https://spike.land/pricing",
+              },
+              id: null,
+            },
+            429,
+          );
+        }
+      }
+    } catch (err) {
+      // Credit check failure must never block the user — log and continue.
+      console.error("[mcp] Credit check error:", err);
+    }
   }
 
   // Parse JSON-RPC request body
@@ -239,13 +299,17 @@ mcpRoute.post("/", async (c) => {
     // 2. Record skill call in D1 rollup tables
     if (isToolCall && toolName) {
       c.executionCtx.waitUntil(
-        recordSkillCall(c.env.DB, {
-          userId,
-          toolName,
-          serverName: "spike-land-mcp",
-          outcome,
-          durationMs,
-        }).catch((err) => console.error("[skill-tracker] Failed to record:", err)),
+        recordSkillCall(
+          c.env.DB,
+          {
+            userId,
+            toolName,
+            serverName: "spike-land-mcp",
+            outcome,
+            durationMs,
+          },
+          c.env.SPIKE_EDGE,
+        ).catch((err) => console.error("[skill-tracker] Failed to record:", err)),
       );
     }
 

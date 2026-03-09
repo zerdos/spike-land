@@ -13,7 +13,7 @@ import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/
 import type { z } from "zod";
 import type { BuiltTool } from "@spike-land-ai/shared/tool-builder";
 import { CATEGORY_DESCRIPTIONS } from "../core-logic/mcp/categories";
-import { optimizeSchema, injectExamplesIntoSchema } from "../core-logic/mcp/schema-optimizer";
+
 import { ToolSearch } from "../core-logic/mcp/search";
 
 // Re-export for consumers
@@ -210,19 +210,6 @@ export class ToolRegistry {
       finalDescription = formatExamplesAsDescription(def.description, def.examples);
     }
 
-    // Optimize inputSchema to reduce token usage in LLM tool selection
-    let optimizedInputSchema =
-      def.inputSchema !== undefined
-        ? (optimizeSchema(def.inputSchema) as z.ZodRawShape)
-        : undefined;
-
-    if (optimizedInputSchema && def.examples && def.examples.length > 0) {
-      optimizedInputSchema = injectExamplesIntoSchema(
-        optimizedInputSchema,
-        def.examples,
-      ) as z.ZodRawShape;
-    }
-
     const wrappedHandler = async (input: never) => {
       const required = def.requiredTier;
       if (required && this.callerTier) {
@@ -265,7 +252,7 @@ export class ToolRegistry {
         def.name,
         {
           description: finalDescription,
-          ...(optimizedInputSchema !== undefined ? { inputSchema: optimizedInputSchema } : {}),
+          ...(def.inputSchema !== undefined ? { inputSchema: def.inputSchema } : {}),
           ...(def.annotations !== undefined ? { annotations: def.annotations } : {}),
           ...(def.examples !== undefined ? { examples: def.examples } : {}),
           _meta: { category: def.category, tier: def.tier, version, stability },

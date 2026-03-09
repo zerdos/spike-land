@@ -6,7 +6,7 @@ import { imageProcedure } from "../../lazy-imports/image-middleware.js";
 export const albumTool = imageProcedure
   .tool("album", "Get album details, optionally including images", {
     album_handle: z.string().describe("Handle of the album to retrieve"),
-    include_images: z.boolean().describe("If true, include all images in the album").optional(),
+    include_images: z.coerce.boolean().describe("If true, include all images in the album").optional(),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     const { userId, deps } = ctx;

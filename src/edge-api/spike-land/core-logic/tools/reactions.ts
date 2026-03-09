@@ -78,7 +78,7 @@ export function registerReactionsTools(
         "List your tool reaction rules. Optionally filter by sourceTool or enabled status.",
         {
           sourceTool: z.string().optional().describe("Filter by source tool name"),
-          enabled: z.boolean().optional().describe("Filter by enabled status"),
+          enabled: z.coerce.boolean().optional().describe("Filter by enabled status"),
           limit: z.number().min(1).max(100).optional().default(20).describe("Maximum results"),
         },
       )
@@ -161,7 +161,7 @@ export function registerReactionsTools(
         {
           reactionId: z.string().optional().describe("Filter by specific reaction ID"),
           sourceTool: z.string().optional().describe("Filter by source tool name"),
-          isError: z.boolean().optional().describe("Filter by error status"),
+          isError: z.coerce.boolean().optional().describe("Filter by error status"),
           limit: z.number().min(1).max(100).optional().default(20).describe("Maximum results"),
         },
       )

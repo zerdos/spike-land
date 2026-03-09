@@ -9,7 +9,7 @@ const InitializeSchema = {
     .string()
     .optional()
     .describe("File path to a local .wasm file (will be compiled via WebAssembly.compile)"),
-  worker: z.boolean().optional().describe("Run esbuild in a Web Worker (default: false)"),
+  worker: z.coerce.boolean().optional().describe("Run esbuild in a Web Worker (default: false)"),
 };
 
 export function registerInitializeTool(server: McpServer): void {

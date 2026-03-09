@@ -12,7 +12,7 @@ export const albumDeleteTool = imageProcedure
   .use(withOwnership(["album_handle"]))
   .tool("album_delete", "Delete an album (images are NOT deleted, only removed from album)", {
     album_handle: z.string().describe("Handle of the album to delete"),
-    confirm: z.boolean().describe("Must be true to confirm permanent deletion"),
+    confirm: z.coerce.boolean().describe("Must be true to confirm permanent deletion"),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     const { deps } = ctx;

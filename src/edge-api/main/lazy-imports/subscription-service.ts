@@ -110,6 +110,12 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
     return; // Caller should route to donation-service
   }
 
+  // Credit pack purchases
+  if (session.metadata?.type === "credit_purchase") {
+    await handleCreditPurchase(db, session);
+    return;
+  }
+
   const userId = session.metadata?.userId;
   if (!userId) {
     log.warn("checkout.session.completed without userId in metadata");
@@ -154,6 +160,16 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
       .bind(customerEmail, now, userId, customerEmail)
       .run();
   }
+
+  // Emit upgrade_completed analytics event
+  await db
+    .prepare(
+      `INSERT INTO analytics_events (source, event_type, metadata, client_id)
+       VALUES ('stripe', 'upgrade_completed', ?, ?)`,
+    )
+    .bind(JSON.stringify({ plan, userId }), `user_${userId}`)
+    .run()
+    .catch(() => {}); // best-effort — never block the checkout flow
 }
 
 // ─── Service Purchase ───────────────────────────────────────────────────────
@@ -177,6 +193,22 @@ async function handleServicePurchase(
       .bind(crypto.randomUUID(), serviceName, sessionId, metaUserId, customerEmail, Date.now())
       .run();
   }
+}
+
+// ─── Credit Purchase ────────────────────────────────────────────────────────
+
+async function handleCreditPurchase(db: D1Database, session: StripeSession): Promise<void> {
+  const userId = session.metadata?.userId;
+  const creditsStr = session.metadata?.credits;
+  if (!userId || !creditsStr) {
+    log.warn("credit_purchase checkout without userId or credits in metadata");
+    return;
+  }
+  const credits = parseInt(creditsStr, 10);
+  if (isNaN(credits) || credits <= 0) return;
+  const sessionId = (session as unknown as Record<string, unknown>).id as string | undefined;
+  const { purchaseCredits } = await import("../core-logic/credit-service.js");
+  await purchaseCredits(db, userId, credits, sessionId ?? "unknown");
 }
 
 // ─── Subscription Updated ───────────────────────────────────────────────────

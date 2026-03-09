@@ -9,6 +9,7 @@ import { LoginButton } from "../components/LoginButton";
 import { AppFooter } from "../components/AppFooter";
 import { CookieConsent } from "../components/CookieConsent";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
+import { WelcomeModal } from "../components/WelcomeModal";
 import { apiUrl } from "../../core-logic/api";
 import { initGoogleAds } from "../../core-logic/google-ads";
 
@@ -454,6 +455,7 @@ export function RootLayout() {
 
         <AppFooter />
         <CookieConsent />
+        <WelcomeModal userName={null} />
       </div>
     </div>
   );
