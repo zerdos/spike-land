@@ -5,36 +5,30 @@ import { safeCtx, withEdgeCache } from "../lib/edge-cache.js";
 import { getBlogPostRow } from "./blog.js";
 import { trackPageView } from "../../core-logic/analytics.js";
 import { getCacheVersion } from "../lib/cache-version.js";
+import {
+  getSpaResponseCacheControl,
+  getSpaShellStatusCode,
+  getSpaStaticAssetEdgeCacheSettings,
+  getSpaStaticAssetPolicy,
+  isHtmlLikeResponse,
+  isKnownSpaRoute,
+  normalizeSpaAssetKey,
+  resolveSpaFallbackKeys,
+  shouldServeSpaShell,
+} from "./spa-route-logic.js";
 
 const spa = new Hono<{ Bindings: Env }>();
 
-const IMMUTABLE_EXTENSIONS = new Set([".js", ".css", ".wasm", ".woff2", ".woff", ".ttf"]);
-
-function isHashedAsset(path: string): boolean {
-  // Match patterns like filename.abc123.js or filename-abc123.css
-  return /\.[a-f0-9]{8,}\.\w+$/.test(path);
-}
-
 spa.get("/*", async (c) => {
   const path = new URL(c.req.url).pathname;
-
-  // Strip leading slash for R2 key
-  let key = path.startsWith("/") ? path.slice(1) : path;
-
-  // Default to index.html for root
-  if (!key) {
-    key = "index.html";
-  }
+  const key = normalizeSpaAssetKey(path);
 
   // For static assets (not index.html), use edge cache to avoid R2 reads
-  const hasExtension = key.includes(".") && key !== "index.html";
-  if (hasExtension) {
-    const ext = key.substring(key.lastIndexOf("."));
-    const isImmutable = IMMUTABLE_EXTENSIONS.has(ext) && isHashedAsset(key);
-    const ttl = isImmutable ? 31536000 : 3600;
-
+  const staticAssetCacheSettings = await (async () => {
     const cv = await getCacheVersion(c.env.SPA_ASSETS);
-    const cacheKey = `${c.req.url}?_cv=${cv}`;
+    return getSpaStaticAssetEdgeCacheSettings(c.req.url, key, cv);
+  })();
+  if (staticAssetCacheSettings) {
     const cached = await withEdgeCache(
       c.req.raw,
       safeCtx(c),
@@ -47,7 +41,7 @@ spa.get("/*", async (c) => {
         headers.set("etag", object.httpEtag);
         return new Response(object.body, { headers });
       },
-      { ttl, ...(isImmutable ? {} : { swr: 3600 }), immutable: isImmutable, cacheKey },
+      staticAssetCacheSettings,
     );
 
     if (cached) return cached;
@@ -59,62 +53,16 @@ spa.get("/*", async (c) => {
   const object = await c.env.SPA_ASSETS.get(key);
 
   if (!object) {
-    // 1. First attempt: check if a prerendered HTML file exists for this route path
-    // For example /blog -> blog.html, or /blog/ -> blog/index.html
-    const prerenderedKey = key.endsWith("/") ? `${key}index.html` : `${key}.html`;
-    let fallback = await c.env.SPA_ASSETS.get(prerenderedKey);
-
-    // 2. Second attempt: check reverse (some static generators output /about/index.html for /about)
-    if (!fallback && !key.endsWith("/")) {
-      fallback = await c.env.SPA_ASSETS.get(`${key}/index.html`);
+    let fallback: R2ObjectBody | null = null;
+    for (const fallbackKey of resolveSpaFallbackKeys(path)) {
+      fallback = await c.env.SPA_ASSETS.get(fallbackKey);
+      if (fallback) {
+        break;
+      }
     }
 
-    const exactSpaRoutes = new Set([
-      "/",
-      "/about",
-      "/analytics",
-      "/build",
-      "/callback",
-      "/cockpit",
-      "/dashboard",
-      "/learn",
-      "/login",
-      "/mcp",
-      "/mcp/authorize",
-      "/packages",
-      "/packages/new",
-      "/packages/qa-studio/ui",
-      "/pricing",
-      "/privacy",
-      "/security",
-      "/settings",
-      "/store",
-      "/terms",
-      "/tools",
-      "/version",
-      "/vibe-code",
-      "/what-we-do",
-      "/bazdmeg",
-      "/agency/portfolio",
-    ]);
-    const prefixedSpaRoutes = [
-      "/apps",
-      "/blog",
-      "/bugbook",
-      "/dashboard",
-      "/docs",
-      "/learn",
-      "/messages",
-      "/packages",
-    ];
-    const isKnownRoute =
-      exactSpaRoutes.has(path) ||
-      prefixedSpaRoutes.some((prefix) => path.startsWith(`${prefix}/`));
-
     // API-like prefixes must not serve SPA shell unless they are explicit product pages.
-    const apiPrefixes = ["/oauth/", "/api/"];
-    const isApiLikePath = path.startsWith("/mcp/") || apiPrefixes.some((p) => path.startsWith(p));
-    if (isApiLikePath && !isKnownRoute) {
+    if (!shouldServeSpaShell(path)) {
       return c.json({ error: "Not Found", path }, 404);
     }
 
@@ -412,10 +360,10 @@ spa.get("/*", async (c) => {
     }
 
     const response = new Response(html, {
-      status: isKnownRoute ? 200 : 404,
+      status: getSpaShellStatusCode(path),
       headers: {
         "content-type": "text/html; charset=utf-8",
-        "cache-control": "private, no-cache, no-store, must-revalidate",
+        "cache-control": getSpaResponseCacheControl(true),
       },
     });
 
@@ -474,12 +422,7 @@ spa.get("/*", async (c) => {
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
   const contentType = headers.get("content-type") ?? "";
-  const isHtmlResponse =
-    key === "index.html" || key.endsWith(".html") || contentType.includes("text/html");
-  headers.set(
-    "cache-control",
-    isHtmlResponse ? "private, no-cache, no-store, must-revalidate" : "public, max-age=3600",
-  );
+  headers.set("cache-control", getSpaResponseCacheControl(isHtmlLikeResponse(key, contentType)));
 
   return new Response(object.body, { headers });
 });

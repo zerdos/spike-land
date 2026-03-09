@@ -1,0 +1,115 @@
+{
+  "version": "2026-03-09-cache-v1",
+  "cacheNamespace": "spike-app",
+  "manifestTtlSeconds": 300,
+  "clearOnVersionChange": true,
+  "precache": [
+    {
+      "url": "/",
+      "strategy": "network-first",
+      "cacheName": "pages"
+    },
+    {
+      "url": "/manifest.webmanifest",
+      "strategy": "cache-first",
+      "cacheName": "metadata"
+    },
+    {
+      "url": "/site.webmanifest",
+      "strategy": "cache-first",
+      "cacheName": "metadata"
+    },
+    {
+      "url": "/favicon.ico",
+      "strategy": "cache-first",
+      "cacheName": "metadata"
+    }
+  ],
+  "runtime": [
+    {
+      "match": {
+        "pathnamePrefix": "/api/"
+      },
+      "strategy": "network-only",
+      "cacheName": "api"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/oauth/"
+      },
+      "strategy": "network-only",
+      "cacheName": "auth"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/mcp/"
+      },
+      "strategy": "network-only",
+      "cacheName": "mcp"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/errors/"
+      },
+      "strategy": "network-only",
+      "cacheName": "errors"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/analytics/"
+      },
+      "strategy": "network-only",
+      "cacheName": "analytics"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/transpile/"
+      },
+      "strategy": "network-only",
+      "cacheName": "transpile"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/assets/"
+      },
+      "strategy": "cache-first",
+      "cacheName": "assets"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/apps/"
+      },
+      "strategy": "cache-first",
+      "cacheName": "app-icons"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/src/"
+      },
+      "strategy": "stale-while-revalidate",
+      "cacheName": "source-modules"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/node_modules/"
+      },
+      "strategy": "cache-first",
+      "cacheName": "vendor-modules"
+    },
+    {
+      "match": {
+        "pathnamePrefix": "/service-worker/"
+      },
+      "strategy": "network-first",
+      "cacheName": "control-plane"
+    },
+    {
+      "match": {
+        "regex": "^/(?!api/|oauth/|mcp/|errors/|analytics/|transpile/).*$",
+        "requestMode": "navigate"
+      },
+      "strategy": "stale-while-revalidate",
+      "cacheName": "pages"
+    }
+  ]
+}

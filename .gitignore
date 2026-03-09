@@ -22,6 +22,7 @@ binaryen/
 coverage/
 .claude/
 .bazdmeg/
+.prompt-history/
 *.log
 out/
 

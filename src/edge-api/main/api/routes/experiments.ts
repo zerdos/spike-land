@@ -17,6 +17,17 @@ import {
   evaluateExperiment,
 } from "../../lazy-imports/experiment-engine.js";
 import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
+import {
+  buildEvaluationGate,
+  detectZeroImpressionAnomalies,
+  getMonitorWindow,
+  groupMetricsByVariant,
+  isValidAssignClientId,
+  mapRevenueCentsToDollars,
+  normalizeTrackEvents,
+  type MetricRow,
+  type VariantDef,
+} from "./experiments-route-logic.js";
 
 const experiments = new Hono<{ Bindings: Env }>();
 
@@ -36,51 +47,6 @@ interface ExperimentRow {
   updated_at: number;
 }
 
-interface VariantDef {
-  id: string;
-  config: Record<string, unknown>;
-  weight: number;
-}
-
-const VALID_EVENT_TYPES = new Set([
-  "widget_impression",
-  "slider_start",
-  "slider_change",
-  "slider_final",
-  "fistbump_click",
-  "donate_click",
-  "custom_toggle",
-  "custom_value",
-  "share_click",
-  "visibility_time",
-  "checkout_started",
-  "thankyou_viewed",
-]);
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-type MetricRow = {
-  variant_id: string;
-  metric_name: string;
-  metric_value: number;
-  sample_size: number;
-};
-
-function groupMetricsByVariant(
-  metrics: MetricRow[],
-): Record<string, Record<string, { value: number; sampleSize: number }>> {
-  const byVariant: Record<string, Record<string, { value: number; sampleSize: number }>> = {};
-  for (const m of metrics) {
-    if (!byVariant[m.variant_id]) byVariant[m.variant_id] = {};
-    const variantBucket = byVariant[m.variant_id]!;
-    variantBucket[m.metric_name] = {
-      value: m.metric_value,
-      sampleSize: m.sample_size,
-    };
-  }
-  return byVariant;
-}
-
 // ─── POST /api/experiments/assign ───────────────────────────────────────────
 
 experiments.post("/api/experiments/assign", async (c) => {
@@ -91,7 +57,7 @@ experiments.post("/api/experiments/assign", async (c) => {
     }));
   const clientId = body.clientId;
 
-  if (!clientId || typeof clientId !== "string" || clientId.length > 100) {
+  if (!isValidAssignClientId(clientId)) {
     return c.json({ error: "clientId is required" }, 400);
   }
 
@@ -171,33 +137,17 @@ experiments.post("/api/experiments/track", async (c) => {
     return c.json({ error: "events array required" }, 400);
   }
 
-  // Cap batch size (allows ~16 user actions × 3 experiments per flush)
-  const batch = events.slice(0, 150);
   const db = c.env.DB;
   const now = Date.now();
+  const { acceptedEvents, metricUpdates } = normalizeTrackEvents(events);
 
   const insertStmt = db.prepare(
     "INSERT INTO widget_events (id, client_id, slug, event_type, event_data, experiment_id, variant_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
   );
 
   const stmts: D1PreparedStatement[] = [];
-  const metricsUpdates: Array<{
-    experimentId: string;
-    variantId: string;
-    metricName: string;
-    value: number;
-  }> = [];
 
-  for (const event of batch) {
-    if (
-      !event.clientId ||
-      !event.slug ||
-      !event.eventType ||
-      !VALID_EVENT_TYPES.has(event.eventType)
-    ) {
-      continue;
-    }
-
+  for (const event of acceptedEvents) {
     stmts.push(
       insertStmt.bind(
         crypto.randomUUID(),
@@ -205,37 +155,11 @@ experiments.post("/api/experiments/track", async (c) => {
         event.slug,
         event.eventType,
         event.eventData ? JSON.stringify(event.eventData) : null,
-        event.experimentId ?? null,
-        event.variantId ?? null,
+        event.experimentId,
+        event.variantId,
         now,
       ),
     );
-
-    // Increment materialized metrics
-    if (event.experimentId && event.variantId) {
-      if (event.eventType === "widget_impression") {
-        metricsUpdates.push({
-          experimentId: event.experimentId,
-          variantId: event.variantId,
-          metricName: "impressions",
-          value: 1,
-        });
-      } else if (event.eventType === "donate_click") {
-        metricsUpdates.push({
-          experimentId: event.experimentId,
-          variantId: event.variantId,
-          metricName: "donations",
-          value: 1,
-        });
-      } else if (event.eventType === "fistbump_click") {
-        metricsUpdates.push({
-          experimentId: event.experimentId,
-          variantId: event.variantId,
-          metricName: "fistbumps",
-          value: 1,
-        });
-      }
-    }
   }
 
   // Upsert metrics
@@ -340,17 +264,6 @@ experiments.post("/api/experiments/:id/evaluate", async (c) => {
   if (!exp) return c.json({ error: "Experiment not found" }, 404);
   if (exp.status !== "active") return c.json({ error: "Experiment not active" }, 400);
 
-  // Check min 48h runtime
-  const runtimeMs = Date.now() - exp.created_at;
-  const MIN_RUNTIME_MS = 48 * 60 * 60 * 1000;
-  if (runtimeMs < MIN_RUNTIME_MS) {
-    return c.json({
-      ready: false,
-      reason: "Minimum 48h runtime not met",
-      runtimeHours: Math.round(runtimeMs / 3600000),
-    });
-  }
-
   const variants: VariantDef[] = JSON.parse(exp.variants);
   const metricsRows = await db
     .prepare(
@@ -360,29 +273,17 @@ experiments.post("/api/experiments/:id/evaluate", async (c) => {
     .all<MetricRow>();
 
   const byVariant = groupMetricsByVariant(metricsRows.results ?? []);
-
-  // Check min sample size (500 impressions per variant)
-  for (const v of variants) {
-    const impressions = byVariant[v.id]?.impressions?.value ?? 0;
-    if (impressions < 500) {
-      return c.json({
-        ready: false,
-        reason: `Variant ${v.id} has ${impressions} impressions (need 500)`,
-      });
-    }
+  const gate = buildEvaluationGate({
+    createdAt: exp.created_at,
+    now: Date.now(),
+    variants,
+    byVariant,
+  });
+  if (!gate.ready) {
+    return c.json(gate);
   }
 
-  // Build input for Bayesian evaluation
-  const variantData = variants.map((v) => {
-    const vm = byVariant[v.id] ?? {};
-    return {
-      id: v.id,
-      impressions: vm.impressions?.value ?? 0,
-      donations: vm.donations?.value ?? 0,
-    };
-  });
-
-  const result = evaluateExperiment(variantData);
+  const result = evaluateExperiment(gate.variantData);
 
   if (result.shouldGraduate) {
     const now = Date.now();
@@ -435,16 +336,14 @@ experiments.get("/api/experiments/dashboard", async (c) => {
 
   return c.json({
     experiments: exps,
-    revenue24h: (recentRevenue?.total ?? 0) / 100,
+    revenue24h: mapRevenueCentsToDollars(recentRevenue?.total),
   });
 });
 
 // ─── GET /api/experiments/monitor ────────────────────────────────────────
 
 experiments.get("/api/experiments/monitor", async (c) => {
-  const hours = parseInt(c.req.query("hours") ?? "4", 10);
-  const windowMs = Math.min(Math.max(hours, 1), 168) * 60 * 60 * 1000; // 1h to 7d
-  const since = Date.now() - windowMs;
+  const window = getMonitorWindow(c.req.query("hours"), Date.now());
 
   const db = c.env.DB;
 
@@ -456,7 +355,7 @@ experiments.get("/api/experiments/monitor", async (c) => {
          WHERE created_at >= ? AND experiment_id IS NOT NULL
          GROUP BY experiment_id, variant_id, event_type`,
       )
-      .bind(since)
+      .bind(window.since)
       .all<{
         experiment_id: string;
         variant_id: string;
@@ -470,32 +369,10 @@ experiments.get("/api/experiments/monitor", async (c) => {
 
   const counts = eventCounts.results ?? [];
   const active = activeExps.results ?? [];
-
-  // Build per-experiment, per-variant impression set
-  const impressionSet = new Set<string>();
-  for (const row of counts) {
-    if (row.event_type === "widget_impression") {
-      impressionSet.add(`${row.experiment_id}:${row.variant_id}`);
-    }
-  }
-
-  // Check for anomalies: active variants with 0 impressions in window
-  const anomalies: Array<{ experimentId: string; variantId: string; issue: string }> = [];
-  for (const exp of active) {
-    const variants: Array<{ id: string }> = JSON.parse(exp.variants);
-    for (const v of variants) {
-      if (!impressionSet.has(`${exp.id}:${v.id}`)) {
-        anomalies.push({
-          experimentId: exp.id,
-          variantId: v.id,
-          issue: `Zero impressions in last ${hours}h`,
-        });
-      }
-    }
-  }
+  const anomalies = detectZeroImpressionAnomalies(counts, active, window.requestedHours);
 
   return c.json({
-    windowHours: hours,
+    windowHours: window.requestedHours,
     events: counts,
     anomalies,
     activeExperiments: active.length,

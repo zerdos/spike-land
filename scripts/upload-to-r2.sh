@@ -8,20 +8,52 @@ set -euo pipefail
 DIST_DIR="${1:?Usage: upload-to-r2.sh <dist-dir> <r2-bucket>}"
 R2_BUCKET="${2:?Usage: upload-to-r2.sh <dist-dir> <r2-bucket>}"
 WRANGLER="${WRANGLER:-yarn wrangler}"
+R2_KEY_PREFIX="${R2_KEY_PREFIX:-}"
+UPLOAD_HTML_LAST="${UPLOAD_HTML_LAST:-0}"
 
 CACHE_DIR="${DIST_DIR}/../.deploy-cache"
 mkdir -p "$CACHE_DIR"
 
-echo "Uploading to R2 bucket: ${R2_BUCKET}..."
+if [ -n "$R2_KEY_PREFIX" ]; then
+  echo "Uploading to R2 bucket: ${R2_BUCKET} (prefix: ${R2_KEY_PREFIX})..."
+else
+  echo "Uploading to R2 bucket: ${R2_BUCKET}..."
+fi
+
+prefix_slug() {
+  if [ -z "$1" ]; then
+    printf 'root'
+    return
+  fi
+  printf '%s' "$1" | tr '/:' '__'
+}
+
+build_remote_key() {
+  local key="$1"
+  if [ -n "$R2_KEY_PREFIX" ]; then
+    printf '%s/%s' "${R2_KEY_PREFIX%/}" "$key"
+    return
+  fi
+  printf '%s' "$key"
+}
+
+is_html_key() {
+  case "$1" in
+    *.html) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 
 # Load previously uploaded keys for content-hash diffing
-UPLOADED_KEYS_FILE="$CACHE_DIR/uploaded-keys-${R2_BUCKET}.txt"
+UPLOADED_KEYS_FILE="$CACHE_DIR/uploaded-keys-${R2_BUCKET}-$(prefix_slug "$R2_KEY_PREFIX").txt"
 touch "$UPLOADED_KEYS_FILE"
 
 upload_file() {
   local file="$1"
   local dist="$2"
-  local key="${file#${dist}/}"
+  local local_key="${file#${dist}/}"
+  local remote_key
+  remote_key="$(build_remote_key "$local_key")"
   local content_type
 
   case "$file" in
@@ -40,17 +72,19 @@ upload_file() {
     *)      content_type="application/octet-stream" ;;
   esac
 
-  $WRANGLER r2 object put "${R2_BUCKET}/${key}" \
+  $WRANGLER r2 object put "${R2_BUCKET}/${remote_key}" \
     --file "$file" \
     --content-type "$content_type" \
     --remote
 }
 
 export -f upload_file
-export R2_BUCKET WRANGLER
+export -f build_remote_key
+export R2_BUCKET WRANGLER R2_KEY_PREFIX
 
 # Build list of files to upload, skipping hashed assets already uploaded
 FILES_TO_UPLOAD=()
+HTML_FILES_TO_UPLOAD=()
 NEW_KEYS=()
 TOTAL_FILES=0
 
@@ -58,22 +92,38 @@ find "$DIST_DIR" -type f -print0 > "$CACHE_DIR/files.tmp"
 while IFS= read -r -d '' file; do
   TOTAL_FILES=$((TOTAL_FILES + 1))
   key="${file#${DIST_DIR}/}"
+  remote_key="$(build_remote_key "$key")"
   # Hashed assets (contain content hash in filename) can be skipped if already uploaded
-  if [[ "$key" =~ \.[0-9a-f]{8,}\. ]] && grep -qxF "$key" "$UPLOADED_KEYS_FILE" 2>/dev/null; then
+  if [[ "$key" =~ \.[0-9a-f]{8,}\. ]] && grep -qxF "$remote_key" "$UPLOADED_KEYS_FILE" 2>/dev/null; then
     continue
   fi
-  FILES_TO_UPLOAD+=("$file")
-  NEW_KEYS+=("$key")
+
+  if [ "$UPLOAD_HTML_LAST" = "1" ] && is_html_key "$key"; then
+    HTML_FILES_TO_UPLOAD+=("$file")
+  else
+    FILES_TO_UPLOAD+=("$file")
+  fi
+
+  NEW_KEYS+=("$remote_key")
 done < "$CACHE_DIR/files.tmp"
 
-SKIPPED=$(( TOTAL_FILES - ${#FILES_TO_UPLOAD[@]} ))
-echo "Uploading ${#FILES_TO_UPLOAD[@]} files (skipped ${SKIPPED} cached)..."
+TOTAL_TO_UPLOAD=$(( ${#FILES_TO_UPLOAD[@]} + ${#HTML_FILES_TO_UPLOAD[@]} ))
+SKIPPED=$(( TOTAL_FILES - TOTAL_TO_UPLOAD ))
+echo "Uploading ${TOTAL_TO_UPLOAD} files (skipped ${SKIPPED} cached)..."
 
 if [ ${#FILES_TO_UPLOAD[@]} -gt 0 ]; then
   # Upload in parallel (4 concurrent to avoid R2 rate limits)
   printf '%s\0' "${FILES_TO_UPLOAD[@]}" | xargs -0 -P 4 -I {} bash -c 'upload_file "$@" "'"$DIST_DIR"'"' _ {}
+fi
 
-  # Update uploaded keys cache
+if [ ${#HTML_FILES_TO_UPLOAD[@]} -gt 0 ]; then
+  echo "Uploading HTML files last..."
+  for file in "${HTML_FILES_TO_UPLOAD[@]}"; do
+    upload_file "$file" "$DIST_DIR"
+  done
+fi
+
+if [ ${#NEW_KEYS[@]} -gt 0 ]; then
   printf '%s\n' "${NEW_KEYS[@]}" >> "$UPLOADED_KEYS_FILE"
   sort -u -o "$UPLOADED_KEYS_FILE" "$UPLOADED_KEYS_FILE"
 fi

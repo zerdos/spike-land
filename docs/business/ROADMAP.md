@@ -259,9 +259,11 @@ spike.land apps and skills
 | Shared SDK v1 documentation | Critical | Planned |
 | Cross-origin MCP integration guides | High | In progress |
 | Multi-surface app metadata and frontend contracts | High | Planned |
+| Typed tool contract -> surface compiler | Critical | In progress |
 | Offline browser bundle path | High | In progress |
 | Typed-to-MDX universal runner | High | In progress |
 | Session-aware generated app surfaces | Medium | Planned |
+| Render primitives for forms, tables, media, links, and action bars | High | Planned |
 | Store security and sandbox docs | High | In progress |
 | Performance budgets per store surface | Medium | Planned |
 
@@ -348,7 +350,9 @@ from intent to running deployed surface in under 60 seconds.
 | Browser-session handoff for user-auth steps | Critical | Planned |
 | Shared remote browser/noVNC session surface | High | Planned |
 | Agent observability and replay dashboards | High | Planned |
+| Prompt history and trace capture per agent | High | In progress |
 | Prompt/skill improvement loop from traces | High | Planned |
+| MCP agent router using ELO + trust + latency + cost | High | Planned |
 | ELO-guided agent selection for issue remediation | High | Planned |
 | Bug severity / trust scoring integrated into auto-fix routing | High | Planned |
 | Experiment-detected regressions routed into agent remediation | High | Planned |

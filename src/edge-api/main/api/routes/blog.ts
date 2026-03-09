@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
 import { getClientId, sendGA4Events } from "../../lazy-imports/ga4.js";
 import { safeCtx, withEdgeCache } from "../lib/edge-cache.js";
+import { buildBlogAnalyticsEvents } from "./blog-audience.js";
 
 const blog = new Hono<{ Bindings: Env }>();
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/spike-land-ai/spike-land-ai/main";
@@ -143,6 +144,29 @@ function rowToPost(row: BlogPostRow, includeContent = false) {
   return post;
 }
 
+interface AnalyticsBlogPost {
+  slug: string;
+  title: string;
+  category: string;
+  tags: string[];
+}
+
+function toAnalyticsBlogPost(post: unknown): AnalyticsBlogPost | null {
+  if (!post || typeof post !== "object") return null;
+
+  const record = post as Record<string, unknown>;
+  const slug = typeof record.slug === "string" ? record.slug : "";
+  const title = typeof record.title === "string" ? record.title : "";
+  const category = typeof record.category === "string" ? record.category : "";
+  const tags = Array.isArray(record.tags)
+    ? record.tags.filter((tag): tag is string => typeof tag === "string")
+    : [];
+
+  if (!slug || !title) return null;
+
+  return { slug, title, category, tags };
+}
+
 function isLocalDev(c: { req: { header: (name: string) => string | undefined } }): boolean {
   const origin = c.req.header("origin") ?? "";
   const referer = c.req.header("referer") ?? "";
@@ -245,20 +269,40 @@ blog.get("/api/blog/:slug", async (c) => {
 
   if (!cached) return c.json({ error: "Post not found" }, 404);
 
+  const analyticsPost = await cached
+    .clone()
+    .json<unknown>()
+    .then((post) => toAnalyticsBlogPost(post))
+    .catch((): AnalyticsBlogPost | null => null);
+
   try {
     c.executionCtx.waitUntil(
       getClientId(c.req.raw).then((clientId) => {
-        const ga4Promise = sendGA4Events(c.env, clientId, [
-          {
-            name: "blog_view",
-            params: { page_path: `/api/blog/${slug}`, slug },
-          },
-        ]);
+        const { events, signal } = analyticsPost
+          ? buildBlogAnalyticsEvents(analyticsPost)
+          : {
+              events: [
+                {
+                  name: "blog_view",
+                  params: { page_path: `/api/blog/${slug}`, slug },
+                },
+              ],
+              signal: null,
+            };
+        const ga4Promise = sendGA4Events(c.env, clientId, events);
 
         const dbPromise = c.env.DB.prepare(
           "INSERT INTO analytics_events (source, event_type, metadata, client_id) VALUES (?, ?, ?, ?)",
         )
-          .bind("platform-frontend", "blog_view", JSON.stringify({ slug }), clientId)
+          .bind(
+            "platform-frontend",
+            "blog_view",
+            JSON.stringify({
+              slug,
+              audienceSignal: signal,
+            }),
+            clientId,
+          )
           .run();
 
         return Promise.all([ga4Promise, dbPromise]);

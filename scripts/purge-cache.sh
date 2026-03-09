@@ -9,7 +9,40 @@ warn() {
   echo "WARNING: $*" >&2
 }
 
+info() {
+  echo "$*" >&2
+}
+
+resolve_auth_token() {
+  if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+    AUTH_TOKEN="$CLOUDFLARE_API_TOKEN"
+    AUTH_TOKEN_SOURCE="env:CLOUDFLARE_API_TOKEN"
+    return 0
+  fi
+
+  if ! command -v npx >/dev/null 2>&1; then
+    return 1
+  fi
+
+  if ! npx wrangler whoami >/dev/null 2>&1; then
+    return 1
+  fi
+
+  auth_json="$(npx wrangler auth token --json 2>/dev/null)" || return 1
+  AUTH_TOKEN="$(printf '%s' "$auth_json" | jq -r '.token // ""' 2>/dev/null)"
+  token_type="$(printf '%s' "$auth_json" | jq -r '.type // "unknown"' 2>/dev/null)"
+
+  if [ -z "$AUTH_TOKEN" ] || [ "$AUTH_TOKEN" = "null" ]; then
+    return 1
+  fi
+
+  AUTH_TOKEN_SOURCE="wrangler:${token_type}"
+  return 0
+}
+
 FILES_ARG=""
+AUTH_TOKEN=""
+AUTH_TOKEN_SOURCE=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -32,14 +65,14 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-  warn "CLOUDFLARE_API_TOKEN is not set; skipping cache purge"
+if ! resolve_auth_token; then
+  warn "No Cloudflare auth available; skipping cache purge"
   exit 0
 fi
 
 CF_ZONE_ID="$(
   curl -sf --max-time 10 \
-    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+    -H "Authorization: Bearer ${AUTH_TOKEN}" \
     "https://api.cloudflare.com/client/v4/zones?name=spike.land" \
     | jq -r '.result[0].id // ""' 2>/dev/null
 )" || CF_ZONE_ID=""
@@ -75,11 +108,12 @@ if [ -n "$FILES_ARG" ]; then
 fi
 
 echo "Purging Cloudflare ${purge_target}..."
+info "Auth source: ${AUTH_TOKEN_SOURCE}"
 
 response="$(
   curl -sS --max-time 20 \
     -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
-    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+    -H "Authorization: Bearer ${AUTH_TOKEN}" \
     -H "Content-Type: application/json" \
     -d "$payload"
 )" || {
@@ -90,6 +124,10 @@ response="$(
 success="$(printf '%s' "$response" | jq -r '.success // false' 2>/dev/null)" || success="false"
 if [ "$success" != "true" ]; then
   errors="$(printf '%s' "$response" | jq -c '.errors // []' 2>/dev/null)" || errors="[]"
+  if [ "$AUTH_TOKEN_SOURCE" = "wrangler:oauth" ] && printf '%s' "$errors" | jq -e '.[]? | select(.code == 10000)' >/dev/null 2>&1; then
+    warn "Wrangler OAuth login cannot purge zone cache via this API. Set CLOUDFLARE_API_TOKEN with Cache Purge permission for explicit purge."
+    exit 0
+  fi
   warn "Cloudflare cache purge was not accepted: ${errors}"
   exit 0
 fi

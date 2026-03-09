@@ -4,6 +4,7 @@ import { useAnalytics } from "../hooks/useAnalytics";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useAuth } from "../hooks/useAuth";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { usePageLoadCounter } from "../hooks/usePageLoadCounter";
 import { useDevMode } from "@spike-land-ai/block-website/core";
 import { LoginButton } from "../components/LoginButton";
 import { AppFooter } from "../components/AppFooter";
@@ -192,6 +193,7 @@ const BASE_NAV_LINKS = [
 
 export function RootLayout() {
   useAnalytics();
+  usePageLoadCounter();
   const { theme, setTheme } = useDarkMode();
   useAuth();
   const { isDeveloper } = useDevMode();
