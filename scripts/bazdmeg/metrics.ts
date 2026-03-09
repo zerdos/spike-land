@@ -18,7 +18,12 @@ export function generateRunId(): string {
 export function loadMetrics(): RunRecord[] {
   ensureDirs();
   if (!existsSync(METRICS_FILE)) return [];
-  return JSON.parse(readFileSync(METRICS_FILE, "utf-8")) as RunRecord[];
+  try {
+    return JSON.parse(readFileSync(METRICS_FILE, "utf-8")) as RunRecord[];
+  } catch (error) {
+    console.error("Failed to parse metrics file, resetting to empty array:", error);
+    return [];
+  }
 }
 
 export function saveRunRecord(record: RunRecord): void {
