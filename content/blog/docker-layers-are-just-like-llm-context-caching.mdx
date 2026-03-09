@@ -32,6 +32,8 @@ Docker reuses deterministic build outputs. LLM systems reuse computation over st
 
 If you understand why `COPY . .` in the wrong place makes Docker slow, you already understand a large part of context engineering.
 
+<SharedOptimizationProblemDemo />
+
 ---
 
 ## Current chat models behave like layered builds
@@ -52,6 +54,8 @@ That has three direct consequences:
 
 This is why giant chats degrade. The system is not only carrying more information. It is carrying more recomputation and more noise.
 
+<PrefixInvalidationDemo />
+
 ---
 
 ## The context window problem is mostly a build-design problem
@@ -68,6 +72,8 @@ You are using one model to compress the consequences of a badly structured promp
 - pass typed outputs instead of whole transcripts
 
 This is exactly what good Dockerfiles do.
+
+<ContextWindowDesignDemo />
 
 ---
 
@@ -96,6 +102,8 @@ A bad agent workflow does the same thing:
 Then one new error arrives and the whole stack has to be reconsidered again.
 
 This is the `COPY . .` anti-pattern in AI form.
+
+<MonolithAntiPatternDemo />
 
 ---
 
@@ -128,6 +136,8 @@ A review pass does not need the full planning transcript. A test runner does not
 
 Parallelism becomes possible once the stages are real.
 
+<MultiStageBuildDemo />
+
 ---
 
 ## Smaller context is not only cheaper. It is better
@@ -146,6 +156,8 @@ The gain comes from three places at once:
 
 This is also why context compression should be treated carefully. Compression can reduce token count, but it also introduces another generative step and another chance to lose signal. If you can replace transcript compression with typed intermediate artifacts and explicit stage boundaries, that is usually the better system.
 
+<FocusedContextDemo />
+
 ---
 
 ## The practical rules are the same as Docker
@@ -161,6 +173,8 @@ If you want a fast, cheap, reliable agent pipeline:
 - parallelize what does not depend on shared state
 
 This is not prompt poetry. It is build engineering.
+
+<PracticalRulesDemo />
 
 ---
 
@@ -183,6 +197,8 @@ That is the useful mental model:
 If you already know Docker, this should feel familiar.
 
 Stable layers first. Volatile layers last. Small artifacts between stages. Rebuild only what changed.
+
+<CacheAwareBuildGraphDemo />
 
 That is how you make Docker fast.
 
