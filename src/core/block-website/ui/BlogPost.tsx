@@ -287,10 +287,6 @@ export function BlogPostView({
     "",
   );
   const safeHeroImage = sanitizeBlogImageSrc(resolvedPost.heroImage);
-  const lightHeroImage = safeHeroImage?.replace(
-    /\.(png|jpe?g|webp|avif)$/i,
-    "-light.$1",
-  );
 
   return (
     <ExperimentProvider>
@@ -342,16 +338,13 @@ export function BlogPostView({
                 className="w-full aspect-[21/9] object-cover hidden dark:block"
               />
               <motion.img
-                src={lightHeroImage ?? safeHeroImage}
+                src={safeHeroImage}
                 alt={resolvedPost.title}
                 width={1200}
                 height={514}
                 loading="eager"
                 decoding="async"
                 className="w-full aspect-[21/9] object-cover dark:hidden block"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = safeHeroImage;
-                }}
               />
             </motion.div>
             <AnimatePresence>
@@ -371,12 +364,9 @@ export function BlogPostView({
                   />
                   <motion.img
                     layoutId={`hero-image-${slug}-light`}
-                    src={lightHeroImage ?? safeHeroImage}
+                    src={safeHeroImage}
                     alt={resolvedPost.title}
                     className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain dark:hidden block"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = safeHeroImage;
-                    }}
                   />
                 </motion.div>
               )}
