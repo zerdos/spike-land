@@ -125,35 +125,75 @@ const GREETINGS: Record<string, GreetingInfo> = {
   cs: { locale: "cs", languageLabel: "Čeština", greeting: "Šťastný Mezinárodní den žen" },
   da: { locale: "da", languageLabel: "Dansk", greeting: "Glædelig international kvindedag" },
   de: { locale: "de", languageLabel: "Deutsch", greeting: "Frohen Internationalen Frauentag" },
-  el: { locale: "el", languageLabel: "Ελληνικά", greeting: "Χρόνια πολλά για την Παγκόσμια Ημέρα της Γυναίκας" },
+  el: {
+    locale: "el",
+    languageLabel: "Ελληνικά",
+    greeting: "Χρόνια πολλά για την Παγκόσμια Ημέρα της Γυναίκας",
+  },
   en: { locale: "en", languageLabel: "English", greeting: "Happy International Women's Day" },
   es: { locale: "es", languageLabel: "Español", greeting: "Feliz Día Internacional de la Mujer" },
   et: { locale: "et", languageLabel: "Eesti", greeting: "Head rahvusvahelist naistepäeva" },
   fa: { locale: "fa", languageLabel: "فارسی", greeting: "روز جهانی زن مبارک" },
   fi: { locale: "fi", languageLabel: "Suomi", greeting: "Hyvää kansainvälistä naistenpäivää" },
-  fr: { locale: "fr", languageLabel: "Français", greeting: "Joyeuse Journée internationale des femmes" },
+  fr: {
+    locale: "fr",
+    languageLabel: "Français",
+    greeting: "Joyeuse Journée internationale des femmes",
+  },
   he: { locale: "he", languageLabel: "עברית", greeting: "יום האישה הבינלאומי שמח" },
   hi: { locale: "hi", languageLabel: "हिन्दी", greeting: "अंतरराष्ट्रीय महिला दिवस की शुभकामनाएं" },
   hr: { locale: "hr", languageLabel: "Hrvatski", greeting: "Sretan Međunarodni dan žena" },
   hu: { locale: "hu", languageLabel: "Magyar", greeting: "Boldog nemzetközi nőnapot" },
-  id: { locale: "id", languageLabel: "Bahasa Indonesia", greeting: "Selamat Hari Perempuan Internasional" },
-  it: { locale: "it", languageLabel: "Italiano", greeting: "Buona Giornata internazionale della donna" },
+  id: {
+    locale: "id",
+    languageLabel: "Bahasa Indonesia",
+    greeting: "Selamat Hari Perempuan Internasional",
+  },
+  it: {
+    locale: "it",
+    languageLabel: "Italiano",
+    greeting: "Buona Giornata internazionale della donna",
+  },
   ja: { locale: "ja", languageLabel: "日本語", greeting: "国際女性デーおめでとうございます" },
   ko: { locale: "ko", languageLabel: "한국어", greeting: "행복한 세계 여성의 날 되세요" },
   lt: { locale: "lt", languageLabel: "Lietuvių", greeting: "Su Tarptautine moters diena" },
-  lv: { locale: "lv", languageLabel: "Latviešu", greeting: "Priecīgu Starptautisko sieviešu dienu" },
-  ms: { locale: "ms", languageLabel: "Bahasa Melayu", greeting: "Selamat Hari Wanita Antarabangsa" },
+  lv: {
+    locale: "lv",
+    languageLabel: "Latviešu",
+    greeting: "Priecīgu Starptautisko sieviešu dienu",
+  },
+  ms: {
+    locale: "ms",
+    languageLabel: "Bahasa Melayu",
+    greeting: "Selamat Hari Wanita Antarabangsa",
+  },
   nl: { locale: "nl", languageLabel: "Nederlands", greeting: "Fijne Internationale Vrouwendag" },
-  no: { locale: "no", languageLabel: "Norsk", greeting: "Gratulerer med den internasjonale kvinnedagen" },
-  pl: { locale: "pl", languageLabel: "Polski", greeting: "Szczęśliwego Międzynarodowego Dnia Kobiet" },
+  no: {
+    locale: "no",
+    languageLabel: "Norsk",
+    greeting: "Gratulerer med den internasjonale kvinnedagen",
+  },
+  pl: {
+    locale: "pl",
+    languageLabel: "Polski",
+    greeting: "Szczęśliwego Międzynarodowego Dnia Kobiet",
+  },
   pt: { locale: "pt", languageLabel: "Português", greeting: "Feliz Dia Internacional da Mulher" },
-  ro: { locale: "ro", languageLabel: "Română", greeting: "La mulți ani de Ziua Internațională a Femeii" },
+  ro: {
+    locale: "ro",
+    languageLabel: "Română",
+    greeting: "La mulți ani de Ziua Internațională a Femeii",
+  },
   ru: { locale: "ru", languageLabel: "Русский", greeting: "С Международным женским днём" },
   sk: { locale: "sk", languageLabel: "Slovenčina", greeting: "Šťastný Medzinárodný deň žien" },
   sl: { locale: "sl", languageLabel: "Slovenščina", greeting: "Vesel mednarodni dan žena" },
   sr: { locale: "sr", languageLabel: "Српски", greeting: "Срећан Међународни дан жена" },
   sv: { locale: "sv", languageLabel: "Svenska", greeting: "Glad internationella kvinnodagen" },
-  sw: { locale: "sw", languageLabel: "Kiswahili", greeting: "Heri ya Siku ya Kimataifa ya Wanawake" },
+  sw: {
+    locale: "sw",
+    languageLabel: "Kiswahili",
+    greeting: "Heri ya Siku ya Kimataifa ya Wanawake",
+  },
   th: { locale: "th", languageLabel: "ไทย", greeting: "สุขสันต์วันสตรีสากล" },
   tr: { locale: "tr", languageLabel: "Türkçe", greeting: "Dünya Kadınlar Günü kutlu olsun" },
   uk: { locale: "uk", languageLabel: "Українська", greeting: "З Міжнародним жіночим днем" },
@@ -288,7 +328,10 @@ function normalizeLanguageTag(tag: string): string[] {
   return candidates;
 }
 
-function resolveGreeting(acceptLanguage: string | null | undefined, countryCode?: string | null): GreetingInfo {
+function resolveGreeting(
+  acceptLanguage: string | null | undefined,
+  countryCode?: string | null,
+): GreetingInfo {
   const languageCandidates = (acceptLanguage ?? "")
     .split(",")
     .map((part) => part.split(";")[0]?.trim() ?? "")
@@ -559,13 +602,14 @@ async function generateArtwork(env: Env, message: IwdMessage): Promise<void> {
 
     let outputUrl: string | null = null;
     for (let attempt = 0; attempt < 3; attempt++) {
-      const status = await callImageStudioTool<{ outputUrl?: string; status?: string; error?: string }>(
-        "job_status",
-        {
-          job_id: job.jobId,
-          job_type: "generation",
-        },
-      );
+      const status = await callImageStudioTool<{
+        outputUrl?: string;
+        status?: string;
+        error?: string;
+      }>("job_status", {
+        job_id: job.jobId,
+        job_type: "generation",
+      });
 
       if (status.outputUrl) {
         outputUrl = status.outputUrl;
@@ -590,11 +634,15 @@ async function generateArtwork(env: Env, message: IwdMessage): Promise<void> {
       .run();
   } catch (error) {
     const messageText = error instanceof Error ? error.message : "Image generation failed";
-    await env.DB.prepare(
-      "UPDATE iwd_messages SET image_prompt = ?, image_status = 'FAILED', error_message = ?, updated_at = ? WHERE id = ?",
-    )
-      .bind(prompt, messageText, Date.now(), message.id)
-      .run();
+    try {
+      await env.DB.prepare(
+        "UPDATE iwd_messages SET image_prompt = ?, image_status = 'FAILED', error_message = ?, updated_at = ? WHERE id = ?",
+      )
+        .bind(prompt, messageText, Date.now(), message.id)
+        .run();
+    } catch (dbError) {
+      console.error("Fallback DB write failed:", dbError);
+    }
   }
 }
 
@@ -2297,7 +2345,9 @@ function renderPage(origin: string, viewerGreeting: GreetingInfo): string {
 }
 
 function jsonResponse(_c: Context<{ Bindings: Env }>, data: unknown, status = 200): Response {
-  const headers = noStoreHeaders(new Headers({ "Content-Type": "application/json; charset=utf-8" }));
+  const headers = noStoreHeaders(
+    new Headers({ "Content-Type": "application/json; charset=utf-8" }),
+  );
   return new Response(JSON.stringify(data), {
     status,
     headers,
@@ -2349,7 +2399,8 @@ iwd.post("/api/iwd/checkin", async (c) => {
   let country = typeof cf?.country === "string" ? cf.country : null;
 
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    const fallback = DEV_FALLBACK_LOCATIONS[Math.floor(Math.random() * DEV_FALLBACK_LOCATIONS.length)]!;
+    const fallback =
+      DEV_FALLBACK_LOCATIONS[Math.floor(Math.random() * DEV_FALLBACK_LOCATIONS.length)]!;
     latitude = fallback.latitude;
     longitude = fallback.longitude;
     city = fallback.city;
@@ -2380,7 +2431,15 @@ iwd.post("/api/iwd/checkin", async (c) => {
   const inserted = await c.env.DB.prepare(
     "INSERT INTO iwd_visitors (latitude, longitude, city, country, locale, greeting, language_label) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, latitude, longitude, city, country, locale, greeting, language_label, created_at",
   )
-    .bind(latitude, longitude, city, country, greeting.locale, greeting.greeting, greeting.languageLabel)
+    .bind(
+      latitude,
+      longitude,
+      city,
+      country,
+      greeting.locale,
+      greeting.greeting,
+      greeting.languageLabel,
+    )
     .first<VisitorRow>();
 
   const feed = await loadFeed(c.env.DB);
@@ -2410,12 +2469,20 @@ iwd.post("/api/iwd/message", async (c) => {
   const visitorId =
     (typeof body?.visitorId === "string" && body.visitorId) || cookieVisitorId || "";
   if (!visitorId) {
-    return jsonResponse(c, { error: "Visit the map first so we know where to place your message." }, 400);
+    return jsonResponse(
+      c,
+      { error: "Visit the map first so we know where to place your message." },
+      400,
+    );
   }
 
   const visitor = await findTodayVisitor(c.env.DB, visitorId);
   if (!visitor) {
-    return jsonResponse(c, { error: "Your visitor session expired. Refresh the page and try again." }, 400);
+    return jsonResponse(
+      c,
+      { error: "Your visitor session expired. Refresh the page and try again." },
+      400,
+    );
   }
 
   const text = sanitizeMessageText(body?.text);
@@ -2431,7 +2498,11 @@ iwd.post("/api/iwd/message", async (c) => {
     .first<{ created_at: number | string }>();
 
   if (lastMessage && Date.now() - numberValue(lastMessage.created_at) < IWD_MESSAGE_COOLDOWN_MS) {
-    return jsonResponse(c, { error: "Give the last celebration a few seconds to land before sending another." }, 429);
+    return jsonResponse(
+      c,
+      { error: "Give the last celebration a few seconds to land before sending another." },
+      429,
+    );
   }
 
   const inserted = await c.env.DB.prepare(
