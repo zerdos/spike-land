@@ -239,7 +239,7 @@ describe("GET /iwd", () => {
 
 describe("POST /api/iwd/checkin", () => {
   it("creates a visitor, returns the feed payload, and sets a cookie", async () => {
-    vi.spyOn(crypto, "getRandomValues").mockImplementation((arr: any) => {
+    vi.spyOn(crypto, "getRandomValues").mockImplementation((arr: Uint8Array) => {
       arr[0] = 0;
       return arr;
     });

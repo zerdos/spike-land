@@ -34,7 +34,7 @@ class ResourceLoaderImpl implements ResourceLoader {
   }
 
   private shouldLoadResources(): boolean {
-    const pathname = location.pathname;
+    const _pathname = location.pathname;
 
     return true;
   }

@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createZodTool, jsonResult, formatError } from "@spike-land-ai/mcp-server-base";
+import { createZodTool, jsonResult } from "@spike-land-ai/mcp-server-base";
 import { runPipeline } from "./pipeline.js";
 
 export function registerDiscoverTool(server: McpServer): void {

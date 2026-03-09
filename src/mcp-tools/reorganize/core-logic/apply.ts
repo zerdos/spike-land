@@ -3,7 +3,7 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createZodTool, jsonResult, textResult } from "@spike-land-ai/mcp-server-base";
+import { createZodTool, jsonResult } from "@spike-land-ai/mcp-server-base";
 import { runPipeline } from "./pipeline.js";
 import {
   rewriteImports,

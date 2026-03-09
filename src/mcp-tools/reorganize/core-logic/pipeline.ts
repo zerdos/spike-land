@@ -1,6 +1,5 @@
 import path from "node:path";
 import { glob } from "glob";
-import { execSync } from "node:child_process";
 import { Project } from "ts-morph";
 
 import { excludeGlobs } from "../../../../scripts/reorganize-config.js";
@@ -22,7 +21,7 @@ export interface PipelineResult {
 
 export async function runPipeline(
   srcDir?: string,
-  incremental = false,
+  _incremental = false,
 ): Promise<PipelineResult> {
   const resolvedSrcDir = srcDir
     ? path.resolve(process.cwd(), srcDir)
@@ -35,19 +34,7 @@ export async function runPipeline(
     skipAddingFilesFromTsConfig: true,
   });
 
-  let filesToProcess: string[] = [];
-  if (incremental) {
-    try {
-      const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
-      const srcRel = path.relative(process.cwd(), resolvedSrcDir);
-      filesToProcess = stdout
-        .split("\n")
-        .filter((f) => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
-        .map((f) => path.resolve(process.cwd(), f));
-    } catch {
-      // git not available or no changes
-    }
-  }
+  // TODO: implement incremental file filtering using git diff
 
   const allFiles = await glob("**/*.{ts,tsx}", {
     cwd: resolvedSrcDir,
