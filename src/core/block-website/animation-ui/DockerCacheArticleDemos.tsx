@@ -682,7 +682,10 @@ export function ContextWindowDesignDemo() {
 }
 
 export function MonolithAntiPatternDemo() {
-  const { ref, step, hasStarted, start, restart } = useDemoSequence(ANTI_PATTERN_PHASES.length, 1500);
+  const { ref, step, hasStarted, start, restart } = useDemoSequence(
+    ANTI_PATTERN_PHASES.length,
+    1500,
+  );
   const dockerBreaks = step >= 1;
   const agentBreaks = step >= 2;
 
@@ -886,7 +889,8 @@ export function MultiStageBuildDemo() {
                     }}
                     transition={{
                       duration: 1.2,
-                      repeat: activeIndexes.has(index + 1) && isRunning ? Number.POSITIVE_INFINITY : 0,
+                      repeat:
+                        activeIndexes.has(index + 1) && isRunning ? Number.POSITIVE_INFINITY : 0,
                       ease: "easeInOut",
                     }}
                     className="absolute -right-3 top-10 z-20 hidden items-center text-cyan-200/70 lg:flex"
@@ -965,8 +969,18 @@ export function FocusedContextDemo() {
               })}
             </div>
             <div className="space-y-3">
-              <MetricRow label="cache reuse" value={wideCacheReuse} tone="rose" animate={hasStarted} />
-              <MetricRow label="token waste" value={wideTokenWaste} tone="amber" animate={hasStarted} />
+              <MetricRow
+                label="cache reuse"
+                value={wideCacheReuse}
+                tone="rose"
+                animate={hasStarted}
+              />
+              <MetricRow
+                label="token waste"
+                value={wideTokenWaste}
+                tone="amber"
+                animate={hasStarted}
+              />
               <MetricRow
                 label="reasoning focus"
                 value={wideReasoningFocus}
@@ -1048,7 +1062,9 @@ export function PracticalRulesDemo() {
       <DemoShell
         title="The rules are operational"
         kicker="Cache-aware checklist"
-        status={hasStarted ? `Rule ${step + 1} / ${rules.length}: ${currentRule.label}` : "Ready to start"}
+        status={
+          hasStarted ? `Rule ${step + 1} / ${rules.length}: ${currentRule.label}` : "Ready to start"
+        }
         hasStarted={hasStarted}
         onStart={start}
         onRestart={restart}
@@ -1137,7 +1153,9 @@ export function CacheAwareBuildGraphDemo() {
                 label={layer.label}
                 tone={layer.tone}
                 active={
-                  hasStarted && (step === index || (rebuildMode && index === 3)) && index < visibleLayers
+                  hasStarted &&
+                  (step === index || (rebuildMode && index === 3)) &&
+                  index < visibleLayers
                 }
                 dim={index >= visibleLayers}
               />
