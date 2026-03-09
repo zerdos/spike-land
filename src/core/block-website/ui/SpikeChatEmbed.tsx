@@ -17,7 +17,8 @@ export function SpikeChatEmbed({
   height = 500,
 }: SpikeChatEmbedProps) {
   const isLocal = typeof window !== "undefined" && window.location.hostname.includes("localhost");
-  const configuredBaseUrl = import.meta.env.VITE_CHAT_BASE_URL?.trim() ?? "";
+  // @ts-expect-error - Vite env might not be typed correctly in this context
+  const configuredBaseUrl = (import.meta.env?.VITE_CHAT_BASE_URL as string)?.trim() ?? "";
   const baseUrl = isLocal ? "http://localhost:8787" : configuredBaseUrl;
   const embedUrl = `${baseUrl}/embed/${workspaceSlug}/${channelSlug}?guest=${guestAccess}`;
   const [status, setStatus] = useState<"loading" | "ready" | "unavailable">(
