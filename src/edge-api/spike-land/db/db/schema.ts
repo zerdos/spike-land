@@ -656,6 +656,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   whatsappLinks: many(whatsappLinks),
   userApiKeys: many(userApiKeyVault),
   accessGrants: many(accessGrants),
+  appRatings: many(appRatings),
+  appWishlists: many(appWishlists),
+  appInstalls: many(appInstalls),
 }));
 
 export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
@@ -790,6 +793,126 @@ export const userApiKeyVaultRelations = relations(userApiKeyVault, ({ one }) => 
 
 export const accessGrantsRelations = relations(accessGrants, ({ one }) => ({
   user: one(users, { fields: [accessGrants.userId], references: [users.id] }),
+}));
+
+// ─── MCP Apps (store catalog) ────────────────────────────────────────────────
+
+export const mcpApps = sqliteTable(
+  "mcp_apps",
+  {
+    slug: text("slug").primaryKey(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    emoji: text("emoji").notNull().default(""),
+    status: text("status").notNull().default("draft"), // "draft" | "live"
+    tools: text("tools").notNull().default("[]"), // JSON array
+    graph: text("graph").notNull().default("{}"), // JSON
+    markdown: text("markdown").notNull().default(""),
+    toolCount: integer("tool_count").notNull().default(0),
+    sortOrder: integer("sort_order").notNull().default(0),
+    category: text("category").notNull().default(""),
+    tags: text("tags").notNull().default("[]"), // JSON array of strings
+    tagline: text("tagline").notNull().default(""),
+    pricing: text("pricing").notNull().default("free"),
+    isFeatured: integer("is_featured", { mode: "boolean" }).notNull().default(false),
+    isNew: integer("is_new", { mode: "boolean" }).notNull().default(false),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    statusIdx: index("idx_mcp_apps_status").on(t.status),
+    sortIdx: index("idx_mcp_apps_sort").on(t.sortOrder),
+    categoryIdx: index("idx_mcp_apps_category").on(t.category),
+    featuredIdx: index("idx_mcp_apps_featured").on(t.isFeatured),
+  }),
+);
+
+// ─── App Ratings/Reviews ────────────────────────────────────────────────────
+
+export const appRatings = sqliteTable(
+  "app_ratings",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    appSlug: text("app_slug")
+      .notNull()
+      .references(() => mcpApps.slug, { onDelete: "cascade" }),
+    rating: integer("rating").notNull(),
+    body: text("body").notNull().default(""),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    userAppIdx: uniqueIndex("idx_app_ratings_user_app").on(t.userId, t.appSlug),
+    appIdx: index("idx_app_ratings_app").on(t.appSlug),
+    createdIdx: index("idx_app_ratings_created").on(t.appSlug, t.createdAt),
+  }),
+);
+
+// ─── App Wishlists ──────────────────────────────────────────────────────────
+
+export const appWishlists = sqliteTable(
+  "app_wishlists",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    appSlug: text("app_slug")
+      .notNull()
+      .references(() => mcpApps.slug, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    userAppIdx: uniqueIndex("idx_app_wishlists_user_app").on(t.userId, t.appSlug),
+    userIdx: index("idx_app_wishlists_user").on(t.userId),
+  }),
+);
+
+// ─── App Installs ───────────────────────────────────────────────────────────
+
+export const appInstalls = sqliteTable(
+  "app_installs",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    appSlug: text("app_slug")
+      .notNull()
+      .references(() => mcpApps.slug, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    userAppIdx: uniqueIndex("idx_app_installs_user_app").on(t.userId, t.appSlug),
+    userIdx: index("idx_app_installs_user").on(t.userId),
+    appIdx: index("idx_app_installs_app").on(t.appSlug),
+  }),
+);
+
+// ─── MCP Apps Relations ─────────────────────────────────────────────────────
+
+export const mcpAppsRelations = relations(mcpApps, ({ many }) => ({
+  ratings: many(appRatings),
+  wishlists: many(appWishlists),
+  installs: many(appInstalls),
+}));
+
+export const appRatingsRelations = relations(appRatings, ({ one }) => ({
+  user: one(users, { fields: [appRatings.userId], references: [users.id] }),
+  app: one(mcpApps, { fields: [appRatings.appSlug], references: [mcpApps.slug] }),
+}));
+
+export const appWishlistsRelations = relations(appWishlists, ({ one }) => ({
+  user: one(users, { fields: [appWishlists.userId], references: [users.id] }),
+  app: one(mcpApps, { fields: [appWishlists.appSlug], references: [mcpApps.slug] }),
+}));
+
+export const appInstallsRelations = relations(appInstalls, ({ one }) => ({
+  user: one(users, { fields: [appInstalls.userId], references: [users.id] }),
+  app: one(mcpApps, { fields: [appInstalls.appSlug], references: [mcpApps.slug] }),
 }));
 
 // ─── LearnIt Content ─────────────────────────────────────────────────────────
