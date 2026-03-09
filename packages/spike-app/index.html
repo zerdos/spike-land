@@ -38,6 +38,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=optional" rel="stylesheet">
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)">
+    <!-- Google Consent Mode v2: defaults to denied, updated on cookie accept -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+      try {
+        if (localStorage.getItem('cookie_consent') === 'accepted') {
+          gtag('consent', 'update', {
+            'ad_storage': 'granted',
+            'ad_user_data': 'granted',
+            'ad_personalization': 'granted',
+            'analytics_storage': 'granted'
+          });
+        }
+      } catch(e) {}
+      gtag('js', new Date());
+      gtag('config', 'AW-17978085462');
+      gtag('config', 'G-9WNEM9ZHE7');
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17978085462"></script>
   </head>
   <body class="antialiased selection:bg-primary/30">
     <script>

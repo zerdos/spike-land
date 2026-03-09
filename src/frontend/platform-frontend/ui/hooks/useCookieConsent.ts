@@ -32,6 +32,14 @@ export function useCookieConsent(): CookieConsentHook {
     localStorage.setItem(STORAGE_KEY, "accepted");
     setConsentCookie("accepted");
     setConsentGiven(true);
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        "ad_storage": "granted",
+        "ad_user_data": "granted",
+        "ad_personalization": "granted",
+        "analytics_storage": "granted",
+      });
+    }
   };
 
   const reject = (): void => {

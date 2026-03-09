@@ -4,7 +4,7 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   "spike.land",
   "www.spike.land",
   "local.spike.land",
-  "ipfs.spike.land",
+  "dev.spike.land",
   "localhost",
   "127.0.0.1",
 ]);

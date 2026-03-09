@@ -45,8 +45,8 @@ while true; do
     fi
     git commit -m "chore: auto-sync local changes $(date +%s)" || true
     git push -u origin "$CURRENT_BRANCH" >/dev/null 2>&1 || true
-    # Background build+upload to ipfs.spike.land R2 mirror
-    LOCK="/tmp/ipfs-spike-land-build.lock"
+    # Background build+upload to dev.spike.land R2 mirror
+    LOCK="/tmp/dev-spike-land-build.lock"
     if [ ! -f "$LOCK" ]; then
       touch "$LOCK"
       (
@@ -58,8 +58,8 @@ while true; do
           sed -i.bak "s|</head>|<meta name=\"build-sha\" content=\"${SHA}\" /><meta name=\"build-time\" content=\"${TIME}\" /></head>|" ./dist/index.html
         fi
         rm -f ./dist/index.html.bak
-        bash ../../scripts/upload-to-r2.sh ./dist ipfs-spike-land
-        echo "[auto-sync] ipfs.spike.land updated: ${SHA:0:12}"
+        bash ../../scripts/upload-to-r2.sh ./dist dev-spike-land
+        echo "[auto-sync] dev.spike.land updated: ${SHA:0:12}"
         rm -f "$LOCK"
       ) &
     fi
