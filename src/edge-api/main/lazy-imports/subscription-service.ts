@@ -161,13 +161,14 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
       .run();
   }
 
-  // Emit upgrade_completed analytics event
+  // Emit upgrade_completed analytics event (include gclid for offline conversion attribution)
+  const gclid = session.metadata?.gclid ?? null;
   await db
     .prepare(
       `INSERT INTO analytics_events (source, event_type, metadata, client_id)
        VALUES ('stripe', 'upgrade_completed', ?, ?)`,
     )
-    .bind(JSON.stringify({ plan, userId }), `user_${userId}`)
+    .bind(JSON.stringify({ plan, userId, ...(gclid && { gclid }) }), `user_${userId}`)
     .run()
     .catch(() => {}); // best-effort — never block the checkout flow
 }
@@ -280,4 +281,83 @@ export async function handleInvoicePaymentFailed(
       .bind(now, subId)
       .run();
   }
+}
+
+// ─── Charge Refunded ───────────────────────────────────────────────────────
+
+export interface StripeCharge {
+  id: string;
+  customer?: string;
+  amount?: number;
+  currency?: string;
+  invoice?: string;
+  metadata?: Record<string, string>;
+}
+
+export async function handleChargeRefunded(db: D1Database, event: StripeEvent): Promise<void> {
+  const charge = event.data.object as unknown as StripeCharge;
+  const customerId = typeof charge.customer === "string" ? charge.customer : null;
+
+  await db
+    .prepare(
+      `INSERT INTO analytics_events (source, event_type, metadata, client_id)
+       VALUES ('stripe', 'charge_refunded', ?, ?)`,
+    )
+    .bind(
+      JSON.stringify({
+        chargeId: charge.id,
+        amount: charge.amount,
+        currency: charge.currency,
+      }),
+      customerId ? `customer_${customerId}` : "unknown",
+    )
+    .run();
+
+  await db
+    .prepare(
+      `INSERT INTO error_logs (service_name, error_code, message, stack_trace, metadata, client_id, severity)
+       VALUES ('stripe-webhook', 'charge.refunded', ?, NULL, ?, ?, 'warning')`,
+    )
+    .bind(
+      `Charge ${charge.id} refunded`,
+      JSON.stringify({ amount: charge.amount, currency: charge.currency }),
+      customerId ? `customer_${customerId}` : null,
+    )
+    .run();
+}
+
+// ─── Charge Dispute Created ────────────────────────────────────────────────
+
+export async function handleChargeDisputeCreated(
+  db: D1Database,
+  event: StripeEvent,
+): Promise<void> {
+  const dispute = event.data.object as Record<string, unknown>;
+  const chargeId = typeof dispute.charge === "string" ? dispute.charge : null;
+  const disputeId = typeof dispute.id === "string" ? dispute.id : "unknown";
+  const reason = typeof dispute.reason === "string" ? dispute.reason : "unknown";
+  const amount = typeof dispute.amount === "number" ? dispute.amount : null;
+
+  await db
+    .prepare(
+      `INSERT INTO analytics_events (source, event_type, metadata, client_id)
+       VALUES ('stripe', 'charge_dispute_created', ?, ?)`,
+    )
+    .bind(
+      JSON.stringify({ disputeId, chargeId, reason, amount }),
+      chargeId ? `charge_${chargeId}` : "unknown",
+    )
+    .run();
+
+  await db
+    .prepare(
+      `INSERT INTO error_logs (service_name, error_code, message, stack_trace, metadata, client_id, severity)
+       VALUES ('stripe-webhook', 'charge.dispute.created', ?, NULL, ?, ?, 'error')`,
+    )
+    .bind(
+      `Dispute ${disputeId} opened for charge ${chargeId ?? "unknown"}: ${reason}`,
+      JSON.stringify({ disputeId, chargeId, reason, amount }),
+      chargeId ? `charge_${chargeId}` : null,
+    )
+    .run();
 }

@@ -27,9 +27,9 @@ checkout.post("/api/checkout", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  let body: { tier?: string; lookup_key?: string };
+  let body: { tier?: string; lookup_key?: string; gclid?: string };
   try {
-    body = (await c.req.json()) as { tier?: string; lookup_key?: string };
+    body = (await c.req.json()) as { tier?: string; lookup_key?: string; gclid?: string };
   } catch {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
@@ -81,6 +81,7 @@ checkout.post("/api/checkout", async (c) => {
       client_reference_id: userId,
       "metadata[userId]": userId,
       "metadata[tier]": tier,
+      ...(body.gclid && { "metadata[gclid]": body.gclid }),
     },
     idempotencyKey,
   );
@@ -106,9 +107,9 @@ checkout.post("/api/checkout/service", async (c) => {
     return c.json({ error: "Stripe not configured" }, 503);
   }
 
-  let body: { service?: string; email?: string };
+  let body: { service?: string; email?: string; gclid?: string };
   try {
-    body = (await c.req.json()) as { service?: string; email?: string };
+    body = (await c.req.json()) as { service?: string; email?: string; gclid?: string };
   } catch {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
@@ -149,6 +150,7 @@ checkout.post("/api/checkout/service", async (c) => {
     cancel_url: `https://spike.land${product.successPath.split("?")[0]!}`,
     "metadata[type]": "service_purchase",
     "metadata[service]": service,
+    ...(body.gclid && { "metadata[gclid]": body.gclid }),
   };
 
   // Attach userId if authenticated, otherwise allow guest checkout

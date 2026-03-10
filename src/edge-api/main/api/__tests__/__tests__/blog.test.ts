@@ -449,6 +449,14 @@ describe("GET /api/blog-images/:slug/:filename", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/png");
+    expect(
+      JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit | undefined)?.body ?? "{}"))
+        .name,
+    ).toBe("img_generate");
+    expect(
+      JSON.parse(String((fetchMock.mock.calls[1]?.[1] as RequestInit | undefined)?.body ?? "{}"))
+        .name,
+    ).toBe("img_job_status");
     expect((r2.put as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]).toBe(
       "blog-images/test-post/hero.png",
     );

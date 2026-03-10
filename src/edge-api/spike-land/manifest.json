@@ -39,6 +39,7 @@
     "core-logic/middleware/abuse-detector.ts",
     "core-logic/tools/ai-gateway.ts",
     "core-logic/tools/apps.ts",
+    "core-logic/tools/arbor.ts",
     "core-logic/tools/arena.ts",
     "core-logic/tools/bazdmeg/bazdmeg-index.ts",
     "core-logic/tools/bazdmeg/faq.ts",

@@ -44,6 +44,16 @@ const rootRoute = createRootRoute({ component: RootLayout, notFoundComponent: No
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
+  beforeLoad: () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("spike-lang");
+      const lang = stored || navigator.language || "";
+      const normalized = lang.trim().toLowerCase().split("-")[0];
+      if (normalized === "hu") {
+        throw redirect({ to: "/apps/$appSlug", params: { appSlug: "ai-automatizalas" } });
+      }
+    }
+  },
   component: withSuspense(() => import("../lazy-imports/routes-index.tsx"), "IndexPage"),
 });
 
@@ -302,6 +312,13 @@ const appSessionRoute = createRoute({
   component: withSuspense(() => import("./routes/tools/$appSlug"), "AppSessionPage"),
 });
 
+// Single-tool shareable surface: /tool/$toolName
+const toolSurfaceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/tool/$toolName",
+  component: withSuspense(() => import("./routes/tool/$toolName"), "ToolSurfacePage"),
+});
+
 const legacyToolsIndexRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/tools",
@@ -407,6 +424,7 @@ const routeTree = rootRoute.addChildren([
   whatWeDoRoute,
   vibeCodeRoute,
   buildRoute,
+  toolSurfaceRoute,
   legacyToolDetailRedirectRoute,
   legacyToolsIndexRedirectRoute,
   startChecklistRoute,

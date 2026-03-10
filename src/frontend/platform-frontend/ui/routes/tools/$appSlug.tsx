@@ -30,6 +30,9 @@ const ChessArenaApp = lazy(() =>
 const AiAutomatizalasApp = lazy(() =>
   import("../../apps/ai-automatizalas").then((m) => ({ default: m.AiAutomatizalasApp })),
 );
+const SpikeChatApp = lazy(() =>
+  import("../../apps/spike-chat").then((m) => ({ default: m.SpikeChatApp })),
+);
 
 type SurfaceType = "overview" | "chat" | "terminal" | "mdx";
 
@@ -69,7 +72,9 @@ export function AppSessionPage() {
   const isPagesTemplateChooser = appSlug === "pages-template-chooser";
   const isChessArena = appSlug === "chess-arena";
   const isAiAutomatizalas = appSlug === "ai-automatizalas";
-  const isShowcaseApp = isHackerNews || isPagesTemplateChooser || isChessArena || isAiAutomatizalas;
+  const isSpikeChat = appSlug === "spike-chat";
+  const isShowcaseApp =
+    isHackerNews || isPagesTemplateChooser || isChessArena || isAiAutomatizalas || isSpikeChat;
   const availableSurfaces = app?.tools.length
     ? SURFACES
     : SURFACES.filter((surface) => surface.id !== "terminal");
@@ -220,6 +225,16 @@ export function AppSessionPage() {
                     }
                   >
                     <AiAutomatizalasApp />
+                  </Suspense>
+                ) : isSpikeChat ? (
+                  <Suspense
+                    fallback={
+                      <div className="flex items-center justify-center py-16">
+                        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                      </div>
+                    }
+                  >
+                    <SpikeChatApp />
                   </Suspense>
                 ) : (
                   <AppMarkdownRenderer

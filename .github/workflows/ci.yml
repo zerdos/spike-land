@@ -273,6 +273,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
+      - name: Warm prompt-driven blog hero images
+        run: node --import tsx scripts/warm-blog-heroes.ts --base https://spike-edge.spikeland.workers.dev
+
       - name: Purge Cloudflare cache after worker deploys
         run: bash scripts/purge-cache.sh
         env:

@@ -9,8 +9,13 @@ export function CallbackPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      trackAnalyticsEvent("signup_completed");
-      trackSignUpConversion();
+      // Only track signup conversion for new signups, not returning logins
+      const isSignup = sessionStorage.getItem("signup_flow") === "1";
+      if (isSignup) {
+        trackAnalyticsEvent("signup_completed");
+        trackSignUpConversion();
+        sessionStorage.removeItem("signup_flow");
+      }
     }
   }, [isAuthenticated]);
 

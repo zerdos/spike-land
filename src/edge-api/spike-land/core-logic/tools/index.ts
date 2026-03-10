@@ -1,5 +1,6 @@
 export * from "./ai-gateway";
 export * from "./apps";
+export * from "./arbor";
 export * from "./arena";
 export * from "./bazdmeg";
 export * from "./bft";

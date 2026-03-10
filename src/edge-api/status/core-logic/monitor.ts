@@ -60,6 +60,12 @@ export const SERVICES: ServiceProbe[] = [
     binding: "IMAGE_STUDIO",
     path: "/health",
   },
+  {
+    label: "Stripe Webhook",
+    url: "https://api.spike.land/stripe/webhook/health",
+    binding: "SPIKE_EDGE",
+    path: "/stripe/webhook/health",
+  },
 ];
 
 export const TIMEOUT_MS = 3000;

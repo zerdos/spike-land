@@ -56,6 +56,26 @@ const RANGES: Record<ServiceMetricRangeKey, ServiceMetricRange> = {
   "24h": { key: "24h", label: "Last 24 hours", windowMinutes: 24 * 60 },
 };
 
+const SERVICE_METRIC_SCHEMA_STATEMENTS = [
+  [
+    "CREATE TABLE IF NOT EXISTS status_service_minute_metrics (",
+    "service_name TEXT NOT NULL,",
+    "minute_bucket INTEGER NOT NULL,",
+    "request_count INTEGER NOT NULL DEFAULT 0,",
+    "latency_min_ms REAL NOT NULL,",
+    "latency_max_ms REAL NOT NULL,",
+    "latency_sum_ms REAL NOT NULL DEFAULT 0,",
+    "latency_sum_sq_ms REAL NOT NULL DEFAULT 0,",
+    "updated_at INTEGER NOT NULL,",
+    "PRIMARY KEY (service_name, minute_bucket)",
+    ")",
+  ].join(" "),
+  [
+    "CREATE INDEX IF NOT EXISTS idx_status_service_minute_metrics_bucket",
+    "ON status_service_minute_metrics (minute_bucket DESC)",
+  ].join(" "),
+] as const;
+
 let schemaPromise: Promise<void> | null = null;
 
 function floorToMinute(timestampMs: number): number {
@@ -198,21 +218,7 @@ export function shouldTrackServiceMetricRequest(request: Request): boolean {
 export async function ensureServiceMetricSchema(db: D1Database): Promise<void> {
   if (!schemaPromise) {
     schemaPromise = db
-      .exec(`
-        CREATE TABLE IF NOT EXISTS status_service_minute_metrics (
-          service_name TEXT NOT NULL,
-          minute_bucket INTEGER NOT NULL,
-          request_count INTEGER NOT NULL DEFAULT 0,
-          latency_min_ms REAL NOT NULL,
-          latency_max_ms REAL NOT NULL,
-          latency_sum_ms REAL NOT NULL DEFAULT 0,
-          latency_sum_sq_ms REAL NOT NULL DEFAULT 0,
-          updated_at INTEGER NOT NULL,
-          PRIMARY KEY (service_name, minute_bucket)
-        );
-        CREATE INDEX IF NOT EXISTS idx_status_service_minute_metrics_bucket
-          ON status_service_minute_metrics (minute_bucket DESC);
-      `)
+      .batch(SERVICE_METRIC_SCHEMA_STATEMENTS.map((statement) => db.prepare(statement)))
       .then((): void => undefined)
       .catch((error) => {
         schemaPromise = null;

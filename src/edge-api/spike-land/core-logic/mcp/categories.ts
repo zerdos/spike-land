@@ -31,6 +31,8 @@ export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
     "Tool marketplace for community-published tools with discovery, installation, and token earnings",
   bootstrap: "One-session workspace setup: create workspace, store secrets, deploy apps",
   apps: "Full My-Apps lifecycle: create, chat, iterate, manage versions, and batch operations",
+  arbor:
+    "Project Arbor strategy tools: contextual mapping, pilot design, risk modeling, and audience-specific narrative generation",
   arena: "AI Prompt Arena: submit prompts, review code, compete on ELO leaderboard",
   "album-images":
     "Album image management: add, remove, reorder, list, and move images between albums",
@@ -321,4 +323,5 @@ export const CATEGORY_AUDIENCES: Record<string, CategoryAudience> = {
 
   // Persona
   persona: "domain",
+  arbor: "domain",
 };

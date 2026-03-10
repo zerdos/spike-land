@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
 import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
+import { requireInternalSecret } from "../../core-logic/internal-auth.js";
 
 const errors = new Hono<{ Bindings: Env }>();
 
@@ -91,6 +92,10 @@ errors.post("/errors/ingest", async (c) => {
 
 /** GET /errors — list recent errors (internal/admin). */
 errors.get("/errors", async (c) => {
+  if (!requireInternalSecret(c.env, c.req)) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   const service = c.req.query("service");
   const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
   const range = c.req.query("range") ?? "24h";
@@ -121,6 +126,10 @@ errors.get("/errors", async (c) => {
 
 /** GET /errors/summary — aggregated error stats for cockpit dashboard. */
 errors.get("/errors/summary", async (c) => {
+  if (!requireInternalSecret(c.env, c.req)) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   const range = c.req.query("range") ?? "24h";
   const rangeMs: Record<string, number> = {
     "1h": 3_600_000,

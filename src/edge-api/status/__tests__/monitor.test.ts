@@ -30,6 +30,7 @@ function createStatusDb(
   > = {},
 ): D1Database {
   return {
+    batch: vi.fn(async () => []),
     exec: vi.fn(async () => undefined),
     prepare: vi.fn(() => ({
       bind: (...params: unknown[]) => {

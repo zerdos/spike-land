@@ -1,10 +1,22 @@
-import { useState, useEffect, useMemo, isValidElement, type ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  isValidElement,
+  lazy,
+  Suspense,
+  type ReactNode,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { FileText, Loader2 } from "lucide-react";
 import { MdxCommandCard } from "./MdxCommandCard";
 import { isExecutableShellLanguage, resolveMcpCommandBlock } from "./mcp-command-line";
+
+const ToolSurface = lazy(() =>
+  import("./tool-surface/ToolSurface").then((m) => ({ default: m.ToolSurface })),
+);
 
 interface MdxSurfaceProps {
   appSlug: string;
@@ -50,6 +62,25 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
+          // Interactive tool surface for executing MCP tools inline
+          toolsurface: ({ node: _node, ...props }: { node?: unknown; [key: string]: unknown }) => {
+            const name = (props as Record<string, string>).name;
+            if (!name) return null;
+            return (
+              <div className="my-5">
+                <Suspense
+                  fallback={
+                    <div className="rubik-panel p-4 flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-sm">Loading tool surface...</span>
+                    </div>
+                  }
+                >
+                  <ToolSurface toolName={name} defaultExpanded />
+                </Suspense>
+              </div>
+            );
+          },
           // Custom component for embedded tool results
           toolresult: ({ node: _node, ...props }: { node?: unknown; [key: string]: unknown }) => {
             const name = (props as Record<string, string>).name || "unknown";
@@ -178,9 +209,7 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
         <span className="rubik-chip px-2.5 py-1 text-[10px]">editorial surface</span>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl p-6 sm:p-8">
-        {renderedContent}
-        </div>
+        <div className="mx-auto w-full max-w-3xl p-6 sm:p-8">{renderedContent}</div>
       </div>
     </div>
   );

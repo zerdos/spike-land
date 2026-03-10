@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "@tanstack/react-router";
 
-const GA4_MEASUREMENT_ID = "G-9WNEM9ZHE7";
+const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID ?? "G-9WNEM9ZHE7";
 
 /**
  * Push a page_view hit to GA4 for SPA navigations.
@@ -107,7 +107,7 @@ const GA4_MIRRORED_EVENTS = new Set([
   "signup_completed",
   "app_view",
   "app_install",
-  "blog_post_view",
+  "blog_view",
   "credit_purchase_started",
 ]);
 

@@ -56,13 +56,22 @@ export async function getClientId(request: Request): Promise<string> {
   return hashClientId(ip);
 }
 
-/** Send events to GA4 via the Measurement Protocol v2. Silently skips if credentials are missing. */
+let ga4WarningLogged = false;
+
+/** Send events to GA4 via the Measurement Protocol v2. Logs a warning once if credentials are missing. */
 export async function sendGA4Events(
   env: GA4Env,
   clientId: string,
   events: GA4Event[],
 ): Promise<void> {
   if (!env.GA_MEASUREMENT_ID || !env.GA_API_SECRET) {
+    if (!ga4WarningLogged) {
+      ga4WarningLogged = true;
+      log.warn(
+        "GA4 Measurement Protocol disabled: GA_MEASUREMENT_ID or GA_API_SECRET not set. " +
+          "Run `wrangler secret put GA_API_SECRET` to enable server-side GA4 forwarding.",
+      );
+    }
     return;
   }
 

@@ -16,6 +16,8 @@ import {
   handleSubscriptionDeleted,
   handleInvoicePaid,
   handleInvoicePaymentFailed,
+  handleChargeRefunded,
+  handleChargeDisputeCreated,
   type StripeEvent,
   type StripeSession,
 } from "../../lazy-imports/subscription-service.js";
@@ -82,6 +84,12 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
       case "invoice.payment_failed":
         await handleInvoicePaymentFailed(db, event);
         break;
+      case "charge.refunded":
+        await handleChargeRefunded(db, event);
+        break;
+      case "charge.dispute.created":
+        await handleChargeDisputeCreated(db, event);
+        break;
       default:
         break;
     }
@@ -98,6 +106,11 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
   }
 
   return c.json({ received: true });
+});
+
+// Health check for status monitor probing
+stripeWebhook.get("/stripe/webhook/health", (c) => {
+  return c.json({ ok: true });
 });
 
 export { stripeWebhook };

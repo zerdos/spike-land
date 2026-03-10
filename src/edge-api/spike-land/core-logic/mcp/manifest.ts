@@ -30,6 +30,7 @@ import { registerPermissionsTools } from "../../db/tools/permissions";
 import { registerMarketplaceTools } from "../../db/tools/marketplace";
 import { registerBootstrapTools } from "../../db/tools/bootstrap";
 import { registerAppsTools } from "../tools/apps";
+import { registerArborTools } from "../tools/arbor";
 import { registerArenaTools } from "../tools/arena";
 import { registerCreateTools } from "../tools/create";
 import { registerLearnItTools } from "../tools/learnit";
@@ -148,6 +149,7 @@ export async function registerAllTools(
   safeRegister(registerMarketplaceTools, "registerMarketplaceTools", registry, userId, db);
   safeRegister(registerBootstrapTools, "registerBootstrapTools", registry, userId, db);
   safeRegister(registerAppsTools, "registerAppsTools", registry, userId, db);
+  safeRegister(registerArborTools, "registerArborTools", registry, userId, db);
   safeRegister(registerArenaTools, "registerArenaTools", registry, userId, db);
   safeRegister(registerCreateTools, "registerCreateTools", registry, userId, db);
   safeRegister(registerLearnItTools, "registerLearnItTools", registry, userId, db);

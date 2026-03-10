@@ -29,5 +29,6 @@ export interface Env {
   MCP_INTERNAL_SECRET: string;
   CF_ZONE_ID: string;
   CF_CACHE_PURGE_TOKEN: string;
+  XAI_API_KEY: string;
   ANALYTICS: AnalyticsEngineDataset;
 }

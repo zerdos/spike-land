@@ -32,6 +32,7 @@ import { experiments } from "./routes/experiments.js";
 import { fixer } from "./routes/fixer.js";
 import { cachePurge } from "./routes/cache-purge.js";
 import { chat } from "./routes/chat.js";
+import { spikeChat } from "./routes/spike-chat.js";
 import { spa } from "./routes/spa.js";
 import { wellKnown } from "./routes/well-known.js";
 import { sitemap } from "./routes/sitemap.js";
@@ -178,6 +179,10 @@ app.post("/api/experiments/*/evaluate", authMiddleware);
 app.use("/api/chat", authMiddleware);
 app.use("/api/chat", creditMeterMiddleware);
 
+// Auth and credit metering for Spike Chat (Grok-powered)
+app.use("/api/spike-chat", authMiddleware);
+app.use("/api/spike-chat", creditMeterMiddleware);
+
 // Error handling middleware
 app.onError((err, c) => {
   log.error(`${c.req.method} ${c.req.path}: ${err.message}`);
@@ -238,6 +243,7 @@ app.route("/", support);
 app.route("/", experiments);
 app.route("/", fixer);
 app.route("/", chat);
+app.route("/", spikeChat);
 app.route("/", cachePurge);
 
 /** Track whether MCP_SERVICE binding is functional (avoids repeated failures in local dev). */
@@ -484,6 +490,7 @@ async function fetchAuthWithFallback(env: Env, request: Request): Promise<Respon
 // Better Auth proxy via service binding (sub-1ms internal call)
 app.all("/api/auth/*", async (c) => {
   const url = new URL(c.req.url);
+  const isGetSession = url.pathname.endsWith("/get-session");
   url.hostname = "auth-mcp.spike.land";
   url.port = "";
   url.protocol = "https:";
@@ -493,7 +500,20 @@ app.all("/api/auth/*", async (c) => {
   newRequest.headers.set("X-Forwarded-Proto", "https");
   newRequest.headers.set("X-Request-Id", c.get("requestId"));
 
-  const response = await fetchAuthWithFallback(c.env, newRequest);
+  let response: Response;
+  try {
+    response = await fetchAuthWithFallback(c.env, newRequest);
+  } catch (error) {
+    if (isGetSession) {
+      return c.json(null, 200);
+    }
+    throw error;
+  }
+
+  if (isGetSession && !response.ok) {
+    return c.json(null, 200);
+  }
+
   // Strip CORS headers from upstream — spike-edge's own CORS middleware handles them
   const headers = new Headers(response.headers);
   headers.delete("Access-Control-Allow-Origin");

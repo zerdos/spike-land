@@ -16,7 +16,9 @@ interface JsonSchemaProperty {
   type: string;
   description: string;
   enum?: string[];
-  items?: { type: string };
+  items?: JsonSchemaProperty;
+  properties?: Record<string, JsonSchemaProperty>;
+  required?: string[];
 }
 
 /** Map a Zod type to a JSON Schema property, unwrapping Optional/Default wrappers. */
@@ -41,6 +43,33 @@ function resolveZodProperty(zodField: unknown): { prop: JsonSchemaProperty; opti
     return { prop: { type: "string", description, ...(values ? { enum: values } : {}) }, optional };
   }
 
+  // For ZodObject: recurse into shape
+  if (typeName === "ZodObject") {
+    const shapeDef = field._def as { shape?: unknown };
+    const shape =
+      typeof shapeDef.shape === "function"
+        ? (shapeDef.shape as () => Record<string, unknown>)()
+        : shapeDef.shape;
+    if (shape && typeof shape === "object") {
+      const nestedProps: Record<string, JsonSchemaProperty> = {};
+      const nestedRequired: string[] = [];
+      for (const [k, v] of Object.entries(shape as Record<string, unknown>)) {
+        const { prop: nestedProp, optional: nestedOptional } = resolveZodProperty(v);
+        nestedProps[k] = nestedProp;
+        if (!nestedOptional) nestedRequired.push(k);
+      }
+      return {
+        prop: {
+          type: "object",
+          description,
+          properties: nestedProps,
+          ...(nestedRequired.length > 0 ? { required: nestedRequired } : {}),
+        },
+        optional,
+      };
+    }
+  }
+
   const typeMap: Record<string, string> = {
     ZodString: "string",
     ZodNumber: "number",
@@ -53,8 +82,8 @@ function resolveZodProperty(zodField: unknown): { prop: JsonSchemaProperty; opti
   const prop: JsonSchemaProperty = { type: jsonType, description };
 
   if (jsonType === "array" && field._def?.type) {
-    const innerDef = (field._def.type as { _def?: { typeName?: string } })?._def;
-    prop.items = { type: typeMap[innerDef?.typeName ?? ""] ?? "string" };
+    const { prop: itemProp } = resolveZodProperty(field._def.type);
+    prop.items = itemProp;
   }
 
   return { prop, optional };

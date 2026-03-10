@@ -39,6 +39,7 @@
     "seed:apps:remote": "node --import tsx scripts/seed-apps.ts --remote",
     "seed:blog": "node --import tsx scripts/seed-blog.ts",
     "seed:blog:remote": "node --import tsx scripts/seed-blog.ts --remote",
+    "warm:blog:heroes": "node --import tsx scripts/warm-blog-heroes.ts",
     "reorganize": "node --import tsx scripts/reorganize.ts",
     "reorganize:mcp": "node --import tsx src/mcp-tools/reorganize/mcp/index.ts",
     "test:reorganize": "vitest run --config scripts/__tests__/vitest.config.ts",

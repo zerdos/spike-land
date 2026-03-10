@@ -155,11 +155,10 @@ export function BlogPostPage() {
   // Track blog post view once we have a resolved title (or fall back to slug)
   useEffect(() => {
     if (!normalizedSlug) return;
-    trackAnalyticsEvent("blog_post_view", {
+    trackAnalyticsEvent("blog_view", {
       slug: normalizedSlug,
       title: postTitle ?? normalizedSlug,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [normalizedSlug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

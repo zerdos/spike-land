@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "description": "MCP server for Google Analytics 4 read access",
   "type": "module",
-  "bin": {
-    "google-analytics-mcp": "dist/src/mcp-tools/google-analytics/mcp/server.js"
-  },
+  "bin": "dist/src/mcp-tools/google-analytics/mcp/server.js",
   "main": "./dist/packages/google-analytics-mcp/index.js",
   "types": "./dist/packages/google-analytics-mcp/index.d.ts",
   "exports": {

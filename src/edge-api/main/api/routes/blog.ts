@@ -332,6 +332,8 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 const IMAGE_STUDIO_URL = "https://image-studio-mcp.spike.land/api/tool";
+const IMAGE_STUDIO_GENERATE_TOOL = "img_generate";
+const IMAGE_STUDIO_JOB_STATUS_TOOL = "img_job_status";
 const HERO_GENERATION_POLL_ATTEMPTS = 15;
 const HERO_GENERATION_POLL_DELAY_MS = 1_000;
 
@@ -366,6 +368,15 @@ function inferHeroOutputFormat(ext: string): "png" | "jpeg" | "webp" {
   if (ext === "jpg" || ext === "jpeg") return "jpeg";
   if (ext === "webp") return "webp";
   return "png";
+}
+
+function shouldAllowProdImageFallback(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "local.spike.land" ||
+    hostname === "dev.spike.land"
+  );
 }
 
 async function callImageStudioTool<T>(name: string, args: Record<string, unknown>): Promise<T> {
@@ -412,7 +423,7 @@ async function generateHeroImageAsset(
     "No typography, no captions, no logos, no watermarks, no border, no UI chrome.",
   ].join(" ");
 
-  const job = await callImageStudioTool<{ jobId?: string }>("generate", {
+  const job = await callImageStudioTool<{ jobId?: string }>(IMAGE_STUDIO_GENERATE_TOOL, {
     prompt: fullPrompt,
     aspect_ratio: "21:9",
     tier: "TIER_1K",
@@ -432,7 +443,7 @@ async function generateHeroImageAsset(
       outputUrl?: string;
       status?: string;
       error?: string;
-    }>("job_status", {
+    }>(IMAGE_STUDIO_JOB_STATUS_TOOL, {
       job_id: job.jobId,
       job_type: "generation",
     });
@@ -509,6 +520,7 @@ async function serveBlogImage(
   filename: string,
   requestedPrompt?: string | null,
   versionToken?: string | null,
+  allowProdFallback = false,
 ): Promise<Response | null> {
   const ext = filename.split(".").pop()?.toLowerCase() ?? "";
   const key = `blog-images/${slug}/${filename}`;
@@ -553,7 +565,11 @@ async function serveBlogImage(
     return buildImageResponse(obj, contentType, "public, max-age=31536000, immutable");
   }
 
-  // Fallback to production for local dev (R2 bucket is empty locally)
+  // Fallback to production only for local dev where the local R2 bucket is empty.
+  if (!allowProdFallback) {
+    return null;
+  }
+
   const prodUrl = new URL(`https://spike.land/api/blog-images/${slug}/${filename}`);
   if (requestedPrompt) {
     prodUrl.searchParams.set("prompt", requestedPrompt);
@@ -577,6 +593,7 @@ async function serveBlogImage(
 
 blog.get("/api/blog-images/:slug/:filename", async (c) => {
   const { slug, filename } = c.req.param();
+  const hostname = new URL(c.req.url).hostname;
   const resp = await serveBlogImage(
     c.env.SPA_ASSETS,
     c.env.DB,
@@ -584,6 +601,7 @@ blog.get("/api/blog-images/:slug/:filename", async (c) => {
     filename,
     c.req.query("prompt"),
     c.req.query("v"),
+    shouldAllowProdImageFallback(hostname),
   );
   return resp ?? c.notFound();
 });
@@ -595,6 +613,7 @@ blog.get("/blog/:slug/:filename", async (c, next) => {
 
   if (!IMAGE_EXTS.has(ext)) return next();
 
+  const hostname = new URL(c.req.url).hostname;
   const resp = await serveBlogImage(
     c.env.SPA_ASSETS,
     c.env.DB,
@@ -602,6 +621,7 @@ blog.get("/blog/:slug/:filename", async (c, next) => {
     filename,
     c.req.query("prompt"),
     c.req.query("v"),
+    shouldAllowProdImageFallback(hostname),
   );
   return resp ?? next();
 });

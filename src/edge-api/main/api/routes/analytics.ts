@@ -3,27 +3,9 @@ import type { Env, Variables } from "../../core-logic/env.js";
 import { getClientId, sendGA4Events } from "../../lazy-imports/ga4.js";
 import type { GA4Event } from "../../lazy-imports/ga4.js";
 import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
+import { requireInternalSecret } from "../../core-logic/internal-auth.js";
 
 const analytics = new Hono<{ Bindings: Env; Variables: Variables }>();
-
-/**
- * Require X-Internal-Secret for all analytics read endpoints.
- * These endpoints expose event metadata and client_ids and must not be
- * publicly accessible — OWASP API7 (Security Misconfiguration).
- */
-function requireInternalSecret(
-  env: { INTERNAL_SERVICE_SECRET?: string },
-  req: { header: (name: string) => string | undefined },
-): boolean {
-  const secret = req.header("x-internal-secret");
-  return (
-    typeof secret === "string" &&
-    secret.length > 0 &&
-    typeof env.INTERNAL_SERVICE_SECRET === "string" &&
-    env.INTERNAL_SERVICE_SECRET.length > 0 &&
-    secret === env.INTERNAL_SERVICE_SECRET
-  );
-}
 
 const isRateLimited = createRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 
