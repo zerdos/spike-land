@@ -2,19 +2,16 @@
 
 name = "spike-land"
 main = "../../src/edge-api/backend/edge/chat.ts"
+compatibility_date = "2025-07-12"
+compatibility_flags = ["nodejs_compat"]
+
+# chat.ts imports ./staticContent.mjs relative to its source location,
+# but the file lives in this deploy shim directory.
+[alias]
+"./staticContent.mjs" = "./staticContent.mjs"
 
 [dev]
 port = 8788
-compatibility_flags = ["nodejs_compat"]
-# chat.ts imports ./staticContent.mjs relative to its source location,
-# but the file lives in this deploy shim directory.
-alias = { "./staticContent.mjs" = "./staticContent.mjs" }
-
-# SECURITY: Account ID should be set via environment variable, not hardcoded
-# Wrangler automatically reads CLOUDFLARE_ACCOUNT_ID from environment
-# See docs/SECRETS_SETUP.md for configuration instructions
-# account_id = "your-account-id-here"
-compatibility_date = "2025-07-12"
 
 kv_namespaces = [
   { binding = "KV", id = "e05276b573af4afd905bc6ac1ed371d5", preview_id = "9db106837d4d437a962612dd04197581" },
