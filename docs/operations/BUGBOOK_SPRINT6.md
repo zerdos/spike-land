@@ -10,14 +10,14 @@
 | 2 | Analytics Engine bound but unused | medium | observability | CANDIDATE |
 | 3 | Rollback script is a manual stub | medium | ci-cd | CANDIDATE |
 | 4 | No distributed tracing | medium | observability | CANDIDATE |
-| 5 | `any` types in 3 first-party files | medium | type-safety | CANDIDATE |
+| 5 | Explicit `any` in chess Prisma stub | medium | type-safety | CANDIDATE |
 | 6 | ESLint type rules in warning mode | low | type-safety | CANDIDATE |
 | 7 | 11 @ts-ignore in vendored monaco-editor | low | type-safety | CANDIDATE |
 | 8 | 6 spike-chat stub endpoints | high | feature-gap | CANDIDATE |
 | 9 | Reorganize pipeline missing incremental filtering | medium | feature-gap | CANDIDATE |
 | 10 | google-ads MCP tool incomplete | medium | feature-gap | CANDIDATE |
-| 11 | 20 uncommitted config files | high | ci-cd | CANDIDATE |
-| 12 | Transpile test config removed | medium | ci-cd | CANDIDATE |
+| 11 | 20 uncommitted config files | high | ci-cd | DISCARDED |
+| 12 | Transpile test config removed | medium | ci-cd | DISCARDED |
 | 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | ACTIVE |
 | 14 | Cloudflare API token is temporary | high | ci-cd | ACTIVE |
 | 15 | Stale worktrees wasting disk | low | maintenance | CANDIDATE |
@@ -26,7 +26,7 @@
 | 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
 | 19 | spike-chat D1 database not created | high | ci-cd | CANDIDATE |
 
-**ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation.
+**ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
 ---
 
@@ -71,15 +71,15 @@
 - **ELO**: 1200
 - **Description**: No OpenTelemetry, request-id correlation, or tracing spans exist across the multi-worker architecture (spike-edge → mcp-auth → spike-land-mcp → spike-land-backend). Debugging cross-service issues requires manual log correlation.
 
-### BUG-S6-05: `any` types in 3 first-party files
+### BUG-S6-05: Explicit `any` in chess Prisma stub
 
 - **Severity**: medium
 - **Category**: type-safety
 - **Status**: CANDIDATE
 - **Confidence**: 0.90
 - **ELO**: 1200
-- **Description**: Explicit `any` usage found in first-party (non-vendored) code, violating the monorepo convention of "never use `any`".
-- **Files**: `src/mcp-server-base/core-logic/index.ts`, `src/chess-engine/core-logic/prisma.ts`, `src/code/core-logic/services/editorUtils.ts`
+- **Description**: One explicit `any` remains in first-party (non-vendored) code: `const prismaStub: any = new Proxy(...)`. This violates the monorepo convention of "never use `any`".
+- **Files**: `src/core/chess/core-logic/prisma.ts`
 
 ### BUG-S6-06: ESLint type rules in warning mode
 
@@ -133,19 +133,19 @@
 
 - **Severity**: high
 - **Category**: ci-cd
-- **Status**: CANDIDATE
-- **Confidence**: 0.90
+- **Status**: DISCARDED
+- **Confidence**: 0.10
 - **ELO**: 1200
-- **Description**: ~20 config files with publishConfig standardization, vitest path fixes, and build config updates are sitting unstaged. These may represent incomplete Sprint 5 work or in-progress changes that should be committed or reverted.
+- **Description**: This observation came from a dirty local worktree during the audit and is not reproducible on the committed branch. `git status --porcelain` is clean for `main` at commit `a9a1a95d`.
 
 ### BUG-S6-12: Transpile test config removed
 
 - **Severity**: medium
 - **Category**: ci-cd
-- **Status**: CANDIDATE
-- **Confidence**: 0.80
+- **Status**: DISCARDED
+- **Confidence**: 0.10
 - **ELO**: 1200
-- **Description**: `.tests/vitest.config.ts` had the transpile test block entirely removed (uncommitted change). This means transpile package tests may not run in CI.
+- **Description**: The committed `.tests/vitest.config.ts` still contains the `transpile` package test block, so the removal noted during the audit was not reproducible on this branch.
 - **Files**: `.tests/vitest.config.ts`
 
 ### BUG-S6-13: NPM_TOKEN expired

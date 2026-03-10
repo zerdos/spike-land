@@ -221,12 +221,12 @@ are prioritized P0 (critical) through P3 (minor/nice-to-have).
 
 ### P3 - Low Priority
 
-#### TD-P3-6: `any` types in 3 first-party files
+#### TD-P3-6: Explicit `any` in chess Prisma stub
 
 - **Status**: Open
 - **Impact**: Violates monorepo "never use any" convention
-- **Details**: `src/mcp-server-base/core-logic/index.ts`, `src/chess-engine/core-logic/prisma.ts`, `src/code/core-logic/services/editorUtils.ts`
-- **Action**: Replace with proper types or `unknown`
+- **Details**: `src/core/chess/core-logic/prisma.ts` still declares `const prismaStub: any = new Proxy(...)`
+- **Action**: Replace the stub with a typed proxy shape or `unknown`-based adapter
 
 #### TD-P3-7: Stale worktrees
 
