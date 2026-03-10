@@ -107,7 +107,7 @@ docsApi.get("/api/docs", (c) => {
     ),
   }));
 
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   return c.json({ categories: grouped, total: DOCS_MANIFEST.length });
 });
 
@@ -136,7 +136,7 @@ docsApi.get("/api/docs/:slug", async (c) => {
   }
 
   const { filePath: _fp, ...publicEntry } = entry;
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   return c.json({ ...publicEntry, content });
 });
 

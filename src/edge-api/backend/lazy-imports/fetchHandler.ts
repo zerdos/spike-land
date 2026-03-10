@@ -9,7 +9,6 @@ const ESM_CDN = "https://esm.sh";
 function corsRedirect(target: string, requestUrl: string): Response {
   const origin = new URL(requestUrl).origin;
 
-
   return new Response(null, {
     status: 302,
     headers: {
@@ -266,7 +265,7 @@ async function handlePublicRequest(codeSpace: string, path: string[], request: R
       const headers = new Headers();
       object.writeHttpMetadata(headers);
       headers.set("etag", object.httpEtag);
-      headers.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+      headers.set("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
 
       const reqOrigin = request.headers.get("Origin") || "";
       headers.set("Access-Control-Allow-Origin", reqOrigin || "*");

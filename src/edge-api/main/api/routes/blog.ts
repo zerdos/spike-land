@@ -564,7 +564,7 @@ async function serveBlogImage(
   const heroPrompt = await resolveHeroPrompt(db, slug, filename, requestedPrompt);
   const versionedCache = versionToken
     ? "public, max-age=31536000, immutable"
-    : "public, max-age=3600";
+    : "public, max-age=14400";
 
   const obj = await spaAssets.get(key);
   if (heroPrompt) {
@@ -592,7 +592,7 @@ async function serveBlogImage(
       });
     } catch {
       if (obj) {
-        return buildImageResponse(obj, contentType, "public, max-age=3600");
+        return buildImageResponse(obj, contentType, "public, max-age=14400");
       }
     }
   }
@@ -619,7 +619,7 @@ async function serveBlogImage(
     return new Response(upstream.body, {
       headers: {
         "Content-Type": upstream.headers.get("Content-Type") || "application/octet-stream",
-        "Cache-Control": "public, max-age=3600",
+        "Cache-Control": "public, max-age=14400",
       },
     });
   }

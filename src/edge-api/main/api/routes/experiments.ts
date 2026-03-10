@@ -213,7 +213,7 @@ experiments.get("/api/experiments/active", async (c) => {
     trafficPct: exp.traffic_pct,
   }));
 
-  c.header("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
+  c.header("Cache-Control", "public, max-age=900, stale-while-revalidate=3600");
   return c.json({ experiments: result });
 });
 

@@ -154,7 +154,7 @@ export const serveWithCache = (files: Record<string, string>, cacheToUse: () => 
           } else if (isHashed) {
             headers.set("Cache-Control", "public, max-age=604800, immutable");
           } else {
-            headers.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+            headers.set("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
           }
           headers.set("Access-Control-Allow-Origin", "*");
           // Access-Control-Allow-Credentials: true

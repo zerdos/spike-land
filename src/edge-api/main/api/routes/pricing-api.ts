@@ -8,7 +8,7 @@ pricingApi.get("/api/pricing", (c) => {
   const country = c.req.header("cf-ipcountry") ?? "US";
   const { currency, prices, formatted } = getRegionalPricing(country);
 
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   c.header("Vary", "CF-IPCountry");
 
   return c.json({

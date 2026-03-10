@@ -361,7 +361,7 @@ app.get("/api/store/tools", async (c) => {
     })
     .slice(0, 6);
 
-  c.header("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+  c.header("Cache-Control", "public, max-age=1800, stale-while-revalidate=14400");
   return c.json({ categories, featured, total: tools.length });
 });
 

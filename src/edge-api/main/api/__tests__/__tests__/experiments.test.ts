@@ -254,7 +254,7 @@ describe("GET /api/experiments/active", () => {
     const app = createApp({ DB: db });
 
     const res = await app.request("/api/experiments/active");
-    expect(res.headers.get("Cache-Control")).toContain("max-age=300");
+    expect(res.headers.get("Cache-Control")).toContain("max-age=900");
   });
 });
 

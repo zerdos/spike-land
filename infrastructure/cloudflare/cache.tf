@@ -44,22 +44,22 @@ resource "cloudflare_ruleset" "cache_rules" {
       enabled     = true
     },
     {
-      # Rule 2: Non-hashed JS, CSS, WOFF2 — short cache
+      # Rule 2: Non-hashed JS, CSS, WOFF2 — medium cache
       # Hashed assets are already covered by Rule 1 (1-year immutable)
       action = "set_cache_settings"
       action_parameters = {
         cache = true
         edge_ttl = {
           mode    = "override_origin"
-          default = 3600
+          default = 14400
         }
         browser_ttl = {
           mode    = "override_origin"
-          default = 300
+          default = 3600
         }
       }
       expression  = "(http.request.uri.path.extension in {\"js\" \"css\" \"woff2\"} and not http.request.uri.path matches \"[-.][A-Za-z0-9_-]{8,}\\.\")"
-      description = "Non-hashed *.js, *.css, *.woff2 — 1h edge / 5min browser"
+      description = "Non-hashed *.js, *.css, *.woff2 — 4h edge / 1h browser"
       enabled     = true
     },
     {

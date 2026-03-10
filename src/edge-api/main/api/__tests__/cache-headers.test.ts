@@ -40,10 +40,10 @@ describe("SPA cache headers", () => {
       ttl: 31_536_000,
     });
     expect(getSpaStaticAssetPolicy("assets/index.js")).toEqual({
-      cacheControl: "public, max-age=3600, stale-while-revalidate=3600",
+      cacheControl: "public, max-age=14400, stale-while-revalidate=86400",
       immutable: false,
-      ttl: 3_600,
-      swr: 3_600,
+      ttl: 14_400,
+      swr: 86_400,
     });
     expect(getSpaStaticAssetPolicy("index.html")).toBeNull();
   });
@@ -105,6 +105,6 @@ describe("SPA cache headers", () => {
     expect(isHtmlLikeResponse("assets/index.js", "text/html; charset=utf-8")).toBe(true);
     expect(isHtmlLikeResponse("assets/index.js", "application/javascript")).toBe(false);
     expect(getSpaResponseCacheControl(true)).toBe("private, no-cache, no-store, must-revalidate");
-    expect(getSpaResponseCacheControl(false)).toBe("public, max-age=3600");
+    expect(getSpaResponseCacheControl(false)).toBe("public, max-age=14400");
   });
 });

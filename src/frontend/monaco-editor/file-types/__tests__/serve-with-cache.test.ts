@@ -11,10 +11,7 @@ function createCache(): Cache {
 async function serveAsset(filePath: string): Promise<Response> {
   const cache = createCache();
   const pending: Promise<unknown>[] = [];
-  const server = serveWithCache(
-    { [filePath]: filePath },
-    async () => cache,
-  );
+  const server = serveWithCache({ [filePath]: filePath }, async () => cache);
 
   const response = await server.serve(
     new Request(`https://code.spike.land/${filePath}`),
@@ -47,7 +44,7 @@ describe("serveWithCache cache headers", () => {
     const response = await serveAsset("assets/index.js");
 
     expect(response.headers.get("cache-control")).toBe(
-      "public, max-age=3600, stale-while-revalidate=86400",
+      "public, max-age=14400, stale-while-revalidate=86400",
     );
   });
 });

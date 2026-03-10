@@ -37,7 +37,7 @@ publicAppsRoute.get("/", async (c) => {
     };
   });
 
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   return c.json({ apps });
 });
 
@@ -95,6 +95,6 @@ publicAppsRoute.get("/:slug", async (c) => {
     sort_order: row.sort_order,
   };
 
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   return c.json(app);
 });

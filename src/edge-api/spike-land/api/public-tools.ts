@@ -73,6 +73,6 @@ publicToolsRoute.get("/", async (c) => {
   });
 
   const response = c.json({ tools });
-  c.header("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
   return response;
 });
