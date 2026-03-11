@@ -67,17 +67,18 @@ export interface ConsentRecord {
  * GDPR Art. 30 requires records of processing activities; this enum covers
  * the lifecycle of a data subject's information.
  */
-export enum AuditAction {
-  CREATE = "CREATE",
-  READ = "READ",
-  UPDATE = "UPDATE",
-  DELETE = "DELETE",
-  EXPORT = "EXPORT",
-  CONSENT_GRANTED = "CONSENT_GRANTED",
-  CONSENT_REVOKED = "CONSENT_REVOKED",
-  DELETION_REQUESTED = "DELETION_REQUESTED",
-  DELETION_COMPLETED = "DELETION_COMPLETED",
-}
+export const AuditAction = {
+  CREATE: "CREATE",
+  READ: "READ",
+  UPDATE: "UPDATE",
+  DELETE: "DELETE",
+  EXPORT: "EXPORT",
+  CONSENT_GRANTED: "CONSENT_GRANTED",
+  CONSENT_REVOKED: "CONSENT_REVOKED",
+  DELETION_REQUESTED: "DELETION_REQUESTED",
+  DELETION_COMPLETED: "DELETION_COMPLETED",
+} as const;
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
 
 /**
  * A single immutable audit record.
@@ -107,15 +108,16 @@ export interface AuditEntry {
  * IMMIGRATION and LEGAL data carry the highest risk of harm if mishandled
  * and must have the most restrictive retention settings.
  */
-export enum DataCategory {
-  IDENTITY = "IDENTITY",
-  FINANCIAL = "FINANCIAL",
-  HEALTH = "HEALTH",
-  LEGAL = "LEGAL",
-  IMMIGRATION = "IMMIGRATION",
-  EMPLOYMENT = "EMPLOYMENT",
-  FAMILY = "FAMILY",
-}
+export const DataCategory = {
+  IDENTITY: "IDENTITY",
+  FINANCIAL: "FINANCIAL",
+  HEALTH: "HEALTH",
+  LEGAL: "LEGAL",
+  IMMIGRATION: "IMMIGRATION",
+  EMPLOYMENT: "EMPLOYMENT",
+  FAMILY: "FAMILY",
+} as const;
+export type DataCategory = (typeof DataCategory)[keyof typeof DataCategory];
 
 /**
  * Specifies how long data in a given category may be kept, and whether

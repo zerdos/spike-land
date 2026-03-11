@@ -64,8 +64,11 @@ export class McpHandler {
   ];
 
   private env: Env | null = null;
+  private durableObject: Code;
 
-  constructor(private durableObject: Code) {}
+  constructor(durableObject: Code) {
+    this.durableObject = durableObject;
+  }
 
   setEnv(env: Env): void {
     this.env = env;
@@ -200,12 +203,12 @@ export class McpHandler {
           };
 
         case "tools/call": {
-          if (!params?.name || typeof params.name !== "string") {
+          if (!params?.["name"] || typeof params["name"] !== "string") {
             throw new Error("Tool name is required and must be a string");
           }
           const result = await this.executeTool(
-            params.name,
-            (params.arguments as Record<string, unknown>) || {},
+            params["name"],
+            (params["arguments"] as Record<string, unknown>) || {},
           );
           return {
             jsonrpc: "2.0",
@@ -236,10 +239,10 @@ export class McpHandler {
           };
 
         case "resources/read": {
-          if (!params?.uri || typeof params.uri !== "string") {
+          if (!params?.["uri"] || typeof params["uri"] !== "string") {
             throw new Error("Resource URI is required and must be a string");
           }
-          const resourceContents = await this.readResource(params.uri);
+          const resourceContents = await this.readResource(params["uri"]);
           return {
             jsonrpc: "2.0",
             id,
@@ -355,7 +358,7 @@ export class McpHandler {
     toolName: string,
     args: Record<string, unknown>,
   ): Promise<CallToolResult> {
-    const requestedCodeSpace = args.codeSpace as string;
+    const requestedCodeSpace = args["codeSpace"] as string;
     if (!requestedCodeSpace) {
       throw new Error(`codeSpace parameter is required for tool '${toolName}'`);
     }
@@ -389,14 +392,14 @@ export class McpHandler {
           break;
 
         case "update_code": {
-          if (!args.code || typeof args.code !== "string") {
+          if (!args["code"] || typeof args["code"] !== "string") {
             throw new Error("Code parameter is required and must be a string");
           }
           const origin = this.durableObject.getOrigin();
           result = await executeUpdateCode(
             session,
             requestedCodeSpace,
-            args.code,
+            args["code"],
             updateSession,
             origin,
           );
@@ -404,14 +407,14 @@ export class McpHandler {
         }
 
         case "edit_code": {
-          if (!args.edits || !Array.isArray(args.edits)) {
+          if (!args["edits"] || !Array.isArray(args["edits"])) {
             throw new Error("Edits parameter is required and must be an array");
           }
           const editOrigin = this.durableObject.getOrigin();
           result = await executeEditCode(
             session,
             requestedCodeSpace,
-            args.edits as LineEdit[],
+            args["edits"] as LineEdit[],
             updateSession,
             editOrigin,
           );
@@ -419,33 +422,33 @@ export class McpHandler {
         }
 
         case "find_lines": {
-          if (!args.pattern || typeof args.pattern !== "string") {
+          if (!args["pattern"] || typeof args["pattern"] !== "string") {
             throw new Error("Pattern parameter is required and must be a string");
           }
           result = executeFindLines(
             session,
             requestedCodeSpace,
-            args.pattern,
-            args.isRegex === true,
+            args["pattern"],
+            args["isRegex"] === true,
           );
           break;
         }
 
         case "search_and_replace": {
-          if (!args.search || typeof args.search !== "string") {
+          if (!args["search"] || typeof args["search"] !== "string") {
             throw new Error("Search parameter is required and must be a string");
           }
-          if (typeof args.replace !== "string") {
+          if (typeof args["replace"] !== "string") {
             throw new Error("Replace parameter is required and must be a string");
           }
           const replaceOrigin = this.durableObject.getOrigin();
           result = await executeSearchAndReplace(
             session,
             requestedCodeSpace,
-            args.search,
-            args.replace,
-            args.isRegex === true,
-            args.global !== false,
+            args["search"],
+            args["replace"],
+            args["isRegex"] === true,
+            args["global"] !== false,
             updateSession,
             replaceOrigin,
           );
@@ -459,19 +462,19 @@ export class McpHandler {
         }
 
         case "read_file": {
-          if (!args.path || typeof args.path !== "string") {
+          if (!args["path"] || typeof args["path"] !== "string") {
             throw new Error("Path parameter is required and must be a string");
           }
           const files = this.durableObject.getFiles();
-          result = executeReadFile(files, session.code, requestedCodeSpace, args.path);
+          result = executeReadFile(files, session.code, requestedCodeSpace, args["path"]);
           break;
         }
 
         case "write_file": {
-          if (!args.path || typeof args.path !== "string") {
+          if (!args["path"] || typeof args["path"] !== "string") {
             throw new Error("Path parameter is required and must be a string");
           }
-          if (typeof args.content !== "string") {
+          if (typeof args["content"] !== "string") {
             throw new Error("Content parameter is required and must be a string");
           }
           const wFiles = this.durableObject.getFiles();
@@ -479,8 +482,8 @@ export class McpHandler {
             wFiles,
             session.code,
             requestedCodeSpace,
-            args.path,
-            args.content,
+            args["path"],
+            args["content"],
             (p, c) => this.durableObject.setFile(p, c),
             wFiles.size,
           );
@@ -488,11 +491,11 @@ export class McpHandler {
         }
 
         case "delete_file": {
-          if (!args.path || typeof args.path !== "string") {
+          if (!args["path"] || typeof args["path"] !== "string") {
             throw new Error("Path parameter is required and must be a string");
           }
           const dFiles = this.durableObject.getFiles();
-          result = await executeDeleteFile(dFiles, requestedCodeSpace, args.path, (p) =>
+          result = await executeDeleteFile(dFiles, requestedCodeSpace, args["path"], (p) =>
             this.durableObject.deleteFile(p),
           );
           break;

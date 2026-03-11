@@ -141,13 +141,12 @@ export async function cancelChallenge(
 }
 
 export async function listChallenges(playerId: string, status?: string): Promise<ChessChallenge[]> {
-
   const where: Record<string, unknown> = {
     OR: [{ senderId: playerId }, { receiverId: playerId }],
   };
 
   if (status) {
-    where.status = status;
+    where["status"] = status;
   }
 
   return prisma.chessChallenge.findMany({

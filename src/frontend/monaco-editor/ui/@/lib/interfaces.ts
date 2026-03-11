@@ -152,16 +152,17 @@ interface ImagePart {
 /**
  * Supported message types in the messaging system
  */
-export enum MessageType {
+export const MessageType = {
   /** Regular text message */
-  TEXT = "text",
+  TEXT: "text",
   /** Command message for system operations */
-  COMMAND = "command",
+  COMMAND: "command",
   /** Status update message */
-  STATUS = "status",
+  STATUS: "status",
   /** Error message */
-  ERROR = "error",
-}
+  ERROR: "error",
+} as const;
+export type MessageType = (typeof MessageType)[keyof typeof MessageType];
 /**
  * Response structure for message handling operations
  */

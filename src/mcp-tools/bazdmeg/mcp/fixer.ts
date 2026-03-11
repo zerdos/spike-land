@@ -3,8 +3,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createZodTool, textResult } from "@spike-land-ai/mcp-server-base";
 import { PERSONAS, QUIZ_BANK, createFixerSessionId } from "../core-logic/personas.js";
 
-const API_BASE = process.env.EDGE_API_BASE_URL || "https://api.spike.land";
-const SECRET = process.env.INTERNAL_SERVICE_SECRET || "dev-internal-secret";
+const API_BASE = process.env["EDGE_API_BASE_URL"] || "https://api.spike.land";
+const SECRET = process.env["INTERNAL_SERVICE_SECRET"] || "dev-internal-secret";
 
 const STAGE_ORDER = [
   "1_setup",
@@ -15,12 +15,49 @@ const STAGE_ORDER = [
   "completed",
 ] as const;
 
+interface FixerSession {
+  id: string;
+  stage: string;
+  target: string;
+  created_at: string;
+}
+
+interface FixerAgent {
+  agent_id: string;
+  role: string;
+  quiz_passed: boolean;
+  findings_count: number;
+  personas: string;
+}
+
+interface FixerFinding {
+  finding_id: string;
+  severity: string;
+  title: string;
+  bug_id: string;
+  agent_id: string;
+}
+
+interface FixerValidation {
+  bug_id: string;
+  validator_agent_id: string;
+  verdict: string;
+  evidence: string;
+}
+
+interface FixerQuiz {
+  agent_id: string;
+  stage: string;
+  score: number;
+  passed: boolean;
+}
+
 interface SessionResponse {
-  session: Record<string, unknown>;
-  agents: Array<Record<string, unknown>>;
-  findings: Array<Record<string, unknown>>;
-  validations: Array<Record<string, unknown>>;
-  quizzes: Array<Record<string, unknown>>;
+  session: FixerSession;
+  agents: FixerAgent[];
+  findings: FixerFinding[];
+  validations: FixerValidation[];
+  quizzes: FixerQuiz[];
 }
 
 async function fetchInternal<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {

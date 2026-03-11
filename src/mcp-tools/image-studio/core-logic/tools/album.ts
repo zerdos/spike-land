@@ -6,7 +6,10 @@ import { imageProcedure } from "../../lazy-imports/image-middleware.js";
 export const albumTool = imageProcedure
   .tool("album", "Get album details, optionally including images", {
     album_handle: z.string().describe("Handle of the album to retrieve"),
-    include_images: z.coerce.boolean().describe("If true, include all images in the album").optional(),
+    include_images: z.coerce
+      .boolean()
+      .describe("If true, include all images in the album")
+      .optional(),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     const { userId, deps } = ctx;
@@ -37,8 +40,8 @@ export const albumTool = imageProcedure
     };
 
     if (isOwner && a.shareToken) {
-      result.share_token = a.shareToken;
-      result.share_url = `https://spike.land/pixel/album/${a.shareToken}`;
+      result["share_token"] = a.shareToken;
+      result["share_url"] = `https://spike.land/pixel/album/${a.shareToken}`;
     }
 
     if (input.include_images) {
@@ -48,7 +51,7 @@ export const albumTool = imageProcedure
       }
 
       const images = imagesResult.data ?? [];
-      result.images = images.map((ai) => ({
+      result["images"] = images.map((ai) => ({
         image_id: ai.image.id,
         name: ai.image.name,
         url: ai.image.originalUrl,

@@ -53,10 +53,10 @@ export function registerRealtimeTool(
         limit,
       };
       if (dimensions && dimensions.length > 0) {
-        body.dimensions = dimensions.map((d) => ({ name: d }));
+        body["dimensions"] = dimensions.map((d) => ({ name: d }));
       }
       if (dimension_filter !== undefined) {
-        body.dimensionFilter = dimension_filter;
+        body["dimensionFilter"] = dimension_filter;
       }
 
       const url = `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`;

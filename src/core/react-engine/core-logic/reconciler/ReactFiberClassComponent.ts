@@ -136,7 +136,7 @@ export function constructClassInstance(
   instance.context = context;
 
   // Set up updater
-  (instance as unknown as Record<string, unknown>).updater = {
+  (instance as unknown as Record<string, unknown>)["updater"] = {
     isMounted: () => true,
     enqueueSetState: (_inst: unknown, payload: unknown, callback: unknown) => {
       const update = createClassUpdate(SyncLane);
@@ -161,7 +161,7 @@ export function constructClassInstance(
 
   fiber.stateNode = instance;
   // Store fiber reference on instance for setState
-  (instance as unknown as Record<string, unknown>)._reactInternals = fiber;
+  (instance as unknown as Record<string, unknown>)["_reactInternals"] = fiber;
 
   return instance;
 }
@@ -183,8 +183,9 @@ export function mountClassInstance(
   instance.state = fiber.memoizedState as Readonly<Record<string, unknown>>;
 
   // Call getDerivedStateFromProps
-  const getDerivedStateFromProps = (Component as unknown as Record<string, unknown>)
-    .getDerivedStateFromProps;
+  const getDerivedStateFromProps = (Component as unknown as Record<string, unknown>)[
+    "getDerivedStateFromProps"
+  ];
   if (typeof getDerivedStateFromProps === "function") {
     const partialState = getDerivedStateFromProps(nextProps, instance.state);
     if (partialState != null) {
@@ -214,8 +215,9 @@ export function updateClassInstance(
 
   // Call getDerivedStateFromProps
   let newState = oldState;
-  const getDerivedStateFromProps = (Component as unknown as Record<string, unknown>)
-    .getDerivedStateFromProps;
+  const getDerivedStateFromProps = (Component as unknown as Record<string, unknown>)[
+    "getDerivedStateFromProps"
+  ];
   if (typeof getDerivedStateFromProps === "function") {
     const partialState = getDerivedStateFromProps(nextProps, oldState);
     if (partialState != null) {

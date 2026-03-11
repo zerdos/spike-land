@@ -188,8 +188,8 @@ export function registerWorkspacesTools(
       .handler(async ({ input, ctx }) => {
         const { workspace_id, name, slug: newSlug } = input;
         const data: Record<string, unknown> = { updatedAt: Date.now() };
-        if (name) data.name = name;
-        if (newSlug) data.slug = newSlug;
+        if (name) data["name"] = name;
+        if (newSlug) data["slug"] = newSlug;
 
         if (!name && !newSlug) {
           return textResult(

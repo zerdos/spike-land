@@ -6,12 +6,14 @@ import { StorageService } from "../services/storageService";
 import { PREFLIGHT_CORS_HEADERS } from "../utils";
 
 export class AiRoutes {
+  private code: Code;
   private env: Env;
   private storageService: StorageService;
   private getHandler: GetHandler;
   private postHandler: PostHandler;
 
-  constructor(private code: Code) {
+  constructor(code: Code) {
+    this.code = code;
     this.env = this.code.getEnv();
     this.storageService = new StorageService(this.env);
     this.getHandler = new GetHandler(this.storageService);

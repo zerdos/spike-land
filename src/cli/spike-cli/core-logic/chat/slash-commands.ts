@@ -350,7 +350,7 @@ async function handleDirectToolCall(
   const mergedArgs: Record<string, unknown> = { ...defaults, ...userArgs };
 
   // Auto-fill ID params from session state
-  const required = (schema.required as string[] | undefined) ?? [];
+  const required = (schema["required"] as string[] | undefined) ?? [];
   const autoFilled: string[] = [];
   for (const paramName of required) {
     if (paramName in mergedArgs && mergedArgs[paramName] !== undefined) {

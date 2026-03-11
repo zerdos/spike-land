@@ -18,10 +18,10 @@ export function Component(
   context: unknown,
   updater?: Updater,
 ) {
-  this.props = props;
-  this.context = context;
-  this.refs = emptyObject;
-  this.updater = updater || ReactNoopUpdateQueue;
+  this["props"] = props;
+  this["context"] = context;
+  this["refs"] = emptyObject;
+  this["updater"] = updater || ReactNoopUpdateQueue;
 }
 
 Component.prototype.isReactComponent = {};
@@ -53,10 +53,10 @@ export function PureComponent(
   context: unknown,
   updater?: Updater,
 ) {
-  this.props = props;
-  this.context = context;
-  this.refs = emptyObject;
-  this.updater = updater || ReactNoopUpdateQueue;
+  this["props"] = props;
+  this["context"] = context;
+  this["refs"] = emptyObject;
+  this["updater"] = updater || ReactNoopUpdateQueue;
 }
 
 const pureComponentPrototype = (PureComponent.prototype = new (
@@ -64,4 +64,4 @@ const pureComponentPrototype = (PureComponent.prototype = new (
 )());
 pureComponentPrototype.constructor = PureComponent;
 assign(pureComponentPrototype, Component.prototype);
-pureComponentPrototype.isPureReactComponent = true;
+pureComponentPrototype["isPureReactComponent"] = true;

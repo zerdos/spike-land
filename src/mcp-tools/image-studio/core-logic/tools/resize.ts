@@ -16,7 +16,8 @@ export const resizeTool = imageProcedure
     withCredits({
       cost: (input, deps) =>
         deps.credits.calculateGenerationCost({
-          tier: ((input as Record<string, unknown>).tier as EnhancementTier | undefined) ?? "FREE",
+          tier:
+            ((input as Record<string, unknown>)["tier"] as EnhancementTier | undefined) ?? "FREE",
         }),
       source: "resize",
       sourceIdField: "image_id",

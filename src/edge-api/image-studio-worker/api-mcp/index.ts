@@ -64,8 +64,8 @@ app.on("HEAD", "/r2/:key", async (c) => {
       "Content-Type": obj.httpMetadata?.contentType ?? "application/octet-stream",
       "Content-Length": String(obj.size),
       ETag: obj.etag,
-      ...(obj.customMetadata?.width ? { "X-Image-Width": obj.customMetadata.width } : {}),
-      ...(obj.customMetadata?.height ? { "X-Image-Height": obj.customMetadata.height } : {}),
+      ...(obj.customMetadata?.["width"] ? { "X-Image-Width": obj.customMetadata["width"] } : {}),
+      ...(obj.customMetadata?.["height"] ? { "X-Image-Height": obj.customMetadata["height"] } : {}),
     },
   });
 });

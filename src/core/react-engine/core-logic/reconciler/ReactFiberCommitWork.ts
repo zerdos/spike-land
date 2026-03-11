@@ -363,7 +363,7 @@ function commitLayoutEffectsOnFiber(fiber: Fiber, root: FiberRoot): void {
               instance.componentDidUpdate(
                 current.memoizedProps as Readonly<Record<string, unknown>>,
                 current.memoizedState as Readonly<Record<string, unknown>>,
-                (instance as unknown as Record<string, unknown>).__snapshot,
+                (instance as unknown as Record<string, unknown>)["__snapshot"],
               );
             }
           }
@@ -375,8 +375,8 @@ function commitLayoutEffectsOnFiber(fiber: Fiber, root: FiberRoot): void {
         if (current === null && flags & Update) {
           const instance = fiber.stateNode as Element;
           if (
-            (fiber.memoizedProps as Record<string, unknown> | null)?.autoFocus &&
-            typeof (instance as unknown as Record<string, unknown>).focus === "function"
+            (fiber.memoizedProps as Record<string, unknown> | null)?.["autoFocus"] &&
+            typeof (instance as unknown as Record<string, unknown>)["focus"] === "function"
           ) {
             (
               instance as unknown as Record<string, unknown> & {

@@ -18,21 +18,19 @@ webhooksRouter.post("/inbound/:token", async (c) => {
   const db = createDb(c.env.DB);
 
   // Look up the webhook by token
-  const [webhook] = await db.select()
-    .from(webhooks)
-    .where(eq(webhooks.token, token));
+  const [webhook] = await db.select().from(webhooks).where(eq(webhooks.token, token));
 
   if (!webhook) {
     return c.json({ error: "Invalid webhook token" }, 404);
   }
 
-  const body = await c.req.json().catch((): null => null) as Record<string, unknown> | null;
+  const body = (await c.req.json().catch((): null => null)) as Record<string, unknown> | null;
   if (!body) {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
 
   // Accept either { text } or { content } as the message body
-  const content = String(body.text || body.content || JSON.stringify(body));
+  const content = String(body["text"] || body["content"] || JSON.stringify(body));
 
   const id = generateId();
   const now = Date.now();
@@ -50,7 +48,7 @@ webhooksRouter.post("/inbound/:token", async (c) => {
     channelId: webhook.channelId,
     userId: `webhook-${webhook.id}`,
     content,
-    contentType: String(body.contentType || "text"),
+    contentType: String(body["contentType"] || "text"),
     threadId: null,
     createdAt: now,
   };
@@ -61,11 +59,13 @@ webhooksRouter.post("/inbound/:token", async (c) => {
   const doId = c.env.CHANNEL_DO.idFromName(webhook.channelId);
   const stub = c.env.CHANNEL_DO.get(doId);
 
-  await stub.fetch(new Request("http://internal/broadcast", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type: "message_new", message: msg }),
-  }));
+  await stub.fetch(
+    new Request("http://internal/broadcast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "message_new", message: msg }),
+    }),
+  );
 
   return c.json({ success: true, messageId: id }, 201);
 });
@@ -82,9 +82,7 @@ export async function fireOutboundWebhooks(
   channelId: string,
   message: Record<string, unknown>,
 ): Promise<void> {
-  const outbound = await db.select()
-    .from(webhooks)
-    .where(eq(webhooks.channelId, channelId));
+  const outbound = await db.select().from(webhooks).where(eq(webhooks.channelId, channelId));
 
   const outboundHooks = outbound.filter((w) => w.type === "outbound" && w.url);
 

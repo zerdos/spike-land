@@ -223,12 +223,17 @@ program
   .option("--once", "Run once and exit")
   .action(async (options) => {
     try {
-      const { createSpikeChatConfig, startPollingLoop, listAppChannels, pollChannels, postMessage } =
-        await import("./spike-chat-poller.js");
+      const {
+        createSpikeChatConfig,
+        startPollingLoop,
+        listAppChannels,
+        pollChannels,
+        postMessage,
+      } = await import("./spike-chat-poller.js");
 
       const config = createSpikeChatConfig({
         chatUrl: options.chatUrl,
-        apiKey: options.apiKey || process.env.AGENT_API_KEY,
+        apiKey: options.apiKey || process.env["AGENT_API_KEY"],
         pollInterval: parseInt(options.interval, 10) || 5000,
       });
 

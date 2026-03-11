@@ -453,8 +453,10 @@ export interface ToolCallRow {
 // ─── Resolver Interface ───
 
 export class ImageStudioResolverError extends Error {
-  constructor(public readonly result: CallToolResult) {
+  public readonly result: CallToolResult;
+  constructor(result: CallToolResult) {
     super("resolver");
+    this.result = result;
   }
 }
 

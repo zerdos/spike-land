@@ -42,7 +42,7 @@ export const creditsTool = imageProcedure
 
       const canAffordResult = await tryCatch(deps.credits.hasEnough(userId, totalCost));
 
-      response.estimate = {
+      response["estimate"] = {
         tier: input.tier,
         count,
         costPerUnit,

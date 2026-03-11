@@ -52,12 +52,12 @@ function isToolDefinition(value: unknown): value is ToolDefinition {
 
   const obj = value as Record<string, unknown>;
 
-  const hasInputSchema = "input_schema" in obj && obj.input_schema !== null;
+  const hasInputSchema = "input_schema" in obj && obj["input_schema"] !== null;
   const hasCustomInputSchema =
     "custom" in obj &&
-    typeof obj.custom === "object" &&
-    obj.custom !== null &&
-    "input_schema" in (obj.custom as Record<string, unknown>);
+    typeof obj["custom"] === "object" &&
+    obj["custom"] !== null &&
+    "input_schema" in (obj["custom"] as Record<string, unknown>);
 
   return hasInputSchema || hasCustomInputSchema;
 }

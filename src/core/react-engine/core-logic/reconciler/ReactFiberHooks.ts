@@ -509,14 +509,24 @@ function updateEffectImpl(
       const prevEffect: Effect = currentHook.memoizedState as Effect;
       const prevDeps = prevEffect.deps;
       if (areHookInputsEqual(nextDeps as Array<unknown>, prevDeps)) {
-        hook.memoizedState = pushSimpleEffect(hookFlags, inst, create, nextDeps as Array<unknown> | null);
+        hook.memoizedState = pushSimpleEffect(
+          hookFlags,
+          inst,
+          create,
+          nextDeps as Array<unknown> | null,
+        );
         return;
       }
     }
   }
 
   currentlyRenderingFiber.flags |= fiberFlags;
-  hook.memoizedState = pushSimpleEffect(HookHasEffect | hookFlags, inst, create, nextDeps as Array<unknown> | null);
+  hook.memoizedState = pushSimpleEffect(
+    HookHasEffect | hookFlags,
+    inst,
+    create,
+    nextDeps as Array<unknown> | null,
+  );
 }
 
 function mountEffect(create: () => (() => void) | void, deps?: Array<unknown> | null): void {
@@ -910,9 +920,9 @@ const updateDebugValue = mountDebugValue;
 function use<T>(usable: unknown): T {
   if (usable !== null && typeof usable === "object") {
     const obj = usable as Record<string, unknown>;
-    if (typeof obj.then === "function") {
+    if (typeof obj["then"] === "function") {
       throw usable; // Suspend (throw the thenable)
-    } else if (obj.$$typeof === REACT_CONTEXT_TYPE) {
+    } else if (obj["$$typeof"] === REACT_CONTEXT_TYPE) {
       return readContext(usable as ReactContext<T>);
     }
   }

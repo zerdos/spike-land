@@ -99,7 +99,7 @@ export class ServiceRegistry {
     }
 
     const { stdout, stderr } = await execFileAsync("docker", args, {
-      cwd: process.env.COMPOSE_PROJECT_DIR ?? "/app",
+      cwd: process.env["COMPOSE_PROJECT_DIR"] ?? "/app",
       timeout: 60_000,
     });
 
@@ -118,7 +118,7 @@ export class ServiceRegistry {
     args.push("--", service);
 
     const { stdout } = await execFileAsync("docker", args, {
-      cwd: process.env.COMPOSE_PROJECT_DIR ?? "/app",
+      cwd: process.env["COMPOSE_PROJECT_DIR"] ?? "/app",
       timeout: 30_000,
     });
 

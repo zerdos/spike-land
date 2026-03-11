@@ -61,20 +61,20 @@ export const albumUpdateTool = imageProcedure
     }
 
     const data: Record<string, unknown> = {};
-    if (input.name !== undefined) data.name = input.name;
-    if (input.description !== undefined) data.description = input.description;
+    if (input.name !== undefined) data["name"] = input.name;
+    if (input.description !== undefined) data["description"] = input.description;
     if (input.cover_image_id !== undefined) {
-      data.coverImageId = input.cover_image_id;
+      data["coverImageId"] = input.cover_image_id;
     }
-    if (input.pipeline_id !== undefined) data.pipelineId = input.pipeline_id;
-    if (input.default_tier !== undefined) data.defaultTier = input.default_tier;
+    if (input.pipeline_id !== undefined) data["pipelineId"] = input.pipeline_id;
+    if (input.default_tier !== undefined) data["defaultTier"] = input.default_tier;
 
     if (input.privacy !== undefined) {
-      data.privacy = input.privacy;
+      data["privacy"] = input.privacy;
       if (input.privacy === "PRIVATE") {
-        data.shareToken = null;
+        data["shareToken"] = null;
       } else if (!album.shareToken) {
-        data.shareToken = deps.nanoid(12);
+        data["shareToken"] = deps.nanoid(12);
       }
     }
 

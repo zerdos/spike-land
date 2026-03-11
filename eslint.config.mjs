@@ -31,18 +31,12 @@ const sharedRules = {
       disallowTypeAnnotations: false,
     },
   ],
-  "dot-notation": "error",
-  // ── Type-aware rules (require parserOptions.project / projectService) ────────
-  // These rules are intentionally NOT enabled here because this config has no
-  // parserOptions.project set. Enabling them without it either silently no-ops
-  // or throws a parser error on every file.
-  //
-  // To activate them, add parserOptions.projectService: true (or point
-  // parserOptions.project to a tsconfig) in each languageOptions block, then
-  // uncomment:
-  //
-  //   "@typescript-eslint/no-floating-promises": "error",
-  //   "@typescript-eslint/no-misused-promises": "error",
+  "dot-notation": "off",
+  "@typescript-eslint/dot-notation": ["error", { allowIndexSignaturePropertyAccess: true }],
+  // ── Type-aware rules (require parserOptions.projectService) ─────────────────
+  "@typescript-eslint/no-floating-promises": "warn",
+  "@typescript-eslint/no-misused-promises": ["warn", { checksVoidReturn: { arguments: false } }],
+  "@typescript-eslint/await-thenable": "error",
   //   "@typescript-eslint/consistent-type-exports": "error",
   //   "@typescript-eslint/no-unnecessary-type-assertion": "warn",
   //   "@typescript-eslint/prefer-nullish-coalescing": "warn",
@@ -79,6 +73,8 @@ export default tseslint.config(
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
@@ -95,6 +91,8 @@ export default tseslint.config(
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
@@ -112,11 +110,45 @@ export default tseslint.config(
       react: { version: "detect" },
     },
   },
-  // Test file overrides
+  // Test file overrides — disable type-aware rules (test files are excluded
+  // from the root tsconfig; they use tsconfig.test.json which is typechecked
+  // separately via `yarn typecheck:tests`)
   {
-    files: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+    files: [
+      "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx",
+      ".tests/**/*.ts", ".tests/**/*.tsx",
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+      },
+    },
     rules: {
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
+    },
+  },
+  // Directories excluded from root tsconfig — disable type-aware rules
+  // (typechecked via their own tsconfigs separately)
+  {
+    files: [
+      "src/frontend/platform-frontend/**/*.ts", "src/frontend/platform-frontend/**/*.tsx",
+      "src/frontend/monaco-editor/**/*.ts", "src/frontend/monaco-editor/**/*.tsx",
+      "src/media/educational-videos/**/*.ts", "src/media/educational-videos/**/*.tsx",
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+      },
+    },
+    rules: {
+      "@typescript-eslint/dot-notation": "off",
       "dot-notation": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
     },
   },
   // Config files at root
@@ -135,6 +167,11 @@ export default tseslint.config(
     rules: {
       ...sharedRules,
       "@typescript-eslint/no-unused-vars": "off",
+      // Disable type-aware rules for config files (no projectService)
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
     },
   },
 );

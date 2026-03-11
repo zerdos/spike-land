@@ -233,7 +233,7 @@ function createMockDeps(): ImageStudioDeps {
 
 // --- 2. Setup Deps ---
 
-const DEFAULT_USER_ID = process.env.IMAGE_STUDIO_USER_ID || "test-user";
+const DEFAULT_USER_ID = process.env["IMAGE_STUDIO_USER_ID"] || "test-user";
 const deps = createMockDeps();
 
 // --- 3. Setup the MCP Server & Registry ---
@@ -277,9 +277,9 @@ tools.push({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           service_name: "mcp-image-studio",
-          title: input.title,
-          description: input.description,
-          severity: input.severity,
+          title: input["title"],
+          description: input["description"],
+          severity: input["severity"],
         }),
       });
       if (!response.ok) throw new Error(await response.text());

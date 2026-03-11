@@ -232,7 +232,7 @@ function withJob(config: JobConfig) {
   >(async ({ input, ctx, next }) => {
     const inputRecord = input as Record<string, unknown>;
     const imageId = inputRecord[config.imageIdField] as ImageId;
-    const tier = (inputRecord.tier as EnhancementTier | undefined) ?? "FREE";
+    const tier = (inputRecord["tier"] as EnhancementTier | undefined) ?? "FREE";
     const creditsCost = ctx.billing?.creditsCost ?? 0;
 
     const jobResult = await tryCatch(

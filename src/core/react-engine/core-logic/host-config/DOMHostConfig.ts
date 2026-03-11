@@ -115,7 +115,7 @@ function updateProperties(
       setStyles(
         domElement as HTMLElement,
         newValue as Record<string, unknown>,
-        oldProps.style as Record<string, unknown>,
+        oldProps["style"] as Record<string, unknown>,
       );
     } else if (propKey.startsWith("on")) {
       // Event listeners handled by event delegation
@@ -202,8 +202,8 @@ export const DOMHostConfig: HostConfig<
       domElement = document.createElementNS(SVG_NAMESPACE, type);
     } else if (hostContext.namespace === MATH_NAMESPACE) {
       domElement = document.createElementNS(MATH_NAMESPACE, type);
-    } else if (props.is) {
-      domElement = document.createElement(type, { is: props.is as string });
+    } else if (props["is"]) {
+      domElement = document.createElement(type, { is: props["is"] as string });
     } else {
       domElement = document.createElement(type);
     }
@@ -265,9 +265,9 @@ export const DOMHostConfig: HostConfig<
     return (
       type === "textarea" ||
       type === "noscript" ||
-      typeof props.children === "string" ||
-      typeof props.children === "number" ||
-      typeof props.children === "bigint"
+      typeof props["children"] === "string" ||
+      typeof props["children"] === "number" ||
+      typeof props["children"] === "bigint"
     );
   },
 
@@ -300,7 +300,7 @@ export const DOMHostConfig: HostConfig<
     props: Record<string, unknown>,
     _hostContext: HostContextValue,
   ): boolean {
-    return !!props.autoFocus;
+    return !!props["autoFocus"];
   },
 
   prepareUpdate(

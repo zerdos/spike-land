@@ -36,12 +36,12 @@ export const jobStatusTool = imageProcedure
             creditsCost: g.creditsCost,
           };
           if (g.status === "COMPLETED") {
-            response.outputUrl = g.outputImageUrl;
-            response.width = g.outputWidth;
-            response.height = g.outputHeight;
+            response["outputUrl"] = g.outputImageUrl;
+            response["width"] = g.outputWidth;
+            response["height"] = g.outputHeight;
           }
           if (g.status === "FAILED") {
-            response.error = g.errorMessage;
+            response["error"] = g.errorMessage;
           }
           return jsonResult(response);
         }
@@ -67,12 +67,12 @@ export const jobStatusTool = imageProcedure
           imageId: e.imageId,
         };
         if (e.status === "COMPLETED") {
-          response.enhancedUrl = e.enhancedUrl;
-          response.width = e.enhancedWidth;
-          response.height = e.enhancedHeight;
+          response["enhancedUrl"] = e.enhancedUrl;
+          response["width"] = e.enhancedWidth;
+          response["height"] = e.enhancedHeight;
         }
         if (e.status === "FAILED") {
-          response.error = e.errorMessage;
+          response["error"] = e.errorMessage;
         }
         return jsonResult(response);
       }

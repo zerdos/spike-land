@@ -160,7 +160,10 @@ export function normalizeTrackEvents(events: TrackEventInput[] | undefined): {
   return { acceptedEvents, metricUpdates };
 }
 
-export function getMonitorWindow(rawHours: string | undefined, now: number): {
+export function getMonitorWindow(
+  rawHours: string | undefined,
+  now: number,
+): {
   requestedHours: number;
   clampedHours: number;
   since: number;
@@ -223,7 +226,7 @@ export function buildEvaluationGate(params: {
   }
 
   for (const variant of params.variants) {
-    const impressions = params.byVariant[variant.id]?.impressions?.value ?? 0;
+    const impressions = params.byVariant[variant.id]?.["impressions"]?.value ?? 0;
     if (impressions < MIN_IMPRESSIONS_PER_VARIANT) {
       return {
         ready: false,
@@ -238,8 +241,8 @@ export function buildEvaluationGate(params: {
       const variantMetrics = params.byVariant[variant.id] ?? {};
       return {
         id: variant.id,
-        impressions: variantMetrics.impressions?.value ?? 0,
-        donations: variantMetrics.donations?.value ?? 0,
+        impressions: variantMetrics["impressions"]?.value ?? 0,
+        donations: variantMetrics["donations"]?.value ?? 0,
       };
     }),
   };

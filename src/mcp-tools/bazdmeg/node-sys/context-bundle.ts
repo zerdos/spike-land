@@ -98,11 +98,11 @@ function summarizePackageJson(raw: string): PackageJsonSummary | null {
   try {
     const pkg = JSON.parse(raw) as Record<string, unknown>;
     return {
-      name: (pkg.name as string) ?? "unknown",
-      version: (pkg.version as string) ?? "0.0.0",
-      scripts: (pkg.scripts as Record<string, string>) ?? {},
-      dependencies: (pkg.dependencies as Record<string, string>) ?? {},
-      devDependencies: (pkg.devDependencies as Record<string, string>) ?? {},
+      name: (pkg["name"] as string) ?? "unknown",
+      version: (pkg["version"] as string) ?? "0.0.0",
+      scripts: (pkg["scripts"] as Record<string, string>) ?? {},
+      dependencies: (pkg["dependencies"] as Record<string, string>) ?? {},
+      devDependencies: (pkg["devDependencies"] as Record<string, string>) ?? {},
     };
   } catch {
     return null;

@@ -13,9 +13,11 @@ function sanitizeCodeSpace(codeSpace: string | null): string {
 }
 
 export class LiveRoutes {
+  private code: Code;
   private aiRoutes: AiRoutes;
 
-  constructor(private code: Code) {
+  constructor(code: Code) {
+    this.code = code;
     this.aiRoutes = new AiRoutes(code);
   }
 

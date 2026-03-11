@@ -34,16 +34,16 @@ export function validateMessages(messages: unknown): string | null {
     const typedMsg = msg as Record<string, unknown>;
 
     if (
-      !typedMsg.role ||
-      typeof typedMsg.role !== "string" ||
-      !VALID_ROLES.includes(typedMsg.role as ValidRole)
+      !typedMsg["role"] ||
+      typeof typedMsg["role"] !== "string" ||
+      !VALID_ROLES.includes(typedMsg["role"] as ValidRole)
     ) {
       return `Message at index ${i} must have a valid role (${VALID_ROLES.join(", ")})`;
     }
 
     // Support both 'content' and 'parts' fields
-    const hasContent = typedMsg.content !== undefined;
-    const hasParts = typedMsg.parts !== undefined;
+    const hasContent = typedMsg["content"] !== undefined;
+    const hasParts = typedMsg["parts"] !== undefined;
 
     if (!hasContent && !hasParts) {
       return `Message at index ${i} must have either 'content' or 'parts'`;
@@ -57,11 +57,11 @@ export function validateMessages(messages: unknown): string | null {
 
     // Validate content structure if present
     if (hasContent) {
-      if (typeof typedMsg.content !== "string" && !Array.isArray(typedMsg.content)) {
+      if (typeof typedMsg["content"] !== "string" && !Array.isArray(typedMsg["content"])) {
         return `Message at index ${i} content must be a string or array`;
       }
 
-      const content = typedMsg.content;
+      const content = typedMsg["content"];
       if (Array.isArray(content)) {
         const contentParts = content as Record<string, unknown>[];
         for (let j = 0; j < contentParts.length; j++) {
@@ -74,7 +74,7 @@ export function validateMessages(messages: unknown): string | null {
     }
 
     // Validate parts structure if present
-    const messageParts = typedMsg.parts;
+    const messageParts = typedMsg["parts"];
     if (hasParts && !Array.isArray(messageParts)) {
       return `Message at index ${i} parts must be an array`;
     }

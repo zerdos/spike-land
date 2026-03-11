@@ -103,8 +103,8 @@ function normalizeRow(value: unknown): ServiceMetricRow | null {
   }
 
   const row = value as Record<string, unknown>;
-  const minuteBucket = toFiniteNumber(row.minute_bucket);
-  const requestCount = toFiniteNumber(row.request_count);
+  const minuteBucket = toFiniteNumber(row["minute_bucket"]);
+  const requestCount = toFiniteNumber(row["request_count"]);
 
   if (!minuteBucket) {
     return null;
@@ -113,10 +113,10 @@ function normalizeRow(value: unknown): ServiceMetricRow | null {
   return {
     minute_bucket: minuteBucket,
     request_count: requestCount,
-    latency_min_ms: toFiniteNumber(row.latency_min_ms),
-    latency_max_ms: toFiniteNumber(row.latency_max_ms),
-    latency_sum_ms: toFiniteNumber(row.latency_sum_ms),
-    latency_sum_sq_ms: toFiniteNumber(row.latency_sum_sq_ms),
+    latency_min_ms: toFiniteNumber(row["latency_min_ms"]),
+    latency_max_ms: toFiniteNumber(row["latency_max_ms"]),
+    latency_sum_ms: toFiniteNumber(row["latency_sum_ms"]),
+    latency_sum_sq_ms: toFiniteNumber(row["latency_sum_sq_ms"]),
   };
 }
 

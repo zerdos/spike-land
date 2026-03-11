@@ -58,7 +58,7 @@ publicToolsRoute.get("/", async (c) => {
         z.object(t.inputSchema) as unknown as Parameters<typeof zodToJsonSchema>[0],
       ) as Record<string, unknown>;
       // Remove top-level $schema for cleaner output
-      delete converted.$schema;
+      delete converted["$schema"];
       inputSchema = converted;
     }
 

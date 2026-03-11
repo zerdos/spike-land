@@ -2,7 +2,8 @@
  * Sync module for testing.spike.land code management
  */
 
-const TESTING_SPIKE_LAND_URL = process.env.TESTING_SPIKE_LAND_URL || "https://testing.spike.land";
+const TESTING_SPIKE_LAND_URL =
+  process.env["TESTING_SPIKE_LAND_URL"] || "https://testing.spike.land";
 
 interface SessionResponse {
   code?: string;

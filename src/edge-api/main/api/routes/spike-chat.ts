@@ -106,7 +106,7 @@ async function streamGrokResponse(
     stream: true,
   };
   if (opts.tools && opts.tools.length > 0) {
-    body.tools = opts.tools;
+    body["tools"] = opts.tools;
   }
 
   const res = await fetch("https://api.x.ai/v1/chat/completions", {

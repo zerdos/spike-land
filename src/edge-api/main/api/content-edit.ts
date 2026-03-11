@@ -22,13 +22,13 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
   if (
     typeof body !== "object" ||
     body === null ||
-    typeof (body as Record<string, unknown>).content !== "string" ||
-    ((body as Record<string, unknown>).content as string).trim().length === 0
+    typeof (body as Record<string, unknown>)["content"] !== "string" ||
+    ((body as Record<string, unknown>)["content"] as string).trim().length === 0
   ) {
     return c.json({ error: "content is required and must be a non-empty string" }, 400);
   }
 
-  const content = (body as Record<string, string>).content;
+  const content = (body as Record<string, string>)["content"];
   const token = c.env.GITHUB_TOKEN;
   const branch = `content-edit/${slug}-${Date.now()}`;
   const filePath = `content/blog/${slug}.mdx`;
@@ -82,7 +82,7 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
     content: btoa(unescape(encodeURIComponent(content!))),
     branch,
   };
-  if (existingFileSha) commitBody.sha = existingFileSha;
+  if (existingFileSha) commitBody["sha"] = existingFileSha;
 
   const commitRes = await fetch(`${apiBase}/contents/${filePath}`, {
     method: "PUT",

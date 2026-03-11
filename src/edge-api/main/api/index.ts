@@ -387,13 +387,14 @@ async function mcpProxy(c: import("hono").Context<{ Bindings: Env; Variables: Va
     fetchAuth: fetchAuthWithFallback,
   });
   proxyHeaders.set("X-Request-Id", c.get("requestId"));
+  const hasBody = newRequest.method !== "GET" && newRequest.method !== "HEAD";
   const response = await fetchMcpWithFallback(c.env, newRequest.url, {
     method: newRequest.method,
     headers: Object.fromEntries(proxyHeaders.entries()),
-    body: newRequest.method !== "GET" && newRequest.method !== "HEAD" ? newRequest.body : undefined,
-    // @ts-expect-error duplex needed for streaming request bodies
-    duplex: "half",
-  });
+    ...(hasBody && newRequest.body != null
+      ? { body: newRequest.body, duplex: "half" as const }
+      : {}),
+  } as RequestInit);
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

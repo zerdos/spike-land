@@ -118,12 +118,11 @@ const COMMAND_PAYLOADS: ReadonlyMap<string, string> = new Map([
 // ---------------------------------------------------------------------------
 
 export class TelegramParseError extends Error {
-  constructor(
-    reason: string,
-    public readonly raw: unknown,
-  ) {
+  readonly raw: unknown;
+  constructor(reason: string, raw: unknown) {
     super(`Telegram webhook parse error: ${reason}`);
     this.name = "TelegramParseError";
+    this.raw = raw;
   }
 }
 
@@ -134,14 +133,17 @@ export class TelegramParseError extends Error {
 export class TelegramAdapter implements MessagingAdapter {
   readonly platform = Platform.TELEGRAM;
 
+  private readonly httpClient: HttpClient;
+  private readonly botToken: string;
+
   /**
    * @param httpClient  Injectable HTTP client.
    * @param botToken    Telegram Bot API token (from @BotFather).
    */
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly botToken: string,
-  ) {}
+  constructor(httpClient: HttpClient, botToken: string) {
+    this.httpClient = httpClient;
+    this.botToken = botToken;
+  }
 
   // -------------------------------------------------------------------------
   // Public API

@@ -61,8 +61,8 @@ export function validationMiddleware(): ToolMiddleware {
     const schema = ctx.inputSchema;
     if (!schema) return next();
 
-    const required = (schema.required as string[] | undefined) ?? [];
-    const properties = schema.properties as Record<string, unknown> | undefined;
+    const required = (schema["required"] as string[] | undefined) ?? [];
+    const properties = schema["properties"] as Record<string, unknown> | undefined;
 
     for (const field of required) {
       if (!(field in ctx.input) || ctx.input[field] === undefined) {
@@ -83,7 +83,7 @@ export function validationMiddleware(): ToolMiddleware {
         const prop = properties[key] as Record<string, unknown> | undefined;
         if (!prop) continue;
 
-        const expectedType = prop.type as string | undefined;
+        const expectedType = prop["type"] as string | undefined;
         if (!expectedType) continue;
 
         const actualType = typeof value;

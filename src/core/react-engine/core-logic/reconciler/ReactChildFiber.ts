@@ -113,7 +113,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
     }
 
     if (typeof newChild === "object" && newChild !== null) {
-      switch ((newChild as Record<string, unknown>).$$typeof) {
+      switch ((newChild as Record<string, unknown>)["$$typeof"]) {
         case REACT_ELEMENT_TYPE: {
           const created = createFiberFromElement(newChild as ReactElement, lanes);
           coerceRef(created, newChild as ReactElement);
@@ -121,8 +121,10 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
           return created;
         }
         case REACT_LAZY_TYPE: {
-          const payload = (newChild as Record<string, unknown>)._payload;
-          const init = (newChild as Record<string, unknown>)._init as (payload: unknown) => unknown;
+          const payload = (newChild as Record<string, unknown>)["_payload"];
+          const init = (newChild as Record<string, unknown>)["_init"] as (
+            payload: unknown,
+          ) => unknown;
           return createChild(returnFiber, init(payload), lanes);
         }
       }
@@ -171,7 +173,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
     }
 
     if (typeof newChild === "object" && newChild !== null) {
-      switch ((newChild as Record<string, unknown>).$$typeof) {
+      switch ((newChild as Record<string, unknown>)["$$typeof"]) {
         case REACT_ELEMENT_TYPE: {
           if ((newChild as ReactElement).key === key) {
             return updateElement(returnFiber, oldFiber, newChild as ReactElement, lanes);
@@ -180,8 +182,10 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
           }
         }
         case REACT_LAZY_TYPE: {
-          const payload = (newChild as Record<string, unknown>)._payload;
-          const init = (newChild as Record<string, unknown>)._init as (payload: unknown) => unknown;
+          const payload = (newChild as Record<string, unknown>)["_payload"];
+          const init = (newChild as Record<string, unknown>)["_init"] as (
+            payload: unknown,
+          ) => unknown;
           return updateSlot(returnFiber, oldFiber, init(payload), lanes);
         }
       }
@@ -214,15 +218,17 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
     }
 
     if (typeof newChild === "object" && newChild !== null) {
-      switch ((newChild as Record<string, unknown>).$$typeof) {
+      switch ((newChild as Record<string, unknown>)["$$typeof"]) {
         case REACT_ELEMENT_TYPE: {
           const el = newChild as ReactElement;
           const matchedFiber = existingChildren.get(el.key === null ? newIdx : el.key) || null;
           return updateElement(returnFiber, matchedFiber, el, lanes);
         }
         case REACT_LAZY_TYPE: {
-          const payload = (newChild as Record<string, unknown>)._payload;
-          const init = (newChild as Record<string, unknown>)._init as (payload: unknown) => unknown;
+          const payload = (newChild as Record<string, unknown>)["_payload"];
+          const init = (newChild as Record<string, unknown>)["_init"] as (
+            payload: unknown,
+          ) => unknown;
           return updateFromMap(existingChildren, returnFiber, newIdx, init(payload), lanes);
         }
       }
@@ -264,7 +270,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
       return updateFragment(
         returnFiber,
         current,
-        (element.props as Record<string, unknown>).children,
+        (element.props as Record<string, unknown>)["children"],
         lanes,
         element.key,
       );
@@ -315,7 +321,10 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
         if (elementType === REACT_FRAGMENT_TYPE) {
           if (child.tag === Fragment) {
             deleteRemainingChildren(returnFiber, child.sibling);
-            const existing = reuseFiber(child, (element.props as Record<string, unknown>).children);
+            const existing = reuseFiber(
+              child,
+              (element.props as Record<string, unknown>)["children"],
+            );
             existing.return = returnFiber;
             return existing;
           }
@@ -338,7 +347,7 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
 
     if (element.type === REACT_FRAGMENT_TYPE) {
       const created = createFiberFromFragment(
-        (element.props as Record<string, unknown>).children,
+        (element.props as Record<string, unknown>)["children"],
         lanes,
         element.key,
       );
@@ -481,21 +490,23 @@ function createChildReconciler(shouldTrackSideEffects: boolean) {
     if (
       typeof newChild === "object" &&
       newChild !== null &&
-      (newChild as Record<string, unknown>).type === REACT_FRAGMENT_TYPE &&
+      (newChild as Record<string, unknown>)["type"] === REACT_FRAGMENT_TYPE &&
       (newChild as ReactElement).key === null
     ) {
-      newChild = ((newChild as ReactElement).props as Record<string, unknown>).children;
+      newChild = ((newChild as ReactElement).props as Record<string, unknown>)["children"];
     }
 
     if (typeof newChild === "object" && newChild !== null) {
-      switch ((newChild as Record<string, unknown>).$$typeof) {
+      switch ((newChild as Record<string, unknown>)["$$typeof"]) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
             reconcileSingleElement(returnFiber, currentFirstChild, newChild as ReactElement, lanes),
           );
         case REACT_LAZY_TYPE: {
-          const payload = (newChild as Record<string, unknown>)._payload;
-          const init = (newChild as Record<string, unknown>)._init as (payload: unknown) => unknown;
+          const payload = (newChild as Record<string, unknown>)["_payload"];
+          const init = (newChild as Record<string, unknown>)["_init"] as (
+            payload: unknown,
+          ) => unknown;
           return reconcileChildFibers(returnFiber, currentFirstChild, init(payload), lanes);
         }
       }

@@ -16,7 +16,7 @@ function getHashHeaderValue(filePath: string, assetHash: string): string {
 }
 
 export const serveWithCache = (files: Record<string, string>, cacheToUse: () => Promise<Cache>) => {
-  const ASSET_HASH = files.ASSET_HASH || md5(JSON.stringify(files));
+  const ASSET_HASH = files["ASSET_HASH"] || md5(JSON.stringify(files));
 
   let _fileCache: Cache | null | undefined;
   const fileCachePromise = cacheToUse()

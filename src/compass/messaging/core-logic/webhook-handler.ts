@@ -40,12 +40,11 @@ export interface WebhookResponse {
 // ---------------------------------------------------------------------------
 
 export class WebhookVerificationError extends Error {
-  constructor(
-    public readonly platform: Platform,
-    reason: string,
-  ) {
+  readonly platform: Platform;
+  constructor(platform: Platform, reason: string) {
     super(`Webhook verification failed for ${platform}: ${reason}`);
     this.name = "WebhookVerificationError";
+    this.platform = platform;
   }
 }
 
@@ -127,10 +126,13 @@ export function hasTwilioSignatureHeader(headers: Record<string, string | undefi
 // ---------------------------------------------------------------------------
 
 export class WebhookHandler {
-  constructor(
-    private readonly router: MessageRouter,
-    private readonly configs: Map<Platform, WebhookConfig>,
-  ) {}
+  private readonly router: MessageRouter;
+  private readonly configs: Map<Platform, WebhookConfig>;
+
+  constructor(router: MessageRouter, configs: Map<Platform, WebhookConfig>) {
+    this.router = router;
+    this.configs = configs;
+  }
 
   /**
    * Handle an inbound webhook request.

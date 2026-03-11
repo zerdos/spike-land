@@ -216,7 +216,7 @@ function createToolBuilderImpl<TInput, TCtx, TOutput>(
         } catch (error: unknown) {
           if (error && typeof error === "object") {
             const errorObj = error as Record<string, unknown>;
-            if (errorObj.name === "DomainError") {
+            if (errorObj["name"] === "DomainError") {
               const domainError = errorObj as {
                 code: string;
                 message: string;
@@ -233,7 +233,7 @@ function createToolBuilderImpl<TInput, TCtx, TOutput>(
               };
             }
             // Handle McpError (has name === "McpError" and a code property)
-            if (errorObj.name === "McpError" && "code" in errorObj) {
+            if (errorObj["name"] === "McpError" && "code" in errorObj) {
               const mcpError = errorObj as {
                 code: string;
                 message: string;

@@ -19,7 +19,7 @@ import { generateFishCompletions } from "../core-logic/completions/fish";
 export type ShellType = "bash" | "zsh" | "fish" | "unknown";
 
 export function detectShell(): ShellType {
-  const shell = process.env.SHELL ?? "";
+  const shell = process.env["SHELL"] ?? "";
   if (shell.endsWith("/zsh")) return "zsh";
   if (shell.endsWith("/bash")) return "bash";
   if (shell.endsWith("/fish")) return "fish";

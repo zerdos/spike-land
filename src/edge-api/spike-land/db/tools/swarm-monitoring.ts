@@ -120,7 +120,7 @@ export function registerSwarmMonitoringTools(
 
         for (const a of agents) {
           const meta = JSON.parse(a.metadata || "{}") as Record<string, unknown>;
-          const tokens = typeof meta.totalTokensUsed === "number" ? meta.totalTokensUsed : 0;
+          const tokens = typeof meta["totalTokensUsed"] === "number" ? meta["totalTokensUsed"] : 0;
           totalTokens += tokens;
           const agentCost = (tokens * TOKEN_COST_USD).toFixed(4);
           text += `- **${a.name}** — ${tokens.toLocaleString()} tokens ($${agentCost})\n`;
@@ -136,7 +136,7 @@ export function registerSwarmMonitoringTools(
 
         for (const a of agents) {
           const meta = JSON.parse(a.metadata || "{}") as Record<string, unknown>;
-          const tokens = typeof meta.totalTokensUsed === "number" ? meta.totalTokensUsed : 0;
+          const tokens = typeof meta["totalTokensUsed"] === "number" ? meta["totalTokensUsed"] : 0;
           const agentCost = (tokens * TOKEN_COST_USD).toFixed(4);
           text += `- **${a.name}** — ${tokens.toLocaleString()} tokens ($${agentCost})\n`;
           text += `  ID: ${a.id}\n`;
@@ -290,8 +290,8 @@ export function registerSwarmMonitoringTools(
           const lastActivity = a.lastActiveAt ? new Date(a.lastActiveAt).toISOString() : "never";
 
           const meta = JSON.parse(a.metadata || "{}") as Record<string, unknown>;
-          const currentTask = meta.projectPath
-            ? `Working on: ${meta.projectPath}`
+          const currentTask = meta["projectPath"]
+            ? `Working on: ${meta["projectPath"]}`
             : "No active task";
 
           text += `- **${a.name}** [${health}]\n`;

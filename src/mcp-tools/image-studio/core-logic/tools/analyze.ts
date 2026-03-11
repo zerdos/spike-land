@@ -15,7 +15,7 @@ export const analyzeTool = imageProcedure
   .use(
     withCredits({
       cost: (input, deps) => {
-        const includePalette = (input as Record<string, unknown>).include_palette ?? true;
+        const includePalette = (input as Record<string, unknown>)["include_palette"] ?? true;
         return 1 + (includePalette && deps.generation.extractPalette ? 1 : 0);
       },
       source: "analyze",
@@ -28,7 +28,10 @@ export const analyzeTool = imageProcedure
       .enum(DETAIL_LEVEL_VALUES)
       .describe("Level of detail: brief, detailed, or alt_text")
       .optional(),
-    include_palette: z.coerce.boolean().describe("If true, extract dominant color palette").optional(),
+    include_palette: z.coerce
+      .boolean()
+      .describe("If true, extract dominant color palette")
+      .optional(),
   })
   .handler(async ({ input: input, ctx: ctx }) => {
     const { userId, deps } = ctx;

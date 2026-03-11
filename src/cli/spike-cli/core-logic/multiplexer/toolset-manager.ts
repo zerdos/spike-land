@@ -162,7 +162,7 @@ export class ToolsetManager {
     }
 
     if (name === "spike__load_toolset") {
-      const toolsetName = args.name;
+      const toolsetName = args["name"];
       if (typeof toolsetName !== "string") {
         return {
           content: [{ type: "text", text: "name is required" }],
@@ -195,7 +195,7 @@ export class ToolsetManager {
     }
 
     if (name === "spike__unload_toolset") {
-      const toolsetName = args.name;
+      const toolsetName = args["name"];
       if (typeof toolsetName !== "string") {
         return {
           content: [{ type: "text", text: "name is required" }],
@@ -238,14 +238,14 @@ export class ToolsetManager {
           isError: true,
         };
       }
-      const query = args.query;
+      const query = args["query"];
       if (typeof query !== "string") {
         return {
           content: [{ type: "text", text: "query is required" }],
           isError: true,
         };
       }
-      const maxResults = typeof args.max_results === "number" ? args.max_results : 5;
+      const maxResults = typeof args["max_results"] === "number" ? args["max_results"] : 5;
       const searchResult = this.registry.search(query, maxResults);
       const toolSchemas = searchResult.tools.map((t) => ({
         name: t.namespacedName,

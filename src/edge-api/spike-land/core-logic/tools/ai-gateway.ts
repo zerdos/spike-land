@@ -135,8 +135,8 @@ async function callAnthropic(
     max_tokens: maxTokens,
     messages: [{ role: "user", content: message }],
   };
-  if (systemPrompt) body.system = systemPrompt;
-  if (temperature != null) body.temperature = temperature;
+  if (systemPrompt) body["system"] = systemPrompt;
+  if (temperature != null) body["temperature"] = temperature;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -199,7 +199,7 @@ async function callOpenAI(
     max_tokens: maxTokens,
     messages,
   };
-  if (temperature != null) body.temperature = temperature;
+  if (temperature != null) body["temperature"] = temperature;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -263,7 +263,7 @@ async function callGemini(
     },
   };
   if (systemPrompt) {
-    body.systemInstruction = { parts: [{ text: systemPrompt }] };
+    body["systemInstruction"] = { parts: [{ text: systemPrompt }] };
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;

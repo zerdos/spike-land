@@ -16,12 +16,13 @@ import { DEFAULT_CORS_HEADERS } from "../core-logic/utils";
 type ProcessedToolsRecord = Record<string, ToolDef>;
 
 export class PostHandler {
+  private code: Code;
+  private env: Env;
   private storageService: StorageService;
 
-  constructor(
-    private code: Code,
-    private env: Env,
-  ) {
+  constructor(code: Code, env: Env) {
+    this.code = code;
+    this.env = env;
     this.storageService = new StorageService(env);
   }
 

@@ -65,7 +65,7 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as unknown as StripeSession;
-        if (session.metadata?.type === "blog_support") {
+        if (session.metadata?.["type"] === "blog_support") {
           await handleBlogDonation(db, event);
         } else {
           await handleCheckoutCompleted(db, event);

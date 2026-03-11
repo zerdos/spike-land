@@ -100,10 +100,11 @@ export function registerCachePurgeTools(
 
         const result = await resp.json<{ success?: boolean; errors?: unknown[] }>();
 
-        const workersPurged = (result as Record<string, unknown>).workers_cache_purged;
-        const workersInfo = Array.isArray(workersPurged) && workersPurged.length
-          ? ` + ${workersPurged.length} Workers Cache API entries`
-          : "";
+        const workersPurged = (result as Record<string, unknown>)["workers_cache_purged"];
+        const workersInfo =
+          Array.isArray(workersPurged) && workersPurged.length
+            ? ` + ${workersPurged.length} Workers Cache API entries`
+            : "";
 
         if (resp.ok && result.success) {
           const parts: string[] = [];

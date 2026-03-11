@@ -14,25 +14,26 @@ import { vaultSecrets, workspaceMembers, workspaces } from "../../db/db/schema";
 
 // ─── MCP Error Types (inline — not exported from @spike-land-ai/shared) ──────
 
-export enum McpErrorCode {
-  TIMEOUT = "TIMEOUT",
-  CONTENT_POLICY = "CONTENT_POLICY",
-  RATE_LIMITED = "RATE_LIMITED",
-  AUTH_ERROR = "AUTH_ERROR",
-  INVALID_IMAGE = "INVALID_IMAGE",
-  INVALID_INPUT = "INVALID_INPUT",
-  GEMINI_API_ERROR = "GEMINI_API_ERROR",
-  R2_UPLOAD_ERROR = "R2_UPLOAD_ERROR",
-  GENERATION_ERROR = "GENERATION_ERROR",
-  WORKSPACE_NOT_FOUND = "WORKSPACE_NOT_FOUND",
-  APP_NOT_FOUND = "APP_NOT_FOUND",
-  PERMISSION_DENIED = "PERMISSION_DENIED",
-  INSUFFICIENT_CREDITS = "INSUFFICIENT_CREDITS",
-  VALIDATION_ERROR = "VALIDATION_ERROR",
-  CONFLICT = "CONFLICT",
-  UPSTREAM_SERVICE_ERROR = "UPSTREAM_SERVICE_ERROR",
-  UNKNOWN = "UNKNOWN",
-}
+export const McpErrorCode = {
+  TIMEOUT: "TIMEOUT",
+  CONTENT_POLICY: "CONTENT_POLICY",
+  RATE_LIMITED: "RATE_LIMITED",
+  AUTH_ERROR: "AUTH_ERROR",
+  INVALID_IMAGE: "INVALID_IMAGE",
+  INVALID_INPUT: "INVALID_INPUT",
+  GEMINI_API_ERROR: "GEMINI_API_ERROR",
+  R2_UPLOAD_ERROR: "R2_UPLOAD_ERROR",
+  GENERATION_ERROR: "GENERATION_ERROR",
+  WORKSPACE_NOT_FOUND: "WORKSPACE_NOT_FOUND",
+  APP_NOT_FOUND: "APP_NOT_FOUND",
+  PERMISSION_DENIED: "PERMISSION_DENIED",
+  INSUFFICIENT_CREDITS: "INSUFFICIENT_CREDITS",
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+  CONFLICT: "CONFLICT",
+  UPSTREAM_SERVICE_ERROR: "UPSTREAM_SERVICE_ERROR",
+  UNKNOWN: "UNKNOWN",
+} as const;
+export type McpErrorCode = (typeof McpErrorCode)[keyof typeof McpErrorCode];
 
 export const MCP_ERROR_MESSAGES: Record<McpErrorCode, string> = {
   [McpErrorCode.TIMEOUT]: "Generation took too long. Try a lower quality tier.",
@@ -316,7 +317,7 @@ export async function apiRequest<T>(
     "Content-Type": "application/json",
   };
   if (serviceToken) {
-    headers.Authorization = `Bearer ${serviceToken}`;
+    headers["Authorization"] = `Bearer ${serviceToken}`;
   }
 
   const controller = new AbortController();

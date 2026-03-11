@@ -174,7 +174,7 @@ const main = {
         body[key] = value;
       });
       if (body["record.wav"]) {
-        body.file = (await formData.get("record.wav")) as unknown as File;
+        body.file = formData.get("record.wav") as unknown as File;
       }
 
       const blob = await body.file!.arrayBuffer();

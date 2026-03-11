@@ -605,7 +605,7 @@ async function executeTool(params: {
   } = params;
 
   if (toolName === "mcp_tool_search") {
-    const query = typeof toolArgs.query === "string" ? toolArgs.query.trim() : "";
+    const query = typeof toolArgs["query"] === "string" ? toolArgs["query"].trim() : "";
     if (!query) {
       return {
         transport: "mcp" as const,
@@ -628,7 +628,7 @@ async function executeTool(params: {
   }
 
   if (toolName === "mcp_tool_call") {
-    const targetName = typeof toolArgs.name === "string" ? toolArgs.name.trim() : "";
+    const targetName = typeof toolArgs["name"] === "string" ? toolArgs["name"].trim() : "";
     if (!targetName) {
       return {
         transport: "mcp" as const,
@@ -658,7 +658,7 @@ async function executeTool(params: {
         c.env,
         requestId,
         targetName,
-        normalizeToolArgs(toolArgs.arguments),
+        normalizeToolArgs(toolArgs["arguments"]),
       );
 
       return {

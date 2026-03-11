@@ -100,23 +100,23 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
   const session = event.data.object as unknown as StripeSession;
 
   // Service purchases are handled separately
-  if (session.metadata?.type === "service_purchase") {
+  if (session.metadata?.["type"] === "service_purchase") {
     await handleServicePurchase(db, session, event);
     return;
   }
 
   // Blog donations are handled by donation-service
-  if (session.metadata?.type === "blog_support") {
+  if (session.metadata?.["type"] === "blog_support") {
     return; // Caller should route to donation-service
   }
 
   // Credit pack purchases
-  if (session.metadata?.type === "credit_purchase") {
+  if (session.metadata?.["type"] === "credit_purchase") {
     await handleCreditPurchase(db, session);
     return;
   }
 
-  const userId = session.metadata?.userId;
+  const userId = session.metadata?.["userId"];
   if (!userId) {
     log.warn("checkout.session.completed without userId in metadata");
     return;
@@ -127,7 +127,7 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
     typeof session.subscription === "string" ? session.subscription : null;
   const now = Date.now();
 
-  const rawTier = session.metadata?.tier;
+  const rawTier = session.metadata?.["tier"];
   const plan = rawTier === "business" || rawTier === "pro" ? rawTier : "pro";
 
   const existing = await db
@@ -162,7 +162,7 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
   }
 
   // Emit upgrade_completed analytics event (include gclid for offline conversion attribution)
-  const gclid = session.metadata?.gclid ?? null;
+  const gclid = session.metadata?.["gclid"] ?? null;
   await db
     .prepare(
       `INSERT INTO analytics_events (source, event_type, metadata, client_id)
@@ -180,10 +180,10 @@ async function handleServicePurchase(
   session: StripeSession,
   event: StripeEvent,
 ): Promise<void> {
-  const serviceName = session.metadata?.service;
-  const sessionId = (event.data.object as Record<string, unknown>).id as string | undefined;
-  const customerEmail = session.customer_email ?? (session.metadata?.email || null);
-  const metaUserId = session.metadata?.userId ?? null;
+  const serviceName = session.metadata?.["service"];
+  const sessionId = (event.data.object as Record<string, unknown>)["id"] as string | undefined;
+  const customerEmail = session.customer_email ?? (session.metadata?.["email"] || null);
+  const metaUserId = session.metadata?.["userId"] ?? null;
 
   if (serviceName && sessionId) {
     await db
@@ -199,15 +199,15 @@ async function handleServicePurchase(
 // ─── Credit Purchase ────────────────────────────────────────────────────────
 
 async function handleCreditPurchase(db: D1Database, session: StripeSession): Promise<void> {
-  const userId = session.metadata?.userId;
-  const creditsStr = session.metadata?.credits;
+  const userId = session.metadata?.["userId"];
+  const creditsStr = session.metadata?.["credits"];
   if (!userId || !creditsStr) {
     log.warn("credit_purchase checkout without userId or credits in metadata");
     return;
   }
   const credits = parseInt(creditsStr, 10);
   if (isNaN(credits) || credits <= 0) return;
-  const sessionId = (session as unknown as Record<string, unknown>).id as string | undefined;
+  const sessionId = (session as unknown as Record<string, unknown>)["id"] as string | undefined;
   const { purchaseCredits } = await import("../core-logic/credit-service.js");
   await purchaseCredits(db, userId, credits, sessionId ?? "unknown");
 }
@@ -270,7 +270,7 @@ export async function handleInvoicePaymentFailed(
   event: StripeEvent,
 ): Promise<void> {
   const invoice = event.data.object as Record<string, unknown>;
-  const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
+  const subId = typeof invoice["subscription"] === "string" ? invoice["subscription"] : null;
   if (subId) {
     const now = Date.now();
     await db
@@ -335,10 +335,10 @@ export async function handleChargeDisputeCreated(
   event: StripeEvent,
 ): Promise<void> {
   const dispute = event.data.object as Record<string, unknown>;
-  const chargeId = typeof dispute.charge === "string" ? dispute.charge : null;
-  const disputeId = typeof dispute.id === "string" ? dispute.id : "unknown";
-  const reason = typeof dispute.reason === "string" ? dispute.reason : "unknown";
-  const amount = typeof dispute.amount === "number" ? dispute.amount : null;
+  const chargeId = typeof dispute["charge"] === "string" ? dispute["charge"] : null;
+  const disputeId = typeof dispute["id"] === "string" ? dispute["id"] : "unknown";
+  const reason = typeof dispute["reason"] === "string" ? dispute["reason"] : "unknown";
+  const amount = typeof dispute["amount"] === "number" ? dispute["amount"] : null;
 
   await db
     .prepare(

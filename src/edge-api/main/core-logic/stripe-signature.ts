@@ -29,8 +29,8 @@ export async function verifyStripeSignature(
     return acc;
   }, {});
 
-  const timestamp = parts.t;
-  const v1Signature = parts.v1;
+  const timestamp = parts["t"];
+  const v1Signature = parts["v1"];
   if (!timestamp || !v1Signature) return false;
 
   // Validate timestamp is a positive integer (prevents NaN injection)

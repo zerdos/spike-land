@@ -2,6 +2,25 @@ import { Hono } from "hono";
 import type { Env } from "../core-logic/env";
 import type { AuthVariables } from "./middleware";
 
+interface McpAppRow {
+  slug: unknown;
+  name: unknown;
+  description: unknown;
+  emoji: unknown;
+  category: unknown;
+  tags: unknown;
+  tagline: unknown;
+  pricing: unknown;
+  is_featured: unknown;
+  is_new: unknown;
+  tool_count: unknown;
+  sort_order: unknown;
+  status?: unknown;
+  tools?: unknown;
+  graph?: unknown;
+  markdown?: unknown;
+}
+
 export const publicAppsRoute = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
 publicAppsRoute.get("/", async (c) => {
@@ -12,7 +31,8 @@ publicAppsRoute.get("/", async (c) => {
      ORDER BY sort_order ASC`,
   ).all();
 
-  const apps = (result.results ?? []).map((row) => {
+  const apps = (result.results ?? []).map((rawRow) => {
+    const row = rawRow as unknown as McpAppRow;
     let tags = [];
 
     try {
@@ -44,7 +64,7 @@ publicAppsRoute.get("/", async (c) => {
 publicAppsRoute.get("/:slug", async (c) => {
   const slug = c.req.param("slug");
 
-  const row = await c.env.DB.prepare(
+  const rawRow = await c.env.DB.prepare(
     `SELECT slug, name, description, emoji, category, tags, tagline, pricing, is_featured, is_new, status, tools, graph, markdown, tool_count, sort_order
      FROM mcp_apps
      WHERE slug = ?`,
@@ -52,10 +72,11 @@ publicAppsRoute.get("/:slug", async (c) => {
     .bind(slug)
     .first();
 
-  if (!row) {
+  if (!rawRow) {
     return c.json({ error: "App not found" }, 404);
   }
 
+  const row = rawRow as unknown as McpAppRow;
   let tools = [];
   let graph = {};
   let tags = [];

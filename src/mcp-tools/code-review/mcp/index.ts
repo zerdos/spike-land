@@ -293,7 +293,7 @@ export async function startServer(): Promise<void> {
     shipper.shipError({ service_name: "spike-review", message, stack_trace, severity: "high" });
   });
 
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env["GITHUB_TOKEN"];
   if (!token) {
     process.stderr.write(
       "GITHUB_TOKEN environment variable is required. Set it to a GitHub PAT or App installation token.\n",

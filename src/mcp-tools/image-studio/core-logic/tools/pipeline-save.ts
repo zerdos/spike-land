@@ -34,10 +34,10 @@ export const pipelineSaveTool = imageProcedure
           userId,
           visibility: "PRIVATE",
           tier: "FREE",
-          analysisConfig: castConfigs?.analysis ?? null,
-          autoCropConfig: castConfigs?.autoCrop ?? null,
-          promptConfig: castConfigs?.prompt ?? null,
-          generationConfig: castConfigs?.generation ?? null,
+          analysisConfig: castConfigs?.["analysis"] ?? null,
+          autoCropConfig: castConfigs?.["autoCrop"] ?? null,
+          promptConfig: castConfigs?.["prompt"] ?? null,
+          generationConfig: castConfigs?.["generation"] ?? null,
         }),
       );
 
@@ -83,10 +83,10 @@ export const pipelineSaveTool = imageProcedure
           userId,
           visibility: "PRIVATE",
           tier: source.tier,
-          analysisConfig: castConfigs?.analysis ?? source.analysisConfig,
-          autoCropConfig: castConfigs?.autoCrop ?? source.autoCropConfig,
-          promptConfig: castConfigs?.prompt ?? source.promptConfig,
-          generationConfig: castConfigs?.generation ?? source.generationConfig,
+          analysisConfig: castConfigs?.["analysis"] ?? source.analysisConfig,
+          autoCropConfig: castConfigs?.["autoCrop"] ?? source.autoCropConfig,
+          promptConfig: castConfigs?.["prompt"] ?? source.promptConfig,
+          generationConfig: castConfigs?.["generation"] ?? source.generationConfig,
         }),
       );
 
@@ -116,18 +116,18 @@ export const pipelineSaveTool = imageProcedure
     }
 
     const data: Record<string, unknown> = { name };
-    if (description !== undefined) data.description = description;
-    if (castConfigs?.analysis !== undefined) {
-      data.analysisConfig = castConfigs.analysis;
+    if (description !== undefined) data["description"] = description;
+    if (castConfigs?.["analysis"] !== undefined) {
+      data["analysisConfig"] = castConfigs["analysis"];
     }
-    if (castConfigs?.autoCrop !== undefined) {
-      data.autoCropConfig = castConfigs.autoCrop;
+    if (castConfigs?.["autoCrop"] !== undefined) {
+      data["autoCropConfig"] = castConfigs["autoCrop"];
     }
-    if (castConfigs?.prompt !== undefined) {
-      data.promptConfig = castConfigs.prompt;
+    if (castConfigs?.["prompt"] !== undefined) {
+      data["promptConfig"] = castConfigs["prompt"];
     }
-    if (castConfigs?.generation !== undefined) {
-      data.generationConfig = castConfigs.generation;
+    if (castConfigs?.["generation"] !== undefined) {
+      data["generationConfig"] = castConfigs["generation"];
     }
 
     const result = await tryCatch(deps.db.pipelineUpdate(pipelineId, data));

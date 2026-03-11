@@ -169,7 +169,7 @@ bugbook.post(`${BUGBOOK_API_BASE}/report`, authMiddleware, eloThrottleMiddleware
   let isNewBug: boolean;
 
   if (existingBug) {
-    bugId = existingBug.id as string;
+    bugId = existingBug["id"] as string;
     isNewBug = false;
 
     const bumpQ = buildBumpBugReportCount(now, bugId);
@@ -262,7 +262,7 @@ bugbook.post(`${BUGBOOK_API_BASE}/report`, authMiddleware, eloThrottleMiddleware
     {
       bugId,
       isNewBug,
-      status: isNewBug ? "CANDIDATE" : (existingBug?.status ?? "ACTIVE"),
+      status: isNewBug ? "CANDIDATE" : (existingBug?.["status"] ?? "ACTIVE"),
       userElo: { newElo: eloResult.newElo, delta: eloResult.delta, tier: eloResult.tier },
     },
     201,
@@ -300,7 +300,7 @@ bugbook.post(
       c.env.DB.prepare(bumpQ.sql).bind(...bumpQ.params),
       c.env.DB.prepare(
         "INSERT INTO bug_reports (bug_id, reporter_id, service_name, description, severity) VALUES (?, ?, ?, 'Confirmed by user', ?)",
-      ).bind(bugId, userId, bug.category as string, bug.severity as string),
+      ).bind(bugId, userId, bug["category"] as string, bug["severity"] as string),
     ]);
 
     const eloResult = await recordEloEvent(c.env.DB, userId, "bug_confirmed", bugId);

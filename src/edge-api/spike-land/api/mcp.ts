@@ -71,11 +71,11 @@ function applyCallerContext(
   userRole?: string,
 ): void {
   const mcpWithRegistry = mcpServer as unknown as Record<string, unknown>;
-  if (!mcpWithRegistry.registry) {
+  if (!mcpWithRegistry["registry"]) {
     return;
   }
 
-  const reg = mcpWithRegistry.registry as {
+  const reg = mcpWithRegistry["registry"] as {
     setCallerElo(elo: number, tier: CallerTier, isAgent: boolean): void;
     setCallerRole(role: string): void;
   };
@@ -370,9 +370,9 @@ mcpRoute.post("/", async (c) => {
             if ("error" in parsed) {
               outcome = "error";
             } else if (
-              parsed.result &&
-              typeof parsed.result === "object" &&
-              (parsed.result as Record<string, unknown>).isError
+              parsed["result"] &&
+              typeof parsed["result"] === "object" &&
+              (parsed["result"] as Record<string, unknown>)["isError"]
             ) {
               outcome = "error";
             }
@@ -518,9 +518,9 @@ mcpRoute.post("/", async (c) => {
           if ("error" in parsed) {
             outcome = "error";
           } else if (
-            parsed.result &&
-            typeof parsed.result === "object" &&
-            (parsed.result as Record<string, unknown>).isError
+            parsed["result"] &&
+            typeof parsed["result"] === "object" &&
+            (parsed["result"] as Record<string, unknown>)["isError"]
           ) {
             outcome = "error";
           }

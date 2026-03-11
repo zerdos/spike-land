@@ -261,7 +261,7 @@ export function wrapServerWithLogging(
           result &&
           typeof result === "object" &&
           "isError" in result &&
-          (result as Record<string, unknown>).isError
+          (result as Record<string, unknown>)["isError"]
         ) {
           outcome = "error";
         }

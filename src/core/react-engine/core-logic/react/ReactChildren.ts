@@ -31,9 +31,9 @@ function getElementKey(element: unknown, index: number): string {
   if (
     typeof element === "object" &&
     element !== null &&
-    (element as Record<string, unknown>).key != null
+    (element as Record<string, unknown>)["key"] != null
   ) {
-    return escape("" + (element as Record<string, unknown>).key);
+    return escape("" + (element as Record<string, unknown>)["key"]);
   }
   return index.toString(36);
 }
@@ -146,7 +146,7 @@ function mapIntoArray(
           mappedChild,
           escapedPrefix +
             (mappedChild.key != null &&
-            (!child || (child as Record<string, unknown>).key !== mappedChild.key)
+            (!child || (child as Record<string, unknown>)["key"] !== mappedChild.key)
               ? escapeUserProvidedKey("" + mappedChild.key) + "/"
               : "") +
             childKey,

@@ -25,14 +25,14 @@ function isValidErrorLog(e: unknown): e is ErrorLogEntry {
   if (typeof e !== "object" || e === null) return false;
   const obj = e as Record<string, unknown>;
   return (
-    typeof obj.service_name === "string" &&
-    obj.service_name.length <= MAX_STRING &&
-    typeof obj.message === "string" &&
-    obj.message.length <= MAX_STRING &&
-    (obj.error_code === undefined ||
-      (typeof obj.error_code === "string" && obj.error_code.length <= MAX_STRING)) &&
-    (obj.stack_trace === undefined ||
-      (typeof obj.stack_trace === "string" && obj.stack_trace.length <= MAX_STACK))
+    typeof obj["service_name"] === "string" &&
+    obj["service_name"].length <= MAX_STRING &&
+    typeof obj["message"] === "string" &&
+    obj["message"].length <= MAX_STRING &&
+    (obj["error_code"] === undefined ||
+      (typeof obj["error_code"] === "string" && obj["error_code"].length <= MAX_STRING)) &&
+    (obj["stack_trace"] === undefined ||
+      (typeof obj["stack_trace"] === "string" && obj["stack_trace"].length <= MAX_STACK))
   );
 }
 

@@ -68,7 +68,7 @@ export const historyTool = imageProcedure
     }
 
     // Sort by createdAt descending and limit
-    results.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+    results.sort((a, b) => String(b["createdAt"]).localeCompare(String(a["createdAt"])));
 
     return jsonResult({
       jobs: results.slice(0, limit),

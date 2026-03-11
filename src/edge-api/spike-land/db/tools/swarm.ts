@@ -214,9 +214,9 @@ export function registerSwarmTools(registry: ToolRegistry, userId: string, db: D
         }
 
         const meta = JSON.parse(agent.metadata || "{}") as Record<string, unknown>;
-        if (project_path !== undefined) meta.projectPath = project_path;
+        if (project_path !== undefined) meta["projectPath"] = project_path;
         if (working_directory !== undefined) {
-          meta.workingDirectory = working_directory;
+          meta["workingDirectory"] = working_directory;
         }
 
         await ctx.db

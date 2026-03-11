@@ -54,7 +54,7 @@ export async function createGameRecord(
   whitePlayerId: string,
   timeControl: string = "BLITZ_5",
 ): Promise<{ id: string }> {
-  const timeMs = TIME_CONTROL_MS[timeControl] ?? TIME_CONTROL_MS.BLITZ_5;
+  const timeMs = TIME_CONTROL_MS[timeControl] ?? TIME_CONTROL_MS["BLITZ_5"];
 
   const resolvedTimeMs = timeMs ?? 300_000;
   const game = await prisma.chessGame.create({
@@ -195,12 +195,11 @@ export async function getGame(gameId: string): Promise<GameRecord> {
 }
 
 export async function listGames(playerId: string, status?: string): Promise<GameRecord[]> {
-
   const where: Record<string, unknown> = {
     OR: [{ whitePlayerId: playerId }, { blackPlayerId: playerId }],
   };
   if (status) {
-    where.status = status;
+    where["status"] = status;
   }
 
   return prisma.chessGame.findMany({

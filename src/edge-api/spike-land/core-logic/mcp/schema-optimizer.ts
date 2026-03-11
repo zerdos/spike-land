@@ -152,7 +152,7 @@ function optimizeNode(node: unknown, propertyName: string | undefined, isRoot = 
 
     // Strip type-default defaults (zero values that match the declared type)
     if (key === "default") {
-      const nodeType = typeof obj.type === "string" ? obj.type : undefined;
+      const nodeType = typeof obj["type"] === "string" ? obj["type"] : undefined;
       if (isTypeDefaultValue(value, nodeType)) {
         continue;
       }
@@ -189,10 +189,10 @@ function optimizeNode(node: unknown, propertyName: string | undefined, isRoot = 
 
     // Process descriptions
     if (key === "description" && typeof value === "string") {
-      const nodeType = typeof obj.type === "string" ? obj.type : undefined;
+      const nodeType = typeof obj["type"] === "string" ? obj["type"] : undefined;
       if (
         propertyName &&
-        isRedundantDescription(propertyName, value, obj.enum as unknown[] | undefined, nodeType)
+        isRedundantDescription(propertyName, value, obj["enum"] as unknown[] | undefined, nodeType)
       ) {
         continue; // strip entirely
       }

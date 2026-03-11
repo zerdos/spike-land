@@ -10,48 +10,51 @@
 // Enumerations
 // ---------------------------------------------------------------------------
 
-export enum Operator {
+export const Operator = {
   /** Strict equality */
-  eq = "eq",
+  eq: "eq",
   /** Strict inequality */
-  neq = "neq",
+  neq: "neq",
   /** Greater than (numeric) */
-  gt = "gt",
+  gt: "gt",
   /** Less than (numeric) */
-  lt = "lt",
+  lt: "lt",
   /** Greater than or equal (numeric) */
-  gte = "gte",
+  gte: "gte",
   /** Less than or equal (numeric) */
-  lte = "lte",
+  lte: "lte",
   /** Value is contained within the rule array */
-  in = "in",
+  in: "in",
   /** Value is NOT contained within the rule array */
-  notIn = "notIn",
+  notIn: "notIn",
   /** Array/string field contains the rule value */
-  contains = "contains",
+  contains: "contains",
   /** Field is present and non-null (value is ignored) */
-  exists = "exists",
-}
+  exists: "exists",
+} as const;
+export type Operator = (typeof Operator)[keyof typeof Operator];
 
-export enum EmploymentStatus {
-  employed = "employed",
-  selfEmployed = "selfEmployed",
-  unemployed = "unemployed",
-  student = "student",
-  retired = "retired",
-  disabled = "disabled",
-  notInLaborForce = "notInLaborForce",
-}
+export const EmploymentStatus = {
+  employed: "employed",
+  selfEmployed: "selfEmployed",
+  unemployed: "unemployed",
+  student: "student",
+  retired: "retired",
+  disabled: "disabled",
+  notInLaborForce: "notInLaborForce",
+} as const;
+export type EmploymentStatus = (typeof EmploymentStatus)[keyof typeof EmploymentStatus];
 
-export enum CitizenshipStatus {
-  citizen = "citizen",
-  permanentResident = "permanentResident",
-  refugee = "refugee",
-  asylumSeeker = "asylumSeeker",
-  temporaryVisa = "temporaryVisa",
-  undocumented = "undocumented",
-  other = "other",
-}
+export const CitizenshipStatus = {
+  citizen: "citizen",
+  permanentResident: "permanentResident",
+  refugee: "refugee",
+  asylumSeeker: "asylumSeeker",
+  temporaryVisa: "temporaryVisa",
+  undocumented: "undocumented",
+  other: "other",
+} as const;
+export type CitizenshipStatus = (typeof CitizenshipStatus)[keyof typeof CitizenshipStatus];
 
 // ---------------------------------------------------------------------------
 // Core domain types

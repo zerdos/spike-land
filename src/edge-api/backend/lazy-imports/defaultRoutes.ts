@@ -2,7 +2,10 @@ import { HTML, importMap, md5 } from "@spike-land-ai/code";
 import type { Code } from "./chatRoom";
 
 export class DefaultRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleDefaultRoute(): Promise<Response> {
     const { html, codeSpace, css } = this.code.getSession();

@@ -82,7 +82,7 @@ export async function main(): Promise<void> {
     .option("--base-url <url>", "Base URL for spike.land", "https://spike.land")
     .hook("preAction", (thisCommand) => {
       const opts = thisCommand.opts();
-      if (opts.verbose) {
+      if (opts["verbose"]) {
         setVerbose(true);
       }
     });
@@ -99,7 +99,7 @@ export async function main(): Promise<void> {
 }
 
 /* v8 ignore start */
-if (process.env.NODE_ENV !== "test") {
+if (process.env["NODE_ENV"] !== "test") {
   main().catch((err) => {
     console.error(`spike: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);

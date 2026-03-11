@@ -348,7 +348,7 @@ export function SupportBanner({ variant, slug, onTrackEvent }: SupportBannerProp
 
   if (!slug) {
     // Guard: blog variant requires a slug — fail silently in production
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env["NODE_ENV"] !== "production") {
       console.warn("[SupportBanner] variant='blog' requires a `slug` prop.");
     }
     return null;

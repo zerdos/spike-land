@@ -107,10 +107,10 @@ export function pushStartInstance(type: string, props: Record<string, unknown>):
   html += ">";
 
   // Handle raw HTML content (from React's __html prop)
-  if (props.rawHtml != null) {
-    html += String(props.rawHtml);
-  } else if (typeof props.children === "string" || typeof props.children === "number") {
-    html += escapeHtml(String(props.children));
+  if (props["rawHtml"] != null) {
+    html += String(props["rawHtml"]);
+  } else if (typeof props["children"] === "string" || typeof props["children"] === "number") {
+    html += escapeHtml(String(props["children"]));
   }
 
   return html;

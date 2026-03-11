@@ -2,7 +2,10 @@ import { computeSessionHash, importMapReplace, md5 } from "@spike-land-ai/code";
 import type { Code } from "./chatRoom";
 
 export class CodeRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleCodeRoute(): Promise<Response> {
     return new Response(this.code.getSession().code, {

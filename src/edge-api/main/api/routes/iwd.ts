@@ -349,30 +349,26 @@ function resolveGreeting(
     }
   }
 
-  return GREETINGS.en as GreetingInfo;
+  return GREETINGS["en"] as GreetingInfo;
 }
 
 function greetingForCountry(countryCode: string | null | undefined): GreetingInfo {
-  if (!countryCode) return GREETINGS.en as GreetingInfo;
+  if (!countryCode) return GREETINGS["en"] as GreetingInfo;
   const locale = COUNTRY_TO_LOCALE[countryCode.toUpperCase()];
-  return ((locale && GREETINGS[locale]) || GREETINGS.en) as GreetingInfo;
+  return ((locale && GREETINGS[locale]) || GREETINGS["en"]) as GreetingInfo;
 }
 
-function normalizeVisitor(row: Record<string, unknown>): IwdVisitor {
-  const fallbackGreeting = greetingForCountry(typeof row.country === "string" ? row.country : null);
+function normalizeVisitor(row: VisitorRow): IwdVisitor {
+  const fallbackGreeting = greetingForCountry(row.country);
   return {
     id: String(row.id),
     latitude: numberValue(row.latitude),
     longitude: numberValue(row.longitude),
-    city: typeof row.city === "string" ? row.city : null,
-    country: typeof row.country === "string" ? row.country : null,
-    locale: typeof row.locale === "string" && row.locale ? row.locale : fallbackGreeting.locale,
-    greeting:
-      typeof row.greeting === "string" && row.greeting ? row.greeting : fallbackGreeting.greeting,
-    languageLabel:
-      typeof row.language_label === "string" && row.language_label
-        ? row.language_label
-        : fallbackGreeting.languageLabel,
+    city: row.city,
+    country: row.country,
+    locale: row.locale ?? fallbackGreeting.locale,
+    greeting: row.greeting ?? fallbackGreeting.greeting,
+    languageLabel: row.language_label ?? fallbackGreeting.languageLabel,
     createdAt: numberValue(row.created_at),
   };
 }
@@ -391,25 +387,24 @@ function parseEmojiJson(value: string | null | undefined): AllowedEmoji[] {
   }
 }
 
-function normalizeMessage(row: Record<string, unknown>): IwdMessage {
-  const fallbackGreeting = greetingForCountry(typeof row.country === "string" ? row.country : null);
+function normalizeMessage(row: MessageRow): IwdMessage {
+  const fallbackGreeting = greetingForCountry(row.country);
   return {
-    id: String(row.id),
-    visitorId: String(row.visitor_id),
-    text: typeof row.text === "string" ? row.text : "",
-    emojis: parseEmojiJson(typeof row.emoji_json === "string" ? row.emoji_json : "[]"),
-    country: typeof row.country === "string" ? row.country : null,
-    city: typeof row.city === "string" ? row.city : null,
+    id: row.id,
+    visitorId: row.visitor_id,
+    text: row.text,
+    emojis: parseEmojiJson(row.emoji_json),
+    country: row.country,
+    city: row.city,
     latitude: numberValue(row.latitude),
     longitude: numberValue(row.longitude),
-    locale: typeof row.locale === "string" && row.locale ? row.locale : fallbackGreeting.locale,
-    greeting:
-      typeof row.greeting === "string" && row.greeting ? row.greeting : fallbackGreeting.greeting,
-    imagePrompt: typeof row.image_prompt === "string" ? row.image_prompt : null,
-    imageJobId: typeof row.image_job_id === "string" ? row.image_job_id : null,
-    imageUrl: typeof row.image_url === "string" ? row.image_url : null,
-    imageStatus: typeof row.image_status === "string" ? row.image_status : "PROCESSING",
-    errorMessage: typeof row.error_message === "string" ? row.error_message : null,
+    locale: row.locale ?? fallbackGreeting.locale,
+    greeting: row.greeting ?? fallbackGreeting.greeting,
+    imagePrompt: row.image_prompt,
+    imageJobId: row.image_job_id,
+    imageUrl: row.image_url,
+    imageStatus: row.image_status,
+    errorMessage: row.error_message,
     createdAt: numberValue(row.created_at),
     updatedAt: numberValue(row.updated_at),
   };
@@ -434,14 +429,14 @@ async function loadFeed(db: D1Database, since?: number): Promise<FeedPayload> {
       "SELECT id, latitude, longitude, city, country, locale, greeting, language_label, created_at FROM iwd_visitors WHERE created_at >= ? ORDER BY created_at ASC",
     )
     .bind(visitorSince)
-    .all<Record<string, unknown>>();
+    .all<VisitorRow>();
 
   const messagesPromise = db
     .prepare(
       "SELECT id, visitor_id, text, emoji_json, country, city, latitude, longitude, locale, greeting, image_prompt, image_job_id, image_url, image_status, error_message, created_at, updated_at FROM iwd_messages WHERE created_at >= ? AND updated_at >= ? ORDER BY updated_at ASC",
     )
     .bind(dayStart, messageSince)
-    .all<Record<string, unknown>>();
+    .all<MessageRow>();
 
   const leaderboardPromise = db
     .prepare(
@@ -2384,7 +2379,7 @@ iwd.post("/api/iwd/checkin", async (c) => {
       const response = jsonResponse(c, {
         ok: true,
         isNew: false,
-        visitor: normalizeVisitor(existing as unknown as Record<string, unknown>),
+        visitor: normalizeVisitor(existing),
         viewerGreeting: resolveGreeting(acceptLanguage, existing.country),
         ...feed,
       });
@@ -2393,10 +2388,10 @@ iwd.post("/api/iwd/checkin", async (c) => {
     }
   }
 
-  let latitude = numberValue(cf?.latitude, Number.NaN);
-  let longitude = numberValue(cf?.longitude, Number.NaN);
-  let city = typeof cf?.city === "string" ? cf.city : null;
-  let country = typeof cf?.country === "string" ? cf.country : null;
+  let latitude = numberValue(cf?.["latitude"], Number.NaN);
+  let longitude = numberValue(cf?.["longitude"], Number.NaN);
+  let city = typeof cf?.["city"] === "string" ? cf["city"] : null;
+  let country = typeof cf?.["country"] === "string" ? cf["country"] : null;
 
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     const randomArray = new Uint32Array(1);
@@ -2422,7 +2417,7 @@ iwd.post("/api/iwd/checkin", async (c) => {
     const response = jsonResponse(c, {
       ok: true,
       isNew: false,
-      visitor: normalizeVisitor(deduped as unknown as Record<string, unknown>),
+      visitor: normalizeVisitor(deduped),
       viewerGreeting: greeting,
       ...feed,
     });
@@ -2448,7 +2443,7 @@ iwd.post("/api/iwd/checkin", async (c) => {
   const response = jsonResponse(c, {
     ok: true,
     isNew: true,
-    visitor: inserted ? normalizeVisitor(inserted as unknown as Record<string, unknown>) : null,
+    visitor: inserted ? normalizeVisitor(inserted) : null,
     viewerGreeting: greeting,
     ...feed,
   });
@@ -2528,7 +2523,7 @@ iwd.post("/api/iwd/message", async (c) => {
     return jsonResponse(c, { error: "Message launch failed." }, 500);
   }
 
-  const normalized = normalizeMessage(inserted as unknown as Record<string, unknown>);
+  const normalized = normalizeMessage(inserted);
   try {
     c.executionCtx.waitUntil(generateArtwork(c.env, normalized));
   } catch {

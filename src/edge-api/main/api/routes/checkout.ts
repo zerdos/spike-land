@@ -58,7 +58,7 @@ checkout.post("/api/checkout", async (c) => {
     return c.json({ error: "Failed to look up price" }, 502);
   }
 
-  const prices = priceRes.data.data as Array<{ id: string }> | undefined;
+  const prices = priceRes.data["data"] as Array<{ id: string }> | undefined;
   if (!prices || prices.length === 0) {
     return c.json({ error: `No price found for tier '${tier}'` }, 404);
   }
@@ -91,7 +91,7 @@ checkout.post("/api/checkout", async (c) => {
     return c.json({ error: "Failed to create checkout session" }, 502);
   }
 
-  const sessionUrl = sessionRes.data.url as string | undefined;
+  const sessionUrl = sessionRes.data["url"] as string | undefined;
   if (!sessionUrl) {
     return c.json({ error: "No checkout URL returned" }, 502);
   }
@@ -134,7 +134,7 @@ checkout.post("/api/checkout/service", async (c) => {
     return c.json({ error: "Failed to look up price" }, 502);
   }
 
-  const prices = priceRes.data.data as Array<{ id: string }> | undefined;
+  const prices = priceRes.data["data"] as Array<{ id: string }> | undefined;
   if (!prices || prices.length === 0) {
     return c.json({ error: `No price found for service '${service}'` }, 404);
   }
@@ -156,7 +156,7 @@ checkout.post("/api/checkout/service", async (c) => {
   // Attach userId if authenticated, otherwise allow guest checkout
   const userId = c.get("userId") as string | undefined;
   if (userId) {
-    sessionParams.client_reference_id = userId;
+    sessionParams["client_reference_id"] = userId;
     sessionParams["metadata[userId]"] = userId;
   }
 
@@ -166,7 +166,7 @@ checkout.post("/api/checkout/service", async (c) => {
   // excessively long or malformed strings reaching the Stripe API (OWASP A03).
   const EMAIL_RE = /^[^\s@]{1,254}@[^\s@]+\.[^\s@]{2,}$/;
   if (body.email && typeof body.email === "string" && EMAIL_RE.test(body.email)) {
-    sessionParams.customer_email = body.email.slice(0, 254);
+    sessionParams["customer_email"] = body.email.slice(0, 254);
   }
 
   const sessionRes = await stripePost(stripeKey, "/v1/checkout/sessions", sessionParams);
@@ -176,7 +176,7 @@ checkout.post("/api/checkout/service", async (c) => {
     return c.json({ error: "Failed to create checkout session" }, 502);
   }
 
-  const sessionUrl = sessionRes.data.url as string | undefined;
+  const sessionUrl = sessionRes.data["url"] as string | undefined;
   if (!sessionUrl) {
     return c.json({ error: "No checkout URL returned" }, 502);
   }

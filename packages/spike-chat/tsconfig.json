@@ -2,6 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": true,
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["../../src/edge-api/spike-chat/**/*", "index.ts"]

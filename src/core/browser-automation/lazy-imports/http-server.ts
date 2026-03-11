@@ -9,7 +9,11 @@ const LOCAL_BROWSER_ORIGIN_PATTERN =
   /^https?:\/\/(?:localhost|127\.0\.0\.1|local\.spike\.land)(:\d+)?$/i;
 
 export function isAllowedQaStudioOrigin(origin: string | undefined) {
-  return origin === undefined || origin === "https://spike.land" || LOCAL_BROWSER_ORIGIN_PATTERN.test(origin);
+  return (
+    origin === undefined ||
+    origin === "https://spike.land" ||
+    LOCAL_BROWSER_ORIGIN_PATTERN.test(origin)
+  );
 }
 
 export function startHttpServer(server: McpServer, port: number, host: string) {
@@ -44,7 +48,7 @@ export function startHttpServer(server: McpServer, port: number, host: string) {
   });
 
   app.post("/mcp/messages", async (req, res) => {
-    const sessionId = req.query.sessionId as string;
+    const sessionId = req.query["sessionId"] as string;
     if (!sessionId) {
       res.status(400).send("Missing sessionId query parameter");
       return;
@@ -67,7 +71,7 @@ export function startHttpServer(server: McpServer, port: number, host: string) {
   });
 
   app.delete("/mcp", (req, res) => {
-    const sessionId = req.query.sessionId as string;
+    const sessionId = req.query["sessionId"] as string;
     if (sessionId) {
       const transport = transports.get(sessionId);
       if (transport) {

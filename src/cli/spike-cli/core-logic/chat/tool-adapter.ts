@@ -30,8 +30,8 @@ function extractToolResultText(content: ToolResultContent[]): string {
  */
 function normalizeInputSchema(schema: Record<string, unknown>): Record<string, unknown> {
   const normalized = { ...schema };
-  if (!normalized.type) {
-    normalized.type = "object";
+  if (!normalized["type"]) {
+    normalized["type"] = "object";
   }
   return normalized;
 }
@@ -59,13 +59,13 @@ export interface ParamInfo {
  * Returns `{ key: defaultValue }` for every property that declares a `"default"`.
  */
 export function extractDefaults(inputSchema: Record<string, unknown>): Record<string, unknown> {
-  const props = inputSchema.properties as Record<string, Record<string, unknown>> | undefined;
+  const props = inputSchema["properties"] as Record<string, Record<string, unknown>> | undefined;
   if (!props) return {};
 
   const defaults: Record<string, unknown> = {};
   for (const [key, prop] of Object.entries(props)) {
     if ("default" in prop) {
-      defaults[key] = prop.default;
+      defaults[key] = prop["default"];
     }
   }
   return defaults;
@@ -76,8 +76,8 @@ export function extractDefaults(inputSchema: Record<string, unknown>): Record<st
  * These are the params the user must supply.
  */
 export function getRequiredParams(inputSchema: Record<string, unknown>): ParamInfo[] {
-  const required = (inputSchema.required as string[] | undefined) ?? [];
-  const props = inputSchema.properties as Record<string, Record<string, unknown>> | undefined;
+  const required = (inputSchema["required"] as string[] | undefined) ?? [];
+  const props = inputSchema["properties"] as Record<string, Record<string, unknown>> | undefined;
   if (!props) return [];
 
   const defaults = extractDefaults(inputSchema);
@@ -88,8 +88,8 @@ export function getRequiredParams(inputSchema: Record<string, unknown>): ParamIn
       const prop = props[name] ?? {};
       return {
         name,
-        description: (prop.description as string) ?? "",
-        type: (prop.type as string) ?? "string",
+        description: (prop["description"] as string) ?? "",
+        type: (prop["type"] as string) ?? "string",
       };
     });
 }

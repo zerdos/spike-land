@@ -13,7 +13,7 @@ interface MessageContentPart {
 function isMessageContentPart(value: unknown): value is MessageContentPart {
   if (value === null || typeof value !== "object") return false;
   const obj = value as Record<string, unknown>;
-  return typeof obj.type === "string";
+  return typeof obj["type"] === "string";
 }
 
 interface MessagePart {

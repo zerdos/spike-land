@@ -30,11 +30,14 @@ function byteSize(str: string): number {
 }
 
 export class LargeValueStorage {
-  constructor(
-    private storage: DurableObjectStorage,
-    private r2: R2Bucket,
-    private doId: string,
-  ) {}
+  private storage: DurableObjectStorage;
+  private r2: R2Bucket;
+  private doId: string;
+  constructor(storage: DurableObjectStorage, r2: R2Bucket, doId: string) {
+    this.storage = storage;
+    this.r2 = r2;
+    this.doId = doId;
+  }
 
   private r2Key(storageKey: string): string {
     return `do_${this.doId}/${storageKey}`;

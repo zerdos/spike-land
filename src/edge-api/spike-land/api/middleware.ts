@@ -60,10 +60,10 @@ export const authMiddleware = createMiddleware<{
       c.req.method === "POST" &&
       body &&
       typeof body === "object" &&
-      body.method === "tools/call" &&
-      body.params &&
-      typeof body.params === "object" &&
-      ANONYMOUS_TOOLS.has((body.params as Record<string, unknown>).name as string)
+      body["method"] === "tools/call" &&
+      body["params"] &&
+      typeof body["params"] === "object" &&
+      ANONYMOUS_TOOLS.has((body["params"] as Record<string, unknown>)["name"] as string)
     ) {
       c.set("userId", "anonymous");
       c.set("db", db);

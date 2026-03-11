@@ -70,7 +70,7 @@ export function isSimpleFunctionComponent(type: unknown): boolean {
   return (
     typeof type === "function" &&
     !shouldConstruct(type as (...args: unknown[]) => unknown) &&
-    (type as unknown as Record<string, unknown>).defaultProps === undefined
+    (type as unknown as Record<string, unknown>)["defaultProps"] === undefined
   );
 }
 
@@ -100,7 +100,7 @@ export function createFiberFromTypeAndProps(
     switch (type) {
       case REACT_FRAGMENT_TYPE:
         return createFiberFromFragment(
-          (pendingProps as Record<string, unknown>).children,
+          (pendingProps as Record<string, unknown>)["children"],
           lanes,
           key,
         );
@@ -108,7 +108,7 @@ export function createFiberFromTypeAndProps(
         return createFiberFromSuspense(pendingProps, lanes, key);
       default: {
         if (typeof type === "object" && type !== null) {
-          switch ((type as Record<string, unknown>).$$typeof) {
+          switch ((type as Record<string, unknown>)["$$typeof"]) {
             case REACT_CONTEXT_TYPE:
               fiberTag = ContextProvider;
               break;

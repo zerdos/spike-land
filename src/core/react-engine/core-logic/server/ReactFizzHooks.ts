@@ -99,7 +99,7 @@ export const ServerDispatcher: Dispatcher = {
     if (usable !== null && typeof usable === "object") {
       if (
         "$$typeof" in usable &&
-        (usable as unknown as Record<string, unknown>).$$typeof === REACT_CONTEXT_TYPE
+        (usable as unknown as Record<string, unknown>)["$$typeof"] === REACT_CONTEXT_TYPE
       ) {
         const context = usable as ReactContext<T>;
         return context._currentValue;

@@ -62,9 +62,9 @@ function buildReportBody(args: {
     dateRanges: [{ startDate: args.date_range_start, endDate: args.date_range_end }],
     limit: args.limit ?? 1000,
   };
-  if (args.offset !== undefined) body.offset = args.offset;
-  if (args.dimension_filter !== undefined) body.dimensionFilter = args.dimension_filter;
-  if (args.metric_filter !== undefined) body.metricFilter = args.metric_filter;
+  if (args.offset !== undefined) body["offset"] = args.offset;
+  if (args.dimension_filter !== undefined) body["dimensionFilter"] = args.dimension_filter;
+  if (args.metric_filter !== undefined) body["metricFilter"] = args.metric_filter;
   return body;
 }
 

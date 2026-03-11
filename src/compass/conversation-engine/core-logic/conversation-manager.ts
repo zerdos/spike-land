@@ -98,9 +98,11 @@ export interface ConversationManagerOptions {
 // ---------------------------------------------------------------------------
 
 export class SessionNotFoundError extends Error {
-  constructor(public readonly sessionId: string) {
+  readonly sessionId: string;
+  constructor(sessionId: string) {
     super(`Session "${sessionId}" not found. It may have expired or never existed.`);
     this.name = "SessionNotFoundError";
+    this.sessionId = sessionId;
   }
 }
 
@@ -186,7 +188,7 @@ export class ConversationManager {
    */
   async handleMessage(sessionId: string, userContent: string): Promise<Message> {
     const state = await this.requireSession(sessionId);
-    const config = state.context.config as ConversationConfig;
+    const config = state.context["config"] as ConversationConfig;
 
     if (state.history.length >= config.maxTurns * 2) {
       return this.makeMessage(

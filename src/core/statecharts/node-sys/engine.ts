@@ -383,7 +383,7 @@ export function sendEvent(
 
   // Clean up event payload from context
   if (payload) {
-    delete instance.context._event;
+    delete instance.context["_event"];
   }
 
   if (!matchedTransition) {

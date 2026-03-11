@@ -27,8 +27,8 @@ export function registerTransformTool(server: McpServer): void {
         code: result.data.code,
         warnings: result.data.warnings,
       };
-      if (result.data.map) output.map = result.data.map;
-      if (result.data.mangleCache) output.mangleCache = result.data.mangleCache;
+      if (result.data.map) output["map"] = result.data.map;
+      if (result.data.mangleCache) output["mangleCache"] = result.data.mangleCache;
 
       return {
         content: [

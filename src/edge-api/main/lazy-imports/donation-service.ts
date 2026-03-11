@@ -12,9 +12,9 @@ const log = createLogger("spike-edge");
 
 export async function handleBlogDonation(db: D1Database, event: StripeEvent): Promise<void> {
   const session = event.data.object as unknown as StripeSession;
-  const slug = session.metadata?.slug;
-  const amountStr = session.metadata?.amount;
-  const sessionId = (event.data.object as Record<string, unknown>).id as string | undefined;
+  const slug = session.metadata?.["slug"];
+  const amountStr = session.metadata?.["amount"];
+  const sessionId = (event.data.object as Record<string, unknown>)["id"] as string | undefined;
 
   if (!slug || !sessionId) return;
 
@@ -53,7 +53,7 @@ async function trackExperimentRevenue(
   amountStr: string | undefined,
 ): Promise<void> {
   try {
-    const metaClientId = metadata?.client_id;
+    const metaClientId = metadata?.["client_id"];
     const amountCents = amountStr ? Math.round(parseFloat(amountStr) * 100) : 0;
     if (!metaClientId || amountCents <= 0) return;
 

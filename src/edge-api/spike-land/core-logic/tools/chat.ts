@@ -15,7 +15,7 @@ import type { Env } from "../env";
 /** Minimal env fields required by chat tools. */
 type ChatEnv = Pick<Env, "ANTHROPIC_API_KEY">;
 
-const MODEL_MAP: Record<string, string> = {
+const MODEL_MAP: { opus: string; sonnet: string; haiku: string } = {
   opus: "claude-4-6-opus",
   sonnet: "claude-4-6-sonnet",
   haiku: "claude-4-5-haiku",
@@ -75,7 +75,7 @@ export function registerChatTools(
             messages: [{ role: "user", content: message }],
           };
           if (system_prompt) {
-            body.system = system_prompt;
+            body["system"] = system_prompt;
           }
 
           const response = await fetch("https://api.anthropic.com/v1/messages", {

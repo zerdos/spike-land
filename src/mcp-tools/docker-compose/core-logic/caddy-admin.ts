@@ -10,7 +10,7 @@ export class CaddyAdminClient {
   private readonly baseUrl: string;
 
   constructor(baseUrl?: string) {
-    this.baseUrl = baseUrl ?? process.env.CADDY_ADMIN_URL ?? "http://caddy:2019";
+    this.baseUrl = baseUrl ?? process.env["CADDY_ADMIN_URL"] ?? "http://caddy:2019";
   }
 
   async getConfig(): Promise<unknown> {

@@ -112,11 +112,11 @@ interface WebCryptoLocal {
 // all runtimes without side-effects at import time.
 function getCrypto(): WebCryptoLocal {
   // globalThis.crypto is available in: browsers, CF Workers, Node >= 20, Deno
-  const c = (globalThis as Record<string, unknown>).crypto;
+  const c = (globalThis as Record<string, unknown>)["crypto"];
   if (
     typeof c !== "object" ||
     c === null ||
-    typeof (c as Record<string, unknown>).subtle === "undefined"
+    typeof (c as Record<string, unknown>)["subtle"] === "undefined"
   ) {
     throw new Error(
       "Web Crypto API (globalThis.crypto.subtle) is not available in this runtime. " +
@@ -198,12 +198,16 @@ function decodeUtf8(bytes: BufferSource): string {
  *   const plaintext = await svc.decrypt(payload, key);
  */
 export class EncryptionService {
+  private readonly keyId: string;
+
   /**
    * @param keyId  Logical key identifier used to populate EncryptedPayload.keyId.
    *   This should reflect key version so callers can rotate keys and still
    *   decrypt older records (e.g. "compass-v1", "compass-v2").
    */
-  constructor(private readonly keyId: string) {}
+  constructor(keyId: string) {
+    this.keyId = keyId;
+  }
 
   /**
    * Generate a new AES-GCM-256 CryptoKey.

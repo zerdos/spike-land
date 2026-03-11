@@ -73,7 +73,7 @@ credits.post("/api/credits/purchase", async (c) => {
     return c.json({ error: "Failed to look up price" }, 502);
   }
 
-  const prices = priceRes.data.data as Array<{ id: string }> | undefined;
+  const prices = priceRes.data["data"] as Array<{ id: string }> | undefined;
   if (!prices || prices.length === 0) {
     return c.json({ error: `No price found for ${pack.credits} credit pack` }, 404);
   }
@@ -98,7 +98,7 @@ credits.post("/api/credits/purchase", async (c) => {
     return c.json({ error: "Failed to create checkout session" }, 502);
   }
 
-  const sessionUrl = sessionRes.data.url as string | undefined;
+  const sessionUrl = sessionRes.data["url"] as string | undefined;
   if (!sessionUrl) {
     return c.json({ error: "No checkout URL returned" }, 502);
   }

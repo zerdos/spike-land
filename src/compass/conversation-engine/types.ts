@@ -9,20 +9,21 @@
 // Phase
 // ---------------------------------------------------------------------------
 
-export enum Phase {
+export const Phase = {
   /** Initial intake: collect basic identity and situational context. */
-  INTAKE = "INTAKE",
+  INTAKE: "INTAKE",
   /** Structured interview to determine eligibility for a benefit or process. */
-  ELIGIBILITY_INTERVIEW = "ELIGIBILITY_INTERVIEW",
+  ELIGIBILITY_INTERVIEW: "ELIGIBILITY_INTERVIEW",
   /** Walk the user step-by-step through a specific process. */
-  PROCESS_NAVIGATION = "PROCESS_NAVIGATION",
+  PROCESS_NAVIGATION: "PROCESS_NAVIGATION",
   /** Help the user understand, find, or prepare documents. */
-  DOCUMENT_HELP = "DOCUMENT_HELP",
+  DOCUMENT_HELP: "DOCUMENT_HELP",
   /** Explain the user's legal or procedural rights. */
-  RIGHTS_INFO = "RIGHTS_INFO",
+  RIGHTS_INFO: "RIGHTS_INFO",
   /** Closing phase: confirm completion, offer next steps, schedule reminders. */
-  FOLLOW_UP = "FOLLOW_UP",
-}
+  FOLLOW_UP: "FOLLOW_UP",
+} as const;
+export type Phase = (typeof Phase)[keyof typeof Phase];
 
 // ---------------------------------------------------------------------------
 // Message

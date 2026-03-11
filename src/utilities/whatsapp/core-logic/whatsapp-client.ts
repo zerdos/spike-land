@@ -60,7 +60,7 @@ export class WhatsAppClient {
       language: { code: languageCode },
     };
     if (components) {
-      template.components = components;
+      template["components"] = components;
     }
 
     const resp = await fetch(this.messagesUrl, {

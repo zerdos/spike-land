@@ -24,7 +24,7 @@ export function mapStripePlanToTier(subscription: StripeSubscriptionForTier): st
   const lookupKey = subscription.items?.data?.[0]?.price?.lookup_key;
   if (lookupKey?.includes("business")) return "business";
   if (lookupKey?.includes("pro")) return "pro";
-  const metaTier = subscription.metadata?.tier;
+  const metaTier = subscription.metadata?.["tier"];
   if (metaTier === "business" || metaTier === "pro") return metaTier;
   return "pro"; // default paid tier
 }

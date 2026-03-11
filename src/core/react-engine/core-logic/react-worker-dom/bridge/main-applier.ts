@@ -10,14 +10,13 @@ import { serializeEvent } from "./event-serializer.js";
 
 export class MainThreadApplier {
   private worker: Worker;
+  private container: HTMLElement;
   private nodeMap = new Map<number, Node>();
   private reverseMap = new WeakMap<Node, number>();
   private eventAbortController = new AbortController();
 
-  constructor(
-    private container: HTMLElement,
-    workerBlobUrl: string,
-  ) {
+  constructor(container: HTMLElement, workerBlobUrl: string) {
+    this.container = container;
     // Pre-register the container as node 0
     this.nodeMap.set(0, container);
     this.reverseMap.set(container, 0);

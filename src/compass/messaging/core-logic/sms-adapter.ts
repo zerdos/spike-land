@@ -70,12 +70,11 @@ interface TwilioInboundFields {
 // ---------------------------------------------------------------------------
 
 export class SmsParseError extends Error {
-  constructor(
-    reason: string,
-    public readonly raw: unknown,
-  ) {
+  readonly raw: unknown;
+  constructor(reason: string, raw: unknown) {
     super(`SMS webhook parse error: ${reason}`);
     this.name = "SmsParseError";
+    this.raw = raw;
   }
 }
 
@@ -125,18 +124,23 @@ export function formatButtonsAsText(text: string, buttons: Button[]): string {
 export class SMSAdapter implements MessagingAdapter {
   readonly platform = Platform.SMS;
 
+  private readonly httpClient: HttpClient;
+  private readonly accountSid: string;
+  private readonly authToken: string;
+  private readonly fromNumber: string;
+
   /**
    * @param httpClient   Injectable HTTP client.
    * @param accountSid   Twilio Account SID.
    * @param authToken    Twilio Auth Token (used for Basic auth).
    * @param fromNumber   Twilio source phone number in E.164 format.
    */
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly accountSid: string,
-    private readonly authToken: string,
-    private readonly fromNumber: string,
-  ) {}
+  constructor(httpClient: HttpClient, accountSid: string, authToken: string, fromNumber: string) {
+    this.httpClient = httpClient;
+    this.accountSid = accountSid;
+    this.authToken = authToken;
+    this.fromNumber = fromNumber;
+  }
 
   // -------------------------------------------------------------------------
   // Public API

@@ -15,7 +15,7 @@ export const diagramTool = imageProcedure
     withCredits({
       cost: (input, deps) =>
         deps.credits.calculateGenerationCost({
-          tier: ((input as Record<string, unknown>).tier as EnhancementTier) ?? "TIER_1K",
+          tier: ((input as Record<string, unknown>)["tier"] as EnhancementTier) ?? "TIER_1K",
         }),
       source: "diagram",
     }),

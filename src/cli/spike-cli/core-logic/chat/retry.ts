@@ -40,8 +40,8 @@ export function isRetryableError(error: unknown): boolean {
   if (message.includes("socket hang up")) return true;
 
   // Anthropic SDK specific
-  if ("status" in error && typeof (error as Record<string, unknown>).status === "number") {
-    const status = (error as Record<string, unknown>).status as number;
+  if ("status" in error && typeof (error as Record<string, unknown>)["status"] === "number") {
+    const status = (error as Record<string, unknown>)["status"] as number;
     return RETRYABLE_STATUS_CODES.has(status);
   }
 

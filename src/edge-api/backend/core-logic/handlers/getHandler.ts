@@ -2,7 +2,10 @@ import type { StorageService } from "../services/storageService";
 import { DEFAULT_CORS_HEADERS } from "../utils";
 
 export class GetHandler {
-  constructor(private storageService: StorageService) {}
+  private storageService: StorageService;
+  constructor(storageService: StorageService) {
+    this.storageService = storageService;
+  }
 
   async handle(codeSpace: string): Promise<Response> {
     const requestBody = await this.storageService.loadRequestBody(codeSpace);

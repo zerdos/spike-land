@@ -3,8 +3,11 @@ import type { ExtractedLink, LinkValidationResult } from "./types.js";
 class Semaphore {
   private queue: Array<() => void> = [];
   private active = 0;
+  private readonly max: number;
 
-  constructor(private readonly max: number) {}
+  constructor(max: number) {
+    this.max = max;
+  }
 
   async acquire(): Promise<void> {
     if (this.active < this.max) {

@@ -38,7 +38,7 @@ export function registerContextTool(server: McpServer): void {
           errors: rebuildResult.data.errors,
         };
         if (rebuildResult.data.mangleCache) {
-          output.mangleCache = rebuildResult.data.mangleCache;
+          output["mangleCache"] = rebuildResult.data.mangleCache;
         }
 
         return {

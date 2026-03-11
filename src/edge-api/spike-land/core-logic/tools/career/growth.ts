@@ -352,7 +352,11 @@ const SITUATIONAL_QUESTIONS: InterviewQuestion[] = [
   },
 ];
 
-const TECHNICAL_BANKS: Record<string, InterviewQuestion[]> = {
+const TECHNICAL_BANKS: {
+  default: InterviewQuestion[];
+  senior: InterviewQuestion[];
+  lead: InterviewQuestion[];
+} = {
   default: [
     {
       question: "What is the difference between horizontal and vertical scaling?",

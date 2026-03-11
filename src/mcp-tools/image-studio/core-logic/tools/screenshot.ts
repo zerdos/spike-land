@@ -22,7 +22,7 @@ export const screenshotTool = imageProcedure
     withCredits({
       cost: (input, deps) =>
         deps.credits.calculateGenerationCost({
-          tier: ((input as Record<string, unknown>).tier as EnhancementTier) ?? "TIER_1K",
+          tier: ((input as Record<string, unknown>)["tier"] as EnhancementTier) ?? "TIER_1K",
         }),
       source: "screenshot",
       sourceIdField: "source_image_id",

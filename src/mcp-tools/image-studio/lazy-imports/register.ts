@@ -116,11 +116,11 @@ function isToolExport(obj: unknown): obj is BuiltTool<unknown, unknown> {
     typeof obj === "object" &&
     obj !== null &&
     "name" in obj &&
-    typeof (obj as Record<string, unknown>).name === "string" &&
+    typeof (obj as Record<string, unknown>)["name"] === "string" &&
     "inputSchema" in obj &&
-    (obj as Record<string, unknown>).inputSchema != null &&
+    (obj as Record<string, unknown>)["inputSchema"] != null &&
     "handler" in obj &&
-    typeof (obj as Record<string, unknown>).handler === "function"
+    typeof (obj as Record<string, unknown>)["handler"] === "function"
   );
 }
 
@@ -138,13 +138,13 @@ function createToolFromExport(
     >[0],
     "inputSchema",
   ) as Record<string, unknown>;
-  const defs = jsonSchema.definitions as Record<string, Record<string, unknown>> | undefined;
-  const inputSchemaDef = defs?.inputSchema;
-  const properties = (inputSchemaDef?.properties || jsonSchema.properties || {}) as Record<
+  const defs = jsonSchema["definitions"] as Record<string, Record<string, unknown>> | undefined;
+  const inputSchemaDef = defs?.["inputSchema"];
+  const properties = (inputSchemaDef?.["properties"] || jsonSchema["properties"] || {}) as Record<
     string,
     unknown
   >;
-  const required = (inputSchemaDef?.required || jsonSchema.required || []) as string[];
+  const required = (inputSchemaDef?.["required"] || jsonSchema["required"] || []) as string[];
 
   const toolName = toolExport.name.startsWith("img_") ? toolExport.name : `img_${toolExport.name}`;
 
@@ -167,7 +167,7 @@ function createToolFromExport(
           result &&
           typeof result === "object" &&
           "content" in result &&
-          Array.isArray((result as unknown as Record<string, unknown>).content)
+          Array.isArray((result as unknown as Record<string, unknown>)["content"])
         ) {
           if ((result as { isError?: boolean }).isError) outcome = "error";
           return result as CallToolResult;
@@ -179,7 +179,7 @@ function createToolFromExport(
           err &&
           typeof err === "object" &&
           "isError" in err &&
-          (err as unknown as Record<string, unknown>).isError
+          (err as unknown as Record<string, unknown>)["isError"]
         ) {
           return err as CallToolResult;
         }
@@ -266,12 +266,12 @@ export function registerImageStudioTools(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            title: args.title,
-            description: args.description,
+            title: args["title"],
+            description: args["description"],
             service_name: "mcp-image-studio",
-            severity: args.severity,
-            reproduction_steps: args.reproduction_steps,
-            error_code: args.error_code,
+            severity: args["severity"],
+            reproduction_steps: args["reproduction_steps"],
+            error_code: args["error_code"],
           }),
         });
         if (!res.ok) {
@@ -286,8 +286,8 @@ export function registerImageStudioTools(
             {
               type: "text",
               text: result.isNewBug
-                ? `New bug reported: "${args.title}". Track at spike.land/bugbook/${result.bugId}`
-                : `Bug confirmed: "${args.title}". Track at spike.land/bugbook/${result.bugId}`,
+                ? `New bug reported: "${args["title"]}". Track at spike.land/bugbook/${result.bugId}`
+                : `Bug confirmed: "${args["title"]}". Track at spike.land/bugbook/${result.bugId}`,
             },
           ],
         };

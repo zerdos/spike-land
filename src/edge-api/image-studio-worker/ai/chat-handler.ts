@@ -243,7 +243,7 @@ export async function handleChatStream(
                   );
                 }
 
-                const sig = (part.functionCall as Record<string, unknown>).thoughtSignature;
+                const sig = (part.functionCall as Record<string, unknown>)["thoughtSignature"];
                 toolResponsesInThisTurn.push({
                   functionResponse: {
                     name: fnName,

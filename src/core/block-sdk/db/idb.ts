@@ -208,7 +208,7 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
         row[cols[i]!] = vals[i];
       }
       // Only write to IDB if row has an id (IDB store uses keyPath: "id")
-      if (row.id !== undefined) {
+      if (row["id"] !== undefined) {
         const store = await getStore(table, "readwrite");
         await idbReq(store.put(row));
       }
@@ -255,7 +255,7 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
         for (let i = 0; i < result[0]!.columns.length; i++) {
           row[result[0]!.columns[i]!] = vals[i];
         }
-        if (row.id !== undefined) {
+        if (row["id"] !== undefined) {
           const store = await getStore(table, "readwrite");
           await idbReq(store.put(row));
         }

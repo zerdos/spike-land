@@ -2,7 +2,10 @@ import type Env from "../env";
 import type { PostRequestBody } from "../../lazy-imports/types";
 
 export class StorageService {
-  constructor(private env: Env) {}
+  private env: Env;
+  constructor(env: Env) {
+    this.env = env;
+  }
 
   async loadRequestBody(codeSpace: string): Promise<PostRequestBody | null> {
     const bodyKey = `request_body_${codeSpace}`;

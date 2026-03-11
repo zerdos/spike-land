@@ -32,8 +32,8 @@ export function registerBuildTool(server: McpServer): void {
         warnings: result.data.warnings,
         errors: result.data.errors,
       };
-      if (result.data.metafile) output.metafile = result.data.metafile;
-      if (result.data.mangleCache) output.mangleCache = result.data.mangleCache;
+      if (result.data.metafile) output["metafile"] = result.data.metafile;
+      if (result.data.mangleCache) output["mangleCache"] = result.data.mangleCache;
 
       return {
         content: [

@@ -57,10 +57,10 @@ export function computeConversionRates(
   variantId: string,
   metrics: Partial<Record<string, { value: number; sampleSize: number }>>,
 ): VariantConversionRates {
-  const impressions = metrics.impressions?.value ?? 0;
-  const donations = metrics.donations?.value ?? 0;
-  const revenue = metrics.revenue_cents?.value ?? 0;
-  const fistbumps = metrics.fistbumps?.value ?? 0;
+  const impressions = metrics["impressions"]?.value ?? 0;
+  const donations = metrics["donations"]?.value ?? 0;
+  const revenue = metrics["revenue_cents"]?.value ?? 0;
+  const fistbumps = metrics["fistbumps"]?.value ?? 0;
 
   return {
     variantId,

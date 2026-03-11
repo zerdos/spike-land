@@ -66,8 +66,8 @@ const SPIKE_BASE_URL = "https://spike.land";
 const LOC_BROWSER = 28;
 const LOC_MCP_TOOL = 12;
 
-const USE_REAL_BROWSER = process.env.BENCHMARK_USE_REAL_BROWSER === "true";
-const USE_REAL_MCP = process.env.BENCHMARK_USE_REAL_MCP === "true";
+const USE_REAL_BROWSER = process.env["BENCHMARK_USE_REAL_BROWSER"] === "true";
+const USE_REAL_MCP = process.env["BENCHMARK_USE_REAL_MCP"] === "true";
 
 // ---------------------------------------------------------------------------
 // Stub helpers (used when real connections are disabled)
@@ -237,10 +237,7 @@ async function runMcpToolApproach(): Promise<BenchmarkResult> {
 // ---------------------------------------------------------------------------
 
 function formatTable(browser: BenchmarkResult, mcp: BenchmarkResult): string {
-  const speedup =
-    browser.durationMs > 0
-      ? (browser.durationMs / mcp.durationMs).toFixed(1)
-      : "N/A";
+  const speedup = browser.durationMs > 0 ? (browser.durationMs / mcp.durationMs).toFixed(1) : "N/A";
 
   const locReduction = (
     ((browser.linesOfCode - mcp.linesOfCode) / browser.linesOfCode) *
@@ -306,14 +303,11 @@ async function main(): Promise<void> {
     summary: {
       speedupFactor:
         browserResult.durationMs > 0 && mcpResult.durationMs > 0
-          ? parseFloat(
-              (browserResult.durationMs / mcpResult.durationMs).toFixed(2),
-            )
+          ? parseFloat((browserResult.durationMs / mcpResult.durationMs).toFixed(2))
           : null,
       locReductionPercent: parseFloat(
         (
-          ((browserResult.linesOfCode - mcpResult.linesOfCode) /
-            browserResult.linesOfCode) *
+          ((browserResult.linesOfCode - mcpResult.linesOfCode) / browserResult.linesOfCode) *
           100
         ).toFixed(1),
       ),

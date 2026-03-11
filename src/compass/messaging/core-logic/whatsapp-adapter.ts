@@ -147,12 +147,11 @@ interface WaWebhookBody {
 // ---------------------------------------------------------------------------
 
 export class WhatsAppParseError extends Error {
-  constructor(
-    reason: string,
-    public readonly raw: unknown,
-  ) {
+  readonly raw: unknown;
+  constructor(reason: string, raw: unknown) {
     super(`WhatsApp webhook parse error: ${reason}`);
     this.name = "WhatsAppParseError";
+    this.raw = raw;
   }
 }
 
@@ -173,6 +172,11 @@ export class WhatsAppButtonLimitError extends Error {
 export class WhatsAppAdapter implements MessagingAdapter {
   readonly platform = Platform.WHATSAPP;
 
+  private readonly httpClient: HttpClient;
+  private readonly phoneNumberId: string;
+  private readonly accessToken: string;
+  private readonly apiVersion: string;
+
   /**
    * @param httpClient  Injectable HTTP client — no real fetch calls in tests.
    * @param phoneNumberId  WhatsApp Business Account phone_number_id.
@@ -180,11 +184,16 @@ export class WhatsAppAdapter implements MessagingAdapter {
    * @param apiVersion  Graph API version, defaults to "v18.0".
    */
   constructor(
-    private readonly httpClient: HttpClient,
-    private readonly phoneNumberId: string,
-    private readonly accessToken: string,
-    private readonly apiVersion: string = "v18.0",
-  ) {}
+    httpClient: HttpClient,
+    phoneNumberId: string,
+    accessToken: string,
+    apiVersion: string = "v18.0",
+  ) {
+    this.httpClient = httpClient;
+    this.phoneNumberId = phoneNumberId;
+    this.accessToken = accessToken;
+    this.apiVersion = apiVersion;
+  }
 
   // -------------------------------------------------------------------------
   // Public API

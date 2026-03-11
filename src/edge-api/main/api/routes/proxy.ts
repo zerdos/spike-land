@@ -17,7 +17,7 @@ interface ProxyRequestBody {
 function validateProxyBody(body: unknown): body is ProxyRequestBody {
   if (typeof body !== "object" || body === null) return false;
   const b = body as Record<string, unknown>;
-  return typeof b.url === "string" && b.url.length > 0;
+  return typeof b["url"] === "string" && b["url"].length > 0;
 }
 
 // S4: Explicit allowlist of headers callers may set. Never let callers override

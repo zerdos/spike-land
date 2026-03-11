@@ -1,7 +1,10 @@
 import type { Code } from "../../lazy-imports/chatRoom";
 
 export class UtilityRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleRequestRoute(request: Request): Promise<Response> {
     return new Response(JSON.stringify({ ...request }), {

@@ -118,7 +118,7 @@ export function isEntryPointTool(tool: NamespacedTool): boolean {
   }
 
   // Tools with zero required params are also entry points
-  const required = (tool.inputSchema.required as string[] | undefined) ?? [];
+  const required = (tool.inputSchema["required"] as string[] | undefined) ?? [];
   return required.length === 0;
 }
 
@@ -127,7 +127,7 @@ export function isEntryPointTool(tool: NamespacedTool): boolean {
  * Dependent tools have required params ending in `_id`.
  */
 function isDependentTool(tool: NamespacedTool): boolean {
-  const required = (tool.inputSchema.required as string[] | undefined) ?? [];
+  const required = (tool.inputSchema["required"] as string[] | undefined) ?? [];
   return required.some((param) => param.endsWith("_id"));
 }
 
@@ -135,7 +135,7 @@ function isDependentTool(tool: NamespacedTool): boolean {
  * Get required ID params for a tool (params ending in `_id`).
  */
 function getRequiredIdParams(tool: NamespacedTool): string[] {
-  const required = (tool.inputSchema.required as string[] | undefined) ?? [];
+  const required = (tool.inputSchema["required"] as string[] | undefined) ?? [];
   return required.filter((p) => p.endsWith("_id"));
 }
 

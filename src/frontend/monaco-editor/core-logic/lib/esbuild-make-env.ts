@@ -4,8 +4,8 @@ export type { Environment };
 const nodeEnv =
   typeof process !== "undefined" &&
   typeof process.env !== "undefined" &&
-  typeof process.env.NODE_ENV === "string"
-    ? process.env.NODE_ENV
+  typeof process.env["NODE_ENV"] === "string"
+    ? process.env["NODE_ENV"]
     : "development";
 
 export const environment = nodeEnv as Environment;

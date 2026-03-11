@@ -14,7 +14,10 @@ interface ValidationResult {
 }
 
 export class ApiRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleApiRoute(request: Request, url: URL, path: string[]): Promise<Response> {
     // path comes in as ["api", "code"] or ["api", "run"] etc.

@@ -8,13 +8,25 @@ import { eq } from "drizzle-orm";
 import { approveDeviceCode, createDeviceCode, exchangeDeviceCode } from "../db/auth/oauth-device";
 import { checkRateLimit } from "../core-logic/kv/rate-limit";
 
+/** Typed shape for OAuth request bodies (device grant + revoke endpoints). */
+interface OAuthRequestBody {
+  client_id?: string;
+  scope?: string;
+  grant_type?: string;
+  device_code?: string;
+  user_code?: string;
+  user_id?: string;
+  token?: string;
+  [key: string]: unknown;
+}
+
 /** Parse request body from either form-encoded or JSON, per OAuth RFC 6749 §2.3. */
-async function parseOAuthBody(c: Context): Promise<Record<string, unknown>> {
+async function parseOAuthBody(c: Context): Promise<OAuthRequestBody> {
   const contentType = c.req.header("content-type") ?? "";
   if (contentType.includes("application/x-www-form-urlencoded")) {
-    return (await c.req.parseBody()) as Record<string, unknown>;
+    return (await c.req.parseBody()) as OAuthRequestBody;
   }
-  return (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
+  return (await c.req.json().catch(() => ({}))) as OAuthRequestBody;
 }
 
 export const oauthRoute = new Hono<{ Bindings: Env }>();

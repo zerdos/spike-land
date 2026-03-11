@@ -9,11 +9,12 @@
 // Platform
 // ---------------------------------------------------------------------------
 
-export enum Platform {
-  WHATSAPP = "whatsapp",
-  TELEGRAM = "telegram",
-  SMS = "sms",
-}
+export const Platform = {
+  WHATSAPP: "whatsapp",
+  TELEGRAM: "telegram",
+  SMS: "sms",
+} as const;
+export type Platform = (typeof Platform)[keyof typeof Platform];
 
 // ---------------------------------------------------------------------------
 // Button and media primitives

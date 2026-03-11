@@ -30,6 +30,8 @@ export interface CodeVersion {
 }
 
 export class Code implements DurableObject {
+  private state: DurableObjectState;
+  private env: Env;
   private routeHandler: RouteHandler;
   wsHandler: WebSocketHandler;
   private mcpServer: McpServer;
@@ -126,10 +128,8 @@ export class Code implements DurableObject {
     return versions;
   }
 
-  constructor(
-    private state: DurableObjectState,
-    private env: Env,
-  ) {
+  constructor(state: DurableObjectState, env: Env) {
+    this.state = state;
     this.env = env;
 
     // this.historyManager = createCodeHistoryManager(this.env);

@@ -149,7 +149,7 @@ function rowToPost(row: BlogPostRow, includeContent = false) {
     heroPrompt,
   };
   if (includeContent) {
-    post.content = row.content;
+    post["content"] = row.content;
   }
   return post;
 }
@@ -196,11 +196,11 @@ function toAnalyticsBlogPost(post: unknown): AnalyticsBlogPost | null {
   if (!post || typeof post !== "object") return null;
 
   const record = post as Record<string, unknown>;
-  const slug = typeof record.slug === "string" ? record.slug : "";
-  const title = typeof record.title === "string" ? record.title : "";
-  const category = typeof record.category === "string" ? record.category : "";
-  const tags = Array.isArray(record.tags)
-    ? record.tags.filter((tag): tag is string => typeof tag === "string")
+  const slug = typeof record["slug"] === "string" ? record["slug"] : "";
+  const title = typeof record["title"] === "string" ? record["title"] : "";
+  const category = typeof record["category"] === "string" ? record["category"] : "";
+  const tags = Array.isArray(record["tags"])
+    ? record["tags"].filter((tag): tag is string => typeof tag === "string")
     : [];
 
   if (!slug || !title) return null;
@@ -568,7 +568,7 @@ async function serveBlogImage(
 
   const obj = await spaAssets.get(key);
   if (heroPrompt) {
-    if (obj?.customMetadata?.promptHash === heroPrompt.promptHash) {
+    if (obj?.customMetadata?.["promptHash"] === heroPrompt.promptHash) {
       return buildImageResponse(obj, contentType, versionedCache);
     }
 

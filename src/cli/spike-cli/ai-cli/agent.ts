@@ -16,7 +16,7 @@ export function startCompletionServer(port: number) {
         return;
       }
 
-      const apiKey = process.env.GEMINI_API_KEY || process.env.CLAUDE_CODE_OAUTH_TOKEN;
+      const apiKey = process.env["GEMINI_API_KEY"] || process.env["CLAUDE_CODE_OAUTH_TOKEN"];
       if (!apiKey) {
         res.status(500).json({ error: "GEMINI_API_KEY is not configured" });
         return;
@@ -53,16 +53,18 @@ export function startCompletionServer(port: number) {
               maxOutputTokens: 150,
             },
           }),
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(`Google API returned ${response.status}: ${await response.text()}`);
       }
 
-      const data = await response.json() as unknown as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+      const data = (await response.json()) as unknown as {
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      };
       const completionText = (data.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
-      
+
       res.json({ completion: completionText });
     } catch (error) {
       console.error("[Agent] Completion error:", error);
@@ -85,7 +87,7 @@ export function registerAgentCommand(program: Command): void {
     .description("Run the Spike CLI AI Agent that provides code completion")
     .option("--port <port>", "Port for local HTTP completion API", "3005")
     .action((options: AgentCommandOptions) => {
-      if (!process.env.GEMINI_API_KEY && !process.env.CLAUDE_CODE_OAUTH_TOKEN) {
+      if (!process.env["GEMINI_API_KEY"] && !process.env["CLAUDE_CODE_OAUTH_TOKEN"]) {
         console.error("Error: GEMINI_API_KEY is not set.");
         process.exit(1);
       }

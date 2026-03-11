@@ -12,12 +12,12 @@ export {
  * A standard domain error that can be caught by the ToolBuilder to return structured MCP errors.
  */
 export class DomainError extends Error {
-  constructor(
-    public code: ErrorCode,
-    message: string,
-    public retryable = false,
-  ) {
+  public code: ErrorCode;
+  public retryable: boolean;
+  constructor(code: ErrorCode, message: string, retryable = false) {
     super(message);
     this.name = "DomainError";
+    this.code = code;
+    this.retryable = retryable;
   }
 }

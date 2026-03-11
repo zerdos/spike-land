@@ -183,7 +183,7 @@ support.post("/api/support/donate", async (c) => {
   // Record pending donation
   const db = c.env.DB;
   const donationId = crypto.randomUUID();
-  const sessionId = data.id as string;
+  const sessionId = data["id"] as string;
   try {
     await db
       .prepare(
@@ -195,7 +195,7 @@ support.post("/api/support/donate", async (c) => {
     log.error("donation record error", { error: err instanceof Error ? err.message : String(err) });
   }
 
-  return c.json({ url: data.url as string });
+  return c.json({ url: data["url"] as string });
 });
 
 // ─── Migration Checkout (Stripe) ────────────────────────────────────────────
@@ -281,7 +281,7 @@ support.post("/api/support/migration-checkout", async (c) => {
   // Record pending migration purchase
   const db = c.env.DB;
   const donationId = crypto.randomUUID();
-  const sessionId = data.id as string;
+  const sessionId = data["id"] as string;
   try {
     await db
       .prepare(
@@ -295,7 +295,7 @@ support.post("/api/support/migration-checkout", async (c) => {
     });
   }
 
-  return c.json({ url: data.url as string });
+  return c.json({ url: data["url"] as string });
 });
 
 export { support };

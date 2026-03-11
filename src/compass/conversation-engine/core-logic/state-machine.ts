@@ -82,15 +82,16 @@ const TRANSITIONS: ReadonlyMap<Phase, ReadonlyMap<ConversationEvent["type"], Pha
 // ---------------------------------------------------------------------------
 
 export class TransitionError extends Error {
-  constructor(
-    public readonly fromPhase: Phase,
-    public readonly event: ConversationEvent["type"],
-  ) {
+  readonly fromPhase: Phase;
+  readonly event: ConversationEvent["type"];
+  constructor(fromPhase: Phase, event: ConversationEvent["type"]) {
     super(
       `No transition from phase "${fromPhase}" on event "${event}". ` +
         `Available events: ${[...ConversationStateMachine.getAvailableTransitions(fromPhase).keys()].join(", ") || "none"}.`,
     );
     this.name = "TransitionError";
+    this.fromPhase = fromPhase;
+    this.event = event;
   }
 }
 

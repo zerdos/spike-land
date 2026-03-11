@@ -18,7 +18,7 @@ interface AnalyticsEvent {
 function isValidEvent(event: unknown): event is AnalyticsEvent {
   if (typeof event !== "object" || event === null) return false;
   const e = event as Record<string, unknown>;
-  return typeof e.source === "string" && typeof e.eventType === "string";
+  return typeof e["source"] === "string" && typeof e["eventType"] === "string";
 }
 
 const VALID_RANGES: Record<string, number> = {
@@ -235,8 +235,8 @@ analytics.get("/analytics/summary", async (c) => {
   const usersRow = results[1]?.results[0] as Record<string, unknown> | undefined;
 
   return c.json({
-    totalEvents: totalRow?.total ?? 0,
-    uniqueUsers: usersRow?.unique_users ?? 0,
+    totalEvents: totalRow?.["total"] ?? 0,
+    uniqueUsers: usersRow?.["unique_users"] ?? 0,
     eventsByType: results[2]?.results ?? [],
     toolUsage: results[3]?.results ?? [],
     blogViews: results[4]?.results ?? [],
@@ -328,19 +328,19 @@ analytics.get("/analytics/dashboard", async (c) => {
 
   return c.json({
     summary: {
-      totalEvents: totalRow?.total ?? 0,
-      uniqueUsers: usersRow?.unique_users ?? 0,
+      totalEvents: totalRow?.["total"] ?? 0,
+      uniqueUsers: usersRow?.["unique_users"] ?? 0,
       eventsByType: results[2]?.results ?? [],
       toolUsage: results[3]?.results ?? [],
       blogViews: results[4]?.results ?? [],
     },
     recentEvents: results[5]?.results ?? [],
     funnel: includeFunnel ? (results[8]?.results ?? null) : null,
-    activeUsers: (activeRow?.active_users as number) ?? null,
+    activeUsers: (activeRow?.["active_users"] as number) ?? null,
     meta: {
       range,
       queriedAt: Date.now(),
-      earliestEvent: (earliestRow?.earliest as number) ?? null,
+      earliestEvent: (earliestRow?.["earliest"] as number) ?? null,
     },
   });
 });

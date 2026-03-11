@@ -26,13 +26,13 @@ import { dequeueMessage, getAppsWithPending, setAgentWorking } from "../core-log
  * Configurable via CLAUDE_TIMEOUT_MS environment variable.
  * Default: 300000 (5 minutes)
  */
-const CLAUDE_TIMEOUT_MS = parseInt(process.env.CLAUDE_TIMEOUT_MS || "300000", 10);
+const CLAUDE_TIMEOUT_MS = parseInt(process.env["CLAUDE_TIMEOUT_MS"] || "300000", 10);
 const getTestingSpikeLandUrl = (): string =>
-  process.env.TESTING_SPIKE_LAND_URL || "https://testing.spike.land";
-const getLiveDir = (): string => process.env.LIVE_DIR || "/app/live";
+  process.env["TESTING_SPIKE_LAND_URL"] || "https://testing.spike.land";
+const getLiveDir = (): string => process.env["LIVE_DIR"] || "/app/live";
 
 // Permission control for Claude CLI
-const SKIP_PERMISSIONS = process.env.AGENT_REQUIRE_PERMISSIONS !== "true";
+const SKIP_PERMISSIONS = process.env["AGENT_REQUIRE_PERMISSIONS"] !== "true";
 
 // ============================================================
 // E2E Test Keyword Handlers

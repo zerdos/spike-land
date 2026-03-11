@@ -26,11 +26,10 @@ export class SessionSynchronizer implements ISessionSynchronizer {
   private refreshInterval: ReturnType<typeof setInterval> | null = null;
   private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
   private isClosed = false;
+  private codeSpace: string;
 
-  constructor(
-    private codeSpace: string,
-    session?: ICodeSession,
-  ) {
+  constructor(codeSpace: string, session?: ICodeSession) {
+    this.codeSpace = codeSpace;
     if (session) {
       this.session = sanitizeSession(session);
     }

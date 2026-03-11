@@ -216,7 +216,7 @@ export function createWorkerDOMHostConfig(
     },
 
     shouldSetTextContent(_type: string, props: Record<string, unknown>): boolean {
-      return typeof props.children === "string" || typeof props.children === "number";
+      return typeof props["children"] === "string" || typeof props["children"] === "number";
     },
 
     getRootHostContext(_rootContainer: WorkerElement): WorkerHostContext {

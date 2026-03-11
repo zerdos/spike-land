@@ -94,12 +94,12 @@ function formatArgs(args: Record<string, unknown>, maxChars: number) {
 
 function summarizeBrowserArgs(toolName: string, args: Record<string, unknown>, maxChars: number) {
   const parts: string[] = [];
-  const targetId = typeof args.targetId === "string" ? args.targetId : "";
-  const selector = typeof args.selector === "string" ? args.selector : "";
+  const targetId = typeof args["targetId"] === "string" ? args["targetId"] : "";
+  const selector = typeof args["selector"] === "string" ? args["selector"] : "";
 
   switch (toolName) {
     case "browser_navigate": {
-      const url = typeof args.url === "string" ? args.url : "";
+      const url = typeof args["url"] === "string" ? args["url"] : "";
       if (url) {
         parts.push(`url=${truncateText(url, 80)}`);
       }
@@ -117,7 +117,11 @@ function summarizeBrowserArgs(toolName: string, args: Record<string, unknown>, m
 
       if (toolName === "browser_scroll") {
         const y =
-          typeof args.y === "number" ? args.y : typeof args.y === "string" ? Number(args.y) : NaN;
+          typeof args["y"] === "number"
+            ? args["y"]
+            : typeof args["y"] === "string"
+              ? Number(args["y"])
+              : NaN;
         if (Number.isFinite(y)) {
           parts.push(`y=${String(y)}`);
         }
@@ -132,7 +136,7 @@ function summarizeBrowserArgs(toolName: string, args: Record<string, unknown>, m
         parts.push(`selector=${truncateText(selector, 60)}`);
       }
 
-      const value = typeof args.value === "string" ? args.value : "";
+      const value = typeof args["value"] === "string" ? args["value"] : "";
       if (value) {
         parts.push(`value=${truncateText(value, 60)}`);
       }

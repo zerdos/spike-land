@@ -48,9 +48,9 @@ function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
           shape[key] = zField;
         }
       } // Support old ToolDefinition format
-      else if (def.inputSchema?.properties) {
-        const required = new Set<string>((def.inputSchema.required as string[]) ?? []);
-        for (const [key, prop] of Object.entries(def.inputSchema.properties) as [
+      else if (def.inputSchema?.["properties"]) {
+        const required = new Set<string>((def.inputSchema["required"] as string[]) ?? []);
+        for (const [key, prop] of Object.entries(def.inputSchema["properties"]) as [
           string,
           Record<string, unknown>,
         ][]) {
@@ -66,7 +66,7 @@ function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
         shape,
         async (params, extra): Promise<SdkCallToolResult> => {
           const ctx = {
-            userId: ((extra as Record<string, unknown>)?.userId as string) || "demo-user",
+            userId: ((extra as Record<string, unknown>)?.["userId"] as string) || "demo-user",
             deps: {} as ImageStudioDeps, // The real deps are passed via the closure when registerImageStudioTools is called
           };
           // The handler is already bound to the deps inside `registerImageStudioTools`
@@ -79,8 +79,8 @@ function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
 }
 
 function buildZodField(prop: Record<string, unknown>): z.ZodTypeAny {
-  const enumValues = prop.enum as string[] | undefined;
-  switch (prop.type) {
+  const enumValues = prop["enum"] as string[] | undefined;
+  switch (prop["type"]) {
     case "string":
       if (enumValues) return z.enum(enumValues as [string, ...string[]]);
       return z.string();
@@ -90,8 +90,8 @@ function buildZodField(prop: Record<string, unknown>): z.ZodTypeAny {
     case "boolean":
       return z.boolean();
     case "array":
-      if (prop.items && typeof prop.items === "object") {
-        return z.array(buildZodField(prop.items as Record<string, unknown>));
+      if (prop["items"] && typeof prop["items"] === "object") {
+        return z.array(buildZodField(prop["items"] as Record<string, unknown>));
       }
       return z.array(z.unknown());
     case "object":

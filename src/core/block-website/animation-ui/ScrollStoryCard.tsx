@@ -190,7 +190,7 @@ function TerminalToolCall({
   color: string;
 }) {
   const args = terminal.args;
-  const serverArg = args.server ?? "";
+  const serverArg = args["server"] ?? "";
   const extraArgs = Object.entries(args)
     .filter(([k]) => k !== "server" && k !== "tool" && k !== "transport")
     .map(([k, v]) => `--${k} ${v}`)
@@ -220,7 +220,7 @@ function TerminalToolCall({
     blue: "text-blue-400 border-blue-500/30 bg-blue-500/5",
     violet: "text-violet-400 border-violet-500/30 bg-violet-500/5",
   };
-  const accent = accentMap[color] ?? accentMap.cyan;
+  const accent = accentMap[color] ?? accentMap["cyan"];
 
   return (
     <div className="w-full rounded-2xl overflow-hidden border border-border/40 bg-card/90 shadow-2xl backdrop-blur-md">

@@ -129,13 +129,17 @@ class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShap
   private validates: Array<(input: TInput, ctx: TCtx) => CallToolResult | void> = [];
   private contextValidates: Array<(input: TInput, ctx: TCtx) => CallToolResult | void> = [];
   private _agentInstructions?: string;
+  private name: string;
+  private description: string;
+  private fields: TFields;
+  private zodSchema: z.ZodObject<TFields>;
 
-  constructor(
-    private name: string,
-    private description: string,
-    private fields: TFields,
-    private zodSchema: z.ZodObject<TFields>,
-  ) {}
+  constructor(name: string, description: string, fields: TFields, zodSchema: z.ZodObject<TFields>) {
+    this.name = name;
+    this.description = description;
+    this.fields = fields;
+    this.zodSchema = zodSchema;
+  }
 
   agentInstructions(instructions: string): this {
     this._agentInstructions = instructions;
@@ -306,7 +310,7 @@ class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShap
         let cost = 0;
         if (creditsConfig) {
           cost = creditsConfig.cost(validArgs, deps);
-          extendedCtx.billing.creditsCost = cost;
+          extendedCtx.billing["creditsCost"] = cost;
           if (cost > 0) {
             const sourceId = creditsConfig.sourceIdField
               ? ((validArgs as Record<string, unknown>)[creditsConfig.sourceIdField] as string)
@@ -328,7 +332,7 @@ class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShap
         if (jobConfig) {
           const imageId = (validArgs as Record<string, unknown>)[jobConfig.imageIdField] as ImageId;
           const tier =
-            ((validArgs as Record<string, unknown>).tier as EnhancementTier | undefined) ??
+            ((validArgs as Record<string, unknown>)["tier"] as EnhancementTier | undefined) ??
             ("FREE" as const);
 
           const jobResult = await tryCatch(
@@ -346,7 +350,7 @@ class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShap
           if (!jobResult.ok || !jobResult.data) {
             return errorResult("JOB_CREATE_FAILED", "Failed to create job");
           }
-          extendedCtx.jobs.currentJob = jobResult.data;
+          extendedCtx.jobs["currentJob"] = jobResult.data;
 
           if (ctx.notify) {
             ctx.notify(

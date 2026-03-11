@@ -1,19 +1,20 @@
 // Worker-DOM Bridge Protocol
 // Defines the message format for mutations (worker -> main) and events (main -> worker).
 
-export const enum MutationType {
-  CREATE_ELEMENT = 0,
-  CREATE_TEXT = 1,
-  APPEND_CHILD = 2,
-  INSERT_BEFORE = 3,
-  REMOVE_CHILD = 4,
-  SET_ATTRIBUTE = 5,
-  REMOVE_ATTRIBUTE = 6,
-  SET_STYLE = 7,
-  SET_TEXT = 8,
-  SET_TEXT_CONTENT = 9,
-  CREATE_ELEMENT_NS = 10,
-}
+export const MutationType = {
+  CREATE_ELEMENT: 0,
+  CREATE_TEXT: 1,
+  APPEND_CHILD: 2,
+  INSERT_BEFORE: 3,
+  REMOVE_CHILD: 4,
+  SET_ATTRIBUTE: 5,
+  REMOVE_ATTRIBUTE: 6,
+  SET_STYLE: 7,
+  SET_TEXT: 8,
+  SET_TEXT_CONTENT: 9,
+  CREATE_ELEMENT_NS: 10,
+} as const;
+export type MutationType = (typeof MutationType)[keyof typeof MutationType];
 
 export interface Mutation {
   type: MutationType;

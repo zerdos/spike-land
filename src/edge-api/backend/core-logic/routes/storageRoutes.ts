@@ -1,7 +1,10 @@
 import type { Code } from "../../lazy-imports/chatRoom";
 
 export class StorageRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleHashCodeRoute(_request: Request, _url: URL, path: string[]): Promise<Response> {
     const hashCode = String(Number(path[1]));

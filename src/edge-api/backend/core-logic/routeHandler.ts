@@ -25,7 +25,9 @@ export class RouteHandler {
   private aiRoutes: AiRoutes;
   private apiRoutes: ApiRoutes;
 
-  constructor(private code: Code) {
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
     // Initialize all route handlers
     this.codeRoutes = new CodeRoutes(this.code);
     this.websocketRoutes = new WebsocketRoutes(this.code);

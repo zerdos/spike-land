@@ -2,7 +2,10 @@ import { computeSessionHash } from "@spike-land-ai/code";
 import type { Code } from "./chatRoom";
 
 export class WebsocketRoutes {
-  constructor(private code: Code) {}
+  private code: Code;
+  constructor(code: Code) {
+    this.code = code;
+  }
 
   async handleWebsocketRoute(request: Request): Promise<Response> {
     if (request.headers.get("Upgrade")?.toLowerCase() !== "websocket") {

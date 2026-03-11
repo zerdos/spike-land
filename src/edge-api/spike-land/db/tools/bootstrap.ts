@@ -231,7 +231,7 @@ export function registerBootstrapTools(
           monetizationModel: "free",
           codespaceId: effectiveCodespaceId,
         };
-        if (code) body.code = code;
+        if (code) body["code"] = code;
 
         try {
           const appData = await apiRequest<{

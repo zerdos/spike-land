@@ -147,7 +147,7 @@ function isReactElement(node: unknown): node is ReactElement {
   return (
     typeof node === "object" &&
     node !== null &&
-    (node as Record<string, unknown>).$$typeof === REACT_ELEMENT_TYPE
+    (node as Record<string, unknown>)["$$typeof"] === REACT_ELEMENT_TYPE
   );
 }
 
@@ -157,7 +157,7 @@ function renderElementToChunks(element: ReactElement, chunks: string[]): void {
 
   // Fragment
   if (type === REACT_FRAGMENT_TYPE) {
-    renderNodeToChunks(props.children as ReactNode, chunks);
+    renderNodeToChunks(props["children"] as ReactNode, chunks);
     return;
   }
 
@@ -166,11 +166,11 @@ function renderElementToChunks(element: ReactElement, chunks: string[]): void {
     // On the server, render the children (not fallback)
     // If children throw, we could render the fallback instead
     try {
-      renderNodeToChunks(props.children as ReactNode, chunks);
+      renderNodeToChunks(props["children"] as ReactNode, chunks);
     } catch (_error) {
       // Render fallback on error
-      if (props.fallback !== undefined) {
-        renderNodeToChunks(props.fallback as ReactNode, chunks);
+      if (props["fallback"] !== undefined) {
+        renderNodeToChunks(props["fallback"] as ReactNode, chunks);
       }
     }
     return;
@@ -193,17 +193,17 @@ function renderElementToChunks(element: ReactElement, chunks: string[]): void {
     const typeObj = type as Record<string, unknown>;
 
     // Forward ref
-    if (typeObj.$$typeof === REACT_FORWARD_REF_TYPE) {
+    if (typeObj["$$typeof"] === REACT_FORWARD_REF_TYPE) {
       const rendered = (
-        typeObj.render as (props: Record<string, unknown>, ref: unknown) => ReactNode
+        typeObj["render"] as (props: Record<string, unknown>, ref: unknown) => ReactNode
       )(props, element.ref);
       renderNodeToChunks(rendered, chunks);
       return;
     }
 
     // Memo
-    if (typeObj.$$typeof === REACT_MEMO_TYPE) {
-      const innerType = typeObj.type;
+    if (typeObj["$$typeof"] === REACT_MEMO_TYPE) {
+      const innerType = typeObj["type"];
       if (typeof innerType === "function") {
         renderComponentElement(innerType as FunctionComponent | ComponentClass, props, chunks);
       } else {
@@ -222,12 +222,12 @@ function renderElementToChunks(element: ReactElement, chunks: string[]): void {
     }
 
     // Context provider
-    if (typeObj.$$typeof === REACT_CONTEXT_TYPE) {
+    if (typeObj["$$typeof"] === REACT_CONTEXT_TYPE) {
       const context = typeObj as unknown as ReactContext<unknown>;
       const previousValue = context._currentValue;
-      context._currentValue = props.value;
+      context._currentValue = props["value"];
       try {
-        renderNodeToChunks(props.children as ReactNode, chunks);
+        renderNodeToChunks(props["children"] as ReactNode, chunks);
       } finally {
         context._currentValue = previousValue;
       }
@@ -235,9 +235,9 @@ function renderElementToChunks(element: ReactElement, chunks: string[]): void {
     }
 
     // Lazy component
-    if (typeObj.$$typeof === REACT_LAZY_TYPE) {
-      const payload = typeObj._payload;
-      const init = typeObj._init as (payload: unknown) => unknown;
+    if (typeObj["$$typeof"] === REACT_LAZY_TYPE) {
+      const payload = typeObj["_payload"];
+      const init = typeObj["_init"] as (payload: unknown) => unknown;
       const resolvedType = init(payload);
       const resolvedElement: ReactElement = {
         $$typeof: REACT_ELEMENT_TYPE,
@@ -263,7 +263,7 @@ function renderHostElement(type: string, props: Record<string, unknown>, chunks:
 
   // Render children (unless it's a void element or text content was already added)
   if (!isVoidElement(type)) {
-    const children = props.children;
+    const children = props["children"];
     if (children != null && typeof children !== "string" && typeof children !== "number") {
       renderNodeToChunks(children as ReactNode, chunks);
     }
@@ -285,11 +285,11 @@ function renderComponentElement(
 
     // Call componentWillMount if exists (legacy)
     const instanceRecord = instance as unknown as Record<string, unknown>;
-    if (typeof instanceRecord.componentWillMount === "function") {
-      (instanceRecord.componentWillMount as () => void)();
+    if (typeof instanceRecord["componentWillMount"] === "function") {
+      (instanceRecord["componentWillMount"] as () => void)();
     }
-    if (typeof instanceRecord.UNSAFE_componentWillMount === "function") {
-      (instanceRecord.UNSAFE_componentWillMount as () => void)();
+    if (typeof instanceRecord["UNSAFE_componentWillMount"] === "function") {
+      (instanceRecord["UNSAFE_componentWillMount"] as () => void)();
     }
 
     const rendered = instance.render();
@@ -302,6 +302,8 @@ function renderComponentElement(
 }
 
 function isClassComponent(type: unknown): boolean {
-  const proto = (type as Record<string, unknown>).prototype as Record<string, unknown> | undefined;
-  return !!(proto && proto.isReactComponent);
+  const proto = (type as Record<string, unknown>)["prototype"] as
+    | Record<string, unknown>
+    | undefined;
+  return !!(proto && proto["isReactComponent"]);
 }

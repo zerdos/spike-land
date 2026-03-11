@@ -93,7 +93,7 @@ async function handleBillingPortal(c: Context<{ Bindings: Env; Variables: Variab
     return c.json({ error: "Failed to create billing portal session" }, 502);
   }
 
-  const url = data.url as string | undefined;
+  const url = data["url"] as string | undefined;
   if (!url) {
     return c.json({ error: "No portal URL returned" }, 502);
   }

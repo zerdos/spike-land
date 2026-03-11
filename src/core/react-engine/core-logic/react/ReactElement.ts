@@ -29,11 +29,11 @@ export function createElement(
   let ref: unknown = null;
 
   if (config != null) {
-    if (config.ref !== undefined) {
-      ref = config.ref;
+    if (config["ref"] !== undefined) {
+      ref = config["ref"];
     }
-    if (config.key !== undefined) {
-      key = "" + config.key;
+    if (config["key"] !== undefined) {
+      key = "" + config["key"];
     }
 
     for (const propName in config) {
@@ -52,18 +52,18 @@ export function createElement(
   // Children can be more than one argument
   const childrenLength = args.length;
   if (childrenLength === 1) {
-    props.children = args[0];
+    props["children"] = args[0];
   } else if (childrenLength > 1) {
     const childArray = Array(childrenLength);
     for (let i = 0; i < childrenLength; i++) {
       childArray[i] = args[i];
     }
-    props.children = childArray;
+    props["children"] = childArray;
   }
 
   // Resolve default props
   if (type && typeof type === "object" && "defaultProps" in type) {
-    const defaultProps = (type as Record<string, unknown>).defaultProps as
+    const defaultProps = (type as Record<string, unknown>)["defaultProps"] as
       | Record<string, unknown>
       | undefined;
     if (defaultProps) {
@@ -92,11 +92,11 @@ export function cloneElement(
   let ref = element.ref;
 
   if (config != null) {
-    if (config.ref !== undefined) {
-      ref = config.ref as typeof ref;
+    if (config["ref"] !== undefined) {
+      ref = config["ref"] as typeof ref;
     }
-    if (config.key !== undefined) {
-      key = "" + config.key;
+    if (config["key"] !== undefined) {
+      key = "" + config["key"];
     }
 
     for (const propName in config) {
@@ -114,13 +114,13 @@ export function cloneElement(
 
   const childrenLength = args.length;
   if (childrenLength === 1) {
-    props.children = args[0];
+    props["children"] = args[0];
   } else if (childrenLength > 1) {
     const childArray = Array(childrenLength);
     for (let i = 0; i < childrenLength; i++) {
       childArray[i] = args[i];
     }
-    props.children = childArray;
+    props["children"] = childArray;
   }
 
   return ReactElement(element.type, key, ref, props);

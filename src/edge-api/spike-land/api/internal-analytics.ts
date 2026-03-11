@@ -137,16 +137,16 @@ internalAnalytics.get("/analytics/summary", async (c) => {
   const usersRow = results[1]?.results[0] as Record<string, unknown> | undefined;
   const toolsRow = results[2]?.results[0] as Record<string, unknown> | undefined;
 
-  const totalCalls = (totals?.total_calls as number) ?? 0;
-  const totalErrors = (totals?.total_errors as number) ?? 0;
+  const totalCalls = (totals?.["total_calls"] as number) ?? 0;
+  const totalErrors = (totals?.["total_errors"] as number) ?? 0;
 
   return c.json({
     totalCalls,
     totalErrors,
     errorRate: totalCalls > 0 ? totalErrors / totalCalls : 0,
-    totalMs: (totals?.total_ms as number) ?? 0,
-    uniqueUsers: (usersRow?.unique_users as number) ?? 0,
-    uniqueTools: (toolsRow?.unique_tools as number) ?? 0,
+    totalMs: (totals?.["total_ms"] as number) ?? 0,
+    uniqueUsers: (usersRow?.["unique_users"] as number) ?? 0,
+    uniqueTools: (toolsRow?.["unique_tools"] as number) ?? 0,
     range,
   });
 });

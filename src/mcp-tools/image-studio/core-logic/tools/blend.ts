@@ -14,7 +14,7 @@ export const blendTool = imageProcedure
     withCredits({
       cost: (input, deps) =>
         deps.credits.calculateGenerationCost({
-          tier: ((input as Record<string, unknown>).tier as EnhancementTier) ?? "FREE",
+          tier: ((input as Record<string, unknown>)["tier"] as EnhancementTier) ?? "FREE",
         }),
       source: "blend",
     }),

@@ -14,8 +14,8 @@ import { registerSendTemplateTool } from "./send-template.js";
 import { registerListTemplatesTool } from "./list-templates.js";
 import { registerMarkReadTool } from "./mark-read.js";
 
-const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
-const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+const accessToken = process.env["WHATSAPP_ACCESS_TOKEN"];
+const phoneNumberId = process.env["WHATSAPP_PHONE_NUMBER_ID"];
 
 if (!accessToken || !phoneNumberId) {
   console.error(

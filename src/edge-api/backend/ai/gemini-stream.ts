@@ -169,12 +169,12 @@ async function runStreamLoop(
 
   const body: Record<string, unknown> = { contents };
   if (systemInstruction) {
-    body.systemInstruction = systemInstruction;
+    body["systemInstruction"] = systemInstruction;
   }
 
   const declarations = tools ? toFunctionDeclarations(tools) : [];
   if (declarations.length > 0) {
-    body.tools = [{ functionDeclarations: declarations }];
+    body["tools"] = [{ functionDeclarations: declarations }];
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;

@@ -200,7 +200,7 @@ export class ToolRegistry {
         if (oldTool) {
           oldTool.definition.stability = "deprecated";
           if (oldTool.registered && oldTool.registered._meta) {
-            oldTool.registered._meta.stability = "deprecated";
+            oldTool.registered._meta["stability"] = "deprecated";
           }
         }
       }

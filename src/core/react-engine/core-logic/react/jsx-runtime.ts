@@ -8,8 +8,8 @@ function jsxProd(type: unknown, config: Record<string, unknown>, maybeKey?: unkn
     key = "" + maybeKey;
   }
 
-  if (config.key !== undefined) {
-    key = "" + config.key;
+  if (config["key"] !== undefined) {
+    key = "" + config["key"];
   }
 
   let props: Record<string, unknown>;
@@ -24,7 +24,7 @@ function jsxProd(type: unknown, config: Record<string, unknown>, maybeKey?: unkn
     }
   }
 
-  const ref = props.ref !== undefined ? (props.ref as ReactElement["ref"]) : null;
+  const ref = props["ref"] !== undefined ? (props["ref"] as ReactElement["ref"]) : null;
 
   return {
     $$typeof: REACT_ELEMENT_TYPE,

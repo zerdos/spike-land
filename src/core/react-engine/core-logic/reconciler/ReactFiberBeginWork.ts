@@ -129,7 +129,7 @@ function updateHostRoot(current: Fiber, workInProgress: Fiber, renderLanes: Lane
   pushHostContainer(workInProgress);
 
   const nextChildren =
-    (workInProgress.memoizedState as Record<string, unknown> | null)?.element ?? null;
+    (workInProgress.memoizedState as Record<string, unknown> | null)?.["element"] ?? null;
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }
@@ -145,7 +145,7 @@ function updateHostComponent(
   const prevProps =
     current !== null ? (current.memoizedProps as Record<string, unknown> | null) : null;
 
-  let nextChildren = nextProps.children;
+  let nextChildren = nextProps["children"];
 
   // Check if the host config says this component should set text content
   const isDirectTextChild = typeof nextChildren === "string" || typeof nextChildren === "number";
@@ -154,7 +154,7 @@ function updateHostComponent(
     nextChildren = null;
   } else if (prevProps !== null) {
     const prevIsDirectTextChild =
-      typeof prevProps.children === "string" || typeof prevProps.children === "number";
+      typeof prevProps["children"] === "string" || typeof prevProps["children"] === "number";
     if (prevIsDirectTextChild) {
       workInProgress.flags |= ContentReset;
     }
@@ -187,11 +187,11 @@ function updateContextProvider(
 ): Fiber | null {
   const context: ReactContext<unknown> = workInProgress.type as ReactContext<unknown>;
   const newProps = workInProgress.pendingProps as Record<string, unknown>;
-  const newValue = newProps.value;
+  const newValue = newProps["value"];
 
   pushProvider(workInProgress, context, newValue);
 
-  const newChildren = newProps.children;
+  const newChildren = newProps["children"];
   reconcileChildren(current, workInProgress, newChildren, renderLanes);
   return workInProgress.child;
 }
@@ -203,7 +203,7 @@ function updateForwardRef(
   nextProps: unknown,
   renderLanes: Lanes,
 ): Fiber | null {
-  const render = (Component as Record<string, unknown>).render as (
+  const render = (Component as Record<string, unknown>)["render"] as (
     props: unknown,
     secondArg?: unknown,
   ) => unknown;
@@ -237,11 +237,11 @@ function updateMemoComponent(
 ): Fiber | null {
   const comp = Component as Record<string, unknown>;
   if (current === null) {
-    const innerType = comp.type;
+    const innerType = comp["type"];
     if (
       typeof innerType === "function" &&
-      comp.compare === null &&
-      comp.defaultProps === undefined
+      comp["compare"] === null &&
+      comp["defaultProps"] === undefined
     ) {
       // Simple memo shortcut
       workInProgress.tag = SimpleMemoComponent;
@@ -269,7 +269,7 @@ function updateMemoComponent(
   // Update path
   const currentChild = current.child!;
   const prevProps = currentChild.memoizedProps;
-  const compare = (comp.compare || shallowEqual) as (a: unknown, b: unknown) => boolean;
+  const compare = (comp["compare"] || shallowEqual) as (a: unknown, b: unknown) => boolean;
 
   if (compare(prevProps, nextProps) && current.ref === workInProgress.ref) {
     return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
@@ -279,7 +279,7 @@ function updateMemoComponent(
   const newChild = createFiberFromElement(
     {
       $$typeof: REACT_ELEMENT_TYPE,
-      type: comp.type as string | ((...args: unknown[]) => unknown),
+      type: comp["type"] as string | ((...args: unknown[]) => unknown),
       key: null,
       ref: null,
       props: nextProps,
@@ -328,14 +328,14 @@ function updateSuspenseComponent(
 
   if (showFallback) {
     workInProgress.flags &= ~DidCapture;
-    const fallback = nextProps.fallback;
+    const fallback = nextProps["fallback"];
     // Render fallback
     reconcileChildren(current, workInProgress, fallback, renderLanes);
     return workInProgress.child;
   }
 
   // Normal render - show primary content
-  const primaryChildren = nextProps.children;
+  const primaryChildren = nextProps["children"];
   reconcileChildren(current, workInProgress, primaryChildren, renderLanes);
   return workInProgress.child;
 }
@@ -347,8 +347,8 @@ function updateLazyComponent(
   nextProps: unknown,
   renderLanes: Lanes,
 ): Fiber | null {
-  const payload = (lazyComponent as Record<string, unknown>)._payload;
-  const init = (lazyComponent as Record<string, unknown>)._init as (payload: unknown) => unknown;
+  const payload = (lazyComponent as Record<string, unknown>)["_payload"];
+  const init = (lazyComponent as Record<string, unknown>)["_init"] as (payload: unknown) => unknown;
   const Component = init(payload);
 
   workInProgress.type = Component;
@@ -369,11 +369,11 @@ function updateLazyComponent(
   }
 
   if (typeof Component === "object" && Component !== null) {
-    if ((Component as Record<string, unknown>).$$typeof === REACT_FORWARD_REF_TYPE) {
+    if ((Component as Record<string, unknown>)["$$typeof"] === REACT_FORWARD_REF_TYPE) {
       workInProgress.tag = ForwardRef;
       return updateForwardRef(current, workInProgress, Component, nextProps, renderLanes);
     }
-    if ((Component as Record<string, unknown>).$$typeof === REACT_MEMO_TYPE) {
+    if ((Component as Record<string, unknown>)["$$typeof"] === REACT_MEMO_TYPE) {
       workInProgress.tag = MemoComponent;
       return updateMemoComponent(current, workInProgress, Component, nextProps, renderLanes);
     }
@@ -386,10 +386,10 @@ function updateLazyComponent(
 }
 
 function isClassComponent(Component: unknown): boolean {
-  const proto = (Component as Record<string, unknown>).prototype as
+  const proto = (Component as Record<string, unknown>)["prototype"] as
     | Record<string, unknown>
     | undefined;
-  return !!(proto && proto.isReactComponent);
+  return !!(proto && proto["isReactComponent"]);
 }
 
 // Track whether we received an update during this beginWork
@@ -443,7 +443,7 @@ export function beginWork(
           pushProvider(
             workInProgress,
             context,
-            (workInProgress.memoizedProps as Record<string, unknown>).value,
+            (workInProgress.memoizedProps as Record<string, unknown>)["value"],
           );
           break;
         }

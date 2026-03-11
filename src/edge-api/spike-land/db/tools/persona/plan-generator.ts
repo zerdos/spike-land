@@ -178,7 +178,7 @@ function generatePersonaAuditPlan(personaSlug: string, batchId?: string): AuditS
     performance_notes: "",
   };
   if (batchId) {
-    submitArgs.batch_id = batchId;
+    submitArgs["batch_id"] = batchId;
   }
 
   steps.push({

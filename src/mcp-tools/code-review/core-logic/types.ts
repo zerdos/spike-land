@@ -9,23 +9,26 @@ import { z } from "zod";
 
 // ── Enums ────────────────────────────────────────────────────────────────────
 
-export enum DiffSide {
-  LEFT = "LEFT",
-  RIGHT = "RIGHT",
-}
+export const DiffSide = {
+  LEFT: "LEFT",
+  RIGHT: "RIGHT",
+} as const;
+export type DiffSide = (typeof DiffSide)[keyof typeof DiffSide];
 
-export enum ReviewEvent {
-  APPROVE = "APPROVE",
-  REQUEST_CHANGES = "REQUEST_CHANGES",
-  COMMENT = "COMMENT",
-}
+export const ReviewEvent = {
+  APPROVE: "APPROVE",
+  REQUEST_CHANGES: "REQUEST_CHANGES",
+  COMMENT: "COMMENT",
+} as const;
+export type ReviewEvent = (typeof ReviewEvent)[keyof typeof ReviewEvent];
 
-export enum FileStatus {
-  ADDED = "added",
-  MODIFIED = "modified",
-  DELETED = "deleted",
-  RENAMED = "renamed",
-}
+export const FileStatus = {
+  ADDED: "added",
+  MODIFIED: "modified",
+  DELETED: "deleted",
+  RENAMED: "renamed",
+} as const;
+export type FileStatus = (typeof FileStatus)[keyof typeof FileStatus];
 
 export type GateStatus = "GREEN" | "YELLOW" | "RED";
 

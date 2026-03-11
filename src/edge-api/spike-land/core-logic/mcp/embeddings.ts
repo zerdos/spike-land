@@ -254,25 +254,25 @@ export function suggestParameters(query: string): Record<string, string> {
     /\bof\s+(?:a\s+|an\s+|the\s+)?(.+?)(?:\s+(?:in|to|called|named|from|with)\b|$)/,
   );
   if (ofMatch?.[1]) {
-    params.prompt = ofMatch[1].trim();
+    params["prompt"] = ofMatch[1].trim();
   }
 
   // "called/named <name>" -> name
   const namedMatch = lower.match(/\b(?:called|named)\s+["']?([a-z0-9_-]+)["']?/);
   if (namedMatch?.[1]) {
-    params.name = namedMatch[1];
+    params["name"] = namedMatch[1];
   }
 
   // "to <format>" -> format
   const formatMatch = lower.match(/\bto\s+([a-z]+)\b/);
   if (formatMatch?.[1] && KNOWN_FORMATS.has(formatMatch[1])) {
-    params.format = formatMatch[1];
+    params["format"] = formatMatch[1];
   }
 
   // "in <language>" -> language
   const langMatch = lower.match(/\bin\s+([a-z]+)\b/);
   if (langMatch?.[1] && KNOWN_LANGUAGES.has(langMatch[1])) {
-    params.language = langMatch[1];
+    params["language"] = langMatch[1];
   }
 
   return params;

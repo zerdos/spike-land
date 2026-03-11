@@ -116,14 +116,14 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
   }
 
   async function executeChatTool(args: Record<string, unknown>): Promise<McpCallResult> {
-    const message = args.message as string | undefined;
+    const message = args["message"] as string | undefined;
     if (!message) {
       return {
         content: [{ type: "text", text: "Error: message is required" }],
         isError: true,
       };
     }
-    const sessionKey = (args.session as string | undefined) ?? defaultSessionKey;
+    const sessionKey = (args["session"] as string | undefined) ?? defaultSessionKey;
     log(`chat: ${sessionKey}: ${message.slice(0, 80)}`);
 
     try {
@@ -208,9 +208,9 @@ export function createMcpBridge(opts: McpBridgeOptions): McpBridge {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               service_name: "openclaw-mcp",
-              title: args.title,
-              description: args.description,
-              severity: args.severity,
+              title: args["title"],
+              description: args["description"],
+              severity: args["severity"],
             }),
           });
           if (!response.ok) throw new Error(await response.text());
