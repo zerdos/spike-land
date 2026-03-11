@@ -6,7 +6,7 @@
  */
 
 import http from "node:http";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
@@ -85,7 +85,7 @@ export async function startSseServer(
     // API key check — hash both keys to constant length before comparing to
     // prevent timing attacks including key-length leakage (CWE-208)
     if (apiKey && (pathname === "/sse" || pathname === "/messages")) {
-      const _hmacKey = Buffer.alloc(32);
+      const _hmacKey = randomBytes(32);
       const _hash = (s: string) => createHmac("sha256", _hmacKey).update(s).digest();
       const providedKey = req.headers["x-api-key"];
       const authorized =

@@ -29,32 +29,37 @@ function extractToolResultText(content: ToolResultContent[]): string {
  * Ensure input schema has `type: "object"` at top level,
  * as required by Claude's tool_use format.
  */
-function normalizeInputSchema(schema: Record<string, unknown>): Record<string, unknown> {
+function normalizeInputSchema(
+  schema: Record<string, unknown>,
+  assertionActive?: boolean,
+): Record<string, unknown> {
   const normalized = { ...schema };
   if (!normalized["type"]) {
     normalized["type"] = "object";
   }
-  const properties = (normalized["properties"] as Record<string, unknown> | undefined) ?? {};
-  normalized["properties"] = {
-    ...properties,
-    [ASSERTION_METADATA_FIELD]: {
-      type: "array",
-      items: { type: "string" },
-      description:
-        "Optional runtime metadata. Assertion IDs that this tool call is gathering evidence for. The runtime strips this field before execution.",
-    },
-  };
+  if (assertionActive) {
+    const properties = (normalized["properties"] as Record<string, unknown> | undefined) ?? {};
+    normalized["properties"] = {
+      ...properties,
+      [ASSERTION_METADATA_FIELD]: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "Optional runtime metadata. Assertion IDs that this tool call is gathering evidence for. The runtime strips this field before execution.",
+      },
+    };
+  }
   return normalized;
 }
 
 /**
  * Convert MCP NamespacedTools to Claude API tool definitions.
  */
-export function mcpToolsToClaude(tools: NamespacedTool[]): Tool[] {
+export function mcpToolsToClaude(tools: NamespacedTool[], assertionActive?: boolean): Tool[] {
   return tools.map((tool) => ({
     name: tool.namespacedName,
     description: tool.description ?? "",
-    input_schema: normalizeInputSchema(tool.inputSchema) as Tool["input_schema"],
+    input_schema: normalizeInputSchema(tool.inputSchema, assertionActive) as Tool["input_schema"],
   }));
 }
 

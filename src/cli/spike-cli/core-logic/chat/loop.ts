@@ -75,9 +75,10 @@ export async function runAgentLoop(
     }
 
     // Build tools per-turn (dynamic registry or all tools)
+    const assertionActive = ctx.assertionRuntime?.hasCanonicalCore() ?? false;
     const tools: Tool[] = ctx.registry
-      ? mcpToolsToClaude(ctx.registry.getActiveTools())
-      : mcpToolsToClaude(ctx.manager.getAllTools());
+      ? mcpToolsToClaude(ctx.registry.getActiveTools(), assertionActive)
+      : mcpToolsToClaude(ctx.manager.getAllTools(), assertionActive);
 
     // Build system prompt with catalog if registry is active
     const promptParts: string[] = [];

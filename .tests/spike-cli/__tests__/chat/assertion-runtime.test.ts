@@ -33,6 +33,7 @@ describe("AssertionRuntime", () => {
     const runtime = new AssertionRuntime();
     runtime.setCanonicalCore("- assertion is satisfied only with enough evidence");
     const assertionId = runtime.getAssertions()[0]?.id;
+    expect(assertionId).toBeDefined();
 
     runtime.recordToolEvidence({
       toolName: "vitest__run_tests",

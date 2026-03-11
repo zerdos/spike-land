@@ -109,6 +109,7 @@ describe("ConfigWatcher", () => {
     });
 
     watcher.start();
+    expect(mockWatcher._callback).toBeDefined();
     const callback = mockWatcher._callback ?? (() => {});
     callback();
 
@@ -129,6 +130,7 @@ describe("ConfigWatcher", () => {
     });
 
     watcher.start();
+    expect(mockWatcher._callback).toBeDefined();
     const callback = mockWatcher._callback ?? (() => {});
     callback();
 
@@ -149,6 +151,7 @@ describe("ConfigWatcher", () => {
     watcher.start();
 
     // Simulate rapid file changes
+    expect(mockWatcher._callback).toBeDefined();
     const callback = mockWatcher._callback ?? (() => {});
     callback();
     callback();

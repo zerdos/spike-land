@@ -5,6 +5,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 import { homedir } from "node:os";
+import { randomUUID } from "node:crypto";
 import type { Message } from "../ai/client.js";
 import type { AssertionRuntimeSnapshot } from "../core-logic/chat/assertion-runtime.js";
 
@@ -57,7 +58,7 @@ function generateId(): string {
   const now = new Date();
   const date = now.toISOString().slice(0, 10).replace(/-/g, "");
   const time = now.toISOString().slice(11, 19).replace(/:/g, "");
-  const rand = Math.random().toString(36).slice(2, 6);
+  const rand = randomUUID().slice(0, 8);
   return `${date}-${time}-${rand}`;
 }
 

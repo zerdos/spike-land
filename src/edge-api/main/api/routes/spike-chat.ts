@@ -15,6 +15,7 @@ import {
 } from "../../core-logic/aether-memory.js";
 
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
+const GROK_MODEL = "grok-4-1";
 type SpikeChatRole = "system" | "user" | "assistant";
 
 interface SpikeChatMessage {
@@ -36,7 +37,7 @@ async function callGrok(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "grok-4-1",
+      model: GROK_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
@@ -68,12 +69,13 @@ export function buildSpikeChatMessages(
   const messages: SpikeChatMessage[] = [{ role: "system", content: systemPrompt }];
 
   if (Array.isArray(history)) {
-    for (const entry of history) {
+    const cappedHistory = history.slice(-20);
+    for (const entry of cappedHistory) {
       if (
         (entry.role === "user" || entry.role === "assistant") &&
         typeof entry.content === "string"
       ) {
-        const content = entry.content.trim();
+        const content = entry.content.trim().slice(0, 4000);
         if (content) {
           messages.push({ role: entry.role, content });
         }
@@ -130,8 +132,7 @@ async function streamGrokResponse(
   const decoder = new TextDecoder();
   let buffer = "";
   let fullText = "";
-  let currentToolName = "";
-  let toolArgBuffer = "";
+  const toolCallState = new Map<number, { name: string; argBuffer: string }>();
 
   while (true) {
     const { done, value } = await reader.read();
@@ -152,6 +153,7 @@ async function streamGrokResponse(
             delta: {
               content?: string;
               tool_calls?: Array<{
+                index: number;
                 function: { name?: string; arguments?: string };
               }>;
             };
@@ -168,25 +170,29 @@ async function streamGrokResponse(
           await sendEvent({ type: "text_delta", text: delta.content });
         }
 
-        // Tool calls (OpenAI format)
+        // Tool calls (OpenAI format) — track each by index
         if (delta.tool_calls) {
           for (const tc of delta.tool_calls) {
+            const idx = tc.index ?? 0;
             if (tc.function.name) {
-              currentToolName = tc.function.name;
-              toolArgBuffer = "";
-              await sendEvent({ type: "tool_call_start", name: currentToolName, args: {} });
+              toolCallState.set(idx, { name: tc.function.name, argBuffer: "" });
+              await sendEvent({ type: "tool_call_start", name: tc.function.name, args: {} });
             }
             if (tc.function.arguments) {
-              toolArgBuffer += tc.function.arguments;
+              const state = toolCallState.get(idx);
+              if (state) {
+                state.argBuffer += tc.function.arguments;
+              }
             }
           }
         }
 
-        // Finish reason — tool call end
-        if (chunk.choices[0]?.finish_reason === "tool_calls" && currentToolName) {
-          await sendEvent({ type: "tool_call_end", name: currentToolName, result: toolArgBuffer });
-          currentToolName = "";
-          toolArgBuffer = "";
+        // Finish reason — emit tool_call_end for all accumulated tool calls
+        if (chunk.choices[0]?.finish_reason === "tool_calls" && toolCallState.size > 0) {
+          for (const [, state] of toolCallState) {
+            await sendEvent({ type: "tool_call_end", name: state.name, result: state.argBuffer });
+          }
+          toolCallState.clear();
         }
       } catch {
         // skip malformed SSE
@@ -239,7 +245,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
     function: { name: string; description: string; parameters: unknown };
   }> = [];
   try {
-    const toolsRes = await c.env.MCP_SERVICE.fetch(
+    const toolsRes = await c.env.MCP_SERVICE?.fetch(
       new Request("https://mcp.spike.land/tools", {
         headers: { "X-Request-Id": requestId },
       }),
@@ -256,7 +262,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
         type: "function" as const,
         function: {
           name: t.name,
-          description: t.description,
+          description: (t.description ?? "").slice(0, 512),
           parameters: t.inputSchema ?? { type: "object", properties: {} },
         },
       }));

@@ -67,6 +67,7 @@ describe("saveConversation", () => {
     saveConversation(messages, "runtime-id", runtime.getSnapshot());
     const loaded = loadConversation("runtime-id");
 
+    expect(loaded).not.toBeNull();
     expect(loaded?.runtime?.core?.text).toContain("enough evidence");
     expect(loaded?.runtime?.assertions).toHaveLength(1);
   });

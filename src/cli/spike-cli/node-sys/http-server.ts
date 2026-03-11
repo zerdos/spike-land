@@ -6,7 +6,7 @@
  */
 
 import http from "node:http";
-import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
@@ -79,7 +79,7 @@ export async function startHttpServer(
     // API key check for /mcp — hash both keys to constant length before comparing to
     // prevent timing attacks including key-length leakage (CWE-208)
     if (pathname === "/mcp" && apiKey) {
-      const _hmacKey = Buffer.alloc(32);
+      const _hmacKey = randomBytes(32);
       const _hash = (s: string) => createHmac("sha256", _hmacKey).update(s).digest();
       const providedKey = req.headers["x-api-key"];
       const authorized =
@@ -138,6 +138,7 @@ export async function startHttpServer(
         for await (const chunk of req) {
           totalBytes += (chunk as Buffer).length;
           if (totalBytes > MAX_BODY_BYTES) {
+            req.socket.destroy();
             res.writeHead(413, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "Request body too large" }));
             return;
@@ -190,7 +191,7 @@ export async function startHttpServer(
 
   await new Promise<void>((resolve, reject) => {
     rawServer.once("error", reject);
-    rawServer.listen(port, () => resolve());
+    rawServer.listen(port, "127.0.0.1", () => resolve());
   });
 
   return {

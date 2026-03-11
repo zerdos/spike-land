@@ -106,7 +106,7 @@ function slugify(text: string): string {
 }
 
 function buildCoreVersion(text: string): string {
-  return createHash("sha1").update(text).digest("hex").slice(0, 12);
+  return createHash("sha256").update(text).digest("hex").slice(0, 12);
 }
 
 function truncateExcerpt(value: string): string {
@@ -262,6 +262,7 @@ export class AssertionRuntime {
   private core: CanonicalCore | null = null;
   private assertions = new Map<string, AssertionRecord>();
   private evidence: EvidenceRecord[] = [];
+  private evidenceCounter = 0;
 
   hasCanonicalCore(): boolean {
     return this.core !== null;
@@ -285,6 +286,7 @@ export class AssertionRuntime {
 
     this.core = core;
     this.evidence = [];
+    this.evidenceCounter = 0;
     this.assertions = new Map(
       extractAssertionsFromCore(normalized).map((assertion) => [assertion.id, assertion]),
     );
@@ -296,6 +298,7 @@ export class AssertionRuntime {
     this.core = null;
     this.assertions.clear();
     this.evidence = [];
+    this.evidenceCounter = 0;
   }
 
   getAssertions(): AssertionRecord[] {
@@ -329,6 +332,7 @@ export class AssertionRuntime {
       (snapshot.assertions ?? []).map((assertion) => [assertion.id, { ...assertion }]),
     );
     this.evidence = (snapshot.evidence ?? []).map((item) => ({ ...item }));
+    this.evidenceCounter = this.evidence.length;
     this.recomputeAssertionStatuses();
   }
 
@@ -361,8 +365,8 @@ export class AssertionRuntime {
     const timestamp = new Date().toISOString();
     const excerpt = truncateExcerpt(input.result);
 
-    const recorded = assertionIds.map((assertionId, index) => {
-      const evidenceId = `e${this.evidence.length + index + 1}`;
+    const recorded = assertionIds.map((assertionId) => {
+      const evidenceId = `e${++this.evidenceCounter}`;
       return {
         evidenceId,
         assertionId,
