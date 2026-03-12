@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import path from "node:path";
 import { glob } from "glob";
-import { Project, SyntaxKind, StringLiteral, NoSubstitutionTemplateLiteral } from "ts-morph";
+import type { StringLiteral, NoSubstitutionTemplateLiteral } from "ts-morph";
+import { Project, SyntaxKind } from "ts-morph";
 import type { MovePlan, AliasMap } from "./types.js";
 
 /**
@@ -45,7 +46,7 @@ export function rewriteSingleImport(
   }
 
   const oldDir = path.dirname(oldPath);
-  let resolvedAbs = path.resolve(oldDir, p1);
+  const resolvedAbs = path.resolve(oldDir, p1);
 
   const mapped = findMapped(resolvedAbs, pathMapping);
 
@@ -188,21 +189,21 @@ export async function copyAssets(
   const pkgDirMap = new Map<string, string>(); // "spike-app" → "frontend/platform-frontend/..."
   for (const [oldAbs, newAbs] of pathMapping) {
     const oldRel = path.relative(srcDir, oldAbs);
-    const pkgName = oldRel.split(path.sep)[0];
+    const pkgName = oldRel.split(path.sep)[0] ?? "";
     if (!pkgDirMap.has(pkgName)) {
       // Find the target directory for this package's files
       const newRel = path.relative(outputDir, newAbs);
       const parts = newRel.split(path.sep);
       // category/appName is the base
       if (parts.length >= 2) {
-        pkgDirMap.set(pkgName, path.join(parts[0], parts[1]));
+        pkgDirMap.set(pkgName, path.join(parts[0]!, parts[1]!));
       }
     }
   }
 
   let copied = 0;
   for (const relFile of assetFiles) {
-    const pkgName = relFile.split(path.sep)[0];
+    const pkgName = relFile.split(path.sep)[0] ?? "";
     const pkgBase = pkgDirMap.get(pkgName);
     if (!pkgBase) continue; // package wasn't in the move plans
 
@@ -253,7 +254,7 @@ function rewriteCssSource(
     const relToSrc = path.relative(srcDir, absSource);
 
     // Find which package this source path refers to
-    const sourcePkg = relToSrc.split(path.sep)[0];
+    const sourcePkg = relToSrc.split(path.sep)[0] ?? "";
     const targetBase = pkgDirMap.get(sourcePkg);
 
     if (targetBase) {
@@ -436,20 +437,20 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         }
       }
       if (pkg.exports) {
-        const traverse = (obj: unknown) => {
+        const traverse = (obj: Record<string, unknown>) => {
           for (const key in obj) {
             if (typeof obj[key] === "string") {
-              const n = updatePath(obj[key]);
+              const n = updatePath(obj[key] as string);
               if (n !== obj[key]) {
                 obj[key] = n;
                 changed = true;
               }
-            } else if (typeof obj[key] === "object") {
-              traverse(obj[key]);
+            } else if (typeof obj[key] === "object" && obj[key] !== null) {
+              traverse(obj[key] as Record<string, unknown>);
             }
           }
         };
-        traverse(pkg.exports);
+        traverse(pkg.exports as Record<string, unknown>);
       }
 
       if (changed) {
@@ -563,7 +564,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
                 const newRel = path.relative(outputDir, newAbs);
                 const parts = newRel.split(path.sep);
                 if (parts.length >= 2) {
-                  const appBase = path.join(outputDir, parts[0], parts[1]);
+                  const appBase = path.join(outputDir, parts[0]!, parts[1]!);
                   let relBase = path.relative(pkgPath, appBase);
                   if (!relBase.startsWith(".")) relBase = "./" + relBase;
                   const suffix = pattern.slice(pattern.indexOf(basePattern) + basePattern.length);
@@ -614,7 +615,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
                     const newRel = path.relative(outputDir, newAbs);
                     const parts = newRel.split(path.sep);
                     if (parts.length >= 2) {
-                      const appBase = path.join(outputDir, parts[0], parts[1]);
+                      const appBase = path.join(outputDir, parts[0]!, parts[1]!);
                       const rel = path.relative(pkgPath, appBase);
                       return (rel.startsWith(".") ? rel : "./" + rel) + "/*";
                     }
@@ -683,7 +684,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
                 ? path.resolve(rootDir, path.basename(srcDir))
                 : path.resolve(rootDir, "src");
               const relToSrc = path.relative(srcDirAbs, oldAbs);
-              const pkgName = relToSrc.split(path.sep)[0];
+              const pkgName = relToSrc.split(path.sep)[0] ?? "";
               const pkgRoot = path.join(srcDirAbs, pkgName);
 
               // The sub-path beyond the package root in the reference
@@ -694,7 +695,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
               const newRel = path.relative(outputDir, newAbs);
               const parts = newRel.split(path.sep);
               if (parts.length >= 2) {
-                const appRoot = path.join(outputDir, parts[0], parts[1]);
+                const appRoot = path.join(outputDir, parts[0]!, parts[1]!);
                 // Append the sub-path (e.g., "public", "src/ui")
                 if (subPath && subPath !== ".") {
                   return path.join(appRoot, subPath);
@@ -772,7 +773,7 @@ export async function generateManifests(plans: MovePlan[], outputDir: string) {
     if (!appMap.has(appFolder)) {
       appMap.set(appFolder, { files: [], deps: new Set() });
     }
-    const appData = appMap.get(appFolder);
+    const appData = appMap.get(appFolder)!;
     appData.files.push(path.relative(appFolder, p.targetRelPath));
     for (const d of p.fileNode.externalDeps) {
       appData.deps.add(d);

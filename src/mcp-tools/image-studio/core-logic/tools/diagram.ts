@@ -66,7 +66,7 @@ export const diagramTool = imageProcedure
       }
 
       ctx.notify?.(
-        toolEvent("job:created", jobRes.data.jobId, {
+        toolEvent("job:created", jobRes.data.jobId ?? "", {
           tier,
           diagram_type: diagramType,
           status: "PENDING",
@@ -101,7 +101,7 @@ export const diagramTool = imageProcedure
     }
 
     ctx.notify?.(
-      toolEvent("job:created", jobRes.data.jobId, {
+      toolEvent("job:created", jobRes.data.jobId ?? "", {
         tier,
         diagram_type: diagramType,
         status: "PENDING",

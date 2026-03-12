@@ -46,6 +46,7 @@ export function groupBlocksIntoChunks(blocks: ReaderBlock[], voiceId: string): T
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
+    if (!block) continue;
     const blockSeconds = (block.words / WORDS_PER_MINUTE) * 60;
     const currentSeconds = (currentWords / WORDS_PER_MINUTE) * 60;
 
@@ -192,7 +193,9 @@ export class ElevenLabsTtsEngine {
     this.setStatus("loading");
 
     try {
-      const audioData = await getOrFetchAudio(this.chunks[ci], this.voiceId);
+      const chunk = this.chunks[ci];
+      if (!chunk) return;
+      const audioData = await getOrFetchAudio(chunk, this.voiceId);
       if (localRunId !== this.runId) return;
       await this.playAudioData(audioData, ci, localRunId);
     } catch {
@@ -276,6 +279,7 @@ export class ElevenLabsTtsEngine {
     this.audio = audio;
 
     const chunk = this.chunks[chunkIndex];
+    if (!chunk) return;
 
     // Start prefetching next chunk
     this.prefetchNext(chunkIndex);
@@ -318,6 +322,7 @@ export class ElevenLabsTtsEngine {
         const nextChunkIndex = chunkIndex + 1;
         if (nextChunkIndex < this.chunks.length) {
           const nextChunk = this.chunks[nextChunkIndex];
+          if (!nextChunk) return;
 
           const playNext = async () => {
             try {
@@ -368,6 +373,7 @@ export class ElevenLabsTtsEngine {
     if (this.prefetchPromise) return;
 
     const nextChunk = this.chunks[nextIndex];
+    if (!nextChunk) return;
     this.prefetchPromise = getOrFetchAudio(nextChunk, this.voiceId).catch(() => {
       this.prefetchPromise = null;
       return new ArrayBuffer(0);

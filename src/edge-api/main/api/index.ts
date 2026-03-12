@@ -12,6 +12,7 @@ import { live } from "./routes/live.js";
 import { openAiCompatible } from "./routes/openai-compatible.js";
 import { analytics } from "./routes/analytics.js";
 import { analyticsGa4 } from "./routes/analytics-ga4.js";
+import { analyticsDashboard } from "./routes/analytics-dashboard.js";
 import { quizBadge } from "./routes/quiz-badge.js";
 import { version } from "./routes/version.js";
 import { blog } from "./routes/blog.js";
@@ -94,10 +95,13 @@ app.use("*", requestIdMiddleware);
 app.use("*", async (c, next) => {
   const host = getRequestHost(c.req.raw);
   if (host === PLATFORM_HOSTS.analytics) {
-    const url = new URL(c.req.url);
-    if (url.pathname === "/" || url.pathname === "/index.html") {
-      url.pathname = "/analytics";
-      return c.redirect(url.toString(), 308);
+    const pathname = new URL(c.req.url).pathname;
+    // Rewrite paths so analytics.spike.land/X → /analytics/X
+    if (pathname === "/" || pathname === "/index.html") {
+      return c.redirect("/analytics", 307);
+    }
+    if (!pathname.startsWith("/analytics")) {
+      return c.redirect(`/analytics${pathname}`, 307);
     }
   }
   return next();
@@ -267,6 +271,7 @@ app.route("/", r2);
 app.route("/", proxy);
 app.route("/", live);
 app.route("/", openAiCompatible);
+app.route("/", analyticsDashboard);
 app.route("/", analytics);
 app.route("/", analyticsGa4);
 app.route("/", quizBadge);

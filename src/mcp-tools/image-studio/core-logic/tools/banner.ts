@@ -113,7 +113,7 @@ export const bannerTool = imageProcedure
       if (error) return error;
 
       ctx.notify?.(
-        toolEvent("job:created", jobRes.data.jobId, {
+        toolEvent("job:created", jobRes.data.jobId ?? "", {
           tier,
           preset: input.preset,
           status: "PENDING",
@@ -160,7 +160,7 @@ export const bannerTool = imageProcedure
     if (error) return error;
 
     ctx.notify?.(
-      toolEvent("job:created", jobRes.data.jobId, {
+      toolEvent("job:created", jobRes.data.jobId ?? "", {
         tier,
         preset: input.preset,
         status: "PENDING",

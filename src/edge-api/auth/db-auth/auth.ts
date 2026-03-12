@@ -10,6 +10,7 @@ import * as schema from "../db/schema";
 export interface Env {
   AUTH_DB: D1Database;
   STATUS_DB: D1Database;
+  PLATFORM_DB: D1Database;
   BETTER_AUTH_SECRET: string;
   MCP_INTERNAL_SECRET: string;
   SENTRY_DSN?: string;

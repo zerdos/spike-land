@@ -36,12 +36,12 @@ export class MainThreadApplier {
   private applyMutation(mut: Mutation): void {
     switch (mut.type) {
       case MutationType.CREATE_ELEMENT: {
-        const el = document.createElement(mut.tagName);
+        const el = document.createElement(mut.tagName ?? "div");
         this.register(mut.targetId, el);
         break;
       }
       case MutationType.CREATE_ELEMENT_NS: {
-        const el = document.createElementNS(mut.namespace, mut.tagName);
+        const el = document.createElementNS(mut.namespace ?? "", mut.tagName ?? "div");
         this.register(mut.targetId, el);
         break;
       }
@@ -51,20 +51,27 @@ export class MainThreadApplier {
         break;
       }
       case MutationType.APPEND_CHILD: {
-        const parent = this.nodeMap.get(mut.parentId);
+        const parentId = mut.parentId;
+        if (parentId === undefined) break;
+        const parent = this.nodeMap.get(parentId);
         const child = this.nodeMap.get(mut.targetId);
         if (parent && child) parent.appendChild(child);
         break;
       }
       case MutationType.INSERT_BEFORE: {
-        const parent = this.nodeMap.get(mut.parentId);
+        const parentId = mut.parentId;
+        if (parentId === undefined) break;
+        const parent = this.nodeMap.get(parentId);
         const child = this.nodeMap.get(mut.targetId);
-        const ref = this.nodeMap.get(mut.refId);
+        const refId = mut.refId;
+        const ref = refId !== undefined ? this.nodeMap.get(refId) : undefined;
         if (parent && child) parent.insertBefore(child, ref ?? null);
         break;
       }
       case MutationType.REMOVE_CHILD: {
-        const parent = this.nodeMap.get(mut.parentId);
+        const parentId = mut.parentId;
+        if (parentId === undefined) break;
+        const parent = this.nodeMap.get(parentId);
         const child = this.nodeMap.get(mut.targetId);
         if (parent && child && child.parentNode === parent) {
           parent.removeChild(child);
@@ -73,22 +80,22 @@ export class MainThreadApplier {
       }
       case MutationType.SET_ATTRIBUTE: {
         const el = this.nodeMap.get(mut.targetId);
-        if (el && el instanceof Element) {
-          el.setAttribute(mut.name, mut.value);
+        if (el && el instanceof Element && mut.name !== undefined) {
+          el.setAttribute(mut.name, mut.value ?? "");
         }
         break;
       }
       case MutationType.REMOVE_ATTRIBUTE: {
         const el = this.nodeMap.get(mut.targetId);
-        if (el && el instanceof Element) {
+        if (el && el instanceof Element && mut.name !== undefined) {
           el.removeAttribute(mut.name);
         }
         break;
       }
       case MutationType.SET_STYLE: {
         const el = this.nodeMap.get(mut.targetId);
-        if (el && el instanceof HTMLElement) {
-          el.style.setProperty(mut.name, mut.value);
+        if (el && el instanceof HTMLElement && mut.name !== undefined) {
+          el.style.setProperty(mut.name, mut.value ?? "");
         }
         break;
       }

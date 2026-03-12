@@ -1,0 +1,306 @@
+import { drizzle } from "drizzle-orm/d1";
+import type { Env } from "../db-auth/auth";
+import type { AuthResult } from "./auth-guard";
+import { logAudit } from "./audit";
+import * as queries from "./queries";
+import * as platformQueries from "./platform-queries";
+import * as schema from "../db/schema";
+
+type Handler = (
+  request: Request,
+  env: Env,
+  auth: AuthResult,
+  params: Record<string, string>,
+) => Promise<Response>;
+
+function json(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function getIp(request: Request): string {
+  return (
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown"
+  );
+}
+
+const routes: Array<{ method: string; pattern: RegExp; handler: Handler }> = [];
+
+function route(method: string, path: string, handler: Handler) {
+  const pattern = new RegExp("^" + path.replace(/:(\w+)/g, "(?<$1>[^/]+)") + "$");
+  routes.push({ method, pattern, handler });
+}
+
+// --- Overview ---
+route("GET", "/dashboard/api/stats", async (_req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  return json(await queries.getOverviewStats(db));
+});
+
+// --- Users ---
+route("GET", "/dashboard/api/users", async (req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const url = new URL(req.url);
+  const opts: Parameters<typeof queries.getUsers>[1] = {
+    page: Number(url.searchParams.get("page")) || 1,
+    limit: Number(url.searchParams.get("limit")) || 25,
+  };
+  const search = url.searchParams.get("search");
+  if (search) opts.search = search;
+  const role = url.searchParams.get("role");
+  if (role) opts.role = role;
+  return json(await queries.getUsers(db, opts));
+});
+
+route("GET", "/dashboard/api/users/:id", async (_req, env, _auth, params) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const id = params.id!;
+  const detail = await queries.getUserDetail(db, id);
+  if (!detail) return json({ error: "User not found" }, 404);
+  return json(detail);
+});
+
+route("PATCH", "/dashboard/api/users/:id", async (req, env, auth, params) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const id = params.id!;
+  const body = (await req.json()) as { role?: string; emailVerified?: boolean };
+
+  const before = await queries.getUserDetail(db, id);
+  const updated = await queries.updateUser(db, id, body);
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: body.role !== undefined ? "user.role_changed" : "user.updated",
+    targetType: "user",
+    targetId: id,
+    details: {
+      before: { role: before?.user?.role, emailVerified: before?.user?.emailVerified },
+      after: body,
+    },
+    ipAddress: getIp(req),
+  });
+
+  return json(updated);
+});
+
+route("POST", "/dashboard/api/users/bulk", async (req, env, auth) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const body = (await req.json()) as {
+    ids: string[];
+    patch: { role?: string; emailVerified?: boolean };
+  };
+
+  if (!Array.isArray(body.ids) || body.ids.length === 0) {
+    return json({ error: "ids array required" }, 400);
+  }
+
+  const result = await queries.bulkUpdateUsers(db, body.ids, body.patch);
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: "user.bulk_updated",
+    targetType: "user",
+    targetId: body.ids.join(","),
+    details: { count: body.ids.length, patch: body.patch },
+    ipAddress: getIp(req),
+  });
+
+  return json(result);
+});
+
+route("POST", "/dashboard/api/users/export", async (req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const body = (await req.json()) as { role?: string; search?: string };
+  const users = await queries.exportUsers(db, body);
+  return json(users);
+});
+
+// --- Sessions ---
+route("GET", "/dashboard/api/sessions", async (req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const url = new URL(req.url);
+  return json(
+    await queries.getActiveSessions(db, {
+      page: Number(url.searchParams.get("page")) || 1,
+      limit: Number(url.searchParams.get("limit")) || 25,
+    }),
+  );
+});
+
+route("DELETE", "/dashboard/api/sessions/:id", async (req, env, auth, params) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const id = params.id!;
+  await queries.revokeSession(db, id);
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: "session.revoked",
+    targetType: "session",
+    targetId: id,
+    ipAddress: getIp(req),
+  });
+
+  return json({ ok: true });
+});
+
+route("POST", "/dashboard/api/sessions/bulk-revoke", async (req, env, auth) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const body = (await req.json()) as { ids: string[] };
+
+  if (!Array.isArray(body.ids) || body.ids.length === 0) {
+    return json({ error: "ids array required" }, 400);
+  }
+
+  const result = await queries.bulkRevokeSessions(db, body.ids);
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: "session.bulk_revoked",
+    targetType: "session",
+    targetId: body.ids.join(","),
+    details: { count: body.ids.length },
+    ipAddress: getIp(req),
+  });
+
+  return json(result);
+});
+
+// --- Organizations ---
+route("GET", "/dashboard/api/organizations", async (req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const url = new URL(req.url);
+  return json(
+    await queries.getOrganizations(db, {
+      page: Number(url.searchParams.get("page")) || 1,
+      limit: Number(url.searchParams.get("limit")) || 25,
+    }),
+  );
+});
+
+route("GET", "/dashboard/api/organizations/:id", async (_req, env, _auth, params) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const id = params.id!;
+  const detail = await queries.getOrgDetail(db, id);
+  if (!detail) return json({ error: "Organization not found" }, 404);
+  return json(detail);
+});
+
+// --- API Keys (PLATFORM_DB) ---
+route("GET", "/dashboard/api/api-keys", async (req, env) => {
+  const url = new URL(req.url);
+  return json(
+    await platformQueries.getApiKeys(env.PLATFORM_DB, {
+      page: Number(url.searchParams.get("page")) || 1,
+      limit: Number(url.searchParams.get("limit")) || 25,
+    }),
+  );
+});
+
+route("DELETE", "/dashboard/api/api-keys/:id", async (req, env, auth, params) => {
+  const id = params.id!;
+  await platformQueries.revokeApiKey(env.PLATFORM_DB, id);
+  const db = drizzle(env.AUTH_DB, { schema });
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: "api_key.revoked",
+    targetType: "api_key",
+    targetId: id,
+    ipAddress: getIp(req),
+  });
+
+  return json({ ok: true });
+});
+
+route("GET", "/dashboard/api/oauth-clients", async (_req, env) => {
+  return json(await platformQueries.getOAuthClients(env.PLATFORM_DB));
+});
+
+route("GET", "/dashboard/api/device-codes", async (req, env) => {
+  const url = new URL(req.url);
+  return json(
+    await platformQueries.getDeviceAuthCodes(env.PLATFORM_DB, {
+      page: Number(url.searchParams.get("page")) || 1,
+      limit: Number(url.searchParams.get("limit")) || 25,
+    }),
+  );
+});
+
+// --- Audit Log ---
+route("GET", "/dashboard/api/audit-log", async (req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const url = new URL(req.url);
+  const opts: Parameters<typeof queries.getAuditLog>[1] = {
+    page: Number(url.searchParams.get("page")) || 1,
+    limit: Number(url.searchParams.get("limit")) || 50,
+  };
+  const action = url.searchParams.get("action");
+  if (action) opts.action = action;
+  return json(await queries.getAuditLog(db, opts));
+});
+
+// --- Security ---
+route("GET", "/dashboard/api/security", async (_req, env) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  return json(await queries.getSecurityEvents(db));
+});
+
+// --- System ---
+route("GET", "/dashboard/api/system", async (_req, env) => {
+  return json(await queries.getSystemHealth(env.STATUS_DB, env.AUTH_DB));
+});
+
+// --- Impersonation ---
+route("POST", "/dashboard/api/impersonate", async (req, env, auth) => {
+  const db = drizzle(env.AUTH_DB, { schema });
+  const body = (await req.json()) as { userId: string };
+
+  if (!body.userId) return json({ error: "userId required" }, 400);
+
+  const target = await queries.getUserDetail(db, body.userId);
+  if (!target) return json({ error: "User not found" }, 404);
+
+  await logAudit(db, {
+    actorId: auth.user.id,
+    action: "user.impersonated",
+    targetType: "user",
+    targetId: body.userId,
+    ipAddress: getIp(req),
+  });
+
+  return json({ ok: true, user: target.user });
+});
+
+route("POST", "/dashboard/api/stop-impersonate", async () => {
+  return json({ ok: true });
+});
+
+// --- Dispatcher ---
+export async function handleDashboardApi(
+  request: Request,
+  env: Env,
+  auth: AuthResult,
+): Promise<Response> {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  for (const r of routes) {
+    if (r.method !== request.method) continue;
+    const match = pathname.match(r.pattern);
+    if (match) {
+      const params = match.groups ?? {};
+      try {
+        return await r.handler(request, env, auth, params);
+      } catch (err) {
+        console.error(`[dashboard-api] ${r.method} ${pathname}:`, err);
+        return json({ error: err instanceof Error ? err.message : "Internal error" }, 500);
+      }
+    }
+  }
+
+  return json({ error: "Not found" }, 404);
+}

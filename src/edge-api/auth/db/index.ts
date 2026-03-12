@@ -122,6 +122,12 @@ export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("mcp-au
         return new Response(null, { status: 204 });
       }
 
+      // Dashboard routes
+      if (url.pathname === "/dashboard" || url.pathname.startsWith("/dashboard/")) {
+        const { handleDashboard } = await import("../dashboard/index");
+        return withCors(await handleDashboard(request, instrumentedEnv), request);
+      }
+
       // 1. Better Auth catch-all API routes (OAuth, Magic Links, Session queries)
       if (url.pathname.startsWith("/api/auth/")) {
         const auth = createAuth(instrumentedEnv);

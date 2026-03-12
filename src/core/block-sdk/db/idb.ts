@@ -155,7 +155,9 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
           if (rows.length === 0) continue;
 
           // Infer schema from first row
-          const cols = Object.keys(rows[0]);
+          const firstRow = rows[0];
+          if (!firstRow) continue;
+          const cols = Object.keys(firstRow);
           const colDefs = cols.map((c) => `"${c}" TEXT`).join(", ");
           sqliteDb?.run(`CREATE TABLE IF NOT EXISTS "${storeName}" (${colDefs})`);
 
@@ -165,14 +167,17 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
           const stmt = sqliteDb?.prepare(
             `INSERT INTO "${storeName}" (${colNames}) VALUES (${placeholders})`,
           );
-          for (const row of rows) {
-            stmt.run(cols.map((c) => row[c] as string | number | null));
+          if (stmt) {
+            for (const row of rows) {
+              stmt.run(cols.map((c) => row[c] as string | number | null));
+            }
+            stmt.free();
           }
-          stmt.free();
         }
       })();
     }
     await initPromise;
+    if (!sqliteDb) throw new Error("sql.js failed to initialize");
     return sqliteDb;
   }
 
@@ -200,12 +205,16 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
   async function syncInsertToIDB(table: string, db: Database, _params: unknown[]): Promise<void> {
     // Get the last inserted row by rowid
     const result = db.exec(`SELECT * FROM "${table}" WHERE rowid = last_insert_rowid()`);
-    if (result.length > 0 && result[0]?.values.length > 0) {
-      const cols = result[0]?.columns;
-      const vals = result[0]?.values[0];
+    const firstResult = result[0];
+    if (result.length > 0 && firstResult && firstResult.values.length > 0) {
+      const cols = firstResult.columns;
+      const vals = firstResult.values[0];
       const row: Row = {};
-      for (let i = 0; i < cols.length; i++) {
-        row[cols[i]] = vals[i];
+      if (vals) {
+        for (let i = 0; i < cols.length; i++) {
+          const colName = cols[i];
+          if (colName) row[colName] = vals[i];
+        }
       }
       // Only write to IDB if row has an id (IDB store uses keyPath: "id")
       if (row["id"] !== undefined) {
@@ -244,16 +253,18 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
     // Count SET params to know where WHERE params start
     const setMatch = sql.match(/SET\s+(.+?)\s+WHERE/i);
     if (!setMatch) return;
-    const setCount = setMatch[1]?.split(",").length;
+    const setCount = setMatch[1]?.split(",").length ?? 0;
     const whereParams = params.slice(setCount);
 
     const selectSql = `SELECT * FROM "${table}" WHERE ${whereMatch[1]}`;
     const result = db.exec(selectSql, whereParams as (string | number | null)[]);
-    if (result.length > 0) {
-      for (const vals of result[0]?.values) {
+    const updateResult = result[0];
+    if (result.length > 0 && updateResult) {
+      for (const vals of updateResult.values) {
         const row: Row = {};
-        for (let i = 0; i < result[0]?.columns.length; i++) {
-          row[result[0]?.columns[i]] = vals[i];
+        for (let i = 0; i < updateResult.columns.length; i++) {
+          const colName = updateResult.columns[i];
+          if (colName) row[colName] = vals[i];
         }
         if (row["id"] !== undefined) {
           const store = await getStore(table, "readwrite");
@@ -282,11 +293,14 @@ function createIDBSQL(dbPromise: Promise<IDBDatabase>): SQLAdapter {
       if (result.length === 0) {
         return { rows: [] as T[], rowsAffected: 0 };
       }
-      const cols = result[0]?.columns;
-      const rows = result[0]?.values.map((vals) => {
+      const selectResult = result[0];
+      if (!selectResult) return { rows: [] as T[], rowsAffected: 0 };
+      const cols = selectResult.columns;
+      const rows: T[] = selectResult.values.map((vals) => {
         const row: Row = {};
         for (let i = 0; i < cols.length; i++) {
-          row[cols[i]] = vals[i];
+          const colName = cols[i];
+          if (colName) row[colName] = vals[i];
         }
         return row as T;
       });

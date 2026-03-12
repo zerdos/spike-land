@@ -6,8 +6,9 @@ export function nanoid(length = 21): string {
   while (id.length < length) {
     const bytes = crypto.getRandomValues(new Uint8Array(length - id.length));
     for (let i = 0; i < bytes.length && id.length < length; i++) {
-      if (bytes[i] < MAX_BYTE) {
-        id += ALPHABET[bytes[i] % ALPHABET.length];
+      const byte = bytes[i];
+      if (byte !== undefined && byte < MAX_BYTE) {
+        id += ALPHABET[byte % ALPHABET.length];
       }
     }
   }

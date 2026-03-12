@@ -305,7 +305,7 @@ function mountStateImpl<S>(initialState: (() => S) | S): Hook {
 
 function mountState<S>(initialState: (() => S) | S): [S, (action: S | ((s: S) => S)) => void] {
   const hook = mountStateImpl(initialState);
-  const queue = hook.queue;
+  const queue = hook.queue!;
   const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue) as unknown as (
     action: S | ((s: S) => S),
   ) => void;
@@ -392,18 +392,19 @@ function updateReducerImpl<S, A>(
     let newBaseState: S | null = null;
     let newBaseQueueFirst: Update<S, A> | null = null;
     let newBaseQueueLast: Update<S, A> | null = null;
-    let update = first;
+    let update: Update<S, A> | null = first;
 
     do {
-      const updateLane = update?.lane;
+      if (update === null) break;
+      const updateLane = update.lane;
 
       if (!isSubsetOfLanes(renderLanes, updateLane)) {
         // Priority is insufficient. Skip this update.
         const clone: Update<S, A> = {
           lane: updateLane,
-          action: update?.action,
-          hasEagerState: update?.hasEagerState,
-          eagerState: update?.eagerState,
+          action: update.action,
+          hasEagerState: update.hasEagerState,
+          eagerState: update.eagerState,
           next: null,
         };
         if (newBaseQueueLast === null) {
@@ -419,9 +420,9 @@ function updateReducerImpl<S, A>(
         if (newBaseQueueLast !== null) {
           const clone: Update<S, A> = {
             lane: NoLane,
-            action: update?.action,
-            hasEagerState: update?.hasEagerState,
-            eagerState: update?.eagerState,
+            action: update.action,
+            hasEagerState: update.hasEagerState,
+            eagerState: update.eagerState,
             next: null,
           };
           newBaseQueueLast.next = clone;
@@ -429,14 +430,14 @@ function updateReducerImpl<S, A>(
         }
 
         // Process the update
-        const action = update?.action;
-        if (update?.hasEagerState) {
-          newState = update?.eagerState as S;
+        const action = update.action;
+        if (update.hasEagerState) {
+          newState = update.eagerState as S;
         } else {
           newState = reducer(newState, action);
         }
       }
-      update = update?.next;
+      update = update.next;
     } while (update !== null && update !== first);
 
     if (newBaseQueueLast === null) {
@@ -455,7 +456,7 @@ function updateReducerImpl<S, A>(
     queue.lastRenderedState = newState;
   }
 
-  const dispatch = queue.dispatch;
+  const dispatch = queue.dispatch!;
   return [hook.memoizedState as S, dispatch];
 }
 
@@ -696,7 +697,7 @@ function updateDeferredValue<T>(value: T, _initialValue?: T): T {
 
 function mountTransition(): [boolean, (callback: () => void) => void] {
   const stateHook = mountStateImpl(false as boolean);
-  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue, true, false);
+  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue!, true, false);
   const hook = mountWorkInProgressHook();
   hook.memoizedState = start;
   return [false, start];

@@ -196,16 +196,16 @@ export class ProfileBuilder {
       throw new Error(`ProfileBuilder.build(): missing required fields: ${missing.join(", ")}`);
     }
 
-    // At this point all required fields are defined — the non-null assertions
-    // are safe because we validated above.
+    // At this point all required fields are defined — validated above.
+    const s = this.state;
     const profile: UserProfile = {
-      age: this.state.age,
-      incomeAnnualCents: this.state.incomeAnnualCents,
-      location: this.state.location,
-      familySize: this.state.familySize,
-      disabilities: Object.freeze([...this.state.disabilities]),
-      employmentStatus: this.state.employmentStatus,
-      citizenshipStatus: this.state.citizenshipStatus,
+      age: s.age!,
+      incomeAnnualCents: s.incomeAnnualCents!,
+      location: s.location!,
+      familySize: s.familySize!,
+      disabilities: Object.freeze([...s.disabilities]),
+      employmentStatus: s.employmentStatus!,
+      citizenshipStatus: s.citizenshipStatus!,
       languages: Object.freeze([...this.state.languages]),
       customFields: new Map(this.state.customFields),
     };

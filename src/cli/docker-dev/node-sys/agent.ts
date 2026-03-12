@@ -73,7 +73,7 @@ export const TEST_KEYWORD_HANDLERS: Record<string, TestKeywordHandler> = {
 
   "E2E_TEST_DELAY:": async (content) => {
     const delayMatch = content.match(/E2E_TEST_DELAY:(\d+)/);
-    const delayMs = delayMatch ? parseInt(delayMatch[1], 10) : 1000;
+    const delayMs = delayMatch ? parseInt(delayMatch[1]!, 10) : 1000;
     const clampedDelay = Math.min(delayMs, 30000);
     await new Promise((resolve) => setTimeout(resolve, clampedDelay));
     return {

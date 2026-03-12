@@ -200,7 +200,7 @@ export function registerOrchestratorTools(
             text = `**Dispatched ${dispatched.length} subtask(s):**\n\n`;
             for (const id of dispatched) {
               const st = plan.subtasks.find((s) => s.id === id);
-              text += `- \`${id}\`: ${st.description}\n`;
+              text += `- \`${id}\`: ${st?.description ?? "(unknown)"}\n`;
             }
           }
 

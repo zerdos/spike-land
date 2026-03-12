@@ -84,6 +84,7 @@ async function runMiddlewareChain(
       return finalHandler(input, ctx);
     }
     const current = middlewares[index];
+    if (!current) return finalHandler(input, ctx);
     index++;
     return current.fn({
       input,

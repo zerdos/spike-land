@@ -64,7 +64,7 @@ function buildTree(maxGenerations: number): BranchDef[] {
 
   if (maxGenerations < 2) return branches;
 
-  const g1Survivor = gen1[0]?.to;
+  const g1Survivor: Point = gen1[0]?.to ?? { x: 250, y: 200 };
   const gen2: Array<{ to: Point; survives: boolean; fitness: number; delay: number }> = [
     { to: { x: 160, y: 90 }, survives: true, fitness: 91, delay: 0.01 },
     { to: { x: 340, y: 110 }, survives: false, fitness: 22, delay: 0.03 },
@@ -81,7 +81,7 @@ function buildTree(maxGenerations: number): BranchDef[] {
     });
   });
 
-  const g1Failed = gen1[1]?.to;
+  const g1Failed: Point = gen1[1]?.to ?? { x: 560, y: 210 };
   branches.push({
     id: "g2-fail-a",
     from: g1Failed,
@@ -93,7 +93,7 @@ function buildTree(maxGenerations: number): BranchDef[] {
   });
   branches.push({
     id: "g2-fail-b",
-    from: g1Failed,
+    from: g1Failed as Point,
     to: { x: 630, y: 120 },
     generation: 2,
     survives: false,
@@ -103,7 +103,7 @@ function buildTree(maxGenerations: number): BranchDef[] {
 
   if (maxGenerations < 3) return branches;
 
-  const g2Survivor = gen2[0]?.to;
+  const g2Survivor: Point = gen2[0]?.to ?? { x: 160, y: 90 };
   const gen3: Array<{ to: Point; survives: boolean; fitness: number; delay: number }> = [
     { to: { x: 90, y: 20 }, survives: true, fitness: 97, delay: 0.01 },
     { to: { x: 200, y: 15 }, survives: false, fitness: 43, delay: 0.02 },

@@ -138,6 +138,8 @@ export default tseslint.config(
   // (typechecked via their own tsconfigs separately)
   {
     files: [
+      "scripts/**/*.ts",
+      "scripts/**/*.tsx",
       "src/frontend/platform-frontend/**/*.ts",
       "src/frontend/platform-frontend/**/*.tsx",
       "src/frontend/monaco-editor/**/*.ts",

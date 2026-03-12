@@ -191,6 +191,9 @@ async function runStreamLoop(
   }
 
   const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error("Gemini API response body is empty");
+  }
   const decoder = new TextDecoder();
   let buffer = "";
   const functionCalls: { name: string; args: Record<string, unknown> }[] = [];
@@ -203,7 +206,7 @@ async function runStreamLoop(
 
     // Process complete SSE lines
     const lines = buffer.split("\n");
-    buffer = lines.pop(); // keep incomplete line
+    buffer = lines.pop() ?? ""; // keep incomplete line
 
     for (const line of lines) {
       if (!line.startsWith("data: ")) continue;

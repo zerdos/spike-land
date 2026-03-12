@@ -179,7 +179,7 @@ export function registerLearnItTools(
             return textResult(`**Error: NOT_FOUND**\nNo topic found with slug "${input.slug}".`);
           }
 
-          const topic = topicResult[0];
+          const topic = topicResult[0]!;
 
           // Fetch all outgoing relations (children, related, prerequisites)
           const outgoingResult = await db

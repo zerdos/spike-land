@@ -162,15 +162,16 @@ function shuffleFour(correct: Category): Category[] {
     const idx = Math.floor(Math.random() * others.length);
     if (!indices.has(idx)) {
       indices.add(idx);
-      picked.push(others[idx]);
+      const other = others[idx];
+      if (other) picked.push(other);
     }
   }
   const four = [correct, ...picked];
   // Fisher-Yates shuffle
   for (let i = four.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    const tmp = four[i];
-    four[i] = four[j];
+    const tmp = four[i] as Category;
+    four[i] = four[j] as Category;
     four[j] = tmp;
   }
   return four;
@@ -273,6 +274,7 @@ export function CodeCategorizerQuiz() {
     );
   }
 
+  if (!currentQuestion || !currentOptions) return null;
   const reason = hasAnswered ? getReason(currentQuestion) : null;
 
   return (

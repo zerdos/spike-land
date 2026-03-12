@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { Project, SyntaxKind, StringLiteral, NoSubstitutionTemplateLiteral } from "ts-morph";
+import type { Project, StringLiteral, NoSubstitutionTemplateLiteral } from "ts-morph";
+import { SyntaxKind } from "ts-morph";
 import type { FileNode, AliasMap } from "./types.js";
 import { extractRootPackage } from "./utils.js";
 import { excludedDeps } from "../reorganize-config.js";
@@ -133,7 +134,7 @@ export async function discoverFiles(
         relativeImports.add(resolved);
       } else if (importPath.startsWith("@/")) {
         // Resolve @/ alias to absolute path and track as relative import
-        const resolved = resolveAliasImport(importPath, packageName, aliasMap);
+        const resolved = resolveAliasImport(importPath, packageName ?? "", aliasMap);
         if (resolved) {
           relativeImports.add(resolved);
         }
@@ -145,7 +146,7 @@ export async function discoverFiles(
       }
     }
 
-    nodes.push({ absPath, relPath, packageName: packageName, externalDeps, relativeImports });
+    nodes.push({ absPath, relPath, packageName: packageName ?? "", externalDeps, relativeImports });
   }
   return { nodes, aliasMap };
 }

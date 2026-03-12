@@ -45,14 +45,17 @@ function createZodTool<TSchema extends z.ZodRawShape>(
     handler: (args: z.infer<z.ZodObject<TSchema>>) => Promise<unknown> | unknown;
   },
 ) {
-  server.tool(options.name, options.description, options.schema, (async (args: unknown) => {
+  server.tool(options.name, options.description, options.schema, async (args) => {
     try {
-      return await options.handler(args);
+      return (await options.handler(args as z.infer<z.ZodObject<TSchema>>)) as {
+        content: Array<{ type: "text"; text: string }>;
+        isError?: boolean;
+      };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return errorResult("INTERNAL_ERROR", message);
     }
-  }) as unknown);
+  });
 }
 
 export function registerServiceTools(server: McpServer): void {

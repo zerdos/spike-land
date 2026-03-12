@@ -368,6 +368,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM images WHERE id = ?")
         .bind(id)
         .first<D1ImageRow>();
+      if (!row) throw new Error("Image row not found after insert");
       return mapImageRow(row);
     },
 
@@ -407,6 +408,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM enhancement_jobs WHERE id = ?")
         .bind(id)
         .first<D1JobRow>();
+      if (!row) throw new Error("Job row not found after insert");
       return mapJobRow(row);
     },
 
@@ -514,6 +516,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM enhancement_jobs WHERE id = ?")
         .bind(id)
         .first<D1JobRow>();
+      if (!row) throw new Error("Job row not found after update");
       return mapJobRow(row);
     },
 
@@ -549,6 +552,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM albums WHERE id = ?")
         .bind(id)
         .first<D1AlbumRow>();
+      if (!row) throw new Error("Album row not found after insert");
       return mapAlbumRow(row);
     },
 
@@ -663,6 +667,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM albums WHERE handle = ?")
         .bind(handle)
         .first<D1AlbumRow>();
+      if (!row) throw new Error("Album row not found after update");
       return mapAlbumRow(row);
     },
 
@@ -805,6 +810,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM pipelines WHERE id = ?")
         .bind(id)
         .first<D1PipelineRow>();
+      if (!row) throw new Error("Pipeline row not found after insert");
       return mapPipelineRow(row);
     },
 
@@ -893,6 +899,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM pipelines WHERE id = ?")
         .bind(id)
         .first<D1PipelineRow>();
+      if (!row) throw new Error("Pipeline row not found after update");
       return mapPipelineRow(row);
     },
 
@@ -928,6 +935,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM generation_jobs WHERE id = ?")
         .bind(id)
         .first<D1GenJobRow>();
+      if (!row) throw new Error("Generation job row not found after insert");
       return mapGenJobRow(row);
     },
 
@@ -1073,6 +1081,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM generation_jobs WHERE id = ?")
         .bind(id)
         .first<D1GenJobRow>();
+      if (!row) throw new Error("Generation job row not found after update");
       return mapGenJobRow(row);
     },
 
@@ -1092,6 +1101,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM subjects WHERE id = ?")
         .bind(id)
         .first<D1SubjectRow>();
+      if (!row) throw new Error("Subject row not found after insert");
       return mapSubjectRow(row);
     },
 

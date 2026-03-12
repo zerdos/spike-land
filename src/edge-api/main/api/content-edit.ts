@@ -28,7 +28,7 @@ contentEdit.post("/api/blog/:slug/edit", async (c) => {
     return c.json({ error: "content is required and must be a non-empty string" }, 400);
   }
 
-  const content = (body as Record<string, string>)["content"];
+  const content = String((body as Record<string, unknown>)["content"]);
   const token = c.env.GITHUB_TOKEN;
   const branch = `content-edit/${slug}-${Date.now()}`;
   const filePath = `content/blog/${slug}.mdx`;

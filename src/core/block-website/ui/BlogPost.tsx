@@ -784,7 +784,7 @@ interface SliderStop {
   readonly amount: number;
   readonly label: string;
   readonly sub: string;
-  readonly icon: LucideIcon;
+  readonly icon: LucideIcon | typeof Zap;
 }
 
 interface HumorRound {

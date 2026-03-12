@@ -220,9 +220,12 @@ function requestHostCallback(): void {
 }
 
 function requestHostTimeout(callback: (currentTime: number) => void, ms: number): void {
-  taskTimeoutID = localSetTimeout?.(() => {
+  const id = localSetTimeout?.(() => {
     callback(getCurrentTime());
   }, ms);
+  if (id !== undefined) {
+    taskTimeoutID = id;
+  }
 }
 
 function cancelHostTimeout(): void {

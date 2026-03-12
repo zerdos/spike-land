@@ -21,6 +21,11 @@ binding = "STATUS_DB"
 database_name = "spike-edge-analytics"
 database_id = "f7219e86-7dc6-4627-92ad-17fce49ae35a"
 
+[[d1_databases]]
+binding = "PLATFORM_DB"
+database_name = "spike-land-mcp"
+database_id = "52b72b0a-c0f8-4d7f-aaec-4f014594d0c1"
+
 [[r2_buckets]]
 binding = "AUTH_R2"
 bucket_name = "spike-auth-assets"

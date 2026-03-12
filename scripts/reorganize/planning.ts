@@ -32,7 +32,7 @@ export function computeMovePlans(
     const category = packageCategories.get(n.packageName) || fallbackCategory;
 
     // Deduplicate: avoid cli/cli/cli stutter
-    let depGroupName = deduplicateDepGroup(depGroupRaw, category);
+    const depGroupName = deduplicateDepGroup(depGroupRaw, category);
 
     const appName = resolveAppName(n.packageName);
     let targetDir = path.join(category, appName, depGroupName);
@@ -45,7 +45,7 @@ export function computeMovePlans(
       }
     }
 
-    let fileName = flattenFilename(n.relPath, n.packageName);
+    const fileName = flattenFilename(n.relPath, n.packageName);
 
     // Issue 3 (Co-locate tests): Put tests in __tests__ subfolder
     if (fileName.endsWith(".test.ts") || fileName.endsWith(".test.tsx")) {
@@ -54,7 +54,7 @@ export function computeMovePlans(
 
     const targetPathKey = path.join(targetDir, fileName);
     let disambigName = fileName;
-    let count = targetCounts.get(targetPathKey) || 0;
+    const count = targetCounts.get(targetPathKey) || 0;
     if (count > 0) {
       const ext = path.extname(fileName);
       const base = path.basename(fileName, ext);

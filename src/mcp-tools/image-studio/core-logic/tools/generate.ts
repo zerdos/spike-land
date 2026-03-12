@@ -154,7 +154,7 @@ export const generateTool = imageProcedure
       if (!resp.data.success) {
         return errorResult("GENERATION_FAILED", resp.data.error ?? "Reference generation failed");
       }
-      ctx.notify?.(toolEvent("job:created", resp.data.jobId, { tier, status: "PENDING" }));
+      ctx.notify?.(toolEvent("job:created", resp.data.jobId ?? "", { tier, status: "PENDING" }));
       return jsonResult({
         jobId: resp.data.jobId,
         status: "PENDING",
@@ -223,7 +223,7 @@ export const generateTool = imageProcedure
       if (!resp.data.success) {
         return errorResult("GENERATION_FAILED", resp.data.error ?? "Advanced generation failed");
       }
-      ctx.notify?.(toolEvent("job:created", resp.data.jobId, { tier, status: "PENDING" }));
+      ctx.notify?.(toolEvent("job:created", resp.data.jobId ?? "", { tier, status: "PENDING" }));
       return jsonResult({
         jobId: resp.data.jobId,
         status: "PENDING",
@@ -252,7 +252,7 @@ export const generateTool = imageProcedure
     if (!resp.data.success) {
       return errorResult("GENERATION_FAILED", resp.data.error ?? "Generation failed");
     }
-    ctx.notify?.(toolEvent("job:created", resp.data.jobId, { tier, status: "PENDING" }));
+    ctx.notify?.(toolEvent("job:created", resp.data.jobId ?? "", { tier, status: "PENDING" }));
     return jsonResult({
       jobId: resp.data.jobId,
       status: "PENDING",

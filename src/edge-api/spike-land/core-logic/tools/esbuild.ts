@@ -131,7 +131,7 @@ export function registerEsbuildTools(
 
           for (const line of lines) {
             const match = line.match(errorPattern);
-            if (match) {
+            if (match && match[1] && match[2] && match[3]) {
               errors.push({
                 line: parseInt(match[1], 10),
                 column: parseInt(match[2], 10),

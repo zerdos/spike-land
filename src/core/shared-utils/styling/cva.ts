@@ -16,8 +16,9 @@ export function clsx(...inputs: ClassValue[]): string {
         const inner = clsx(...val);
         if (inner) str += (str && " ") + inner;
       } else if (typeof val === "object") {
-        for (const key in val as unknown) {
-          if ((val as unknown)[key]) {
+        const obj = val as Record<string, unknown>;
+        for (const key in obj) {
+          if (obj[key]) {
             str += (str && " ") + key;
           }
         }

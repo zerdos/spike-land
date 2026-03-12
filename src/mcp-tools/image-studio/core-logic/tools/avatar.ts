@@ -58,7 +58,7 @@ export const avatarTool = imageProcedure
     );
     if (error) return error;
 
-    ctx.notify?.(toolEvent("job:created", jobRes.data.jobId, { tier, status: "PENDING" }));
+    ctx.notify?.(toolEvent("job:created", jobRes.data.jobId ?? "", { tier, status: "PENDING" }));
     return jsonResult({
       jobId: jobRes.data.jobId,
       creditsCost: jobRes.data.creditsCost ?? cost,

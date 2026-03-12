@@ -30,10 +30,10 @@ function buildTree(
       const prefix = isLast ? "  └── " : "  ├── ";
       const childIndent = indent + (isLast ? "      " : "  │   ");
 
-      if (packages[dep]) {
+      if (dep && packages[dep]) {
         output += `${indent}${prefix}${buildTree(dep, packages, childIndent, visited).trimStart()}`;
       } else {
-        output += `${indent}${prefix}${dep} (external)\n`;
+        output += `${indent}${prefix}${dep ?? "unknown"} (external)\n`;
       }
     }
   }
@@ -113,7 +113,7 @@ function buildList(packages: Record<string, ManifestPackage>, rootPackage?: stri
 
     let output = "## Topological Order (build order)\n\n";
     for (let i = 0; i < filtered.length; i++) {
-      const name = filtered[i];
+      const name = filtered[i] ?? "";
       const pkg = packages[name];
       const deps = pkg?.deps?.length ?? 0;
       output += `${i + 1}. \`${name}\` (${pkg?.kind ?? "?"}, ${deps} deps)\n`;

@@ -32,6 +32,7 @@ function MonacoEditorWrapper({
     import("monaco-editor")
       .then((monaco) => {
         if (!isMounted) return;
+        if (!containerRef.current) return;
         editorRef.current = monaco.editor.create(containerRef.current, {
           value: valueRef.current,
           language: "markdown",
@@ -45,7 +46,7 @@ function MonacoEditorWrapper({
         });
 
         editorRef.current.onDidChangeModelContent(() => {
-          onChangeRef.current(editorRef.current?.getValue());
+          onChangeRef.current(editorRef.current?.getValue() ?? "");
         });
       })
       .catch((err: unknown) => {
@@ -242,7 +243,7 @@ export function DevModeFAB({ slug, initialContent }: DevModeFABProps) {
 
   return (
     <>
-      {open && <ContentCreatorMode slug={slug} initialContent={initialContent} />}
+      {open && <ContentCreatorMode slug={slug} initialContent={initialContent ?? ""} />}
       {!open && (
         <button
           onClick={() => setOpen(true)}

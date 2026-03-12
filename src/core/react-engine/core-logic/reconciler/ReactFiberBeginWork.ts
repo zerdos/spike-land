@@ -268,6 +268,9 @@ function updateMemoComponent(
 
   // Update path
   const currentChild = current.child;
+  if (currentChild === null) {
+    return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
+  }
   const prevProps = currentChild.memoizedProps;
   const compare = (comp["compare"] || shallowEqual) as (a: unknown, b: unknown) => boolean;
 
@@ -472,8 +475,12 @@ export function beginWork(
       const unresolvedProps = workInProgress.pendingProps;
       return updateClassComponent(current, workInProgress, Component, unresolvedProps, renderLanes);
     }
-    case HostRoot:
+    case HostRoot: {
+      if (current === null) {
+        throw new Error("HostRoot should always have a current fiber");
+      }
       return updateHostRoot(current, workInProgress, renderLanes);
+    }
     case HostComponent:
       return updateHostComponent(current, workInProgress, renderLanes);
     case HostText:

@@ -85,3 +85,16 @@ export const orgInvite = sqliteTable("org_invite", {
   expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
   createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
 });
+
+export const auditLog = sqliteTable("audit_log", {
+  id: text("id").primaryKey(),
+  actorId: text("actor_id")
+    .notNull()
+    .references(() => user.id),
+  action: text("action").notNull(),
+  targetType: text("target_type").notNull(),
+  targetId: text("target_id").notNull(),
+  details: text("details"),
+  ipAddress: text("ip_address"),
+  createdAt: integer("created_at", { mode: "number" }).notNull(),
+});

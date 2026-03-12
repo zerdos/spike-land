@@ -95,7 +95,7 @@ export const iconTool = imageProcedure
       }
 
       ctx.notify?.(
-        toolEvent("job:created", jobRes.data.jobId, {
+        toolEvent("job:created", jobRes.data.jobId ?? "", {
           tier,
           target,
           status: "PENDING",
@@ -132,7 +132,7 @@ export const iconTool = imageProcedure
     }
 
     ctx.notify?.(
-      toolEvent("job:created", jobRes.data.jobId, {
+      toolEvent("job:created", jobRes.data.jobId ?? "", {
         tier,
         target,
         status: "PENDING",

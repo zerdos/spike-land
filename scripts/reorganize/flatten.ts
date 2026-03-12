@@ -10,5 +10,5 @@ export function flattenFilename(relPath: string, _packageName: string): string {
       return `${parent}-${fileName}`;
     }
   }
-  return fileName;
+  return fileName ?? relPath;
 }

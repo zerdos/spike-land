@@ -94,7 +94,7 @@ export const editTool = imageProcedure
       );
     }
 
-    ctx.notify?.(toolEvent("job:created", result.data.jobId, { tier, status: "PENDING" }));
+    ctx.notify?.(toolEvent("job:created", result.data.jobId ?? "", { tier, status: "PENDING" }));
     return jsonResult({
       jobId: result.data.jobId,
       creditsCost: result.data.creditsCost,
