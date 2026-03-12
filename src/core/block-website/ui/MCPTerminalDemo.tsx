@@ -137,7 +137,6 @@ export function MCPTerminalDemo() {
   const [started, setStarted] = useState(false);
 
   const tab = TABS[activeTab] ?? TABS[0];
-  if (!tab) return null;
 
   const startAnimation = useCallback(() => {
     setTyped("");
@@ -162,7 +161,7 @@ export function MCPTerminalDemo() {
 
   // Typewriter
   useEffect(() => {
-    if (!playing || paused) return undefined;
+    if (!playing || paused || !tab) return undefined;
     const target = tab.request;
     if (typed.length >= target.length) {
       setPlaying(false);
@@ -171,7 +170,9 @@ export function MCPTerminalDemo() {
     }
     const iv = setInterval(() => setTyped((p) => target.slice(0, p.length + 1)), 30);
     return () => clearInterval(iv);
-  }, [playing, paused, typed, tab.request]);
+  }, [playing, paused, typed, tab]);
+
+  if (!tab) return null;
 
   const isDone = typed.length >= tab.request.length;
 

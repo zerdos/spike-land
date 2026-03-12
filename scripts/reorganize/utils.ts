@@ -21,7 +21,7 @@ export async function readPackagesYaml(): Promise<Record<string, ManifestPkg>> {
     const content = await fs.readFile("packages.yaml", "utf-8");
     const parsed = yaml.parse(content);
     return parsed.packages || {};
-  } catch (e) {
+  } catch (_e) {
     return {};
   }
 }

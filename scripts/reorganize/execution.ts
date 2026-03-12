@@ -457,7 +457,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         await fs.writeFile(pkgJsonPath, JSON.stringify(pkg, null, 2) + "\n");
         console.log(`Updated ${path.relative(rootDir, pkgJsonPath)}`);
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     // wrangler.toml
     const wranglerPath = path.join(pkgPath, "wrangler.toml");
@@ -481,7 +481,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         await fs.writeFile(wranglerPath, content);
         console.log(`Updated ${path.relative(rootDir, wranglerPath)}`);
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     // TypeScript shim files (index.ts, main.ts, cli.ts, etc.)
     // These contain re-exports like: export * from "../../src/code/modules.ts"
@@ -533,7 +533,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
           await fs.writeFile(shimPath, content, "utf-8");
           console.log(`Updated ${path.relative(rootDir, shimPath)}`);
         }
-      } catch (e) {}
+      } catch (_e) {}
     }
 
     // tsconfig.json — update paths and include patterns
@@ -654,7 +654,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         await fs.writeFile(pkgTsconfigPath, JSON.stringify(tsconfig, null, 2) + "\n");
         console.log(`Updated ${path.relative(rootDir, pkgTsconfigPath)}`);
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     // vite.config.ts — update resolve.alias and publicDir paths
     const viteConfigPath = path.join(pkgPath, "vite.config.ts");
@@ -741,7 +741,7 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
         await fs.writeFile(viteConfigPath, content, "utf-8");
         console.log(`Updated ${path.relative(rootDir, viteConfigPath)}`);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 }
 

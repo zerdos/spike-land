@@ -40,7 +40,7 @@ async function main() {
       )
       .join("\n");
     console.log(`  [API] Successfully fetched ${data.tools.length} tools.`);
-  } catch (err) {
+  } catch (_err) {
     console.error("❌ Failed to fetch tools from local. Verify local server is running.");
     process.exit(1);
   }

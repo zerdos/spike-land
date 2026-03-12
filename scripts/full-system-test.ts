@@ -1,4 +1,4 @@
-import { chromium, type Page } from "playwright";
+import { chromium } from "playwright";
 
 const BASE_URL = "https://127.0.0.1:5173";
 

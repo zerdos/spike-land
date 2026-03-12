@@ -74,7 +74,7 @@ interface MutateOperation {
   };
 }
 
-async function mutate(
+async function _mutate(
   endpoint: string,
   operations: MutateOperation[],
 ): Promise<Record<string, unknown>> {

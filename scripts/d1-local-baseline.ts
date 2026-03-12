@@ -9,7 +9,7 @@ import {
   type LocalD1State,
 } from "./d1-local-baseline-lib.js";
 
-interface SqliteRow extends Record<string, unknown> {}
+type SqliteRow = Record<string, unknown>;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..");

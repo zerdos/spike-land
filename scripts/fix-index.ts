@@ -1,4 +1,4 @@
-import { Project, SyntaxKind } from "ts-morph";
+import { Project } from "ts-morph";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -11,7 +11,7 @@ async function main() {
 
   const project = new Project();
   const oldContent = await fs.readFile("src-old/spike-edge/index.ts", "utf-8");
-  const oldAbsPath = path.resolve(process.cwd(), "src/spike-edge/index.ts");
+  const _oldAbsPath = path.resolve(process.cwd(), "src/spike-edge/index.ts");
   const newAbsPath = path.resolve(process.cwd(), "src/edge-api/main/api/index.ts");
   
   const sourceFile = project.createSourceFile(newAbsPath, oldContent, { overwrite: true });

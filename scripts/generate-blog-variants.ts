@@ -47,7 +47,7 @@ async function generateVariants() {
     let existingVariants: Record<string, string> = {};
     try {
       existingVariants = JSON.parse(await fs.readFile(variantsFile, "utf-8"));
-    } catch (e) {
+    } catch (_e) {
       // Doesn't exist or invalid
     }
 

@@ -50,7 +50,7 @@ function main() {
     // Save hash on success
     fs.writeFileSync(CACHE_FILE, newHash);
     console.log("Deployment successful!");
-  } catch (error) {
+  } catch (_error) {
     console.error("Deployment failed.");
     process.exit(1);
   }

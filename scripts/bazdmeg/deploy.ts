@@ -37,7 +37,7 @@ function saveDeployState(state: DeployState): void {
   writeFileSync(DEPLOY_STATE_FILE, JSON.stringify(state, null, 2));
 }
 
-function md5File(filePath: string): string {
+function _md5File(filePath: string): string {
   const content = readFileSync(filePath);
   return createHash("md5").update(content).digest("hex");
 }

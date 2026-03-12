@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { RunRecord, RunLog, RunLogEvent, PromptUsage } from "./types.js";
+import type { RunRecord, RunLog, RunLogEvent } from "./types.js";
 
 const DATA_DIR = join(process.cwd(), ".bazdmeg");
 const METRICS_FILE = join(DATA_DIR, "metrics.json");

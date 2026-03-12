@@ -64,7 +64,7 @@ async function runBenchmark() {
     try {
       await runToolTest();
       toolSuccesses++;
-    } catch (e) {
+    } catch (_e) {
       toolFails++;
     }
   }
@@ -84,7 +84,7 @@ async function runBenchmark() {
     try {
       await runPlaywrightTest();
       browserSuccesses++;
-    } catch (e) {
+    } catch (_e) {
       browserFails++;
     }
   }

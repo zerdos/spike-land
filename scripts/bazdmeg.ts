@@ -316,7 +316,7 @@ function phase2(
     // Score reviewer
     const reviewOutcome: Outcome =
       rejected.length === 0 ? "win" : approved.length > 0 ? "draw" : "loss";
-    const { delta: revDelta } = recordOutcome(reviewPrompt.id, runId, reviewOutcome);
+    const { delta: _revDelta } = recordOutcome(reviewPrompt.id, runId, reviewOutcome);
     promptsUsed.push({ promptId: reviewPrompt.id, outcome: reviewOutcome });
 
     // Fix rejected files

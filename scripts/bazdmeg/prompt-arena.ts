@@ -4,7 +4,6 @@ import type {
   EloChange,
   Outcome,
   PromptEloFile,
-  PromptRating,
   PromptRole,
   PromptVariant,
 } from "./types.js";

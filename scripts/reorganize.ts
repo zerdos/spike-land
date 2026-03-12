@@ -46,7 +46,7 @@ async function runReorganization(values: unknown) {
         .split("\n")
         .filter((f) => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
         .map((f) => path.resolve(process.cwd(), f));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   const allFiles = await glob("**/*.{ts,tsx}", {
@@ -55,7 +55,7 @@ async function runReorganization(values: unknown) {
     absolute: true,
   });
 
-  const files = filesToProcess.length > 0 ? filesToProcess : allFiles;
+  const _files = filesToProcess.length > 0 ? filesToProcess : allFiles;
   project.addSourceFilesAtPaths(allFiles);
 
   const { nodes, aliasMap } = await discoverFiles(project, srcDir);

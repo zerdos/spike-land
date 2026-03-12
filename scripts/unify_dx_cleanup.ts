@@ -2,12 +2,7 @@ import {
   Project,
   SyntaxKind,
   Node,
-  NonNullExpression,
-  PropertyAccessExpression,
-  ElementAccessExpression,
-  CallExpression,
 } from "ts-morph";
-import * as path from "path";
 
 const project = new Project({
   // We don't use tsConfigFilePath because it excludes many files we want to fix

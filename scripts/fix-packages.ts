@@ -4,7 +4,7 @@ import path from "node:path";
 import { updatePackagesConfigs } from "./reorganize/execution.js";
 
 async function main() {
-  const mappingPath = path.resolve(process.cwd(), "src-old/.mapping.json"); // Wait, where is it?
+  const _mappingPath = path.resolve(process.cwd(), "src-old/.mapping.json"); // Wait, where is it?
   // I moved src-reorganized to src. So it's in src/.mapping.json
   const currentMappingPath = path.resolve(process.cwd(), "src/.mapping.json");
   
