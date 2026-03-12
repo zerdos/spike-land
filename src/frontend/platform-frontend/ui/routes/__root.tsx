@@ -50,6 +50,10 @@ function buildRouteMeta(t: (key: string) => string): Record<string, RouteMeta> {
     "/login": { title: r("login"), description: d("login") },
     "/version": { title: r("version"), description: d("version") },
     "/what-we-do": { title: r("whatWeDo"), description: d("whatWeDo") },
+    "/rubik": {
+      title: "Rubik 3.0 — spike.land",
+      description: "Chat with Rubik 3.0 — spike.land's design + quality + product intelligence",
+    },
   };
 }
 
@@ -116,6 +120,7 @@ function injectJsonLd(id: string, content: string) {
 const NAV_LINK_ROUTES = [
   { to: "/apps", key: "apps" },
   { to: "/vibe-code", key: "vibeCode" },
+  { to: "/rubik", key: "rubik3", label: "Rubik 3.0" },
   { to: "/pricing", key: "pricing" },
   { to: "/docs", key: "docs" },
   { to: "/status", key: "status" },
@@ -133,7 +138,11 @@ export function RootLayout() {
   const resolvedLanguage = resolveSupportedLanguage(i18n.resolvedLanguage ?? i18n.language);
 
   const navLinks = useMemo(
-    () => NAV_LINK_ROUTES.map(({ to, key }) => ({ to, label: t(`nav:${key}`) })),
+    () =>
+      NAV_LINK_ROUTES.map((route) => ({
+        to: route.to,
+        label: "label" in route && route.label ? route.label : t(`nav:${route.key}`),
+      })),
     [t],
   );
 
@@ -277,7 +286,7 @@ export function RootLayout() {
   }, [pathname, resolvedLanguage, searchStr, t]);
 
   return (
-    <div className="app-shell relative flex min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div className="app-shell relative flex min-h-[100dvh] overflow-x-hidden bg-background text-foreground">
       {/* Skip to main content link for keyboard/screen reader users */}
       <a
         href="#main-content"
@@ -288,7 +297,7 @@ export function RootLayout() {
 
       <div className="flex flex-1 flex-col min-w-0">
         <header className="sticky top-0 z-30 border-b border-border/80 bg-background/86 backdrop-blur-xl">
-          <div className="rubik-container flex h-[4.5rem] items-center justify-between gap-6">
+          <div className="rubik-container flex h-14 lg:h-[4.5rem] items-center justify-between gap-6">
             <div className="flex min-w-0 items-center gap-5">
               <Link to="/" className="flex min-w-0 items-center gap-3">
                 <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
@@ -402,7 +411,10 @@ export function RootLayout() {
           </div>
         )}
 
-        <main id="main-content" className="flex-1 overflow-x-hidden pb-8">
+        <main
+          id="main-content"
+          className="flex-1 min-h-[calc(100dvh-3.5rem)] lg:min-h-[calc(100dvh-4.5rem)] overflow-x-hidden pb-8"
+        >
           <noscript>
             <div className="p-8 text-center">
               <h1>{t("common:jsRequired")}</h1>

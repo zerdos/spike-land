@@ -80,6 +80,7 @@ export type ConversationItem =
 
 interface UseChatOptions {
   enabled?: boolean;
+  persona?: string;
 }
 
 interface UseChatReturn {
@@ -172,7 +173,7 @@ export function buildConversationItems(rounds: ThreadRound[]): ConversationItem[
   return items;
 }
 
-export function useChat({ enabled = true }: UseChatOptions = {}): UseChatReturn {
+export function useChat({ enabled = true, persona }: UseChatOptions = {}): UseChatReturn {
   const [threads, setThreads] = useState<ChatThreadSummary[]>([]);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
   const [items, setItems] = useState<ConversationItem[]>([]);
@@ -354,6 +355,7 @@ export function useChat({ enabled = true }: UseChatOptions = {}): UseChatReturn 
           body: JSON.stringify({
             message: trimmed,
             ...(currentThreadIdRef.current ? { threadId: currentThreadIdRef.current } : {}),
+            ...(persona ? { persona } : {}),
           }),
           signal: abortRef.current.signal,
         });

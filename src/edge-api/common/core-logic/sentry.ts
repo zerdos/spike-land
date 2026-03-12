@@ -97,6 +97,7 @@ export function createWorkerSentryOptions(
         service: serviceName,
       },
     },
+    integrations: [Sentry.captureConsoleIntegration({ levels: ["error", "warn"] })],
     beforeSend(event) {
       const request = event.request;
       if (request && typeof request === "object") {

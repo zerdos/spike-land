@@ -4,6 +4,7 @@ import type { Env, Variables } from "../../core-logic/env.js";
 import { DOCS_MANIFEST, type DocEntry } from "../../core-logic/docs-catalog.js";
 import { resolveByokKey, type ByokProvider } from "../../core-logic/byok.js";
 import { authMiddleware } from "../middleware/auth.js";
+import { compressMessage, type PrdCompressionConfig } from "../../core-logic/prd-compression.js";
 
 const openAiCompatible = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -993,14 +994,21 @@ async function handleChatCompletion(c: Context<{ Bindings: Env; Variables: Varia
     });
   }
 
+  const prdConfig: PrdCompressionConfig = {
+    mode: (c.env.PRD_COMPRESSION_MODE as PrdCompressionConfig["mode"]) ?? "auto",
+    geminiApiKey: c.env.GEMINI_API_KEY,
+  };
+  const compression = await compressMessage(latestUserPrompt, prdConfig);
+  const effectivePrompt = compression.formattedMessage;
+
   const requestId = (c.get("requestId") as string | undefined) ?? crypto.randomUUID();
   const userId = c.get("userId") as string | undefined;
   const toolCatalog = await fetchToolCatalog(c.env, requestId);
-  const selectedDocs = selectRelevantDocs(latestUserPrompt);
-  const selectedTools = searchToolCatalog(latestUserPrompt, toolCatalog);
+  const selectedDocs = selectRelevantDocs(effectivePrompt);
+  const selectedTools = searchToolCatalog(effectivePrompt, toolCatalog);
   const providerMessages = buildProviderMessages(
     body.messages,
-    buildKnowledgePrompt(latestUserPrompt, selectedDocs, selectedTools),
+    buildKnowledgePrompt(effectivePrompt, selectedDocs, selectedTools),
   );
 
   const synthesisTarget = await resolveSynthesisTarget(c.env, userId, parsedModel.value);

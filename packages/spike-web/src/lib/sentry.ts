@@ -16,7 +16,10 @@ export function initBrowserSentry(): void {
     environment:
       import.meta.env.PUBLIC_SENTRY_ENVIRONMENT ??
       (import.meta.env.PROD ? "production" : "development"),
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.captureConsoleIntegration({ levels: ["error", "warn"] }),
+    ],
     tracesSampleRate: 0.1,
     tracePropagationTargets: [...TRACE_PROPAGATION_TARGETS],
     ignoreErrors: [

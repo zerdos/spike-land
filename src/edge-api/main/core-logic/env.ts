@@ -34,6 +34,8 @@ export interface Env {
   XAI_API_KEY: string;
   SENTRY_DSN?: string;
   SENTRY_TRACES_SAMPLE_RATE?: string;
+  PRD_COMPRESSION_MODE?: string;
+  PRD_COMPRESSION_EXPOSE?: string;
   ANALYTICS: AnalyticsEngineDataset;
   /** Set to "development" or "local" in dev wrangler config to enable draft posts */
   ENVIRONMENT?: string;

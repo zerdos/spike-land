@@ -377,6 +377,12 @@ const cockpitRoute = createRoute({
   component: withSuspense(() => import("./routes/cockpit"), "CockpitPage"),
 });
 
+const rubikChatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/rubik",
+  component: withSuspense(() => import("./routes/rubik-chat"), "RubikChatPage"),
+});
+
 // BAZDMEG Method Presentation
 const bazdmegRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -432,6 +438,7 @@ const startChecklistRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   cockpitRoute,
+  rubikChatRoute,
   bazdmegRoute,
   whatWeDoRoute,
   migrateRoute,

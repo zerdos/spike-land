@@ -78,4 +78,4 @@ docker/caddy_data/
 docker/caddy_config/
 
 
-__astro
+__astro.env.local.save

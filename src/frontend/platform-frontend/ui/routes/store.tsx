@@ -75,7 +75,7 @@ export function StorePage() {
   const isDiscover = activeGroup === null;
 
   return (
-    <div className="rubik-container rubik-page flex flex-col gap-8 xl:flex-row">
+    <div className="rubik-container-wide rubik-page flex flex-col gap-8 xl:flex-row">
       <aside className="hidden xl:block xl:w-64 xl:shrink-0">
         <div className="sticky top-6 space-y-4">
           <div className="rubik-panel p-5">

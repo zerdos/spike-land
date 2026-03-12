@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { getChatSystemPrompt } from "../../core-logic/chat-system-prompt.js";
+import { getRubik3SystemPrompt } from "../../core-logic/rubik-persona-prompt.js";
 import { BROWSER_TOOLS } from "../../core-logic/chat-browser-tools.js";
 import {
   appendStageSummary,
@@ -11,6 +12,7 @@ import {
   summarizeCompletedStage,
 } from "./chat-stage-memory.js";
 import { groupToolExecutionBatches } from "./chat-tool-batching.js";
+import { compressMessage, type PrdCompressionConfig } from "../../core-logic/prd-compression.js";
 
 const chat = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -24,6 +26,7 @@ type ChatContext = Context<{ Bindings: Env; Variables: Variables }>;
 interface ChatRequestBody {
   message?: string;
   threadId?: string;
+  persona?: string;
 }
 
 interface ToolCatalogItem {
@@ -394,6 +397,7 @@ async function createThread(
   db: D1Database,
   userId: string,
   message: string,
+  _persona?: string,
 ): Promise<ChatThreadSummaryResponse> {
   const now = Date.now();
   const threadId = crypto.randomUUID();
@@ -802,7 +806,15 @@ chat.post("/api/chat", async (c) => {
   }
 
   const requestId = (c.get("requestId") as string | undefined) ?? crypto.randomUUID();
-  const message = body.message.trim();
+  const rawMessage = body.message.trim();
+  const persona = typeof body.persona === "string" ? body.persona.trim() : undefined;
+
+  const prdConfig: PrdCompressionConfig = {
+    mode: (c.env.PRD_COMPRESSION_MODE as PrdCompressionConfig["mode"]) ?? "auto",
+    geminiApiKey: c.env.GEMINI_API_KEY,
+  };
+  const compression = await compressMessage(rawMessage, prdConfig);
+  const message = compression.formattedMessage;
 
   const threadSummary = body.threadId
     ? await (async () => {
@@ -812,7 +824,7 @@ chat.post("/api/chat", async (c) => {
         }
         return formatThreadSummary(existingThread);
       })()
-    : await createThread(c.env.DB, userId, message);
+    : await createThread(c.env.DB, userId, rawMessage, persona);
 
   if (!threadSummary) {
     return c.json({ error: "Thread not found" }, 404);
@@ -860,6 +872,15 @@ chat.post("/api/chat", async (c) => {
         thread: threadSummary,
       });
 
+      if (compression.compressed && c.env.PRD_COMPRESSION_EXPOSE === "true") {
+        await sendSseEvent("prd_compression", {
+          tier: compression.tier,
+          prd: compression.prd,
+          originalTokenEstimate: compression.originalTokenEstimate,
+          compressedTokenEstimate: compression.compressedTokenEstimate,
+        });
+      }
+
       while (toolLoopCount <= MAX_TOOL_LOOPS) {
         const stageMessages: AnthropicMessage[] = [
           ...baseMessages,
@@ -882,7 +903,7 @@ chat.post("/api/chat", async (c) => {
           body: JSON.stringify({
             model: "claude-sonnet-4-6",
             max_tokens: 4096,
-            system: getChatSystemPrompt(),
+            system: persona === "rubik-3" ? getRubik3SystemPrompt() : getChatSystemPrompt(),
             tools: MCP_AGENT_TOOLS,
             messages: stageMessages,
             stream: true,
@@ -1168,6 +1189,138 @@ chat.post("/api/chat", async (c) => {
       "X-Request-Id": requestId,
     },
   });
+});
+
+const DESIGN_VARIANTS = [
+  {
+    id: "dense-grid",
+    name: "Dense Grid",
+    focus:
+      "Maximum content density with masonry layout. Pack information tight, use compact cards, minimize whitespace.",
+  },
+  {
+    id: "editorial",
+    name: "Editorial",
+    focus:
+      "Magazine-style layout with large typography, generous white space, pull quotes, and editorial photography.",
+  },
+  {
+    id: "terminal",
+    name: "Terminal",
+    focus:
+      "Monospace-first, dark theme, terminal aesthetics. Feels like a dev tool with command-line influences.",
+  },
+  {
+    id: "glassmorphism",
+    name: "Glassmorphism",
+    focus:
+      "Full glass effects on all surfaces. Backdrop blur, translucent panels, layered depth with frosted glass.",
+  },
+  {
+    id: "obsidian",
+    name: "Obsidian",
+    focus:
+      "Dark-only design using the obsidian palette. Deep midnight blues, subtle gradients, no light mode.",
+  },
+  {
+    id: "phone-compact",
+    name: "Phone Compact",
+    focus:
+      "Optimized for 375px iPhone screens. Every pixel counts, thumb-friendly targets, no wasted space.",
+  },
+  {
+    id: "4k-expanse",
+    name: "4K Expanse",
+    focus:
+      "Full 3840px width utilization. Multi-column layouts, data-dense grids, wide content areas.",
+  },
+  {
+    id: "kinetic-type",
+    name: "Kinetic Type",
+    focus:
+      "Heavy variable font animations. Weight transitions, text reveals, scroll-driven typography effects.",
+  },
+  {
+    id: "card-world",
+    name: "Card World",
+    focus:
+      "Everything is a card. Nested cards, card grids, card stacks. Consistent rounded corners and shadows.",
+  },
+  {
+    id: "command-first",
+    name: "Command First",
+    focus:
+      "Keyboard-first interface. Spotlight search, command palette, keyboard shortcuts, minimal mouse interaction.",
+  },
+  {
+    id: "store-forward",
+    name: "Store Forward",
+    focus:
+      "Apps as the homepage. Store catalog front and center, featured apps, category browsing as primary navigation.",
+  },
+  {
+    id: "blog-forward",
+    name: "Blog Forward",
+    focus:
+      "Content as the primary surface. Blog posts, articles, documentation as the main experience.",
+  },
+  {
+    id: "chat-forward",
+    name: "Chat Forward",
+    focus:
+      "Conversation as the main interface. Chat-first design, persistent thread sidebar, inline tool results.",
+  },
+  {
+    id: "dashboard-pro",
+    name: "Dashboard Pro",
+    focus:
+      "Analytics and metrics as hero content. Charts, graphs, real-time data, status indicators.",
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    focus:
+      "Conservative, trust-first design. Professional, clean, no experimental effects. SOC2-audit-friendly aesthetics.",
+  },
+  {
+    id: "playful",
+    name: "Playful",
+    focus:
+      "Bouncy animations, bright colors, casual tone. Rounded shapes, playful icons, friendly micro-interactions.",
+  },
+];
+
+chat.post("/api/chat/seed-variants", async (c) => {
+  const userId = c.get("userId");
+  const now = Date.now();
+  const seeded: Array<{ id: string; variantId: string; name: string }> = [];
+
+  for (const variant of DESIGN_VARIANTS) {
+    const threadId = crypto.randomUUID();
+    await c.env.DB.prepare(
+      `INSERT INTO chat_threads (id, user_id, title, last_prompt_tokens, last_completion_tokens, last_total_tokens, created_at, updated_at)
+       VALUES (?, ?, ?, NULL, NULL, NULL, ?, ?)`,
+    )
+      .bind(threadId, userId, `Design Variant: ${variant.name}`, now, now)
+      .run();
+
+    const seedMessage = `You are exploring the "${variant.name}" design variant for spike.land. Focus: ${variant.focus}\n\nGenerate a detailed design proposal for spike.land using this aesthetic direction. Include specific CSS changes, component modifications, and layout adjustments for all 4 target viewports (iPhone 13 Mini 375px, iPad 810px, Desktop 1440px, 4K 3840px).`;
+
+    await c.env.DB.prepare(
+      `INSERT INTO chat_rounds (id, thread_id, user_id, input_role, input_content, assistant_blocks, assistant_text, prompt_tokens, completion_tokens, total_tokens, created_at, updated_at)
+       VALUES (?, ?, ?, 'user', ?, '[]', '', NULL, NULL, NULL, ?, ?)`,
+    )
+      .bind(crypto.randomUUID(), threadId, userId, seedMessage, now, now)
+      .run();
+
+    seeded.push({ id: threadId, variantId: variant.id, name: variant.name });
+  }
+
+  return c.json({ variants: seeded });
+});
+
+chat.get("/api/chat/design-variants", (_c) => {
+  return _c.json({ variants: DESIGN_VARIANTS });
 });
 
 export { chat };

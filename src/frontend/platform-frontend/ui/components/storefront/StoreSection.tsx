@@ -38,14 +38,9 @@ export function StoreSection({
       </div>
 
       {layout === "grid" ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {apps.map((app) => (
-            <StoreAppCard
-              key={app.slug}
-              app={app}
-              categoryName={categoryName}
-              layout="grid"
-            />
+            <StoreAppCard key={app.slug} app={app} categoryName={categoryName} layout="grid" />
           ))}
         </div>
       ) : (
