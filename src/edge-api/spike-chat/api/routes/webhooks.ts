@@ -84,7 +84,9 @@ export async function fireOutboundWebhooks(
 ): Promise<void> {
   const outbound = await db.select().from(webhooks).where(eq(webhooks.channelId, channelId));
 
-  const outboundHooks = outbound.filter((w) => w.type === "outbound" && w.url);
+  const outboundHooks = outbound.filter(
+    (w): w is typeof w & { url: string } => w.type === "outbound" && w.url !== null,
+  );
 
   await Promise.allSettled(
     outboundHooks.map(async (hook) => {

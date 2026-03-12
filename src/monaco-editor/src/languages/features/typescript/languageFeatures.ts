@@ -120,7 +120,7 @@ export class LibFiles {
       return model;
     }
     if (this.isLibFile(uri) && this._hasFetchedLibFiles) {
-      return editor.createModel(this._libFiles[uri.path.slice(1)], "typescript", uri);
+      return editor.createModel((this._libFiles[uri.path.slice(1)] as any), "typescript", uri);
     }
     const matchedLibFile = typescriptDefaults.getExtraLibs()[fileName];
     if (matchedLibFile) {
@@ -894,8 +894,8 @@ export class OutlineAdapter extends Adapter implements languages.DocumentSymbolP
         name: item.text,
         detail: "",
         kind: <languages.SymbolKind>(outlineTypeTable[item.kind] || languages.SymbolKind.Variable),
-        range: this._textSpanToRange(model, span),
-        selectionRange: this._textSpanToRange(model, span),
+        range: this._textSpanToRange(model, span as any),
+        selectionRange: this._textSpanToRange(model, span as any),
         tags: [],
       };
       if (item.childItems !== undefined) {

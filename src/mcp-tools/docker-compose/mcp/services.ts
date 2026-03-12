@@ -36,26 +36,26 @@ function errorResult(code: string, message: string, retryable = false) {
 /**
  * Register a tool with Zod validation and automatic error wrapping.
  */
+type ToolResult = { content: Array<{ type: "text"; text: string }>; isError?: boolean };
+
 function createZodTool<TSchema extends z.ZodRawShape>(
   server: McpServer,
   options: {
     name: string;
     description: string;
     schema: TSchema;
-    handler: (args: z.infer<z.ZodObject<TSchema>>) => Promise<unknown> | unknown;
+    handler: (args: z.infer<z.ZodObject<TSchema>>) => Promise<ToolResult> | ToolResult;
   },
 ) {
-  server.tool(options.name, options.description, options.schema, async (args) => {
+  const wrappedHandler = async (args: z.infer<z.ZodObject<TSchema>>): Promise<ToolResult> => {
     try {
-      return (await options.handler(args as z.infer<z.ZodObject<TSchema>>)) as {
-        content: Array<{ type: "text"; text: string }>;
-        isError?: boolean;
-      };
+      return await options.handler(args);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return errorResult("INTERNAL_ERROR", message);
     }
-  });
+  };
+  (server.tool as any)(options.name, options.description, options.schema, wrappedHandler);
 }
 
 export function registerServiceTools(server: McpServer): void {

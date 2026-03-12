@@ -20,6 +20,7 @@ export function extractMentions(text: string): Mention[] {
     const raw = match[0].trim();
     const prefix = match[1];
     const id = match[2];
+    if (prefix === undefined || id === undefined) continue;
 
     if (prefix === "#") {
       mentions.push({ type: "channel", id: id, raw });

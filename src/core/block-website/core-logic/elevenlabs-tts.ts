@@ -166,7 +166,7 @@ export class ElevenLabsTtsEngine {
   private status: ElevenLabsStatus = "idle";
   private timeline: ReaderTimelineEntry[] = [];
   private timeUpdateHandler: (() => void) | null = null;
-  private voiceId = ELEVENLABS_VOICES[0]?.id;
+  private voiceId: string = ELEVENLABS_VOICES[0]?.id ?? "";
 
   onBlockChange: (blockIndex: number) => void = () => {};
   onProgress: (seconds: number) => void = () => {};

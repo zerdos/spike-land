@@ -163,7 +163,8 @@ function parseNamedExports(match: string): Array<{ name: string; alias?: string 
     .filter(Boolean)
     .map((s) => {
       const parts = s.split(/\s+as\s+/);
-      return parts.length > 1 ? { name: parts[0], alias: parts[1] } : { name: parts[0] };
+      const name = parts[0] ?? "";
+      return parts.length > 1 && parts[1] !== undefined ? { name, alias: parts[1] } : { name };
     });
 }
 

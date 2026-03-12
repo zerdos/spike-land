@@ -10,9 +10,12 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl | null {
   // Try raw.githubusercontent.com first
   const rawMatch = RAW_GH_RE.exec(url);
   if (rawMatch) {
+    const rawOrg = rawMatch[1];
+    const rawRepo = rawMatch[2];
+    if (!rawOrg || !rawRepo) return null;
     return {
-      org: rawMatch[1]!,
-      repo: rawMatch[2]!,
+      org: rawOrg,
+      repo: rawRepo,
       type: "raw",
       branch: rawMatch[3],
       path: rawMatch[4],
@@ -37,9 +40,12 @@ export function parseShieldsBadge(url: string): ParsedGitHubUrl | null {
   const match = SHIELDS_WORKFLOW_RE.exec(url);
   if (!match) return null;
 
+  const shieldOrg = match[1];
+  const shieldRepo = match[2];
+  if (!shieldOrg || !shieldRepo) return null;
   return {
-    org: match[1]!,
-    repo: match[2]!,
+    org: shieldOrg,
+    repo: shieldRepo,
     type: "badge",
     workflow: match[3],
     url,

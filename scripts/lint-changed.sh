@@ -5,14 +5,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-WRITE_MODE=0
+FIX_MODE=0
 BASE_REF="HEAD"
 HEAD_REF="WORKTREE"
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --write)
-      WRITE_MODE=1
+    --fix)
+      FIX_MODE=1
       shift
       ;;
     --base)
@@ -41,11 +41,11 @@ get_changed_files() {
   fi
 }
 
-FORMAT_FILES=()
+LINT_FILES=()
 while IFS= read -r path; do
   [[ -n "$path" ]] || continue
   case "$path" in
-    *.ts|*.tsx|*.js|*.mjs|*.json)
+    *.js|*.jsx|*.mjs|*.cjs|*.ts|*.tsx)
       ;;
     *)
       continue
@@ -53,20 +53,20 @@ while IFS= read -r path; do
   esac
 
   if [[ -f "$REPO_ROOT/$path" ]]; then
-    FORMAT_FILES+=("$path")
+    LINT_FILES+=("$path")
   fi
 done < <(get_changed_files)
 
-if [[ ${#FORMAT_FILES[@]} -eq 0 ]]; then
-  echo "No Biome-formattable changes detected. Skipping format check."
+if [[ ${#LINT_FILES[@]} -eq 0 ]]; then
+  echo "No ESLint-relevant changes detected. Skipping lint."
   exit 0
 fi
 
 cd "$REPO_ROOT"
-if [[ "$WRITE_MODE" -eq 1 ]]; then
-  echo "==> Formatting ${#FORMAT_FILES[@]} changed file(s)..." >&2
-  yarn biome check --write --no-errors-on-unmatched "${FORMAT_FILES[@]}"
+if [[ "$FIX_MODE" -eq 1 ]]; then
+  echo "==> Lint-fixing ${#LINT_FILES[@]} changed file(s)..." >&2
+  yarn eslint --fix --no-error-on-unmatched-pattern --no-warn-ignored "${LINT_FILES[@]}"
 else
-  echo "==> Checking formatting for ${#FORMAT_FILES[@]} changed file(s)..." >&2
-  yarn biome check --no-errors-on-unmatched "${FORMAT_FILES[@]}"
+  echo "==> Lint-checking ${#LINT_FILES[@]} changed file(s)..." >&2
+  yarn eslint --no-error-on-unmatched-pattern --no-warn-ignored "${LINT_FILES[@]}"
 fi

@@ -79,6 +79,9 @@ credits.post("/api/credits/purchase", async (c) => {
   }
 
   const priceId = prices[0]?.id;
+  if (!priceId) {
+    return c.json({ error: `No price ID found for ${pack.credits} credit pack` }, 404);
+  }
 
   // Create one-time checkout session
   const sessionRes = await stripePost(stripeKey, "/v1/checkout/sessions", {

@@ -7,16 +7,16 @@
     "README.md"
   ],
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/packages/openclaw-mcp/index.js",
+  "types": "./dist/packages/openclaw-mcp/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/packages/openclaw-mcp/index.d.ts",
+      "import": "./dist/packages/openclaw-mcp/index.js",
+      "default": "./dist/packages/openclaw-mcp/index.js"
     }
   },
-  "bin": "./dist/cli.js",
+  "bin": "./dist/packages/openclaw-mcp/cli.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -24,7 +24,7 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --quiet .",
-    "start": "node dist/cli.js"
+    "start": "node dist/packages/openclaw-mcp/cli.js"
   },
   "engines": {
     "node": ">=20"

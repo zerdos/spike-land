@@ -27,7 +27,11 @@ export class PresenceDurableObject extends DurableObject {
 
     if (request.headers.get("Upgrade") === "websocket") {
       const pair = new WebSocketPair();
-      const [client, server] = Object.values(pair);
+      const client = pair[0];
+      const server = pair[1];
+      if (!client || !server) {
+        return new Response("WebSocket pair unavailable", { status: 500 });
+      }
 
       const userId = request.headers.get("x-user-id") || url.searchParams.get("userId");
       if (!userId) {
@@ -35,16 +39,16 @@ export class PresenceDurableObject extends DurableObject {
       }
 
       this.ctx.acceptWebSocket(server, [userId]);
-      server?.serializeAttachment({ userId });
+      server.serializeAttachment({ userId });
 
       // Mark user as online
       this.updatePresence(userId, "online");
 
       // Send current presence state of everyone to the new client
       const state = Object.fromEntries(this.presence.entries());
-      server?.send(JSON.stringify({ type: "presence_state", state }));
+      server.send(JSON.stringify({ type: "presence_state", state }));
 
-      return new Response(null, { status: 101, webSocket: client || null });
+      return new Response(null, { status: 101, webSocket: client });
     }
 
     if (request.method === "GET" && url.pathname === "/state") {

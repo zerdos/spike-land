@@ -22,7 +22,11 @@ export class ChannelDurableObject extends DurableObject {
     if (request.headers.get("Upgrade") === "websocket") {
       // Create a WebSocket pair
       const pair = new WebSocketPair();
-      const [client, server] = Object.values(pair);
+      const client = pair[0];
+      const server = pair[1];
+      if (!client || !server) {
+        return new Response("WebSocket pair unavailable", { status: 500 });
+      }
 
       // Authenticate via attachment? We can pass userId in headers or URL during upgrade
       const userId =
@@ -42,10 +46,10 @@ export class ChannelDurableObject extends DurableObject {
       this.ctx.acceptWebSocket(server, [channelId]);
 
       // Store attachment
-      server?.serializeAttachment(attachment);
+      server.serializeAttachment(attachment);
 
       // Broadcast user_joined (optional, maybe too noisy for large channels)
-      return new Response(null, { status: 101, webSocket: client || null });
+      return new Response(null, { status: 101, webSocket: client });
     }
 
     // HTTP endpoint for internal broadcasts (from Hono API routes)

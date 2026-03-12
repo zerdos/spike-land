@@ -73,7 +73,7 @@ export const screenshotTool = imageProcedure
     }
 
     ctx.notify?.(
-      toolEvent("job:created", jobRes.data.jobId, {
+      toolEvent("job:created", jobRes.data.jobId ?? "", {
         tier,
         device,
         background,

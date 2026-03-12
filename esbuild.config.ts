@@ -219,13 +219,16 @@ export function createBuildConfig(opts: BuildOptions): esbuild.BuildOptions {
   const outDir = resolve("dist", packageName);
   const entryPoint = join(srcDir, entry);
 
-  const external = resolveExternals(allPackages[packageName]!, allPackages, profile.external);
+  const pkgEntry = allPackages[packageName];
+  if (!pkgEntry) {
+    throw new Error(`Package "${packageName}" not found in manifest`);
+  }
+  const external = resolveExternals(pkgEntry, allPackages, profile.external);
 
   let entryPoints: string[] = [entryPoint];
-  const pkgDef = allPackages[packageName];
-  if (pkgDef?.exports && profile.bundle === false) {
+  if (pkgEntry.exports && profile.bundle === false) {
     entryPoints = [];
-    for (const v of Object.values(pkgDef.exports)) {
+    for (const v of Object.values(pkgEntry.exports)) {
       const cleanPath = v.replace(/^\.\//, "");
       const fullPath = join(srcDir, cleanPath);
       // Fallback to searching in src/ if it exists (e.g. block-website has inner src)
@@ -371,7 +374,8 @@ async function main(): Promise<void> {
   if (args.includes("--all")) {
     targets = topologicalSort(allPackages);
   } else if (args.some((a) => a.startsWith("--kind="))) {
-    const kind = args.find((a) => a.startsWith("--kind="))!.split("=")[1] as PackageKind;
+    const kindArg = args.find((a) => a.startsWith("--kind="));
+    const kind = (kindArg?.split("=")[1] ?? "") as PackageKind;
     targets = Object.entries(allPackages)
       .filter(([_, pkg]) => pkg.kind === kind)
       .map(([name]) => name);

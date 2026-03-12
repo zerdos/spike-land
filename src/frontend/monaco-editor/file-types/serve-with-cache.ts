@@ -139,9 +139,10 @@ export const serveWithCache = (files: Record<string, string>, cacheToUse: () => 
         const cachedResp = await _fileCache.match(cacheKey);
         if (cachedResp) return cachedResp.clone();
 
-        if (inFlightRequests.has(request.url)) {
+        const inFlight = inFlightRequests.get(request.url);
+        if (inFlight !== undefined) {
           // Wait for the in-flight fetch to complete
-          const inFlightResponse = await inFlightRequests.get(request.url);
+          const inFlightResponse = await inFlight;
           return inFlightResponse.clone();
         }
 

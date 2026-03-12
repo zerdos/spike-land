@@ -52,6 +52,23 @@ mcp_debug.ts
 test_output.txt
 test_script.ts
 test_transport.js
+
+# Lint output artifacts (never commit these)
+eslint_tests.json
+lint_*.json
+lint_*.txt
+
+# Temp files and patches
+*.diff
+*.patch
+batch_*.txt
+files_*.txt
+all_files_to_fix.txt
+
+# Build cache artifacts
+_astro/
+.deploy-cache/
+.depot/
 # Terraform
 .terraform/
 *.tfstate

@@ -141,6 +141,8 @@ app.use("*", async (c, next) => {
       "Mcp-Protocol-Version",
       "Accept",
       "Cookie",
+      "sentry-trace",
+      "baggage",
     ],
     exposeHeaders: ["Mcp-Session-Id", "Set-Cookie"],
     credentials: true,

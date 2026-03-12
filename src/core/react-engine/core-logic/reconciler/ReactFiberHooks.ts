@@ -305,7 +305,10 @@ function mountStateImpl<S>(initialState: (() => S) | S): Hook {
 
 function mountState<S>(initialState: (() => S) | S): [S, (action: S | ((s: S) => S)) => void] {
   const hook = mountStateImpl(initialState);
-  const queue = hook.queue!;
+  if (!hook.queue) {
+    throw new Error("mountState: hook queue was not initialized by mountStateImpl");
+  }
+  const queue = hook.queue;
   const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue) as unknown as (
     action: S | ((s: S) => S),
   ) => void;
@@ -456,7 +459,12 @@ function updateReducerImpl<S, A>(
     queue.lastRenderedState = newState;
   }
 
-  const dispatch = queue.dispatch!;
+  if (!queue.dispatch) {
+    throw new Error(
+      "updateReducerImpl: queue.dispatch is null — hook was not properly initialized",
+    );
+  }
+  const dispatch = queue.dispatch;
   return [hook.memoizedState as S, dispatch];
 }
 
@@ -677,7 +685,12 @@ function mountDeferredValue<T>(value: T, _initialValue?: T): T {
 
 function updateDeferredValue<T>(value: T, _initialValue?: T): T {
   const hook = updateWorkInProgressHook();
-  const prevValue: T = (currentHook as Hook).memoizedState as T;
+  if (!currentHook) {
+    throw new Error(
+      "updateDeferredValue: currentHook is null — called outside of an update render",
+    );
+  }
+  const prevValue: T = currentHook.memoizedState as T;
   if (objectIs(value, prevValue)) {
     return value;
   }
@@ -697,7 +710,10 @@ function updateDeferredValue<T>(value: T, _initialValue?: T): T {
 
 function mountTransition(): [boolean, (callback: () => void) => void] {
   const stateHook = mountStateImpl(false as boolean);
-  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue!, true, false);
+  if (!stateHook.queue) {
+    throw new Error("mountTransition: stateHook queue was not initialized by mountStateImpl");
+  }
+  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue, true, false);
   const hook = mountWorkInProgressHook();
   hook.memoizedState = start;
   return [false, start];
@@ -964,7 +980,10 @@ function updateOptimistic<S, A>(
     typeof reducer === "function"
       ? reducer
       : (basicStateReducer as unknown as (state: S, action: A) => S);
-  return updateReducerImpl(hook, currentHook as Hook, resolvedReducer);
+  if (!currentHook) {
+    throw new Error("updateOptimistic: currentHook is null — called outside of an update render");
+  }
+  return updateReducerImpl(hook, currentHook, resolvedReducer);
 }
 
 // --- Action State (simplified) ---

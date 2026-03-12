@@ -322,7 +322,7 @@ function normalizeLanguageTag(tag: string): string[] {
   if (!lower) return [];
   const parts = lower.split("-");
   const candidates = [lower];
-  if (parts.length > 1) {
+  if (parts.length > 1 && parts[0] !== undefined) {
     candidates.push(parts[0]);
   }
   return candidates;
@@ -2396,12 +2396,14 @@ iwd.post("/api/iwd/checkin", async (c) => {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     const randomArray = new Uint32Array(1);
     crypto.getRandomValues(randomArray);
-    const fallbackIndex = randomArray[0] % DEV_FALLBACK_LOCATIONS.length;
+    const fallbackIndex = (randomArray[0] ?? 0) % DEV_FALLBACK_LOCATIONS.length;
     const fallback = DEV_FALLBACK_LOCATIONS[fallbackIndex];
-    latitude = fallback.latitude;
-    longitude = fallback.longitude;
-    city = fallback.city;
-    country = fallback.country;
+    if (fallback !== undefined) {
+      latitude = fallback.latitude;
+      longitude = fallback.longitude;
+      city = fallback.city;
+      country = fallback.country;
+    }
   }
 
   const greeting = resolveGreeting(acceptLanguage, country);

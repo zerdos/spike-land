@@ -82,11 +82,12 @@ export function registerStoreAppsTools(
             .where(and(eq(appRatings.userId, userId), eq(appRatings.appSlug, input.appSlug)))
             .limit(1);
 
-          if (existing.length > 0) {
+          const existingId = existing[0]?.id;
+          if (existingId !== undefined) {
             await db
               .update(appRatings)
               .set({ rating: input.rating, body: bodyText, updatedAt: now })
-              .where(eq(appRatings.id, existing[0]!.id));
+              .where(eq(appRatings.id, existingId));
           } else {
             await db.insert(appRatings).values({
               id: generateId(),
@@ -268,15 +269,14 @@ export function registerStoreAppsTools(
             .where(eq(mcpApps.slug, input.appSlug))
             .limit(1);
 
-          if (sourceRows.length === 0) {
+          const source = sourceRows[0];
+          if (!source) {
             throw new McpError(
               `App "${input.appSlug}" not found.`,
               McpErrorCode.APP_NOT_FOUND,
               false,
             );
           }
-
-          const source = sourceRows[0]!;
           const sourceTags = new Set(parseTags(source.tags));
 
           // Load all live apps except the source

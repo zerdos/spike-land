@@ -19,7 +19,8 @@ export function pop<T extends HeapNode>(heap: Heap<T>): T | null {
   if (heap.length === 0) {
     return null;
   }
-  const first = heap[0]!;
+  const first = heap[0];
+  if (first === undefined) return null;
   const last = heap.pop();
   if (last !== undefined && last !== first) {
     heap[0] = last;
@@ -32,7 +33,8 @@ function siftUp<T extends HeapNode>(heap: Heap<T>, node: T, i: number): void {
   let index = i;
   while (index > 0) {
     const parentIndex = (index - 1) >>> 1;
-    const parent = heap[parentIndex]!;
+    const parent = heap[parentIndex];
+    if (parent === undefined) break;
     if (compare(parent, node) > 0) {
       // The parent is larger. Swap positions.
       heap[parentIndex] = node;

@@ -222,8 +222,11 @@ export function registerAuditQuestionnaireTools(
         });
         scored.sort((a, b) => b.avg - a.avg);
 
-        const best = scored[0]!;
-        const worst = scored[scored.length - 1]!;
+        const best = scored[0];
+        const worst = scored[scored.length - 1];
+        if (!best || !worst) {
+          return jsonResult("No scored results available.", { error: "no_scored_results" });
+        }
 
         const insights = [
           `**Best performing**: ${best.name} (avg ${best.avg.toFixed(1)})`,

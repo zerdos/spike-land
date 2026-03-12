@@ -445,10 +445,17 @@ export function registerCrdtTools(registry: ToolRegistry, userId: string, db: Dr
       .meta({ category: "crdt", tier: "free" })
       .handler(async ({ input }) => {
         const set = getSet(input.set_id, userId);
-        const allStates = set.replicaOrder.map((rid) => set.replicas.get(rid)!.state);
-        const merged = cloneState(allStates[0]!);
+        const allStates = set.replicaOrder
+          .map((rid) => set.replicas.get(rid)?.state)
+          .filter((s): s is ReplicaState => s !== undefined);
+        const firstState = allStates[0];
+        if (!firstState) {
+          return textResult("No replicas found in the set.");
+        }
+        const merged = cloneState(firstState);
         for (let i = 1; i < allStates.length; i++) {
-          mergeStates(merged, cloneState(allStates[i]!));
+          const s = allStates[i];
+          if (s) mergeStates(merged, cloneState(s));
         }
         for (const replicaId of set.replicaOrder) {
           const replica = set.replicas.get(replicaId);
@@ -456,9 +463,11 @@ export function registerCrdtTools(registry: ToolRegistry, userId: string, db: Dr
         }
         const rows = set.replicaOrder
           .map((rid) => {
-            const r = set.replicas.get(rid)!;
+            const r = set.replicas.get(rid);
+            if (!r) return null;
             return formatReplicaState(r.id, r.state, resolveValue(r.state));
           })
+          .filter((row): row is string => row !== null)
           .join("\n");
         return textResult(
           `**All Replicas Synchronized**\n\n**Converged:** Yes\n\n| Replica | Value | Internal State |\n|---|---|---|\n${rows}`,
@@ -500,16 +509,20 @@ export function registerCrdtTools(registry: ToolRegistry, userId: string, db: Dr
       .meta({ category: "crdt", tier: "free" })
       .handler(async ({ input }) => {
         const set = getSet(input.set_id, userId);
-        const replicaValues = set.replicaOrder.map((rid) => ({
-          id: rid,
-          value: resolveValue(set.replicas.get(rid)!.state),
-        }));
+        const replicaValues = set.replicaOrder
+          .map((rid) => {
+            const replica = set.replicas.get(rid);
+            if (!replica) return null;
+            return { id: rid, value: resolveValue(replica.state) };
+          })
+          .filter((rv): rv is { id: string; value: string } => rv !== null);
         const diffs: Array<{ replicaA: string; replicaB: string; valueA: string; valueB: string }> =
           [];
         for (let i = 0; i < replicaValues.length; i++) {
           for (let j = i + 1; j < replicaValues.length; j++) {
-            const a = replicaValues[i]!,
-              b = replicaValues[j]!;
+            const a = replicaValues[i],
+              b = replicaValues[j];
+            if (!a || !b) continue;
             if (a.value !== b.value) {
               diffs.push({
                 replicaA: a.id,
@@ -550,9 +563,12 @@ export function registerCrdtTools(registry: ToolRegistry, userId: string, db: Dr
       .meta({ category: "crdt", tier: "free" })
       .handler(async ({ input }) => {
         const set = getSet(input.set_id, userId);
-        const replicaValues = set.replicaOrder.map((rid) =>
-          resolveValue(set.replicas.get(rid)!.state),
-        );
+        const replicaValues = set.replicaOrder
+          .map((rid) => {
+            const replica = set.replicas.get(rid);
+            return replica ? resolveValue(replica.state) : null;
+          })
+          .filter((v): v is string => v !== null);
         const converged = replicaValues.every((v) => v === replicaValues[0]);
         const currentState = converged
           ? "All replicas have **converged** to the same value."

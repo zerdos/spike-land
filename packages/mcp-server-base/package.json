@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "description": "Shared base utilities for @spike-land-ai MCP server packages",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/packages/mcp-server-base/index.js",
+  "module": "./dist/packages/mcp-server-base/index.js",
+  "types": "./dist/packages/mcp-server-base/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/packages/mcp-server-base/index.d.ts",
+      "import": "./dist/packages/mcp-server-base/index.js",
+      "default": "./dist/packages/mcp-server-base/index.js"
     }
   },
   "files": [

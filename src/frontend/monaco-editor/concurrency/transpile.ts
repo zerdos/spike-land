@@ -223,7 +223,11 @@ export const build = async ({
       if (splitting) {
         return result.outputFiles;
       } else {
-        return result.outputFiles[0]?.text;
+        const text = result.outputFiles[0]?.text;
+        if (text === undefined) {
+          throw new Error("Build produced no text output.");
+        }
+        return text;
       }
     };
 

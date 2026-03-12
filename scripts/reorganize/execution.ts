@@ -195,8 +195,10 @@ export async function copyAssets(
       const newRel = path.relative(outputDir, newAbs);
       const parts = newRel.split(path.sep);
       // category/appName is the base
-      if (parts.length >= 2) {
-        pkgDirMap.set(pkgName, path.join(parts[0]!, parts[1]!));
+      const part0 = parts[0];
+      const part1 = parts[1];
+      if (parts.length >= 2 && part0 !== undefined && part1 !== undefined) {
+        pkgDirMap.set(pkgName, path.join(part0, part1));
       }
     }
   }
@@ -563,8 +565,10 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
                 const outputDir = path.resolve(rootDir, "src");
                 const newRel = path.relative(outputDir, newAbs);
                 const parts = newRel.split(path.sep);
-                if (parts.length >= 2) {
-                  const appBase = path.join(outputDir, parts[0]!, parts[1]!);
+                const p0 = parts[0];
+                const p1 = parts[1];
+                if (parts.length >= 2 && p0 !== undefined && p1 !== undefined) {
+                  const appBase = path.join(outputDir, p0, p1);
                   let relBase = path.relative(pkgPath, appBase);
                   if (!relBase.startsWith(".")) relBase = "./" + relBase;
                   const suffix = pattern.slice(pattern.indexOf(basePattern) + basePattern.length);
@@ -614,8 +618,10 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
                     const outputDir = path.resolve(rootDir, "src");
                     const newRel = path.relative(outputDir, newAbs);
                     const parts = newRel.split(path.sep);
-                    if (parts.length >= 2) {
-                      const appBase = path.join(outputDir, parts[0]!, parts[1]!);
+                    const p0 = parts[0];
+                    const p1 = parts[1];
+                    if (parts.length >= 2 && p0 !== undefined && p1 !== undefined) {
+                      const appBase = path.join(outputDir, p0, p1);
                       const rel = path.relative(pkgPath, appBase);
                       return (rel.startsWith(".") ? rel : "./" + rel) + "/*";
                     }
@@ -694,8 +700,10 @@ export async function updatePackagesConfigs(pathMapping: Map<string, string>, sr
               const outputDir = path.resolve(rootDir, "src");
               const newRel = path.relative(outputDir, newAbs);
               const parts = newRel.split(path.sep);
-              if (parts.length >= 2) {
-                const appRoot = path.join(outputDir, parts[0]!, parts[1]!);
+              const p0 = parts[0];
+              const p1 = parts[1];
+              if (parts.length >= 2 && p0 !== undefined && p1 !== undefined) {
+                const appRoot = path.join(outputDir, p0, p1);
                 // Append the sub-path (e.g., "public", "src/ui")
                 if (subPath && subPath !== ".") {
                   return path.join(appRoot, subPath);
@@ -773,7 +781,8 @@ export async function generateManifests(plans: MovePlan[], outputDir: string) {
     if (!appMap.has(appFolder)) {
       appMap.set(appFolder, { files: [], deps: new Set() });
     }
-    const appData = appMap.get(appFolder)!;
+    const appData = appMap.get(appFolder);
+    if (!appData) continue;
     appData.files.push(path.relative(appFolder, p.targetRelPath));
     for (const d of p.fileNode.externalDeps) {
       appData.deps.add(d);

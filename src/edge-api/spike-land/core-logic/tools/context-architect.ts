@@ -381,7 +381,9 @@ export function registerContextArchitectTools(
         text += `| # | Score | Path | Size |\n`;
         text += `|---|-------|------|------|\n`;
         for (let i = 0; i < scored.length; i++) {
-          const { file, score } = scored[i]!;
+          const entry = scored[i];
+          if (!entry) continue;
+          const { file, score } = entry;
           const sizeStr =
             file.size > 1024 ? `${(file.size / 1024).toFixed(1)} KB` : `${file.size} B`;
           text += `| ${i + 1} | ${score} | \`${file.path}\` | ${sizeStr} |\n`;

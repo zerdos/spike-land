@@ -17,7 +17,7 @@ export function extractLinks(source: string, _filePath: string): ExtractedLink[]
   let inComment = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!;
+    const line = lines[i] ?? "";
     const lineNum = i + 1;
 
     // Track code block state
@@ -177,7 +177,7 @@ export function extractHeadings(source: string): string[] {
 
     const match = HEADING_RE.exec(line);
     if (match) {
-      headings.push(slugifyHeading(match[2]!));
+      headings.push(slugifyHeading(match[2] ?? ""));
     }
   }
 

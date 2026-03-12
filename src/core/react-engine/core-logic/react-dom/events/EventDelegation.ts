@@ -100,7 +100,8 @@ function dispatchEvent(nativeEventName: string, nativeEvent: Event, _container: 
     const captureListeners = collectListeners(targetFiber, reactName, true);
     for (let i = captureListeners.length - 1; i >= 0; i--) {
       if (syntheticEvent.isPropagationStopped()) break;
-      const listener = captureListeners[i]!;
+      const listener = captureListeners[i];
+      if (!listener) continue;
       syntheticEvent.currentTarget = listener.currentTarget;
       listener.handler(syntheticEvent);
     }
@@ -110,7 +111,8 @@ function dispatchEvent(nativeEventName: string, nativeEvent: Event, _container: 
       const bubbleListeners = collectListeners(targetFiber, reactName, false);
       for (let i = 0; i < bubbleListeners.length; i++) {
         if (syntheticEvent.isPropagationStopped()) break;
-        const listener = bubbleListeners[i]!;
+        const listener = bubbleListeners[i];
+        if (!listener) continue;
         syntheticEvent.currentTarget = listener.currentTarget;
         listener.handler(syntheticEvent);
       }

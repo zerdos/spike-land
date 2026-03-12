@@ -175,11 +175,10 @@ export function registerLearnItTools(
             .where(and(eq(learnItContent.slug, input.slug), eq(learnItContent.status, "published")))
             .limit(1);
 
-          if (topicResult.length === 0) {
+          const topic = topicResult[0];
+          if (!topic) {
             return textResult(`**Error: NOT_FOUND**\nNo topic found with slug "${input.slug}".`);
           }
-
-          const topic = topicResult[0]!;
 
           // Fetch all outgoing relations (children, related, prerequisites)
           const outgoingResult = await db

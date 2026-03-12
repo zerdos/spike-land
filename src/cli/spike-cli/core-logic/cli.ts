@@ -15,8 +15,8 @@
  */
 
 import { config } from "dotenv";
+import { createRequire } from "node:module";
 import { program } from "commander";
-import packageJson from "../../../../packages/spike-cli/package.json";
 import { registerAuthCommand } from "./commands/auth";
 import { registerAliasCommand } from "./commands/alias";
 import { registerCompletionsCommand } from "./commands/completions";
@@ -28,6 +28,11 @@ import { registerTerminalCommand } from "./commands/terminal";
 import { registerUpgradeCommand } from "./commands/upgrade";
 import { setVerbose } from "./util/logger";
 import { loadAliases } from "../node-sys/store";
+
+const require = createRequire(import.meta.url);
+const packageJson = require("../../../../packages/spike-cli/package.json") as {
+  version: string;
+};
 
 // Load environment variables from .env.local and .env
 config({ path: ".env.local", quiet: true });

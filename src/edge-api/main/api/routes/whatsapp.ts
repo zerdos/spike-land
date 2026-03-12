@@ -270,6 +270,10 @@ whatsapp.post("/whatsapp/webhook", async (c) => {
 
   const msg = value.messages[0];
 
+  if (msg === undefined) {
+    return c.json({ ok: true });
+  }
+
   // Non-text messages — acknowledge immediately
   if (msg.type !== "text" || !msg.text?.body) {
     return c.json({ ok: true });

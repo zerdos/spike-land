@@ -1,7 +1,7 @@
 import { createAuthClient } from "better-auth/client";
 
 function getBaseURL(): string {
-  if (typeof window === "undefined") return "https://api.spike.land";
+  if (typeof window === "undefined") return "https://spike.land";
 
   const { hostname } = window.location;
 
@@ -13,7 +13,15 @@ function getBaseURL(): string {
     return "https://local.spike.land:8787";
   }
 
-  return "https://api.spike.land";
+  if (
+    hostname === "spike.land" ||
+    hostname === "www.spike.land" ||
+    hostname === "analytics.spike.land"
+  ) {
+    return window.location.origin;
+  }
+
+  return "https://auth-mcp.spike.land";
 }
 
 export const authClient = createAuthClient({ baseURL: getBaseURL() });

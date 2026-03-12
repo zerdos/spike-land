@@ -58,7 +58,8 @@ route("GET", "/dashboard/api/users", async (req, env) => {
 
 route("GET", "/dashboard/api/users/:id", async (_req, env, _auth, params) => {
   const db = drizzle(env.AUTH_DB, { schema });
-  const id = params.id!;
+  const id = params["id"];
+  if (!id) return json({ error: "Missing id" }, 400);
   const detail = await queries.getUserDetail(db, id);
   if (!detail) return json({ error: "User not found" }, 404);
   return json(detail);
@@ -66,7 +67,8 @@ route("GET", "/dashboard/api/users/:id", async (_req, env, _auth, params) => {
 
 route("PATCH", "/dashboard/api/users/:id", async (req, env, auth, params) => {
   const db = drizzle(env.AUTH_DB, { schema });
-  const id = params.id!;
+  const id = params["id"];
+  if (!id) return json({ error: "Missing id" }, 400);
   const body = (await req.json()) as { role?: string; emailVerified?: boolean };
 
   const before = await queries.getUserDetail(db, id);
@@ -133,7 +135,8 @@ route("GET", "/dashboard/api/sessions", async (req, env) => {
 
 route("DELETE", "/dashboard/api/sessions/:id", async (req, env, auth, params) => {
   const db = drizzle(env.AUTH_DB, { schema });
-  const id = params.id!;
+  const id = params["id"];
+  if (!id) return json({ error: "Missing id" }, 400);
   await queries.revokeSession(db, id);
 
   await logAudit(db, {
@@ -183,7 +186,8 @@ route("GET", "/dashboard/api/organizations", async (req, env) => {
 
 route("GET", "/dashboard/api/organizations/:id", async (_req, env, _auth, params) => {
   const db = drizzle(env.AUTH_DB, { schema });
-  const id = params.id!;
+  const id = params["id"];
+  if (!id) return json({ error: "Missing id" }, 400);
   const detail = await queries.getOrgDetail(db, id);
   if (!detail) return json({ error: "Organization not found" }, 404);
   return json(detail);
@@ -201,7 +205,8 @@ route("GET", "/dashboard/api/api-keys", async (req, env) => {
 });
 
 route("DELETE", "/dashboard/api/api-keys/:id", async (req, env, auth, params) => {
-  const id = params.id!;
+  const id = params["id"];
+  if (!id) return json({ error: "Missing id" }, 400);
   await platformQueries.revokeApiKey(env.PLATFORM_DB, id);
   const db = drizzle(env.AUTH_DB, { schema });
 

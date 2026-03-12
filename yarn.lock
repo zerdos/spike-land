@@ -1000,7 +1000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-types@npm:4.20260312.1, @cloudflare/workers-types@npm:^4.20260312.1":
+"@cloudflare/workers-types@npm:4.20260312.1":
   version: 4.20260312.1
   resolution: "@cloudflare/workers-types@npm:4.20260312.1"
   checksum: 10c0/1e99c245b05784eb39ef5c7eaa842c40ded7fb8470e1a6ef1e4e0154c23f1e1f961698b0afa7a8f3f7f499e2d29c2fe53685a15c1efcff0be125291b7a40d0c6
@@ -4942,30 +4942,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spike-land-ai/block-website@workspace:packages/block-website-old":
-  version: 0.0.0-use.local
-  resolution: "@spike-land-ai/block-website@workspace:packages/block-website-old"
-  dependencies:
-    "@spike-land-ai/mcp-server-base": "workspace:*"
-    "@spike-land-ai/shared": "workspace:*"
-    "@types/react": "npm:^19.2.14"
-    framer-motion: "npm:^12.36.0"
-    lucide-react: "npm:^0.577.0"
-    monaco-editor: "workspace:*"
-    react: "npm:^19.2.4"
-    react-markdown: "npm:^10.1.0"
-    rehype-raw: "npm:^7.0.0"
-    remark-gfm: "npm:^4.0.1"
-    tsx: "npm:^4.21.0"
-    typescript: "npm:^5.9.3"
-    zod: "npm:4.3.6"
-  peerDependencies:
-    "@tanstack/react-router": ^1.0.0
-    react: ^19.0.0
-    react-dom: ^19.0.0
-  languageName: unknown
-  linkType: soft
-
 "@spike-land-ai/chess-engine@workspace:packages/chess-engine":
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/chess-engine@workspace:packages/chess-engine"
@@ -5060,25 +5036,6 @@ __metadata:
   checksum: 10c0/b709d9ed99a17622a9c634fae0c7ce5fa753e76c8c7b152e2c4cb50fa5b3178219c5855634c4e890af9c2cc35416957caea1d07cd3fbea36b5926b1580c1e2f6
   languageName: node
   linkType: hard
-
-"@spike-land-ai/google-analytics-mcp@workspace:packages/google-analytics-mcp":
-  version: 0.0.0-use.local
-  resolution: "@spike-land-ai/google-analytics-mcp@workspace:packages/google-analytics-mcp"
-  dependencies:
-    "@changesets/cli": "npm:2.30.0"
-    "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/mcp-server-base": "workspace:*"
-    "@types/node": "npm:25.4.0"
-    "@vitest/coverage-v8": "npm:4.1.0"
-    eslint: "npm:10.0.3"
-    typescript: "npm:5.9.3"
-    typescript-eslint: "npm:8.57.0"
-    vitest: "npm:4.1.0"
-    zod: "npm:4.3.6"
-  bin:
-    google-analytics-mcp: dist/src/mcp-tools/google-analytics/mcp/server.js
-  languageName: unknown
-  linkType: soft
 
 "@spike-land-ai/hackernews-mcp@workspace:packages/hackernews-mcp":
   version: 0.0.0-use.local
@@ -5195,7 +5152,7 @@ __metadata:
     typescript-eslint: "npm:8.57.0"
     vitest: "npm:4.1.0"
   bin:
-    openclaw-mcp: ./dist/cli.js
+    openclaw-mcp: ./dist/packages/openclaw-mcp/cli.js
   languageName: unknown
   linkType: soft
 
@@ -5205,6 +5162,7 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:2.30.0"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
+    "@spike-land-ai/mcp-server-base": "workspace:*"
     "@types/cors": "npm:^2.8.19"
     "@types/express": "npm:^5.0.6"
     "@types/node": "npm:25.4.0"
@@ -5249,21 +5207,6 @@ __metadata:
     typescript: "npm:5.9.3"
     vitest: "npm:4.1.0"
     zod: "npm:4.3.6"
-  languageName: unknown
-  linkType: soft
-
-"@spike-land-ai/spike-chat@workspace:packages/spike-chat":
-  version: 0.0.0-use.local
-  resolution: "@spike-land-ai/spike-chat@workspace:packages/spike-chat"
-  dependencies:
-    "@cloudflare/workers-types": "npm:^4.20260312.1"
-    drizzle-kit: "npm:^0.31.9"
-    drizzle-orm: "npm:^0.45.1"
-    hono: "npm:^4.12.7"
-    typescript: "npm:^5.9.3"
-    ulid: "npm:^3.0.2"
-    vitest: "npm:^4.1.0"
-    wrangler: "npm:^4.72.0"
   languageName: unknown
   linkType: soft
 
@@ -5413,34 +5356,6 @@ __metadata:
     vitest: "npm:4.1.0"
   bin:
     state-machine-cli: ./dist/cli.js
-  languageName: unknown
-  linkType: soft
-
-"@spike-land-ai/status@workspace:packages/status":
-  version: 0.0.0-use.local
-  resolution: "@spike-land-ai/status@workspace:packages/status"
-  dependencies:
-    hono: "npm:^4.12.7"
-    wrangler: "npm:^4.72.0"
-  languageName: unknown
-  linkType: soft
-
-"@spike-land-ai/stripe-analytics-mcp@workspace:packages/stripe-analytics-mcp":
-  version: 0.0.0-use.local
-  resolution: "@spike-land-ai/stripe-analytics-mcp@workspace:packages/stripe-analytics-mcp"
-  dependencies:
-    "@changesets/cli": "npm:2.30.0"
-    "@modelcontextprotocol/sdk": "npm:1.27.1"
-    "@spike-land-ai/mcp-server-base": "workspace:*"
-    "@types/node": "npm:25.4.0"
-    "@vitest/coverage-v8": "npm:4.1.0"
-    eslint: "npm:10.0.3"
-    typescript: "npm:5.9.3"
-    typescript-eslint: "npm:8.57.0"
-    vitest: "npm:4.1.0"
-    zod: "npm:4.3.6"
-  bin:
-    stripe-analytics-mcp: dist/index.js
   languageName: unknown
   linkType: soft
 
@@ -6420,13 +6335,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.15
-  resolution: "@types/prop-types@npm:15.7.15"
-  checksum: 10c0/b59aad1ad19bf1733cf524fd4e618196c6c7690f48ee70a327eb450a42aab8e8a063fbe59ca0a5701aebe2d92d582292c0fb845ea57474f6a15f6994b0e260b2
-  languageName: node
-  linkType: hard
-
 "@types/qs@npm:*":
   version: 6.15.0
   resolution: "@types/qs@npm:6.15.0"
@@ -6441,31 +6349,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.0":
-  version: 18.3.7
-  resolution: "@types/react-dom@npm:18.3.7"
-  peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10c0/8bd309e2c3d1604a28a736a24f96cbadf6c05d5288cfef8883b74f4054c961b6b3a5e997fd5686e492be903c8f3380dba5ec017eff3906b1256529cd2d39603e
-  languageName: node
-  linkType: hard
-
 "@types/react-dom@npm:^19.2.3":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
   peerDependencies:
     "@types/react": ^19.2.0
   checksum: 10c0/b486ebe0f4e2fb35e2e108df1d8fc0927ca5d6002d5771e8a739de11239fe62d0e207c50886185253c99eb9dedfeeb956ea7429e5ba17f6693c7acb4c02f8cd1
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18.2.0":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    csstype: "npm:^3.2.2"
-  checksum: 10c0/683e19cd12b5c691215529af2e32b5ffbaccae3bf0ba93bfafa0e460e8dfee18423afed568be2b8eadf4b837c3749dd296a4f64e2d79f68fa66962c05f5af661
   languageName: node
   linkType: hard
 
@@ -11131,28 +11020,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.0":
-  version: 11.18.2
-  resolution: "framer-motion@npm:11.18.2"
-  dependencies:
-    motion-dom: "npm:^11.18.1"
-    motion-utils: "npm:^11.18.1"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    "@emotion/is-prop-valid": "*"
-    react: ^18.0.0 || ^19.0.0
-    react-dom: ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/41b1ef1b4e54ea13adaf01d61812a8783d2352f74641c91b50519775704bc6274db6b6863ff494a1f705fa6c6ed8f4df3497292327c906d53ea0129cef3ec361
-  languageName: node
-  linkType: hard
-
 "framer-motion@npm:^12.36.0":
   version: 12.36.0
   resolution: "framer-motion@npm:12.36.0"
@@ -13431,22 +13298,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@workspace:*, lucide-react@workspace:packages/spike-icons":
-  version: 0.0.0-use.local
-  resolution: "lucide-react@workspace:packages/spike-icons"
-  dependencies:
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
-    framer-motion: "npm:^11.0.0"
-    real-lucide-react: "npm:lucide-react@^0.300.0"
-    tsup: "npm:^8.0.0"
-    typescript: "npm:^5.0.0"
+"lucide-react@npm:0.575.0":
+  version: 0.575.0
+  resolution: "lucide-react@npm:0.575.0"
   peerDependencies:
-    framer-motion: ^11.0.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  languageName: unknown
-  linkType: soft
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/4f42e81c88f60c8f904b178c0b28e8ac9a99da8ef24eba5f26ed97b63124304a847baea2f71125629a272df58dbb61cd799ff6a7e4878e5a4c28d8a699b84730
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.577.0":
+  version: 0.577.0
+  resolution: "lucide-react@npm:0.577.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/f5f56d66d5072b69ab74af2196833e35b888c18d92906d75aff81afc0aeabf00a4092a5b9dbc1bddd250bf54ec3c5d5933c7353589b5cb7efd75b21651cda399
+  languageName: node
+  linkType: hard
 
 "lz-string@npm:^1.5.0":
   version: 1.5.0
@@ -14543,7 +14411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.55.1, monaco-editor@workspace:*, monaco-editor@workspace:src/monaco-editor":
+"monaco-editor@npm:0.55.1, monaco-editor@workspace:src/monaco-editor":
   version: 0.0.0-use.local
   resolution: "monaco-editor@workspace:src/monaco-editor"
   dependencies:
@@ -14568,15 +14436,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"motion-dom@npm:^11.18.1":
-  version: 11.18.1
-  resolution: "motion-dom@npm:11.18.1"
-  dependencies:
-    motion-utils: "npm:^11.18.1"
-  checksum: 10c0/98378bdf9d77870829cdf3624c5eff02e48cfa820dfc74450364d7421884700048d60e277bfbf477df33270fbae4c1980e5914586f5b6dff28d4921fdca8ac47
-  languageName: node
-  linkType: hard
-
 "motion-dom@npm:^12.34.3":
   version: 12.35.1
   resolution: "motion-dom@npm:12.35.1"
@@ -14592,13 +14451,6 @@ __metadata:
   dependencies:
     motion-utils: "npm:^12.36.0"
   checksum: 10c0/7f97b1e310310b44e6144f7303604d7c3f37f1e278b41ac5b57dca2abe082213d40a9f59cf5a2cb3442d27b8fd82e29f17f31d7b24d4b240f9b908fc97b42d80
-  languageName: node
-  linkType: hard
-
-"motion-utils@npm:^11.18.1":
-  version: 11.18.1
-  resolution: "motion-utils@npm:11.18.1"
-  checksum: 10c0/dac083bdeb6e433a277ac4362211b0fdce59ff09d6f7897f0f49d1e3561209c6481f676876daf99a33485054bc7e4b1d1b8d1de16f7b1e5c6f117fe76358ca00
   languageName: node
   linkType: hard
 
@@ -16204,15 +16056,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"real-lucide-react@npm:lucide-react@^0.300.0":
-  version: 0.300.0
-  resolution: "lucide-react@npm:0.300.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/cd532ee6eca64662abd3850d8b2f9135a5c8ca239a0f7ab0d01cf743271e953aa2b3b6af2027d3eaefc33564eb2c4c51d4664865920c4b6adc332f4c59cebc74
-  languageName: node
-  linkType: hard
-
 "recast@npm:0.23.11, recast@npm:^0.23.11":
   version: 0.23.11
   resolution: "recast@npm:0.23.11"
@@ -17586,6 +17429,7 @@ __metadata:
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
     typescript-eslint: "npm:8.57.0"
+    ulid: "npm:^3.0.2"
     vitest: "npm:4.1.0"
     wrangler: "npm:^4.72.0"
     yaml: "npm:^2.8.2"
@@ -18507,7 +18351,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:8.5.1, tsup@npm:^8.0.0":
+"tsup@npm:8.5.1":
   version: 8.5.1
   resolution: "tsup@npm:8.5.1"
   dependencies:

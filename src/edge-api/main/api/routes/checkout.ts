@@ -64,6 +64,9 @@ checkout.post("/api/checkout", async (c) => {
   }
 
   const priceId = prices[0]?.id;
+  if (!priceId) {
+    return c.json({ error: `No price ID found for tier '${tier}'` }, 404);
+  }
 
   // Create checkout session
   const idempotencyKey = `${userId}-checkout-${tier}-${Math.floor(Date.now() / 60000)}`;
@@ -140,6 +143,9 @@ checkout.post("/api/checkout/service", async (c) => {
   }
 
   const priceId = prices[0]?.id;
+  if (!priceId) {
+    return c.json({ error: `No price ID found for service '${service}'` }, 404);
+  }
 
   // Build checkout session params
   const sessionParams: Record<string, string> = {

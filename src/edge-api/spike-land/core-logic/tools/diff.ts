@@ -84,9 +84,9 @@ function parseUnifiedDiff(diffText: string): FileDiff[] {
       const match = line.match(/@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@/);
       if (match) {
         currentHunk = {
-          oldStart: parseInt(match[1]!, 10),
+          oldStart: parseInt(match[1] ?? "0", 10),
           oldLines: parseInt(match[2] || "1", 10),
-          newStart: parseInt(match[3]!, 10),
+          newStart: parseInt(match[3] ?? "0", 10),
           newLines: parseInt(match[4] || "1", 10),
           lines: [],
         };

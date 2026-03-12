@@ -53,8 +53,9 @@ export function registerBootstrapTools(
 
         let workspaceId: string;
 
-        if (existing.length > 0) {
-          workspaceId = existing[0]!.id;
+        const existingWorkspace = existing[0];
+        if (existingWorkspace !== undefined) {
+          workspaceId = existingWorkspace.id;
           await ctx.db
             .update(workspaces)
             .set({

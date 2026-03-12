@@ -149,14 +149,16 @@ async function processCSS(css: string, baseURL: string, depth = 0): Promise<stri
   // We re-assign `css` to `processedCss` inside the loop if we were to re-run exec on the modified string,
   // but here we run exec on the original `css` and replace in `processedCss`.
   while ((match = importRegex.exec(css)) !== null) {
-    const importUrlPath = match[1] || match[2]; // Get the path from either url() or "..."
+    const importUrlPath = match[1] ?? match[2]; // Get the path from either url() or "..."
+    if (importUrlPath === undefined) continue;
     // Resolve the import path against the baseURL of the current CSS file.
     // This correctly handles relative paths like "../fonts/font.css".
     const absoluteUrl = new URL(importUrlPath, baseURL).toString();
 
     // Use cache to avoid re-fetching and re-processing the same CSS file.
-    if (urlCache.has(absoluteUrl)) {
-      processedCss = processedCss.replace(match[0], urlCache.get(absoluteUrl));
+    const cachedImport = urlCache.get(absoluteUrl);
+    if (cachedImport !== undefined) {
+      processedCss = processedCss.replace(match[0], cachedImport);
       continue;
     }
 
@@ -207,8 +209,9 @@ async function processCSS(css: string, baseURL: string, depth = 0): Promise<stri
       // Resolve the URL path against the baseURL of the current CSS file.
       const absoluteUrl = new URL(urlPath, baseURL).toString();
 
-      if (urlCache.has(absoluteUrl)) {
-        css = css.replace(fullMatchSyntax, urlCache.get(absoluteUrl));
+      const cachedUrl = urlCache.get(absoluteUrl);
+      if (cachedUrl !== undefined) {
+        css = css.replace(fullMatchSyntax, cachedUrl);
         continue;
       }
 

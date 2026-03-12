@@ -320,8 +320,9 @@ function selectRoundQuestions(session: InterviewSession): InterviewRound {
 
   for (let i = 0; i < Math.min(3, unmastered.length); i++) {
     const pickIdx = (roundOffset + i) % unmastered.length;
-    const pick = unmastered[pickIdx]!;
-    const concept = session.concepts[pick.index]!;
+    const pick = unmastered[pickIdx];
+    const concept = pick !== undefined ? session.concepts[pick.index] : undefined;
+    if (pick === undefined || concept === undefined) continue;
     const variantIndex = pick.state.attempts % concept.variants.length;
     selected.push({ conceptIndex: pick.index, variantIndex });
   }
@@ -329,23 +330,31 @@ function selectRoundQuestions(session: InterviewSession): InterviewRound {
   // If fewer than 3 unmastered, cycle and pick different variants
   while (selected.length < 3 && unmastered.length > 0) {
     const pickIdx = selected.length % unmastered.length;
-    const pick = unmastered[pickIdx]!;
-    const concept = session.concepts[pick.index]!;
+    const pick = unmastered[pickIdx];
+    const concept = pick !== undefined ? session.concepts[pick.index] : undefined;
+    if (pick === undefined || concept === undefined) break;
     const variantIndex = (pick.state.attempts + selected.length) % concept.variants.length;
     selected.push({ conceptIndex: pick.index, variantIndex });
   }
 
-  const questions = selected.map((s) => {
-    const concept = session.concepts[s.conceptIndex]!;
-    const variant = concept.variants[s.variantIndex]!;
-    return {
-      conceptIndex: s.conceptIndex,
-      variantIndex: s.variantIndex,
-      question: variant.question,
-      options: variant.options,
-      correctIndex: variant.correctIndex,
-    } satisfies InterviewQuestion;
-  }) as [InterviewQuestion, InterviewQuestion, InterviewQuestion];
+  const questions = selected
+    .map((s) => {
+      const concept = session.concepts[s.conceptIndex];
+      const variant = concept?.variants[s.variantIndex];
+      if (concept === undefined || variant === undefined) return null;
+      return {
+        conceptIndex: s.conceptIndex,
+        variantIndex: s.variantIndex,
+        question: variant.question,
+        options: variant.options,
+        correctIndex: variant.correctIndex,
+      } satisfies InterviewQuestion;
+    })
+    .filter((q): q is InterviewQuestion => q !== null) as [
+    InterviewQuestion,
+    InterviewQuestion,
+    InterviewQuestion,
+  ];
 
   return {
     roundNumber: session.roundNumber,
@@ -466,10 +475,12 @@ export function registerWorkflowTools(server: McpServer): void {
         const roundResults: string[] = [];
 
         for (let i = 0; i < 3; i++) {
-          const q = round.questions[i]!;
+          const q = round.questions[i];
+          if (q === undefined) continue;
           const givenAnswer = answers[i] as number;
           const isCorrect = givenAnswer === q.correctIndex;
-          const conceptState = session.conceptStates[q.conceptIndex]!;
+          const conceptState = session.conceptStates[q.conceptIndex];
+          if (conceptState === undefined) continue;
           const conceptName = session.concepts[q.conceptIndex]?.name ?? "unknown";
 
           conceptState.attempts++;

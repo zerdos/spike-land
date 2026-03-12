@@ -27,6 +27,7 @@ export class TerminalSupervisor {
   private shuttingDown = false;
   private ownershipHeartbeat: ReturnType<typeof setInterval> | null = null;
   private restartAttempts = 0;
+  private streamOpenLine = false;
 
   constructor(options: TerminalSupervisorOptions) {
     this.options = options;
@@ -93,7 +94,8 @@ export class TerminalSupervisor {
   }
 
   private async spawnWorker(): Promise<void> {
-    const child = spawn(process.execPath, [this.options.entrypoint, "terminal-worker"], {
+    const execArgs = [...process.execArgv, this.options.entrypoint, "terminal-worker"];
+    const child = spawn(process.execPath, execArgs, {
       cwd: this.options.cwd,
       env: process.env,
       stdio: ["ignore", "ignore", "inherit", "ipc"],
@@ -146,6 +148,7 @@ export class TerminalSupervisor {
         return;
       case "streamed_delta":
         process.stdout.write(message.text);
+        this.streamOpenLine = !message.text.endsWith("\n");
         return;
       case "tool_start":
         process.stderr.write(`\n[tool] ${message.toolCall.name}\n`);
@@ -258,6 +261,10 @@ export class TerminalSupervisor {
 
   private prompt(): void {
     if (!this.rl || this.shuttingDown) return;
+    if (this.streamOpenLine) {
+      process.stdout.write("\n");
+      this.streamOpenLine = false;
+    }
     this.rl.prompt();
   }
 

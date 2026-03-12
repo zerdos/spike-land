@@ -816,9 +816,10 @@ chat.post("/api/chat", async (c) => {
   const compression = await compressMessage(rawMessage, prdConfig);
   const message = compression.formattedMessage;
 
-  const threadSummary = body.threadId
+  const existingThreadId = body.threadId;
+  const threadSummary = existingThreadId
     ? await (async () => {
-        const existingThread = await getThreadForUser(c.env.DB, body.threadId, userId);
+        const existingThread = await getThreadForUser(c.env.DB, existingThreadId, userId);
         if (!existingThread) {
           return null;
         }

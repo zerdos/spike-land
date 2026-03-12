@@ -13,15 +13,15 @@ export interface SlotProps extends React.HTMLAttributes<HTMLElement> {
 export const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
 
-  if (React.isValidElement(children)) {
+  if (React.isValidElement<Record<string, unknown>>(children)) {
+    const childProps = children.props as Record<string, unknown>;
+    const childRef = childProps["ref"] as React.Ref<HTMLElement> | undefined;
+    const mergedRef = childRef ? mergeRefs(forwardedRef, childRef) : forwardedRef;
     return React.cloneElement(children, {
       ...slotProps,
-      ...(children.props as unknown),
-      // @ts-expect-error - cloning refs is tricky but needed here
-      ref: (children as unknown).props?.ref
-        ? mergeRefs(forwardedRef, (children as unknown).ref)
-        : forwardedRef,
-    } as unknown);
+      ...childProps,
+      ref: mergedRef,
+    });
   }
 
   return React.Children.count(children) > 1 ? React.Children.only(null) : null;
@@ -35,7 +35,7 @@ function mergeRefs<T>(...refs: Array<React.ForwardedRef<T> | React.Ref<T>>) {
       if (typeof ref === "function") {
         ref(node);
       } else if (ref && typeof ref === "object") {
-        (ref as unknown).current = node;
+        (ref as React.MutableRefObject<T>).current = node;
       }
     }
   };

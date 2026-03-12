@@ -62,6 +62,9 @@ export class SessionSynchronizer implements ISessionSynchronizer {
     if (session) {
       this.setSession(sanitizeSession(session), "INIT");
       this.ensureRealtimeConnection();
+      if (!this.session) {
+        throw new Error("Session failed to initialize.");
+      }
       return this.session;
     }
 
@@ -97,6 +100,9 @@ export class SessionSynchronizer implements ISessionSynchronizer {
     }
 
     this.ensureRealtimeConnection();
+    if (!this.session) {
+      throw new Error("Session failed to initialize.");
+    }
     return this.session;
   }
 

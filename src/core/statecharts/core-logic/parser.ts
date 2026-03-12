@@ -25,7 +25,7 @@ function createParser(expression: string, context: Record<string, unknown>): Par
 }
 
 function skipWhitespace(p: Parser): void {
-  while (p.pos < p.input.length && /\s/.test(p.input[p.pos])) {
+  while (p.pos < p.input.length && /\s/.test(p.input.charAt(p.pos))) {
     p.pos++;
   }
 }
@@ -229,15 +229,17 @@ function parsePrimary(p: Parser): unknown {
   // Number literal
   if (
     p.pos < p.input.length &&
-    (/\d/.test(p.input[p.pos]) ||
-      (p.input[p.pos] === "-" && p.pos + 1 < p.input.length && /\d/.test(p.input[p.pos + 1])))
+    (/\d/.test(p.input.charAt(p.pos)) ||
+      (p.input.charAt(p.pos) === "-" &&
+        p.pos + 1 < p.input.length &&
+        /\d/.test(p.input.charAt(p.pos + 1))))
   ) {
     let numStr = "";
     if (p.input[p.pos] === "-") {
       numStr += "-";
       p.pos++;
     }
-    while (p.pos < p.input.length && /[\d.]/.test(p.input[p.pos])) {
+    while (p.pos < p.input.length && /[\d.]/.test(p.input.charAt(p.pos))) {
       numStr += p.input[p.pos];
       p.pos++;
     }
@@ -251,7 +253,7 @@ function parsePrimary(p: Parser): unknown {
   // Boolean / null keywords and context access
   skipWhitespace(p);
   const identStart = p.pos;
-  while (p.pos < p.input.length && /[a-zA-Z0-9_.]/.test(p.input[p.pos])) {
+  while (p.pos < p.input.length && /[a-zA-Z0-9_.]/.test(p.input.charAt(p.pos))) {
     p.pos++;
   }
   const ident = p.input.slice(identStart, p.pos);

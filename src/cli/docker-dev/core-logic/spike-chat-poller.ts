@@ -137,9 +137,13 @@ export async function pollChannels(
           results.push({ channelId, messages: userMessages });
         }
 
-        // Update cursor to the last message ID (including bot messages)
+        // Update cursor to the last message ID (including bot messages).
+        // msgs.length > 0 is confirmed above, so the last element always exists.
         if (msgs.length > 0) {
-          cursors.set(channelId, msgs[msgs.length - 1]!.id);
+          const lastMsg = msgs[msgs.length - 1];
+          if (lastMsg !== undefined) {
+            cursors.set(channelId, lastMsg.id);
+          }
         }
       } catch (err) {
         console.error(`[spike-chat-poller] Error polling ${channelId}:`, err);

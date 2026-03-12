@@ -59,8 +59,10 @@ const DEFAULT_URGENCY_THRESHOLD_DAYS = 30;
  */
 function minMax(values: number[]): { min: number; max: number } {
   if (values.length === 0) return { min: 0, max: 0 };
-  let min = values[0]!;
-  let max = values[0]!;
+  // values is non-empty at this point, so values[0] is always defined.
+  const first = values[0] ?? 0;
+  let min = first;
+  let max = first;
   for (const v of values) {
     if (v < min) min = v;
     if (v > max) max = v;
@@ -135,17 +137,20 @@ export function rankByImpact(
 
   if (candidates.length === 0) return [];
 
-  // Gather raw dimension values so we can normalise across the candidate set
+  // Gather raw dimension values so we can normalise across the candidate set.
+  // programById.has(m.programId) is guaranteed true for every candidate because
+  // the filter above already excludes any match whose programId is missing from
+  // the map; the ?? fallback is a defensive zero that should never be reached.
   const benefitValues = candidates.map((m) => {
-    const p = programById.get(m.programId)!;
-    return totalBenefitCents(p);
+    const p = programById.get(m.programId);
+    return p !== undefined ? totalBenefitCents(p) : 0;
   });
 
   // For application ease: invert step count so fewer steps = higher ease score
   // Programs without a step count get the median step count of the set.
   const stepCounts = candidates.map((m) => {
-    const p = programById.get(m.programId)!;
-    return p.applicationStepCount ?? undefined;
+    const p = programById.get(m.programId);
+    return p?.applicationStepCount ?? undefined;
   });
   const knownSteps = stepCounts.filter((s): s is number => s !== undefined);
   const medianSteps =
@@ -155,8 +160,8 @@ export function rankByImpact(
   const effectiveSteps: number[] = stepCounts.map((s) => s ?? medianSteps);
 
   const urgencyValues = candidates.map((m) => {
-    const p = programById.get(m.programId)!;
-    return deadlineUrgencyScore(p, urgencyThreshold);
+    const p = programById.get(m.programId);
+    return p !== undefined ? deadlineUrgencyScore(p, urgencyThreshold) : 0;
   });
 
   // Normalise each dimension
@@ -165,22 +170,25 @@ export function rankByImpact(
   const urgencyRange = minMax(urgencyValues);
 
   const ranked: RankedMatch[] = candidates.map((match, idx) => {
-    const normBenefit = normalise(benefitValues[idx]!, benefitRange.min, benefitRange.max);
+    // Array lengths equal candidates.length so idx is always a valid index;
+    // the ?? 0 fallback is purely defensive.
+    const normBenefit = normalise(benefitValues[idx] ?? 0, benefitRange.min, benefitRange.max);
 
     // Ease is INVERSE of step count: fewer steps → higher ease normalised score
-    const rawSteps = effectiveSteps[idx]!;
+    const rawSteps = effectiveSteps[idx] ?? medianSteps;
     const normEaseRaw = normalise(rawSteps, stepRange.min, stepRange.max);
     // Flip so that the program with the fewest steps scores 1.0
     const normEase = 1 - normEaseRaw;
 
-    const normUrgency = normalise(urgencyValues[idx]!, urgencyRange.min, urgencyRange.max);
+    const normUrgency = normalise(urgencyValues[idx] ?? 0, urgencyRange.min, urgencyRange.max);
 
     const impactScore =
       weights.benefitValue * normBenefit +
       weights.applicationEase * normEase +
       weights.deadlineUrgency * normUrgency;
 
-    const program = programById.get(match.programId)!;
+    // Guaranteed to exist — the candidate filter above requires it.
+    const program = programById.get(match.programId) as Program;
     return { matchResult: match, program, impactScore };
   });
 

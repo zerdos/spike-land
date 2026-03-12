@@ -9,8 +9,9 @@ export function md5(input: object | string): string {
   const strInput = typeof input === "string" ? input : JSON.stringify(input);
 
   // Check cache
-  if (shortHashCache.has(strInput)) {
-    return shortHashCache.get(strInput);
+  const cached = shortHashCache.get(strInput);
+  if (cached !== undefined) {
+    return cached;
   }
 
   // Compute numeric hash
