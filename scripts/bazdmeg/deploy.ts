@@ -145,32 +145,21 @@ export function deploySPA(): { uploaded: number; skipped: number } {
   // Inject build metadata
   injectBuildMeta(distDir, sha, commitTime);
 
-  // Get deployed assets for hash comparison
+  // Check if deploy is needed by comparing git SHA
   const deployed = fetchDeployedVersion();
-  const deployedEtags = new Map<string, string>();
-  if (deployed) {
-    for (const asset of deployed.assets) {
-      // R2 ETags are quoted MD5 hex — strip quotes
-      deployedEtags.set(asset.key, asset.etag.replace(/"/g, ""));
-    }
+  if (deployed?.sha === sha) {
+    console.log(`  SPA already at SHA ${sha.slice(0, 8)} — skipping upload.`);
+    return { uploaded: 0, skipped: 0 };
   }
 
-  // Compare and upload
+  // Upload all files (per-asset hash comparison no longer available from API)
   const localFiles = getAllFiles(distDir);
   let uploaded = 0;
-  let skipped = 0;
 
   for (const filePath of localFiles) {
     const key = relative(distDir, filePath);
-    const localMd5 = md5File(filePath);
-    const remoteMd5 = deployedEtags.get(key);
-
-    if (localMd5 === remoteMd5) {
-      skipped++;
-    } else {
-      uploadFile(filePath, key);
-      uploaded++;
-    }
+    uploadFile(filePath, key);
+    uploaded++;
   }
 
   // Update deploy state
@@ -179,7 +168,7 @@ export function deploySPA(): { uploaded: number; skipped: number } {
   state.lastDeployedAt = new Date().toISOString();
   saveDeployState(state);
 
-  return { uploaded, skipped };
+  return { uploaded, skipped: 0 };
 }
 
 const WORKER_PACKAGES = [

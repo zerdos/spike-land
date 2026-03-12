@@ -72,8 +72,32 @@ export interface SpaStaticAssetEdgeCacheSettings {
   swr?: number;
 }
 
+/** Non-hash suffixes that could match the length/charset pattern but are human-readable names. */
+const NON_HASH_SUFFIXES = new Set([
+  "min",
+  "module",
+  "bundle",
+  "vendor",
+  "polyfill",
+  "polyfills",
+  "runtime",
+  "common",
+  "commons",
+  "chunk",
+  "shared",
+  "legacy",
+  "modern",
+  "esm",
+  "production",
+  "development",
+]);
+
 export function isHashedAssetKey(path: string): boolean {
-  return /\.[a-zA-Z0-9_-]{8,}\.\w+$/.test(path);
+  // Match content hashes: hex (Vite/Rollup) or base64url (Astro: e.g. .A69QsVOb.js)
+  const match = path.match(/\.([a-zA-Z0-9_-]{8,})\.\w+$/);
+  if (!match?.[1]) return false;
+  // Exclude known non-hash suffixes
+  return !NON_HASH_SUFFIXES.has(match[1].toLowerCase());
 }
 
 export function normalizeSpaAssetKey(pathname: string): string {
@@ -150,9 +174,7 @@ export function resolveSpaFallbackKeys(pathname: string): string[] {
     fallbackKeys.push(`${key}.html`);
   }
 
-  // If none of the specific path files exist, fallback to root index.html
-  // But wait, the main loop handles falling back to "index.html" at the very end
-  // We just provide the nested possibilities here.
+  // Only prerender fallbacks — the caller handles the final "index.html" fallback separately.
   return fallbackKeys;
 }
 

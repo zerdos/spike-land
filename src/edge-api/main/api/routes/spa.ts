@@ -95,9 +95,10 @@ spa.get("/*", async (c) => {
     let html = await fallback.text();
 
     // Prerendered Astro pages already have full SEO meta tags — skip all injection.
+    // Status is always 200 since we found a matching prerendered file in R2.
     if (isPrerendered) {
       return new Response(html, {
-        status: getSpaShellStatusCode(path),
+        status: 200,
         headers: {
           "content-type": "text/html; charset=utf-8",
           "cache-control": getSpaResponseCacheControl(true),
@@ -161,7 +162,7 @@ spa.get("/*", async (c) => {
             },
           });
         }
-        if (row) {
+        {
           const postTitle = escapeHtml(row.title);
           const postDesc = escapeHtml(row.description);
           const postAuthor = escapeHtml(row.author);

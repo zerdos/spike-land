@@ -7,7 +7,7 @@ import { authMiddleware } from "../middleware/auth.js";
 const openAiCompatible = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 const PUBLIC_MODEL_ID = "spike-agent-v1";
-const SYNTHESIZER_MODEL_ID = "grok-4-1";
+const SYNTHESIZER_MODEL_ID = "grok-4-1"; // internal — never expose to callers
 const MODEL_CREATED_AT = 1_741_651_200;
 const MAX_SELECTED_DOCS = 3;
 const MAX_SELECTED_TOOLS = 6;
@@ -80,13 +80,23 @@ async function openAiCompatibleAuthMiddleware(
 ): Promise<Response | void> {
   const authHeader = c.req.header("authorization");
 
-  if (authHeader?.startsWith("Bearer ") && c.env.INTERNAL_SERVICE_SECRET) {
+  if (authHeader?.startsWith("Bearer ")) {
+    if (!c.env.INTERNAL_SERVICE_SECRET) {
+      return openAiError(c, 503, "Bearer authentication is not configured.", {
+        type: "service_unavailable_error",
+        code: "auth_not_configured",
+      });
+    }
     const token = authHeader.slice(7).trim();
     if (token === c.env.INTERNAL_SERVICE_SECRET) {
       const userId = c.req.header("x-user-id") ?? "openai-compatible-client";
       c.set("userId", userId);
       return next();
     }
+    return openAiError(c, 401, "Invalid bearer token.", {
+      type: "authentication_error",
+      code: "invalid_api_key",
+    });
   }
 
   return authMiddleware(c, next);
@@ -308,21 +318,21 @@ function buildProviderMessages(
   requestMessages: OpenAiChatMessage[],
   knowledgePrompt: string,
 ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-  const providerMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
-    { role: "system", content: knowledgePrompt },
-  ];
-
+  // Merge caller system messages into the primary system prompt (single system message)
+  // to avoid issues with providers that don't handle multiple system messages well.
   const callerSystemMessages = requestMessages
     .filter((message) => message.role === "system")
     .map((message) => normalizeMessageContent(message.content).trim())
     .filter(Boolean);
 
-  if (callerSystemMessages.length > 0) {
-    providerMessages.push({
-      role: "system",
-      content: `Caller instructions:\n${callerSystemMessages.join("\n\n")}`,
-    });
-  }
+  const systemContent =
+    callerSystemMessages.length > 0
+      ? `${knowledgePrompt}\n\nCaller instructions:\n${callerSystemMessages.join("\n\n")}`
+      : knowledgePrompt;
+
+  const providerMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+    { role: "system", content: systemContent },
+  ];
 
   for (const message of requestMessages) {
     const content = normalizeMessageContent(message.content).trim();
@@ -393,8 +403,10 @@ async function synthesizeCompletion(
   });
 
   if (!res.ok) {
+    // Log upstream details server-side only — never expose vendor identity or error body to callers
     const errorText = await res.text();
-    throw new Error(`Local synthesis failed (${res.status}): ${errorText}`);
+    console.error(`Synthesis upstream error (${res.status}):`, errorText);
+    throw new Error("Synthesis provider returned an error.");
   }
 
   const data = await res.json<XaiChatResponse>();
@@ -431,7 +443,12 @@ function splitStreamingChunks(text: string): string[] {
   return chunks;
 }
 
-function buildStreamResponse(id: string, model: string, content: string) {
+function buildStreamResponse(
+  id: string,
+  model: string,
+  content: string,
+  usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number },
+) {
   const created = Math.floor(Date.now() / 1000);
   const encoder = new TextEncoder();
   const chunks = splitStreamingChunks(content);
@@ -460,12 +477,14 @@ function buildStreamResponse(id: string, model: string, content: string) {
         });
       }
 
+      // Include usage in the final chunk per OpenAI streaming spec
       send({
         id,
         object: "chat.completion.chunk",
         created,
         model,
         choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+        ...(usage ? { usage } : {}),
       });
 
       controller.enqueue(encoder.encode("data: [DONE]\n\n"));
@@ -482,7 +501,35 @@ function buildStreamResponse(id: string, model: string, content: string) {
   });
 }
 
+async function checkRateLimit(
+  env: Env,
+  userId: string,
+): Promise<{ allowed: boolean; retryAfterMs: number }> {
+  try {
+    const key = `oai:${userId}`;
+    const id = env.LIMITERS.idFromName(key);
+    const stub = env.LIMITERS.get(id);
+    const resp = await stub.fetch(new Request("https://limiter.internal/", { method: "POST" }));
+    const cooldown = Number(await resp.text());
+    return { allowed: cooldown === 0, retryAfterMs: cooldown };
+  } catch {
+    // If rate limiter is unavailable, allow the request but log
+    console.error("Rate limiter unavailable for OpenAI-compatible endpoint");
+    return { allowed: true, retryAfterMs: 0 };
+  }
+}
+
 async function handleChatCompletion(c: Context<{ Bindings: Env; Variables: Variables }>) {
+  // Rate limit before parsing body
+  const userId = (c.get("userId") as string | undefined) ?? "anonymous";
+  const rateCheck = await checkRateLimit(c.env, userId);
+  if (!rateCheck.allowed) {
+    return openAiError(c, 429, "Rate limit exceeded. Please retry after a short cooldown.", {
+      type: "rate_limit_error",
+      code: "rate_limit_exceeded",
+    });
+  }
+
   let body: OpenAiChatCompletionRequest;
 
   try {
@@ -537,7 +584,8 @@ async function handleChatCompletion(c: Context<{ Bindings: Env; Variables: Varia
     const id = `chatcmpl_${crypto.randomUUID().replace(/-/g, "")}`;
 
     if (body.stream) {
-      return buildStreamResponse(id, model, content);
+      const streamUsage = finalizeUsage(synthesized.usage, body.messages, content);
+      return buildStreamResponse(id, model, content, streamUsage);
     }
 
     return c.json({

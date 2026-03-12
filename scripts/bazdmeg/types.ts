@@ -70,7 +70,8 @@ export interface DeployAsset {
 export interface VersionInfo {
   sha: string;
   buildTime: string;
-  assets: DeployAsset[];
+  totalAssets: number;
+  rollbackShas: string[];
 }
 
 export interface DeployState {

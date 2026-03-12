@@ -76,7 +76,7 @@ export const DOCS_MANIFEST: DocEntry[] = [
     title: "Rate Limits",
     category: "API",
     description: "Understanding rate limits and quotas",
-    filePath: "docs/api/API_REFERENCE.md",
+    filePath: "docs/api/API_VERSIONING.md",
   },
   {
     slug: "compass-prd",

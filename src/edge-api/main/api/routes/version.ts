@@ -19,6 +19,7 @@ version.get("/api/version", async (c) => {
 
   // Count total deployed assets without exposing the per-asset inventory
   let totalAssets = 0;
+  const rollbackShas = new Set<string>();
   let cursor: string | undefined;
 
   do {
@@ -27,10 +28,22 @@ version.get("/api/version", async (c) => {
       limit: 1000,
     });
     totalAssets += listing.objects.length;
+    // Collect unique build SHAs from custom metadata for rollback targets
+    for (const obj of listing.objects) {
+      const objSha = obj.customMetadata?.["build-sha"];
+      if (objSha && objSha !== "unknown") {
+        rollbackShas.add(objSha);
+      }
+    }
     cursor = listing.truncated ? listing.cursor : undefined;
   } while (cursor);
 
-  return c.json({ sha, buildTime, totalAssets });
+  return c.json({
+    sha,
+    buildTime,
+    totalAssets,
+    rollbackShas: [...rollbackShas],
+  });
 });
 
 export { version };

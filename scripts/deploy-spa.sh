@@ -22,7 +22,12 @@ BUILD_SHA=$(git -C "$ROOT_DIR" log -1 --format=%H HEAD 2>/dev/null || echo "unkn
 BUILD_TIME=$(git -C "$ROOT_DIR" log -1 --format=%cI HEAD 2>/dev/null || echo "unknown")
 INDEX_HTML="$DIST_DIR/index.html"
 if [ -f "$INDEX_HTML" ]; then
-  sed -i '' "s|</head>|<meta name=\"build-sha\" content=\"${BUILD_SHA}\" /><meta name=\"build-time\" content=\"${BUILD_TIME}\" /></head>|" "$INDEX_HTML"
+  # Portable sed -i: works on both macOS (BSD sed) and Linux (GNU sed)
+  if sed --version >/dev/null 2>&1; then
+    sed -i "s|</head>|<meta name=\"build-sha\" content=\"${BUILD_SHA}\" /><meta name=\"build-time\" content=\"${BUILD_TIME}\" /></head>|" "$INDEX_HTML"
+  else
+    sed -i '' "s|</head>|<meta name=\"build-sha\" content=\"${BUILD_SHA}\" /><meta name=\"build-time\" content=\"${BUILD_TIME}\" /></head>|" "$INDEX_HTML"
+  fi
   echo "==> Injected build SHA: ${BUILD_SHA:0:8}"
 fi
 
@@ -52,19 +57,30 @@ get_content_type() {
   esac
 }
 
-# Upload all files from dist/
-find "$DIST_DIR" -type f | while read -r file; do
-  # Get relative path for key
+# Upload all files from dist/ (sequential to avoid subshell PID issues)
+upload_count=0
+upload_errors=0
+while IFS= read -r file; do
   key="${file#$DIST_DIR/}"
   content_type=$(get_content_type "$file")
 
   echo "Uploading: $key ($content_type)"
-  npx wrangler r2 object put "$BUCKET/$key" \
+  if npx wrangler r2 object put "$BUCKET/$key" \
     --file "$file" \
     --content-type "$content_type" \
-    --remote &
-done
-  wait
+    --remote; then
+    upload_count=$((upload_count + 1))
+  else
+    echo "ERROR: Failed to upload $key"
+    upload_errors=$((upload_errors + 1))
+  fi
+done < <(find "$DIST_DIR" -type f)
+
+if [ "$upload_errors" -gt 0 ]; then
+  echo "ERROR: $upload_errors file(s) failed to upload"
+  exit 1
+fi
+echo "==> Uploaded $upload_count file(s) successfully"
 
 echo ""
 echo "==> SPA uploaded to R2 bucket: $BUCKET"

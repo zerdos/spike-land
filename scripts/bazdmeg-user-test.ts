@@ -15,8 +15,9 @@ async function main() {
   let homepageNarration = "";
   try {
     const { page } = await getOrCreateTab(0);
-    console.log("  [Browser] Navigating to https://spike.land...");
-    await page.goto("http://localhost:4321", { waitUntil: "networkidle" });
+    const targetUrl = process.env.TEST_TARGET_URL ?? "https://spike.land";
+    console.log(`  [Browser] Navigating to ${targetUrl}...`);
+    await page.goto(targetUrl, { waitUntil: "networkidle" });
     const snapshot = await getPageSnapshot();
     if (snapshot?.tree) {
       const result = narrate(snapshot.tree, snapshot.title, snapshot.url);
