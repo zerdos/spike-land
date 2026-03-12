@@ -10,6 +10,8 @@
  *   spike completions install|uninstall  Shell tab completions
  *   spike registry search|add       Browse MCP server registry
  *   spike agent                     Run as MCP server for AI agents
+ *   spike terminal                  Repo-aware interactive coding agent
+ *   spike upgrade                   Upgrade the globally installed CLI
  */
 
 import { config } from "dotenv";
@@ -21,6 +23,8 @@ import { registerRegistryCommand } from "./commands/registry";
 import { registerAgentCommand } from "../ai-cli/agent";
 import { registerShellCommand } from "./commands/shell";
 import { registerStatusCommand } from "./commands/status";
+import { registerTerminalCommand } from "./commands/terminal";
+import { registerUpgradeCommand } from "./commands/upgrade";
 import { setVerbose } from "./util/logger";
 import { loadAliases } from "../node-sys/store";
 
@@ -54,7 +58,17 @@ function handleGenerateCompletions(): boolean {
   const idx = process.argv.indexOf("--generate-completions");
   if (idx === -1) return false;
 
-  const commands = ["shell", "status", "auth", "alias", "completions", "registry", "agent"];
+  const commands = [
+    "shell",
+    "status",
+    "auth",
+    "alias",
+    "completions",
+    "registry",
+    "agent",
+    "terminal",
+    "upgrade",
+  ];
   const globalOptions = ["--verbose", "--base-url", "--help", "--version"];
 
   // Output all commands and options for the completion script to filter
@@ -94,6 +108,8 @@ export async function main(): Promise<void> {
   registerCompletionsCommand(program);
   registerRegistryCommand(program);
   registerAgentCommand(program);
+  registerTerminalCommand(program);
+  registerUpgradeCommand(program);
 
   program.parse();
 }

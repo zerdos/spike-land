@@ -19,30 +19,30 @@ export interface AgentLoopContext {
   messages: Message[];
   maxTurns?: number;
   /** Called immediately before a model request begins. */
-  onModelRequestStart?: (turn: number, maxTurns: number) => void;
-  onTextDelta?: (text: string) => void;
-  onToolCall?: (name: string) => void;
+  onModelRequestStart?: (turn: number, maxTurns: number) => void | Promise<void>;
+  onTextDelta?: (text: string) => void | Promise<void>;
+  onToolCall?: (name: string) => void | Promise<void>;
   /** Called when a tool call begins execution. */
   onToolCallStart?: (
     id: string,
     name: string,
     serverName: string,
     input: Record<string, unknown>,
-  ) => void;
+  ) => void | Promise<void>;
   /** Called when a tool call completes. */
-  onToolCallEnd?: (id: string, result: string, isError: boolean) => void;
+  onToolCallEnd?: (id: string, result: string, isError: boolean) => void | Promise<void>;
   /** Called at the start of each agentic turn. */
-  onTurnStart?: (turn: number, maxTurns: number) => void;
+  onTurnStart?: (turn: number, maxTurns: number) => void | Promise<void>;
   /** Called at the end of each agentic turn. */
-  onTurnEnd?: () => void;
+  onTurnEnd?: () => void | Promise<void>;
   /** Token usage tracker. When provided, records usage from each turn. */
   usageTracker?: TokenTracker;
   /** Called after each turn with updated tracker state. */
-  onUsageUpdate?: (tracker: TokenTracker) => void;
+  onUsageUpdate?: (tracker: TokenTracker) => void | Promise<void>;
   /** Called after the assistant response is appended to history. */
-  onAssistantMessage?: (content: ContentBlock[]) => void;
+  onAssistantMessage?: (content: ContentBlock[]) => void | Promise<void>;
   /** Called after tool results are appended to history. */
-  onToolResultsAppended?: (content: Message["content"]) => void;
+  onToolResultsAppended?: (content: Message["content"]) => void | Promise<void>;
   /** Dynamic tool registry. When provided, only active tools are sent to Claude. */
   registry?: DynamicToolRegistry;
   /** Context manager for automatic summarization. */
@@ -52,9 +52,9 @@ export interface AgentLoopContext {
   /** Assertion-grounded runtime state kept outside chat history. */
   assertionRuntime?: AssertionRuntime;
   /** Called when assertion evidence changes. */
-  onAssertionUpdate?: (runtime: AssertionRuntime) => void;
+  onAssertionUpdate?: (runtime: AssertionRuntime) => void | Promise<void>;
   /** Called once when the run completes. */
-  onRunComplete?: (report?: AssertionReport) => void;
+  onRunComplete?: (report?: AssertionReport) => void | Promise<void>;
 }
 
 /**
@@ -77,7 +77,7 @@ export async function continueAgentLoop(ctx: AgentLoopContext): Promise<void> {
 
   for (let turn = 0; turn < maxTurns; turn++) {
     log(`Agent loop turn ${turn + 1}/${maxTurns}`);
-    ctx.onTurnStart?.(turn + 1, maxTurns);
+    await ctx.onTurnStart?.(turn + 1, maxTurns);
 
     // Context management: summarize if needed before sending
     if (ctx.contextManager && ctx.usageTracker) {
@@ -106,19 +106,19 @@ export async function continueAgentLoop(ctx: AgentLoopContext): Promise<void> {
     }
     const systemOverride = promptParts.length > 0 ? promptParts.join("\n\n") : undefined;
 
-    ctx.onModelRequestStart?.(turn + 1, maxTurns);
+    await ctx.onModelRequestStart?.(turn + 1, maxTurns);
     const stream = ctx.client.createStream(ctx.messages, tools, systemOverride);
     const response = await streamResponse(stream, ctx.onTextDelta);
 
     // Record token usage if tracker is present
     if (ctx.usageTracker && response.usage) {
       ctx.usageTracker.recordTurn(response.usage);
-      ctx.onUsageUpdate?.(ctx.usageTracker);
+      await ctx.onUsageUpdate?.(ctx.usageTracker);
     }
 
     // Add assistant response to history
     ctx.messages.push({ role: "assistant", content: response.content });
-    ctx.onAssistantMessage?.(response.content);
+    await ctx.onAssistantMessage?.(response.content);
 
     // Check for tool_use blocks
     const toolUseBlocks = response.content.filter(
@@ -127,8 +127,8 @@ export async function continueAgentLoop(ctx: AgentLoopContext): Promise<void> {
 
     if (toolUseBlocks.length === 0) {
       // Text-only response — done
-      ctx.onTurnEnd?.();
-      ctx.onRunComplete?.(ctx.assertionRuntime?.buildReport());
+      await ctx.onTurnEnd?.();
+      await ctx.onRunComplete?.(ctx.assertionRuntime?.buildReport());
       return;
     }
 
@@ -149,20 +149,20 @@ export async function continueAgentLoop(ctx: AgentLoopContext): Promise<void> {
       toolResults = await executeToolsSequential(toolUseBlocks, ctx);
     }
 
-    ctx.onTurnEnd?.();
+    await ctx.onTurnEnd?.();
 
     // Add tool results as user message and continue loop
     ctx.messages.push({
       role: "user",
       content: toolResults as Message["content"],
     });
-    ctx.onToolResultsAppended?.(toolResults);
+    await ctx.onToolResultsAppended?.(toolResults);
   }
 
   // Reached maxTurns — call onTurnEnd to avoid leaking UI spinners
-  ctx.onTurnEnd?.();
-  ctx.onTextDelta?.("\n[Reached maximum turns]\n");
-  ctx.onRunComplete?.(ctx.assertionRuntime?.buildReport());
+  await ctx.onTurnEnd?.();
+  await ctx.onTextDelta?.("\n[Reached maximum turns]\n");
+  await ctx.onRunComplete?.(ctx.assertionRuntime?.buildReport());
 }
 
 async function executeToolsSequential(
@@ -174,8 +174,8 @@ async function executeToolsSequential(
     const rawInput = toolUse.input as Record<string, unknown>;
     const { cleanInput, assertionIds } = stripAssertionMetadata(rawInput);
     const serverName = resolveServerName(ctx.manager, toolUse.name);
-    ctx.onToolCall?.(toolUse.name);
-    ctx.onToolCallStart?.(toolUse.id, toolUse.name, serverName, cleanInput);
+    await ctx.onToolCall?.(toolUse.name);
+    await ctx.onToolCallStart?.(toolUse.id, toolUse.name, serverName, cleanInput);
 
     const { result, isError } = await executeToolCall(ctx.manager, toolUse.name, cleanInput);
 
@@ -186,10 +186,10 @@ async function executeToolsSequential(
         isError,
         assertionIds,
       });
-      ctx.onAssertionUpdate?.(ctx.assertionRuntime);
+      await ctx.onAssertionUpdate?.(ctx.assertionRuntime);
     }
 
-    ctx.onToolCallEnd?.(toolUse.id, result, isError);
+    await ctx.onToolCallEnd?.(toolUse.id, result, isError);
 
     toolResults.push({
       type: "tool_result" as const,
@@ -209,8 +209,8 @@ async function executeToolsParallel(
     const rawInput = toolUse.input as Record<string, unknown>;
     const { cleanInput, assertionIds } = stripAssertionMetadata(rawInput);
     const serverName = resolveServerName(ctx.manager, toolUse.name);
-    ctx.onToolCall?.(toolUse.name);
-    ctx.onToolCallStart?.(toolUse.id, toolUse.name, serverName, cleanInput);
+    await ctx.onToolCall?.(toolUse.name);
+    await ctx.onToolCallStart?.(toolUse.id, toolUse.name, serverName, cleanInput);
 
     const { result, isError } = await executeToolCall(ctx.manager, toolUse.name, cleanInput);
 
@@ -221,10 +221,10 @@ async function executeToolsParallel(
         isError,
         assertionIds,
       });
-      ctx.onAssertionUpdate?.(ctx.assertionRuntime);
+      await ctx.onAssertionUpdate?.(ctx.assertionRuntime);
     }
 
-    ctx.onToolCallEnd?.(toolUse.id, result, isError);
+    await ctx.onToolCallEnd?.(toolUse.id, result, isError);
 
     return {
       type: "tool_result" as const,

@@ -5,3 +5,5 @@ export * from "./completions";
 export * from "./registry";
 export * from "./shell";
 export * from "./status";
+export * from "./terminal";
+export * from "./upgrade";
