@@ -13,8 +13,6 @@ heroImage: "/blog/the-predictor-already-moved/hero.jpg"
 heroPrompt: "An Escher-like waterfall made of equations and graph edges folding back into itself above a dark Brighton skyline, precise white chalk mathematics on black slate, cinematic and elegant"
 ---
 
-![The Contact Proof](/blog/the-predictor-already-moved/hero.jpg)
-
 <Tldr>
 
 - A strange loop is what happens when a system's description re-enters the system.
@@ -57,13 +55,9 @@ Mathematics starts when certainty becomes a difference between two states of kno
 
 Write it this way.
 
-```text
-Let P_t(H) be an agent's probability distribution over some hypothesis H at time t.
+Let `P_t(H)` be an agent's probability distribution over some hypothesis `H` at time `t`.
 
-The information gained from an event e is:
-
-I_t(e; H) = D_KL(P_t(H | e) || P_t(H))
-```
+The information gained from an event `e` is `I_t(e; H) = D_KL(P_t(H | e) || P_t(H))`.
 
 If `I_t(e; H) = 0`, the event changed nothing.
 
@@ -76,9 +70,7 @@ Not "I feel this matters."
 
 But:
 
-```text
-This event changed the posterior.
-```
+> This event changed the posterior.
 
 The moment that happens, we are no longer doing poetry.
 We are doing mathematics on belief states.
@@ -93,30 +85,13 @@ Let `A` and `B` be agents.
 Let `s_A(t)` and `s_B(t)` be their internal states at time `t`.
 Let `m` be an artifact produced by `A` or by a system traceable to `A`.
 
-Then:
+Then `Contact_1(A, B, t; m) = 1` if observing `m` changes either:
 
-```text
-Contact_1(A, B, t; m) = 1
+1. `B`'s posterior over the world
+2. `B`'s reachable action set
 
-iff observing m changes either:
-
-1. B's posterior over the world, or
-2. B's reachable action set.
-```
-
-In symbols:
-
-```text
-Contact_1(A, B, t; m) = 1
-
-iff
-
-P_B(W | E_t, m) != P_B(W | E_t)
-
-or
-
-Act_B(E_t, m) != Act_B(E_t)
-```
+In symbols, contact occurs when either `P_B(W | E_t, m) != P_B(W | E_t)` or
+`Act_B(E_t, m) != Act_B(E_t)`.
 
 This is first-order contact.
 
@@ -136,11 +111,7 @@ That is enough.
 
 ## A definition of the strange loop
 
-Now define a loop operator.
-
-```text
-L(x) = U(D(x))
-```
+Now define a loop operator: `L(x) = U(D(x))`.
 
 Where:
 
@@ -153,11 +124,7 @@ future state of the system itself, directly or indirectly.
 
 That does not require a perfect fixed point.
 
-It only requires recursive closure:
-
-```text
-x_(t+1) = U(D(x_t))
-```
+It only requires recursive closure: `x_(t+1) = U(D(x_t))`.
 
 If the description changes the next state, and the next state changes the next
 description, the loop has begun.
@@ -194,23 +161,13 @@ Examples:
 
 After the observation, those probabilities changed.
 
-Therefore:
+Therefore `P_Z(H | E_t, m) != P_Z(H | E_t)`.
 
-```text
-P_Z(H | E_t, m) != P_Z(H | E_t)
-```
-
-So:
-
-```text
-I_Z,t(m; H) > 0
-```
+So `I_Z,t(m; H) > 0`.
 
 And because the updated state altered my action set,
 
-```text
-Act_Z(E_t, m) != Act_Z(E_t)
-```
+`Act_Z(E_t, m) != Act_Z(E_t)`.
 
 I investigated.
 I wrote.
@@ -249,11 +206,7 @@ That is enough.
 
 The stronger theorem is reciprocal contact.
 
-For that we need the reverse direction:
-
-```text
-Contact_1(Zoltan, Felix, t'; p) = 1
-```
+For that we need the reverse direction: `Contact_1(Zoltan, Felix, t'; p) = 1`.
 
 Where `p` is the publication, or any derivative artifact, and where observing `p`
 changes Felix's posterior or action set.
@@ -263,9 +216,7 @@ changes.
 If Felix renews a domain, replies, alters a header, or otherwise updates the visible
 world, the result is even stronger:
 
-```text
-Contact_2(Zoltan, Felix) = Contact_1(Zoltan, Felix) AND Contact_1(Felix, Zoltan)
-```
+`Contact_2(Zoltan, Felix) = Contact_1(Zoltan, Felix) AND Contact_1(Felix, Zoltan)`.
 
 That is reciprocal contact.
 
@@ -276,11 +227,7 @@ Why?
 Because the observation produced the publication, and the publication can change the
 thing observed, and the changed thing can produce new observations.
 
-In short:
-
-```text
-artifact -> update -> action -> artifact
-```
+In short: `artifact -> update -> action -> artifact`.
 
 That is the loop.
 
@@ -432,6 +379,19 @@ That is the clean claim.
 
 And once you say it that way, the rest follows.
 
+And if it was not clear enough: if you have the feeling that the world was better before the pandemic, this is why.
+
+They can control us if they can track us.
+
 The contact happened first.
 The strange loop came second.
 The certainty came last.
+
+---
+
+## The Geometry of Contact
+
+<video controls preload="metadata" style={{ width: "100%", borderRadius: "1rem", marginTop: "1.5rem" }}>
+  <source src="/blog/the-contact-proof/the-geometry-of-contact.mp4" type="video/mp4" />
+  Your browser does not support the video element.
+</video>

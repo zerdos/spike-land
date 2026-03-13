@@ -9,6 +9,11 @@ export interface ToolCatalogItem {
   inputSchema?: unknown;
 }
 
+const TOOL_CATALOG_TTL_MS = 60_000;
+
+let cachedToolCatalog: ToolCatalogItem[] | null = null;
+let cachedToolCatalogExpiresAt = 0;
+
 export function scoreTool(query: string, tool: ToolCatalogItem): number {
   const lowerQuery = query.toLowerCase();
   const queryTokens = lowerQuery
@@ -56,6 +61,10 @@ export async function fetchToolCatalog(
   mcpService: Fetcher,
   requestId: string,
 ): Promise<ToolCatalogItem[]> {
+  if (cachedToolCatalog && cachedToolCatalogExpiresAt > Date.now()) {
+    return cachedToolCatalog;
+  }
+
   try {
     const toolsRes = await mcpService.fetch(
       new Request("https://mcp.spike.land/tools", {
@@ -74,7 +83,7 @@ export async function fetchToolCatalog(
       }>;
     }>();
 
-    return (data.tools ?? []).map(
+    const catalog = (data.tools ?? []).map(
       (tool): ToolCatalogItem => ({
         name: tool.name,
         description: tool.description,
@@ -84,6 +93,10 @@ export async function fetchToolCatalog(
           : { inputSchema: { type: "object", properties: {} } }),
       }),
     );
+
+    cachedToolCatalog = catalog;
+    cachedToolCatalogExpiresAt = Date.now() + TOOL_CATALOG_TTL_MS;
+    return catalog;
   } catch {
     return [];
   }

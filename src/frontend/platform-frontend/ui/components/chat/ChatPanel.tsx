@@ -242,9 +242,7 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
   return (
     <div
       className={`flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl transition-all duration-300 ${
-        isExpanded
-          ? "fixed inset-4 z-[9999] rounded-3xl"
-          : "w-[400px] max-h-[600px] min-h-[500px]"
+        isExpanded ? "fixed inset-4 z-[9999] rounded-3xl" : "w-[400px] max-h-[600px] min-h-[500px]"
       }`}
       role="dialog"
       aria-label="Spike Chat"
@@ -291,7 +289,7 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
 
           {/* Expand to full page link */}
           <Link
-            to="/rubik"
+            to="/chat"
             title="Open full Spike Chat"
             className="flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >

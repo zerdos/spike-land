@@ -263,8 +263,8 @@ describe("spikeChat route", () => {
     expect(res.status).toBe(200);
     const text = await res.text();
 
-    expect(fetchBodies).toHaveLength(5);
-    const executeTools = fetchBodies[2]?.["tools"] as Array<{
+    expect(fetchBodies).toHaveLength(2);
+    const executeTools = fetchBodies[0]?.["tools"] as Array<{
       type: string;
       function: { name: string };
     }>;
@@ -288,6 +288,59 @@ describe("spikeChat route", () => {
     expect(text).toContain('"type":"tool_call_end"');
     expect(text).toContain("Pro costs $29/month.");
     expect(text).toContain("Pricing is $29 for Pro.");
+  });
+
+  it("skips tool catalog loading and extra planning calls for direct conversation turns", async () => {
+    const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+    app.route("/", spikeChat);
+
+    const fetchBodies: Array<Record<string, unknown>> = [];
+    const fetchMock = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+      const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+      fetchBodies.push(body);
+
+      const sse = [
+        'data: {"choices":[{"delta":{"content":"Rate limits kill reliability when each turn fans out into multiple upstream calls."}}]}\n',
+        "data: [DONE]\n",
+      ].join("\n");
+
+      return new Response(sse, {
+        headers: { "Content-Type": "text/event-stream" },
+      });
+    });
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const mcpFetch = vi.fn(async () => new Response("unexpected", { status: 500 }));
+
+    const env = {
+      XAI_API_KEY: "test-key",
+      MCP_SERVICE: {
+        fetch: mcpFetch,
+      },
+    } as unknown as Env;
+
+    const res = await app.request(
+      "/api/spike-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "Explain why rate limits matter for AI chat reliability.",
+        }),
+      },
+      env,
+    );
+
+    expect(res.status).toBe(200);
+    const text = await res.text();
+
+    expect(fetchBodies).toHaveLength(1);
+    expect(fetchBodies[0]?.["tools"]).toBeUndefined();
+    expect(mcpFetch).not.toHaveBeenCalled();
+    expect(text).toContain('"toolCatalogCount":0');
+    expect(text).not.toContain('"type":"tool_call_start"');
+    expect(text).toContain("multiple upstream calls");
   });
 });
 

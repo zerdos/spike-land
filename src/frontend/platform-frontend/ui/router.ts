@@ -45,6 +45,7 @@ function withSuspense(
  * Used by AI agents and the compression pipeline to resolve relevant PRDs.
  */
 export const ROUTE_PRD_MAP: Record<string, string> = {
+  "/chat": "route:/chat",
   "/apps": "route:/apps",
   "/chess": "route:/chess",
   "/blog": "route:/blog",
@@ -409,10 +410,18 @@ const cockpitRoute = createRoute({
   component: withSuspense(() => import("./routes/cockpit"), "CockpitPage"),
 });
 
+const chatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/chat",
+  component: withSuspense(() => import("./apps/spike-chat"), "SpikeChatApp"),
+});
+
 const rubikChatRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rubik",
-  component: withSuspense(() => import("./routes/rubik-chat"), "RubikChatPage"),
+  beforeLoad: () => {
+    throw redirect({ to: "/chat" });
+  },
 });
 
 // BAZDMEG Method Presentation
@@ -446,6 +455,12 @@ const migrateRoute = createRoute({
   component: withSuspense(() => import("./routes/migrate"), "MigratePage"),
 });
 
+const supportRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/support",
+  component: withSuspense(() => import("./routes/support"), "SupportPage"),
+});
+
 const thankYouRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/thank-you",
@@ -472,6 +487,42 @@ const vibeCodeRoute = createRoute({
   component: withSuspense(() => import("./routes/vibe-code"), "VibeCodePage"),
 });
 
+// Create routes
+const createRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/create",
+});
+
+const createIndexRoute = createRoute({
+  getParentRoute: () => createRoute,
+  path: "/",
+  component: withSuspense(() => import("./routes/create/create-index.tsx"), "CreateIndexPage"),
+});
+
+const createAppRoute = createRoute({
+  getParentRoute: () => createRoute,
+  path: "$appPath",
+  component: withSuspense(() => import("./routes/create/$appPath"), "CreateAppPage"),
+});
+
+// LearnIt routes
+const learnitRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/learnit",
+});
+
+const learnitIndexRoute = createRoute({
+  getParentRoute: () => learnitRoute,
+  path: "/",
+  component: withSuspense(() => import("./routes/learnit/learnit-index.tsx"), "LearnitIndexPage"),
+});
+
+const learnitTopicRoute = createRoute({
+  getParentRoute: () => learnitRoute,
+  path: "$topic",
+  component: withSuspense(() => import("./routes/learnit/$topic"), "LearnitTopicPage"),
+});
+
 const startChecklistRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/spike-land-start-checklist",
@@ -494,12 +545,14 @@ const startChecklistRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   cockpitRoute,
+  chatRoute,
   rubikChatRoute,
   bazdmegRoute,
   chessRoute,
   whatWeDoRoute,
   quizRoute,
   migrateRoute,
+  supportRoute,
   thankYouRoute,
   vibeCodeRoute,
   buildRoute,
@@ -545,6 +598,8 @@ const routeTree = rootRoute.addChildren([
   ]),
   mcpRoute.addChildren([mcpIndexRoute, mcpAuthorizeRoute]),
   agencyRoute.addChildren([agencyPortfolioRoute]),
+  createRoute.addChildren([createIndexRoute, createAppRoute]),
+  learnitRoute.addChildren([learnitIndexRoute, learnitTopicRoute]),
 ]);
 
 export const router = createRouter({

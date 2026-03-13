@@ -1,37 +1,33 @@
 import { Hono } from "hono";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { BROWSER_TOOLS } from "../../core-logic/chat-browser-tools.js";
-import {
-  buildAetherSystemPrompt,
-  buildClassifyPrompt,
-  buildPlanPrompt,
-  buildExtractPrompt,
-  type UserMemory,
-} from "../../core-logic/aether-prompt.js";
-import {
-  fetchUserNotes,
-  selectNotes,
-  saveNote,
-  parseExtractedNote,
-} from "../../core-logic/aether-memory.js";
+import { buildAetherSystemPrompt, type UserMemory } from "../../core-logic/aether-prompt.js";
+import { fetchUserNotes, selectNotes, saveNote } from "../../core-logic/aether-memory.js";
 import { fetchToolCatalog } from "../../core-logic/mcp-tools.js";
 import { safeJsonParse, executeAgentTool } from "../../core-logic/chat-tool-execution.js";
 import {
   resolveSynthesisTarget,
-  synthesizeCompletion,
   streamCompletion,
   type ProviderMessage,
   type ResolvedSynthesisTarget,
 } from "../../core-logic/llm-provider.js";
 import { getRubik3SystemPrompt } from "../../core-logic/rubik-persona-prompt.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
-const MAX_TOOL_LOOPS = 6;
+const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
 const MAX_RECENT_HISTORY_MESSAGES = 6;
 const MAX_HISTORY_CHARS = 6_000;
 const RECENT_MESSAGE_CHAR_LIMIT = 1_200;
 const OLDER_ASSISTANT_CHAR_LIMIT = 320;
 const OLDER_USER_CHAR_LIMIT = 240;
+const TOOL_HINT_LIMIT = 12;
+const TOOL_INTENT_PATTERNS = [
+  /\b(search|find|look up|lookup|latest|current|today|browse|inspect|check)\b/i,
+  /\b(open|navigate|click|fill|screenshot|scroll|read)\b/i,
+  /\b(price|pricing|docs?|documentation|api|endpoint|status|error|logs?)\b/i,
+  /\b(compare|verify|debug|deploy|build|tool|mcp)\b/i,
+  /\b(this page|current page|article|here)\b/i,
+] as const;
 type SpikeChatRole = "system" | "user" | "assistant" | "tool";
 
 const SPIKE_BROWSER_TOOLS: Array<{
@@ -128,6 +124,19 @@ interface SpikeChatMessage {
   }>;
 }
 
+interface LocalIntentSummary {
+  intent: "conversation" | "grounded_lookup" | "browser_action";
+  urgency: "low" | "medium" | "high";
+  needsTools: boolean;
+  reason: string;
+}
+
+interface HeuristicNoteCandidate {
+  trigger: string;
+  lesson: string;
+  confidence: number;
+}
+
 function normalizeText(value: string, maxChars: number) {
   const compact = value.replace(/\s+/g, " ").trim();
   if (!compact) {
@@ -180,27 +189,117 @@ function compressHistory(
   return compacted;
 }
 
-/** Call LLM via user-bounded provider resolution. Non-streaming. */
-async function callLlm(
-  env: Env,
-  userId: string | undefined,
-  systemPrompt: string,
+function classifyIntent(
   userMessage: string,
-  opts: { temperature?: number; maxTokens?: number },
-): Promise<string> {
-  const target = await resolveSynthesisTarget(env, userId, {
-    publicModel: "spike-agent-v1",
-    provider: "auto",
-    upstreamModel: undefined,
-  });
-  if (!target) throw new Error("No LLM provider available");
+  pageContext?: {
+    url?: string;
+    title?: string;
+    slug?: string;
+    contentSnippet?: string;
+  },
+): LocalIntentSummary {
+  const compact = userMessage.replace(/\s+/g, " ").trim();
+  const lower = compact.toLowerCase();
+  const mentionsPageContext =
+    Boolean(pageContext?.title || pageContext?.url || pageContext?.slug) &&
+    /\b(this|here|page|article|above|current)\b/i.test(compact);
+  const needsTools =
+    mentionsPageContext || TOOL_INTENT_PATTERNS.some((pattern) => pattern.test(lower));
 
-  const messages: ProviderMessage[] = [
-    { role: "system", content: systemPrompt },
-    { role: "user", content: userMessage },
+  if (/\b(open|navigate|click|fill|screenshot|scroll|read)\b/i.test(lower)) {
+    return {
+      intent: "browser_action",
+      urgency: /\bnow|urgent|asap|immediately\b/i.test(lower) ? "high" : "medium",
+      needsTools,
+      reason: "The request appears to require live navigation or browser interaction.",
+    };
+  }
+
+  if (needsTools) {
+    return {
+      intent: "grounded_lookup",
+      urgency: /\bblocker|broken|incident|outage|failing\b/i.test(lower) ? "high" : "medium",
+      needsTools: true,
+      reason: "The request depends on live platform state, docs, tools, or page context.",
+    };
+  }
+
+  return {
+    intent: "conversation",
+    urgency: "low",
+    needsTools: false,
+    reason: "The request can be answered directly without live tool usage.",
+  };
+}
+
+function buildPlanArtifact(
+  userMessage: string,
+  intent: LocalIntentSummary,
+  toolCatalog: Array<{ name: string }>,
+): string {
+  if (!intent.needsTools) {
+    return userMessage;
+  }
+
+  const hints = toolCatalog.slice(0, TOOL_HINT_LIMIT).map((tool) => tool.name);
+  const lines = [
+    "## Execution Brief",
+    `Intent: ${intent.intent}`,
+    `Urgency: ${intent.urgency}`,
+    `Tool use: ${intent.needsTools ? "Allowed when needed" : "Not required"}`,
+    `Reason: ${intent.reason}`,
   ];
 
-  return (await synthesizeCompletion(target, messages, opts)).content;
+  if (hints.length > 0) {
+    lines.push(`Catalog hints: ${hints.join(", ")}`);
+  }
+
+  lines.push("## User Message");
+  lines.push(userMessage);
+  return lines.join("\n");
+}
+
+function extractNoteCandidate(userMessage: string): HeuristicNoteCandidate | null {
+  const compact = userMessage.replace(/\s+/g, " ").trim();
+  if (compact.length < 12) {
+    return null;
+  }
+
+  const explicitRemember = /(?:^|\b)(?:remember|note that)\s+(.{8,200})$/i.exec(compact);
+  if (explicitRemember?.[1]) {
+    const fact = normalizeText(explicitRemember[1], 180);
+    return {
+      trigger: "explicit memory request",
+      lesson: fact,
+      confidence: 0.7,
+    };
+  }
+
+  const preference = /(?:^|\b)(?:i prefer|we prefer|please use|always use)\s+(.{4,160})$/i.exec(
+    compact,
+  );
+  if (preference?.[1]) {
+    const fact = normalizeText(preference[1], 160);
+    return {
+      trigger: "stated preference",
+      lesson: `User preference: ${fact}`,
+      confidence: 0.62,
+    };
+  }
+
+  const goal = /(?:^|\b)(?:my goal is|i'm trying to|i am trying to|we need to)\s+(.{6,180})$/i.exec(
+    compact,
+  );
+  if (goal?.[1]) {
+    const fact = normalizeText(goal[1], 180);
+    return {
+      trigger: "current goal",
+      lesson: `Current goal: ${fact}`,
+      confidence: 0.58,
+    };
+  }
+
+  return null;
 }
 
 export function buildSpikeChatMessages(
@@ -464,7 +563,10 @@ spikeChat.post("/api/spike-chat", async (c) => {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getRubik3SystemPrompt()}`;
   }
 
-  const toolCatalog = await fetchToolCatalog(c.env.MCP_SERVICE, requestId);
+  const intentSummary = classifyIntent(userMessage, body.pageContext);
+  const toolCatalog = intentSummary.needsTools
+    ? await fetchToolCatalog(c.env.MCP_SERVICE, requestId)
+    : [];
 
   // Set up SSE stream
   const { readable, writable } = new TransformStream();
@@ -536,39 +638,10 @@ spikeChat.post("/api/spike-chat", async (c) => {
 
       // --- Stage 1: CLASSIFY ---
       await sendEvent({ type: "stage_update", stage: "classify" });
-      let classifiedIntent = "{}";
-      try {
-        classifiedIntent = await callLlm(c.env, userId, buildClassifyPrompt(), userMessage, {
-          temperature: 0.1,
-          maxTokens: 200,
-        });
-      } catch {
-        classifiedIntent = JSON.stringify({
-          intent: "conversation",
-          domain: "general",
-          urgency: "medium",
-          suggestedTools: [],
-        });
-      }
 
       // --- Stage 2: PLAN ---
       await sendEvent({ type: "stage_update", stage: "plan" });
-      let planArtifact = userMessage;
-      try {
-        const toolNames = [
-          "mcp_tool_search",
-          "mcp_tool_call",
-          `catalog_size_${toolCatalog.length}`,
-        ];
-        const planPrompt = buildPlanPrompt(classifiedIntent, toolNames);
-        const planResult = await callLlm(c.env, userId, planPrompt, userMessage, {
-          temperature: 0.4,
-          maxTokens: 1024,
-        });
-        planArtifact = `## Plan\n${planResult}\n\n## User Message\n${userMessage}`;
-      } catch {
-        // Fall through with raw user message
-      }
+      const planArtifact = buildPlanArtifact(userMessage, intentSummary, toolCatalog);
 
       // --- Stage 3: EXECUTE (streamed) ---
       await sendEvent({ type: "stage_update", stage: "execute" });
@@ -583,7 +656,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
         const iteration = await streamLlmResponse(llmTarget, executionMessages, sendEvent, {
           temperature: 0.2,
           maxTokens: 4096,
-          tools: SPIKE_AGENT_TOOLS,
+          ...(intentSummary.needsTools ? { tools: SPIKE_AGENT_TOOLS } : {}),
         });
 
         assistantResponse += iteration.fullText;
@@ -673,14 +746,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
       await sendEvent({ type: "stage_update", stage: "extract" });
       await (async () => {
         try {
-          const extractResult = await callLlm(
-            c.env,
-            userId,
-            buildExtractPrompt(),
-            `User: ${userMessage}\n\nAssistant: ${assistantResponse.slice(0, 2000)}`,
-            { temperature: 0.2, maxTokens: 256 },
-          );
-          const extracted = parseExtractedNote(extractResult);
+          const extracted = extractNoteCandidate(userMessage);
           if (extracted && userId) {
             await saveNote(c.env.DB, userId, {
               id: crypto.randomUUID(),

@@ -56,9 +56,10 @@ function buildRouteMeta(t: (key: string) => string): Record<string, RouteMeta> {
     "/login": { title: r("login"), description: d("login") },
     "/version": { title: r("version"), description: d("version") },
     "/what-we-do": { title: r("whatWeDo"), description: d("whatWeDo") },
-    "/rubik": {
-      title: "Rubik 3.0 — spike.land",
-      description: "Chat with Rubik 3.0 — spike.land's design + quality + product intelligence",
+    "/chat": {
+      title: "Chat with Spike — spike.land",
+      description:
+        "Chat with Spike — AI assistant with MCP tools, memory, and the Aether pipeline.",
     },
     "/chess": {
       title: "Chess Arena — spike.land",
@@ -82,7 +83,8 @@ function buildRouteMeta(t: (key: string) => string): Record<string, RouteMeta> {
     },
     "/migrate": {
       title: "Migrate from Next.js — spike.land",
-      description: "Migration services to move Next.js projects to TanStack Start + Cloudflare Workers.",
+      description:
+        "Migration services to move Next.js projects to TanStack Start + Cloudflare Workers.",
     },
     "/store/category": {
       title: "App Store Categories — spike.land",
@@ -156,6 +158,7 @@ function injectJsonLd(id: string, content: string) {
  * Keep this short (fits in one row on ≥1024px). Grouped sections appear in the mobile drawer.
  */
 const NAV_LINK_ROUTES = [
+  { to: "/chat", label: "Chat" },
   { to: "/apps", key: "apps" },
   { to: "/create", label: "Create" },
   { to: "/learnit", label: "LearnIt" },
@@ -175,6 +178,7 @@ const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Discover",
     items: [
+      { to: "/chat", label: "Chat with Spike", icon: "💬" },
       { to: "/apps", label: "App Store", icon: "🏪" },
       { to: "/store", label: "Store", icon: "🛍️" },
     ],
@@ -211,6 +215,7 @@ const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
     heading: "Platform",
     items: [
       { to: "/pricing", label: "Pricing", icon: "💳" },
+      { to: "/support", label: "Support", icon: "❤️" },
       { to: "/migrate", label: "Migrate", icon: "🚀" },
       { to: "/about", label: "About", icon: "ℹ️" },
       { to: "/status", label: "Status", icon: "🟢" },
@@ -382,67 +387,133 @@ export function RootLayout() {
 
   return (
     <ChatProvider>
-    <div className="app-shell relative flex min-h-[100dvh] overflow-x-hidden bg-background text-foreground">
-      {/* Skip to main content link for keyboard/screen reader users */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-primary focus:text-primary-foreground focus:p-2 focus:m-2 focus:rounded focus:outline-none focus:ring-2 focus:ring-[var(--ring-color)]"
-      >
-        {t("common:skipToContent")}
-      </a>
+      <div className="app-shell relative flex min-h-[100dvh] overflow-x-hidden bg-background text-foreground">
+        {/* Skip to main content link for keyboard/screen reader users */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-primary focus:text-primary-foreground focus:p-2 focus:m-2 focus:rounded focus:outline-none focus:ring-2 focus:ring-[var(--ring-color)]"
+        >
+          {t("common:skipToContent")}
+        </a>
 
-      <div className="flex flex-1 flex-col min-w-0">
-        <header className="sticky top-0 z-30 border-b border-border/80 bg-background/86 backdrop-blur-xl">
-          <div className="rubik-container flex h-14 lg:h-[4.5rem] items-center justify-between gap-6">
-            <div className="flex min-w-0 items-center gap-5">
-              <Link to="/" className="flex min-w-0 items-center gap-3">
-                <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
-                  SL
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-[0.95rem] font-semibold tracking-[-0.03em] text-foreground">
-                    spike.land
-                  </p>
-                  <p className="hidden text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground md:block">
-                    {t("common:mcpNativePlatform")}
-                  </p>
-                </div>
-              </Link>
-              <nav className="hidden lg:flex items-center gap-1.5" aria-label={t("common:mainNav")}>
-                {navLinks.map(({ to, label }) => (
-                  <Link
-                    key={to}
-                    to={to}
-                    aria-current={pathname === to ? "page" : undefined}
-                    className={`rounded-full px-3 py-2 text-[0.82rem] font-medium tracking-[0.01em] transition-colors ${
-                      pathname === to
-                        ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
-                        : "text-muted-foreground hover:bg-card/80 hover:text-foreground"
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground xl:inline-flex">
-                <span className="h-2 w-2 rounded-full bg-primary" />
-                {t("common:toolsOnline")}
+        <div className="flex flex-1 flex-col min-w-0">
+          <header className="sticky top-0 z-30 border-b border-border/80 bg-background/86 backdrop-blur-xl">
+            <div className="rubik-container flex h-14 lg:h-[4.5rem] items-center justify-between gap-6">
+              <div className="flex min-w-0 items-center gap-5">
+                <Link to="/" className="flex min-w-0 items-center gap-3">
+                  <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
+                    SL
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.95rem] font-semibold tracking-[-0.03em] text-foreground">
+                      spike.land
+                    </p>
+                    <p className="hidden text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground md:block">
+                      {t("common:mcpNativePlatform")}
+                    </p>
+                  </div>
+                </Link>
+                <nav
+                  className="hidden lg:flex items-center gap-1.5"
+                  aria-label={t("common:mainNav")}
+                >
+                  {navLinks.map(({ to, label }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      aria-current={pathname === to ? "page" : undefined}
+                      className={`rounded-full px-3 py-2 text-[0.82rem] font-medium tracking-[0.01em] transition-colors ${
+                        pathname === to
+                          ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
+                          : "text-muted-foreground hover:bg-card/80 hover:text-foreground"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
               </div>
-              {isDeveloper && <ThemeSwitcher theme={theme} setTheme={setTheme} />}
-              <LanguageSwitcher />
-              <LoginButton />
-              {/* Mobile hamburger */}
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-2xl border border-border bg-card p-3 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
-                aria-label={mobileNavOpen ? t("common:closeNavMenu") : t("common:openNavMenu")}
-                aria-expanded={mobileNavOpen}
-                aria-controls="mobile-nav"
-                onClick={() => setMobileNavOpen(!mobileNavOpen)}
-              >
-                {mobileNavOpen ? (
+              <div className="flex items-center gap-2.5">
+                <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground xl:inline-flex">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  {t("common:toolsOnline")}
+                </div>
+                {isDeveloper && <ThemeSwitcher theme={theme} setTheme={setTheme} />}
+                <LanguageSwitcher />
+                <LoginButton />
+                {/* Mobile hamburger */}
+                <button
+                  type="button"
+                  className="flex items-center justify-center rounded-2xl border border-border bg-card p-3 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+                  aria-label={mobileNavOpen ? t("common:closeNavMenu") : t("common:openNavMenu")}
+                  aria-expanded={mobileNavOpen}
+                  aria-controls="mobile-nav"
+                  onClick={() => setMobileNavOpen(!mobileNavOpen)}
+                >
+                  {mobileNavOpen ? (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Mobile nav drawer */}
+          {mobileNavOpen && (
+            <div
+              ref={mobileNavRef}
+              id="mobile-nav"
+              className="glass-panel fixed inset-0 z-40 flex flex-col lg:hidden overflow-y-auto"
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("common:mobileNav")}
+            >
+              {/* Close button row */}
+              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border/60">
+                <Link
+                  to="/"
+                  className="flex items-center gap-2"
+                  onClick={() => setMobileNavOpen(false)}
+                >
+                  <div className="rubik-icon-badge h-8 w-8 rounded-xl text-xs font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
+                    SL
+                  </div>
+                  <span className="font-semibold text-foreground">spike.land</span>
+                </Link>
+                <button
+                  type="button"
+                  className="flex items-center justify-center rounded-xl border border-border bg-card p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={t("common:closeNavMenu")}
+                  onClick={() => setMobileNavOpen(false)}
+                >
                   <svg
                     className="h-5 w-5"
                     fill="none"
@@ -457,118 +528,72 @@ export function RootLayout() {
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                ) : (
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-          </div>
-        </header>
+                </button>
+              </div>
 
-        {/* Mobile nav drawer */}
-        {mobileNavOpen && (
-          <div
-            ref={mobileNavRef}
-            id="mobile-nav"
-            className="glass-panel fixed inset-0 z-40 flex flex-col lg:hidden overflow-y-auto"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t("common:mobileNav")}
-          >
-            {/* Close button row */}
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border/60">
-              <Link to="/" className="flex items-center gap-2" onClick={() => setMobileNavOpen(false)}>
-                <div className="rubik-icon-badge h-8 w-8 rounded-xl text-xs font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
-                  SL
-                </div>
-                <span className="font-semibold text-foreground">spike.land</span>
-              </Link>
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-xl border border-border bg-card p-2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={t("common:closeNavMenu")}
-                onClick={() => setMobileNavOpen(false)}
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <nav aria-label={t("common:mobileNavLinks")} className="flex-1 px-4 py-4 space-y-6">
-              {NAV_SECTIONS.map((section) => (
-                <div key={section.heading}>
-                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/60">
-                    {section.heading}
-                  </p>
-                  <div className="space-y-0.5">
-                    {section.items.map(({ to, label, icon }) => {
-                      const isActive = pathname === to || (to !== "/" && pathname.startsWith(`${to}/`));
-                      return (
-                        <Link
-                          key={to}
-                          to={to as "/"}
-                          aria-current={isActive ? "page" : undefined}
-                          className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                            isActive
-                              ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
-                              : "text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                          }`}
-                          onClick={() => setMobileNavOpen(false)}
-                        >
-                          <span className="text-base w-5 text-center" aria-hidden="true">{icon}</span>
-                          {label}
-                        </Link>
-                      );
-                    })}
+              <nav aria-label={t("common:mobileNavLinks")} className="flex-1 px-4 py-4 space-y-6">
+                {NAV_SECTIONS.map((section) => (
+                  <div key={section.heading}>
+                    <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/60">
+                      {section.heading}
+                    </p>
+                    <div className="space-y-0.5">
+                      {section.items.map(({ to, label, icon }) => {
+                        const isActive =
+                          pathname === to || (to !== "/" && pathname.startsWith(`${to}/`));
+                        return (
+                          <Link
+                            key={to}
+                            to={to as "/"}
+                            aria-current={isActive ? "page" : undefined}
+                            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                              isActive
+                                ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
+                                : "text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                            }`}
+                            onClick={() => setMobileNavOpen(false)}
+                          >
+                            <span className="text-base w-5 text-center" aria-hidden="true">
+                              {icon}
+                            </span>
+                            {label}
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </nav>
-          </div>
-        )}
-
-        <main
-          id="main-content"
-          className="flex-1 min-h-[calc(100dvh-3.5rem)] lg:min-h-[calc(100dvh-4.5rem)] overflow-x-hidden pb-8"
-        >
-          <noscript>
-            <div className="p-8 text-center">
-              <h1>{t("common:jsRequired")}</h1>
-              <p>{t("common:jsRequiredDesc")}</p>
-            </div>
-          </noscript>
-          {pathname !== "/quiz" && (
-            <div className="rubik-container pt-4">
-              <QuizPersonaBanner />
+                ))}
+              </nav>
             </div>
           )}
-          <Outlet />
-        </main>
 
-        <AppFooter />
-        <CookieConsent />
-        <WelcomeModal userName={null} />
+          <main
+            id="main-content"
+            className="flex-1 min-h-[calc(100dvh-3.5rem)] lg:min-h-[calc(100dvh-4.5rem)] overflow-x-hidden pb-8"
+          >
+            <noscript>
+              <div className="p-8 text-center">
+                <h1>{t("common:jsRequired")}</h1>
+                <p>{t("common:jsRequiredDesc")}</p>
+              </div>
+            </noscript>
+            {pathname !== "/quiz" && (
+              <div className="rubik-container pt-4">
+                <QuizPersonaBanner />
+              </div>
+            )}
+            <Outlet />
+          </main>
+
+          <AppFooter />
+          <CookieConsent />
+          <WelcomeModal userName={null} />
+        </div>
+
+        <AppDrawer />
+
+        <ChatWidget />
       </div>
-
-      <AppDrawer />
-
-      <ChatWidget />
-
-    </div>
     </ChatProvider>
   );
 }
