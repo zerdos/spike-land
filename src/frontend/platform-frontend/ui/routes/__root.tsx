@@ -14,6 +14,7 @@ import { CookieConsent } from "../components/CookieConsent";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
 import { WelcomeModal } from "../components/WelcomeModal";
 import { QuizPersonaBanner } from "../components/quiz/QuizPersonaBanner";
+import { AppDrawer } from "../components/drawer/AppDrawer";
 import { apiUrl } from "../../core-logic/api";
 import { initGoogleAds } from "../../core-logic/google-ads";
 import { resolveSupportedLanguage } from "../i18n";
@@ -435,6 +436,7 @@ export function RootLayout() {
         <CookieConsent />
         <WelcomeModal userName={null} />
       </div>
+      <AppDrawer />
     </div>
   );
 }
