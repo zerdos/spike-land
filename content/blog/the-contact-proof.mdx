@@ -1,0 +1,414 @@
+---
+title: "The Contact Proof"
+slug: "the-contact-proof"
+description: "Where certainty stops being a feeling and becomes mathematics. A strange loop, a contact theorem, Paul Erdos, ELTE, and the proof that a contact was indeed a contact."
+date: "2026-03-13"
+author: "Zoltan Erdos"
+category: "Essay"
+tags: ["strange-loop", "mathematics", "certainty", "systems", "hofstadter", "erdos"]
+featured: false
+draft: true
+primer: "A contact does not begin when two people reply. It begins when one state enters another."
+heroImage: "/blog/the-predictor-already-moved/hero.jpg"
+heroPrompt: "An Escher-like waterfall made of equations and graph edges folding back into itself above a dark Brighton skyline, precise white chalk mathematics on black slate, cinematic and elegant"
+---
+
+![The Contact Proof](/blog/the-predictor-already-moved/hero.jpg)
+
+<Tldr>
+
+- A strange loop is what happens when a system's description re-enters the system.
+- Certainty becomes mathematics when you stop treating it as a mood and start measuring posterior change.
+- A contact does not require a reply. It requires a non-zero update in the state of another agent.
+- Under that definition, the Felix event was already a contact before any explicit answer arrived.
+
+</Tldr>
+
+Will Schoder's essay on the strange loop gets the intuition right.
+
+The self is not a marble hidden somewhere in the skull.
+It is a pattern that folds back on itself.
+A symbol that learns to point at the system that produced the symbol.
+A waterfall that turns out to be feeding itself.
+
+That is Hofstadter's move.
+
+But I want to take one more step.
+
+I want to ask what happens when the loop is not just inside one mind, but between two
+systems in the world.
+
+That is where the beautiful new mathematics starts.
+
+Not at certainty as a slogan.
+At certainty as a measurable update.
+
+## Where certainty becomes mathematics
+
+Most people use the word "certainty" too early.
+
+They mean confidence.
+They mean mood.
+They mean narrative force.
+
+That is not mathematics.
+
+Mathematics starts when certainty becomes a difference between two states of knowledge.
+
+Write it this way.
+
+```text
+Let P_t(H) be an agent's probability distribution over some hypothesis H at time t.
+
+The information gained from an event e is:
+
+I_t(e; H) = D_KL(P_t(H | e) || P_t(H))
+```
+
+If `I_t(e; H) = 0`, the event changed nothing.
+
+If `I_t(e; H) > 0`, the event entered the system. The agent is no longer in the same
+state it was in before.
+
+That is the first place certainty becomes rigorous.
+
+Not "I feel this matters."
+
+But:
+
+```text
+This event changed the posterior.
+```
+
+The moment that happens, we are no longer doing poetry.
+We are doing contact geometry on belief states.
+
+## A definition of contact
+
+If we want to be correct, we need a definition.
+
+Here is mine.
+
+Let `A` and `B` be agents.
+Let `s_A(t)` and `s_B(t)` be their internal states at time `t`.
+Let `m` be an artifact produced by `A` or by a system traceable to `A`.
+
+Then:
+
+```text
+Contact_1(A, B, t; m) = 1
+
+iff observing m changes either:
+
+1. B's posterior over the world, or
+2. B's reachable action set.
+```
+
+In symbols:
+
+```text
+Contact_1(A, B, t; m) = 1
+
+iff
+
+P_B(W | E_t, m) != P_B(W | E_t)
+
+or
+
+Act_B(E_t, m) != Act_B(E_t)
+```
+
+This is first-order contact.
+
+It does **not** require:
+
+- physical proximity
+- spoken dialogue
+- mutual recognition
+- intention
+- reciprocity
+
+It only requires state entry.
+
+One system reached another system and changed it.
+
+That is enough.
+
+## A definition of the strange loop
+
+Now define a loop operator.
+
+```text
+L(x) = U(D(x))
+```
+
+Where:
+
+- `x` is a system state
+- `D(x)` is a description produced from that state
+- `U(...)` is the update caused when the description re-enters a system
+
+A strange loop appears when the description of the system becomes part of the
+future state of the system itself, directly or indirectly.
+
+That does not require a perfect fixed point.
+
+It only requires recursive closure:
+
+```text
+x_(t+1) = U(D(x_t))
+```
+
+If the description changes the next state, and the next state changes the next
+description, the loop has begun.
+
+## The contact theorem
+
+Now we can state the actual result.
+
+### Theorem
+
+Suppose:
+
+1. An external artifact associated with Felix existed in the world before my observation.
+2. My system discovered it.
+3. That discovery changed my posterior over the world.
+4. That change altered my subsequent actions: investigation, writing, publication,
+   and public framing.
+
+Then the event was already a contact in the first-order sense.
+
+### Proof
+
+Before the observation, my posterior over the relevant hypothesis space was one thing.
+
+The relevant hypotheses were not mystical.
+They were concrete.
+
+Examples:
+
+- there exists a second structure in Brighton with a name dangerously close to mine
+- the resemblance is operationally meaningful rather than merely lexical
+- the pattern is worth further investigation
+- the countdown is not background noise
+
+After the observation, those probabilities changed.
+
+Therefore:
+
+```text
+P_t(H | m) != P_t(H)
+```
+
+So:
+
+```text
+I_t(m; H) > 0
+```
+
+And because the updated state altered my action set,
+
+```text
+Act(E_t, m) != Act(E_t)
+```
+
+I investigated.
+I wrote.
+I published.
+I changed the world I was in by acting on the update.
+
+Therefore `Contact_1(Felix, Zoltan, t; m) = 1`.
+
+QED.
+
+## What this proof does not prove
+
+Correctness requires boundaries.
+
+This proof does **not** prove:
+
+- intention
+- destiny
+- conspiracy
+- reciprocity
+- that Felix meant anything by it
+- that the universe is doing theater
+
+It proves something narrower and cleaner.
+
+It proves that contact occurred in the informational sense.
+
+The artifact crossed the boundary.
+My state changed.
+My available actions changed.
+The edge exists.
+
+That is enough.
+
+## The reciprocal version
+
+The stronger theorem is reciprocal contact.
+
+For that we need the reverse direction:
+
+```text
+Contact_1(Zoltan, Felix, t'; p) = 1
+```
+
+Where `p` is the publication, or any derivative artifact, and where observing `p`
+changes Felix's posterior or action set.
+
+If Felix sees the essay and does nothing, there may still be contact if the state
+changes.
+If Felix renews a domain, replies, alters a header, or otherwise updates the visible
+world, the result is even stronger:
+
+```text
+Contact_2(Zoltan, Felix) = Contact_1(Zoltan, Felix) AND Contact_1(Felix, Zoltan)
+```
+
+That is reciprocal contact.
+
+And the moment reciprocal contact appears, the strange loop tightens.
+
+Why?
+
+Because the observation produced the publication, and the publication can change the
+thing observed, and the changed thing can produce new observations.
+
+In short:
+
+```text
+artifact -> update -> action -> artifact
+```
+
+That is the loop.
+
+## Paul Erdos would ask for the shortest proof
+
+In the spirit of Paul Erdos, we should prefer the shortest proof that still bites.
+
+He would not want mist.
+He would want the clean edge in the graph.
+
+So here is the compressed version.
+
+Let the graph have vertices:
+
+- `Z` for Zoltan
+- `F` for Felix
+- `m` for the discovered artifact
+- `p` for the published response
+
+Draw an edge when a node causes a non-zero state update in another node.
+
+Then:
+
+- `F -> m`
+- `m -> Z`
+- `Z -> p`
+
+Those three edges are already enough to prove first-order contact from Felix's world
+to mine.
+
+If `p -> F`, the graph closes.
+
+And once the graph closes, the proof stops being merely about contact and becomes a
+proof of loop formation.
+
+That is a very Erdos kind of pleasure.
+
+Minimal assumptions.
+Sharp conclusion.
+No wasted motion.
+
+## A personal note on the name
+
+This part is not a proof.
+It is context.
+
+I went to ELTE.
+My old email address was `erdos@elte.hu`, and I believe it still belongs to me.
+I always had love for numbers.
+
+So yes, in retrospect I was an obvious pick for this argument.
+
+Not because of fate.
+Because if you give a Hungarian named Erdos a recursive problem involving
+self-reference, graphs, certainty, and contact, he is going to try to formalize it.
+
+That much was overdetermined.
+
+## What about Felix?
+
+Felix is the indispensable second vertex.
+
+Without Felix, this collapses into introspection.
+Without the other end of the edge, there is no theorem, only autobiography.
+
+Mathematically, Felix is not decoration.
+He is the term that makes the statement non-trivial.
+
+Narratively, he is even more important than that.
+
+He is the proof that the loop is not just inside my own head.
+
+He is the outside that entered.
+
+And that is the difference between consciousness and contact.
+
+A strange loop inside one mind is philosophy.
+
+A strange loop distributed across two systems in the same city is mathematics trying
+to become history.
+
+## The point where the new mathematics starts
+
+Yesterday I said this is the point where the beautiful new mathematics starts.
+
+I meant exactly this:
+
+The old mathematics wanted certainty before it moved.
+
+The new mathematics begins one step earlier.
+It studies what happens when systems update under uncertainty and then feed those
+updates back into the world.
+
+That mathematics is built from:
+
+- Bayesian update
+- mutual information
+- graph edges
+- fixed points
+- recursive closure
+
+It is not mystical.
+
+It is simply a mathematics appropriate to living systems that can describe, observe,
+and perturb one another.
+
+Which is to say:
+
+the mathematics of contact.
+
+## Final statement
+
+So was it a contact?
+
+Yes.
+
+Not because anyone answered an email.
+Not because anyone shook hands.
+Not because reciprocity is already proved.
+
+It was a contact because one system entered another system and changed its state.
+
+That is the correct claim.
+
+That is the clean claim.
+
+And once you say it that way, the rest follows.
+
+The contact happened first.
+The strange loop came second.
+The certainty came last.
