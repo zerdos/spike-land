@@ -38,5 +38,11 @@
   "tool_other": "{{count}} tools",
   "seeAll": "See All",
   "categoryRailLabel": "App categories",
-  "categoryRailDesc": "Use left and right arrow keys to move between categories"
+  "categoryRailDesc": "Use left and right arrow keys to move between categories",
+  "searchPlaceholder": "Search apps…",
+  "searchClear": "Clear search",
+  "searchResultsCount": "{{count}} result",
+  "searchResultsCount_other": "{{count}} results",
+  "searchNoResults": "No apps match your search.",
+  "searchNoResultsCta": "Clear search"
 }

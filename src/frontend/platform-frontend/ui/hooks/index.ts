@@ -1,3 +1,4 @@
+export * from "./useInstall";
 export * from "./useAnalytics";
 export * from "./useAuth";
 export * from "./useBugbook";
