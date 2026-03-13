@@ -12,6 +12,8 @@ import { labsDomain } from "./prds/domains/labs.js";
 import { learningDomain } from "./prds/domains/learning.js";
 import { platformInfraDomain } from "./prds/domains/platform-infra.js";
 import { aetherDomain } from "./prds/domains/aether.js";
+import { editorDomain } from "./prds/domains/editor.js";
+import { contextRenderingDomain } from "./prds/domains/context-rendering.js";
 
 // Routes
 import { appsRoute } from "./prds/routes/apps.js";
@@ -19,6 +21,10 @@ import { blogRoute } from "./prds/routes/blog.js";
 import { dashboardRoute } from "./prds/routes/dashboard.js";
 import { pricingRoute } from "./prds/routes/pricing.js";
 import { vibeCodeRoute } from "./prds/routes/vibe-code.js";
+import { learnitRoute } from "./prds/routes/learnit.js";
+import { createRoute } from "./prds/routes/create.js";
+import { storeCategoryRoute } from "./prds/routes/store-category.js";
+import { analyticsRoute } from "./prds/routes/analytics.js";
 
 // Apps
 import { aiGatewayPrd } from "./prds/apps/ai-gateway.js";
@@ -26,6 +32,9 @@ import { chessArenaPrd } from "./prds/apps/chess-arena.js";
 import { crdtLabPrd } from "./prds/apps/crdt-lab.js";
 import { imageStudioPrd } from "./prds/apps/image-studio.js";
 import { qaStudioPrd } from "./prds/apps/qa-studio.js";
+import { beuniqPrd } from "./prds/apps/beuniq.js";
+import { spikeChatWidgetPrd } from "./prds/apps/spike-chat-widget.js";
+import { supportPrd } from "./prds/apps/support.js";
 
 const ALL_PRDS: PrdDefinition[] = [
   // Platform (always first)
@@ -38,18 +47,27 @@ const ALL_PRDS: PrdDefinition[] = [
   platformInfraDomain,
   contentDomain,
   aetherDomain,
+  editorDomain,
+  contextRenderingDomain,
   // Routes
   appsRoute,
   blogRoute,
   dashboardRoute,
   vibeCodeRoute,
   pricingRoute,
+  learnitRoute,
+  createRoute,
+  storeCategoryRoute,
+  analyticsRoute,
   // Apps
   chessArenaPrd,
   aiGatewayPrd,
   imageStudioPrd,
   qaStudioPrd,
   crdtLabPrd,
+  beuniqPrd,
+  spikeChatWidgetPrd,
+  supportPrd,
 ];
 
 let registrationFailures: string[] = [];

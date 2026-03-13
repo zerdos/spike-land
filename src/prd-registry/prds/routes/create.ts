@@ -1,0 +1,50 @@
+import type { PrdDefinition } from "../../core-logic/types.js";
+
+export const createRoute: PrdDefinition = {
+  id: "route:/create",
+  level: "route",
+  name: "Create",
+  summary: "Prompt-to-app generator with 8 templates, live preview, and vibe-code Monaco handoff",
+  purpose:
+    "Creation entry point. Accepts a natural-language prompt and generates a working React/TypeScript stub. Offers 8 curated templates. Renders a live preview alongside generated code, then hands off to vibe-code for refinement before store publishing.",
+  constraints: [
+    "App generation must produce valid TypeScript with zero compile errors",
+    "Generation latency target: first meaningful preview within 5s",
+    "Template gallery must be statically renderable — no runtime fetch for template list",
+    "Preview iframe sandboxed — no access to parent frame or localStorage",
+    "Handoff to vibe-code must preserve full generated file tree",
+    "Generated apps scoped to user's codespace — no cross-user access",
+  ],
+  acceptance: [
+    "Submitting a prompt produces a preview and editable code within 10s",
+    "All 8 templates render a working preview when selected",
+    "Editing generated code in Monaco reflects in preview within 500ms",
+    "Clicking 'Open in Vibe Code' navigates to /vibe-code with files pre-loaded",
+    "Publish button creates a valid app listing in the store",
+  ],
+  toolCategories: ["codespace", "app-generation", "esbuild", "filesystem"],
+  tools: [
+    "app_generate_from_prompt",
+    "template_list",
+    "template_scaffold",
+    "codespace_write_file",
+    "codespace_preview",
+    "store_publish_app",
+  ],
+  composesFrom: ["platform", "domain:app-building", "route:/vibe-code"],
+  routePatterns: ["/create", "/create/:templateSlug"],
+  keywords: [
+    "create",
+    "generate",
+    "prompt",
+    "template",
+    "preview",
+    "scaffold",
+    "app",
+    "editor",
+    "publish",
+    "no-code",
+  ],
+  tokenEstimate: 260,
+  version: "1.0.0",
+};
