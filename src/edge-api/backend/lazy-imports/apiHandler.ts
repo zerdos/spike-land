@@ -115,7 +115,9 @@ export async function handleApiRequest(
       return roomObject.fetch(new Request(newUrl.toString(), request));
     }
     case "": {
-      const respText = HTML;
+      // HTML is declared as string but resolved as Promise<string> at runtime
+      // via wrangler's module loader for .html imports
+      const respText = await (HTML as unknown as string | Promise<string>);
       const headers = new Headers({
         "Access-Control-Allow-Origin": getAllowOrigin(request),
         "Cross-Origin-Embedder-Policy": "require-corp",
