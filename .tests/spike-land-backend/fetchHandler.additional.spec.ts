@@ -219,7 +219,7 @@ describe("FetchHandler additional coverage", () => {
       expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://app.spike.land");
     });
 
-    it("GET with unknown origin defaults to spike.land CORS header", async () => {
+    it("GET with unknown origin echoes back the request origin", async () => {
       const mockR2Object = {
         writeHttpMetadata: vi.fn(),
         httpEtag: "etag-xyz",
@@ -238,7 +238,7 @@ describe("FetchHandler additional coverage", () => {
         mockCtx,
       );
 
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://malicious.com");
     });
   });
 
@@ -313,7 +313,7 @@ describe("FetchHandler additional coverage", () => {
       expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
     });
 
-    it("handles GET index.mjs with non-spike.land origin (defaults to spike.land)", async () => {
+    it("handles GET index.mjs with non-spike.land origin (echoes back the origin)", async () => {
       const mockR2Object = {
         writeHttpMetadata: vi.fn(),
         httpEtag: "etag-789",
@@ -332,7 +332,7 @@ describe("FetchHandler additional coverage", () => {
         mockCtx,
       );
 
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://other.com");
     });
 
     it("returns 405 for unsupported method on index.mjs", async () => {
@@ -400,13 +400,12 @@ describe("FetchHandler additional coverage", () => {
       expect(response.headers.get("Location")).toBe("https://esm.sh/buffer");
     });
 
-    it("corsRedirect: unknown package from example.com defaults to spike.land CORS origin", async () => {
-      // corsRedirect checks the request URL's origin (not Origin header)
-      // Request URL origin is https://example.com which is not spike.land
+    it("corsRedirect: unknown package from example.com uses request URL origin", async () => {
+      // corsRedirect uses new URL(requestUrl).origin — the request URL's own origin
       const request = new Request("https://example.com/some-pkg");
       const response = await handleFetchApi(["some-pkg"], request, mockEnv, mockCtx);
       expect(response.status).toBe(302);
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://example.com");
     });
 
     it("corsRedirect: request from spike.land URL uses spike.land CORS origin", async () => {

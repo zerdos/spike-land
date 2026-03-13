@@ -4,7 +4,7 @@ import {
   executeFindLines,
   findLinesTool,
   findTools,
-} from "../../../../src/edge-api/backend/core-logic/mcp/tools/find-tools";
+} from "../../../../src/edge-api/backend/lazy-imports/find-tools";
 
 const createMockSession = (code: string): ICodeSession =>
   ({

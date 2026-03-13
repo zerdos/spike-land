@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
-import { CodeRoutes } from "../../../src/edge-api/backend/core-logic/routes/codeRoutes";
+import { CodeRoutes } from "../../../src/edge-api/backend/lazy-imports/codeRoutes";
 
 vi.mock("@spike-land-ai/code", () => ({
   computeSessionHash: vi.fn().mockReturnValue("mock-hash-12345"),

@@ -3,7 +3,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom.js";
-import { ApiRoutes } from "../../../src/edge-api/backend/core-logic/routes/apiRoutes.js";
+import { ApiRoutes } from "../../../src/edge-api/backend/lazy-imports/apiRoutes.js";
 
 vi.mock("../../../src/edge-api/backend/lazy-imports/chatRoom", () => ({
   Code: vi.fn(),

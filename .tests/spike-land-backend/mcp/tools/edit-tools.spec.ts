@@ -6,7 +6,7 @@ import {
   executeEditCode,
   executeSearchAndReplace,
   executeUpdateCode,
-} from "../../../../src/edge-api/backend/core-logic/mcp/tools/edit-tools.js";
+} from "../../../../src/edge-api/backend/lazy-imports/edit-tools.js";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;

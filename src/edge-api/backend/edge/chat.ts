@@ -15,7 +15,7 @@ import {
   createWorkerSentryOptions,
 } from "../../common/core-logic/sentry.js";
 // @ts-expect-error no type declarations for generated mjs asset manifest
-import { ASSET_HASH, ASSET_MANIFEST, files } from "./staticContent.mjs";
+import { ASSET_HASH, ASSET_MANIFEST, files } from "../staticContent.mjs";
 
 export async function handleMCPRequest(request: Request, env: Env) {
   const url = new URL(request.url);

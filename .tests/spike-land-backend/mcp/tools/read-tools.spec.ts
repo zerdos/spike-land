@@ -8,7 +8,7 @@ import {
   readHtmlTool,
   readSessionTool,
   readTools,
-} from "../../../../src/edge-api/backend/core-logic/mcp/tools/read-tools";
+} from "../../../../src/edge-api/backend/lazy-imports/read-tools";
 
 const createMockSession = (overrides: Partial<ICodeSession> = {}): ICodeSession =>
   ({

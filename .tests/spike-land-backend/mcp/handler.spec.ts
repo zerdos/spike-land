@@ -2,7 +2,7 @@ import type { ICodeSession } from "@spike-land-ai/code";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom.js";
 import type Env from "../../../src/edge-api/backend/core-logic/env.js";
-import { McpHandler } from "../../../src/edge-api/backend/core-logic/mcp/handler.js";
+import { McpHandler } from "../../../src/edge-api/backend/lazy-imports/handler.js";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;

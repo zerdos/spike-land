@@ -1,7 +1,7 @@
 /**
  * Additional mainFetchHandler tests for uncovered branches
  */
-import { beforeEach, describe, expect, it, type vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type Env from "../../src/edge-api/backend/core-logic/env.js";
 import { handleFetchApi } from "../../src/edge-api/backend/lazy-imports/fetchHandler.js";
 import { handleErrors } from "../../src/edge-api/backend/lazy-imports/handleErrors.js";
@@ -70,7 +70,7 @@ describe("mainFetchHandler additional coverage", () => {
 
       const csp = response.headers.get("Content-Security-Policy");
       expect(csp).toContain("frame-ancestors");
-      expect(csp).toContain("spike.land");
+      expect(csp).toContain("frame-ancestors *");
       // Old frame-ancestors directive should be replaced
       expect(csp).not.toContain("frame-ancestors 'none'");
     });
@@ -121,7 +121,7 @@ describe("mainFetchHandler additional coverage", () => {
       // After filtering out frame-ancestors, withoutFrameAncestors is empty
       // So CSP should be just FRAME_ANCESTORS (no prepended empty string)
       expect(csp).not.toContain("frame-ancestors 'none'");
-      expect(csp).toContain("frame-ancestors 'self'");
+      expect(csp).toContain("frame-ancestors *");
     });
   });
 

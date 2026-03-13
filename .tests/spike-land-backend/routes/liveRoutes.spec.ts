@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Code } from "../../../src/edge-api/backend/lazy-imports/chatRoom";
-import { LiveRoutes } from "../../../src/edge-api/backend/core-logic/routes/liveRoutes";
+import { LiveRoutes } from "../../../src/edge-api/backend/lazy-imports/liveRoutes";
 
 vi.mock("@spike-land-ai/code", () => ({
   HTML: '<html><head>// IMPORTMAP</head><body><div id="embed"></div><!-- Inline LINK for initial theme --><script src="/start.mjs"></script></body></html>',

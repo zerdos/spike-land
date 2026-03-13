@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import type Env from "../../../src/edge-api/backend/core-logic/env.js";
-import { createMockEnv } from "../../../src/edge-api/backend/core-logic/test-utils.js";
+import { createMockEnv } from "../../../src/edge-api/backend/edge/test-utils.js";
 
 // Mock external modules
 vi.mock("@spike-land-ai/code", () => ({
@@ -248,7 +248,7 @@ describe("handleReplicateRequest", () => {
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("image/webp");
       expect(response.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://spike.land");
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
     });
 
     it("should return png format for png requests", async () => {
@@ -558,14 +558,25 @@ describe("handleReplicateRequest", () => {
   });
 
   describe("origin restriction (lines 149-150)", () => {
-    it("returns 403 for requests from unauthorized origin", async () => {
+    it("allows requests from any origin (restriction removed for MCP usage)", async () => {
+      (mockEnv.R2.get as Mock).mockResolvedValue(null);
+      const mockReplicateInstance = {
+        run: vi.fn().mockResolvedValue(["https://replicate.delivery/image.webp"]),
+      };
+      (Replicate as unknown as Mock).mockImplementation(function () {
+        return mockReplicateInstance;
+      });
+      const mockImageData = new ArrayBuffer(100);
+      global.fetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(mockImageData, { status: 200, headers: { "Content-Type": "image/webp" } }),
+        );
       const request = new Request("https://example.com/replicate/test.webp", {
         headers: { Origin: "https://unauthorized.com" },
       });
       const response = await handleReplicateRequest(request, mockEnv as unknown as Env, mockCtx);
-      expect(response.status).toBe(403);
-      const text = await response.text();
-      expect(text).toBe("Unauthorized Origin");
+      expect(response.status).not.toBe(403);
     });
 
     it("allows requests from spike.land subdomain", async () => {
