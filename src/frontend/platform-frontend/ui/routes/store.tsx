@@ -1,9 +1,29 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { useCallback, useMemo, useRef } from "react";
+import { ArrowRight, Search, Sparkles, X } from "lucide-react";
+import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CategoryRail, HeroShelf, StoreSection } from "../components/storefront";
+import { AppCard } from "../components/store";
 import { groupAppsByCategory, useApps } from "../hooks/useApps";
+import type { McpAppSummary } from "../hooks/useApps";
+
+// ---------------------------------------------------------------------------
+// Search helpers
+// ---------------------------------------------------------------------------
+
+function normalizeSearchToken(value: string): string {
+  return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function matchesSearch(app: McpAppSummary, query: string): boolean {
+  if (!query) return true;
+  const token = normalizeSearchToken(query);
+  const haystack = [app.name, app.description, app.tagline, app.category, ...app.tags]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return token.split(" ").every((part) => haystack.includes(part));
+}
 
 // ---------------------------------------------------------------------------
 // Page-level skeleton helpers
@@ -43,6 +63,54 @@ function HeaderSkeleton() {
         <div className="rubik-panel h-7 w-28 animate-pulse rounded-full" />
       </div>
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Search input with debounce via useDeferredValue
+// ---------------------------------------------------------------------------
+
+interface StoreSearchInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function StoreSearchInput({ value, onChange }: StoreSearchInputProps) {
+  const { t } = useTranslation("store");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClear = useCallback(() => {
+    onChange("");
+    inputRef.current?.focus();
+  }, [onChange]);
+
+  return (
+    <div className="relative flex items-center">
+      <Search
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <input
+        ref={inputRef}
+        type="search"
+        role="searchbox"
+        aria-label={t("searchPlaceholder")}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={t("searchPlaceholder")}
+        className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+      />
+      {value && (
+        <button
+          type="button"
+          onClick={handleClear}
+          aria-label={t("searchClear")}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <X className="size-3.5" />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -152,6 +220,63 @@ function MobileCategoryBar({
 }
 
 // ---------------------------------------------------------------------------
+// Search results section
+// ---------------------------------------------------------------------------
+
+interface SearchResultsProps {
+  apps: McpAppSummary[];
+  query: string;
+  onClearSearch: () => void;
+}
+
+function SearchResults({ apps, query, onClearSearch }: SearchResultsProps) {
+  const { t } = useTranslation("store");
+
+  if (apps.length === 0) {
+    return (
+      <div className="rubik-panel flex flex-col items-center gap-4 border-dashed p-12 text-center">
+        <p className="text-sm text-muted-foreground">{t("searchNoResults")}</p>
+        <button
+          type="button"
+          onClick={onClearSearch}
+          className="rounded-xl border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+        >
+          {t("searchNoResultsCta")}
+        </button>
+      </div>
+    );
+  }
+
+  const countKey = apps.length === 1 ? "searchResultsCount" : "searchResultsCount_other";
+  const countLabel = t(countKey, { count: apps.length });
+
+  return (
+    <section className="space-y-4 pt-6" aria-live="polite" aria-atomic="true">
+      <div className="flex items-end justify-between border-b border-border/40 pb-3">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            &ldquo;{query}&rdquo;
+          </h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">{countLabel}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClearSearch}
+          className="text-sm font-bold text-primary transition-colors hover:text-primary/80"
+        >
+          {t("searchClear")}
+        </button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        {apps.map((app) => (
+          <AppCard key={app.slug} app={app} layout="grid" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // StorePage
 // ---------------------------------------------------------------------------
 
@@ -160,6 +285,11 @@ export function StorePage() {
   const search = useSearch({ strict: false }) as { category?: string };
   const navigate = useNavigate();
   const { data: apps, isLoading, isError, error } = useApps();
+
+  // Raw search input (controlled)
+  const [searchInput, setSearchInput] = useState("");
+  // Deferred value for filtering — avoids blocking the input on large lists
+  const deferredQuery = useDeferredValue(searchInput);
 
   const groupedApps = useMemo(() => groupAppsByCategory(apps ?? []), [apps]);
   const featuredApps = useMemo(
@@ -173,6 +303,14 @@ export function StorePage() {
   }, [groupedApps, search.category]);
   const recommendedApps = useMemo(() => (apps ?? []).slice(3, 11), [apps]);
 
+  // Filtered apps for the search results view
+  const searchResults = useMemo(() => {
+    if (!deferredQuery.trim()) return [];
+    return (apps ?? []).filter((app) => matchesSearch(app, deferredQuery));
+  }, [apps, deferredQuery]);
+
+  const isSearching = deferredQuery.trim().length > 0;
+
   const selectCategory = (category: string | null) => {
     void navigate({
       search: (prev) => ({
@@ -181,6 +319,10 @@ export function StorePage() {
       }),
     });
   };
+
+  const clearSearch = useCallback(() => {
+    setSearchInput("");
+  }, []);
 
   // ----- Loading state -----
   if (isLoading) {
@@ -304,6 +446,7 @@ export function StorePage() {
       </aside>
 
       <main className="min-w-0 flex-1 space-y-8">
+        {/* Page header + search */}
         <section className="rubik-panel-strong flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl space-y-4">
             <span className="rubik-eyebrow">
@@ -318,22 +461,28 @@ export function StorePage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <span className="rubik-chip rubik-chip-accent">
-              {t("appsCount", { count: apps.length })}
-            </span>
-            <span className="rubik-chip">
-              {t("categoriesCount", { count: groupedApps.length })}
-            </span>
-            {!isDiscover && activeGroup && (
-              <button
-                type="button"
-                onClick={() => selectCategory(null)}
-                className="rubik-chip transition-colors hover:border-primary/20 hover:text-primary"
-              >
-                {t("backToDiscover")}
-              </button>
-            )}
+          <div className="flex flex-col gap-3 lg:min-w-[260px]">
+            {/* Search input */}
+            <StoreSearchInput value={searchInput} onChange={setSearchInput} />
+
+            {/* Chips */}
+            <div className="flex flex-wrap gap-3">
+              <span className="rubik-chip rubik-chip-accent">
+                {t("appsCount", { count: apps.length })}
+              </span>
+              <span className="rubik-chip">
+                {t("categoriesCount", { count: groupedApps.length })}
+              </span>
+              {!isDiscover && activeGroup && (
+                <button
+                  type="button"
+                  onClick={() => selectCategory(null)}
+                  className="rubik-chip transition-colors hover:border-primary/20 hover:text-primary"
+                >
+                  {t("backToDiscover")}
+                </button>
+              )}
+            </div>
           </div>
         </section>
 
@@ -344,7 +493,10 @@ export function StorePage() {
           onSelectCategory={selectCategory}
         />
 
-        {isDiscover ? (
+        {/* Search results take over the entire content area */}
+        {isSearching ? (
+          <SearchResults apps={searchResults} query={deferredQuery} onClearSearch={clearSearch} />
+        ) : isDiscover ? (
           <>
             <HeroShelf featuredApps={featuredApps.length > 0 ? featuredApps : apps.slice(0, 1)} />
 
