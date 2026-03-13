@@ -411,6 +411,12 @@ const whatWeDoRoute = createRoute({
   component: withSuspense(() => import("./routes/what-we-do"), "WhatWeDoPage"),
 });
 
+const quizRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/quiz",
+  component: withSuspense(() => import("./routes/quiz"), "QuizPage"),
+});
+
 const migrateRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/migrate",
@@ -456,6 +462,7 @@ const routeTree = rootRoute.addChildren([
   rubikChatRoute,
   bazdmegRoute,
   whatWeDoRoute,
+  quizRoute,
   migrateRoute,
   vibeCodeRoute,
   buildRoute,
