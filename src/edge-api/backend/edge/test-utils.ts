@@ -9,7 +9,7 @@ import { vi } from "vitest";
 export function createMockEnv() {
   return {
     OPENAI_API_KEY: "test-api-key",
-    AI: { run: vi.fn(), aiGatewayLogId: "test-log-id", gateway: "test-gateway", models: {} } as unknown,
+    AI: { run: vi.fn(), aiGatewayLogId: "test-log-id", gateway: "test-gateway", models: {} } as Record<string, unknown>,
     KV: { get: vi.fn(), put: vi.fn(), list: vi.fn(), delete: vi.fn(), getWithMetadata: vi.fn() } as unknown as KVNamespace,
     __STATIC_CONTENT: { get: vi.fn(), put: vi.fn(), list: vi.fn(), delete: vi.fn(), getWithMetadata: vi.fn() } as unknown as KVNamespace,
     REPLICATE_API_TOKEN: "test-replicate-api-token",

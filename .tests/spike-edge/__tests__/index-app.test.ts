@@ -234,7 +234,7 @@ describe("Error handler in full app", () => {
 describe("Catch-all /api/* route", () => {
   it("returns 404 JSON for unmatched API routes", async () => {
     const app = new Hono<{ Bindings: Env }>();
-    app.all("/api/*", (_c) => {
+    app.all("/api/*", (c) => {
       return c.json({ error: "Not Found", path: c.req.path }, 404);
     });
 
@@ -250,7 +250,7 @@ describe("Catch-all /api/* route", () => {
 describe("OAuth well-known endpoints", () => {
   it("returns oauth-authorization-server metadata", async () => {
     const app = new Hono<{ Bindings: Env }>();
-    app.get("/.well-known/oauth-authorization-server", (_c) => {
+    app.get("/.well-known/oauth-authorization-server", (c) => {
       c.header("Cache-Control", "public, max-age=86400");
       return c.json({
         issuer: "https://spike.land",
@@ -273,7 +273,7 @@ describe("OAuth well-known endpoints", () => {
 
   it("returns oauth-protected-resource/mcp metadata", async () => {
     const app = new Hono<{ Bindings: Env }>();
-    app.get("/.well-known/oauth-protected-resource/mcp", (_c) => {
+    app.get("/.well-known/oauth-protected-resource/mcp", (c) => {
       c.header("Cache-Control", "public, max-age=86400");
       return c.json({
         resource: "https://spike.land/mcp",
@@ -294,7 +294,7 @@ describe("OAuth well-known endpoints", () => {
 describe("MCP proxy routes", () => {
   it("proxies GET /mcp/tools", async () => {
     const app = new Hono<{ Bindings: Env }>();
-    app.get("/mcp/tools", async (_c) => {
+    app.get("/mcp/tools", async (c) => {
       const url = new URL("https://mcp.spike.land/tools");
       const requestId = c.get("requestId" as never) as string;
       const response = await c.env.MCP_SERVICE.fetch(
@@ -325,7 +325,7 @@ describe("MCP proxy routes", () => {
     };
 
     const app = new Hono<{ Bindings: Env }>();
-    app.get("/api/store/tools", async (_c) => {
+    app.get("/api/store/tools", async (c) => {
       const requestId = c.get("requestId" as never) as string;
       const response = await c.env.MCP_SERVICE.fetch(
         new Request("https://mcp.spike.land/tools", {
@@ -390,7 +390,7 @@ describe("MCP proxy routes", () => {
 
   it("returns 502 when MCP service is unavailable for store tools", async () => {
     const app = new Hono<{ Bindings: Env }>();
-    app.get("/api/store/tools", async (_c) => {
+    app.get("/api/store/tools", async (c) => {
       const response = await c.env.MCP_SERVICE.fetch(new Request("https://mcp.spike.land/tools"));
       if (!response.ok) {
         return c.json({ error: "Failed to fetch tools" }, 502);

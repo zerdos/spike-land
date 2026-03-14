@@ -127,14 +127,15 @@ describe("SERVICE_PRODUCTS", () => {
       "migration_blog",
       "migration_script",
       "migration_mcp",
+      "support_coffee",
     ];
     for (const key of expectedKeys) {
       expect(SERVICE_PRODUCTS).toHaveProperty(key);
     }
   });
 
-  it("has exactly 6 entries", () => {
-    expect(Object.keys(SERVICE_PRODUCTS)).toHaveLength(6);
+  it("has exactly 7 entries", () => {
+    expect(Object.keys(SERVICE_PRODUCTS)).toHaveLength(7);
   });
 
   it("each product has lookupKey, successPath, and label fields", () => {

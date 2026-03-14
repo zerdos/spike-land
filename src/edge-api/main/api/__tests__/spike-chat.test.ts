@@ -15,10 +15,13 @@ import {
   parseExtractedNote,
 } from "../../core-logic/aether-memory";
 import { spikeChat, buildSpikeChatMessages } from "../routes/spike-chat";
+import { resetToolCatalogCache } from "../../core-logic/mcp-tools";
 import type { Env, Variables } from "../../core-logic/env";
 
 afterEach(() => {
   vi.restoreAllMocks();
+  // Reset the module-level tool catalog cache between tests to prevent test pollution.
+  resetToolCatalogCache();
 });
 
 // --- Prompt Builder Tests ---
@@ -142,10 +145,68 @@ describe("buildSpikeChatMessages", () => {
   });
 });
 
+/** Helper: create an app with auth middleware that injects a known userId */
+function createAuthedApp() {
+  const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+  app.use("*", async (c, next) => {
+    c.set("userId" as never, "test-user-123" as never);
+    await next();
+  });
+  app.route("/", spikeChat);
+  return app;
+}
+
+/** Create a mock DB with users table lookup + notes support */
+function createMockDb(email = "zoltan.erdos@spike.land") {
+  return {
+    prepare: vi.fn().mockReturnValue({
+      bind: vi.fn().mockReturnValue({
+        first: vi.fn().mockResolvedValue({ email }),
+        all: vi.fn().mockResolvedValue({ results: [] }),
+        run: vi.fn().mockResolvedValue({ meta: { changes: 1 } }),
+      }),
+    }),
+  };
+}
+
 describe("spikeChat route", () => {
-  it("uses a bounded MCP agent surface, executes tool calls, and resumes streaming", async () => {
+  it("returns 401 when not authenticated", async () => {
     const app = new Hono<{ Bindings: Env; Variables: Variables }>();
     app.route("/", spikeChat);
+    const env = { XAI_API_KEY: "k", MCP_SERVICE: { fetch: vi.fn() } } as unknown as Env;
+    const res = await app.request(
+      "/api/spike-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "hello" }),
+      },
+      env,
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 for non-allowed email", async () => {
+    const app = createAuthedApp();
+    const env = {
+      XAI_API_KEY: "k",
+      MCP_SERVICE: { fetch: vi.fn() },
+      DB: createMockDb("stranger@example.com"),
+    } as unknown as Env;
+    const res = await app.request(
+      "/api/spike-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "hello" }),
+      },
+      env,
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("uses a bounded MCP agent surface, executes tool calls, and resumes streaming", async () => {
+    const app = createAuthedApp();
 
     const fetchBodies: Array<Record<string, unknown>> = [];
     let streamCallCount = 0;
@@ -242,6 +303,7 @@ describe("spikeChat route", () => {
 
     const env = {
       XAI_API_KEY: "test-key",
+      DB: createMockDb(),
       MCP_SERVICE: {
         fetch: mcpFetch,
       },
@@ -263,8 +325,10 @@ describe("spikeChat route", () => {
     expect(res.status).toBe(200);
     const text = await res.text();
 
-    expect(fetchBodies).toHaveLength(2);
-    const executeTools = fetchBodies[0]?.["tools"] as Array<{
+    // fetchBodies includes streaming calls + the synthesizeCompletion call for extraction
+    const streamingBodies = fetchBodies.filter((b) => b["stream"] === true);
+    expect(streamingBodies).toHaveLength(2);
+    const executeTools = streamingBodies[0]?.["tools"] as Array<{
       type: string;
       function: { name: string };
     }>;
@@ -280,7 +344,8 @@ describe("spikeChat route", () => {
       "mcp_tool_search",
       "mcp_tool_call",
     ]);
-    expect(mcpFetch).toHaveBeenCalledTimes(2);
+    // 3 BYOK resolution calls + 1 /tools + 1 /mcp = 5
+    expect(mcpFetch).toHaveBeenCalledTimes(5);
     expect(text).toContain('"type":"context_sync"');
     expect(text).toContain('"type":"tool_call_start"');
     expect(text).toContain('"toolCallId":"tool-1"');
@@ -291,8 +356,7 @@ describe("spikeChat route", () => {
   });
 
   it("skips tool catalog loading and extra planning calls for direct conversation turns", async () => {
-    const app = new Hono<{ Bindings: Env; Variables: Variables }>();
-    app.route("/", spikeChat);
+    const app = createAuthedApp();
 
     const fetchBodies: Array<Record<string, unknown>> = [];
     const fetchMock = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
@@ -315,6 +379,7 @@ describe("spikeChat route", () => {
 
     const env = {
       XAI_API_KEY: "test-key",
+      DB: createMockDb(),
       MCP_SERVICE: {
         fetch: mcpFetch,
       },
@@ -335,8 +400,10 @@ describe("spikeChat route", () => {
     expect(res.status).toBe(200);
     const text = await res.text();
 
-    expect(fetchBodies).toHaveLength(1);
-    expect(fetchBodies[0]?.["tools"]).toBeUndefined();
+    // fetchBodies includes streaming + extraction calls
+    const streamingBodies = fetchBodies.filter((b) => b["stream"] === true);
+    expect(streamingBodies).toHaveLength(1);
+    expect(streamingBodies[0]?.["tools"]).toBeUndefined();
     expect(mcpFetch).not.toHaveBeenCalled();
     expect(text).toContain('"toolCatalogCount":0');
     expect(text).not.toContain('"type":"tool_call_start"');
@@ -460,6 +527,58 @@ describe("parseExtractedNote", () => {
       JSON.stringify({ trigger: "t", lesson: "l", confidence: 0.9 }),
     );
     expect(result?.confidence).toBe(0.7);
+  });
+});
+
+// --- Coverage gap: spikeChat 400 validation ---
+
+describe("spikeChat route – input validation", () => {
+  it("returns 400 when message is missing", async () => {
+    const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+    app.route("/", spikeChat);
+
+    const env = {
+      XAI_API_KEY: "test-key",
+      MCP_SERVICE: { fetch: vi.fn() },
+    } as unknown as Env;
+
+    const res = await app.request(
+      "/api/spike-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      },
+      env,
+    );
+
+    expect(res.status).toBe(400);
+    const json = await res.json<{ error: string }>();
+    expect(json.error).toContain("message");
+  });
+
+  it("returns 400 when message exceeds 8000 characters", async () => {
+    const app = new Hono<{ Bindings: Env; Variables: Variables }>();
+    app.route("/", spikeChat);
+
+    const env = {
+      XAI_API_KEY: "test-key",
+      MCP_SERVICE: { fetch: vi.fn() },
+    } as unknown as Env;
+
+    const res = await app.request(
+      "/api/spike-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "x".repeat(8001) }),
+      },
+      env,
+    );
+
+    expect(res.status).toBe(400);
+    const json = await res.json<{ error: string }>();
+    expect(json.error).toContain("max 8000");
   });
 });
 

@@ -90,7 +90,7 @@ describe("SPA — static asset serving", () => {
     const app = makeApp();
     const res = await app.request("https://spike.land/styles.css", {}, env);
     expect(res.status).toBe(200);
-    expect(res.headers.get("Cache-Control")).toContain("3600");
+    expect(res.headers.get("Cache-Control")).toContain("14400");
   });
 });
 
@@ -111,7 +111,9 @@ describe("SPA — index.html fallback", () => {
     const res = await app.request("https://spike.land/settings", {}, env);
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/html");
-    expect(res.headers.get("cache-control")).toBe("no-cache");
+    expect(res.headers.get("cache-control")).toBe(
+      "public, max-age=0, s-maxage=60, stale-while-revalidate=300",
+    );
   });
 
   it("serves prerendered HTML file when it exists", async () => {
@@ -266,10 +268,11 @@ describe("SPA — /blog/:slug metadata injection", () => {
     const env = createMockEnv({ "index.html": htmlObj });
     const app = makeApp();
     const res = await app.request("https://spike.land/blog/missing-post", {}, env);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(404);
     const text = await res.text();
-    // No blog metadata injected, just the shell
+    // No blog metadata injected, just the shell with noindex
     expect(text).not.toContain("ssr-blog");
+    expect(text).toContain("noindex");
   });
 
   it("uses default OG image when hero_image is null", async () => {
@@ -303,7 +306,7 @@ describe("SPA — /blog/:slug metadata injection", () => {
     const app = makeApp();
     const res = await app.request("https://spike.land/blog/no-image", {}, env);
     const text = await res.text();
-    expect(text).toContain("og-image.png");
+    expect(text).toContain("android-chrome-512x512.png");
   });
 
   it("handles markdown content with headings, lists, and code blocks", async () => {
@@ -384,7 +387,7 @@ describe("SPA — direct R2 match for non-extension paths", () => {
     const app = makeApp();
     const res = await app.request("https://spike.land/some-resource", {}, env);
     expect(res.status).toBe(200);
-    expect(res.headers.get("cache-control")).toContain("3600");
+    expect(res.headers.get("cache-control")).toContain("14400");
   });
 });
 

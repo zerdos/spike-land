@@ -21,7 +21,7 @@ describe("security header policy", () => {
 
     expect(headers.get("x-content-type-options")).toBe("nosniff");
     expect(headers.get("permissions-policy")).toBe(
-      "camera=(), microphone=(), geolocation=(), payment=()",
+      'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")',
     );
     expect(headers.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
     expect(headers.get("strict-transport-security")).toContain("max-age=63072000");

@@ -1,13 +1,23 @@
 import { Hono } from "hono";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { BROWSER_TOOLS } from "../../core-logic/chat-browser-tools.js";
-import { buildAetherSystemPrompt, type UserMemory } from "../../core-logic/aether-prompt.js";
-import { fetchUserNotes, selectNotes, saveNote } from "../../core-logic/aether-memory.js";
+import {
+  buildAetherSystemPrompt,
+  buildExtractPrompt,
+  type UserMemory,
+} from "../../core-logic/aether-prompt.js";
+import {
+  fetchUserNotes,
+  selectNotes,
+  saveNote,
+  parseExtractedNote,
+} from "../../core-logic/aether-memory.js";
 import { fetchToolCatalog } from "../../core-logic/mcp-tools.js";
 import { safeJsonParse, executeAgentTool } from "../../core-logic/chat-tool-execution.js";
 import {
   resolveSynthesisTarget,
   streamCompletion,
+  synthesizeCompletion,
   type ProviderMessage,
   type ResolvedSynthesisTarget,
 } from "../../core-logic/llm-provider.js";
@@ -21,6 +31,7 @@ const RECENT_MESSAGE_CHAR_LIMIT = 1_200;
 const OLDER_ASSISTANT_CHAR_LIMIT = 320;
 const OLDER_USER_CHAR_LIMIT = 240;
 const TOOL_HINT_LIMIT = 12;
+const ALLOWED_CHAT_EMAILS = new Set(["zoltan.erdos@spike.land", "zolika84@gmail.com"]);
 const TOOL_INTENT_PATTERNS = [
   /\b(search|find|look up|lookup|latest|current|today|browse|inspect|check)\b/i,
   /\b(open|navigate|click|fill|screenshot|scroll|read)\b/i,
@@ -491,10 +502,19 @@ spikeChat.post("/api/spike-chat", async (c) => {
   }
 
   const userId = c.get("userId") as string | undefined;
+  if (!userId) {
+    return c.json({ error: "Authentication required" }, 401);
+  }
+  const userRow = await c.env.DB.prepare("SELECT email FROM users WHERE id = ? LIMIT 1")
+    .bind(userId)
+    .first<{ email: string }>();
+  if (!userRow || !ALLOWED_CHAT_EMAILS.has(userRow.email)) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
   const userMessage = body.message.trim();
   const requestId = (c.get("requestId") as string | undefined) ?? crypto.randomUUID();
-  // Use stable session ID per user (persists across requests) with fallback for anon
-  const sessionId = userId ? `spike-chat-${userId}` : `spike-chat-${requestId}`;
+  const sessionId = `spike-chat-${userId}`;
   const persona = typeof body.persona === "string" ? body.persona.trim() : undefined;
 
   // Get DO stub for session management (used for browser callbacks + history)
@@ -532,9 +552,9 @@ spikeChat.post("/api/spike-chat", async (c) => {
   }
 
   // Load user memory
-  const userNotes: UserMemory["notes"] = userId
-    ? await fetchUserNotes(c.env.DB, userId).catch((): UserMemory["notes"] => [])
-    : [];
+  const userNotes: UserMemory["notes"] = await fetchUserNotes(c.env.DB, userId).catch(
+    (): UserMemory["notes"] => [],
+  );
   const selectedNotes = selectNotes(userNotes);
   const userMemory: UserMemory = {
     lifeSummary: "",
@@ -699,9 +719,13 @@ spikeChat.post("/api/spike-chat", async (c) => {
             toolCatalog,
             tableName: "spike_chat_browser_results",
             contextIdColumn: "session_id",
-            // Use DO callback for zero-polling browser results when available
+            // Use DO callback for zero-polling browser results when available.
+            // Capture sessionDO in a local const so the lambda's closure is
+            // narrowed to the non-null type and TypeScript can verify the call.
             ...(sessionDO
-              ? { waitViaCallback: (tcId: string) => sessionDO.waitForBrowserResult(tcId) }
+              ? ((capturedDO) => ({
+                  waitViaCallback: (tcId: string) => capturedDO.waitForBrowserResult(tcId),
+                }))(sessionDO)
               : {}),
           });
 
@@ -746,22 +770,56 @@ spikeChat.post("/api/spike-chat", async (c) => {
       await sendEvent({ type: "stage_update", stage: "extract" });
       await (async () => {
         try {
-          const extracted = extractNoteCandidate(userMessage);
-          if (extracted && userId) {
+          // Fast path: regex extraction (zero latency)
+          const regexExtracted = extractNoteCandidate(userMessage);
+          let savedLesson: string | null = null;
+
+          if (regexExtracted) {
             await saveNote(c.env.DB, userId, {
               id: crypto.randomUUID(),
-              trigger: extracted.trigger,
-              lesson: extracted.lesson,
-              confidence: extracted.confidence,
+              trigger: regexExtracted.trigger,
+              lesson: regexExtracted.lesson,
+              confidence: regexExtracted.confidence,
               helpCount: 0,
               createdAt: Date.now(),
               lastUsedAt: Date.now(),
             });
+            savedLesson = regexExtracted.lesson;
+          }
+
+          // LLM extraction: catches implicit lessons the regex misses
+          if (assistantResponse && userMessage.length >= 20) {
+            const extractInput = `User: ${userMessage}\n\nAssistant: ${assistantResponse.slice(0, 1500)}`;
+            const llmResult = await synthesizeCompletion(
+              llmTarget,
+              [
+                { role: "system", content: buildExtractPrompt() },
+                { role: "user", content: extractInput },
+              ],
+              { temperature: 0.1, maxTokens: 256 },
+            );
+            const llmNote = parseExtractedNote(llmResult.content);
+            // Deduplicate: skip if LLM lesson matches regex lesson
+            if (llmNote && llmNote.lesson !== savedLesson) {
+              await saveNote(c.env.DB, userId, {
+                id: crypto.randomUUID(),
+                trigger: llmNote.trigger,
+                lesson: llmNote.lesson,
+                confidence: llmNote.confidence,
+                helpCount: 0,
+                createdAt: Date.now(),
+                lastUsedAt: Date.now(),
+              });
+              savedLesson = llmNote.lesson;
+            }
+          }
+
+          if (savedLesson) {
             await sendEvent({
               type: "memory_update",
               activeNoteCount: selectedNotes.length,
               totalNoteCount: userNotes.length + 1,
-              lesson: extracted.lesson,
+              lesson: savedLesson,
             });
           }
         } catch {

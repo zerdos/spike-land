@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
 import { openAiCompatible } from "../routes/openai-compatible";
+import { resetToolCatalogCache } from "../../core-logic/mcp-tools";
 import type { Env, Variables } from "../../core-logic/env";
 
 afterEach(() => {
   vi.restoreAllMocks();
+  resetToolCatalogCache();
 });
 
 function makeMcpFetcher(options?: {

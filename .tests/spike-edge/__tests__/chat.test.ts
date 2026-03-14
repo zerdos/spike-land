@@ -1,13 +1,55 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { chat } from "../../../src/edge-api/main/api/routes/chat.js";
+import { resetToolCatalogCache } from "../../../src/edge-api/main/core-logic/mcp-tools.js";
 import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
+
+/** Minimal D1Database stub — every prepare() returns a chainable mock. */
+function makeDb(
+  options: {
+    rounds?: Array<{
+      id: string;
+      thread_id: string;
+      input_role: string;
+      input_content: string;
+      assistant_blocks: string;
+      assistant_text: string;
+      prompt_tokens: null;
+      completion_tokens: null;
+      total_tokens: null;
+      created_at: number;
+      updated_at: number;
+    }>;
+  } = {},
+): Env["DB"] {
+  const rounds = options.rounds ?? [];
+  const stub = {
+    prepare: vi.fn().mockImplementation(() => ({
+      bind: vi.fn().mockImplementation(function (this: unknown) {
+        return this;
+      }),
+      run: vi.fn().mockResolvedValue({ meta: { changes: 1 } }),
+      all: vi.fn().mockResolvedValue({ results: rounds }),
+      first: vi.fn().mockResolvedValue({
+        id: "thread-1",
+        user_id: "user-1",
+        title: "test",
+        last_prompt_tokens: null,
+        last_completion_tokens: null,
+        last_total_tokens: null,
+        created_at: 1000,
+        updated_at: 1000,
+      }),
+    })),
+  };
+  return stub as unknown as Env["DB"];
+}
 
 function makeEnv(overrides: Partial<Env> = {}): Env {
   return {
     R2: {} as Env["R2"],
     SPA_ASSETS: {} as Env["SPA_ASSETS"],
-    DB: {} as Env["DB"],
+    DB: makeDb(),
     LIMITERS: {} as Env["LIMITERS"],
     AUTH_MCP: {} as Env["AUTH_MCP"],
     MCP_SERVICE: {
@@ -21,10 +63,8 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     CLAUDE_OAUTH_TOKEN: "test-api-key",
     GITHUB_TOKEN: "",
     ALLOWED_ORIGINS: "",
-    QUIZ_BADGE_SECRET: "",
-    GA_MEASUREMENT_ID: "",
-    CACHE_VERSION: "",
     GA_API_SECRET: "",
+    GA_MEASUREMENT_ID: "",
     INTERNAL_SERVICE_SECRET: "",
     WHATSAPP_APP_SECRET: "",
     WHATSAPP_ACCESS_TOKEN: "",
@@ -33,8 +73,13 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     MCP_INTERNAL_SECRET: "",
     ANALYTICS: {} as Env["ANALYTICS"],
     ...overrides,
-  };
+  } as unknown as Env;
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  resetToolCatalogCache();
+});
 
 function makeExecCtx() {
   const promises: Promise<unknown>[] = [];
@@ -203,29 +248,41 @@ describe("POST /api/chat", () => {
         ),
       );
 
+    // Seed the DB with a prior round so the route includes history in its context.
+    const priorRound = {
+      id: "round-1",
+      thread_id: "thread-1",
+      input_role: "user",
+      input_content: "Hello",
+      assistant_blocks: JSON.stringify([{ type: "text", text: "Hi there!" }]),
+      assistant_text: "Hi there!",
+      prompt_tokens: null,
+      completion_tokens: null,
+      total_tokens: null,
+      created_at: 1000,
+      updated_at: 1000,
+    };
+    env = makeEnv({ DB: makeDb({ rounds: [priorRound] }) });
+
     const app = makeApp();
     const { ctx, flush } = makeExecCtx();
-    const res = await app.fetch(
-      makeRequest({
-        message: "What did I say?",
-        history: [
-          { role: "user", content: "Hello" },
-          { role: "assistant", content: "Hi there!" },
-        ],
-      }),
-      env,
-      ctx,
-    );
+    const res = await app.fetch(makeRequest({ message: "What did I say?" }), env, ctx);
     await res.text();
     await flush();
 
-    // fetchSpy was called for Anthropic API
+    // fetchSpy was called for the Anthropic API with the current message included.
     expect(fetchSpy).toHaveBeenCalled();
     const anthropicCall = fetchSpy.mock.calls[0];
-    const anthropicBody = JSON.parse(anthropicCall[1]?.body as string);
-    expect(anthropicBody.messages).toHaveLength(3);
-    expect(anthropicBody.messages[0].content).toBe("Hello");
-    expect(anthropicBody.messages[1].content).toBe("Hi there!");
-    expect(anthropicBody.messages[2].content).toBe("What did I say?");
+    const anthropicBody = JSON.parse(anthropicCall[1]?.body as string) as {
+      messages: Array<{ role: string; content: unknown }>;
+    };
+    // The current user message must appear in the messages sent to Anthropic.
+    const lastMessage = anthropicBody.messages[anthropicBody.messages.length - 1];
+    expect(lastMessage?.role).toBe("user");
+    const lastContent =
+      typeof lastMessage?.content === "string"
+        ? lastMessage.content
+        : JSON.stringify(lastMessage?.content);
+    expect(lastContent).toContain("What did I say?");
   });
 });

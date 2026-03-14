@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   scoreTool,
   searchToolCatalog,
   fetchToolCatalog,
+  resetToolCatalogCache,
   callMcpTool,
   type ToolCatalogItem,
 } from "../mcp-tools";
@@ -59,6 +60,10 @@ describe("searchToolCatalog", () => {
 });
 
 describe("fetchToolCatalog", () => {
+  beforeEach(() => {
+    resetToolCatalogCache();
+  });
+
   it("returns tools from MCP service", async () => {
     const mcpFetch = vi.fn(
       async () =>

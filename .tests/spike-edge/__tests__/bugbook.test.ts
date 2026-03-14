@@ -105,10 +105,10 @@ function makeApp() {
 
 // ─── Public GET routes ────────────────────────────────────────────────────────
 
-describe("bugbook — GET /bugbook", () => {
+describe("bugbook — GET /api/bugbook", () => {
   it("lists bugs with default params", async () => {
     const env = makeEnv(defaultDB({ bugs: [{ id: "b1", title: "Bug 1", elo: 1200 }] }));
-    const res = await makeApp().request("/bugbook", {}, env);
+    const res = await makeApp().request("/api/bugbook", {}, env);
     expect(res.status).toBe(200);
     const body = await res.json<{ bugs: unknown[]; total: number }>();
     expect(Array.isArray(body.bugs)).toBe(true);
@@ -117,7 +117,7 @@ describe("bugbook — GET /bugbook", () => {
   it("filters by status, category, sort=recent", async () => {
     const env = makeEnv(defaultDB());
     const res = await makeApp().request(
-      "/bugbook?status=ACTIVE&category=spike-edge&sort=recent&limit=10&offset=5",
+      "/api/bugbook?status=ACTIVE&category=spike-edge&sort=recent&limit=10&offset=5",
       {},
       env,
     );
@@ -126,7 +126,7 @@ describe("bugbook — GET /bugbook", () => {
 
   it("lists leaderboard", async () => {
     const env = makeEnv(defaultDB());
-    const res = await makeApp().request("/bugbook/leaderboard?limit=5", {}, env);
+    const res = await makeApp().request("/api/bugbook/leaderboard?limit=5", {}, env);
     expect(res.status).toBe(200);
     const body = await res.json<{ topBugs: unknown[]; topReporters: unknown[] }>();
     expect(Array.isArray(body.topBugs)).toBe(true);
@@ -134,21 +134,21 @@ describe("bugbook — GET /bugbook", () => {
 
   it("lists top reporters", async () => {
     const env = makeEnv(defaultDB());
-    const res = await makeApp().request("/bugbook/reporters?limit=10", {}, env);
+    const res = await makeApp().request("/api/bugbook/reporters?limit=10", {}, env);
     expect(res.status).toBe(200);
   });
 });
 
-describe("bugbook — GET /bugbook/:id", () => {
+describe("bugbook — GET /api/bugbook/:id", () => {
   it("returns 404 when bug not found", async () => {
     const env = makeEnv(defaultDB({ bugRow: null }));
-    const res = await makeApp().request("/bugbook/nonexistent", {}, env);
+    const res = await makeApp().request("/api/bugbook/nonexistent", {}, env);
     expect(res.status).toBe(404);
   });
 
   it("returns bug detail", async () => {
     const env = makeEnv(defaultDB({ bugRow: { id: "b1", title: "Test Bug" } }));
-    const res = await makeApp().request("/bugbook/b1", {}, env);
+    const res = await makeApp().request("/api/bugbook/b1", {}, env);
     expect(res.status).toBe(200);
     const body = await res.json<{ bug: unknown; reports: unknown[] }>();
     expect(body.bug).toBeTruthy();
@@ -157,13 +157,13 @@ describe("bugbook — GET /bugbook/:id", () => {
 
 // ─── Authenticated routes ─────────────────────────────────────────────────────
 
-describe("bugbook — POST /bugbook/report", () => {
+describe("bugbook — POST /api/bugbook/report", () => {
   beforeEach(() => clearEloCache());
 
   it("returns 400 when required fields missing", async () => {
     const env = makeEnv(defaultDB());
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({ title: "Bug", description: "Desc" }),
@@ -177,7 +177,7 @@ describe("bugbook — POST /bugbook/report", () => {
   it("creates new bug report (no existing bug, no competitor)", async () => {
     const env = makeEnv(defaultDB({ bugRow: null }));
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({
@@ -222,7 +222,7 @@ describe("bugbook — POST /bugbook/report", () => {
     }));
     const env = makeEnv(db);
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({
@@ -243,7 +243,7 @@ describe("bugbook — POST /bugbook/report", () => {
     clearEloCache();
     const env = makeEnv(defaultDB());
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({
@@ -284,7 +284,7 @@ describe("bugbook — POST /bugbook/report", () => {
     }));
     const env = makeEnv(db);
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({
@@ -305,7 +305,7 @@ describe("bugbook — POST /bugbook/report", () => {
     const competitor = { id: "comp-bug", elo: 1100, report_count: 3 };
     const env = makeEnv(defaultDB({ bugRow: null, competitor }));
     const res = await makeApp().request(
-      "/bugbook/report",
+      "/api/bugbook/report",
       {
         method: "POST",
         body: JSON.stringify({ title: "Bug vs Comp", description: "Desc", service_name: "svc" }),
@@ -317,13 +317,13 @@ describe("bugbook — POST /bugbook/report", () => {
   });
 });
 
-describe("bugbook — POST /bugbook/:id/confirm", () => {
+describe("bugbook — POST /api/bugbook/:id/confirm", () => {
   beforeEach(() => clearEloCache());
 
   it("returns 404 when bug not found", async () => {
     const env = makeEnv(defaultDB({ bugRow: null }));
     const res = await makeApp().request(
-      "/bugbook/b1/confirm",
+      "/api/bugbook/b1/confirm",
       {
         method: "POST",
         body: "{}",
@@ -347,7 +347,7 @@ describe("bugbook — POST /bugbook/:id/confirm", () => {
     }));
     const env = makeEnv(db);
     const res = await makeApp().request(
-      "/bugbook/b1/confirm",
+      "/api/bugbook/b1/confirm",
       {
         method: "POST",
         body: "{}",
@@ -382,7 +382,7 @@ describe("bugbook — POST /bugbook/:id/confirm", () => {
     }));
     const env = makeEnv(db);
     const res = await makeApp().request(
-      "/bugbook/b1/confirm",
+      "/api/bugbook/b1/confirm",
       {
         method: "POST",
         body: "{}",
@@ -396,11 +396,11 @@ describe("bugbook — POST /bugbook/:id/confirm", () => {
   });
 });
 
-describe("bugbook — PATCH /bugbook/:id/fix", () => {
+describe("bugbook — PATCH /api/bugbook/:id/fix", () => {
   it("returns 404 when bug not found", async () => {
     const env = makeEnv(defaultDB({ bugRow: null }));
     const res = await makeApp().request(
-      "/bugbook/b1/fix",
+      "/api/bugbook/b1/fix",
       {
         method: "PATCH",
         headers: { cookie: AUTH_COOKIE },
@@ -413,7 +413,7 @@ describe("bugbook — PATCH /bugbook/:id/fix", () => {
   it("marks bug as fixed", async () => {
     const env = makeEnv(defaultDB({ bugRow: { id: "b1", title: "Bug" } }));
     const res = await makeApp().request(
-      "/bugbook/b1/fix",
+      "/api/bugbook/b1/fix",
       {
         method: "PATCH",
         headers: { cookie: AUTH_COOKIE },
@@ -426,7 +426,7 @@ describe("bugbook — PATCH /bugbook/:id/fix", () => {
   });
 });
 
-describe("bugbook — GET /bugbook/my-reports", () => {
+describe("bugbook — GET /api/bugbook/my-reports", () => {
   beforeEach(() => clearEloCache());
 
   it("returns user's bug reports (authenticated)", async () => {
@@ -440,15 +440,15 @@ describe("bugbook — GET /bugbook/my-reports", () => {
       all: async () => ({ results: [{ id: "r1" }] }),
     }));
     const env = makeEnv(db);
-    // Route is GET /bugbook/my-reports — needs cookie since authMiddleware is inline
+    // Route is GET /api/bugbook/my-reports — needs cookie since authMiddleware is inline
     const res = await makeApp().request(
-      "/bugbook/my-reports",
+      "/api/bugbook/my-reports",
       {
         headers: { cookie: AUTH_COOKIE },
       },
       env,
     );
-    // Hono matches /bugbook/my-reports as /bugbook/:id when :id="my-reports" if my-reports route isn't registered first
+    // Hono matches /api/bugbook/my-reports as /api/bugbook/:id when :id="my-reports" if my-reports route isn't registered first
     // Looking at bugbook.ts the my-reports route is registered AFTER /:id so it never matches
     // This is a known routing limitation — just verify auth works or skip gracefully
     if (res.status === 404) {

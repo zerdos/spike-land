@@ -114,6 +114,9 @@ function mockContext(req: Request, env: Env, extra: MockContextExtra = {}) {
     jsonPromise = Promise.resolve({});
   }
 
+  // Collect headers set via c.header() so they appear on responses built by c.json()
+  const pendingHeaders = new Map<string, string>();
+
   return {
     req: {
       raw: req,
@@ -132,12 +135,15 @@ function mockContext(req: Request, env: Env, extra: MockContextExtra = {}) {
       return extra.get?.[k];
     },
     set: vi.fn(),
-    header: vi.fn(),
+    header: (name: string, value: string) => {
+      pendingHeaders.set(name.toLowerCase(), value);
+    },
     json: (obj: unknown, status: number = 200) => {
-      return new Response(JSON.stringify(obj), {
-        status,
-        headers: { "content-type": "application/json" },
-      });
+      const resHeaders = new Headers({ "content-type": "application/json" });
+      for (const [k, v] of pendingHeaders.entries()) {
+        resHeaders.set(k, v);
+      }
+      return new Response(JSON.stringify(obj), { status, headers: resHeaders });
     },
     text: (data: string, status: number = 200) => new Response(data, { status }),
     body: (data: BodyInit | null, status: number = 200, headers: HeadersInit = {}) =>
@@ -337,8 +343,8 @@ describe("POST /oauth/device/approve", () => {
       body: JSON.stringify({ user_code: "ABCD-1234" }),
       headers: { "content-type": "application/json" },
     });
-    const res = await mainOauthDeviceApproveHandler(mockContext(req, env, { userId: "uid-1" }));
-    // Auth middleware rejects (no session)
+    const res = await mainOauthDeviceApproveHandler(mockContext(req, env));
+    // No userId in context → handler returns 401
     expect(res.status).toBe(401);
   });
 
@@ -535,8 +541,10 @@ describe("scheduled handler", () => {
 
     const env = createMockEnv();
     const ctx = makeCtx();
-    // Should not throw
-    mod.default.scheduled({} as ScheduledEvent, env, ctx as unknown as ExecutionContext);
+    // Provide a valid scheduledTime so the Sentry wrapper can construct a Date
+    // without throwing "Invalid time value" from new Date(undefined).
+    const mockEvent = { scheduledTime: Date.now(), cron: "* * * * *" } as ScheduledEvent;
+    mod.default.scheduled(mockEvent, env, ctx as unknown as ExecutionContext);
     expect(ctx.waitUntil).toHaveBeenCalled();
   });
 

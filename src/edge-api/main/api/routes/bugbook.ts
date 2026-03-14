@@ -315,8 +315,8 @@ bugbook.post(
   },
 );
 
-/** PATCH /bugbook/:id/fix — mark bug as fixed (admin only for now). */
-bugbook.patch("/bugbook/:id/fix", authMiddleware, async (c) => {
+/** PATCH /api/bugbook/:id/fix — mark bug as fixed (admin only for now). */
+bugbook.patch(`${BUGBOOK_API_BASE}/:id/fix`, authMiddleware, async (c) => {
   const bugId = c.req.param("id");
   const now = Date.now();
 

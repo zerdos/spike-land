@@ -14,6 +14,12 @@ const TOOL_CATALOG_TTL_MS = 60_000;
 let cachedToolCatalog: ToolCatalogItem[] | null = null;
 let cachedToolCatalogExpiresAt = 0;
 
+/** Reset the in-memory tool catalog cache. Intended for use in tests only. */
+export function resetToolCatalogCache(): void {
+  cachedToolCatalog = null;
+  cachedToolCatalogExpiresAt = 0;
+}
+
 export function scoreTool(query: string, tool: ToolCatalogItem): number {
   const lowerQuery = query.toLowerCase();
   const queryTokens = lowerQuery

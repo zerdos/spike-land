@@ -561,13 +561,17 @@ app.post("/oauth/token", mcpProxy);
 export const mainOauthDeviceApproveHandler = async (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
 ) => {
+  const userId = c.get("userId");
+  if (!userId) {
+    return c.json({ error: "Authentication required" }, 401);
+  }
+
   const url = new URL(c.req.url);
   url.hostname = "mcp.spike.land";
   url.port = "";
   url.protocol = "https:";
 
   const body = await c.req.json<{ user_code: string }>();
-  const userId = c.get("userId");
   const newRequest = new Request(url.toString(), {
     method: "POST",
     headers: {

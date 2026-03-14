@@ -110,7 +110,9 @@ describe("SPA cache headers", () => {
     expect(isHtmlLikeResponse("blog.html", "application/octet-stream")).toBe(true);
     expect(isHtmlLikeResponse("assets/index.js", "text/html; charset=utf-8")).toBe(true);
     expect(isHtmlLikeResponse("assets/index.js", "application/javascript")).toBe(false);
-    expect(getSpaResponseCacheControl(true)).toBe("private, no-cache, no-store, must-revalidate");
+    expect(getSpaResponseCacheControl(true)).toBe(
+      "public, max-age=0, s-maxage=60, stale-while-revalidate=300",
+    );
     expect(getSpaResponseCacheControl(false)).toBe("public, max-age=14400");
   });
 });
