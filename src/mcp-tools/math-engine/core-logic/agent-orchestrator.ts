@@ -18,7 +18,8 @@ import { getSystemPrompt, getUserPrompt } from "./prompt-templates.js";
 import { verifyProof, verificationToFindings } from "./proof-verifier.js";
 import { extractJsonBlock, parseFindingsFromResponse } from "./parse-utils.js";
 
-// Active sessions
+// Active sessions (capped at MAX_SESSIONS, LRU eviction)
+const MAX_SESSIONS = 100;
 const sessions = new Map<string, SessionState>();
 
 export function getSession(sessionId: string): SessionState | undefined {
@@ -39,8 +40,18 @@ export async function runMultiAgentSolve(
     throw new Error(`Problem not found: ${problemId}`);
   }
 
-  const sessionId = `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const sessionId = `session-${crypto.randomUUID()}`;
   const session = createSessionState(sessionId, problemId, maxIterations);
+
+  // Evict oldest sessions if over limit
+  if (sessions.size >= MAX_SESSIONS) {
+    const oldest = [...sessions.entries()]
+      .sort((a, b) => a[1].updatedAt - b[1].updatedAt)
+      .slice(0, sessions.size - MAX_SESSIONS + 1);
+    for (const [id] of oldest) {
+      sessions.delete(id);
+    }
+  }
   sessions.set(sessionId, session);
 
   try {
@@ -58,7 +69,7 @@ export async function runMultiAgentSolve(
       for (const [i, role] of roles.entries()) {
         const result = agentResults[i];
         if (!result) continue;
-        session.agents[role].lastOutput = result.rawOutput;
+        session.agents[role].lastOutput = result.rawOutput.slice(0, 10_000);
         session.agents[role].findings.push(...result.findings);
         session.findings.push(...result.findings);
 
@@ -172,7 +183,7 @@ function parseProofAttempts(response: string, session: SessionState): ProofAttem
       iteration: session.iteration,
       method: String(p.method ?? "unknown"),
       steps: Array.isArray(p.steps) ? p.steps.map(String) : [],
-      status: String(p.status ?? "pending") as ProofAttempt["status"],
+      status: "pending" as const, // always pending — verification loop decides status
     }));
   } catch {
     return [];

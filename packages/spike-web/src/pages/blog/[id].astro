@@ -35,7 +35,8 @@ import MonolithAntiPatternDemo from '../../components/mdx/MonolithAntiPatternDem
 import MultiStageBuildDemo from '../../components/mdx/MultiStageBuildDemo.astro';
 import ParadigmGuiltTimeline from '../../components/mdx/ParadigmGuiltTimeline.astro';
 import PersonaLandingPreview from '../../components/mdx/PersonaLandingPreview.astro';
-import PersonalizedSupportBox from '../../components/mdx/PersonalizedSupportBox.astro';
+import PersonalizedSupportBoxAstro from '../../components/mdx/PersonalizedSupportBox.astro';
+import { PersonalizedSupportBox as PersonalizedSupportBoxReact } from '../../../../../src/core/block-website/ui/PersonalizedSupportBox';
 import PersonaSwitcher from '../../components/mdx/PersonaSwitcher.astro';
 import PerspectiveCarousel from '../../components/mdx/PerspectiveCarousel.astro';
 import PollAnalyticsDashboard from '../../components/mdx/PollAnalyticsDashboard.astro';
@@ -85,7 +86,7 @@ const MDX_COMPONENTS = {
     MultiStageBuildDemo,
     ParadigmGuiltTimeline,
     PersonaLandingPreview,
-    PersonalizedSupportBox,
+    PersonalizedSupportBox: PersonalizedSupportBoxAstro,
     PersonaSwitcher,
     PerspectiveCarousel,
     PollAnalyticsDashboard,
@@ -188,6 +189,11 @@ const { Content } = await render(post);
       <Content components={MDX_COMPONENTS} />
     </article>
 
+  </div>
+
+  <!-- Support CTA — fistbump + donate + social sharing -->
+  <div class="not-prose my-12">
+    <PersonalizedSupportBoxReact client:visible />
   </div>
 
   <Footer />

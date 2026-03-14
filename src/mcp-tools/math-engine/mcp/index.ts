@@ -106,7 +106,9 @@ async function callAnthropic(apiKey: string, options: LLMCallOptions): Promise<s
   });
 
   if (!response.ok) {
-    throw new Error(`Anthropic API error: ${response.status} ${await response.text()}`);
+    const status = response.status;
+    await response.text(); // drain body
+    throw new Error(`Anthropic API error: ${status}`);
   }
 
   const data = (await response.json()) as { content: Array<{ type: string; text?: string }> };
@@ -116,10 +118,10 @@ async function callAnthropic(apiKey: string, options: LLMCallOptions): Promise<s
 
 async function callGoogle(apiKey: string, options: LLMCallOptions): Promise<string> {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: options.systemPrompt }] },
         contents: [{ parts: [{ text: options.userPrompt }] }],
@@ -132,7 +134,9 @@ async function callGoogle(apiKey: string, options: LLMCallOptions): Promise<stri
   );
 
   if (!response.ok) {
-    throw new Error(`Google API error: ${response.status} ${await response.text()}`);
+    const status = response.status;
+    await response.text(); // drain body
+    throw new Error(`Google API error: ${status}`);
   }
 
   const data = (await response.json()) as {
@@ -160,7 +164,9 @@ async function callOpenAI(apiKey: string, options: LLMCallOptions): Promise<stri
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status} ${await response.text()}`);
+    const status = response.status;
+    await response.text(); // drain body
+    throw new Error(`OpenAI API error: ${status}`);
   }
 
   const data = (await response.json()) as {
@@ -169,9 +175,15 @@ async function callOpenAI(apiKey: string, options: LLMCallOptions): Promise<stri
   return data.choices?.[0]?.message?.content ?? "";
 }
 
-// ─── Initialize ───
+// ─── Initialize (lazy) ───
 
-const llm = createLLMProvider();
+let _llm: LLMProvider | null = null;
+function getLLM(): LLMProvider {
+  if (!_llm) {
+    _llm = createLLMProvider();
+  }
+  return _llm;
+}
 
 // ─── Tool 1: math_solve_problem ───
 
@@ -183,7 +195,7 @@ server.tool(
     max_iterations: z.number().int().min(1).max(20).default(5).describe("Maximum iteration rounds"),
   },
   async ({ problem_id, max_iterations }) => {
-    const result = await tryCatch(runMultiAgentSolve(problem_id, max_iterations, llm));
+    const result = await tryCatch(runMultiAgentSolve(problem_id, max_iterations, getLLM()));
     if (!result.ok) {
       return errorResult("ORCHESTRATION_ERROR", result.error.message, true);
     }
@@ -222,7 +234,7 @@ server.tool(
       steps,
       status: "pending" as const,
     };
-    const result = await tryCatch(verifyProof(proof, llm));
+    const result = await tryCatch(verifyProof(proof, getLLM()));
     if (!result.ok) {
       return errorResult("LLM_ERROR", result.error.message, true);
     }
@@ -251,7 +263,7 @@ server.tool(
     const allFindings = [];
     for (let i = 0; i < max_iterations; i++) {
       session.iteration = i + 1;
-      const findings = await exploreConjecture(problem, session, llm);
+      const findings = await exploreConjecture(problem, session, getLLM());
       session.findings.push(...findings);
       allFindings.push(...findings);
     }
@@ -293,13 +305,13 @@ server.tool(
       let findings;
       switch (gap_id) {
         case "convergence":
-          findings = await analyzeConvergence(problem, session, llm);
+          findings = await analyzeConvergence(problem, session, getLLM());
           break;
         case "uncomputability":
-          findings = await checkComputability(problem, session, llm);
+          findings = await checkComputability(problem, session, getLLM());
           break;
         case "curry_paradox":
-          findings = await resolveCurryGap(session, llm);
+          findings = await resolveCurryGap(session, getLLM());
           break;
       }
 
@@ -357,7 +369,7 @@ server.tool(
       return errorResult("SESSION_NOT_FOUND", `No session: ${session_id}`, false);
     }
 
-    const result = await tryCatch(generateBlogPost(session, llm));
+    const result = await tryCatch(generateBlogPost(session, getLLM()));
     if (!result.ok) {
       return errorResult("LLM_ERROR", result.error.message, true);
     }

@@ -27,9 +27,11 @@ heroPrompt: "A sleek futuristic control panel with 80+ illuminated tool slots, g
 
 ## The Problem We Set Out to Solve
 
-Every time a developer wants to connect an AI agent to a new capability, they write the same glue code again. Auth handling. Response parsing. Error recovery. Rate limiting. Tool discovery.
+N times M. That is the integration problem nobody talks about honestly.
 
-Multiply that by every tool the agent needs, and you get N*M integrations — N AI clients times M external services. The integration surface grows quadratically. The maintenance burden follows.
+N AI clients. M external services. Every combination needs auth, response parsing, error recovery, rate limiting, tool discovery. Written again from scratch, every time.
+
+The integration surface grows quadratically. The maintenance burden follows.
 
 MCP (Model Context Protocol) cuts that to N+M. One protocol implemented once on each side. Any client talks to any server. That is the standard we built spike.land on.
 

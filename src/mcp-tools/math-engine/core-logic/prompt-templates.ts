@@ -17,7 +17,7 @@ function formatFindings(findings: Finding[]): string {
 }
 
 function formatCrossPollination(session: SessionState, forRole: AgentRole): string {
-  const otherFindings = session.findings.filter((f) => f.agentRole !== forRole);
+  const otherFindings = session.findings.filter((f) => f.agentRole !== forRole).slice(-30); // bound context window usage
   if (otherFindings.length === 0) return "";
   return `\n## Cross-pollination (other agents' findings)\n${formatFindings(otherFindings)}`;
 }
