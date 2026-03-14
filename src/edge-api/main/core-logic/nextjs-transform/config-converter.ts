@@ -219,8 +219,9 @@ export function convertRewritesAndRedirects(nextConfig: string): {
   const rules: RouteRule[] = [];
 
   // Extract rewrite rules (best effort regex)
+  // Use greedy capture ([\s\S]*) inside the return block to get all rule objects
   const rewriteSection = nextConfig.match(
-    /rewrites\s*\(\s*\)\s*\{[\s\S]*?return\s*\[?([\s\S]*?)\]?\s*;?\s*\}/,
+    /rewrites\s*\(\s*\)\s*\{[\s\S]*?return\s*\[?([\s\S]*)\]?\s*;?\s*\}/,
   );
 
   if (rewriteSection && rewriteSection[1]) {
@@ -230,7 +231,7 @@ export function convertRewritesAndRedirects(nextConfig: string): {
 
   // Extract redirect rules
   const redirectSection = nextConfig.match(
-    /redirects\s*\(\s*\)\s*\{[\s\S]*?return\s*\[?([\s\S]*?)\]?\s*;?\s*\}/,
+    /redirects\s*\(\s*\)\s*\{[\s\S]*?return\s*\[?([\s\S]*)\]?\s*;?\s*\}/,
   );
 
   if (redirectSection && redirectSection[1]) {
