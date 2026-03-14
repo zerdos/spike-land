@@ -762,3 +762,32 @@
     opacity: 0;
   }
 }
+
+/* Chat message animations */
+@keyframes chat-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+@utility animate-chat-msg-in {
+  animation: chat-msg-in 0.3s ease both;
+}
+
+@utility animate-typing-bounce {
+  animation: typing-bounce 1.2s ease-in-out infinite;
+}

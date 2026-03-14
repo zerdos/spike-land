@@ -10,6 +10,14 @@ const LOCALHOST_ORIGIN_PATTERN = /^https?:\/\/localhost(:\d+)?$/i;
 //
 // Routes that intentionally require open embedding (e.g. the Monaco widget)
 // must override this specific header via c.res.headers.set() in their handler.
+// CSP 'unsafe-inline' justification:
+// - script-src: Required by Cloudflare Web Analytics (inline beacon),
+//   Google Tag Manager (inline bootstrap), and Monaco editor (dynamic
+//   style/script injection for themes and tokenizers). Removing it breaks
+//   all three. Mitigated by strict connect-src, frame-ancestors, and
+//   form-action directives.
+// - style-src: Required by Monaco editor (runtime theme CSS injection)
+//   and Google Fonts loader. Mitigated by not allowing unsafe-eval.
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com https://esm.sh https://esm.spike.land https://unpkg.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
@@ -30,13 +38,17 @@ const CONTENT_SECURITY_POLICY = [
   "upgrade-insecure-requests",
 ].join("; ");
 
-export function isAllowedBrowserOrigin(origin: string, configuredOrigins: string[]): boolean {
-  return (
-    configuredOrigins.includes(origin) ||
-    SPIKE_LAND_ORIGIN_PATTERN.test(origin) ||
-    LOCAL_SPIKE_LAND_ORIGIN_PATTERN.test(origin) ||
-    LOCALHOST_ORIGIN_PATTERN.test(origin)
-  );
+export function isAllowedBrowserOrigin(
+  origin: string,
+  configuredOrigins: string[],
+  environment?: string,
+): boolean {
+  if (configuredOrigins.includes(origin)) return true;
+  if (SPIKE_LAND_ORIGIN_PATTERN.test(origin)) return true;
+  if (LOCAL_SPIKE_LAND_ORIGIN_PATTERN.test(origin)) return true;
+  // Only allow localhost origins outside production (local dev, staging)
+  if (environment !== "production" && LOCALHOST_ORIGIN_PATTERN.test(origin)) return true;
+  return false;
 }
 
 export function applySecurityHeaders(headers: Headers): void {

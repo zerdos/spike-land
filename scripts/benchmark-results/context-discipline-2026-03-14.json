@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "model": "claude-opus-4-6",
+    "concurrency": 16,
+    "sizes": [50000, 100000, 200000],
+    "timestamp": "2026-03-14T05:31:52.020Z",
+    "totalInputTokens": 0,
+    "totalOutputTokens": 0,
+    "estimatedCostUsd": 0
+  },
+  "records": []
+}

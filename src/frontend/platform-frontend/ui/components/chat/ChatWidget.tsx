@@ -83,7 +83,7 @@ export function ChatWidget({ onOpenAppDrawer }: ChatWidgetProps) {
   }, [isPanelOpen, closePanel]);
 
   return (
-    <div className="fixed bottom-16 right-16 z-[9990] flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 lg:bottom-12 lg:right-12 z-[9990] flex flex-col items-end gap-3">
       {/* Chat panel — slides up from the button */}
       <div
         ref={panelRef}
@@ -106,7 +106,7 @@ export function ChatWidget({ onOpenAppDrawer }: ChatWidgetProps) {
         aria-label={isPanelOpen ? "Close Spike Chat" : "Open Spike Chat"}
         aria-expanded={isPanelOpen}
         aria-haspopup="dialog"
-        className="relative flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl ring-2 ring-background transition-all duration-200 hover:scale-105 hover:shadow-2xl active:scale-95 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/50"
+        className="relative flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl ring-2 ring-background transition-all duration-200 hover:scale-105 hover:shadow-2xl active:scale-90 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/50"
       >
         {/* Icon: X when open, chat bubble when closed */}
         <span

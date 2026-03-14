@@ -1,5 +1,6 @@
 import { createMiddleware } from "hono/factory";
 import type { Env } from "../core-logic/env";
+import { constantTimeEquals } from "../../common/core-logic/security-utils.js";
 import { createDb } from "../db/db/db-index.ts";
 import type { DrizzleDB } from "../db/db/db-index.ts";
 import { lookupApiKey } from "../db/auth/api-key";
@@ -30,7 +31,7 @@ export const authMiddleware = createMiddleware<{
   if (
     internalSecret &&
     c.env.MCP_INTERNAL_SECRET &&
-    internalSecret === c.env.MCP_INTERNAL_SECRET &&
+    constantTimeEquals(internalSecret, c.env.MCP_INTERNAL_SECRET) &&
     internalUserId
   ) {
     let userRole: UserRole = "user";

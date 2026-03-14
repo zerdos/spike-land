@@ -1,12 +1,4 @@
-import {
-  type ChangeEvent,
-  type KeyboardEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   Bot,
   Check,
@@ -19,7 +11,6 @@ import {
   Loader2,
   Maximize2,
   Minimize2,
-  Send,
   Trash2,
   Workflow,
   X,
@@ -28,6 +19,9 @@ import {
 import { Link } from "@tanstack/react-router";
 import { type AetherMessage, type PipelineStage } from "../../hooks/useAetherChat";
 import { useChatContext } from "./ChatProvider";
+import { ChatMarkdown } from "./ChatMarkdown";
+import { ChatInput } from "./ChatInput";
+import { AnimatedMessage, TypingIndicator } from "./ChatAnimations";
 
 // ---------------------------------------------------------------------------
 // Stage helpers (mirrors spike-chat.tsx)
@@ -128,12 +122,13 @@ const MessageBubble = memo(function MessageBubble({ msg }: { msg: AetherMessage 
         }`}
       >
         {msg.content ? (
-          <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+          msg.role === "assistant" ? (
+            <ChatMarkdown content={msg.content} />
+          ) : (
+            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+          )
         ) : (
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Loader2 className="size-3 animate-spin" />
-            <span>Thinking...</span>
-          </span>
+          <TypingIndicator />
         )}
 
         {msg.toolCalls && msg.toolCalls.length > 0 && (
@@ -197,8 +192,14 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
 
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [persona] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem("aether-persona");
+    } catch {
+      return null;
+    }
+  });
 
   // Auto-scroll to bottom when messages update
   useEffect(() => {
@@ -215,34 +216,16 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
     if (!trimmed || isStreaming) return;
     void sendMessage(trimmed);
     setInput("");
-    if (inputRef.current) {
-      inputRef.current.style.height = "auto";
-    }
-    inputRef.current?.focus();
   }, [input, isStreaming, sendMessage]);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleSend();
-      }
-    },
-    [handleSend],
-  );
-
-  const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    e.target.style.height = "auto";
-    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
-  }, []);
 
   const hasMessages = messages.length > 0;
 
   return (
     <div
-      className={`flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl transition-all duration-300 ${
-        isExpanded ? "fixed inset-4 z-[9999] rounded-3xl" : "w-[400px] max-h-[600px] min-h-[500px]"
+      className={`flex flex-col overflow-hidden border border-border bg-background shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        isExpanded
+          ? "fixed inset-4 z-[9999] rounded-3xl"
+          : "w-[400px] max-h-[600px] min-h-[500px] rounded-2xl max-sm:fixed max-sm:inset-0 max-sm:w-full max-sm:max-h-none max-sm:min-h-0 max-sm:rounded-none max-sm:z-[9999]"
       }`}
       role="dialog"
       aria-label="Spike Chat"
@@ -271,6 +254,13 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
                 </>
               )}
             </p>
+            {persona && (
+              <p className="text-[10px] mt-0.5">
+                <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary">
+                  {persona}
+                </span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -356,7 +346,11 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
         className="flex-1 overflow-y-auto px-3 py-3 space-y-4"
       >
         {hasMessages ? (
-          messages.map((msg) => <MessageBubble key={msg.id} msg={msg} />)
+          messages.map((msg, i) => (
+            <AnimatedMessage key={msg.id} index={i}>
+              <MessageBubble msg={msg} />
+            </AnimatedMessage>
+          ))
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-3 py-8 text-center">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
@@ -376,7 +370,6 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
                   type="button"
                   onClick={() => {
                     setInput(prompt);
-                    inputRef.current?.focus();
                   }}
                   className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
                 >
@@ -388,38 +381,7 @@ export function ChatPanel({ onOpenAppDrawer }: ChatPanelProps) {
         )}
       </div>
 
-      {/* Input area */}
-      <div className="border-t border-border bg-card/60 px-3 py-2.5">
-        <div className="flex items-end gap-2">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask Spike..."
-            rows={1}
-            aria-label="Chat message"
-            className="min-h-[36px] flex-1 resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
-            disabled={isStreaming}
-          />
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={!input.trim() || isStreaming}
-            aria-label="Send message"
-            className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {isStreaming ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Send className="size-4" />
-            )}
-          </button>
-        </div>
-        <p className="mt-1.5 text-[10px] text-muted-foreground">
-          Enter to send &middot; Shift+Enter for newline
-        </p>
-      </div>
+      <ChatInput value={input} onChange={setInput} onSend={handleSend} isStreaming={isStreaming} />
     </div>
   );
 }

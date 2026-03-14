@@ -36,11 +36,16 @@ interface UseAetherChatReturn {
   sessionId: string | null;
   /** Whether the DO session is available (history loaded from server). */
   sessionReady: boolean;
+  /** Active persona slug (null = default). */
+  persona: string | null;
+  /** Set the active persona. Pass null to reset to default. */
+  setPersona: (slug: string | null) => void;
 }
 
 const STORAGE_KEY = "aether-chat-messages";
 const SESSION_ID_KEY = "aether-session-id";
 const LAST_EVENT_ID_KEY = "aether-last-event-id";
+const PERSONA_KEY = "aether-persona";
 
 const VALID_STAGES: ReadonlySet<string> = new Set<PipelineStage>([
   "classify",
@@ -125,6 +130,13 @@ export function useAetherChat(): UseAetherChatReturn {
   const [model, setModel] = useState<string | null>(null);
   const [lastLearnedLesson, setLastLearnedLesson] = useState<string | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
+  const [persona, setPersonaState] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(PERSONA_KEY);
+    } catch {
+      return null;
+    }
+  });
   const [sessionId, setSessionId] = useState<string | null>(() => {
     try {
       return localStorage.getItem(SESSION_ID_KEY);
@@ -246,7 +258,11 @@ export function useAetherChat(): UseAetherChatReturn {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ message: content.trim(), history }),
+          body: JSON.stringify({
+            message: content.trim(),
+            history,
+            ...(persona ? { persona } : {}),
+          }),
           signal: abortRef.current.signal,
         });
 
@@ -430,10 +446,23 @@ export function useAetherChat(): UseAetherChatReturn {
         abortRef.current = null;
       }
     },
-    [isStreaming, messages],
+    [isStreaming, messages, persona],
   );
 
   const clearError = useCallback(() => setError(null), []);
+
+  const setPersona = useCallback((slug: string | null) => {
+    setPersonaState(slug);
+    try {
+      if (slug) {
+        localStorage.setItem(PERSONA_KEY, slug);
+      } else {
+        localStorage.removeItem(PERSONA_KEY);
+      }
+    } catch {
+      // localStorage unavailable
+    }
+  }, []);
   const submitBrowserResult = useCallback(async (toolCallId: string, result: unknown) => {
     const sessionId = sessionIdRef.current;
     if (!sessionId) {
@@ -525,5 +554,7 @@ export function useAetherChat(): UseAetherChatReturn {
     lastLearnedLesson,
     sessionId,
     sessionReady,
+    persona,
+    setPersona,
   };
 }

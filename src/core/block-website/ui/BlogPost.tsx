@@ -33,6 +33,7 @@ import {
 } from "./BlogCompatComponents";
 import { BlogReaderControls } from "./BlogReaderControls";
 import { ImageLoader } from "./ImageLoader";
+import { PersonalizedSupportBox } from "./PersonalizedSupportBox";
 import { SpikeChatEmbed } from "./SpikeChatEmbed";
 import { ExperimentProvider, useExperiment } from "./useExperiment";
 import { useWidgetTracking } from "./useWidgetTracking";
@@ -791,6 +792,13 @@ export function BlogPostView({
             </Markdown>
           </div>
         </div>
+
+        {/* Persona-aware support CTA — auto-appended unless already embedded inline */}
+        {!processedContent?.toLowerCase().includes("personalizedsupportbox") && (
+          <div className="max-w-3xl mx-auto">
+            <PersonalizedSupportBox />
+          </div>
+        )}
 
         <div className="max-w-3xl mx-auto">
           <SupportWidget post={resolvedPost} />

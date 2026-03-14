@@ -77,11 +77,15 @@ export function getContentVariant(personaSlug: string): ContentVariant {
 export function getPersonaSlug(): string {
   if (typeof window === "undefined") return "solo-explorer";
   try {
-    // Check cookie first, then localStorage
+    // Check cookie first, then localStorage (multiple keys for compat)
     const cookie = document.cookie.split("; ").find((c) => c.startsWith("spike-persona="));
     if (cookie) return cookie.split("=")[1] ?? "solo-explorer";
 
-    return localStorage.getItem("spike_persona") ?? "solo-explorer";
+    return (
+      localStorage.getItem("spike_persona_slug") ??
+      localStorage.getItem("spike_persona") ??
+      "solo-explorer"
+    );
   } catch {
     return "solo-explorer";
   }

@@ -9,18 +9,17 @@ import {
 } from "react";
 import { useRouter } from "@tanstack/react-router";
 import {
-  Activity,
   Bot,
   Brain,
   Check,
   CheckCircle2,
+  ChevronDown,
   CircuitBoard,
   Cloud,
   CloudOff,
   Copy,
   Loader2,
   Send,
-  Sparkles,
   Trash2,
   User,
   Workflow,
@@ -29,6 +28,7 @@ import {
 import { useAetherChat, type AetherMessage, type PipelineStage } from "../hooks/useAetherChat";
 import { useBrowserBridge } from "../hooks/useBrowserBridge";
 import type { ConversationItem } from "../hooks/useChat";
+import { ChatMarkdown } from "../components/chat/ChatMarkdown";
 
 const STAGE_LABELS: Record<PipelineStage, string> = {
   classify: "Intent classification",
@@ -44,14 +44,15 @@ const QUICK_PROMPTS = [
   "Find the weakest part of my current approach and suggest a better one.",
 ];
 
-const AETHER_PRINCIPLES = [
-  "Split prompt: stable rules plus bounded memory.",
-  "Stages stay narrow: classify, plan, execute, extract.",
-  "Tool work stays evidence-first, not transcript-first.",
-  "History is compacted before it crowds out the task.",
-];
-
 const STAGE_ORDER: PipelineStage[] = ["classify", "plan", "execute", "extract"];
+
+const PERSONA_OPTIONS = [
+  { slug: null, label: "Default" },
+  { slug: "rubik-3", label: "Rubik" },
+  { slug: "erdos", label: "Erdős" },
+  { slug: "radix", label: "Radix" },
+  { slug: "gov", label: "Gov" },
+] as const;
 
 type StageVisualState = "idle" | "upcoming" | "active" | "done";
 
@@ -125,7 +126,11 @@ const MessageItem = memo(function MessageItem({ msg }: { msg: AetherMessage }) {
             : "border-border bg-card text-foreground"
         }`}
       >
-        <p className="whitespace-pre-wrap text-sm leading-6">{msg.content}</p>
+        {msg.role === "assistant" ? (
+          <ChatMarkdown content={msg.content} />
+        ) : (
+          <p className="whitespace-pre-wrap text-sm leading-6">{msg.content}</p>
+        )}
 
         {msg.toolCalls && msg.toolCalls.length > 0 && (
           <div className="mt-4 grid gap-2 border-t border-border/70 pt-3">
@@ -240,51 +245,56 @@ function StageRail({
 
 function EmptyState({ onPromptSelect }: { onPromptSelect: (prompt: string) => void }) {
   return (
-    <div className="grid gap-4">
-      <section className="rounded-[28px] border border-border bg-card p-5 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              <Sparkles className="size-3.5 text-primary" />
-              Aether runtime
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                Context stays tight. Tools stay accountable.
-              </h2>
-              <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                Spike Chat is built as a compact working set, not a transcript dump. Each turn is
-                classified, planned, executed, then mined for reusable memory.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid min-w-[220px] gap-2 rounded-2xl border border-border bg-background p-3">
-            {AETHER_PRINCIPLES.map((principle) => (
-              <div
-                key={principle}
-                className="flex items-start gap-2 text-xs leading-5 text-muted-foreground"
-              >
-                <span className="mt-1 inline-flex size-1.5 shrink-0 rounded-full bg-primary" />
-                <span>{principle}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-2 md:grid-cols-3">
+    <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
+      <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
+        <Zap className="size-7" />
+      </div>
+      <div className="text-center space-y-2 max-w-md">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          What can I help with?
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Spike Chat uses the Aether pipeline — classify, plan, execute, extract — with bounded
+          context and reusable memory.
+        </p>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3 w-full max-w-2xl">
         {QUICK_PROMPTS.map((prompt) => (
           <button
             key={prompt}
-            className="rounded-2xl border border-border bg-card px-4 py-4 text-left text-sm text-foreground transition hover:border-primary/40 hover:bg-primary/5"
+            className="rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm text-foreground transition hover:border-primary/40 hover:bg-primary/5"
             onClick={() => onPromptSelect(prompt)}
             type="button"
           >
             {prompt}
           </button>
         ))}
-      </section>
+      </div>
+    </div>
+  );
+}
+
+function PersonaSelector({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (slug: string | null) => void;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        className="appearance-none rounded-full border border-border bg-card pl-3 pr-7 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground cursor-pointer hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+      >
+        {PERSONA_OPTIONS.map((opt) => (
+          <option key={opt.slug ?? "default"} value={opt.slug ?? ""}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
     </div>
   );
 }
@@ -301,7 +311,6 @@ export function SpikeChatApp() {
     clearMessages,
     noteCount,
     totalNoteCount,
-    toolCatalogCount,
     model,
     lastLearnedLesson,
     sessionId,
@@ -312,6 +321,23 @@ export function SpikeChatApp() {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const [persona, setPersona] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem("aether-persona");
+    } catch {
+      return null;
+    }
+  });
+  const handleSetPersona = useCallback((slug: string | null) => {
+    setPersona(slug);
+    try {
+      if (slug) localStorage.setItem("aether-persona", slug);
+      else localStorage.removeItem("aether-persona");
+    } catch {
+      /* */
+    }
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -381,88 +407,69 @@ export function SpikeChatApp() {
 
   return (
     <div className="flex h-full flex-col bg-gradient-to-b from-background via-background to-muted/30">
-      <header className="border-b border-border bg-background/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="rounded-2xl border border-primary/20 bg-primary/10 p-3 text-primary shadow-sm">
-                  <Zap className="size-6" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                      Spike Chat
-                    </h1>
-                    <span className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Remembers what matters
-                    </span>
-                  </div>
-                  <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                    Aether pipeline with bounded tool access, compact context, and reusable memory.
-                  </p>
-                </div>
-              </div>
+      <header className="border-b border-border bg-background/90 backdrop-blur sticky top-0 z-10">
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 h-12">
+          {/* Left: Icon + title + persona */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
+              <Zap className="size-4" />
+            </div>
+            <h1 className="text-sm font-semibold tracking-tight text-foreground whitespace-nowrap">
+              Spike Chat
+            </h1>
+            <PersonaSelector value={persona} onChange={handleSetPersona} />
+          </div>
 
-              <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                <span className="rounded-full border border-border bg-card px-3 py-1">
-                  {model ?? "Grok"} runtime
-                </span>
-                <span className="rounded-full border border-border bg-card px-3 py-1">
-                  {toolCatalogCount} MCP tools indexed
-                </span>
-                <span className="rounded-full border border-border bg-card px-3 py-1">
-                  {noteCount} active notes
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1">
-                  {sessionReady ? (
-                    <Cloud className="size-3 text-success-foreground" />
+          {/* Center: Stage dots */}
+          <div className="hidden sm:flex items-center gap-1.5 mx-auto">
+            {STAGE_ORDER.map((stage) => {
+              const currentIdx = STAGE_ORDER.indexOf(currentStage);
+              const stageIdx = STAGE_ORDER.indexOf(stage);
+              const isDone = isStreaming && stageIdx < currentIdx;
+              const isActive = isStreaming && stageIdx === currentIdx;
+              return (
+                <div key={stage} className="flex items-center gap-1" title={STAGE_LABELS[stage]}>
+                  {isDone ? (
+                    <CheckCircle2 className="size-3 text-primary" />
+                  ) : isActive ? (
+                    <span className="size-3 rounded-full bg-primary animate-pulse" />
                   ) : (
-                    <CloudOff className="size-3 text-muted-foreground" />
+                    <span className="size-3 rounded-full bg-border" />
                   )}
-                  {sessionReady ? "Session synced" : "Connecting..."}
-                </span>
-              </div>
-            </div>
+                  <span
+                    className={`text-[10px] font-semibold uppercase tracking-wider hidden md:inline ${isActive ? "text-primary" : "text-muted-foreground/60"}`}
+                  >
+                    {STAGE_LABELS[stage].split(" ")[0]}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <div className="rounded-2xl border border-border bg-card p-3">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  <Brain className="size-3.5 text-primary" />
-                  Active
-                </div>
-                <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                  {noteCount}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-3">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  <CircuitBoard className="size-3.5 text-primary" />
-                  Learned
-                </div>
-                <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                  {totalNoteCount}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-3">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  <Workflow className="size-3.5 text-primary" />
-                  Stage
-                </div>
-                <p className="mt-2 text-sm font-semibold text-foreground">
-                  {STAGE_LABELS[currentStage]}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-3">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  <Activity className="size-3.5 text-primary" />
-                  State
-                </div>
-                <p className="mt-2 text-sm font-semibold text-foreground">
-                  {isStreaming ? "Streaming" : sessionReady ? "Ready" : "Connecting"}
-                </p>
-              </div>
-            </div>
+          {/* Right: Status chips */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="hidden lg:inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+              {sessionReady ? (
+                <Cloud className="size-2.5 text-primary" />
+              ) : (
+                <CloudOff className="size-2.5" />
+              )}
+              {sessionReady ? "Synced" : "..."}
+            </span>
+            <span className="hidden lg:inline-flex rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+              {model ?? "Grok"}
+            </span>
+            <span className="hidden md:inline-flex rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+              {noteCount} notes
+            </span>
+            <button
+              className="flex size-7 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-destructive"
+              onClick={clearMessages}
+              title="Clear conversation"
+              type="button"
+            >
+              <Trash2 className="size-3.5" />
+            </button>
           </div>
         </div>
       </header>
@@ -479,7 +486,7 @@ export function SpikeChatApp() {
       )}
 
       <div className="flex-1 overflow-hidden">
-        <div className="mx-auto grid h-full w-full max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1.8fr)_320px]">
+        <div className="mx-auto grid h-full w-full max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[1fr_280px]">
           <section className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-border bg-card shadow-sm">
             <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
               <div>

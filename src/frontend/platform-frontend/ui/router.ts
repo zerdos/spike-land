@@ -530,6 +530,31 @@ const govRoute = createRoute({
   component: withSuspense(() => import("./routes/gov"), "GovPage"),
 });
 
+// Lumeva Barber sub-site
+const lumevabarberRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lumevabarber",
+  component: withSuspense(() => import("./routes/lumevabarber/layout"), "LumevaBarberLayout"),
+});
+
+const lumevabarberIndexRoute = createRoute({
+  getParentRoute: () => lumevabarberRoute,
+  path: "/",
+  component: withSuspense(() => import("./routes/lumevabarber/home"), "LumevaHome"),
+});
+
+const lumevabarberLogosRoute = createRoute({
+  getParentRoute: () => lumevabarberRoute,
+  path: "logos",
+  component: withSuspense(() => import("./routes/lumevabarber/logos"), "LumevaLogos"),
+});
+
+const lumevabarberWebsitesRoute = createRoute({
+  getParentRoute: () => lumevabarberRoute,
+  path: "websites",
+  component: withSuspense(() => import("./routes/lumevabarber/websites"), "LumevaWebsites"),
+});
+
 const startChecklistRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/spike-land-start-checklist",
@@ -608,6 +633,11 @@ const routeTree = rootRoute.addChildren([
   agencyRoute.addChildren([agencyPortfolioRoute]),
   createPageRoute.addChildren([createIndexRoute, createAppRoute]),
   learnitRoute.addChildren([learnitIndexRoute, learnitTopicRoute]),
+  lumevabarberRoute.addChildren([
+    lumevabarberIndexRoute,
+    lumevabarberLogosRoute,
+    lumevabarberWebsitesRoute,
+  ]),
 ]);
 
 export const router = createRouter({

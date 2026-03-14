@@ -1,0 +1,19 @@
+tunnel: spike-land-dev
+# credentials-file is written by: cloudflared tunnel create spike-land-dev
+credentials-file: ~/.cloudflared/spike-land-dev.json
+
+ingress:
+  # spike-edge — primary edge API (Hono, R2, Durable Objects)
+  - hostname: local.spike.land
+    service: http://localhost:8787
+
+  # spike-land-mcp — MCP registry (80+ tools, D1-backed)
+  - hostname: local-mcp.spike.land
+    service: http://localhost:8790
+
+  # mcp-auth — auth server (Better Auth + Drizzle + D1)
+  - hostname: local-auth.spike.land
+    service: http://localhost:8791
+
+  # Catch-all required by cloudflared; must be last
+  - service: http_status:404

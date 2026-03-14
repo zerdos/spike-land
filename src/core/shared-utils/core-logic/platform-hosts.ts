@@ -11,6 +11,7 @@ export const PLATFORM_HOSTS = {
   js: "js.spike.land",
   status: "status.spike.land",
   gov: "gov.spike.land",
+  lumevabarber: "lumevabarber.spike.land",
 } as const;
 
 export const MAIN_SITE_HOSTS = [

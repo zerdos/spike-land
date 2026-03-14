@@ -383,6 +383,11 @@ export function RootLayout() {
     }
   }, [pathname, resolvedLanguage, searchStr, t]);
 
+  // Lumeva Barber sub-site has its own layout — bypass spike.land chrome
+  if (pathname.startsWith("/lumevabarber")) {
+    return <Outlet />;
+  }
+
   return (
     <ChatProvider>
       <div className="app-shell relative flex min-h-[100dvh] overflow-x-hidden bg-background text-foreground">

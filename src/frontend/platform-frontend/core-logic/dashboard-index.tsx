@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { Zap } from "lucide-react";
 import { useAuth } from "../ui/hooks/useAuth";
 import { BuyCredits } from "../ui/components/BuyCredits";
 import { CreditWidget } from "../ui/components/CreditWidget";
@@ -23,6 +25,27 @@ export function DashboardPage() {
         <h1 className="text-2xl font-bold text-foreground">
           {isAuthenticated ? `Welcome, ${user?.name ?? "User"}` : "Welcome to Spike"}
         </h1>
+        {/* Chat with Spike card */}
+        <Link
+          to="/chat"
+          className="rubik-panel flex items-center gap-4 p-5 transition-all hover:shadow-lg group"
+        >
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
+            <Zap className="size-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-base font-semibold tracking-tight text-foreground">
+              Chat with Spike
+            </p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              AI assistant with MCP tools, memory, and the Aether pipeline.
+            </p>
+          </div>
+          <span className="text-muted-foreground group-hover:text-primary transition-colors text-sm font-medium">
+            Open &rarr;
+          </span>
+        </Link>
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Card title="Agent Status">
             <div className="flex items-center gap-2">

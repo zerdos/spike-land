@@ -49,6 +49,10 @@ export interface ChatContextValue {
   totalNoteCount: number;
   toolCatalogCount: number;
   model: string | null;
+  /** Active persona slug (null = default). */
+  persona: string | null;
+  /** Set the active persona. Pass null to reset to default. */
+  setPersona: (slug: string | null) => void;
 }
 
 const WIDGET_OPEN_KEY = "spike-chat-widget-open";
@@ -143,6 +147,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       totalNoteCount: aether.totalNoteCount,
       toolCatalogCount: aether.toolCatalogCount,
       model: aether.model,
+      persona: aether.persona,
+      setPersona: aether.setPersona,
       unreadCount,
       markAllRead,
       isPanelOpen,
@@ -164,6 +170,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       aether.totalNoteCount,
       aether.toolCatalogCount,
       aether.model,
+      aether.persona,
+      aether.setPersona,
       unreadCount,
       markAllRead,
       isPanelOpen,

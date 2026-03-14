@@ -186,8 +186,16 @@ async function waitForBrowserSettle() {
 export function useBrowserBridge({ items = [], onResult, router }: BrowserBridgeOptions) {
   const processedRef = useRef<Set<string>>(new Set());
   const surfaceMapRef = useRef<Map<string, SurfaceEntry[]>>(new Map());
+  const lastSurfaceCacheRef = useRef<{ surface: BrowserSurface; timestamp: number } | null>(null);
 
   const buildSurface = useCallback((): BrowserSurface => {
+    // Return cached surface if called within 100ms (prevents redundant DOM queries)
+    const now = Date.now();
+    const cached = lastSurfaceCacheRef.current;
+    if (cached && now - cached.timestamp < 100) {
+      return cached.surface;
+    }
+
     const surfaceId = `surface-${Date.now()}-${crypto.randomUUID()}`;
     const entries: SurfaceEntry[] = [];
 
@@ -232,7 +240,7 @@ export function useBrowserBridge({ items = [], onResult, router }: BrowserBridge
 
     surfaceMapRef.current.set(surfaceId, entries);
 
-    return {
+    const surface: BrowserSurface = {
       surfaceId,
       url: window.location.href,
       title: document.title,
@@ -240,6 +248,8 @@ export function useBrowserBridge({ items = [], onResult, router }: BrowserBridge
       textPreview: normalizeText(document.body?.innerText, 600),
       elements,
     };
+    lastSurfaceCacheRef.current = { surface, timestamp: now };
+    return surface;
   }, []);
 
   const resolveElement = useCallback((args: Record<string, unknown>) => {

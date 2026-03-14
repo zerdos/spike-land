@@ -93,6 +93,31 @@ function getSpikeEdgeMetricService(request: Request): "Main Site" | "Edge API" |
 // Request ID middleware (must run before everything else)
 app.use("*", requestIdMiddleware);
 
+// Request body size limits — prevent abuse via oversized payloads
+const DEFAULT_MAX_BODY = 10 * 1024 * 1024; // 10 MB
+const AI_PROXY_MAX_BODY = 1 * 1024 * 1024; // 1 MB
+const R2_UPLOAD_MAX_BODY = 50 * 1024 * 1024; // 50 MB
+
+function getMaxBodySize(path: string): number {
+  if (path === "/proxy/ai" || path === "/api/chat" || path === "/api/spike-chat") {
+    return AI_PROXY_MAX_BODY;
+  }
+  if (path.startsWith("/r2/upload")) return R2_UPLOAD_MAX_BODY;
+  return DEFAULT_MAX_BODY;
+}
+
+app.use("*", async (c, next) => {
+  const contentLength = c.req.header("content-length");
+  if (contentLength) {
+    const size = parseInt(contentLength, 10);
+    const maxSize = getMaxBodySize(c.req.path);
+    if (!isNaN(size) && size > maxSize) {
+      return c.json({ error: "Payload Too Large", maxBytes: maxSize }, 413);
+    }
+  }
+  return next();
+});
+
 // Generic *.spike.land vanity host rewrite: <prefix>.spike.land → /<prefix>/*
 // Handles analytics.spike.land, gov.spike.land, dash.spike.land, etc. automatically.
 // Hosts that have their own dedicated routing (api, edge, mcp, auth-mcp, etc.) are excluded.
@@ -141,6 +166,7 @@ const KNOWN_VANITY_PREFIXES = [
   "packages",
   "bazdmeg",
   "vibe-code",
+  "lumevabarber",
 ] as const;
 
 /** Levenshtein distance between two strings (optimized single-row DP). */
@@ -256,11 +282,12 @@ app.use("*", async (c, next) => {
     ? c.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
     : ["https://spike.land"];
 
+  const environment = c.env.ENVIRONMENT ?? "production";
   const corsMiddleware = cors({
     origin: (requestOrigin) => {
       const fallbackOrigin = configuredOrigins[0] ?? "https://spike.land";
       if (!requestOrigin) return fallbackOrigin;
-      return isAllowedBrowserOrigin(requestOrigin, configuredOrigins)
+      return isAllowedBrowserOrigin(requestOrigin, configuredOrigins, environment)
         ? requestOrigin
         : fallbackOrigin;
     },
@@ -753,8 +780,31 @@ async function fetchAuthWithFallback(env: Env, request: Request): Promise<Respon
 export const apiAuthAllHandler = async (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
 ) => {
+  // Rate limit auth endpoint mutations to mitigate credential stuffing and
+  // brute-force attacks (OWASP A07:2021 — Identification and Authentication Failures).
+  // GET /get-session is read-only and excluded from POST_AUTH limiting.
   const url = new URL(c.req.url);
   const isGetSession = url.pathname.endsWith("/get-session");
+
+  if (c.req.method === "POST" && !isGetSession) {
+    const rateLimitKey = c.req.header("cf-connecting-ip") ?? "anon";
+    const rateLimitId = c.env.LIMITERS.idFromName(`auth:${rateLimitKey}`);
+    const rateLimitStub = c.env.LIMITERS.get(rateLimitId);
+    const rateLimitResp = await rateLimitStub.fetch(
+      new Request("https://limiter.internal/", {
+        method: "POST",
+        headers: { "X-Rate-Limit-Profile": "POST_AUTH" },
+      }),
+    );
+    const cooldown = Number(await rateLimitResp.text());
+    if (cooldown > 0) {
+      return c.json(
+        { error: "Too many authentication attempts", retryAfterSeconds: cooldown },
+        429,
+      );
+    }
+  }
+
   url.hostname = "auth-mcp.spike.land";
   url.port = "";
   url.protocol = "https:";
