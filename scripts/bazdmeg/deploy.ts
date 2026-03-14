@@ -177,6 +177,7 @@ const WORKER_PACKAGES = [
   "mcp-auth",
   "spike-land-backend",
   "transpile",
+  "spike-chat",
 ];
 
 export function getPhase3Plan(): Phase3Plan {
@@ -184,9 +185,9 @@ export function getPhase3Plan(): Phase3Plan {
   const currentSha = getHeadSha();
   const spaDistExists = existsSync(join(process.cwd(), "packages/spike-web/dist/index.html"));
   const workersPending = WORKER_PACKAGES.filter((pkg) => {
-    const pkgDir = join(process.cwd(), "src", pkg);
+    const pkgDir = join(process.cwd(), "packages", pkg);
     if (!existsSync(pkgDir)) return false;
-    const treeHash = getGitTreeHash(join("src", pkg));
+    const treeHash = getGitTreeHash(join("packages", pkg));
     return treeHash !== state.workerHashes[pkg];
   });
 
@@ -204,10 +205,10 @@ export function deployWorkers(): string[] {
   const deployed: string[] = [];
 
   for (const pkg of WORKER_PACKAGES) {
-    const pkgDir = join(process.cwd(), "src", pkg);
+    const pkgDir = join(process.cwd(), "packages", pkg);
     if (!existsSync(pkgDir)) continue;
 
-    const treeHash = getGitTreeHash(join("src", pkg));
+    const treeHash = getGitTreeHash(join("packages", pkg));
     const lastHash = state.workerHashes[pkg];
 
     if (treeHash === lastHash) {
