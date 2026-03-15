@@ -13,6 +13,7 @@ import {
   Layers3,
   Workflow,
   ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@spike-land-ai/shared";
 import { useDevModeCopy } from "./useDevModeCopy";
@@ -44,6 +45,37 @@ export function LandingPage() {
   return (
     <div className="font-sans text-foreground selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary/40 dark:selection:text-primary-light">
       <LandingHero />
+
+      {/* Strange Loops warning banner */}
+      <div className="rubik-container-wide px-4 pt-8 sm:pt-12">
+        <Link
+          href="/blog/strange-loops-statistical-selves-and-the-coming-identity-crisis"
+          className="group relative block overflow-hidden rounded-2xl border-2 border-amber-500/60 bg-amber-50 p-6 shadow-lg transition-all duration-300 hover:border-amber-500 hover:shadow-amber-500/20 dark:border-amber-400/40 dark:bg-amber-950/30 dark:hover:border-amber-400/70 dark:hover:shadow-amber-400/10 sm:p-8"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-start gap-4 sm:items-center sm:gap-6">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:bg-amber-400/15 dark:text-amber-400 sm:size-16 sm:rounded-2xl">
+              <AlertTriangle className="size-7 sm:size-8" strokeWidth={2.5} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-400">
+                Required reading
+              </p>
+              <h3 className="mt-1 text-xl font-bold tracking-[-0.04em] text-amber-950 dark:text-amber-50 sm:text-2xl md:text-3xl">
+                Strange Loops, Statistical Selves, and the Coming Identity Crisis
+              </h3>
+              <p className="mt-2 max-w-3xl text-sm leading-relaxed text-amber-800/80 dark:text-amber-200/70 sm:text-base">
+                AI does not need to become conscious to interfere with yours. If you use AI daily,
+                read this before your next session.
+              </p>
+            </div>
+            <ArrowRight
+              className="hidden shrink-0 text-amber-600 transition-transform duration-300 group-hover:translate-x-1 dark:text-amber-400 sm:block"
+              size={24}
+            />
+          </div>
+        </Link>
+      </div>
 
       <div className="rubik-stack pb-24 sm:pb-32">
         <section className="relative">
