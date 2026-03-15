@@ -21,6 +21,17 @@ import {
   VIDEO_CONFIG,
 } from "../core-logic/constants";
 import { N404_DURATIONS, N404_TIMING } from "../core-logic/n404-constants";
+import { ERDOS_DURATIONS, ERDOS_TIMING } from "../core-logic/erdos-constants";
+import {
+  ErdosToErdos,
+  Scene01_ErdosOpening,
+  Scene02_ErdosNumber,
+  Scene03_TheBook,
+  Scene04_StrangeLoopConnection,
+  Scene05_SixteenMathematicians,
+  Scene06_MobiusStrip,
+  Scene07_EndCard as Erdos_Scene07_EndCard,
+} from "../core-logic/erdos-index.ts";
 import {
   VERITASIUM_SCENE_DURATION,
   VeritasiumPitch,
@@ -131,6 +142,16 @@ export const RemotionRoot = () => {
         component={VeritasiumPitch}
         durationInFrames={VERITASIUM_SCENE_DURATION * 7}
         fps={VCP_TIMING.fps}
+        width={VIDEO_CONFIG.width}
+        height={VIDEO_CONFIG.height}
+      />
+
+      {/* From Paul Erdős to Zoltan Erdős — ~4min landscape */}
+      <Composition
+        id="ErdosToErdos"
+        component={ErdosToErdos}
+        durationInFrames={ERDOS_TIMING.totalFrames}
+        fps={ERDOS_TIMING.fps}
         width={VIDEO_CONFIG.width}
         height={VIDEO_CONFIG.height}
       />
@@ -302,6 +323,66 @@ export const RemotionRoot = () => {
           fps={N404_TIMING.fps}
           width={1080}
           height={1920}
+        />
+      </Folder>
+
+      {/* Erdős individual scenes for preview */}
+      <Folder name="Erdos-Scenes">
+        <Composition
+          id="Erdos-Scene01-Opening"
+          component={Scene01_ErdosOpening}
+          durationInFrames={ERDOS_DURATIONS.erdosOpening}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene02-ErdosNumber"
+          component={Scene02_ErdosNumber}
+          durationInFrames={ERDOS_DURATIONS.erdosNumber}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene03-TheBook"
+          component={Scene03_TheBook}
+          durationInFrames={ERDOS_DURATIONS.theBook}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene04-StrangeLoop"
+          component={Scene04_StrangeLoopConnection}
+          durationInFrames={ERDOS_DURATIONS.strangeLoop}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene05-SixteenMathematicians"
+          component={Scene05_SixteenMathematicians}
+          durationInFrames={ERDOS_DURATIONS.sixteenMathematicians}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene06-MobiusStrip"
+          component={Scene06_MobiusStrip}
+          durationInFrames={ERDOS_DURATIONS.mobiusStrip}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Erdos-Scene07-EndCard"
+          component={Erdos_Scene07_EndCard}
+          durationInFrames={ERDOS_DURATIONS.endCard}
+          fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
         />
       </Folder>
 
