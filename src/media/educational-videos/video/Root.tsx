@@ -36,6 +36,18 @@ import {
   VERITASIUM_SCENE_DURATION,
   VeritasiumPitch,
 } from "./compositions/veritasium/VeritasiumPitch";
+import { ArenaGrid } from "./compositions/arena/ArenaGrid";
+import { ARENA_TIMING } from "../core-logic/arena-constants";
+import { NewcombParadox } from "./compositions/newcomb/NewcombParadox";
+import { NEWCOMB_TIMING, NEWCOMB_DURATIONS } from "../core-logic/newcomb-constants";
+import { Scene01_Hook as Newcomb_Scene01_Hook } from "./compositions/newcomb/Scene01_Hook";
+import { Scene02_TwoBoxArgument as Newcomb_Scene02 } from "./compositions/newcomb/Scene02_TwoBoxArgument";
+import { Scene03_OneBoxArgument as Newcomb_Scene03 } from "./compositions/newcomb/Scene03_OneBoxArgument";
+import { Scene04_InvisibleGraph as Newcomb_Scene04 } from "./compositions/newcomb/Scene04_InvisibleGraph";
+import { Scene05_GPChemist as Newcomb_Scene05 } from "./compositions/newcomb/Scene05_GPChemist";
+import { Scene06_CancerCure as Newcomb_Scene06 } from "./compositions/newcomb/Scene06_CancerCure";
+import { Scene07_TimeTraversal as Newcomb_Scene07 } from "./compositions/newcomb/Scene07_TimeTraversal";
+import { Scene08_EndCard as Newcomb_Scene08 } from "./compositions/newcomb/Scene08_EndCard";
 import {
   NoMore404s,
   Scene01_Hook as N404_Scene01_Hook,
@@ -164,6 +176,26 @@ export const RemotionRoot = () => {
         fps={N404_TIMING.fps}
         width={1080}
         height={1920}
+      />
+
+      {/* 3×3×3 Arena — hup.hu/node/189552 */}
+      <Composition
+        id="ArenaGrid"
+        component={ArenaGrid}
+        durationInFrames={ARENA_TIMING.totalFrames}
+        fps={ARENA_TIMING.fps}
+        width={VIDEO_CONFIG.width}
+        height={VIDEO_CONFIG.height}
+      />
+
+      {/* Newcomb's Paradox — The Invisible Graph (~3m50s) */}
+      <Composition
+        id="NewcombParadox"
+        component={NewcombParadox}
+        durationInFrames={NEWCOMB_TIMING.totalFrames}
+        fps={NEWCOMB_TIMING.fps}
+        width={VIDEO_CONFIG.width}
+        height={VIDEO_CONFIG.height}
       />
 
       {/* Individual scenes for preview */}
@@ -381,6 +413,74 @@ export const RemotionRoot = () => {
           component={Erdos_Scene07_EndCard}
           durationInFrames={ERDOS_DURATIONS.endCard}
           fps={ERDOS_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+      </Folder>
+
+      {/* Newcomb individual scenes for preview */}
+      <Folder name="Newcomb-Scenes">
+        <Composition
+          id="Newcomb-Scene01-Hook"
+          component={Newcomb_Scene01_Hook}
+          durationInFrames={NEWCOMB_DURATIONS.hook}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene02-TwoBox"
+          component={Newcomb_Scene02}
+          durationInFrames={NEWCOMB_DURATIONS.twoBoxArgument}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene03-OneBox"
+          component={Newcomb_Scene03}
+          durationInFrames={NEWCOMB_DURATIONS.oneBoxArgument}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene04-InvisibleGraph"
+          component={Newcomb_Scene04}
+          durationInFrames={NEWCOMB_DURATIONS.invisibleGraph}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene05-GPChemist"
+          component={Newcomb_Scene05}
+          durationInFrames={NEWCOMB_DURATIONS.gpChemist}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene06-CancerCure"
+          component={Newcomb_Scene06}
+          durationInFrames={NEWCOMB_DURATIONS.cancerCure}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene07-TimeTraversal"
+          component={Newcomb_Scene07}
+          durationInFrames={NEWCOMB_DURATIONS.timeTraversal}
+          fps={NEWCOMB_TIMING.fps}
+          width={VIDEO_CONFIG.width}
+          height={VIDEO_CONFIG.height}
+        />
+        <Composition
+          id="Newcomb-Scene08-EndCard"
+          component={Newcomb_Scene08}
+          durationInFrames={NEWCOMB_DURATIONS.endCard}
+          fps={NEWCOMB_TIMING.fps}
           width={VIDEO_CONFIG.width}
           height={VIDEO_CONFIG.height}
         />
