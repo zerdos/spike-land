@@ -101,6 +101,19 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "How do I connect spike.land to Claude Code?",
     ],
   },
+  raju: {
+    persona: "raju",
+    title: "Raju",
+    accent: "#22c55e",
+    greeting: "Hey! Ready to find some bugs?",
+    subtitle: "QA engineer. Finds every edge case, every browser issue, every accessibility problem.",
+    placeholder: "Show me what to test...",
+    suggestions: [
+      "Test the /chat page for accessibility",
+      "Check this page for mobile responsiveness",
+      "Find edge cases in my form validation",
+    ],
+  },
 };
 
 interface Props {

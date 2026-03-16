@@ -29,6 +29,7 @@ import { getZoltanPersonaPrompt } from "../../core-logic/zoltan-persona-prompt.j
 import { getArnoldPersonaPrompt } from "../../core-logic/arnold-persona-prompt.js";
 import { getDaftPunkPersonaPrompt } from "../../core-logic/daftpunk-persona-prompt.js";
 import { getSpikePersonaPrompt } from "../../core-logic/spike-persona-prompt.js";
+import { getRajuPersonaPrompt } from "../../core-logic/raju-persona-prompt.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
@@ -615,6 +616,11 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Merge Spike platform guide persona when requested
   if (persona === "spike") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getSpikePersonaPrompt()}`;
+  }
+
+  // Merge Raju QA engineer persona when requested
+  if (persona === "raju") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getRajuPersonaPrompt()}`;
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
