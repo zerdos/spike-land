@@ -62,6 +62,19 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "Mondd el mit látsz kívülről",
     ],
   },
+  arnold: {
+    persona: "arnold",
+    title: "Arnold",
+    accent: "#e11d48",
+    greeting: "Show me what you've got.",
+    subtitle: "I'll tell you what it's missing. UX provocateur. Interface extremist.",
+    placeholder: "Show Arnold your UI...",
+    suggestions: [
+      "Roast my landing page",
+      "Make this loading state unforgettable",
+      "What's wrong with my above-the-fold?",
+    ],
+  },
 };
 
 interface Props {
