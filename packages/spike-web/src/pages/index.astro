@@ -99,6 +99,46 @@ const metrics = [
         </div>
       </section>
 
+      <!-- ── Featured blog posts ──────────────────────────────────────── -->
+      <section class="blog-section" id="blog">
+        <div class="rubik-container">
+          <div class="section-header">
+            <p class="rubik-eyebrow">From the Blog</p>
+            <h2 class="section-title">Ideas, post-mortems, and open problems</h2>
+          </div>
+
+          <div class="blog-grid">
+            <a href="/blog/zero-traffic-autopsy" class="blog-card rubik-panel">
+              <span class="blog-tag">Engineering</span>
+              <h3 class="blog-title">Zero Traffic Autopsy</h3>
+              <p class="blog-excerpt">We built 45 blog posts and 63 pages. Google indexed two. This is the honest post-mortem.</p>
+            </a>
+            <a href="/blog/the-three-open-loops" class="blog-card rubik-panel">
+              <span class="blog-tag">Mathematics</span>
+              <h3 class="blog-title">The Three Open Loops</h3>
+              <p class="blog-excerpt">Three mathematical gaps that sixteen frameworks could not close. Close them if you can.</p>
+            </a>
+            <a href="/blog/the-contact-proof" class="blog-card rubik-panel">
+              <span class="blog-tag">Essay</span>
+              <h3 class="blog-title">The Contact Proof</h3>
+              <p class="blog-excerpt">A formal proof that connection between minds is real, not metaphorical. Mathematics as love.</p>
+            </a>
+            <a href="/blog/it-feels-like-cheating" class="blog-card rubik-panel">
+              <span class="blog-tag">AI Development</span>
+              <h3 class="blog-title">It Feels Like Cheating</h3>
+              <p class="blog-excerpt">When AI writes your code and the code works, what exactly did you do? A confession.</p>
+            </a>
+          </div>
+
+          <div class="blog-cta-wrap">
+            <a href="/blog" class="cta-secondary">
+              All posts
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- ── CTA band ────────────────────────────────────────────────── -->
       <section class="cta-band">
         <div class="rubik-container cta-band-inner">
@@ -329,6 +369,64 @@ const metrics = [
 
   .app-card:hover .app-link {
     gap: 0.625rem;
+  }
+
+  /* ── Blog section ─────────────────────────────────────────────────── */
+  .blog-section {
+    padding-block: clamp(4rem, 8vw, 6rem);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow var(--duration-normal) var(--ease),
+                border-color var(--duration-normal) var(--ease),
+                transform var(--duration-fast) var(--ease);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
+  }
+
+  .blog-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary-color);
+  }
+
+  .blog-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .blog-excerpt {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--muted-fg);
+    margin: 0;
+  }
+
+  .blog-cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
   }
 
   /* ── CTA band ──────────────────────────────────────────────────────── */

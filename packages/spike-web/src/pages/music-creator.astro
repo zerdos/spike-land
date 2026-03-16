@@ -1,0 +1,25 @@
+---
+import MusicCreator from '../components/react/music-creator/MusicCreator.tsx';
+import TrackPageView from '../components/TrackPageView.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Music Creator — spike.land</title>
+    <meta name="description" content="Browser-based French house music sequencer. Build beats in real-time with Web Audio synthesis." />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: auto; -webkit-text-size-adjust: 100%; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    </style>
+    <TrackPageView />
+  </head>
+  <body>
+    <MusicCreator client:only="react" />
+  </body>
+</html>

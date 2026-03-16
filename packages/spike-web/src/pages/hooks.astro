@@ -1,0 +1,22 @@
+---
+import HooksExplorer from '../components/react/hooks-explorer/HooksExplorer.tsx';
+import TrackPageView from '../components/TrackPageView.astro';
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Hooks Explorer — spike.land</title>
+    <meta name="description" content="Learn React hooks through real-life analogies. Interactive demos that make useState, useEffect, useRef, and more click instantly." />
+    <meta name="theme-color" content="#0a0a0a" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: auto; -webkit-text-size-adjust: 100%; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    </style>
+    <TrackPageView />
+  </head>
+  <body>
+    <HooksExplorer client:only="react" />
+  </body>
+</html>

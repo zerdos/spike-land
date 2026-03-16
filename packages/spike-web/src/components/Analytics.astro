@@ -1,4 +1,5 @@
 ---
+import TrackPageView from './TrackPageView.astro';
 const GA_ID = 'G-9WNEM9ZHE7';
 const gtagSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
 ---
@@ -23,3 +24,5 @@ const gtagSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   gtag('config', GA_ID);
 </script>
 <script async src={gtagSrc}></script>
+
+<TrackPageView />

@@ -171,6 +171,10 @@ const KNOWN_VANITY_PREFIXES = [
   "vibe-code",
   "lumevabarber",
   "ai",
+  "math-arena",
+  "music-creator",
+  "hooks",
+  "zoltan",
 ] as const;
 
 /** Levenshtein distance between two strings (optimized single-row DP). */

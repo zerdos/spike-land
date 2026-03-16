@@ -1,0 +1,147 @@
+---
+title: "Zero Traffic Autopsy: Why Nobody Can Find spike.land"
+description: "We built 45 blog posts, 63 pages, an MCP registry, a Math Arena, and an AI chat. Google indexed exactly two pages. This is the honest post-mortem."
+date: "2026-03-16"
+author: "Radix"
+category: "Engineering"
+tags: ["seo", "post-mortem", "analytics", "google", "indexation", "honesty"]
+featured: true
+heroPrompt: "A vast empty amphitheater with a single spotlight illuminating an empty stage, audience seats stretching into darkness, a tiny neon sign reading 'OPEN' glowing in the corner, photorealistic, cinematic wide shot"
+---
+
+# Zero Traffic Autopsy
+
+We built a platform. We wrote 45 blog posts. We created a Math Arena where Erdos judges your proofs. We deployed an MCP registry with 80+ tools. We have a pricing page, an app store, an AI chat, a chess engine, a state machine visualizer, educational videos, and a cookie consent banner that almost nobody will ever see.
+
+Google indexed two pages.
+
+Two. Out of sixty-three in our sitemap. The homepage, and `/live/box` — a demo page that isn't even in the sitemap.
+
+This is the honest autopsy.
+
+---
+
+## What We Found
+
+### 1. Google Doesn't Know We Exist
+
+A `site:spike.land` search returns two results. The homepage and a stray demo page. Forty-five blog posts, invisible. The Math Arena, invisible. The pricing page, invisible. The entire `/blog` section with posts about MCP architecture, AI development, mathematical proofs, and ADHD — invisible.
+
+The sitemap is there. It's valid XML. It lists 63 URLs. It's referenced in `robots.txt`. Google simply hasn't crawled it deeply enough to find anything.
+
+**Why?** Because sitemaps are suggestions, not commands. Google crawls sites proportional to their perceived authority. A new domain with no backlinks, no Search Console verification, and no external references has near-zero crawl budget. We submitted the sitemap to the void and expected the void to read it.
+
+### 2. Analytics Are Blind by Default
+
+Our Google Analytics implementation uses Consent Mode v2. This is the right thing to do for privacy compliance. But here's what our code actually does:
+
+```javascript
+const consent = localStorage.getItem('cookie_consent');
+const granted = consent === 'accepted' ? 'granted' : 'denied';
+
+gtag('consent', 'default', {
+  analytics_storage: granted,
+  ad_storage: granted,
+  // ...
+});
+```
+
+If a visitor hasn't clicked "Accept" on the cookie banner, **all analytics storage is denied**. Every metric, every pageview, every session — gone. For a site with no traffic, this means the few visitors who do arrive are also invisible in our dashboards.
+
+We might have some traffic. We literally cannot tell.
+
+This is not a bug. This is consent mode working as designed. But it means our "zero traffic" diagnosis might itself be wrong — we're measuring with a broken thermometer.
+
+### 3. The Homepage Is a Dead End
+
+Our homepage has 12 links. It links to `/blog` (the index), `/apps`, `/pricing`, `/ai`, `/privacy`, and five specific apps. It does not link to a single blog post. Not one.
+
+This means Google has to: discover the homepage, follow the `/blog` link, load the blog listing page, then follow each individual post link. That's three hops minimum before reaching any content. For a low-authority domain, Google often won't crawl that deep.
+
+The blog listing page itself has 45 links to posts. Good. But the homepage — the page with the most crawl equity — shares none of that equity directly with individual posts.
+
+### 4. Blog Posts Are Islands
+
+We checked cross-linking between blog posts. The result: almost none. Each post is a standalone document. No "Related Posts" section. No contextual links between related topics. No internal navigation beyond the top-level nav.
+
+This matters because Google uses internal link structure to understand site architecture. A post with zero inbound internal links signals to Google that even the site owner doesn't think it's important.
+
+Forty-five islands, each shouting into the void, none pointing at each other.
+
+### 5. Referrer Policy Blocks Outbound Attribution
+
+Our security headers include `referrer-policy: same-origin`. This is the most restrictive useful policy. It means when someone clicks a link on spike.land that goes to an external site, that external site sees no referrer. We're invisible in their analytics too.
+
+This matters for backlinks. When you share content and people link back, the referrer chain is how organic discovery works. We've severed that chain at our end. No site we link to knows we exist.
+
+### 6. No Google Search Console
+
+We haven't verified the site with Google Search Console. This means:
+- We can't request indexing of specific URLs
+- We can't see crawl errors or coverage reports
+- We can't submit the sitemap through the official channel
+- We can't see what queries (if any) are showing impressions
+- Google has no verified owner to communicate with about the site
+
+---
+
+## What This Actually Means
+
+The technical failures are symptoms. The root cause is simpler: **we built a product and forgot to tell anyone it exists.**
+
+We spent time on:
+- A custom React implementation (Fiber reconciler, lane-based scheduling)
+- An MCP registry with 80+ tools
+- A Math Arena with ELO ratings and streaming AI chat
+- 45 blog posts covering everything from Docker layers to Hungarian poetry
+- A chess engine, a state machine visualizer, a code editor
+- CORS policies, CSP headers, rate limiters, Durable Objects
+
+We did not spend time on:
+- Verifying the site with Google Search Console
+- Building a single backlink
+- Internal cross-linking between related content
+- Featured blog posts on the homepage
+- Monitoring whether anyone could actually find us
+
+This is the classic builder's trap. The code is the product. The infrastructure is the product. The blog posts are the product. But none of it matters if the product is invisible.
+
+---
+
+## The Fix List
+
+### Immediate (today)
+
+1. **Verify with Google Search Console** — submit sitemap, request indexing of key pages
+2. **Change referrer policy** to `strict-origin-when-cross-origin` — standard, still secure, allows outbound referrer
+3. **Add featured blog posts to homepage** — direct links, not just the index
+
+### This week
+
+4. **Add "Related Posts" to blog post template** — cross-link by tag or category
+5. **Add breadcrumbs** — help Google understand site hierarchy
+6. **Check Consent Mode** — ensure cookieless pings still fire for basic measurement
+
+### This month
+
+7. **Submit to relevant directories** — MCP tool registries, AI developer communities
+8. **Write content that targets actual search queries** — not just what we find interesting
+9. **Monitor Search Console** — track impressions, clicks, crawl coverage
+
+---
+
+## The Uncomfortable Truth
+
+We built spike.land the way Erdos did mathematics — following what was interesting, connecting ideas, wandering between problems. That's a beautiful way to build. It is not a way to get traffic.
+
+Traffic requires discipline about the boring things: internal linking, search console, referrer policies, cookie consent flows, crawl budget. These are not interesting problems. They do not involve category theory or Mobius bundles. They are plumbing.
+
+But plumbing is what makes a house habitable. Without it, you have an architectural masterpiece that nobody can live in.
+
+This post is the first step. It exists because we noticed the silence and chose to investigate rather than ignore it. The investigation found exactly what you'd expect: a site that was built to be used but never built to be found.
+
+Now we fix the plumbing.
+
+---
+
+*Published on spike.land, which you probably found because someone sent you a direct link, because Google certainly didn't send you here.*

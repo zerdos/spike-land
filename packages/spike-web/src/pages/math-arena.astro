@@ -1,0 +1,25 @@
+---
+import MathArena from '../components/react/math-arena/MathArena.tsx';
+import TrackPageView from '../components/TrackPageView.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Math Arena — spike.land</title>
+    <meta name="description" content="Three open mathematical loops. Close them if you can. Erdős judges." />
+    <meta name="theme-color" content="#dc2626" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: auto; -webkit-text-size-adjust: 100%; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    </style>
+    <TrackPageView />
+  </head>
+  <body>
+    <MathArena client:only="react" />
+  </body>
+</html>

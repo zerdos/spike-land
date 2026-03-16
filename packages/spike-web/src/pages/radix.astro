@@ -1,5 +1,6 @@
 ---
 import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
+import TrackPageView from '../components/TrackPageView.astro';
 ---
 
 <html lang="en">
@@ -16,6 +17,7 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
       html, body { height: 100%; overflow: hidden; -webkit-text-size-adjust: 100%; }
       body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     </style>
+    <TrackPageView />
   </head>
   <body>
     <RadixChat client:only="react" />

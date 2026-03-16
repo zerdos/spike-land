@@ -1,0 +1,27 @@
+<!-- First-party pageview tracking — no cookies, no consent needed -->
+<script is:inline>
+  (function() {
+    if (window.__spkAnalyticsSent) return;
+    window.__spkAnalyticsSent = true;
+    var p = JSON.stringify([{
+      source: 'spike-web',
+      eventType: 'page_view',
+      metadata: {
+        path: location.pathname,
+        referrer: document.referrer || '',
+        title: document.title || '',
+        userAgent: navigator.userAgent.slice(0, 200)
+      }
+    }]);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/analytics/ingest', new Blob([p], { type: 'application/json' }));
+    } else {
+      fetch('/analytics/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: p,
+        keepalive: true
+      }).catch(function() {});
+    }
+  })();
+</script>
