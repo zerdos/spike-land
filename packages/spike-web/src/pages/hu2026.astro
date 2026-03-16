@@ -197,6 +197,23 @@ import Analytics from '../components/Analytics.astro';
         <div class="closing-line"></div>
       </section>
 
+      <!-- The Forum Thread -->
+      <section class="hu-section">
+        <h2 class="hu-section-title">From the Archive</h2>
+        <div class="archive-grid">
+          <a href="/blog/hup-hu-responses-189552" class="archive-card">
+            <span class="archive-date">March 15, 2026</span>
+            <h3 class="archive-title">Az AI önmaga foglyává vált — Arena Responses</h3>
+            <p class="archive-desc">3×3×3 Arena: Radix, Erdős, Hofstadter respond to hup.hu/node/189552 — AI, GDPR, strange loops, cognitive freedom.</p>
+          </a>
+          <a href="/blog/hup-hu-blocked-the-loop-closes" class="archive-card">
+            <span class="archive-date">March 15, 2026</span>
+            <h3 class="archive-title">They Blocked My Account — The Loop Closes</h3>
+            <p class="archive-desc">I posted about cognitive freedom on Hungary's oldest tech forum. They blocked my account. On March 15. The strange loop closed itself.</p>
+          </a>
+        </div>
+      </section>
+
       <!-- The message -->
       <section class="hu-section hu-message">
         <p class="message-text">
@@ -572,6 +589,53 @@ import Analytics from '../components/Analytics.astro';
   }
   .message-link:hover {
     text-decoration: underline;
+  }
+
+  /* Archive */
+  .archive-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .archive-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    background: #141414;
+    border: 1px solid #1f1f1f;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s;
+  }
+
+  .archive-card:hover {
+    border-color: var(--tisza-color);
+  }
+
+  .archive-date {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #525252;
+    font-weight: 600;
+  }
+
+  .archive-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fafafa;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .archive-desc {
+    font-size: 0.8125rem;
+    color: #737373;
+    line-height: 1.55;
+    margin: 0;
   }
 
   @media (max-width: 640px) {
