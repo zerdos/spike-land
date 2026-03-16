@@ -88,6 +88,19 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "Design a synth patch that sounds like the future",
     ],
   },
+  spike: {
+    persona: "spike",
+    title: "Spike",
+    accent: "#3b82f6",
+    greeting: "Hey — welcome to spike.land.",
+    subtitle: "Your expert guide to 80+ MCP tools, the app store, and the entire platform.",
+    placeholder: "What are we building?",
+    suggestions: [
+      "What can spike.land do?",
+      "Show me the best MCP tools for building an app",
+      "How do I connect spike.land to Claude Code?",
+    ],
+  },
 };
 
 interface Props {
