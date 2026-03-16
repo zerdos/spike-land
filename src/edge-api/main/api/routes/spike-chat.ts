@@ -506,16 +506,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
     return c.json({ error: "message too long (max 8000 characters)" }, 400);
   }
 
-  const userId = c.get("userId") as string | undefined;
-  if (!userId) {
-    return c.json({ error: "Authentication required" }, 401);
-  }
-  const userRow = await c.env.DB.prepare("SELECT email FROM users WHERE id = ? LIMIT 1")
-    .bind(userId)
-    .first<{ email: string }>();
-  if (!userRow || !ALLOWED_CHAT_EMAILS.has(userRow.email)) {
-    return c.json({ error: "Forbidden" }, 403);
-  }
+  const userId = (c.get("userId") as string | undefined) ?? `guest-${crypto.randomUUID().slice(0, 8)}`;
 
   const userMessage = body.message.trim();
   const requestId = (c.get("requestId") as string | undefined) ?? crypto.randomUUID();
