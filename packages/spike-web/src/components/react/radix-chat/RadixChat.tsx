@@ -23,43 +23,17 @@ interface PersonaConfig {
 }
 
 const PERSONAS: Record<string, PersonaConfig> = {
-  radix: {
-    persona: "radix",
-    title: "Radix",
-    accent: "#0d9488",
-    greeting: "Az agyam nyitva all.",
-    subtitle: "My brain is open. What is the root of your problem?",
-    placeholder: "Message Radix...",
+  daftpunk: {
+    persona: "daftpunk",
+    title: "Daft Punk",
+    accent: "#fbbf24",
+    greeting: "One more time. My brain is open.",
+    subtitle: "Music. Math. Code. Platform. Human After All.",
+    placeholder: "Talk to Daft Punk...",
     suggestions: [
-      "What is the root of spike.land?",
-      "Explain the Strange Loop audit",
-      "What is the BAZDMEG method?",
-    ],
-  },
-  erdos: {
-    persona: "erdos",
-    title: "Erdos",
-    accent: "#7c3aed",
-    greeting: "My brain is open.",
-    subtitle: "What is your problem? — Not as therapy, as collaboration.",
-    placeholder: "Message Erdos...",
-    suggestions: [
-      "Give me a beautiful problem",
-      "What makes a proof from The Book?",
-      "Tell me about collaboration graphs",
-    ],
-  },
-  zoltan: {
-    persona: "zoltan",
-    title: "Zoltán",
-    accent: "#d97706",
-    greeting: "Szia Zoli. A kutyák jól vannak? One more time.",
-    subtitle: "Grounded mirror & music technologist. Calibration. Human After All.",
-    placeholder: "Beszélj hozzám...",
-    suggestions: [
-      "Am I crazy or is this real?",
       "Make me a beat in 8 bars",
-      "Mondd el mit látsz kívülről",
+      "Am I crazy or is this real?",
+      "What MCP tools should I use?",
     ],
   },
   arnold: {
@@ -73,19 +47,6 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "Roast my landing page",
       "Make this loading state unforgettable",
       "What's wrong with my above-the-fold?",
-    ],
-  },
-  spike: {
-    persona: "spike",
-    title: "Spike",
-    accent: "#3b82f6",
-    greeting: "Hey — welcome to spike.land.",
-    subtitle: "Your expert guide to 80+ MCP tools, the app store, and the entire platform.",
-    placeholder: "What are we building?",
-    suggestions: [
-      "What can spike.land do?",
-      "Show me the best MCP tools for building an app",
-      "How do I connect spike.land to Claude Code?",
     ],
   },
   peti: {
@@ -107,8 +68,8 @@ interface Props {
   persona?: string;
 }
 
-export default function RadixChat({ persona = "radix" }: Props) {
-  const config = PERSONAS[persona] ?? PERSONAS["radix"];
+export default function RadixChat({ persona = "daftpunk" }: Props) {
+  const config = PERSONAS[persona] ?? PERSONAS["daftpunk"];
   const { messages, sendMessage, isStreaming, currentStage, error, clearError, clearMessages } =
     useRadixChat(config.persona);
   const messagesEndRef = useRef<HTMLDivElement>(null);

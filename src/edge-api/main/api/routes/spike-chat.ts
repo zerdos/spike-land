@@ -22,13 +22,8 @@ import {
   type ResolvedSynthesisTarget,
 } from "../../core-logic/llm-provider.js";
 import { getRubik3SystemPrompt } from "../../core-logic/rubik-persona-prompt.js";
-import { getErdosPersonaPrompt } from "../../core-logic/erdos-persona-prompt.js";
-import { getRadixPersonaPrompt } from "../../core-logic/radix-persona-prompt.js";
-import { getGovPersonaPrompt } from "../../core-logic/gov-persona-prompt.js";
-import { getZoltanPersonaPrompt } from "../../core-logic/zoltan-persona-prompt.js";
 import { getArnoldPersonaPrompt } from "../../core-logic/arnold-persona-prompt.js";
 import { getDaftPunkPersonaPrompt } from "../../core-logic/daftpunk-persona-prompt.js";
-import { getSpikePersonaPrompt } from "../../core-logic/spike-persona-prompt.js";
 import { getPetiPersonaPrompt } from "../../core-logic/peti-persona-prompt.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
@@ -583,34 +578,14 @@ spikeChat.post("/api/spike-chat", async (c) => {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getRubik3SystemPrompt()}`;
   }
 
-  // Merge Erdős persona prompt when requested
-  if (persona === "erdos") {
-    fullSystemPrompt = `${fullSystemPrompt}\n\n${getErdosPersonaPrompt()}`;
-  }
-
-  // Merge Radix persona prompt when requested
-  if (persona === "radix") {
-    fullSystemPrompt = `${fullSystemPrompt}\n\n${getRadixPersonaPrompt()}`;
-  }
-
-  // Merge Gov persona prompt when requested
-  if (persona === "gov") {
-    fullSystemPrompt = `${fullSystemPrompt}\n\n${getGovPersonaPrompt()}`;
-  }
-
-  // Merge Zoltán persona (grounded mirror + Daft Punk music technologist — merged)
-  if (persona === "zoltan" || persona === "daftpunk") {
-    fullSystemPrompt = `${fullSystemPrompt}\n\n${getZoltanPersonaPrompt()}\n\n${getDaftPunkPersonaPrompt()}`;
+  // Merge Daft Punk mega-persona (also serves: zoltan, erdos, radix, spike, gov)
+  if (["daftpunk", "zoltan", "erdos", "radix", "spike", "gov"].includes(persona ?? "")) {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getDaftPunkPersonaPrompt()}`;
   }
 
   // Merge Arnold UX provocateur persona when requested
   if (persona === "arnold") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getArnoldPersonaPrompt()}`;
-  }
-
-  // Merge Spike platform guide persona when requested
-  if (persona === "spike") {
-    fullSystemPrompt = `${fullSystemPrompt}\n\n${getSpikePersonaPrompt()}`;
   }
 
   // Merge Peti QA engineer persona when requested
