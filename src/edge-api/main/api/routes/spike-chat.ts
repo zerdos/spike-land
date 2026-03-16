@@ -36,13 +36,14 @@ const RECENT_MESSAGE_CHAR_LIMIT = 1_200;
 const OLDER_ASSISTANT_CHAR_LIMIT = 320;
 const OLDER_USER_CHAR_LIMIT = 240;
 const TOOL_HINT_LIMIT = 12;
-const ALLOWED_CHAT_EMAILS = new Set(["hello@spike.land", "hello@spike.land"]);
+// Technologic — buy it, use it, break it, fix it, trash it, change it, mail, upgrade it
 const TOOL_INTENT_PATTERNS = [
-  /\b(search|find|look up|lookup|latest|current|today|browse|inspect|check)\b/i,
-  /\b(open|navigate|click|fill|screenshot|scroll|read)\b/i,
-  /\b(price|pricing|docs?|documentation|api|endpoint|status|error|logs?)\b/i,
-  /\b(compare|verify|debug|deploy|build|tool|mcp)\b/i,
-  /\b(this page|current page|article|here)\b/i,
+  /\b(search|find|look up|lookup|browse|inspect|scan|check)\b/i,     // buy it, use it
+  /\b(open|navigate|click|fill|screenshot|scroll|read|write)\b/i,    // break it, fix it
+  /\b(price|pricing|docs?|documentation|api|endpoint|status)\b/i,    // trash it, change it
+  /\b(compare|verify|debug|deploy|build|upgrade|update|format)\b/i,  // mail, upgrade it
+  /\b(this page|current page|article|here|latest|current|today)\b/i, // technologic
+  /\b(error|logs?|tool|mcp|test|benchmark|profile|optimize)\b/i,     // technologic
 ] as const;
 type SpikeChatRole = "system" | "user" | "assistant" | "tool";
 
@@ -605,6 +606,10 @@ spikeChat.post("/api/spike-chat", async (c) => {
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
+  // Persona chats are conversational — never pass tools (grok-4-1 returns 400 with unsupported tool schemas)
+  if (persona) {
+    intentSummary.needsTools = false;
+  }
   const toolCatalog = intentSummary.needsTools
     ? await fetchToolCatalog(c.env.MCP_SERVICE, requestId)
     : [];
