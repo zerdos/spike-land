@@ -75,6 +75,19 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "What's wrong with my above-the-fold?",
     ],
   },
+  daftpunk: {
+    persona: "daftpunk",
+    title: "Daft Punk",
+    accent: "#fbbf24",
+    greeting: "One more time.",
+    subtitle: "Music is technology. Technology is music. Human After All.",
+    placeholder: "Describe your sound...",
+    suggestions: [
+      "Make me a beat in 8 bars",
+      "How do I make that classic French house filter?",
+      "Design a synth patch that sounds like the future",
+    ],
+  },
 };
 
 interface Props {

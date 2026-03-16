@@ -27,6 +27,7 @@ import { getRadixPersonaPrompt } from "../../core-logic/radix-persona-prompt.js"
 import { getGovPersonaPrompt } from "../../core-logic/gov-persona-prompt.js";
 import { getZoltanPersonaPrompt } from "../../core-logic/zoltan-persona-prompt.js";
 import { getArnoldPersonaPrompt } from "../../core-logic/arnold-persona-prompt.js";
+import { getDaftPunkPersonaPrompt } from "../../core-logic/daftpunk-persona-prompt.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
@@ -603,6 +604,11 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Merge Arnold UX provocateur persona when requested
   if (persona === "arnold") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getArnoldPersonaPrompt()}`;
+  }
+
+  // Merge Daft Punk music technologist persona when requested
+  if (persona === "daftpunk") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getDaftPunkPersonaPrompt()}`;
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
