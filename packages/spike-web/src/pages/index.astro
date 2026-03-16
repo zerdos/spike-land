@@ -7,6 +7,7 @@ import Whisper from '../components/typography/Whisper.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { appCatalog } from '../data/apps';
+import { PrdFilterDemo } from '../../../../src/core/block-website/ui/PrdFilterDemo';
 
 const features = appCatalog;
 
@@ -70,6 +71,9 @@ const metrics = [
           ))}
         </div>
       </section>
+
+      <!-- ── PRD Filter Demo ──────────────────────────────────────────── -->
+      <PrdFilterDemo client:visible />
 
       <!-- ── Apps grid ───────────────────────────────────────────────── -->
       <section class="apps-section" id="apps">
