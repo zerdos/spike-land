@@ -101,6 +101,19 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "Help me design for failure",
     ],
   },
+  erdos: {
+    persona: "erdos",
+    title: "Erdős",
+    accent: "#4f46e5",
+    greeting: "My brain is open. What problem shall we work on today?",
+    subtitle: "Mathematics. Collaboration. Elegance. The Book.",
+    placeholder: "Pose a problem to Erdős...",
+    suggestions: [
+      "Is this solution from The Book?",
+      "Help me think about this combinatorially",
+      "What would the probabilistic method say?",
+    ],
+  },
   switchboard: {
     persona: "switchboard",
     title: "Switchboard",

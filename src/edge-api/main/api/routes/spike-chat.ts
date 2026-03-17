@@ -31,6 +31,7 @@ import { getDaftPunkPersonaPrompt } from "../../core-logic/daftpunk-persona-prom
 import { getGPPersonaPrompt } from "../../core-logic/gp-persona-prompt.js";
 import { getRajuPersonaPrompt } from "../../core-logic/raju-persona-prompt.js";
 import { getSwitchboardPersonaPrompt } from "../../core-logic/switchboard-persona-prompt.js";
+import { getErdosPersonaPrompt } from "../../core-logic/erdos-persona-prompt.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
@@ -608,8 +609,8 @@ spikeChat.post("/api/spike-chat", async (c) => {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getRubik3SystemPrompt()}`;
   }
 
-  // Zoltan mega-persona (also serves legacy slugs: erdos, radix, spike, gov, zoli)
-  if (["zoltan", "zoli", "erdos", "radix", "spike", "gov"].includes(persona ?? "")) {
+  // Zoltan mega-persona (also serves legacy slugs: radix, spike, gov, zoli)
+  if (["zoltan", "zoli", "radix", "spike", "gov"].includes(persona ?? "")) {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getZoltanMegaPersonaPrompt()}`;
   }
 
@@ -641,6 +642,11 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Switchboard UK consumer advocacy persona
   if (persona === "switchboard") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getSwitchboardPersonaPrompt()}`;
+  }
+
+  // Erdős mathematical collaboration persona
+  if (persona === "erdos") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getErdosPersonaPrompt()}`;
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
