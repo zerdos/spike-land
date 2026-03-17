@@ -173,8 +173,8 @@ describe("kindToCategory", () => {
     expect(kindToCategory["library"]).toBe("core");
   });
 
-  it("maps block to core", () => {
-    expect(kindToCategory["block"]).toBe("core");
+  it("maps block to frontend (blocks contain React UI)", () => {
+    expect(kindToCategory["block"]).toBe("frontend");
   });
 });
 

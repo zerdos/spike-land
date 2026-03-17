@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { MovePlan } from "./types.js";
+import type { MovePlan, LintResult } from "./types.js";
 
 export function reportDryRun(plans: MovePlan[]) {
   const stats = new Map<string, number>();
@@ -34,4 +34,62 @@ export function reportDiff(plans: MovePlan[]) {
     console.log(`    → ${p.targetRelPath}`);
   }
   console.log(`\nTotal: ${plans.length} files`);
+}
+
+// ── Lint reporting ───────────────────────────────────────────────────────────
+
+export function reportLint(result: LintResult, json: boolean): void {
+  if (json) {
+    const output = {
+      passed: result.passed,
+      stats: result.stats,
+      violations: result.violations.map((v) => ({
+        rule: v.rule,
+        severity: v.severity,
+        package: v.package,
+        file: v.file,
+        message: v.message,
+      })),
+    };
+    console.log(JSON.stringify(output, null, 2));
+    return;
+  }
+
+  // Human-readable output
+  const { stats, violations, passed } = result;
+
+  if (violations.length === 0) {
+    console.log(
+      `Lint passed. ${stats.files} files, ${stats.packages} packages, ${stats.rules} rules. (${stats.duration}ms)`,
+    );
+    return;
+  }
+
+  // Group by rule
+  const byRule = new Map<string, typeof violations>();
+  for (const v of violations) {
+    if (!byRule.has(v.rule)) byRule.set(v.rule, []);
+    byRule.get(v.rule)!.push(v);
+  }
+
+  console.log("");
+  for (const [rule, vs] of byRule) {
+    const icon = vs[0].severity === "error" ? "✗" : "⚠";
+    console.log(`${icon} ${rule} (${vs.length})`);
+    // Show up to 5 per rule, then summary
+    const show = vs.slice(0, 5);
+    for (const v of show) {
+      console.log(`    ${v.package}: ${v.message}`);
+      console.log(`    ${v.file}`);
+    }
+    if (vs.length > 5) {
+      console.log(`    ... and ${vs.length - 5} more`);
+    }
+    console.log("");
+  }
+
+  const summary = passed
+    ? `Lint passed with ${stats.warnings} warning(s).`
+    : `Lint FAILED: ${stats.errors} error(s), ${stats.warnings} warning(s).`;
+  console.log(`${summary} (${stats.files} files, ${stats.packages} packages, ${stats.duration}ms)`);
 }
