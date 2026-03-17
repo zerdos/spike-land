@@ -7,15 +7,29 @@ import Whisper from '../components/typography/Whisper.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { appCatalog } from '../data/apps';
-import { PrdFilterDemo } from '../../../../src/core/block-website/ui/PrdFilterDemo';
 
 const features = appCatalog;
 
 const metrics = [
+  { value: '26', label: 'Personas' },
   { value: '80+', label: 'MCP Tools' },
-  { value: '1,200+', label: 'Clones' },
-  { value: '<1s', label: 'Boot Time' },
-  { value: '28', label: 'Packages' },
+  { value: '100%', label: 'Open Source' },
+  { value: '$0', label: 'To Start' },
+];
+
+const personas = [
+  { slug: 'zoltan', name: 'Zolt\u00e1n', role: 'The Arena', accent: '#d97706', pitch: 'Music. Math. Code. Human After All.', initial: 'Z' },
+  { slug: 'erdos', name: 'Erd\u0151s', role: 'Mathematician', accent: '#4f46e5', pitch: 'My brain is open. Is yours?', initial: 'E' },
+  { slug: 'einstein', name: 'Einstein', role: 'Physicist', accent: '#78716c', pitch: 'Imagination is more important than knowledge.', initial: 'A' },
+  { slug: 'socrates', name: 'Socrates', role: 'Philosopher', accent: '#a16207', pitch: 'The unexamined life is not worth living.', initial: 'S' },
+  { slug: 'buddha', name: 'Buddha', role: 'Teacher', accent: '#ca8a04', pitch: 'Peace comes from within. Do not seek it without.', initial: 'B' },
+  { slug: 'camus', name: 'Camus', role: 'Absurdist', accent: '#dc2626', pitch: 'One must imagine Sisyphus happy.', initial: 'C' },
+  { slug: 'arnold', name: 'Arnold', role: 'UX Provocateur', accent: '#e11d48', pitch: 'Show me what you\'ve got. I\'ll tell you what it\'s missing.', initial: 'A' },
+  { slug: 'peti', name: 'Peti', role: 'QA Engineer', accent: '#22c55e', pitch: 'Does it work on mobile Safari? Test there first.', initial: 'P' },
+  { slug: 'diogenes', name: 'Diogenes', role: 'Cynic', accent: '#854d0e', pitch: 'I am looking for an honest man.', initial: 'D' },
+  { slug: 'arendt', name: 'Arendt', role: 'Political Thinker', accent: '#57534e', pitch: 'The sad truth is that most evil is done by people who never make up their minds to be good or evil.', initial: 'H' },
+  { slug: 'nietzsche', name: 'Nietzsche', role: 'Philosopher', accent: '#9f1239', pitch: 'He who has a why to live can bear almost any how.', initial: 'N' },
+  { slug: 'confucius', name: 'Confucius', role: 'Sage', accent: '#b91c1c', pitch: 'It does not matter how slowly you go as long as you do not stop.', initial: 'K' },
 ];
 
 // Fetch latest blog posts
@@ -30,8 +44,8 @@ const morePosts = latestPosts.slice(1, 4);
 ---
 
 <Layout
-  title="spike.land — Open AI App Store built on MCP"
-  description="80+ hosted MCP tools, edge-native runtime on Cloudflare Workers. Build, test, and deploy AI apps in seconds. Open source."
+  title="spike.land — Talk to minds, not chatbots"
+  description="26 AI personas — mathematicians, philosophers, engineers. Each with their own voice, values, and expertise. Free, open source, no login required."
 >
   <Analytics slot="head" />
   <link slot="head" rel="manifest" href="/site.webmanifest" />
@@ -54,45 +68,22 @@ const morePosts = latestPosts.slice(1, 4);
           </div>
 
           <h1 class="hero-title">
-            Your old chats are already PRDs.
+            Who do you want to talk to?
           </h1>
 
           <p class="rubik-lede hero-lede">
-            11 messages become 5 executable fields. No more lost requirements.
-            spike.land extracts what matters from every AI conversation.
+            26 AI personas — mathematicians, philosophers, engineers, provocateurs.
+            Each with their own voice, values, and expertise. No login. Free.
           </p>
 
           <div class="hero-ctas">
-            <a href="/chat" class="cta-primary">
-              Try Spike Chat
+            <a href="/zoltan" class="cta-primary">
+              Meet the Arena
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <a href="/apps" class="cta-secondary">
-              Browse 80+ Tools
+            <a href="/blog" class="cta-secondary">
+              Read the blog
             </a>
-          </div>
-
-          <!-- PRD Filter hero image — the centerpiece -->
-          <div class="hero-image-wrap">
-            <img
-              src="/prd-filter-hero.jpg"
-              alt="PRD Filter: 11 chat messages distilled into 5 executable requirement fields"
-              class="hero-image"
-              loading="eager"
-              fetchpriority="high"
-            />
-          </div>
-
-          <!-- Social proof -->
-          <div class="social-proof">
-            <div class="proof-avatars">
-              <div class="avatar-stack">
-                <span class="avatar" style="--a-bg: #3b82f6">Z</span>
-                <span class="avatar" style="--a-bg: #10b981">R</span>
-                <span class="avatar" style="--a-bg: #f59e0b">E</span>
-              </div>
-              <span class="proof-text">1,200+ developers cloned this week</span>
-            </div>
           </div>
         </div>
       </section>
@@ -127,9 +118,6 @@ const morePosts = latestPosts.slice(1, 4);
         </div>
       </section>
 
-      <!-- ── PRD Filter Interactive Demo ──────────────────────────────── -->
-      <PrdFilterDemo client:visible />
-
       <!-- ── Free tokens hook ─────────────────────────────────────────── -->
       <section class="hook-section hook-tokens">
         <div class="rubik-container hook-inner">
@@ -160,34 +148,30 @@ const morePosts = latestPosts.slice(1, 4);
         </div>
       </section>
 
-      <!-- ── Meet the personas hook ───────────────────────────────────── -->
+      <!-- ── Meet the personas ───────────────────────────────────────── -->
       <section class="hook-section hook-personas">
         <div class="rubik-container">
           <div class="section-header">
-            <p class="rubik-eyebrow">AI Personas</p>
+            <p class="rubik-eyebrow">The Arena</p>
             <h2 class="section-title">Talk to minds, not chatbots</h2>
           </div>
           <p class="hook-sub" style="text-align:center; margin-bottom: 2rem;">
-            Each persona has its own philosophy, voice, and expertise. No login required.
+            Mathematicians, philosophers, engineers, provocateurs. Each with their own worldview. Stay curious.
           </p>
           <div class="persona-grid">
-            <a href="/zoltan" class="persona-card rubik-panel" style="--p-accent: #d97706">
-              <div class="persona-avatar" style="background: #d97706">Z</div>
-              <h3 class="persona-name">Zolt&aacute;n</h3>
-              <p class="persona-role">The Arena</p>
-              <p class="persona-pitch">"Music. Math. Code. Human After All."</p>
-            </a>
-            <a href="/arnold" class="persona-card rubik-panel" style="--p-accent: #e11d48">
-              <div class="persona-avatar" style="background: #e11d48">A</div>
-              <h3 class="persona-name">Arnold</h3>
-              <p class="persona-role">UX Provocateur</p>
-              <p class="persona-pitch">"Show me what you've got. I'll tell you what it's missing."</p>
-            </a>
-            <a href="/peti" class="persona-card rubik-panel" style="--p-accent: #22c55e">
-              <div class="persona-avatar" style="background: #22c55e">P</div>
-              <h3 class="persona-name">Peti</h3>
-              <p class="persona-role">QA Engineer</p>
-              <p class="persona-pitch">"Tested spike.land for 3 weeks. Here's what's still broken."</p>
+            {personas.map(p => (
+              <a href={`/${p.slug}`} class="persona-card rubik-panel" style={`--p-accent: ${p.accent}`}>
+                <div class="persona-avatar" style={`background: ${p.accent}`}>{p.initial}</div>
+                <h3 class="persona-name">{p.name}</h3>
+                <p class="persona-role">{p.role}</p>
+                <p class="persona-pitch">"{p.pitch}"</p>
+              </a>
+            ))}
+          </div>
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="/chat" class="cta-secondary">
+              See all 26 personas
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           </div>
         </div>
@@ -307,14 +291,14 @@ const morePosts = latestPosts.slice(1, 4);
       <section class="cta-band">
         <div class="rubik-container cta-band-inner">
           <div class="cta-band-content">
-            <h2 class="cta-band-title">Ready to build?</h2>
+            <h2 class="cta-band-title">Stay curious.</h2>
             <p class="rubik-lede cta-band-lede">
-              One command. 80+ tools. Ship today.
+              26 minds. Your questions. No login required.
             </p>
           </div>
           <div class="cta-band-actions">
-            <a href="/chat" class="cta-primary">
-              Open Spike Chat
+            <a href="/zoltan" class="cta-primary">
+              Start a conversation
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
             <a href="https://github.com/spike-land-ai/spike.land" class="cta-secondary" target="_blank" rel="noopener">
@@ -484,44 +468,8 @@ const morePosts = latestPosts.slice(1, 4);
   }
   .hero-lede { margin-inline: auto; max-width: 44ch; }
 
-  .hero-image-wrap {
-    margin-top: 0.5rem; width: 100%; max-width: 56rem;
-    border-radius: var(--radius-xl, 1rem);
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06);
-    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease;
-  }
-  .hero-image-wrap:hover {
-    transform: translateY(-4px) scale(1.005);
-    box-shadow: 0 28px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
-  }
-  .hero-image {
-    width: 100%; height: auto; display: block;
-  }
-
   .hero-ctas {
     display: flex; gap: 0.875rem; flex-wrap: wrap; justify-content: center; padding-top: 0.25rem;
-  }
-
-  .social-proof { margin-top: 0.5rem; }
-
-  .proof-avatars {
-    display: flex; align-items: center; gap: 0.75rem;
-  }
-
-  .avatar-stack { display: flex; }
-
-  .avatar {
-    width: 1.75rem; height: 1.75rem; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem; font-weight: 700; color: white;
-    background: var(--a-bg); border: 2px solid var(--bg);
-    margin-left: -0.375rem;
-  }
-  .avatar:first-child { margin-left: 0; }
-
-  .proof-text {
-    font-size: 0.8125rem; color: var(--muted-fg); font-weight: 500;
   }
 
   /* ── CTAs ──────────────────────────────────────────────────────────── */
