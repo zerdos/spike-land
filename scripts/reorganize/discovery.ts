@@ -186,7 +186,7 @@ export async function discoverFiles(
   const nodes: FileNode[] = [];
 
   if (categoryDirs.size > 0) {
-    console.log(`Detected category dirs: ${[...categoryDirs].sort().join(", ")}`);
+    console.error(`Detected category dirs: ${[...categoryDirs].sort().join(", ")}`);
   }
 
   const rootWithSep = root.endsWith("/") ? root : root + "/";

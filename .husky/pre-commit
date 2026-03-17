@@ -20,3 +20,8 @@ STAGED_TS=$(git diff --cached --name-only --diff-filter=ACM -- '*.ts' '*.tsx')
 if [ -n "$STAGED_TS" ]; then
   npx tsc --noEmit --incremental
 fi
+
+# Reorganize lint — check for category violations in src/
+if [ -n "$STAGED_TS" ]; then
+  npx tsx scripts/reorganize.ts --lint --src src --incremental
+fi

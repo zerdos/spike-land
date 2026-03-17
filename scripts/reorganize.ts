@@ -12,8 +12,8 @@ import { readPackagesYaml } from "./reorganize/utils.js";
 import { discoverFiles } from "./reorganize/discovery.js";
 import { propagateDeps, computePackageCategories } from "./reorganize/grouping.js";
 import { computeMovePlans } from "./reorganize/planning.js";
-import { checkLint } from "./reorganize/linting.js";
-import { reportDryRun, reportDiff } from "./reorganize/reporting.js";
+import { runLint, listRules } from "./reorganize/linting.js";
+import { reportDryRun, reportDiff, reportLint } from "./reorganize/reporting.js";
 import {
   rewriteImports,
   updateTsConfigPaths,
@@ -23,11 +23,12 @@ import {
   generateBarrels,
   copyAssets,
 } from "./reorganize/execution.js";
+import type { CliOptions } from "./reorganize/types.js";
 
-async function runReorganization(values: unknown) {
+async function runReorganization(opts: CliOptions) {
   const MAX_BUCKET_SIZE = 20;
-  const outputDir = path.resolve(process.cwd(), values.output as string);
-  const srcDir = path.resolve(process.cwd(), values.src as string);
+  const outputDir = path.resolve(process.cwd(), opts.output);
+  const srcDir = path.resolve(process.cwd(), opts.src);
 
   const packagesYaml = await readPackagesYaml();
 
@@ -36,17 +37,30 @@ async function runReorganization(values: unknown) {
     skipAddingFilesFromTsConfig: true,
   });
 
-  // Incremental mode: only changed files
-  let filesToProcess: string[] = [];
-  if (values.incremental) {
+  // Incremental mode: identify changed files (used to filter lint scope)
+  let changedFiles: Set<string> | null = null;
+  if (opts.incremental) {
     try {
-      const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
-      const srcRel = values.src as string;
-      filesToProcess = stdout
-        .split("\n")
-        .filter((f) => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
-        .map((f) => path.resolve(process.cwd(), f));
-    } catch (_e) {}
+      const stdout = execSync("git diff --name-only HEAD --cached", { encoding: "utf-8" });
+      const srcRel = opts.src;
+      changedFiles = new Set(
+        stdout
+          .split("\n")
+          .filter((f) => f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
+          .map((f) => path.resolve(process.cwd(), f)),
+      );
+      if (changedFiles.size === 0) {
+        // Also check unstaged changes
+        const unstaged = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
+        for (const f of unstaged.split("\n")) {
+          if (f.startsWith(srcRel + "/") && (f.endsWith(".ts") || f.endsWith(".tsx"))) {
+            changedFiles.add(path.resolve(process.cwd(), f));
+          }
+        }
+      }
+    } catch {
+      changedFiles = null; // fallback to full scan
+    }
   }
 
   const allFiles = await glob("**/*.{ts,tsx}", {
@@ -55,42 +69,51 @@ async function runReorganization(values: unknown) {
     absolute: true,
   });
 
-  const _files = filesToProcess.length > 0 ? filesToProcess : allFiles;
   project.addSourceFilesAtPaths(allFiles);
 
   const { nodes, aliasMap, categoryDirs } = await discoverFiles(project, srcDir);
   propagateDeps(nodes);
 
-  // Package-level category assignment
   const packageCategories = computePackageCategories(nodes, packagesYaml);
 
-  const plans = computeMovePlans(nodes, packageCategories, MAX_BUCKET_SIZE, categoryDirs);
+  // ── Lint mode ────────────────────────────────────────────────────────────
+  if (opts.lint) {
+    // In incremental mode, only lint files that changed (but still need full graph for context)
+    const lintNodes =
+      opts.incremental && changedFiles && changedFiles.size > 0
+        ? nodes.filter((n) => changedFiles!.has(n.absPath))
+        : nodes;
 
-  // Lint mode: check for category violations
-  if (values.lint) {
-    const violations = checkLint(nodes, packageCategories);
-    if (violations > 0) {
-      console.error(`Found ${violations} lint violations.`);
+    const result = runLint({
+      nodes: lintNodes,
+      packageCategories,
+      categoryDirs,
+    });
+
+    reportLint(result, opts.json);
+
+    if (!result.passed) {
       process.exit(1);
     }
-    console.log("Lint passed.");
     return;
   }
 
+  // ── Migration mode ───────────────────────────────────────────────────────
+  const plans = computeMovePlans(nodes, packageCategories, MAX_BUCKET_SIZE, categoryDirs);
+
   console.log(`Discovered ${nodes.length} files. Grouping...`);
 
-  // --diff mode: show old path → new path
-  if (values.diff) {
+  if (opts.diff) {
     reportDiff(plans);
     return;
   }
 
-  if (!values.apply) {
+  if (!opts.apply) {
     reportDryRun(plans);
     return;
   }
 
-  console.log(`\nApplying changes to ${values.output}...`);
+  console.log(`\nApplying changes to ${opts.output}...`);
   await fs.rm(outputDir, { recursive: true, force: true });
   await fs.mkdir(outputDir, { recursive: true });
 
@@ -100,7 +123,7 @@ async function runReorganization(values: unknown) {
     pathMapping.set(p.fileNode.absPath, absNewPath);
   }
 
-  // Issue 10: Reversible mapping file
+  // Reversible mapping file
   const reversibleMapping: Record<string, string> = {};
   for (const [oldAbs, newAbs] of pathMapping.entries()) {
     reversibleMapping[path.relative(process.cwd(), oldAbs)] = path.relative(outputDir, newAbs);
@@ -132,12 +155,12 @@ async function runReorganization(values: unknown) {
   await updatePackageJsonWorkspaces(outputDir);
   await generateManifests(plans, outputDir);
 
-  if (values.verify) {
+  if (opts.verify) {
     console.log("\nVerifying...");
     try {
       execSync("npx tsc --noEmit", { stdio: "inherit" });
-      execSync("npx eslint " + values.output, { stdio: "inherit" });
-      execSync("npx vitest run " + values.output, { stdio: "inherit" });
+      execSync("npx eslint " + opts.output, { stdio: "inherit" });
+      execSync("npx vitest run " + opts.output, { stdio: "inherit" });
       console.log("Verification passed!");
     } catch (e) {
       console.error("Verification failed:", e);
@@ -148,27 +171,52 @@ async function runReorganization(values: unknown) {
 async function main() {
   const { values } = parseArgs({
     options: {
-      apply: { type: "boolean" },
-      verify: { type: "boolean" },
-      diff: { type: "boolean" },
-      watch: { type: "boolean" },
-      lint: { type: "boolean" },
-      incremental: { type: "boolean" },
-      src: { type: "string", default: "src-old" },
+      apply: { type: "boolean", default: false },
+      verify: { type: "boolean", default: false },
+      diff: { type: "boolean", default: false },
+      watch: { type: "boolean", default: false },
+      lint: { type: "boolean", default: false },
+      incremental: { type: "boolean", default: false },
+      json: { type: "boolean", default: false },
+      rules: { type: "boolean", default: false },
+      src: { type: "string", default: "src" },
       output: { type: "string", default: "src-reorganized" },
     },
   });
 
-  await runReorganization(values);
+  // --rules: list available lint rules and exit
+  if (values.rules) {
+    const rules = listRules();
+    console.log("\nAvailable lint rules:\n");
+    for (const r of rules) {
+      console.log(`  ${r.name}`);
+      console.log(`    ${r.description}\n`);
+    }
+    return;
+  }
 
-  if (values.watch) {
-    const watchDir = path.resolve(process.cwd(), values.src as string);
+  const opts: CliOptions = {
+    apply: values.apply ?? false,
+    verify: values.verify ?? false,
+    diff: values.diff ?? false,
+    watch: values.watch ?? false,
+    lint: values.lint ?? false,
+    incremental: values.incremental ?? false,
+    json: values.json ?? false,
+    src: values.src ?? "src",
+    output: values.output ?? "src-reorganized",
+  };
+
+  await runReorganization(opts);
+
+  if (opts.watch) {
+    const watchDir = path.resolve(process.cwd(), opts.src);
     console.log(`Watching ${watchDir} for changes...`);
     chokidar
       .watch(watchDir, { persistent: true, ignoreInitial: true })
-      .on("all", async (event, path) => {
-        console.log(`Change detected: ${event} ${path}. Re-running...`);
-        await runReorganization(values).catch(console.error);
+      .on("all", async (event, filePath) => {
+        console.log(`Change detected: ${event} ${filePath}. Re-running...`);
+        await runReorganization(opts).catch(console.error);
       });
   }
 }
