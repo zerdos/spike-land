@@ -78,14 +78,15 @@ email.post("/api/email/send", async (c) => {
   const fromAddress = `${displayName} via spike.land <outreach@spike.land>`;
   const replyTo = req.replyTo ?? userRow.email;
 
-  const result = await sendEmail(resendKey, {
+  const payload = {
     from: fromAddress,
     to: req.to,
     subject: req.subject,
     text: req.body,
-    html: req.html,
     reply_to: replyTo,
-  });
+    ...(req.html ? { html: req.html } : {}),
+  };
+  const result = await sendEmail(resendKey, payload);
 
   // Audit log
   const logStatus = result.ok ? "sent" : "failed";

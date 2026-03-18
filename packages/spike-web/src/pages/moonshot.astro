@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Analytics from '../components/Analytics.astro';
+import { MoonshotArena } from '../../../../src/moonshot-arena/ui/MoonshotArena';
+---
+
+<Layout
+  title="Moonshot — spike.land"
+  description="Minimise suffering, maximise intelligence. The moonshot arena with live generative music."
+>
+  <Analytics slot="head" />
+  <MoonshotArena client:load />
+</Layout>

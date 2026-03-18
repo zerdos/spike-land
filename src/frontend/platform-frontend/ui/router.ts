@@ -215,36 +215,6 @@ const blogPostRoute = createRoute({
   component: withSuspense(() => import("./routes/blog/$slug"), "BlogPostPage"),
 });
 
-// Bugbook routes
-const bugbookRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/bugbook",
-});
-
-const bugbookIndexRoute = createRoute({
-  getParentRoute: () => bugbookRoute,
-  path: "/",
-  component: withSuspense(() => import("./routes/bugbook/bugbook-index.tsx"), "BugbookIndexPage"),
-});
-
-const bugbookDetailRoute = createRoute({
-  getParentRoute: () => bugbookRoute,
-  path: "$bugId",
-  component: withSuspense(() => import("./routes/bugbook/$bugId"), "BugbookDetailPage"),
-});
-
-const bugbookLeaderboardRoute = createRoute({
-  getParentRoute: () => bugbookRoute,
-  path: "leaderboard",
-  component: withSuspense(() => import("./routes/bugbook/leaderboard"), "BugbookLeaderboardPage"),
-});
-
-const bugbookMyReportsRoute = createRoute({
-  getParentRoute: () => bugbookRoute,
-  path: "my-reports",
-  component: withSuspense(() => import("./routes/bugbook/my-reports"), "MyReportsPage"),
-});
-
 // Learn routes
 const learnRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -346,18 +316,6 @@ const legacyToolDetailRedirectRoute = createRoute({
   },
 });
 
-// Agency routes
-const agencyRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/agency",
-});
-
-const agencyPortfolioRoute = createRoute({
-  getParentRoute: () => agencyRoute,
-  path: "portfolio",
-  component: withSuspense(() => import("./agency/PortfolioPage"), "PortfolioPage"),
-});
-
 // MCP routes
 const mcpRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -415,47 +373,12 @@ const whatWeDoRoute = createRoute({
   component: withSuspense(() => import("./routes/what-we-do"), "WhatWeDoPage"),
 });
 
-const quizRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/quiz",
-  component: withSuspense(() => import("./routes/quiz"), "QuizPage"),
-});
-
-const migrateRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/migrate",
-});
-
-const migrateIndexRoute = createRoute({
-  getParentRoute: () => migrateRoute,
-  path: "/",
-  component: withSuspense(() => import("./routes/migrate"), "MigratePage"),
-});
-
-const migrateLiveRoute = createRoute({
-  getParentRoute: () => migrateRoute,
-  path: "live",
-  component: withSuspense(() => import("./routes/migrate/live"), "MigrateLivePage"),
-});
-
-const thankYouRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/thank-you",
-  component: withSuspense(() => import("./routes/thank-you"), "ThankYouPage"),
-});
-
 const buildRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/build",
   beforeLoad: () => {
     throw redirect({ to: "/vibe-code" });
   },
-});
-
-const workshopRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/workshop",
-  component: withSuspense(() => import("./routes/workshop"), "WorkshopPage"),
 });
 
 const vibeCodeRoute = createRoute({
@@ -498,12 +421,6 @@ const learnitTopicRoute = createRoute({
   getParentRoute: () => learnitRoute,
   path: "$topic",
   component: withSuspense(() => import("./routes/learnit/$topic"), "LearnitTopicPage"),
-});
-
-const govRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/gov",
-  component: withSuspense(() => import("./routes/gov"), "GovPage"),
 });
 
 const apiProductsRoute = createRoute({
@@ -554,29 +471,35 @@ const startChecklistRoute = createRoute({
     "SpikeLandStartChecklistPage",
   ),
 });
+import { MoonshotPage } from "./routes/moonshot";
+// ...
+const moonshotRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/moonshot",
+  component: MoonshotPage,
+});
+
+// ...
 
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  moonshotRoute,
   cockpitRoute,
+  // ...
   chatRoute,
   rubikChatRoute,
   bazdmegRoute,
   chessRoute,
   whatWeDoRoute,
-  quizRoute,
-  migrateRoute.addChildren([migrateIndexRoute, migrateLiveRoute]),
-  thankYouRoute,
   vibeCodeRoute,
   buildRoute,
-  workshopRoute,
   toolSurfaceRoute,
   toolsIndexRoute,
   legacyToolDetailRedirectRoute,
   startChecklistRoute,
   aboutRoute,
   securityRoute,
-  govRoute,
   apiProductsRoute,
   analyticsRoute,
   statusRoute,
@@ -596,12 +519,6 @@ const routeTree = rootRoute.addChildren([
   ]),
   docsRoute.addChildren([docsIndexRoute, docsSlugRoute]),
   blogRoute.addChildren([blogIndexRoute, blogPostRoute]),
-  bugbookRoute.addChildren([
-    bugbookIndexRoute,
-    bugbookDetailRoute,
-    bugbookLeaderboardRoute,
-    bugbookMyReportsRoute,
-  ]),
   learnRoute.addChildren([learnIndexRoute, learnSessionRoute, learnBadgeRoute]),
   messagesRoute.addChildren([messagesIndexRoute, messageThreadRoute]),
   appsRoute.addChildren([
@@ -610,7 +527,6 @@ const routeTree = rootRoute.addChildren([
     appSessionRoute,
   ]),
   mcpRoute.addChildren([mcpIndexRoute, mcpAuthorizeRoute]),
-  agencyRoute.addChildren([agencyPortfolioRoute]),
   createPageRoute.addChildren([createIndexRoute, createAppRoute]),
   learnitRoute.addChildren([learnitIndexRoute, learnitTopicRoute]),
   lumevabarberRoute.addChildren([

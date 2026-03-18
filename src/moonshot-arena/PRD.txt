@@ -1,0 +1,82 @@
+PRD: Automatic Music Player Widget for Moonshot Arena Chat
+==========================================================
+
+Version: 1.0
+Date: 2026-03-17
+Author: Radix delivery
+Status: In Progress
+
+1. Problem
+----------
+The Moonshot Arena and Spike Chat lack ambient context — users stare at text in
+silence. Music is proven to improve focus (especially lo-fi / ambient for deep
+work). The arena should feel alive, not clinical.
+
+2. Solution
+-----------
+An auto-playing music widget embedded in the Moonshot Arena page. It uses the
+Web Audio API + HTML5 Audio to stream curated ambient tracks. The widget is a
+Radix-styled collapsible panel with play/pause, skip, volume, and track info.
+
+3. User Stories
+---------------
+- As a user, I hear ambient music when I open /moonshot so the page feels alive.
+- As a user, I can pause/resume, skip tracks, and adjust volume.
+- As a user, I see the current track name and a visual waveform indicator.
+- As a user, my volume preference persists across sessions (localStorage).
+- As a user, I can collapse the widget to a minimal floating pill.
+
+4. Technical Design
+-------------------
+Components:
+  - MusicWidget (Radix Collapsible + Slider + Toggle)
+  - useAmbientPlayer hook (audio element, play state, track rotation)
+  - Track list: curated royalty-free ambient URLs (placeholder/demo tracks)
+
+State:
+  - isPlaying: boolean
+  - currentTrack: { title, artist, src }
+  - volume: number (0-1, persisted in localStorage)
+  - isCollapsed: boolean
+
+Auto-play policy:
+  - Attempt autoplay on mount. If browser blocks, show a "tap to play" prompt.
+  - Respect user's previous pause state (localStorage).
+
+Stack:
+  - React 19
+  - Radix UI primitives (@radix-ui/react-collapsible, @radix-ui/react-slider,
+    @radix-ui/react-toggle)
+  - Tailwind CSS (existing theme tokens)
+  - framer-motion (already in moonshot-arena)
+
+5. Track List (Demo)
+--------------------
+Royalty-free placeholder URLs. Replace with real CDN assets later.
+  1. "Deep Focus Alpha" — ambient pad loop
+  2. "Orbital Drift" — space synth
+  3. "Neural Garden" — generative piano
+
+6. Acceptance Criteria
+----------------------
+[x] Widget renders in Moonshot Arena below the roadmap section
+[x] Auto-play attempted on page load
+[x] Play/pause toggle works
+[x] Volume slider with localStorage persistence
+[x] Track skip (next)
+[x] Collapsed/expanded states
+[x] Graceful fallback when autoplay is blocked
+[x] No external dependencies beyond Radix + existing stack
+
+7. Non-Goals (v1)
+------------------
+- Playlist customization UI
+- User-uploaded tracks
+- Integration with Spotify/Apple Music APIs
+- Chat-synchronized music (mood-reactive)
+
+8. Future (v2)
+--------------
+- Mood-reactive: classify chat sentiment → adjust music genre
+- Shared listening rooms (via Durable Objects)
+- Pomodoro timer integration
