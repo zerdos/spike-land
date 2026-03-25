@@ -35,6 +35,7 @@ export interface Env {
   CF_CACHE_PURGE_TOKEN: string;
   XAI_API_KEY: string;
   ELEVENLABS_API_KEY: string;
+  RESEND_API_KEY?: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_REFRESH_TOKEN: string;
@@ -53,6 +54,12 @@ export interface Env {
    * Generate with: openssl rand -base64 32
    */
   TOKEN_ENCRYPTION_KEY?: string;
+  /**
+   * 32-byte (256-bit) base64-encoded AES-256-GCM master key for the token bank.
+   * Preferred over TOKEN_ENCRYPTION_KEY for new deployments.
+   * Generate with: openssl rand -base64 32
+   */
+  TOKEN_BANK_KEY?: string;
   ANALYTICS: AnalyticsEngineDataset;
   /** Set to "development" or "local" in dev wrangler config to enable draft posts */
   ENVIRONMENT?: string;

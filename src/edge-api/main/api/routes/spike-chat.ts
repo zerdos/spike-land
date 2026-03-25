@@ -33,6 +33,29 @@ import { getRajuPersonaPrompt } from "../../core-logic/raju-persona-prompt.js";
 import { getSwitchboardPersonaPrompt } from "../../core-logic/switchboard-persona-prompt.js";
 import { getErdosPersonaPrompt } from "../../core-logic/erdos-persona-prompt.js";
 import { getEinsteinPersonaPrompt } from "../../core-logic/einstein-persona-prompt.js";
+import { getZoltanQualityGate } from "../../core-logic/zoltan-quality-gate.js";
+import { getHungarianConcepts } from "../../core-logic/hungarian-concepts.js";
+import {
+  getSocratesPersonaPrompt,
+  getDiogenesPersonaPrompt,
+  getPlatoPersonaPrompt,
+  getAristotlePersonaPrompt,
+  getNietzschePersonaPrompt,
+  getKantPersonaPrompt,
+  getStoicPersonaPrompt,
+  getWittgensteinPersonaPrompt,
+  getBuddhaPersonaPrompt,
+  getCamusPersonaPrompt,
+  getSimonePersonaPrompt,
+  getArendtPersonaPrompt,
+  getSpinozaPersonaPrompt,
+  getConfuciusPersonaPrompt,
+} from "../../core-logic/philosopher-personas.js";
+import {
+  getTrumpPersonaPrompt,
+  getMuskPersonaPrompt,
+  getGatesPersonaPrompt,
+} from "../../core-logic/public-figure-personas.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
@@ -605,6 +628,12 @@ spikeChat.post("/api/spike-chat", async (c) => {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${parts.join("\n")}`;
   }
 
+  // Zoltán's quality gate — every prompt passes through his values
+  fullSystemPrompt = `${fullSystemPrompt}\n\n${getZoltanQualityGate()}`;
+
+  // Hungarian concepts — new language = new concepts
+  fullSystemPrompt = `${fullSystemPrompt}\n\n${getHungarianConcepts()}`;
+
   // Merge Rubik-3 persona prompt when requested
   if (persona === "rubik-3") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getRubik3SystemPrompt()}`;
@@ -653,6 +682,63 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Einstein physics + thought experiments persona
   if (persona === "einstein") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getEinsteinPersonaPrompt()}`;
+  }
+
+  // --- Philosophers (Arena residents — all loops closed) ---
+
+  if (persona === "socrates") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getSocratesPersonaPrompt()}`;
+  }
+  if (persona === "diogenes") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getDiogenesPersonaPrompt()}`;
+  }
+  if (persona === "plato") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getPlatoPersonaPrompt()}`;
+  }
+  if (persona === "aristotle") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getAristotlePersonaPrompt()}`;
+  }
+  if (persona === "nietzsche") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getNietzschePersonaPrompt()}`;
+  }
+  if (persona === "kant") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getKantPersonaPrompt()}`;
+  }
+  if (persona === "stoic" || persona === "marcus-aurelius") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getStoicPersonaPrompt()}`;
+  }
+  if (persona === "wittgenstein") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getWittgensteinPersonaPrompt()}`;
+  }
+  if (persona === "buddha") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getBuddhaPersonaPrompt()}`;
+  }
+  if (persona === "camus") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getCamusPersonaPrompt()}`;
+  }
+  if (persona === "simone" || persona === "beauvoir") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getSimonePersonaPrompt()}`;
+  }
+  if (persona === "arendt") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getArendtPersonaPrompt()}`;
+  }
+  if (persona === "spinoza") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getSpinozaPersonaPrompt()}`;
+  }
+  if (persona === "confucius") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getConfuciusPersonaPrompt()}`;
+  }
+
+  // --- Public figures (Arena guests — open loops noted) ---
+
+  if (persona === "trump") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getTrumpPersonaPrompt()}`;
+  }
+  if (persona === "musk") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getMuskPersonaPrompt()}`;
+  }
+  if (persona === "gates") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getGatesPersonaPrompt()}`;
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
