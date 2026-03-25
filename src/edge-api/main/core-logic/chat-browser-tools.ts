@@ -3,7 +3,7 @@ interface AnthropicTool {
   description: string;
   input_schema: {
     type: "object";
-    properties: Record<string, { type: string; description: string }>;
+    properties: Record<string, Record<string, unknown>>;
     required?: string[];
   };
 }
@@ -135,6 +135,51 @@ export const BROWSER_TOOLS: AnthropicTool[] = [
           type: "string",
           description: "CSS selector to match elements (defaults to all interactive elements)",
         },
+      },
+    },
+  },
+  {
+    name: "music_set_drums",
+    description:
+      "Set the drum pattern for a specific bar (0-7). The pattern is a 16-step array of 0s and 1s.",
+    input_schema: {
+      type: "object",
+      properties: {
+        bar: { type: "number", description: "Bar index (0-7)" },
+        kick: { type: "array", items: { type: "number" }, description: "Kick drum pattern" },
+        snare: { type: "array", items: { type: "number" }, description: "Snare drum pattern" },
+        hihat: { type: "array", items: { type: "number" }, description: "Hi-hat pattern" },
+        clap: { type: "array", items: { type: "number" }, description: "Clap pattern" },
+      },
+      required: ["bar"],
+    },
+  },
+  {
+    name: "music_set_notes",
+    description:
+      "Set the notes for bass, lead, or pad track for a specific bar. Notes format: 'C5:0' means note C5 at step 0.",
+    input_schema: {
+      type: "object",
+      properties: {
+        bar: { type: "number", description: "Bar index (0-7)" },
+        track: { type: "string", description: "Track name: 'bass', 'lead', or 'pad'" },
+        notes: {
+          type: "object",
+          additionalProperties: { type: "number" },
+          description: "Note map, e.g. { 'C1:0': 1, 'C1:4': 1 }",
+        },
+      },
+      required: ["bar", "track", "notes"],
+    },
+  },
+  {
+    name: "music_set_transport",
+    description: "Change the tempo (BPM) or swing.",
+    input_schema: {
+      type: "object",
+      properties: {
+        bpm: { type: "number", description: "Tempo in beats per minute (60-200)" },
+        swing: { type: "number", description: "Swing amount (0.0 to 1.0)" },
       },
     },
   },

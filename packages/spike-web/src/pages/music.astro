@@ -720,6 +720,57 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
     });
   }
 
+  // ── Music Tool Bridge ──────────────────────────────────────────────────────
+  window.getMusicState = function() {
+    return {
+      bpm: st.bpm,
+      swing: st.swing,
+      bars: st.bars
+    };
+  };
+
+  window.handleMusicTool = function(toolName, args) {
+    if (toolName === 'music_set_drums') {
+      var b = st.bars[args.bar];
+      if (!b) return { success: false, error: "Invalid bar" };
+      if (args.kick) b.drums.kick = args.kick;
+      if (args.snare) b.drums.snare = args.snare;
+      if (args.hihat) b.drums.hihat = args.hihat;
+      if (args.clap) b.drums.clap = args.clap;
+      save();
+      rebuildGrids();
+      return { success: true, message: "Drums updated for bar " + args.bar };
+    }
+    if (toolName === 'music_set_notes') {
+      var b = st.bars[args.bar];
+      if (!b) return { success: false, error: "Invalid bar" };
+      var trk = args.track;
+      if (trk === 'bass' || trk === 'lead' || trk === 'pad') {
+        b[trk] = args.notes || {};
+        save();
+        rebuildGrids();
+        return { success: true, message: "Notes updated for " + trk + " on bar " + args.bar };
+      }
+      return { success: false, error: "Invalid track" };
+    }
+    if (toolName === 'music_set_transport') {
+      if (args.bpm) {
+        st.bpm = args.bpm;
+        if (inited) tp().bpm.value = args.bpm;
+        bpmEl.value = args.bpm;
+      }
+      if (args.swing !== undefined) {
+        st.swing = args.swing;
+        if (inited) tp().swing = args.swing;
+        swingEl.value = Math.round(args.swing * 100);
+        swingV.textContent = Math.round(args.swing * 100) + '%';
+      }
+      save();
+      return { success: true, message: "Transport updated" };
+    }
+    return { success: false, error: "Unknown tool" };
+  };
+
 })();
 </script>
 
