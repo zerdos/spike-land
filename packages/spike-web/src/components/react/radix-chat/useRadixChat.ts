@@ -126,6 +126,15 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
           content: m.content,
         }));
 
+        let pageContext: any = undefined;
+        // Inject music state if available globally
+        if (typeof window !== "undefined" && (window as any).getMusicState) {
+          pageContext = {
+            title: "Music Creator",
+            contentSnippet: `Current loop state: ${JSON.stringify((window as any).getMusicState())}`,
+          };
+        }
+
         const baseURL = getBaseURL();
         const res = await fetch(`${baseURL}/api/spike-chat`, {
           method: "POST",
@@ -138,6 +147,7 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
             message: content.trim(),
             history,
             persona,
+            pageContext,
           }),
           signal: abortRef.current.signal,
         });
@@ -183,6 +193,34 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
                     m.id === assistantMsg.id ? { ...m, content: m.content + deltaText } : m,
                   ),
                 );
+              } else if (eventType === "tool_call_start") {
+                const toolName = typeof parsed["name"] === "string" ? parsed["name"] : "";
+                const toolArgs = typeof parsed["args"] === "object" ? parsed["args"] : {};
+                const toolCallId =
+                  typeof parsed["toolCallId"] === "string" ? parsed["toolCallId"] : "";
+
+                if (
+                  toolName.startsWith("music_") &&
+                  typeof window !== "undefined" &&
+                  (window as any).handleMusicTool
+                ) {
+                  try {
+                    const result = await (window as any).handleMusicTool(toolName, toolArgs);
+                    // Send result back to DO session
+                    fetch(`${baseURL}/api/spike-chat/browser-results`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", "x-guest-access": "true" },
+                      credentials: "include",
+                      body: JSON.stringify({
+                        sessionId: `spike-chat-guest`, // Note: backend handles real user id
+                        toolCallId,
+                        result,
+                      }),
+                    }).catch(console.error);
+                  } catch (e) {
+                    console.error("Error executing music tool", e);
+                  }
+                }
               } else if (eventType === "error") {
                 const errMsg =
                   typeof parsed["error"] === "string" ? parsed["error"] : "Unknown error";

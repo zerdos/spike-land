@@ -742,9 +742,12 @@ spikeChat.post("/api/spike-chat", async (c) => {
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);
-  // Persona chats are conversational — never pass tools (grok-4-1 returns 400 with unsupported tool schemas)
-  if (persona) {
+  // Persona chats are conversational — never pass tools, except daftpunk who needs music tools
+  if (persona && persona !== "daftpunk") {
     intentSummary.needsTools = false;
+  }
+  if (persona === "daftpunk") {
+    intentSummary.needsTools = true;
   }
   const toolCatalog = intentSummary.needsTools
     ? await fetchToolCatalog(c.env.MCP_SERVICE, requestId)
