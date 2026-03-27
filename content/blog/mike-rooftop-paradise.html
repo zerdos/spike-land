@@ -126,14 +126,14 @@ const TOTAL_BARS=TOTAL_ROUNDS*BARS_PER_ROUND;
 const H=8,Q=4,E=2,S=1;
 
 // === CHORD ARCHITECTURE (Radix) ===
-// Hypnotic two-chord pulse with extensions for color
+// Warm, bright, playful — major 7ths for beauty, not darkness
 const CHORDS={
-  Dm9:  [38,50,57,60,64,69],   // D2 D3 A3 C4 E4 A4 — dark, floating
-  Am7:  [33,45,57,60,64,67],   // A1 A2 A3 C4 E4 G4 — melancholic home
-  Fmaj9:[41,53,60,65,69,72],   // F2 F3 C4 F4 A4 C5 — wide, dreamy
-  Em7:  [40,52,55,59,64,67],   // E2 E3 G3 B3 E4 G4 — tension, reaching
+  Cmaj7:[36,48,60,64,67,71],   // C2 C3 C4 E4 G4 B4 — bright, open, happy
+  Fmaj7:[41,53,60,65,69,72],   // F2 F3 C4 F4 A4 C5 — warm, wide, dreamy
+  Am7:  [33,45,57,60,64,67],   // A1 A2 A3 C4 E4 G4 — gentle melancholy
+  G:    [35,47,55,59,62,67],   // B1 B2 G3 B3 D4 G4 — lift, resolve
 };
-const PROG=['Dm9','Am7','Fmaj9','Em7'];
+const PROG=['Cmaj7','Fmaj7','Am7','G'];
 
 // === MELODY ARCHITECTURE (Zoltán) ===
 // Hypnotic = repetition with tiny variations. Singable = mostly stepwise.
@@ -169,6 +169,30 @@ const ERDOS_BASS_B=[
   [33,H],[0,H],                  // A1--....
 ];
 
+// === PIANO MELODIES (playful, bouncy, beautiful) ===
+// The piano is the heart — bright, dancing, like sunlight on rooftop tiles
+
+// Piano right hand — playful, skipping, happy
+const PIANO_A=[
+  [72,E],[74,E],[76,Q],          // C-D-E--         (ascending skip)
+  [79,E],[76,E],[74,Q],          // G.E.D--         (playful fall)
+  [72,Q],[0,Q],                  // C-...           (breathe)
+];
+const PIANO_B=[
+  [76,Q],[79,E],[81,E],          // E-G.A.          (reach up!)
+  [79,Q],[76,E],[74,E],          // G-E.D.          (tumble down)
+  [72,H],                        // C---            (land, smile)
+];
+// Piano left hand — gentle arpeggiated accompaniment
+const PIANO_LEFT_A=[
+  [48,E],[52,E],[55,E],[60,E],   // C3.E3.G3.C4    (arpeggio up)
+  [55,E],[52,E],[48,E],[0,E],    // G3.E3.C3.      (arpeggio down)
+];
+const PIANO_LEFT_B=[
+  [53,E],[57,E],[60,E],[65,E],   // F3.A3.C4.F4    (arpeggio up)
+  [60,E],[57,E],[53,E],[0,E],    // C4.A3.F3.      (arpeggio down)
+];
+
 const AABA=[0,0,1,0];
 
 // === BINAURAL (independent) ===
@@ -195,37 +219,37 @@ const ROUNDS=[
    design:'SIGNAL: sine \u00d7 2 (3\u00a2 detune) \u2192 LP 400Hz Q=0.5 \u2192 tremolo LFO 0.25Hz \u2192 master'},
 
   {p:'zoltan',
-   layers:['pulse','melody'],
-   note:'Zolt\u00e1n\u2019s melody enters. Five notes descending \u2014 A, G, E, then C dissolving into space. The hook that @imfurman heard at 2:45. It plays once and you\u2019re already humming it.',
+   layers:['pulse','melody','piano'],
+   note:'Zolt\u00e1n\u2019s melody enters alongside a playful piano. Five notes descending \u2014 A, G, E, then C dissolving into space. The hook that @imfurman heard at 2:45. It plays once and you\u2019re already humming it.',
    design:'SIGNAL: triangle + FM (ratio 1.5, depth 40%) \u2192 BP 1800Hz Q=2 \u2192 delay 0.35fb \u2192 master'},
 
   {p:'erdos',
-   layers:['pulse','melody','bass'],
+   layers:['pulse','melody','bass','piano'],
    note:'Erd\u0151s drops the bass \u2014 probability-weighted root movement. D to A, sometimes F, sometimes silence. The bass decides on each bar whether to play or rest. P(play) = 0.8.',
    design:'SIGNAL: saw \u00d7 2 (6\u00a2 detune) + sub sine (-1 oct) \u2192 LP 300Hz \u2192 env 80ms attack \u2192 master'},
 
   {p:'daft',
-   layers:['pulse','melody','bass','groove','kick'],
-   note:'Daft Punk locks the groove. Staccato eighth notes pulsing through a resonant filter. The kick is soft but deep \u2014 100Hz sweeping to 30Hz. Your body starts moving before your brain decides to.',
+   layers:['pulse','melody','bass','groove','kick','piano'],
+   note:'Daft Punk locks the groove. The piano dances above it all. Staccato eighth notes pulsing through a resonant filter. The kick is soft but deep \u2014 100Hz sweeping to 30Hz. Your body starts moving before your brain decides to.',
    design:'SIGNAL: square (duty sim) \u2192 LP 3000Hz Q=2 \u2192 env 5ms/200ms \u2192 master\nKICK: sine 100\u219230Hz sweep, 400ms decay'},
 
   {p:'radix',
-   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','air','bloom'],
+   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','air','bloom','piano','pianoLeft'],
    note:'THE BLOOM. Round 5. The 2:45 moment. Radix opens every filter simultaneously. The air texture rises \u2014 filtered noise slowly sweeping from 200Hz to 8000Hz. Double pad. Delay feedback at 0.4. Everything expands into infinity.',
    design:'BLOOM: noise \u2192 BP sweep 200\u21928000Hz (8 bars) \u2192 stereo spread\nDELAY: feedback 0.4, filter 3000Hz\nALL FILTERS: +3000Hz'},
 
   {p:'zoltan',
-   layers:['pulse','melody','air'],
-   note:'Strip everything. Just the pulse, the melody, and the air. The @pellullis moment \u2014 "Out of space MOOD." Zolt\u00e1n\u2019s melody exposed, floating in reverb. The city is far below. The rooftop is yours.',
+   layers:['pulse','melody','air','piano'],
+   note:'Strip everything. Pad, melody, piano, and air. The @pellullis moment \u2014 "Out of space MOOD." Zolt\u00e1n\u2019s melody exposed, floating in reverb. The city is far below. The rooftop is yours.',
    design:'MINIMAL: pulse (LP 600Hz) + melody (delay 0.45fb) + air (BP 1200Hz static)'},
 
   {p:'erdos',
-   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','bloom'],
+   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','bloom','piano','pianoLeft'],
    note:'Everything returns with probability. Erd\u0151s: every instrument now has a 15% chance of variation each bar. Notes shift, rests appear, fills emerge. No two loops are identical. "God has a transfinite book of grooves."',
    design:'ALL LAYERS + mutation P=0.15 per note\nGroove fills P=0.3 on beats 12-15'},
 
   {p:'daft',
-   layers:['pulse','melody'],
+   layers:['pulse','melody','piano'],
    note:'Daft Punk says: the ending IS the beginning. Just the pulse and the melody. Fading. The loop point is seamless \u2014 round 8 dissolves into round 1. The rooftop is forever. "The people want more of this."',
    design:'FADE: master gain \u00d70.7 per bar\nLOOP: seamless \u2192 round 1 pad attack covers the seam'},
 ];
@@ -329,7 +353,7 @@ function useRooftopEngine(){
   // Two sines, 3¢ detune, tremolo LFO at 0.25Hz, LP filtered
   const pulse=useCallback((t,notes,dur,filterFreq)=>{
     const c=ctxRef.current;if(!c)return;
-    const lpFreq=filterFreq||400;
+    const lpFreq=filterFreq||900;
     notes.forEach(n=>{
       if(n<45)return; // skip sub-bass range
       const freq=midi2freq(n);
@@ -339,8 +363,8 @@ function useRooftopEngine(){
       const lfo=c.createOscillator();lfo.type='sine';lfo.frequency.value=0.25;
       const lfoG=c.createGain();lfoG.gain.value=0.015; // subtle pulse
       const g=c.createGain();g.gain.setValueAtTime(0,t);
-      g.gain.linearRampToValueAtTime(0.03,t+1.5); // slow swell
-      g.gain.setValueAtTime(0.03,t+dur-2);
+      g.gain.linearRampToValueAtTime(0.04,t+1.0); // warm swell
+      g.gain.setValueAtTime(0.04,t+dur-1.5);
       g.gain.linearRampToValueAtTime(0,t+dur);
       lfo.connect(lfoG).connect(g.gain);
       const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=lpFreq;f.Q.value=0.5;
@@ -358,7 +382,7 @@ function useRooftopEngine(){
     const freq=midi2freq(note);
     // FM modulator — ratio 1.5 for bell-like partial
     const mod=c.createOscillator();mod.type='sine';mod.frequency.value=freq*1.5;
-    const modG=c.createGain();modG.gain.value=freq*0.4; // moderate FM depth
+    const modG=c.createGain();modG.gain.value=freq*0.15; // gentle FM — warm, not eerie
     mod.connect(modG);
     // Carrier
     const o=c.createOscillator();o.type='triangle';o.frequency.value=freq;
@@ -373,7 +397,7 @@ function useRooftopEngine(){
     g.gain.setValueAtTime((vol||0.07)*0.8,t+dur*0.5);
     g.gain.exponentialRampToValueAtTime(0.001,t+dur+1.2);
     // Bandpass — the character
-    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1800;bp.Q.value=2;
+    const bp=c.createBiquadFilter();bp.type='lowpass';bp.frequency.value=4000;bp.Q.value=0.7;
     o.connect(bp);bp.connect(g).connect(masterRef.current);
     o.start(t);o.stop(t+dur+1.3);mod.start(t);mod.stop(t+dur+1.3);vib.start(t);vib.stop(t+dur+1.3);
   },[midi2freq]);
@@ -413,6 +437,37 @@ function useRooftopEngine(){
     f.frequency.exponentialRampToValueAtTime(800,t+0.15);
     o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
     o.start(t);o.stop(t+0.3);o2.start(t);o2.stop(t+0.3);
+  },[midi2freq]);
+
+  // PIANO — beautiful, playful, bright
+  // Sine fundamental + quiet octave + fifth harmonics, fast attack, medium decay
+  // Sounds like a soft upright piano — warm but clear
+  const pianoNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    // Fundamental
+    const o1=c.createOscillator();o1.type='sine';o1.frequency.value=freq;
+    // Octave harmonic (quiet)
+    const o2=c.createOscillator();o2.type='sine';o2.frequency.value=freq*2;
+    // Fifth harmonic (very quiet — adds sparkle)
+    const o3=c.createOscillator();o3.type='sine';o3.frequency.value=freq*3;
+    // Mix gains — fundamental loudest, harmonics add color
+    const g1=c.createGain();g1.gain.value=1.0;
+    const g2=c.createGain();g2.gain.value=0.3;
+    const g3=c.createGain();g3.gain.value=0.08;
+    // Master envelope — fast attack, natural decay
+    const env=c.createGain();env.gain.setValueAtTime(vol||0.08,t);
+    env.gain.setValueAtTime((vol||0.08)*0.7,t+0.05);
+    env.gain.exponentialRampToValueAtTime(0.001,t+Math.min(dur*1.2,1.5));
+    // Gentle lowpass — warmth
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=5000;f.Q.value=0.5;
+    // Filter follows note — higher notes brighter
+    f.frequency.value=3000+freq*2;
+    o1.connect(g1);o2.connect(g2);o3.connect(g3);
+    g1.connect(f);g2.connect(f);g3.connect(f);
+    f.connect(env).connect(masterRef.current);
+    o1.start(t);o1.stop(t+2);o2.start(t);o2.stop(t+2);o3.start(t);o3.stop(t+2);
   },[midi2freq]);
 
   // RADIX: Air Texture — filtered noise, slowly sweeping
@@ -499,7 +554,7 @@ function useRooftopEngine(){
 
     // Filter — opens with intensity, Radix controls
     if(filterRef.current){
-      const baseF=L.includes('bloom')?4500+intens*4000:1200+intens*3500;
+      const baseF=L.includes('bloom')?5000+intens*4000:2000+intens*4000;
       filterRef.current.frequency.setTargetAtTime(baseF,t,0.3);
     }
 
@@ -514,7 +569,7 @@ function useRooftopEngine(){
     // === PULSING PAD (Radix) ===
     if(L.includes('pulse')&&pos===0&&barInRound===0){
       const padNotes=chord.filter(n=>n>=45);
-      const filterF=round===5?600:round===7?500:L.includes('bloom')?1200:400+intens*600;
+      const filterF=round===5?1000:round===7?800:L.includes('bloom')?1800:900+intens*800;
       pulse(t,padNotes,STEP*STEPS_PER_BAR*BARS_PER_ROUND,filterF);
     }
     // Double pad (bloom rounds)
@@ -579,6 +634,33 @@ function useRooftopEngine(){
       if(round===6&&pos>=12&&Math.random()<0.35)hat(t);
     }
 
+    // === PIANO RIGHT HAND (playful melody) ===
+    if(L.includes('piano')){
+      const phrases=[PIANO_A,PIANO_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          let note=s.note;
+          // Erdős mutation in R6
+          if(round===6&&note&&Math.random()<0.12){note+=(Math.random()<0.5?2:-2);}
+          pianoNote(t,note,STEP*s.dur,round>=4?0.09:0.07);
+        }
+      }
+    }
+
+    // === PIANO LEFT HAND (arpeggiated accompaniment) ===
+    if(L.includes('pianoLeft')){
+      const phrases=[PIANO_LEFT_A,PIANO_LEFT_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          pianoNote(t,s.note,STEP*s.dur,0.04); // quieter than right hand
+        }
+      }
+    }
+
     // === AIR TEXTURE (Radix) ===
     if(L.includes('air')&&pos===0&&barInRound===0){
       const dur=STEP*STEPS_PER_BAR*BARS_PER_ROUND;
@@ -594,7 +676,7 @@ function useRooftopEngine(){
 
     schedRef.current=setTimeout(schedule,8);
     return{round,pos,bar:loopBar,intens};
-  },[pulse,melodyVoice,probBass,grooveStab,air,kick,hat,midi2freq]);
+  },[pulse,melodyVoice,probBass,grooveStab,pianoNote,air,kick,hat,midi2freq]);
 
   // Skip to round
   const skipToRound=useCallback((targetRound)=>{
