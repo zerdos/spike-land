@@ -1,0 +1,309 @@
+---
+import TrackPageView from '../components/TrackPageView.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Vibe Code — spike.land</title>
+    <meta name="description" content="Browser-based code editor with live preview. Write TypeScript, JSX, and see results instantly." />
+    <meta name="theme-color" content="#2563eb" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; -webkit-text-size-adjust: 100%; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0a0a0a;
+        color: #e5e5e5;
+      }
+    </style>
+    <TrackPageView />
+  </head>
+  <body>
+    <div class="editor-shell">
+      <!-- Toolbar -->
+      <header class="toolbar">
+        <a href="/" class="logo">spike.land</a>
+        <span class="toolbar-title">Vibe Code</span>
+        <div class="toolbar-actions">
+          <select id="lang-select" class="lang-select">
+            <option value="tsx">TSX</option>
+            <option value="typescript">TypeScript</option>
+            <option value="javascript">JavaScript</option>
+            <option value="css">CSS</option>
+            <option value="html">HTML</option>
+          </select>
+          <button id="run-btn" class="run-btn">Run</button>
+          <button id="layout-btn" class="layout-btn" title="Toggle layout">⟺</button>
+        </div>
+      </header>
+
+      <!-- Split pane -->
+      <div class="split" id="split">
+        <div class="pane pane-editor" id="pane-editor">
+          <textarea id="code-editor" class="code-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+        </div>
+        <div class="divider" id="divider"></div>
+        <div class="pane pane-preview" id="pane-preview">
+          <iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts allow-same-origin" title="Live preview"></iframe>
+          <div id="error-overlay" class="error-overlay" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+    (function () {
+      'use strict';
+
+      var editor = document.getElementById('code-editor');
+      var frame = document.getElementById('preview-frame');
+      var errorOverlay = document.getElementById('error-overlay');
+      var runBtn = document.getElementById('run-btn');
+      var layoutBtn = document.getElementById('layout-btn');
+      var split = document.getElementById('split');
+      var debounceTimer = null;
+      var TRANSPILE_URL = 'https://js.spike.land';
+      var STORAGE_KEY = 'spike-vibe-editor';
+      var DEFAULT_CODE = 'import React from "react";\n\nfunction App() {\n  var [count, setCount] = React.useState(0);\n\n  return (\n    <div style={{ padding: "2rem", fontFamily: "system-ui", textAlign: "center" }}>\n      <h1>Hello from Vibe Code</h1>\n      <p style={{ fontSize: "3rem", margin: "1rem 0" }}>{count}</p>\n      <button\n        onClick={function() { setCount(function(c) { return c + 1; }); }}\n        style={{\n          padding: "0.75rem 2rem",\n          fontSize: "1rem",\n          borderRadius: "0.5rem",\n          border: "none",\n          background: "#2563eb",\n          color: "white",\n          cursor: "pointer",\n        }}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}\n\nexport default App;';
+
+      // Restore saved code or use default
+      try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        editor.value = saved || DEFAULT_CODE;
+      } catch (e) {
+        editor.value = DEFAULT_CODE;
+      }
+
+      function saveCode() {
+        try { localStorage.setItem(STORAGE_KEY, editor.value); } catch (e) {}
+      }
+
+      function showError(msg) {
+        errorOverlay.textContent = msg;
+        errorOverlay.hidden = false;
+      }
+
+      function clearError() {
+        errorOverlay.hidden = true;
+        errorOverlay.textContent = '';
+      }
+
+      function transpileAndRun() {
+        clearError();
+        saveCode();
+        var code = editor.value;
+
+        fetch(TRANSPILE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code, format: 'esm' }),
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.error) { showError(data.error); return; }
+            var html = data.html || buildHtml(data.code || code);
+            frame.srcdoc = html;
+          })
+          .catch(function (err) {
+            // Fallback: inject raw code into iframe
+            frame.srcdoc = buildHtml(code);
+          });
+      }
+
+      function buildHtml(code) {
+        return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif}</style></head><body><div id="root"></div><script type="module">' +
+          code.replace(/<\/script>/g, '<\\/script>') +
+          '<\/script></body></html>';
+      }
+
+      function scheduleRun() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(transpileAndRun, 500);
+      }
+
+      editor.addEventListener('input', scheduleRun);
+      editor.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+          e.preventDefault();
+          transpileAndRun();
+        }
+        // Tab inserts 2 spaces
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var start = editor.selectionStart;
+          var end = editor.selectionEnd;
+          editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+          editor.selectionStart = editor.selectionEnd = start + 2;
+        }
+      });
+
+      runBtn.addEventListener('click', transpileAndRun);
+
+      // Layout toggle
+      var layouts = ['split', 'editor-only', 'preview-only'];
+      var layoutIdx = 0;
+      layoutBtn.addEventListener('click', function () {
+        layoutIdx = (layoutIdx + 1) % layouts.length;
+        split.className = 'split layout-' + layouts[layoutIdx];
+      });
+
+      // Initial run
+      transpileAndRun();
+    })();
+    </script>
+
+    <style>
+      .editor-shell {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 1rem;
+        height: 3rem;
+        background: #111;
+        border-bottom: 1px solid #222;
+        flex-shrink: 0;
+      }
+
+      .logo {
+        font-weight: 800;
+        font-size: 0.9375rem;
+        color: #fafafa;
+        text-decoration: none;
+        letter-spacing: -0.03em;
+      }
+
+      .toolbar-title {
+        font-size: 0.8125rem;
+        color: #525252;
+        font-weight: 600;
+      }
+
+      .toolbar-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .lang-select {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        color: #a3a3a3;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+
+      .run-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.3rem 1rem;
+        border-radius: 0.25rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .run-btn:hover { background: #1d4ed8; }
+
+      .layout-btn {
+        background: none;
+        border: 1px solid #333;
+        color: #a3a3a3;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+
+      .layout-btn:hover { border-color: #555; color: #fafafa; }
+
+      .split {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .pane { overflow: hidden; }
+
+      .pane-editor {
+        flex: 1;
+        display: flex;
+      }
+
+      .code-textarea {
+        width: 100%;
+        height: 100%;
+        background: #0d0d0d;
+        color: #d4d4d8;
+        border: none;
+        padding: 1rem;
+        font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        resize: none;
+        outline: none;
+        tab-size: 2;
+      }
+
+      .divider {
+        width: 4px;
+        background: #222;
+        cursor: col-resize;
+        flex-shrink: 0;
+      }
+
+      .divider:hover { background: #2563eb; }
+
+      .pane-preview {
+        flex: 1;
+        position: relative;
+        background: white;
+      }
+
+      .preview-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .error-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(220, 38, 38, 0.95);
+        color: white;
+        font-family: monospace;
+        font-size: 0.8125rem;
+        padding: 0.75rem 1rem;
+        white-space: pre-wrap;
+        max-height: 40%;
+        overflow-y: auto;
+      }
+
+      .layout-editor-only .pane-preview,
+      .layout-editor-only .divider { display: none; }
+      .layout-editor-only .pane-editor { flex: 1; }
+
+      .layout-preview-only .pane-editor,
+      .layout-preview-only .divider { display: none; }
+      .layout-preview-only .pane-preview { flex: 1; }
+
+      @media (max-width: 640px) {
+        .split { flex-direction: column; }
+        .divider { width: 100%; height: 4px; cursor: row-resize; }
+        .pane-editor { min-height: 40%; }
+        .pane-preview { min-height: 40%; }
+      }
+    </style>
+  </body>
+</html>

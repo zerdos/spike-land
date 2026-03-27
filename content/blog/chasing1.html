@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHASING BEATS — Math Arena</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--neon:#0ff;--pink:#f0f;--orange:#ff6b35;--deep:#0a0a1f;--pulse:#e63946;--gold:#FFD700}
+  body{background:var(--deep);color:#f0f0f0;font-family:'Space Mono',monospace;overflow-x:hidden}
+
+  /* Canvases */
+  canvas#tunnel{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+  canvas#viz{position:fixed;bottom:0;left:0;width:100%;height:140px;z-index:2;opacity:0.7}
+
+  .wrap{position:relative;z-index:3;max-width:800px;margin:0 auto;padding:2rem}
+
+  /* Header */
+  .hdr{text-align:center;padding:3rem 0 1.5rem}
+  .hdr h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(2rem,8vw,5rem);font-weight:900;
+    background:linear-gradient(135deg,var(--neon),var(--pink),var(--orange),var(--neon));
+    background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shimmer 3s ease infinite;letter-spacing:4px;
+  }
+  .hdr .sub{font-size:0.8rem;color:var(--pink);opacity:0.6;letter-spacing:5px;text-transform:uppercase;margin-top:0.5rem}
+  @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* Transport */
+  .transport{background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border:1px solid rgba(0,255,255,.08);
+    border-radius:14px;padding:1rem;margin:1.5rem 0}
+  .controls{display:flex;justify-content:center;gap:0.7rem;flex-wrap:wrap}
+  .btn{
+    font-family:'Orbitron',sans-serif;font-size:0.75rem;padding:0.6rem 1.3rem;
+    border:1px solid var(--neon);background:rgba(0,255,255,.04);color:var(--neon);
+    border-radius:8px;cursor:pointer;letter-spacing:1.5px;transition:all .2s;user-select:none;
+  }
+  .btn:hover{background:rgba(0,255,255,.12);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.active{background:rgba(0,255,255,.18);border-color:var(--gold);color:var(--gold)}
+  .btn.pink{border-color:var(--pink);color:var(--pink);background:rgba(255,0,255,.04)}
+  .btn.pink:hover{background:rgba(255,0,255,.12)}
+  .btn.pink.active{border-color:var(--gold);color:var(--gold);background:rgba(255,0,255,.15)}
+  .btn.stop{border-color:var(--pulse);color:var(--pulse);background:rgba(230,57,70,.04)}
+
+  /* Stats */
+  .stats{display:flex;justify-content:center;gap:1.5rem;margin:0.8rem 0;font-size:0.65rem;letter-spacing:2px;color:rgba(255,255,255,.3);flex-wrap:wrap}
+  .stats span{color:var(--neon)}
+  .stats .live{color:var(--pulse);animation:blink .8s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* Progress */
+  .progress{margin-top:0.8rem;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--pink),var(--orange));transition:width .15s}
+
+  /* Speed lines overlay */
+  .speed-lines{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0;transition:opacity .3s}
+  .speed-lines.active{opacity:1}
+  .speed-line{position:absolute;width:2px;background:linear-gradient(to bottom,transparent,var(--neon),transparent);
+    animation:speedLine .4s linear infinite;opacity:0.15}
+  @keyframes speedLine{from{transform:translateY(-100vh)}to{transform:translateY(100vh)}}
+
+  /* Chase meter */
+  .chase-meter{margin:1.5rem auto;width:80%;max-width:400px;text-align:center}
+  .chase-meter .label{font-family:'Orbitron',sans-serif;font-size:0.6rem;letter-spacing:3px;color:var(--pink);text-transform:uppercase;margin-bottom:0.4rem}
+  .chase-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+  .chase-fill{height:100%;width:0%;border-radius:3px;background:linear-gradient(90deg,var(--neon),var(--pink),var(--orange),var(--pulse));
+    transition:width .3s;box-shadow:0 0 10px rgba(0,255,255,.3)}
+
+  /* Beat flash */
+  body.flash::after{content:'';position:fixed;inset:0;background:rgba(0,255,255,.03);pointer-events:none;z-index:100;animation:flashOut .12s forwards}
+  @keyframes flashOut{to{opacity:0}}
+
+  /* Kick flash — different from beat flash */
+  body.kick-flash::after{background:rgba(255,0,255,.04)!important}
+
+  @media(max-width:600px){.controls{gap:0.4rem}.btn{padding:0.5rem 0.9rem;font-size:0.65rem}}
+</style>
+</head>
+<body>
+
+<canvas id="tunnel"></canvas>
+<canvas id="viz"></canvas>
+<div class="speed-lines" id="speedLines"></div>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1>CHASING BEATS</h1>
+    <div class="sub">138 BPM &mdash; The pursuit never stops</div>
+  </div>
+
+  <div class="transport">
+    <div class="controls">
+      <button class="btn" id="playBtn" onclick="togglePlay()">&#9654; CHASE</button>
+      <button class="btn" id="filterBtn" onclick="toggleFilter()">FILTER</button>
+      <button class="btn pink" id="riserBtn" onclick="triggerRiser()">RISER</button>
+      <button class="btn pink" id="halfBtn" onclick="toggleHalf()">HALF TIME</button>
+      <button class="btn" id="reverbBtn" onclick="toggleReverb()">SPACE</button>
+      <button class="btn stop" id="stopBtn" onclick="stopAll()">&#9632; STOP</button>
+    </div>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="stats">
+    BPM <span>138</span> | KEY <span>Cm</span> |
+    BAR <span id="barVal">0</span> | BEAT <span id="beatVal">0</span> |
+    INTENSITY <span id="intVal">0</span>% |
+    <span class="live" id="liveInd" style="display:none">&#9679; CHASE</span>
+  </div>
+
+  <div class="chase-meter">
+    <div class="label">Chase Intensity</div>
+    <div class="chase-bar"><div class="chase-fill" id="chaseFill"></div></div>
+  </div>
+</div>
+
+<script>
+// ========================================================================
+// CHASING BEATS — 4 IMPROVEMENT LOOPS
+// ========================================================================
+// Original: kick, snare, bass, lead — raw 138 BPM chase
+// Loop 1:  Proper audio chain (compressor, analyser, reverb, delay)
+//          + tunnel visualizer + redesigned UI
+// Loop 2:  16-step sequencer with arrangement engine (24-bar cycle)
+//          + ride cymbal, crash, sub-bass layers
+//          + half-time toggle, filter sweep, riser effect
+// Loop 3:  Chase intensity system — builds continuously, drives
+//          filter cutoff, delay feedback, visual speed
+//          + speed lines overlay + chase meter UI
+// Loop 4:  Tunnel perspective canvas (3D wireframe racing through space)
+//          + beat-reactive tunnel warping + dynamic BPM display
+// ========================================================================
+
+let ctx,master,comp,analyser,filterNode,delayNode,delayFb,reverbNode,reverbGain,reverbDry,subGain;
+let playing=false,startT=0,schedId=null,currentStep=-1;
+const BPM=138,bt=60/BPM,stepTime=bt/4;
+let filterSweep=false,reverbOn=false,halfTime=false;
+let chaseIntensity=0; // 0-1, builds over time
+
+// Speed lines
+const sl=document.getElementById('speedLines');
+for(let i=0;i<30;i++){
+  const line=document.createElement('div');line.className='speed-line';
+  line.style.left=Math.random()*100+'%';
+  line.style.height=(40+Math.random()*60)+'vh';
+  line.style.animationDuration=(0.2+Math.random()*0.4)+'s';
+  line.style.animationDelay=Math.random()*0.5+'s';
+  sl.appendChild(line);
+}
+
+function init(){
+  if(ctx)return;
+  ctx=new(AudioContext||webkitAudioContext)();
+
+  comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-12;comp.ratio.value=8;comp.attack.value=0.002;comp.release.value=0.1;
+
+  analyser=ctx.createAnalyser();analyser.fftSize=512;
+
+  filterNode=ctx.createBiquadFilter();filterNode.type='lowpass';filterNode.frequency.value=4000;filterNode.Q.value=2;
+
+  // Reverb — short room for chase energy
+  reverbNode=ctx.createConvolver();
+  const irLen=ctx.sampleRate*1.2,irBuf=ctx.createBuffer(2,irLen,ctx.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=irBuf.getChannelData(ch);for(let i=0;i<irLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/irLen,3.5)}
+  reverbNode.buffer=irBuf;
+  reverbGain=ctx.createGain();reverbGain.gain.value=0;
+  reverbDry=ctx.createGain();reverbDry.gain.value=1;
+
+  // Delay — sync to 138 BPM dotted 8th
+  delayNode=ctx.createDelay(1);delayNode.delayTime.value=bt*0.75;
+  delayFb=ctx.createGain();delayFb.gain.value=0.2;
+  const dFilt=ctx.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=3500;
+  delayNode.connect(dFilt);dFilt.connect(delayFb);delayFb.connect(delayNode);delayNode.connect(comp);
+
+  // Sub bass channel
+  subGain=ctx.createGain();subGain.gain.value=0.5;subGain.connect(comp);
+
+  master=ctx.createGain();master.gain.value=0.7;
+  master.connect(filterNode);
+  filterNode.connect(reverbDry);reverbDry.connect(comp);
+  filterNode.connect(reverbNode);reverbNode.connect(reverbGain);reverbGain.connect(comp);
+  filterNode.connect(delayNode);
+  comp.connect(analyser);analyser.connect(ctx.destination);
+}
+
+// ===== INSTRUMENTS =====
+
+function kick(t){
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(30,t+0.12);
+  g.gain.setValueAtTime(2.5,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+  // Click transient
+  const buf=ctx.createBuffer(1,ctx.sampleRate*0.012,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.2);
+  const click=ctx.createBufferSource();click.buffer=buf;
+  const cg=ctx.createGain();cg.gain.setValueAtTime(1.2,t);cg.gain.exponentialRampToValueAtTime(0.001,t+0.02);
+  click.connect(cg).connect(comp);click.start(t);click.stop(t+0.02);
+  o.connect(g).connect(comp);o.start(t);o.stop(t+0.45);
+  // Beat flash
+  const dt=(t-ctx.currentTime)*1000;
+  if(dt>=0)setTimeout(()=>{document.body.classList.add('flash','kick-flash');setTimeout(()=>document.body.classList.remove('flash','kick-flash'),120)},dt);
+}
+
+function snare(t){
+  // Layered: noise + body tone
+  const buf=ctx.createBuffer(1,ctx.sampleRate*0.08,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.9,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=900;
+  src.connect(hp).connect(g).connect(master);src.start(t);src.stop(t+0.15);
+  // Body
+  const o=ctx.createOscillator();o.type='triangle';o.frequency.value=200;
+  const bg=ctx.createGain();bg.gain.setValueAtTime(0.5,t);bg.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+  o.connect(bg).connect(master);o.start(t);o.stop(t+0.1);
+}
+
+function hihat(t,open){
+  const dur=open?0.15:0.03;
+  const buf=ctx.createBuffer(1,ctx.sampleRate*dur,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,open?0.7:5);
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.value=open?0.12:0.08;
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=open?5500:9000;
+  src.connect(hp).connect(g).connect(master);src.start(t);src.stop(t+dur);
+}
+
+function ride(t){
+  const buf=ctx.createBuffer(1,ctx.sampleRate*0.3,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.5)*0.3;
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.value=0.06;
+  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=6000;bp.Q.value=0.5;
+  src.connect(bp).connect(g).connect(master);src.start(t);src.stop(t+0.3);
+}
+
+function crash(t){
+  const buf=ctx.createBuffer(1,ctx.sampleRate*0.8,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.3)*0.5;
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.8);
+  src.connect(g).connect(master);src.start(t);src.stop(t+0.8);
+}
+
+function bassNote(t,note){
+  const freq=440*Math.pow(2,(note-69)/12);
+  // Saw + sub layer
+  const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=freq;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.5,t);g.gain.exponentialRampToValueAtTime(0.001,t+stepTime*3.5);
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=800;f.Q.value=4;
+  f.frequency.setValueAtTime(2000,t);f.frequency.exponentialRampToValueAtTime(800,t+0.06);
+  o.connect(f).connect(g).connect(master);o.start(t);o.stop(t+stepTime*4);
+  // Sub
+  const sub=ctx.createOscillator();sub.type='sine';sub.frequency.value=freq/2;
+  const sg=ctx.createGain();sg.gain.setValueAtTime(0.6,t);sg.gain.exponentialRampToValueAtTime(0.001,t+stepTime*3);
+  sub.connect(sg).connect(subGain);sub.start(t);sub.stop(t+stepTime*4);
+}
+
+function lead(t,note){
+  const freq=440*Math.pow(2,(note-69)/12);
+  const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=freq;
+  const o2=ctx.createOscillator();o2.type='sawtooth';o2.frequency.value=freq*1.005;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.22,t);g.gain.setValueAtTime(0.22,t+stepTime*1.5);g.gain.exponentialRampToValueAtTime(0.001,t+stepTime*2.5);
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=3000+chaseIntensity*3000;f.Q.value=2;
+  o.connect(f);o2.connect(f);f.connect(g).connect(master);
+  o.start(t);o.stop(t+stepTime*3);o2.start(t);o2.stop(t+stepTime*3);
+}
+
+// Riser (Loop 2) — noise sweep up
+function riser(){
+  if(!ctx)return;
+  const dur=4*bt;
+  const buf=ctx.createBuffer(1,ctx.sampleRate*dur,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.min(i/d.length,1);
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.4,ctx.currentTime+dur);
+  const hp=ctx.createBiquadFilter();hp.type='highpass';
+  hp.frequency.setValueAtTime(200,ctx.currentTime);hp.frequency.exponentialRampToValueAtTime(8000,ctx.currentTime+dur);
+  src.connect(hp).connect(g).connect(master);src.start();src.stop(ctx.currentTime+dur);
+  // Crash at end
+  setTimeout(()=>{if(playing)crash(ctx.currentTime)},dur*1000);
+}
+
+// ===== SEQUENCER (Loop 2) =====
+// Bass pattern: C2 C2 Eb2 Eb2 | F2 F2 G2 Ab2 | (repeats with variations)
+const bassPattern=[36,36,39,39,41,41,43,44,36,36,39,39,41,43,44,36];
+// Lead pattern: climbing chase melody
+const leadPattern=[
+  [0,69],[4,72],[8,74],[12,76],  // bar 1: A4 C5 D5 E5
+  [2,71],[6,74],[10,76],[14,79], // bar 2: B4 D5 E5 G5
+  [0,72],[3,74],[6,76],[9,79],[12,81],[14,84], // bar 3: climbing fast
+  [0,84],[4,81],[8,79],[12,76],  // bar 4: descending
+];
+let leadIdx=0;
+
+// 24-bar arrangement cycle
+// 0-3: intro (kick buildup)
+// 4-7: groove (kick+hat+bass)
+// 8-11: chase (full + lead climbing)
+// 12-13: break (strip to hats + snare rolls)
+// 14-17: chase peak (everything + ride)
+// 18-19: riser section
+// 20-23: full send (max intensity)
+function getArr(bar){
+  const p=bar%24;
+  if(p<4)return{kick:p>=1,snare:false,hat:p>=2,ride:false,bass:p>=2,lead:false,intensity:0.2+p*0.1};
+  if(p<8)return{kick:true,snare:true,hat:true,ride:false,bass:true,lead:false,intensity:0.6};
+  if(p<12)return{kick:true,snare:true,hat:true,ride:false,bass:true,lead:true,intensity:0.8};
+  if(p<14)return{kick:false,snare:p===13,hat:true,ride:false,bass:false,lead:false,intensity:0.3};
+  if(p<18)return{kick:true,snare:true,hat:true,ride:true,bass:true,lead:true,intensity:0.95};
+  if(p<20)return{kick:true,snare:false,hat:true,ride:false,bass:true,lead:false,intensity:0.5};
+  return{kick:true,snare:true,hat:true,ride:true,bass:true,lead:true,intensity:1};
+}
+
+function schedule(){
+  if(!playing)return;
+  const now=ctx.currentTime,elapsed=now-startT;
+  const step=Math.floor(elapsed/stepTime);
+  if(step<=currentStep){schedId=setTimeout(schedule,5);return}
+  currentStep=step;
+  const t=startT+step*stepTime;
+  const beatPos=step%16;
+  const bar=Math.floor(step/16);
+  const arr=getArr(bar);
+  const effStep=halfTime?beatPos*2:beatPos;
+
+  // Chase intensity builds continuously (Loop 3)
+  chaseIntensity=Math.min(1,arr.intensity*0.7+Math.min(elapsed/120,0.3));
+
+  // Kick pattern: four-on-the-floor at 138
+  if(arr.kick&&beatPos%4===0)kick(t);
+  // Ghost kicks for chase feel
+  if(arr.kick&&chaseIntensity>0.6&&beatPos%4===2&&beatPos%8!==6)kick(t);
+
+  // Snare on 4 and 12
+  if(arr.snare&&(beatPos===4||beatPos===12))snare(t);
+  // Snare rolls in breaks
+  if(!arr.kick&&arr.snare&&beatPos%2===0)snare(t);
+
+  // Hi-hats: 16ths when chasing, 8ths otherwise
+  if(arr.hat){
+    if(chaseIntensity>0.7)hihat(t,false); // every 16th
+    else if(beatPos%2===0)hihat(t,false);
+    if(beatPos%4===2)hihat(t,true); // open on upbeat
+  }
+
+  // Ride
+  if(arr.ride&&beatPos%2===0)ride(t);
+
+  // Bass
+  if(arr.bass&&beatPos%4===0)bassNote(t,bassPattern[beatPos]||36);
+
+  // Lead — chasing melody
+  if(arr.lead){
+    const barInPhrase=bar%4;
+    const pattern=leadPattern[barInPhrase]||leadPattern[0];
+    for(let i=0;i<pattern.length;i+=2){
+      if(beatPos===pattern[i])lead(t,pattern[i+1]+(Math.floor(bar/8)%3)*2); // transposes up over time
+    }
+  }
+
+  // Filter follows chase intensity (Loop 3)
+  const baseFreq=filterSweep?400+Math.sin(elapsed*0.3)*300:2000;
+  filterNode.frequency.setTargetAtTime(baseFreq+chaseIntensity*6000,t,0.05);
+
+  // Delay feedback follows intensity
+  delayFb.gain.setTargetAtTime(0.15+chaseIntensity*0.25,t,0.1);
+
+  // Master volume
+  master.gain.setTargetAtTime(0.55+arr.intensity*0.2,t,0.1);
+
+  // UI
+  document.getElementById('barVal').textContent=bar;
+  document.getElementById('beatVal').textContent=beatPos;
+  document.getElementById('intVal').textContent=Math.round(chaseIntensity*100);
+  document.getElementById('progressFill').style.width=((bar%24*16+beatPos)/(24*16)*100)+'%';
+  document.getElementById('chaseFill').style.width=(chaseIntensity*100)+'%';
+
+  // Speed lines (Loop 3)
+  sl.classList.toggle('active',chaseIntensity>0.5&&playing);
+
+  schedId=setTimeout(schedule,5);
+}
+
+// ===== CONTROLS =====
+window.togglePlay=function(){
+  init();if(ctx.state==='suspended')ctx.resume();
+  if(!playing){
+    playing=true;startT=ctx.currentTime+0.05;currentStep=-1;chaseIntensity=0;
+    document.getElementById('playBtn').classList.add('active');
+    document.getElementById('playBtn').innerHTML='&#9646;&#9646; PAUSE';
+    document.getElementById('liveInd').style.display='inline';
+    schedule();drawViz();drawTunnel();
+  }else{
+    playing=false;
+    document.getElementById('playBtn').classList.remove('active');
+    document.getElementById('playBtn').innerHTML='&#9654; CHASE';
+    document.getElementById('liveInd').style.display='none';
+    if(schedId)clearTimeout(schedId);
+    sl.classList.remove('active');
+  }
+};
+
+window.stopAll=function(){
+  playing=false;if(schedId)clearTimeout(schedId);
+  document.getElementById('playBtn').classList.remove('active');
+  document.getElementById('playBtn').innerHTML='&#9654; CHASE';
+  document.getElementById('liveInd').style.display='none';
+  ['filterBtn','reverbBtn','halfBtn'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  filterSweep=false;reverbOn=false;halfTime=false;chaseIntensity=0;
+  if(filterNode)filterNode.frequency.value=4000;
+  if(reverbGain)reverbGain.gain.setTargetAtTime(0,ctx.currentTime,0.2);
+  sl.classList.remove('active');
+  document.getElementById('chaseFill').style.width='0%';
+  document.getElementById('progressFill').style.width='0%';
+};
+
+window.toggleFilter=function(){filterSweep=!filterSweep;document.getElementById('filterBtn').classList.toggle('active');
+  if(!filterSweep&&filterNode)filterNode.frequency.setTargetAtTime(4000,ctx.currentTime,0.2)};
+
+window.toggleReverb=function(){init();reverbOn=!reverbOn;document.getElementById('reverbBtn').classList.toggle('active');
+  reverbGain.gain.setTargetAtTime(reverbOn?0.4:0,ctx.currentTime,0.2);
+  reverbDry.gain.setTargetAtTime(reverbOn?0.75:1,ctx.currentTime,0.2)};
+
+window.toggleHalf=function(){halfTime=!halfTime;document.getElementById('halfBtn').classList.toggle('active')};
+
+window.triggerRiser=function(){init();if(ctx.state==='suspended')ctx.resume();riser();
+  document.getElementById('riserBtn').classList.add('active');setTimeout(()=>document.getElementById('riserBtn').classList.remove('active'),4*bt*1000)};
+
+// ===== FREQUENCY VISUALIZER =====
+const vc=document.getElementById('viz'),vx=vc.getContext('2d');
+function vResize(){vc.width=innerWidth;vc.height=140}
+vResize();addEventListener('resize',vResize);
+
+function drawViz(){
+  if(!playing||!analyser)return;
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  vx.clearRect(0,0,vc.width,vc.height);
+  const bw=vc.width/data.length;
+  for(let i=0;i<data.length;i++){
+    const h=(data[i]/255)*vc.height;
+    const ratio=i/data.length;
+    const hue=ratio<0.3?180:ratio<0.6?300:30; // cyan->pink->orange
+    vx.fillStyle=`hsla(${hue},90%,55%,0.6)`;
+    vx.fillRect(i*bw,vc.height-h,bw-1,h);
+  }
+  requestAnimationFrame(drawViz);
+}
+
+// ===== TUNNEL VISUALIZER (Loop 4) =====
+const tc=document.getElementById('tunnel'),tx=tc.getContext('2d');
+let tunnelT=0;
+function tResize(){tc.width=innerWidth;tc.height=innerHeight}
+tResize();addEventListener('resize',tResize);
+
+function drawTunnel(){
+  if(!playing)return;
+  tunnelT+=0.02+chaseIntensity*0.04;
+  const w=tc.width,h=tc.height,cx=w/2,cy=h/2;
+  tx.fillStyle='rgba(10,10,31,0.15)';
+  tx.fillRect(0,0,w,h);
+
+  const rings=20;
+  const speed=tunnelT;
+
+  for(let i=0;i<rings;i++){
+    const depth=(i/rings+speed*0.5)%1;
+    const scale=0.02+depth*0.98;
+    const size=Math.max(w,h)*scale;
+    const alpha=depth*0.4;
+    const sides=6; // hexagonal tunnel
+
+    // Beat reactive wobble
+    let wobble=0;
+    if(analyser){
+      const d=new Uint8Array(4);analyser.getByteFrequencyData(d);
+      wobble=d[0]/255*8*chaseIntensity;
+    }
+
+    tx.save();
+    tx.translate(cx+Math.sin(speed+i*0.3)*wobble,cy+Math.cos(speed*0.7+i*0.3)*wobble);
+    tx.rotate(speed*0.1+i*0.05);
+
+    tx.beginPath();
+    for(let s=0;s<=sides;s++){
+      const angle=(s/sides)*Math.PI*2;
+      const x=Math.cos(angle)*size/2;
+      const y=Math.sin(angle)*size/2;
+      s===0?tx.moveTo(x,y):tx.lineTo(x,y);
+    }
+    tx.closePath();
+
+    const hue=180+i*8+speed*20;
+    tx.strokeStyle=`hsla(${hue%360},80%,50%,${alpha})`;
+    tx.lineWidth=1+chaseIntensity*1.5;
+    tx.stroke();
+    tx.restore();
+  }
+
+  requestAnimationFrame(drawTunnel);
+}
+</script>
+
+</body>
+</html>

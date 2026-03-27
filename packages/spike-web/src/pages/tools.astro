@@ -1,0 +1,315 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+---
+
+<Layout
+  title="MCP Tools — spike.land"
+  description="Browse 170+ MCP tools. Search, filter, and try them live."
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav activePath="/tools" />
+
+    <main id="main-content">
+      <section class="tools-header">
+        <div class="rubik-container tools-header-inner">
+          <p class="rubik-eyebrow">MCP Registry</p>
+          <h1 class="tools-title">170+ tools,<br />ready to use</h1>
+          <p class="rubik-lede">
+            Every tool follows the Model Context Protocol. Search, try, and compose them into your workflows.
+          </p>
+
+          <div class="search-bar">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="tool-search" placeholder="Search tools…" class="search-input" />
+          </div>
+        </div>
+      </section>
+
+      <section class="tools-grid-section">
+        <div class="rubik-container">
+          <p class="tools-count" id="tools-count">Loading tools…</p>
+          <div class="tools-grid" id="tools-grid"></div>
+          <div class="tools-error" id="tools-error" hidden>
+            Failed to load tools. <button id="retry-btn" class="retry-btn">Retry</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<script is:inline>
+(function () {
+  'use strict';
+
+  var grid = document.getElementById('tools-grid');
+  var countEl = document.getElementById('tools-count');
+  var errorEl = document.getElementById('tools-error');
+  var searchInput = document.getElementById('tool-search');
+  var retryBtn = document.getElementById('retry-btn');
+  var allTools = [];
+
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function renderTools(tools) {
+    if (!tools.length) {
+      grid.innerHTML = '<p class="no-tools">No tools found matching your search.</p>';
+      countEl.textContent = '0 tools';
+      return;
+    }
+    countEl.textContent = tools.length + ' tools';
+    grid.innerHTML = tools.map(function (t) {
+      var stability = t.stability || 'stable';
+      var category = t.category || 'general';
+      return '<div class="tool-card">' +
+        '<div class="tool-top">' +
+          '<span class="tool-name">' + escHtml(t.name) + '</span>' +
+          '<span class="badge badge-' + stability + '">' + escHtml(stability) + '</span>' +
+        '</div>' +
+        '<p class="tool-desc">' + escHtml(t.description || '') + '</p>' +
+        '<span class="tool-category">' + escHtml(category) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function filterTools() {
+    var q = (searchInput.value || '').toLowerCase().trim();
+    if (!q) { renderTools(allTools); return; }
+    var filtered = allTools.filter(function (t) {
+      return (t.name || '').toLowerCase().indexOf(q) !== -1 ||
+             (t.description || '').toLowerCase().indexOf(q) !== -1 ||
+             (t.category || '').toLowerCase().indexOf(q) !== -1;
+    });
+    renderTools(filtered);
+  }
+
+  function fetchTools() {
+    countEl.textContent = 'Loading tools…';
+    errorEl.hidden = true;
+    grid.innerHTML = '';
+
+    fetch('https://mcp.spike.land/tools')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        allTools = data.tools || data || [];
+        renderTools(allTools);
+      })
+      .catch(function () {
+        countEl.textContent = '';
+        errorEl.hidden = false;
+      });
+  }
+
+  searchInput.addEventListener('input', filterTools);
+  retryBtn.addEventListener('click', fetchTools);
+  fetchTools();
+})();
+</script>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .tools-header {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    border-bottom: 1px solid var(--border-color);
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--primary-color) 8%, transparent), transparent);
+  }
+
+  .tools-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+  }
+
+  .tools-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+    color: var(--fg);
+    max-width: 20ch;
+    margin: 0;
+  }
+
+  .search-bar {
+    position: relative;
+    max-width: 28rem;
+    margin-top: 0.5rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-fg);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.6875rem 1rem 0.6875rem 2.625rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 0.9375rem;
+    color: var(--fg);
+    transition: border-color var(--duration-fast) var(--ease),
+                box-shadow var(--duration-fast) var(--ease);
+    font-family: var(--font-sans);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--ring-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring-color) 20%, transparent);
+  }
+
+  .search-input::placeholder { color: var(--muted-fg); }
+
+  .tools-grid-section {
+    padding-block: clamp(2rem, 5vw, 4rem);
+    flex: 1;
+  }
+
+  .tools-count {
+    font-size: 0.875rem;
+    color: var(--muted-fg);
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+  }
+
+  .tool-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color var(--duration-fast) var(--ease),
+                box-shadow var(--duration-fast) var(--ease);
+  }
+
+  .tool-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .tool-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .tool-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+    color: var(--fg);
+    word-break: break-all;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  .badge-stable {
+    background: color-mix(in srgb, oklch(52% 0.17 145) 12%, transparent);
+    color: oklch(52% 0.17 145);
+    border: 1px solid color-mix(in srgb, oklch(52% 0.17 145) 20%, transparent);
+  }
+
+  .badge-beta {
+    background: color-mix(in srgb, oklch(60% 0.19 41) 12%, transparent);
+    color: oklch(60% 0.19 41);
+    border: 1px solid color-mix(in srgb, oklch(60% 0.19 41) 20%, transparent);
+  }
+
+  .badge-experimental {
+    background: color-mix(in srgb, oklch(55% 0.2 300) 12%, transparent);
+    color: oklch(55% 0.2 300);
+    border: 1px solid color-mix(in srgb, oklch(55% 0.2 300) 20%, transparent);
+  }
+
+  .tool-desc {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--muted-fg);
+    margin: 0;
+  }
+
+  .tool-category {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    background: var(--muted-bg);
+    color: var(--muted-fg);
+    border: 1px solid var(--border-color);
+    align-self: flex-start;
+  }
+
+  .no-tools {
+    color: var(--muted-fg);
+    font-size: 0.9375rem;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .tools-error {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: var(--radius-lg);
+    color: #f87171;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .retry-btn {
+    background: none;
+    border: 1px solid #f87171;
+    color: #f87171;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .retry-btn:hover { background: rgba(239,68,68,0.1); }
+</style>

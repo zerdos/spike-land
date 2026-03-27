@@ -1,0 +1,204 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+---
+
+<Layout
+  title="BAZDMEG Method — spike.land"
+  description="The quality-gate workflow for AI-assisted development. Pre-code, post-code, and pre-PR checkpoints that prevent AI slop."
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav />
+
+    <main id="main-content" class="bazdmeg-main">
+      <div class="rubik-container">
+
+        <header class="bz-header">
+          <p class="rubik-eyebrow">Quality Method</p>
+          <h1 class="bz-title">BAZDMEG</h1>
+          <p class="rubik-lede">
+            Three checkpoint gates that catch AI slop before it ships. Pre-code, post-code, pre-PR.
+          </p>
+        </header>
+
+        <section class="gates">
+          <div class="gate-card">
+            <div class="gate-num">1</div>
+            <h2 class="gate-title">Pre-Code Gate</h2>
+            <p class="gate-desc">Before writing a single line, verify: Do you understand the requirement? Have you checked existing code? Is the scope tight enough?</p>
+            <ul class="gate-checks">
+              <li>Requirement understood and scoped</li>
+              <li>Existing patterns identified</li>
+              <li>Edge cases enumerated</li>
+              <li>Source rank assigned</li>
+            </ul>
+          </div>
+
+          <div class="gate-card">
+            <div class="gate-num">2</div>
+            <h2 class="gate-title">Post-Code Gate</h2>
+            <p class="gate-desc">After AI generates code, audit every line. Does it match intent? Are there unnecessary abstractions? Does it introduce dependencies?</p>
+            <ul class="gate-checks">
+              <li>Every line reviewed for intent match</li>
+              <li>No unnecessary abstractions</li>
+              <li>No new dependencies without justification</li>
+              <li>Tests pass and coverage maintained</li>
+            </ul>
+          </div>
+
+          <div class="gate-card">
+            <div class="gate-num">3</div>
+            <h2 class="gate-title">Pre-PR Gate</h2>
+            <p class="gate-desc">Before opening the PR, run the full checklist. Is the diff minimal? Are commit messages accurate? Would you approve this PR from someone else?</p>
+            <ul class="gate-checks">
+              <li>Diff is minimal and focused</li>
+              <li>Commit messages reflect actual changes</li>
+              <li>No commented-out code or TODOs</li>
+              <li>Self-review passes the "would I approve this?" test</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="philosophy">
+          <h2 class="phil-title">Why this matters</h2>
+          <p class="phil-text">
+            AI can write code faster than you can read it. That speed is the danger. Without gates, AI-generated code accumulates technical debt at machine speed. BAZDMEG forces you to think at each checkpoint — not to slow you down, but to keep the codebase honest.
+          </p>
+          <p class="phil-text">
+            The name is Hungarian. If you know, you know.
+          </p>
+        </section>
+
+      </div>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .bazdmeg-main {
+    flex: 1;
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+
+  .bz-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .bz-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .gates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .gate-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .gate-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .gate-num {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--fg);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+
+  .gate-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .gate-desc {
+    font-size: 0.9375rem;
+    color: var(--muted-fg);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .gate-checks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .gate-checks li {
+    font-size: 0.8125rem;
+    color: var(--muted-fg);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .gate-checks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  .philosophy {
+    max-width: 40rem;
+  }
+
+  .phil-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 1rem;
+  }
+
+  .phil-text {
+    font-size: 0.9375rem;
+    color: var(--muted-fg);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+
+  .phil-text:last-child { margin-bottom: 0; }
+</style>

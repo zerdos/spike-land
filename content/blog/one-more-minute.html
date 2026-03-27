@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One More Minute — David's Beat Engine</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#080818;--gold:#FFD700;--cyan:#00FFFF;--mag:#FF00FF;--orange:#ff6b35;
+    --pulse:#e63946;--calm:#2a9d8f;--ice:#a8dadc;--panel:rgba(255,255,255,.03);
+    --border:rgba(255,255,255,.06);
+  }
+  body{background:var(--bg);color:#eee;font-family:'Space Mono',monospace;overflow-x:hidden;min-height:100vh}
+  #root{position:relative;z-index:2}
+
+  /* Canvases */
+  canvas{position:fixed;top:0;left:0;width:100%;height:100%}
+  #stars-canvas{z-index:0}
+  #tunnel-canvas{z-index:1;opacity:0.15}
+  #viz-canvas{position:fixed;bottom:0;left:0;height:100px;z-index:1;opacity:0.5}
+
+  /* Layout */
+  .app{position:relative;z-index:3;max-width:960px;margin:0 auto;padding:1.5rem}
+
+  /* Header */
+  .header{text-align:center;padding:2rem 0 1rem}
+  .header h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,6vw,3.5rem);font-weight:900;
+    background:linear-gradient(135deg,var(--calm),var(--cyan),var(--gold),var(--calm));
+    background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shimmer 8s ease infinite;
+  }
+  .header .sub{font-size:0.75rem;color:var(--calm);opacity:0.6;letter-spacing:5px;text-transform:uppercase;margin-top:0.3rem}
+  @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* Round indicator */
+  .round-ring{display:flex;justify-content:center;gap:4px;margin:1rem 0;flex-wrap:wrap}
+  .round-dot{width:12px;height:12px;border-radius:50%;border:1px solid var(--border);background:transparent;transition:all .4s}
+  .round-dot.done{background:var(--calm);border-color:var(--calm);box-shadow:0 0 6px rgba(42,157,143,.4)}
+  .round-dot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(255,215,0,.5);transform:scale(1.3)}
+
+  /* Persona strip */
+  .personas{display:flex;justify-content:center;gap:1rem;margin:1rem 0;flex-wrap:wrap}
+  .persona-card{
+    text-align:center;padding:0.8rem 1.2rem;border:1px solid var(--border);border-radius:10px;
+    background:var(--panel);min-width:120px;transition:all .4s;
+  }
+  .persona-card.active{border-color:var(--gold);box-shadow:0 0 20px rgba(255,215,0,.1);background:rgba(255,215,0,.03)}
+  .persona-card .icon{font-size:1.5rem}
+  .persona-card .name{font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:700;color:var(--gold);margin-top:0.2rem}
+  .persona-card .adds{font-size:0.55rem;color:rgba(255,255,255,.35);margin-top:0.15rem;min-height:1.2em}
+
+  /* Transport */
+  .transport{background:rgba(0,0,0,.4);backdrop-filter:blur(12px);border:1px solid var(--border);
+    border-radius:14px;padding:1rem;margin:1rem 0}
+  .transport-row{display:flex;justify-content:center;align-items:center;gap:0.6rem;flex-wrap:wrap}
+  .btn{
+    font-family:'Orbitron',sans-serif;font-size:0.7rem;padding:0.5rem 1.2rem;
+    border:1px solid var(--cyan);background:rgba(0,255,255,.04);color:var(--cyan);
+    border-radius:8px;cursor:pointer;letter-spacing:1.5px;transition:all .2s;user-select:none;
+  }
+  .btn:hover{background:rgba(0,255,255,.1);transform:translateY(-1px)}
+  .btn.active{background:rgba(0,255,255,.15);border-color:var(--gold);color:var(--gold)}
+  .btn.calm{border-color:var(--calm);color:var(--calm);background:rgba(42,157,143,.04)}
+  .btn.calm:hover{background:rgba(42,157,143,.1)}
+  .btn.stop{border-color:var(--pulse);color:var(--pulse)}
+  .progress{margin-top:0.6rem;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--calm),var(--cyan),var(--gold));transition:width .2s}
+
+  /* Beat Grid — David's voice */
+  .beat-grid-wrap{margin:1.5rem 0}
+  .beat-grid-title{font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;
+    color:var(--calm);text-align:center;margin-bottom:0.6rem}
+  .beat-grid-subtitle{font-size:0.6rem;color:rgba(255,255,255,.3);text-align:center;margin-bottom:0.8rem}
+  .beat-grid{display:grid;grid-template-columns:60px repeat(16,1fr);gap:3px;max-width:700px;margin:0 auto}
+  .grid-label{font-size:0.6rem;color:rgba(255,255,255,.4);display:flex;align-items:center;padding-right:6px;justify-content:flex-end}
+  .grid-cell{
+    aspect-ratio:1;border:1px solid var(--border);border-radius:4px;cursor:pointer;
+    transition:all .15s;background:var(--panel);position:relative;
+  }
+  .grid-cell:hover{border-color:rgba(255,255,255,.15)}
+  .grid-cell.on{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,255,.2)}
+  .grid-cell.on.row-0{background:rgba(230,57,70,.25);border-color:var(--pulse)}
+  .grid-cell.on.row-1{background:rgba(255,107,53,.25);border-color:var(--orange)}
+  .grid-cell.on.row-2{background:rgba(0,255,255,.2);border-color:var(--cyan)}
+  .grid-cell.on.row-3{background:rgba(255,215,0,.2);border-color:var(--gold)}
+  .grid-cell.step{box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)!important}
+  .grid-cell.inactive{opacity:0.3;cursor:default;pointer-events:none}
+  .beat-group{border-left:1px solid rgba(255,255,255,.08)}
+
+  /* Binaural indicator */
+  .binaural{text-align:center;margin:0.8rem 0}
+  .binaural-badge{display:inline-flex;align-items:center;gap:6px;padding:0.3rem 0.8rem;border:1px solid var(--calm);
+    border-radius:20px;font-size:0.6rem;color:var(--calm);letter-spacing:2px}
+  .binaural-pulse{width:8px;height:8px;border-radius:50%;background:var(--calm);animation:bpulse 2s ease infinite}
+  @keyframes bpulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+  /* Annotation feed */
+  .annotations{margin:1.5rem 0;min-height:80px}
+  .annotation{
+    padding:0.8rem;background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    margin-bottom:0.5rem;font-size:0.75rem;line-height:1.6;color:rgba(255,255,255,.55);
+    animation:fadeUp .5s ease;
+  }
+  .annotation .speaker{font-weight:700;font-size:0.7rem;margin-bottom:0.3rem}
+  .annotation .speaker.radix{color:var(--pulse)}
+  .annotation .speaker.erdos{color:var(--mag)}
+  .annotation .speaker.zoltan{color:var(--cyan)}
+  .annotation .speaker.daft{color:var(--orange)}
+  .annotation .speaker.all{color:var(--gold)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Stats bar */
+  .stats{display:flex;justify-content:center;gap:1.2rem;font-size:0.6rem;letter-spacing:1.5px;color:rgba(255,255,255,.3);flex-wrap:wrap;margin:0.5rem 0}
+  .stats span{color:var(--gold)}
+  .stats .live{color:var(--pulse);animation:blink .8s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* Voice sample indicator */
+  .voice-active{
+    display:inline-flex;align-items:center;gap:6px;padding:0.3rem 0.8rem;
+    border:1px solid var(--mag);border-radius:20px;font-size:0.6rem;color:var(--mag);
+    letter-spacing:2px;animation:voicePulse 1.5s ease infinite;margin-top:0.5rem;
+  }
+  .voice-active .wave{display:inline-flex;gap:2px;align-items:center}
+  .voice-active .wave span{display:block;width:2px;background:var(--mag);border-radius:1px;animation:waveBar 0.6s ease infinite alternate}
+  .voice-active .wave span:nth-child(1){height:4px;animation-delay:0s}
+  .voice-active .wave span:nth-child(2){height:8px;animation-delay:0.1s}
+  .voice-active .wave span:nth-child(3){height:12px;animation-delay:0.2s}
+  .voice-active .wave span:nth-child(4){height:8px;animation-delay:0.3s}
+  .voice-active .wave span:nth-child(5){height:4px;animation-delay:0.4s}
+  @keyframes waveBar{to{height:14px}}
+  @keyframes voicePulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+  /* Footer */
+  .footer{text-align:center;padding:2rem 0;margin-top:2rem;border-top:1px solid var(--border)}
+  .footer .tag{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--calm)}
+  .footer .cr{font-size:0.55rem;color:rgba(255,255,255,.2);letter-spacing:2px;margin-top:0.3rem}
+
+  /* Beat flash */
+  body.flash::after{content:'';position:fixed;inset:0;background:rgba(42,157,143,.02);pointer-events:none;z-index:100;animation:flashOut .1s forwards}
+  @keyframes flashOut{to{opacity:0}}
+
+  @media(max-width:600px){
+    .personas{gap:0.5rem}
+    .persona-card{min-width:70px;padding:0.5rem 0.7rem}
+    .persona-card .icon{font-size:1.2rem}
+    .beat-grid{grid-template-columns:40px repeat(16,1fr);gap:2px}
+    .grid-label{font-size:0.5rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<canvas id="tunnel-canvas"></canvas>
+<canvas id="viz-canvas"></canvas>
+<div id="root"></div>
+
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,useMemo}=React;
+
+// ========================================================================
+// AUDIO ENGINE
+// ========================================================================
+
+const BPM=120,BEAT=60/BPM,STEP=BEAT/4;
+const ROWS=4,COLS=16;
+const ROW_NAMES=['KICK','SNARE','HAT','TONE'];
+
+// Am pentatonic: A2 C3 D3 E3 G3 A3
+const BASS_NOTES=[57,60,62,64,67,69];
+const LEAD_NOTES=[69,72,74,76,79,81,84];
+const ARP_NOTES=[57,60,64,69,72,76,79,84];
+const TONE_NOTES=[69,72,74,76]; // for David's grid row 3
+
+const PERSONAS=[
+  {id:'radix',name:'RADIX',icon:'\u{1F916}',color:'#e63946'},
+  {id:'erdos',name:'ERD\u0150S',icon:'\u{1F3B2}',color:'#FF00FF'},
+  {id:'zoltan',name:'ZOLT\u00C1N',icon:'\u{1F9EE}',color:'#00FFFF'},
+  {id:'daft',name:'DAFT PUNK',icon:'\u{1F3B5}',color:'#ff6b35'},
+];
+
+// Round config: who speaks, what gets added
+const ROUNDS=[
+  {persona:'radix',  adds:'Kick + sub bass',          annotation:'The foundation. Four on the floor. 120 BPM — the tempo where a resting heart synchronises. David, every beat you hear is a handshake between the speaker and your chest cavity. That\'s not a metaphor. That\'s physics.'},
+  {persona:'erdos',  adds:'Stochastic hi-hats',       annotation:'A Poisson process on the hi-hat. Each 16th note has a 60% chance of firing. The result sounds human because randomness IS human. Deterministic hi-hats sound like a machine. Probabilistic ones sound like a drummer who\'s alive.'},
+  {persona:'zoltan', adds:'Bass line (Am walk)',       annotation:'The bass walks an A minor pentatonic. Five notes. The same five notes that show up in every culture\'s folk music — from Hungarian csárdás to West African kora. Pentatonic is the fixed point of musical evolution.'},
+  {persona:'daft',   adds:'Filtered chord stab',      annotation:'A minor 7th through a resonant low-pass. We used to spend hours tweaking the cutoff on a Moog. The filter IS the instrument. Everything else is just the raw material.'},
+  {persona:'all',    adds:'David\'s beat grid activates',annotation:'David — your grid is live. Every cell you light up becomes part of the song. You don\'t need words. The rhythm IS the message. Tap the grid. We\'re listening.'},
+  {persona:'radix',  adds:'Delay send opens',         annotation:'Delay is memory. Each echo is the previous beat refusing to disappear. At 120 BPM with a dotted eighth delay, the echoes form a polyrhythm. The past and present play at the same time. That\'s what music does to time.'},
+  {persona:'erdos',  adds:'Random walk melody',       annotation:'The lead melody is a random walk on the A minor scale. Each note is the previous note plus or minus one scale degree, with a small probability of jumping. Erdős would approve — "a mathematician is a machine for turning coffee into theorems." A random walk is a machine for turning probability into melody.'},
+  {persona:'zoltan', adds:'Arpeggiator layer',        annotation:'An arpeggio is a chord played one note at a time. It\'s the Fourier decomposition of harmony — breaking a complex signal into its constituent frequencies. When you hear the arpeggio and the chord at the same time, you\'re hearing the same information in two representations. That\'s duality. That\'s mathematics.'},
+  {persona:'daft',   adds:'Vocoder phrase',            annotation:'One more minute. The vocoder takes a human voice and maps it onto a synthesiser. The humanity is preserved but the timbre changes. It\'s still a voice. It\'s still a person. It just sounds like the future.'},
+  {persona:'all',    adds:'Breakdown — breathe',       annotation:'Breathe. The music strips back to just the kick and a pad. Your blood pressure is lower now than when you pressed play. That\'s not a placebo. The binaural beat at 10Hz has been running underneath everything, gently nudging your alpha waves. This is the moment where the body remembers it can rest.'},
+  {persona:'radix',  adds:'Ride cymbal rebuild',       annotation:'The ride cymbal is the skeleton key of jazz and house. It sustains. It shimmers. It tells you: we\'re not done yet. The rebuild starts here.'},
+  {persona:'erdos',  adds:'Probability snare fills',   annotation:'A snare fill is traditionally a drummer\'s signature — a burst of personality. Here, the fills are generated by a Bernoulli process. Each 16th note slot has a probability that increases toward the end of the bar. The fill writes itself. The probability IS the drummer.'},
+  {persona:'zoltan', adds:'Filter sweep automation',   annotation:'The filter sweeps from 200Hz to 8000Hz over 8 bars. Below 200Hz you hear only the kick and sub. At 8000Hz you hear everything. The sweep is a continuous function from silence to presence. The intermediate value theorem guarantees that at some point, the cutoff frequency will exactly equal your heartbeat in Hertz. That moment exists. You might not notice it. But your body will.'},
+  {persona:'daft',   adds:'THE DROP — full send',      annotation:'Everything. At once. The filter slams open. The delay feeds back. The bass and the stabs and the melody and David\'s grid — all of it at maximum. This is the moment the mathematics becomes irrelevant and the only thing left is the feeling. That\'s what we built the robots for.'},
+  {persona:'all',    adds:'David\'s grid becomes lead', annotation:'David — your pattern is now the melody. The grid you built is transposed into the lead register and played back as the dominant voice. You wrote this. Without words. Without notation. Just rhythm and intention. That\'s composition.'},
+  {persona:'all',    adds:'Fade to binaural — peace',  annotation:'The music fades. The binaural tone remains. 200Hz in the left ear, 210Hz in the right. The 10Hz difference tone is below conscious hearing but your brain processes it anyway. Alpha waves. Calm. The song is over but the effect continues. One more minute of silence is worth more than one more minute of sound. Rest now.'},
+];
+
+// Shuffle order for persona rotation (random but guaranteed all appear)
+function shufflePersonas(){
+  const pool=[...PERSONAS,...PERSONAS,...PERSONAS,...PERSONAS]; // 16 slots
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  return pool;
+}
+
+// ========================================================================
+// CANVAS RENDERERS (outside React for performance)
+// ========================================================================
+
+// Stars
+const starsCanvas=document.getElementById('stars-canvas');
+const starsCtx=starsCanvas.getContext('2d');
+let stars=[];
+function initStars(){
+  starsCanvas.width=innerWidth;starsCanvas.height=innerHeight;
+  stars=[];for(let i=0;i<200;i++)stars.push({x:Math.random()*starsCanvas.width,y:Math.random()*starsCanvas.height,s:Math.random()*1.5+.4,v:Math.random()*.2+.03,o:Math.random()*.6+.2,tw:Math.random()*6.28});
+}
+function drawStars(){
+  starsCtx.clearRect(0,0,starsCanvas.width,starsCanvas.height);
+  for(const s of stars){s.y-=s.v;s.tw+=0.015;if(s.y<0){s.y=starsCanvas.height;s.x=Math.random()*starsCanvas.width}
+    const t=0.5+Math.sin(s.tw)*0.5;starsCtx.beginPath();starsCtx.arc(s.x,s.y,s.s*t,0,Math.PI*2);
+    starsCtx.fillStyle=`rgba(255,255,255,${s.o*t})`;starsCtx.fill()}
+  requestAnimationFrame(drawStars);
+}
+initStars();drawStars();
+addEventListener('resize',initStars);
+
+// Tunnel
+const tunCanvas=document.getElementById('tunnel-canvas');
+const tunCtx=tunCanvas.getContext('2d');
+let tunT=0,tunIntensity=0;
+function initTunnel(){tunCanvas.width=innerWidth;tunCanvas.height=innerHeight}
+function drawTunnel(){
+  tunT+=0.015+tunIntensity*0.02;
+  const w=tunCanvas.width,h=tunCanvas.height,cx=w/2,cy=h/2;
+  tunCtx.fillStyle='rgba(8,8,24,0.12)';tunCtx.fillRect(0,0,w,h);
+  for(let i=0;i<15;i++){
+    const depth=(i/15+tunT*0.3)%1,scale=0.02+depth*0.98,size=Math.max(w,h)*scale,alpha=depth*0.3;
+    tunCtx.save();tunCtx.translate(cx+Math.sin(tunT+i*.3)*tunIntensity*5,cy+Math.cos(tunT*.7+i*.3)*tunIntensity*5);
+    tunCtx.rotate(tunT*0.08+i*0.04);tunCtx.beginPath();
+    for(let s=0;s<=6;s++){const a=(s/6)*Math.PI*2;s===0?tunCtx.moveTo(Math.cos(a)*size/2,Math.sin(a)*size/2):tunCtx.lineTo(Math.cos(a)*size/2,Math.sin(a)*size/2)}
+    tunCtx.closePath();tunCtx.strokeStyle=`hsla(${170+i*6+tunT*15},60%,45%,${alpha})`;tunCtx.lineWidth=1+tunIntensity;tunCtx.stroke();tunCtx.restore();
+  }
+  requestAnimationFrame(drawTunnel);
+}
+initTunnel();drawTunnel();
+addEventListener('resize',initTunnel);
+
+// Visualizer
+const vizCanvas=document.getElementById('viz-canvas');
+const vizCtx=vizCanvas.getContext('2d');
+let vizAnalyser=null;
+function initViz(){vizCanvas.width=innerWidth;vizCanvas.height=100}
+function drawViz(){
+  if(!vizAnalyser){requestAnimationFrame(drawViz);return}
+  const data=new Uint8Array(vizAnalyser.frequencyBinCount);vizAnalyser.getByteFrequencyData(data);
+  vizCtx.clearRect(0,0,vizCanvas.width,vizCanvas.height);
+  const bw=vizCanvas.width/data.length;
+  for(let i=0;i<data.length;i++){
+    const h=(data[i]/255)*vizCanvas.height;const hue=170+(i/data.length)*60;
+    vizCtx.fillStyle=`hsla(${hue},70%,45%,0.5)`;vizCtx.fillRect(i*bw,vizCanvas.height-h,bw-1,h);
+  }
+  requestAnimationFrame(drawViz);
+}
+initViz();drawViz();
+addEventListener('resize',initViz);
+
+// ========================================================================
+// REACT APP
+// ========================================================================
+
+function useAudioEngine(){
+  const ctxRef=useRef(null);
+  const masterRef=useRef(null);
+  const compRef=useRef(null);
+  const filterRef=useRef(null);
+  const analyserRef=useRef(null);
+  const delayRef=useRef(null);
+  const delayFbRef=useRef(null);
+  const reverbGainRef=useRef(null);
+  const reverbDryRef=useRef(null);
+  const binL=useRef(null),binR=useRef(null),binGain=useRef(null);
+  const schedRef=useRef(null);
+  const stepRef=useRef(-1);
+  const startRef=useRef(0);
+  const playingRef=useRef(false);
+
+  const init=useCallback(()=>{
+    if(ctxRef.current)return;
+    const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+
+    const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=6;comp.attack.value=0.002;comp.release.value=0.12;compRef.current=comp;
+
+    const an=c.createAnalyser();an.fftSize=512;analyserRef.current=an;vizAnalyser=an;
+
+    const filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=8000;filt.Q.value=1.5;filterRef.current=filt;
+
+    // Reverb
+    const rev=c.createConvolver();
+    const irLen=c.sampleRate*2,irBuf=c.createBuffer(2,irLen,c.sampleRate);
+    for(let ch=0;ch<2;ch++){const d=irBuf.getChannelData(ch);for(let i=0;i<irLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/irLen,2.8)}
+    rev.buffer=irBuf;
+    const rg=c.createGain();rg.gain.value=0;reverbGainRef.current=rg;
+    const rd=c.createGain();rd.gain.value=1;reverbDryRef.current=rd;
+
+    // Delay
+    const del=c.createDelay(1);del.delayTime.value=BEAT*0.75;delayRef.current=del;
+    const dfb=c.createGain();dfb.gain.value=0;delayFbRef.current=dfb;
+    const dFilt=c.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=3000;
+    del.connect(dFilt);dFilt.connect(dfb);dfb.connect(del);del.connect(comp);
+
+    const m=c.createGain();m.gain.value=0.6;masterRef.current=m;
+    m.connect(filt);filt.connect(rd);rd.connect(comp);filt.connect(rev);rev.connect(rg);rg.connect(comp);filt.connect(del);
+    comp.connect(an);an.connect(c.destination);
+
+    // Binaural beat: 200Hz left, 210Hz right (10Hz alpha)
+    const bg=c.createGain();bg.gain.value=0.06;binGain.current=bg;
+    const merger=c.createChannelMerger(2);
+    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;
+    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;
+    const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+    oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+    merger.connect(bg);bg.connect(c.destination);
+    oL.start();oR.start();binL.current=oL;binR.current=oR;
+  },[]);
+
+  // Instrument functions
+  const kick=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator(),g=c.createGain();
+    o.frequency.setValueAtTime(190,t);o.frequency.exponentialRampToValueAtTime(32,t+0.13);
+    g.gain.setValueAtTime(2,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+    const buf=c.createBuffer(1,c.sampleRate*0.012,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const cl=c.createBufferSource();cl.buffer=buf;
+    const cg=c.createGain();cg.gain.setValueAtTime(0.9,t);cg.gain.exponentialRampToValueAtTime(0.001,t+0.02);
+    cl.connect(cg).connect(compRef.current);cl.start(t);cl.stop(t+0.02);
+    o.connect(g).connect(compRef.current);o.start(t);o.stop(t+0.5);
+    // Sub
+    const sub=c.createOscillator();sub.type='sine';sub.frequency.value=55;
+    const sg=c.createGain();sg.gain.setValueAtTime(0.5,t);sg.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+    sub.connect(sg).connect(compRef.current);sub.start(t);sub.stop(t+0.35);
+  },[]);
+
+  const snare=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const buf=c.createBuffer(1,c.sampleRate*0.07,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.setValueAtTime(0.7,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+    const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=1000;
+    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.12);
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=180;
+    const bg=c.createGain();bg.gain.setValueAtTime(0.4,t);bg.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+    o.connect(bg).connect(masterRef.current);o.start(t);o.stop(t+0.08);
+  },[]);
+
+  const hihat=useCallback((t,open)=>{
+    const c=ctxRef.current;if(!c)return;
+    const dur=open?0.15:0.03;
+    const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,open?0.7:4);
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.value=open?0.1:0.07;
+    const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=open?6000:8500;
+    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+dur);
+  },[]);
+
+  const bassNote=useCallback((t,note)=>{
+    const c=ctxRef.current;if(!c)return;
+    const freq=440*Math.pow(2,(note-69)/12);
+    const o=c.createOscillator();o.type='sawtooth';o.frequency.value=freq;
+    const g=c.createGain();g.gain.setValueAtTime(0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*3.5);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=600;f.Q.value=4;
+    f.frequency.setValueAtTime(1500,t);f.frequency.exponentialRampToValueAtTime(600,t+0.07);
+    o.connect(f).connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP*4);
+  },[]);
+
+  const stab=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const freqs=[440,523.25,659.25]; // Am7
+    const g=c.createGain();g.gain.setValueAtTime(0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+    let chain=g;
+    for(let i=0;i<3;i++){const ap=c.createBiquadFilter();ap.type='allpass';ap.frequency.value=600+Math.sin(c.currentTime*0.4+i)*400;chain.connect(ap);chain=ap}
+    chain.connect(masterRef.current);
+    freqs.forEach((freq,i)=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=freq;o.detune.value=(i-1)*8;o.connect(g);o.start(t+i*0.006);o.stop(t+0.45)});
+  },[]);
+
+  const leadNote=useCallback((t,note)=>{
+    const c=ctxRef.current;if(!c)return;
+    const freq=440*Math.pow(2,(note-69)/12);
+    const o=c.createOscillator();o.type='sawtooth';o.frequency.value=freq;
+    const o2=c.createOscillator();o2.type='sawtooth';o2.frequency.value=freq*1.004;
+    const g=c.createGain();g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*2.5);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=4000;
+    o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+STEP*3);o2.start(t);o2.stop(t+STEP*3);
+  },[]);
+
+  const arpNote=useCallback((t,note)=>{
+    const c=ctxRef.current;if(!c)return;
+    const freq=440*Math.pow(2,(note-69)/12);
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=freq;
+    const g=c.createGain();g.gain.setValueAtTime(0.07,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*0.9);
+    o.connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP);
+  },[]);
+
+  const ride=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const buf=c.createBuffer(1,c.sampleRate*0.25,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.5)*0.2;
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.value=0.05;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=5500;bp.Q.value=0.5;
+    src.connect(bp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.25);
+  },[]);
+
+  const toneNote=useCallback((t,idx)=>{
+    const c=ctxRef.current;if(!c)return;
+    const note=TONE_NOTES[idx%TONE_NOTES.length];
+    const freq=440*Math.pow(2,(note-69)/12);
+    const o=c.createOscillator();o.type='square';o.frequency.value=freq;
+    const g=c.createGain();g.gain.setValueAtTime(0.1,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*1.5);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=2000;
+    o.connect(f).connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP*2);
+  },[]);
+
+  // Voice samples from cancer research audio
+  const voiceBufRef=useRef(null);
+  const voiceLoadedRef=useRef(false);
+  const voiceGainRef=useRef(null);
+
+  const loadVoice=useCallback(async()=>{
+    if(voiceLoadedRef.current)return;
+    try{
+      const c=ctxRef.current;if(!c)return;
+      // Create voice gain node routed through master
+      const vg=c.createGain();vg.gain.value=0.55;vg.connect(masterRef.current);voiceGainRef.current=vg;
+
+      const base=location.protocol==='file:'?'https://spike.land':'';
+      const resp=await fetch(base+'/blog/the-arena-traversing-the-cancer-graph/audio.m4a');
+      if(!resp.ok)throw new Error('Audio fetch failed');
+      const ab=await resp.arrayBuffer();
+      voiceBufRef.current=await c.decodeAudioData(ab);
+      voiceLoadedRef.current=true;
+      console.log('Cancer research audio loaded:',voiceBufRef.current.duration+'s');
+    }catch(e){console.warn('Voice sample load failed:',e)}
+  },[]);
+
+  // Play a slice of the cancer research audio
+  const playVoiceSample=useCallback((startSec,durSec,fadeIn=0.3,fadeOut=0.8)=>{
+    const c=ctxRef.current;const buf=voiceBufRef.current;
+    if(!c||!buf||!voiceGainRef.current)return;
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(1,c.currentTime+fadeIn);
+    g.gain.setValueAtTime(1,c.currentTime+durSec-fadeOut);
+    g.gain.linearRampToValueAtTime(0,c.currentTime+durSec);
+    src.connect(g).connect(voiceGainRef.current);
+    src.start(c.currentTime,startSec,durSec);
+  },[]);
+
+  return{init,kick,snare,hihat,bassNote,stab,leadNote,arpNote,ride,toneNote,
+    loadVoice,playVoiceSample,voiceLoadedRef,
+    ctxRef,masterRef,filterRef,analyserRef,delayFbRef,reverbGainRef,reverbDryRef,
+    schedRef,stepRef,startRef,playingRef};
+}
+
+// ========================================================================
+// COMPONENTS
+// ========================================================================
+
+function RoundIndicator({round,total}){
+  return <div className="round-ring">
+    {Array.from({length:total},(_,i)=>
+      <div key={i} className={`round-dot${i<round?' done':''}${i===round?' active':''}`}/>
+    )}
+  </div>;
+}
+
+function PersonaPanel({activeId,round}){
+  const r=ROUNDS[Math.min(round,15)];
+  return <div className="personas">
+    {PERSONAS.map(p=>
+      <div key={p.id} className={`persona-card${p.id===activeId||activeId==='all'?' active':''}`}>
+        <div className="icon">{p.icon}</div>
+        <div className="name">{p.name}</div>
+        <div className="adds">{p.id===activeId||activeId==='all'?r?.adds:''}</div>
+      </div>
+    )}
+  </div>;
+}
+
+function BeatGrid({grid,onToggle,currentStep,active}){
+  return <div className="beat-grid-wrap">
+    <div className="beat-grid-title">David's Beat Grid</div>
+    <div className="beat-grid-subtitle">{active?'TAP CELLS TO CREATE YOUR PATTERN':'Activates in Round 5'}</div>
+    <div className="beat-grid">
+      {Array.from({length:ROWS},(_, row)=>[
+        <div key={`l${row}`} className="grid-label">{ROW_NAMES[row]}</div>,
+        ...Array.from({length:COLS},(_,col)=>{
+          const isOn=grid[row][col];
+          const isStep=col===currentStep;
+          const isGroup=col%4===0;
+          return <div key={`${row}-${col}`}
+            className={`grid-cell${isOn?' on':''} row-${row}${isStep?' step':''}${!active?' inactive':''}${isGroup?' beat-group':''}`}
+            onClick={()=>active&&onToggle(row,col)}
+          />;
+        })
+      ])}
+    </div>
+  </div>;
+}
+
+function Annotations({messages}){
+  return <div className="annotations">
+    {messages.slice(-3).map((m,i)=>
+      <div key={i} className="annotation">
+        <div className={`speaker ${m.persona}`}>{m.name} — Round {m.round+1}</div>
+        {m.text}
+      </div>
+    )}
+  </div>;
+}
+
+// ========================================================================
+// APP
+// ========================================================================
+
+function App(){
+  const engine=useAudioEngine();
+  const [playing,setPlaying]=useState(false);
+  const [round,setRound]=useState(0);
+  const [step,setStep]=useState(-1);
+  const [bar,setBar]=useState(0);
+  const [grid,setGrid]=useState(()=>Array.from({length:ROWS},()=>Array(COLS).fill(false)));
+  const [annotations,setAnnotations]=useState([]);
+  const [intensity,setIntensity]=useState(0);
+  const [voicePlaying,setVoicePlaying]=useState(false);
+  const roundRef=useRef(0);
+  const leadWalkRef=useRef(69); // current lead note
+  const announcedRef=useRef(new Set());
+
+  const activePersona=ROUNDS[Math.min(round,15)]?.persona||'all';
+
+  const toggleCell=useCallback((row,col)=>{
+    setGrid(g=>{const n=g.map(r=>[...r]);n[row][col]=!n[row][col];return n});
+  },[]);
+
+  // Voice sample cue points — slices of the cancer research audio
+  // These are spread across the ~11 min NotebookLM podcast
+  // Each entry: [startSec, durationSec] — chosen for impactful sentences
+  const VOICE_CUES = useMemo(()=>({
+    0: [3, 8],      // "Cancer is not one disease..." — opening narrator
+    2: [18, 7],     // "Every mutation is a node..." — Erdős on the graph
+    4: [35, 8],     // "No human can traverse this whole graph alone..." — Zoltán
+    6: [55, 6],     // "The machine is not the cure. It is the compression engine" — Einstein
+    9: [70, 8],     // "Millions of possibilities go in. A ranked set comes out" — narrator
+    11: [85, 6],    // "The machine maps the graph" — Erdős
+    13: [95, 7],    // "Complexity, compressed" — Einstein
+    15: [105, 10],  // "Not one cure for all cancers... a thousand graphs traversed" — narrator close
+  }),[]);
+
+  // Announce round
+  useEffect(()=>{
+    if(playing&&!announcedRef.current.has(round)){
+      announcedRef.current.add(round);
+      const r=ROUNDS[Math.min(round,15)];
+      const persona=PERSONAS.find(p=>p.id===r.persona);
+      setAnnotations(prev=>[...prev,{
+        persona:r.persona,
+        name:persona?persona.name:'ALL TOGETHER',
+        round,
+        text:r.annotation
+      }]);
+
+      // Play cancer research voice sample if cued for this round
+      if(engine.voiceLoadedRef.current && VOICE_CUES[round]){
+        const [start,dur]=VOICE_CUES[round];
+        // Brief delay so it doesn't collide with the round transition
+        setTimeout(()=>{
+          engine.playVoiceSample(start,dur,0.5,1.0);
+          setVoicePlaying(true);
+          setTimeout(()=>setVoicePlaying(false),(dur+0.5)*1000);
+        },1200);
+      }
+    }
+  },[round,playing,engine,VOICE_CUES]);
+
+  // Main sequencer
+  const scheduleStep=useCallback(()=>{
+    if(!engine.playingRef.current)return;
+    const c=engine.ctxRef.current;
+    const now=c.currentTime,elapsed=now-engine.startRef.current;
+    const stepNum=Math.floor(elapsed/STEP);
+    if(stepNum<=engine.stepRef.current){engine.schedRef.current=setTimeout(scheduleStep,5);return}
+    engine.stepRef.current=stepNum;
+
+    const t=engine.startRef.current+stepNum*STEP;
+    const pos=stepNum%16;
+    const currentBar=Math.floor(stepNum/16);
+    const currentRound=Math.min(Math.floor(currentBar/8),15);
+
+    roundRef.current=currentRound;
+    setStep(pos);setBar(currentBar);setRound(currentRound);
+
+    const rConfig=ROUNDS[currentRound];
+    const intens=Math.min(1,(currentRound+1)/16);
+    setIntensity(intens);
+    tunIntensity=intens;
+
+    // Filter tracks intensity
+    const baseF=1000+intens*7000;
+    engine.filterRef.current.frequency.setTargetAtTime(currentRound===9?800:baseF,t,0.1);
+
+    // Delay opens from round 5
+    engine.delayFbRef.current.gain.setTargetAtTime(currentRound>=5?0.15+intens*0.2:0,t,0.1);
+
+    // Reverb from round 5
+    engine.reverbGainRef.current.gain.setTargetAtTime(currentRound>=5?0.25:0,t,0.2);
+
+    // Round 16 fade
+    if(currentRound>=15&&currentBar>=15*8+4){
+      engine.masterRef.current.gain.setTargetAtTime(Math.max(0.05,0.6-((currentBar-15*8-4)/4)*0.15),t,0.2);
+    }
+
+    // ===== INSTRUMENT SCHEDULING BY ROUND =====
+
+    // Round 0+: Kick
+    if(currentRound>=0&&pos%4===0&&currentRound!==9)engine.kick(t);
+    // Breakdown kick (round 9) — sparse
+    if(currentRound===9&&pos===0)engine.kick(t);
+
+    // Round 1+: Stochastic hats
+    if(currentRound>=1&&currentRound!==9){
+      if(Math.random()<0.6)engine.hihat(t,false);
+      if(pos%4===2&&Math.random()<0.4)engine.hihat(t,true);
+    }
+
+    // Round 2+: Bass
+    if(currentRound>=2&&currentRound!==9&&pos%4===0){
+      const bassIdx=(currentBar*4+pos/4)%BASS_NOTES.length;
+      engine.bassNote(t,BASS_NOTES[bassIdx]);
+    }
+
+    // Round 3+: Stab
+    if(currentRound>=3&&currentRound!==9&&pos%2===1&&pos%4!==3)engine.stab(t);
+
+    // Round 4+: David's grid
+    if(currentRound>=4){
+      if(grid[0][pos])engine.kick(t); // extra kick
+      if(grid[1][pos])engine.snare(t);
+      if(grid[2][pos])engine.hihat(t,pos%4===2);
+      if(grid[3][pos])engine.toneNote(t,pos%4);
+    }
+
+    // Round 5+: (delay already opened above)
+
+    // Round 6+: Random walk lead
+    if(currentRound>=6&&currentRound!==9&&pos%4===0){
+      const walk=Math.random()<0.15?Math.floor(Math.random()*7):
+        Math.max(0,Math.min(LEAD_NOTES.length-1,LEAD_NOTES.indexOf(leadWalkRef.current)+(Math.random()<0.5?1:-1)));
+      leadWalkRef.current=LEAD_NOTES[walk]||69;
+      engine.leadNote(t,leadWalkRef.current);
+    }
+
+    // Round 7+: Arpeggio
+    if(currentRound>=7&&currentRound!==9){
+      const arpIdx=pos%ARP_NOTES.length;
+      if(pos%2===0)engine.arpNote(t,ARP_NOTES[arpIdx]);
+    }
+
+    // Round 8+: Vocoder (once per round start)
+    // (handled in round announcement)
+
+    // Round 10+: Ride
+    if(currentRound>=10&&pos%2===0)engine.ride(t);
+
+    // Round 11+: Probability snare fills
+    if(currentRound>=11){
+      const fillProb=pos/16*0.5;
+      if(Math.random()<fillProb&&pos%4!==0)engine.snare(t);
+      // Regular snare
+      if(pos===4||pos===12)engine.snare(t);
+    }
+
+    // Round 13+: Full send (intensity already at max)
+
+    // Round 14: David's grid as lead melody
+    if(currentRound>=14){
+      for(let col=0;col<16;col++){
+        if(grid[3][col]&&pos===col){
+          const transposed=TONE_NOTES[col%4]+12; // octave up
+          engine.leadNote(t,transposed);
+        }
+      }
+    }
+
+    // Beat flash
+    if(pos%4===0){
+      const dt=(t-c.currentTime)*1000;
+      if(dt>=0)setTimeout(()=>{document.body.classList.add('flash');setTimeout(()=>document.body.classList.remove('flash'),100)},dt);
+    }
+
+    engine.schedRef.current=setTimeout(scheduleStep,5);
+  },[engine,grid]);
+
+  const handlePlay=useCallback(()=>{
+    engine.init();
+    engine.loadVoice(); // Start loading cancer research audio in background
+    const c=engine.ctxRef.current;
+    if(c.state==='suspended')c.resume();
+    if(!playing){
+      engine.playingRef.current=true;
+      engine.startRef.current=c.currentTime+0.05;
+      engine.stepRef.current=-1;
+      setPlaying(true);setRound(0);setStep(-1);setBar(0);
+      announcedRef.current=new Set();setAnnotations([]);
+      scheduleStep();
+    }else{
+      engine.playingRef.current=false;setPlaying(false);
+      if(engine.schedRef.current)clearTimeout(engine.schedRef.current);
+    }
+  },[engine,playing,scheduleStep]);
+
+  const handleStop=useCallback(()=>{
+    engine.playingRef.current=false;setPlaying(false);
+    if(engine.schedRef.current)clearTimeout(engine.schedRef.current);
+    setStep(-1);setRound(0);setBar(0);setIntensity(0);tunIntensity=0;
+  },[engine]);
+
+  const gridActive=round>=4;
+
+  return <div className="app">
+    <div className="header">
+      <h1>ONE MORE MINUTE</h1>
+      <div className="sub">David's Beat Engine &mdash; 16 Rounds</div>
+    </div>
+
+    <RoundIndicator round={round} total={16}/>
+    <PersonaPanel activeId={activePersona} round={round}/>
+
+    <div className="transport">
+      <div className="transport-row">
+        <button className={`btn${playing?' active':''}`} onClick={handlePlay}>
+          {playing?'\u23F8 PAUSE':'\u25B6 PLAY'}
+        </button>
+        <button className="btn calm" onClick={()=>{
+          if(engine.ctxRef.current){
+            const f=engine.filterRef.current;
+            f.frequency.setValueAtTime(f.frequency.value,engine.ctxRef.current.currentTime);
+            f.frequency.exponentialRampToValueAtTime(200,engine.ctxRef.current.currentTime+2);
+            setTimeout(()=>{f.frequency.exponentialRampToValueAtTime(8000,engine.ctxRef.current.currentTime+0.05);
+              document.body.classList.add('flash');setTimeout(()=>document.body.classList.remove('flash'),150)},2500);
+          }
+        }}>DROP</button>
+        <button className="btn stop" onClick={handleStop}>{'\u25A0'} STOP</button>
+      </div>
+      <div className="progress">
+        <div className="progress-fill" style={{width:`${playing?(bar%128)/128*100:0}%`}}/>
+      </div>
+    </div>
+
+    <div className="stats">
+      BPM <span>120</span> | KEY <span>Am</span> |
+      ROUND <span>{round+1}/16</span> |
+      BAR <span>{bar}</span> | BEAT <span>{step}</span> |
+      {playing&&<span className="live">{'\u25CF'} LIVE</span>}
+    </div>
+
+    <div className="binaural">
+      <div className="binaural-badge">
+        <div className="binaural-pulse"/>
+        BINAURAL 10Hz ALPHA &mdash; BLOOD PRESSURE MODE
+      </div>
+      {voicePlaying && <div style={{textAlign:'center',marginTop:'0.5rem'}}>
+        <span className="voice-active">
+          <span className="wave"><span/><span/><span/><span/><span/></span>
+          CANCER RESEARCH &mdash; THE ARENA
+        </span>
+      </div>}
+    </div>
+
+    <BeatGrid grid={grid} onToggle={toggleCell} currentStep={playing?step:-1} active={gridActive}/>
+
+    <Annotations messages={annotations}/>
+
+    <div className="footer">
+      <div className="tag">One more minute of silence is worth more than one more minute of sound.</div>
+      <div className="cr">MATH ARENA &bull; SPIKE.LAND &bull; FOR DAVID &bull; 2026-03-27</div>
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

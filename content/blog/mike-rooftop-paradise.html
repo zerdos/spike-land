@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mike's Rooftop Paradise — The Music Arena</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#0a0a12;--pulse:#7b68ee;--warm:#e8a87c;--gold:#FFD700;
+    --rose:#e63946;--lavender:#b8a9c9;--teal:#2a9d8f;--sunset:#ff6b35;
+    --panel:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);
+    --text:rgba(255,255,255,.6);
+  }
+  html{scroll-behavior:smooth}
+  body{background:linear-gradient(180deg,#06060e 0%,#0e0a1a 30%,#120e22 60%,#0a0a14 100%);
+    color:#eee;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;top:0;left:0;right:0;height:60vh;
+    background:radial-gradient(ellipse at 50% 20%,rgba(123,104,238,.04) 0%,rgba(232,168,124,.02) 40%,transparent 70%);
+    pointer-events:none;z-index:0}
+
+  .app{position:relative;z-index:3;max-width:600px;margin:0 auto;padding:1rem}
+
+  .header{text-align:center;padding:2rem 0 0.5rem}
+  .header h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,6vw,1.8rem);font-weight:700;
+    color:rgba(255,255,255,.15);letter-spacing:6px;
+  }
+  .header .sub{font-size:0.65rem;color:var(--pulse);opacity:0.3;margin-top:0.3rem;font-weight:300;letter-spacing:3px}
+  @keyframes slowPulse{0%,100%{opacity:0.3}50%{opacity:0.5}}
+
+  .transport{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1.5rem 0}
+  .play-btn{
+    width:56px;height:56px;border-radius:50%;border:1.5px solid rgba(123,104,238,.3);
+    background:rgba(123,104,238,.03);color:var(--pulse);font-size:1.4rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .4s;touch-action:manipulation;
+  }
+  .play-btn:active{transform:scale(0.92)}
+  .play-btn.on{border-color:rgba(123,104,238,.5);animation:breathe 6s ease infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(123,104,238,.08)}50%{box-shadow:0 0 30px 8px rgba(123,104,238,.06)}}
+
+  .skip-btn{
+    width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:transparent;
+    color:rgba(255,255,255,.2);font-size:0.9rem;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;touch-action:manipulation;transition:all .2s;
+  }
+  .skip-btn:active{transform:scale(0.9);color:var(--pulse)}
+
+  .transport-info{font-size:0.55rem;color:var(--pulse);opacity:0.25;text-align:center;letter-spacing:2px;margin-top:0.2rem}
+
+  .rounds{display:flex;justify-content:center;gap:6px;margin:1rem 0}
+  .rdot{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.06);
+    transition:all .4s;cursor:pointer;touch-action:manipulation;
+    display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:rgba(255,255,255,.1)}
+  .rdot:active{transform:scale(1.3)}
+  .rdot.done{background:rgba(123,104,238,.2);border-color:rgba(123,104,238,.3);color:transparent}
+  .rdot.now{background:var(--pulse);border-color:var(--pulse);box-shadow:0 0 12px rgba(123,104,238,.3);
+    transform:scale(1.15);color:transparent}
+
+  .personas{display:flex;justify-content:center;gap:0.5rem;margin:0.5rem 0}
+  .ptag{font-size:0.5rem;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.04);
+    color:rgba(255,255,255,.15);transition:all .4s;letter-spacing:1px}
+  .ptag.active{color:#fff;font-weight:500}
+  .ptag.radix.active{border-color:rgba(230,57,70,.3);color:var(--rose);background:rgba(230,57,70,.04)}
+  .ptag.erdos.active{border-color:rgba(184,169,201,.3);color:var(--lavender);background:rgba(184,169,201,.04)}
+  .ptag.zoltan.active{border-color:rgba(42,157,143,.3);color:var(--teal);background:rgba(42,157,143,.04)}
+  .ptag.daft.active{border-color:rgba(255,107,53,.3);color:var(--sunset);background:rgba(255,107,53,.04)}
+
+  .bin-row{display:flex;justify-content:center;gap:0.4rem;margin:1rem 0}
+  .bin-btn{
+    font-size:0.5rem;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.04);
+    color:rgba(255,255,255,.2);cursor:pointer;touch-action:manipulation;transition:all .2s;letter-spacing:1px;
+  }
+  .bin-btn:active{transform:scale(0.95)}
+  .bin-btn.sel{border-color:rgba(42,157,143,.3);color:var(--teal);background:rgba(42,157,143,.03)}
+  .bin-label{font-size:0.45rem;color:var(--teal);opacity:0.2;text-align:center;margin-bottom:0.2rem;letter-spacing:3px}
+
+  .anno{
+    padding:1.2rem;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);
+    border-radius:16px;margin:1rem 0;font-size:0.8rem;line-height:1.9;color:rgba(255,255,255,.45);
+    animation:fadeIn .6s ease;min-height:50px;
+  }
+  .anno .who{font-weight:500;font-size:0.6rem;margin-bottom:0.4rem;letter-spacing:2px;opacity:0.7}
+  .anno .design{font-size:0.6rem;color:rgba(255,255,255,.2);margin-top:0.6rem;padding-top:0.5rem;
+    border-top:1px solid rgba(255,255,255,.03);font-style:italic;line-height:1.6}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .yt{margin:1.5rem 0;padding:1rem;background:rgba(255,255,255,.01);border:1px solid rgba(255,255,255,.03);
+    border-radius:12px}
+  .yt-title{font-size:0.5rem;color:var(--pulse);opacity:0.2;letter-spacing:3px;margin-bottom:0.6rem;text-align:center}
+  .yt-comment{font-size:0.7rem;color:rgba(255,255,255,.25);line-height:1.6;padding:0.4rem 0;
+    border-bottom:1px solid rgba(255,255,255,.02)}
+  .yt-comment:last-child{border:none}
+  .yt-user{font-size:0.55rem;color:var(--pulse);opacity:0.3}
+  .yt-time{font-size:0.5rem;color:rgba(255,255,255,.1);margin-left:0.4rem}
+
+  .footer{text-align:center;padding:2rem 0 3rem;border-top:1px solid rgba(255,255,255,.03);margin-top:2rem}
+  .footer .tag{font-size:0.75rem;color:rgba(255,255,255,.15);font-weight:300;line-height:1.6}
+  .footer .cr{font-size:0.45rem;color:rgba(255,255,255,.06);letter-spacing:3px;margin-top:0.5rem}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const {useState,useCallback,useRef,useEffect}=React;
+
+// ========================================================================
+// MIKE'S ROOFTOP PARADISE — THE MUSIC ARENA
+// Inspired by Weval. Engineered by Radix. Probabilized by Erdős.
+// Dreamed by Zoltán. Dropped by Daft Punk.
+//
+// "after 2:45 amazing" — @imfurman
+// "Hypnotic. Je kiffe" — @DSAforever1
+// "Out of space MOOD" — @pellullis
+// ========================================================================
+
+const BPM=112, BEAT=60/BPM, STEP=BEAT/4;
+const TOTAL_ROUNDS=8, BARS_PER_ROUND=4, STEPS_PER_BAR=16;
+const TOTAL_BARS=TOTAL_ROUNDS*BARS_PER_ROUND;
+const H=8,Q=4,E=2,S=1;
+
+// === CHORD ARCHITECTURE (Radix) ===
+// Warm, bright, playful — major 7ths for beauty, not darkness
+const CHORDS={
+  Cmaj7:[36,48,60,64,67,71],   // C2 C3 C4 E4 G4 B4 — bright, open, happy
+  Fmaj7:[41,53,60,65,69,72],   // F2 F3 C4 F4 A4 C5 — warm, wide, dreamy
+  Am7:  [33,45,57,60,64,67],   // A1 A2 A3 C4 E4 G4 — gentle melancholy
+  G:    [35,47,55,59,62,67],   // B1 B2 G3 B3 D4 G4 — lift, resolve
+};
+const PROG=['Cmaj7','Fmaj7','Am7','G'];
+
+// === MELODY ARCHITECTURE (Zoltán) ===
+// Hypnotic = repetition with tiny variations. Singable = mostly stepwise.
+// The hook lives in ZOLTAN_HOOK — 5 notes that won't leave your head.
+
+// Zoltán's hook — the "after 2:45" melody. Simple. Devastating.
+const ZOLTAN_HOOK=[
+  [69,H],[67,Q],[64,Q],          // A--G-E-         (descend, sigh)
+  [60,H],[0,H],                  // C--....          (resolve, space)
+];
+const ZOLTAN_B=[
+  [64,H],[67,H],                 // E--G--           (rise)
+  [69,Q],[72,Q],[69,H],          // A-C-A--          (reach and return)
+];
+
+// Daft Punk's groove motif — rhythmic, punchy, locks the body
+const DAFT_A=[
+  [57,E],[0,E],[60,E],[57,E],    // A.C.A.           (staccato pulse)
+  [55,Q],[57,E],[0,E],[0,Q],     // G-A...           (space)
+];
+const DAFT_B=[
+  [60,E],[60,E],[57,E],[0,E],    // CC.A..           (insistent)
+  [55,E],[57,Q],[0,E],[60,Q],    // G.A-..C-         (resolve up)
+];
+
+// Erdős probability bass — root movements, deep
+const ERDOS_BASS_A=[
+  [38,H],[0,Q],[45,Q],           // D2---..A2-
+  [38,Q],[0,Q],[0,H],            // D2-......
+];
+const ERDOS_BASS_B=[
+  [41,H],[40,Q],[38,Q],          // F2--E2-D2-
+  [33,H],[0,H],                  // A1--....
+];
+
+// === PIANO MELODIES (playful, bouncy, beautiful) ===
+// The piano is the heart — bright, dancing, like sunlight on rooftop tiles
+
+// Piano right hand — playful, skipping, happy
+const PIANO_A=[
+  [72,E],[74,E],[76,Q],          // C-D-E--         (ascending skip)
+  [79,E],[76,E],[74,Q],          // G.E.D--         (playful fall)
+  [72,Q],[0,Q],                  // C-...           (breathe)
+];
+const PIANO_B=[
+  [76,Q],[79,E],[81,E],          // E-G.A.          (reach up!)
+  [79,Q],[76,E],[74,E],          // G-E.D.          (tumble down)
+  [72,H],                        // C---            (land, smile)
+];
+// Piano left hand — gentle arpeggiated accompaniment
+const PIANO_LEFT_A=[
+  [48,E],[52,E],[55,E],[60,E],   // C3.E3.G3.C4    (arpeggio up)
+  [55,E],[52,E],[48,E],[0,E],    // G3.E3.C3.      (arpeggio down)
+];
+const PIANO_LEFT_B=[
+  [53,E],[57,E],[60,E],[65,E],   // F3.A3.C4.F4    (arpeggio up)
+  [60,E],[57,E],[53,E],[0,E],    // C4.A3.F3.      (arpeggio down)
+];
+
+const AABA=[0,0,1,0];
+
+// === BINAURAL (independent) ===
+const BINAURAL_MODES=[
+  {name:'OFF',hz:0,desc:'disabled',lFreq:0,rFreq:0},
+  {name:'ALPHA',hz:10,desc:'10Hz \u2014 focus',lFreq:200,rFreq:210},
+  {name:'THETA',hz:6,desc:'6Hz \u2014 relax',lFreq:200,rFreq:206},
+  {name:'DELTA',hz:2,desc:'2Hz \u2014 sleep',lFreq:200,rFreq:202},
+  {name:'BETA',hz:15,desc:'15Hz \u2014 alert',lFreq:200,rFreq:215},
+];
+
+const PERSONAS=[
+  {id:'radix',name:'RADIX',color:'var(--rose)',icon:'\u{1F916}',role:'engineer'},
+  {id:'erdos',name:'ERD\u0150S',color:'var(--lavender)',icon:'\u{1F3B2}',role:'probability'},
+  {id:'zoltan',name:'ZOLT\u00C1N',color:'var(--teal)',icon:'\u{1F319}',role:'melody'},
+  {id:'daft',name:'DAFT PUNK',color:'var(--sunset)',icon:'\u{1F3B5}',role:'groove'},
+];
+
+// === 8 ROUNDS ===
+const ROUNDS=[
+  {p:'radix',
+   layers:['pulse'],
+   note:'Radix lays the signal chain. A single pulsing pad \u2014 sine wave breathing at 0.25Hz through a lowpass at 400. This is the heartbeat. Everything else is built on top of this.',
+   design:'SIGNAL: sine \u00d7 2 (3\u00a2 detune) \u2192 LP 400Hz Q=0.5 \u2192 tremolo LFO 0.25Hz \u2192 master'},
+
+  {p:'zoltan',
+   layers:['pulse','melody','piano'],
+   note:'Zolt\u00e1n\u2019s melody enters alongside a playful piano. Five notes descending \u2014 A, G, E, then C dissolving into space. The hook that @imfurman heard at 2:45. It plays once and you\u2019re already humming it.',
+   design:'SIGNAL: triangle + FM (ratio 1.5, depth 40%) \u2192 BP 1800Hz Q=2 \u2192 delay 0.35fb \u2192 master'},
+
+  {p:'erdos',
+   layers:['pulse','melody','bass','piano'],
+   note:'Erd\u0151s drops the bass \u2014 probability-weighted root movement. D to A, sometimes F, sometimes silence. The bass decides on each bar whether to play or rest. P(play) = 0.8.',
+   design:'SIGNAL: saw \u00d7 2 (6\u00a2 detune) + sub sine (-1 oct) \u2192 LP 300Hz \u2192 env 80ms attack \u2192 master'},
+
+  {p:'daft',
+   layers:['pulse','melody','bass','groove','kick','piano'],
+   note:'Daft Punk locks the groove. The piano dances above it all. Staccato eighth notes pulsing through a resonant filter. The kick is soft but deep \u2014 100Hz sweeping to 30Hz. Your body starts moving before your brain decides to.',
+   design:'SIGNAL: square (duty sim) \u2192 LP 3000Hz Q=2 \u2192 env 5ms/200ms \u2192 master\nKICK: sine 100\u219230Hz sweep, 400ms decay'},
+
+  {p:'radix',
+   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','air','bloom','piano','pianoLeft'],
+   note:'THE BLOOM. Round 5. The 2:45 moment. Radix opens every filter simultaneously. The air texture rises \u2014 filtered noise slowly sweeping from 200Hz to 8000Hz. Double pad. Delay feedback at 0.4. Everything expands into infinity.',
+   design:'BLOOM: noise \u2192 BP sweep 200\u21928000Hz (8 bars) \u2192 stereo spread\nDELAY: feedback 0.4, filter 3000Hz\nALL FILTERS: +3000Hz'},
+
+  {p:'zoltan',
+   layers:['pulse','melody','air','piano'],
+   note:'Strip everything. Pad, melody, piano, and air. The @pellullis moment \u2014 "Out of space MOOD." Zolt\u00e1n\u2019s melody exposed, floating in reverb. The city is far below. The rooftop is yours.',
+   design:'MINIMAL: pulse (LP 600Hz) + melody (delay 0.45fb) + air (BP 1200Hz static)'},
+
+  {p:'erdos',
+   layers:['pulse','pulseDbl','melody','bass','groove','kick','hat','bloom','piano','pianoLeft'],
+   note:'Everything returns with probability. Erd\u0151s: every instrument now has a 15% chance of variation each bar. Notes shift, rests appear, fills emerge. No two loops are identical. "God has a transfinite book of grooves."',
+   design:'ALL LAYERS + mutation P=0.15 per note\nGroove fills P=0.3 on beats 12-15'},
+
+  {p:'daft',
+   layers:['pulse','melody','piano'],
+   note:'Daft Punk says: the ending IS the beginning. Just the pulse and the melody. Fading. The loop point is seamless \u2014 round 8 dissolves into round 1. The rooftop is forever. "The people want more of this."',
+   design:'FADE: master gain \u00d70.7 per bar\nLOOP: seamless \u2192 round 1 pad attack covers the seam'},
+];
+
+// YouTube comments to display
+const YT_COMMENTS=[
+  {user:'@imfurman',time:'11y',text:'"after 2:45 amazing"'},
+  {user:'@DSAforever1',time:'11y',text:'"Hypnotic. Je kiffe"'},
+  {user:'@pellullis',time:'6y',text:'"Out of space MOOD --(--.--)--"'},
+  {user:'@ouquandquoi',time:'12y',text:'"incredible track !!! fantastic album !!"'},
+  {user:'@ABDsang',time:'11y',text:'"the people want more of this. help us will you"'},
+  {user:'@rotyoto',time:'8y',text:'"Highly motivated from Thom York\'s music but just amazing."'},
+  {user:'@LorneChrones',time:'3y',text:'"First heard this in the game Tharsis. Accidentally killing your astronauts to bad RNG dice rolls has never been this much of a bop"'},
+];
+
+// Intensity per round
+const INTENSITY=[0.15, 0.3, 0.45, 0.65, 1.0, 0.2, 0.85, 0.15];
+
+function useRooftopEngine(){
+  const ctxRef=useRef(null);
+  const masterRef=useRef(null);
+  const compRef=useRef(null);
+  const filterRef=useRef(null);
+  const delayRef=useRef(null);
+  const delayFbRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const playingRef=useRef(false);
+  const schedRef=useRef(null);
+  const stepRef=useRef(-1);
+  const startRef=useRef(0);
+
+  const midi2freq=useCallback((n)=>440*Math.pow(2,(n-69)/12),[]);
+
+  const init=useCallback(()=>{
+    if(ctxRef.current)return;
+    const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+
+    // Radix signal chain: compressor → destination
+    const comp=c.createDynamicsCompressor();
+    comp.threshold.value=-10;comp.ratio.value=6;comp.knee.value=10;
+    comp.connect(c.destination);compRef.current=comp;
+
+    // Global filter (Radix controls this per round)
+    const filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=2000;filt.Q.value=0.7;
+    filterRef.current=filt;
+
+    // Delay line (ping-pong feel via feedback + filter)
+    const del=c.createDelay(2);del.delayTime.value=BEAT*0.75;delayRef.current=del;
+    const dfb=c.createGain();dfb.gain.value=0;delayFbRef.current=dfb;
+    const dFilt=c.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=2200;
+    del.connect(dFilt);dFilt.connect(dfb);dfb.connect(del);del.connect(comp);
+
+    // Master gain → filter → compressor + delay send
+    const m=c.createGain();m.gain.value=0.35;
+    m.connect(filt);filt.connect(comp);filt.connect(del);
+    masterRef.current=m;
+
+    // Binaural (independent)
+    const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+    const merger=c.createChannelMerger(2);
+    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
+    const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+    oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+    merger.connect(bg);bg.connect(c.destination);
+    oL.start();oR.start();
+  },[]);
+
+  const setBinaural=useCallback((mode)=>{
+    if(!ctxRef.current){
+      const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+      if(!binGainRef.current){
+        const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+        const merger=c.createChannelMerger(2);
+        const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+        const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
+        const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+        oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+        merger.connect(bg);bg.connect(c.destination);oL.start();oR.start();
+      }
+    }
+    const c=ctxRef.current;if(c.state==='suspended')c.resume();
+    if(!binLRef.current||!binGainRef.current)return;
+    const bm=BINAURAL_MODES[mode]||BINAURAL_MODES[0];
+    const t=c.currentTime;
+    if(bm.hz===0){binGainRef.current.gain.setTargetAtTime(0,t,0.3);}
+    else{
+      binLRef.current.frequency.setTargetAtTime(bm.lFreq,t,0.3);
+      binRRef.current.frequency.setTargetAtTime(bm.rFreq,t,0.3);
+      binGainRef.current.gain.setTargetAtTime(0.05,t,0.3);
+    }
+  },[]);
+
+  // ================================================================
+  // UNIQUE INSTRUMENTS — each designed in the arena
+  // ================================================================
+
+  // RADIX: Pulsing Pad — the Weval heartbeat
+  // Two sines, 3¢ detune, tremolo LFO at 0.25Hz, LP filtered
+  const pulse=useCallback((t,notes,dur,filterFreq)=>{
+    const c=ctxRef.current;if(!c)return;
+    const lpFreq=filterFreq||900;
+    notes.forEach(n=>{
+      if(n<45)return; // skip sub-bass range
+      const freq=midi2freq(n);
+      const o1=c.createOscillator();o1.type='sine';o1.frequency.value=freq;
+      const o2=c.createOscillator();o2.type='sine';o2.frequency.value=freq*1.002; // 3¢ detune
+      // Tremolo LFO — the breathing
+      const lfo=c.createOscillator();lfo.type='sine';lfo.frequency.value=0.25;
+      const lfoG=c.createGain();lfoG.gain.value=0.015; // subtle pulse
+      const g=c.createGain();g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.04,t+1.0); // warm swell
+      g.gain.setValueAtTime(0.04,t+dur-1.5);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      lfo.connect(lfoG).connect(g.gain);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=lpFreq;f.Q.value=0.5;
+      o1.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+      o1.start(t);o1.stop(t+dur+0.2);o2.start(t);o2.stop(t+dur+0.2);
+      lfo.start(t);lfo.stop(t+dur+0.2);
+    });
+  },[midi2freq]);
+
+  // ZOLTÁN: Melody Voice — triangle with FM, bandpass, long reverb tail
+  // The "after 2:45" sound — crystalline, melancholic, human
+  const melodyVoice=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    // FM modulator — ratio 1.5 for bell-like partial
+    const mod=c.createOscillator();mod.type='sine';mod.frequency.value=freq*1.5;
+    const modG=c.createGain();modG.gain.value=freq*0.15; // gentle FM — warm, not eerie
+    mod.connect(modG);
+    // Carrier
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=freq;
+    modG.connect(o.frequency);
+    // Subtle vibrato (human quality)
+    const vib=c.createOscillator();vib.type='sine';vib.frequency.value=4.5;
+    const vibG=c.createGain();vibG.gain.value=2;
+    vib.connect(vibG).connect(o.frequency);
+    // Envelope — soft attack, long tail
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol||0.07,t+0.06);
+    g.gain.setValueAtTime((vol||0.07)*0.8,t+dur*0.5);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur+1.2);
+    // Bandpass — the character
+    const bp=c.createBiquadFilter();bp.type='lowpass';bp.frequency.value=4000;bp.Q.value=0.7;
+    o.connect(bp);bp.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+1.3);mod.start(t);mod.stop(t+dur+1.3);vib.start(t);vib.stop(t+dur+1.3);
+  },[midi2freq]);
+
+  // ERDŐS: Probability Bass — dual detuned saw + sub sine, LP 300
+  // Deep. Chest-vibrating. Probability decides if each note plays.
+  const probBass=useCallback((t,note,dur,pPlay)=>{
+    if(!note||note===0)return;
+    if(Math.random()>=(pPlay||0.8))return; // probability gate
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    const o1=c.createOscillator();o1.type='sawtooth';o1.frequency.value=freq;
+    const o2=c.createOscillator();o2.type='sawtooth';o2.frequency.value=freq*1.004; // 6¢ detune
+    const sub=c.createOscillator();sub.type='sine';sub.frequency.value=freq*0.5; // sub octave
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.2,t+0.08);
+    g.gain.setValueAtTime(0.2,t+dur*0.35);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=300;f.Q.value=0.8;
+    o1.connect(f);o2.connect(f);sub.connect(f);f.connect(g).connect(masterRef.current);
+    o1.start(t);o1.stop(t+dur+0.1);o2.start(t);o2.stop(t+dur+0.1);sub.start(t);sub.stop(t+dur+0.1);
+  },[midi2freq]);
+
+  // DAFT PUNK: Groove Stab — square wave, resonant filter, fast envelope
+  // Staccato. Hypnotic. The body-mover.
+  const grooveStab=useCallback((t,note,dur)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    const o=c.createOscillator();o.type='square';o.frequency.value=freq;
+    const o2=c.createOscillator();o2.type='square';o2.frequency.value=freq*1.005;
+    const g=c.createGain();g.gain.setValueAtTime(0.065,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+Math.min(dur*0.8,0.22));
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=3000;f.Q.value=2;
+    // Filter envelope — opens then closes
+    f.frequency.setValueAtTime(3000,t);
+    f.frequency.exponentialRampToValueAtTime(800,t+0.15);
+    o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+0.3);o2.start(t);o2.stop(t+0.3);
+  },[midi2freq]);
+
+  // PIANO — beautiful, playful, bright
+  // Sine fundamental + quiet octave + fifth harmonics, fast attack, medium decay
+  // Sounds like a soft upright piano — warm but clear
+  const pianoNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    // Fundamental
+    const o1=c.createOscillator();o1.type='sine';o1.frequency.value=freq;
+    // Octave harmonic (quiet)
+    const o2=c.createOscillator();o2.type='sine';o2.frequency.value=freq*2;
+    // Fifth harmonic (very quiet — adds sparkle)
+    const o3=c.createOscillator();o3.type='sine';o3.frequency.value=freq*3;
+    // Mix gains — fundamental loudest, harmonics add color
+    const g1=c.createGain();g1.gain.value=1.0;
+    const g2=c.createGain();g2.gain.value=0.3;
+    const g3=c.createGain();g3.gain.value=0.08;
+    // Master envelope — fast attack, natural decay
+    const env=c.createGain();env.gain.setValueAtTime(vol||0.08,t);
+    env.gain.setValueAtTime((vol||0.08)*0.7,t+0.05);
+    env.gain.exponentialRampToValueAtTime(0.001,t+Math.min(dur*1.2,1.5));
+    // Gentle lowpass — warmth
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=5000;f.Q.value=0.5;
+    // Filter follows note — higher notes brighter
+    f.frequency.value=3000+freq*2;
+    o1.connect(g1);o2.connect(g2);o3.connect(g3);
+    g1.connect(f);g2.connect(f);g3.connect(f);
+    f.connect(env).connect(masterRef.current);
+    o1.start(t);o1.stop(t+2);o2.start(t);o2.stop(t+2);o3.start(t);o3.stop(t+2);
+  },[midi2freq]);
+
+  // RADIX: Air Texture — filtered noise, slowly sweeping
+  const air=useCallback((t,dur,sweepTo)=>{
+    const c=ctxRef.current;if(!c)return;
+    const bufLen=c.sampleRate*Math.min(dur,20);
+    const buf=c.createBuffer(2,bufLen,c.sampleRate);
+    for(let ch=0;ch<2;ch++){
+      const d=buf.getChannelData(ch);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.08;
+    }
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.015,t+2);
+    g.gain.setValueAtTime(0.015,t+dur-2);
+    g.gain.linearRampToValueAtTime(0,t+dur);
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=200;bp.Q.value=0.5;
+    if(sweepTo)bp.frequency.linearRampToValueAtTime(sweepTo,t+dur*0.8);
+    else bp.frequency.value=1200;
+    src.connect(bp).connect(g).connect(masterRef.current);
+    src.start(t);src.stop(t+dur);
+  },[]);
+
+  // Soft kick — 100Hz → 30Hz sine sweep
+  const kick=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();const g=c.createGain();
+    o.frequency.setValueAtTime(100,t);o.frequency.exponentialRampToValueAtTime(30,t+0.16);
+    g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+    o.connect(g).connect(compRef.current);o.start(t);o.stop(t+0.45);
+  },[]);
+
+  // Soft hat — noise burst, highpass 7kHz
+  const hat=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const buf=c.createBuffer(1,c.sampleRate*0.018,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,5)*0.12;
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.value=0.02;
+    const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=7000;
+    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.025);
+  },[]);
+
+  // phraseSteps helper
+  function phraseSteps(phrase){
+    const steps=[];let cum=0;
+    for(const [note,dur] of phrase){steps.push({note,dur,start:cum});cum+=dur;}
+    return steps;
+  }
+
+  // ================================================================
+  // SCHEDULER — 8 rounds, continuous loop
+  // ================================================================
+  const schedule=useCallback(()=>{
+    if(!playingRef.current)return;
+    const c=ctxRef.current;
+    const now=c.currentTime,elapsed=now-startRef.current;
+    const sn=Math.floor(elapsed/STEP);
+    if(sn<=stepRef.current){schedRef.current=setTimeout(schedule,8);return}
+    stepRef.current=sn;
+    const t=startRef.current+sn*STEP;
+    const pos=sn%STEPS_PER_BAR;
+    const bar=Math.floor(sn/STEPS_PER_BAR);
+    const loopBar=bar%TOTAL_BARS;
+    const round=Math.floor(loopBar/BARS_PER_ROUND);
+    const barInRound=loopBar%BARS_PER_ROUND;
+    const formIdx=AABA[barInRound];
+
+    const cfg=ROUNDS[round];
+    const L=cfg.layers;
+    const intens=INTENSITY[round];
+
+    // Chord
+    const chordName=PROG[barInRound];
+    const chord=CHORDS[chordName];
+
+    // === RADIX: Master dynamics ===
+    if(masterRef.current){
+      let vol=0.25+intens*0.2;
+      // R7 fade for seamless loop
+      if(round===7){vol*=Math.max(0.3,1-(barInRound/BARS_PER_ROUND)*0.7);}
+      masterRef.current.gain.setTargetAtTime(vol,t,0.6);
+    }
+
+    // Filter — opens with intensity, Radix controls
+    if(filterRef.current){
+      const baseF=L.includes('bloom')?5000+intens*4000:2000+intens*4000;
+      filterRef.current.frequency.setTargetAtTime(baseF,t,0.3);
+    }
+
+    // Delay feedback
+    if(delayFbRef.current){
+      const fb=L.includes('bloom')?0.4:
+               round===5?0.45: // stripped = more echo
+               intens>0.4?0.15+intens*0.15:0.05;
+      delayFbRef.current.gain.setTargetAtTime(fb,t,0.4);
+    }
+
+    // === PULSING PAD (Radix) ===
+    if(L.includes('pulse')&&pos===0&&barInRound===0){
+      const padNotes=chord.filter(n=>n>=45);
+      const filterF=round===5?1000:round===7?800:L.includes('bloom')?1800:900+intens*800;
+      pulse(t,padNotes,STEP*STEPS_PER_BAR*BARS_PER_ROUND,filterF);
+    }
+    // Double pad (bloom rounds)
+    if(L.includes('pulseDbl')&&pos===0&&barInRound===0){
+      const padNotes=chord.filter(n=>n>=45).map(n=>n+0.12);
+      pulse(t,padNotes,STEP*STEPS_PER_BAR*BARS_PER_ROUND,800+intens*800);
+    }
+
+    // === MELODY (Zoltán) ===
+    if(L.includes('melody')){
+      const phrases=[ZOLTAN_HOOK,ZOLTAN_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          let note=s.note;
+          // Erdős mutation in R6
+          if(round===6&&note&&Math.random()<0.15){note+=(Math.random()<0.5?2:-2);}
+          melodyVoice(t,note,STEP*s.dur*0.95,round===5?0.1:0.07);
+        }
+      }
+    }
+
+    // === BASS (Erdős) ===
+    if(L.includes('bass')&&pos===0){
+      const phrases=[ERDOS_BASS_A,ERDOS_BASS_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      const pPlay=round===6?0.65:0.8; // lower probability in mutation round
+      for(const s of steps){
+        // Schedule all notes in phrase on beat 0
+        if(s.note&&s.note>0){
+          probBass(t+s.start*STEP,s.note,STEP*s.dur*0.9,pPlay);
+        }
+      }
+    }
+
+    // === GROOVE (Daft Punk) ===
+    if(L.includes('groove')){
+      const phrases=[DAFT_A,DAFT_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          grooveStab(t,s.note,STEP*s.dur);
+        }
+      }
+    }
+
+    // === KICK ===
+    if(L.includes('kick')){
+      if(pos===0||pos===8)kick(t);
+      // Erdős probability fill in R6
+      if(round===6&&pos===12&&Math.random()<0.3)kick(t);
+    }
+
+    // === HAT ===
+    if(L.includes('hat')){
+      if(pos%4===2)hat(t);
+      if(pos%2===0&&Math.random()<(round===6?0.5:0.3))hat(t);
+      // Erdős probability fill
+      if(round===6&&pos>=12&&Math.random()<0.35)hat(t);
+    }
+
+    // === PIANO RIGHT HAND (playful melody) ===
+    if(L.includes('piano')){
+      const phrases=[PIANO_A,PIANO_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          let note=s.note;
+          // Erdős mutation in R6
+          if(round===6&&note&&Math.random()<0.12){note+=(Math.random()<0.5?2:-2);}
+          pianoNote(t,note,STEP*s.dur,round>=4?0.09:0.07);
+        }
+      }
+    }
+
+    // === PIANO LEFT HAND (arpeggiated accompaniment) ===
+    if(L.includes('pianoLeft')){
+      const phrases=[PIANO_LEFT_A,PIANO_LEFT_B];
+      const phrase=phrases[formIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(pos===s.start){
+          pianoNote(t,s.note,STEP*s.dur,0.04); // quieter than right hand
+        }
+      }
+    }
+
+    // === AIR TEXTURE (Radix) ===
+    if(L.includes('air')&&pos===0&&barInRound===0){
+      const dur=STEP*STEPS_PER_BAR*BARS_PER_ROUND;
+      const sweep=round===5?null:8000; // R5: static filter. Others: sweep up
+      air(t,dur,sweep);
+    }
+
+    // === BLOOM (Radix) — the 2:45 moment ===
+    if(L.includes('bloom')&&pos===0&&barInRound===0){
+      const dur=STEP*STEPS_PER_BAR*BARS_PER_ROUND;
+      air(t,dur,8000); // rising noise sweep
+    }
+
+    schedRef.current=setTimeout(schedule,8);
+    return{round,pos,bar:loopBar,intens};
+  },[pulse,melodyVoice,probBass,grooveStab,pianoNote,air,kick,hat,midi2freq]);
+
+  // Skip to round
+  const skipToRound=useCallback((targetRound)=>{
+    if(!ctxRef.current)return;
+    const now=ctxRef.current.currentTime;
+    const targetStep=targetRound*BARS_PER_ROUND*STEPS_PER_BAR;
+    startRef.current=now-(targetStep*STEP);
+    stepRef.current=targetStep-1;
+  },[]);
+
+  const toggle=useCallback(()=>{
+    init();
+    const c=ctxRef.current;if(c.state==='suspended')c.resume();
+    if(!playingRef.current){
+      playingRef.current=true;
+      startRef.current=c.currentTime+0.05;
+      stepRef.current=-1;
+      schedule();return true;
+    }else{
+      playingRef.current=false;
+      if(schedRef.current)clearTimeout(schedRef.current);return false;
+    }
+  },[init,schedule]);
+
+  const stop=useCallback(()=>{
+    playingRef.current=false;
+    if(schedRef.current)clearTimeout(schedRef.current);
+  },[]);
+
+  return{toggle,stop,setBinaural,skipToRound,ctxRef,startRef,stepRef,playingRef};
+}
+
+// ========================================================================
+// APP
+// ========================================================================
+function App(){
+  const [binMode,setBinMode]=useState(0);
+  const engine=useRooftopEngine();
+  const [playing,setPlaying]=useState(false);
+  const [round,setRound]=useState(0);
+
+  useEffect(()=>{
+    if(!playing)return;
+    const iv=setInterval(()=>{
+      if(!engine.ctxRef.current||!engine.playingRef.current)return;
+      const elapsed=engine.ctxRef.current.currentTime-engine.startRef.current;
+      const bar=Math.floor(elapsed/(STEP*STEPS_PER_BAR));
+      const loopBar=bar%TOTAL_BARS;
+      setRound(Math.floor(loopBar/BARS_PER_ROUND));
+    },200);
+    return()=>clearInterval(iv);
+  },[playing,engine]);
+
+  const activePersona=ROUNDS[round]?.p||'radix';
+  const pObj=PERSONAS.find(p=>p.id===activePersona);
+
+  return <div className="app">
+    <div className="header">
+      <h1>ROOFTOP PARADISE</h1>
+      <div className="sub">THE MUSIC ARENA</div>
+    </div>
+
+    <div className="transport">
+      <div className={`play-btn${playing?' on':''}`} onClick={()=>{
+        const p=engine.toggle();setPlaying(p);if(!p)setRound(0);
+      }}>{playing?'\u23F8':'\u25B6'}</div>
+      <div className="skip-btn" onClick={()=>{
+        if(!playing)return;
+        const next=(round+1)%TOTAL_ROUNDS;
+        engine.skipToRound(next);setRound(next);
+      }}>{'\u23ED'}</div>
+    </div>
+    <div className="transport-info">
+      {playing
+        ?`ROUND ${round+1}/${TOTAL_ROUNDS} \u2022 ${ROUNDS[round]?.layers.length} LAYERS \u2022 ${BPM} BPM`
+        :'TAP TO PLAY'}
+    </div>
+
+    <div className="rounds">
+      {Array.from({length:TOTAL_ROUNDS},(_,i)=>
+        <div key={i} className={`rdot${i<round?' done':''}${i===round?' now':''}`}
+          onClick={()=>{if(!playing)return;engine.skipToRound(i);setRound(i);}}>{i+1}</div>
+      )}
+    </div>
+
+    <div className="personas">
+      {PERSONAS.map(p=><span key={p.id} className={`ptag ${p.id}${activePersona===p.id?' active':''}`}>
+        {p.icon} {p.name}
+      </span>)}
+    </div>
+
+    <div className="bin-label">BINAURAL</div>
+    <div className="bin-row">
+      {BINAURAL_MODES.map((bm,i)=>
+        <div key={i} className={`bin-btn${binMode===i?' sel':''}`}
+          onClick={()=>{setBinMode(i);engine.setBinaural(i);}}>
+          {bm.name}
+        </div>
+      )}
+    </div>
+
+    {playing && <div className="anno" key={round}>
+      <div className="who" style={{color:pObj?.color}}>
+        {pObj?.icon} {pObj?.name} &mdash; ROUND {round+1}
+      </div>
+      {ROUNDS[round]?.note}
+      <div className="design">{ROUNDS[round]?.design}</div>
+    </div>}
+
+    {/* YouTube comments — proof this vibe works */}
+    <div className="yt">
+      <div className="yt-title">WHAT THE PEOPLE SAID</div>
+      {YT_COMMENTS.map((c,i)=>
+        <div key={i} className="yt-comment">
+          <span className="yt-user">{c.user}</span>
+          <span className="yt-time">{c.time} ago</span>
+          <div>{c.text}</div>
+        </div>
+      )}
+    </div>
+
+    <div className="footer">
+      <div className="tag">Hypnotic. Je kiffe.<br/>The rooftop is forever.</div>
+      <div className="cr">RADIX \u00b7 ERD\u0150S \u00b7 ZOLT\u00c1N \u00b7 DAFT PUNK \u00b7 2026</div>
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Analytics from '../../components/Analytics.astro';
+import CookieConsent from '../../components/CookieConsent.astro';
+---
+
+<Layout
+  title="Dashboard — spike.land"
+  description="Your spike.land dashboard. Manage API keys, view usage, and configure settings."
+  noindex={true}
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav />
+
+    <main id="main-content" class="dash-main">
+      <div class="rubik-container">
+        <header class="dash-header">
+          <h1 class="dash-title">Dashboard</h1>
+          <p class="dash-sub" id="user-greeting">Loading…</p>
+        </header>
+
+        <!-- Sidebar + Content -->
+        <div class="dash-layout">
+          <aside class="dash-sidebar">
+            <nav class="dash-nav" aria-label="Dashboard navigation">
+              <a href="/dashboard" class="dash-nav-link dash-nav-link--active">Overview</a>
+              <a href="/dashboard/settings" class="dash-nav-link">Settings</a>
+              <a href="/dashboard/keys" class="dash-nav-link">API Keys</a>
+              <a href="/dashboard/usage" class="dash-nav-link">Usage</a>
+            </nav>
+          </aside>
+
+          <section class="dash-content" id="dash-content">
+            <!-- Overview cards -->
+            <div class="overview-grid">
+              <div class="stat-card">
+                <span class="stat-label">Plan</span>
+                <span class="stat-value" id="stat-plan">Free</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">API Calls Today</span>
+                <span class="stat-value" id="stat-calls">—</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Credits</span>
+                <span class="stat-value" id="stat-credits">—</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Tools Used</span>
+                <span class="stat-value" id="stat-tools">—</span>
+              </div>
+            </div>
+
+            <!-- Quick links -->
+            <h2 class="section-title">Quick Actions</h2>
+            <div class="quick-links">
+              <a href="/tools" class="quick-link">Browse MCP Tools</a>
+              <a href="/apps" class="quick-link">App Store</a>
+              <a href="/vibe-code" class="quick-link">Open Code Editor</a>
+              <a href="/chat" class="quick-link">Start Chat</a>
+            </div>
+
+            <!-- Auth gate -->
+            <div class="auth-gate" id="auth-gate" hidden>
+              <p>Sign in to access your dashboard.</p>
+              <a href="/login?redirect=/dashboard" class="auth-cta">Sign In</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<script is:inline>
+(function () {
+  'use strict';
+
+  // Check auth state
+  fetch('/api/auth/get-session', { credentials: 'include' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      var greeting = document.getElementById('user-greeting');
+      var gate = document.getElementById('auth-gate');
+      if (data && data.user) {
+        greeting.textContent = 'Welcome back, ' + (data.user.name || data.user.email || 'user') + '.';
+      } else {
+        greeting.textContent = 'Sign in to see your dashboard.';
+        gate.hidden = false;
+      }
+    })
+    .catch(function () {
+      document.getElementById('user-greeting').textContent = 'Sign in to see your dashboard.';
+      document.getElementById('auth-gate').hidden = false;
+    });
+})();
+</script>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .dash-main {
+    flex: 1;
+    padding-block: clamp(2rem, 5vw, 3rem);
+  }
+
+  .dash-header { margin-bottom: 2rem; }
+
+  .dash-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .dash-sub {
+    font-size: 0.9375rem;
+    color: var(--muted-fg);
+    margin: 0.25rem 0 0;
+  }
+
+  .dash-layout {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 2rem;
+  }
+
+  .dash-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: sticky;
+    top: 5rem;
+  }
+
+  .dash-nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-fg);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .dash-nav-link:hover { color: var(--fg); background: var(--muted-bg); }
+  .dash-nav-link--active { color: var(--fg); background: var(--muted-bg); font-weight: 600; }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-fg);
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 0.75rem;
+  }
+
+  .quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .quick-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fg);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .quick-link:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .auth-gate {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .auth-gate p {
+    font-size: 0.9375rem;
+    color: var(--muted-fg);
+    margin: 0 0 1rem;
+  }
+
+  .auth-cta {
+    display: inline-flex;
+    padding: 0.625rem 1.5rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+
+  .auth-cta:hover { opacity: 0.88; }
+
+  @media (max-width: 640px) {
+    .dash-layout {
+      grid-template-columns: 1fr;
+    }
+    .dash-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      position: static;
+    }
+  }
+</style>

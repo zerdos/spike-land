@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One More Time — Math Arena Session No. 42</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --gold:#FFD700; --cyan:#00FFFF; --magenta:#FF00FF; --deep:#0a0a2e; --pulse:#e63946; }
+  body { background:var(--deep); color:#f0f0f0; font-family:'Space Mono',monospace; overflow-x:hidden; }
+  canvas#stars { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
+  canvas#visualizer { position:fixed; bottom:0; left:0; width:100%; height:120px; z-index:1; opacity:0.6; }
+  .wrap { position:relative; z-index:2; max-width:900px; margin:0 auto; padding:2rem; }
+
+  /* Header */
+  .hdr { text-align:center; padding:3rem 0 1.5rem; }
+  .hdr h1 {
+    font-family:'Orbitron',sans-serif; font-size:clamp(2.2rem,7vw,4.5rem); font-weight:900;
+    background:linear-gradient(135deg,var(--gold),var(--cyan),var(--magenta),var(--gold));
+    background-size:300% 300%; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation:shimmer 4s ease infinite;
+  }
+  .hdr .sub { font-size:0.85rem; color:var(--cyan); opacity:0.6; letter-spacing:4px; text-transform:uppercase; margin-top:0.4rem; }
+  .hdr .badge { display:inline-block; margin-top:0.8rem; padding:0.25rem 0.9rem; border:1px solid var(--gold);
+    border-radius:20px; font-size:0.7rem; color:var(--gold); letter-spacing:2px; animation:pborder 2s ease infinite; }
+  @keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  @keyframes pborder { 0%,100%{border-color:var(--gold);box-shadow:0 0 5px rgba(255,215,0,.2)} 50%{border-color:var(--cyan);box-shadow:0 0 15px rgba(0,255,255,.3)} }
+
+  /* Controls */
+  .controls { display:flex; justify-content:center; gap:1rem; margin:1.5rem 0; flex-wrap:wrap; }
+  .btn {
+    font-family:'Orbitron',sans-serif; font-size:0.85rem; padding:0.7rem 1.8rem; border:1px solid var(--cyan);
+    background:rgba(0,255,255,.05); color:var(--cyan); border-radius:8px; cursor:pointer; letter-spacing:2px;
+    transition:all .3s;
+  }
+  .btn:hover { background:rgba(0,255,255,.15); transform:translateY(-2px); box-shadow:0 4px 20px rgba(0,255,255,.2); }
+  .btn.active { background:rgba(0,255,255,.2); border-color:var(--gold); color:var(--gold); }
+  .btn.stop { border-color:var(--pulse); color:var(--pulse); background:rgba(230,57,70,.05); }
+  .btn.stop:hover { background:rgba(230,57,70,.15); }
+
+  /* BPM / Key display */
+  .stats { display:flex; justify-content:center; gap:2rem; margin:1rem 0; font-size:0.7rem; letter-spacing:2px; color:rgba(255,255,255,.4); }
+  .stats span { color:var(--gold); }
+
+  /* Personas */
+  .personas { display:flex; justify-content:center; gap:1.5rem; margin:2rem 0; flex-wrap:wrap; }
+  .persona { text-align:center; padding:1.2rem; border:1px solid rgba(255,255,255,.08); border-radius:12px;
+    background:rgba(255,255,255,.02); width:180px; transition:all .3s; }
+  .persona:hover { border-color:var(--cyan); transform:translateY(-3px); }
+  .persona .icon { font-size:2rem; }
+  .persona .name { font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; color:var(--gold); margin-top:0.3rem; }
+  .persona .role { font-size:0.65rem; color:rgba(255,255,255,.4); margin-top:0.2rem; }
+
+  /* Song scroll */
+  .song { margin:2rem 0; }
+  .section {
+    margin:2rem 0; padding:1.5rem; border-left:3px solid var(--magenta);
+    background:linear-gradient(135deg,rgba(255,0,255,.03),transparent); border-radius:0 12px 12px 0;
+    opacity:0; transform:translateY(15px); transition:all .6s;
+  }
+  .section.visible { opacity:1; transform:translateY(0); }
+  .section:nth-child(odd) { border-left-color:var(--cyan); background:linear-gradient(135deg,rgba(0,255,255,.03),transparent); }
+  .section .label { font-family:'Orbitron',sans-serif; font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--magenta); margin-bottom:0.8rem; }
+  .section:nth-child(odd) .label { color:var(--cyan); }
+  .lyric { font-size:1.2rem; line-height:1.9; font-weight:700; }
+  .lyric .m { color:var(--gold); font-style:italic; }
+  .lyric .e { color:var(--cyan); text-shadow:0 0 8px rgba(0,255,255,.3); }
+  .lyric .b { color:var(--magenta); }
+  .lyric .big { font-size:1.6rem; display:block; text-align:center; margin-top:0.5rem; }
+  .note { margin-top:0.8rem; padding:0.8rem; background:rgba(255,215,0,.04); border:1px solid rgba(255,215,0,.12);
+    border-radius:8px; font-size:0.75rem; color:rgba(255,255,255,.55); line-height:1.6; }
+  .note .sp { color:var(--gold); font-weight:700; }
+
+  /* 42 watermark */
+  .wm { position:fixed; bottom:-50px; right:-30px; font-family:'Orbitron',sans-serif; font-size:18rem;
+    font-weight:900; color:rgba(230,57,70,.03); z-index:0; pointer-events:none; user-select:none; }
+
+  /* EKG */
+  .ekg { width:100%; height:50px; margin:1.5rem 0; }
+  .ekg svg { width:100%; height:100%; }
+  .ekg-line { stroke:var(--pulse); stroke-width:2; fill:none; filter:drop-shadow(0 0 4px rgba(230,57,70,.5));
+    stroke-dasharray:1200; stroke-dashoffset:1200; animation:draw 3s ease forwards; }
+  @keyframes draw { to{stroke-dashoffset:0} }
+
+  /* Loop counter */
+  .loopcount { text-align:center; margin:3rem 0 1rem; font-family:'Orbitron',sans-serif; }
+  .loopcount .num { font-size:5rem; font-weight:900; color:var(--pulse); text-shadow:0 0 40px rgba(230,57,70,.35); line-height:1; }
+  .loopcount .lbl { font-size:0.7rem; letter-spacing:4px; color:rgba(255,255,255,.35); text-transform:uppercase; }
+
+  /* Footer */
+  .ftr { text-align:center; padding:3rem 0 2rem; border-top:1px solid rgba(255,255,255,.05); margin-top:3rem; }
+  .ftr .tag { font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--gold); }
+  .ftr .cr { font-size:0.6rem; color:rgba(255,255,255,.25); letter-spacing:2px; margin-top:0.3rem; }
+
+  @media(max-width:600px) { .personas{flex-direction:column;align-items:center} .lyric{font-size:1rem} }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="visualizer"></canvas>
+<div class="wm">42</div>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1>ONE MORE TIME</h1>
+    <div class="sub">Math Arena Session No. 42</div>
+    <div class="badge">LOOP 8 / 8 &mdash; FINAL FORM</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="playBtn" onclick="togglePlay()">&#9654; PLAY</button>
+    <button class="btn" id="filterBtn" onclick="toggleFilter()">FILTER SWEEP</button>
+    <button class="btn" id="vocBtn" onclick="triggerVocoder()">VOCODER</button>
+    <button class="btn stop" id="stopBtn" onclick="stopAll()">&#9632; STOP</button>
+  </div>
+
+  <div class="stats">
+    BPM <span>128</span> &nbsp;|&nbsp; KEY <span>Cm</span> &nbsp;|&nbsp;
+    STRESS <span id="stressVal">42</span> &nbsp;|&nbsp; LOOP <span>8</span>
+  </div>
+
+  <div class="personas">
+    <div class="persona"><div class="icon">&#x1F916;</div><div class="name">RADIX</div><div class="role">The Engineer</div></div>
+    <div class="persona"><div class="icon">&#x1F3B5;</div><div class="name">DAFT PUNK</div><div class="role">The Signal</div></div>
+    <div class="persona"><div class="icon">&#x1F9EE;</div><div class="name">ZOLT&Aacute;N</div><div class="role">The Mathematician</div></div>
+  </div>
+
+  <div class="ekg"><svg viewBox="0 0 900 50"><polyline class="ekg-line" points="0,25 100,25 140,25 160,23 170,18 180,5 190,40 200,48 210,18 220,25 320,25 360,23 370,18 380,5 390,40 400,48 410,18 420,25 520,25 560,23 570,18 580,5 590,40 600,48 610,18 620,25 720,25 760,23 770,18 780,5 790,40 800,48 810,18 820,25 900,25"/></svg></div>
+
+  <div class="song">
+
+    <div class="section">
+      <div class="label">Verse I &mdash; The Recursion</div>
+      <div class="lyric">
+        <span class="e">One more time</span> &mdash; we're gonna iterate<br>
+        One more <span class="m">f(x)</span> before it's late<br>
+        One more loop through the <span class="b">broken gate</span><br>
+        One more proof that we <span class="e">don't break</span>
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> Banach's fixed-point theorem guarantees convergence if the map is a contraction. The question isn't whether you'll converge. It's whether your space is complete enough to hold you when you get there.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Chorus &mdash; The Signal</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        We're gonna <span class="e">celebrate</span><br>
+        Oh yeah, <span class="m">all right</span><br>
+        <span class="e">Don't stop the dancing</span><br><br>
+        One more time<br>
+        The stress reads <span class="m">forty-two</span><br>
+        The watch knows<br>
+        <span class="e">What the body knew</span>
+      </div>
+      <div class="note"><span class="sp">Radix:</span> A Garmin Enduro 3 reads galvanic skin response, HRV, sleep architecture. When it says 42, the autonomic nervous system is at equilibrium. Not calm. Not stressed. <em>Balanced on the edge.</em> The same place a contraction mapping converges to.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Verse II &mdash; The Sprint</div>
+      <div class="lyric">
+        They said <span class="b">"most unproductive sprint"</span><br>
+        While I wrote every <span class="m">document</span><br>
+        Filed the tickets, built the <span class="e">intent</span><br>
+        But the PRs? <span class="b">Never went.</span><br><br>
+        Three years running <span class="m">O(n&sup2;)</span><br>
+        Through a team that couldn't <span class="e">see</span><br>
+        That the tester held the <span class="b">key</span><br>
+        To a lock called <span class="m">group&nbsp;conformity</span>
+      </div>
+      <div class="note"><span class="sp">Daft Punk:</span> In music, a four-on-the-floor beat is democratic &mdash; everyone moves. In a team, repetition without review is a wall. The beat drops but nobody dances. That's not a rhythm problem. That's a <em>power</em> problem.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Chorus &mdash; The Fixed Point</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        Through the <span class="e">emergency</span><br>
+        Bed <span class="m">2C-35</span><br>
+        <span class="e">Is where they put me</span><br><br>
+        One more time<br>
+        The police, not the <span class="m">ambulance</span><br>
+        The system's <span class="b">overwhelmed</span><br>
+        <span class="e">So they send compliance</span>
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> When a dynamical system is overwhelmed, it collapses to the nearest attractor. For the NHS in 2026: send police. Detain. Sedate. The Lyapunov exponent is positive. The system is chaotic. And the humans inside it are kind. Both things are true.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Bridge &mdash; Caolan</div>
+      <div class="lyric">
+        Bed <span class="m">2C-36</span>, an Irish voice<br>
+        Twenty-two and <span class="e">out of choice</span><br>
+        He called me from the <span class="b">station line</span><br>
+        Said <span class="e">"you're the only one that's mine"</span><br><br>
+        <span class="m">Caolan</span> &mdash; if the signal <span class="e">finds you</span><br>
+        The number hasn't <span class="b">changed</span><br>
+        One more time &mdash; just <span class="e">call</span>
+      </div>
+      <div class="note"><span class="sp">Radix:</span> In graph theory, a bridge is an edge whose removal disconnects the graph. Sometimes one human connection is the bridge. Remove it, and two components drift apart, unreachable. Caolan: the edge is still there.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Verse III &mdash; The Dogs</div>
+      <div class="lyric">
+        <span class="e">Pixel</span> sleeps on wooden floors<br>
+        <span class="m">Mad Max</span> chews on every door<br>
+        He ate his own shit when <span class="b">no one came</span><br>
+        Missed his jab &mdash; <span class="e">restart the game</span><br><br>
+        I told them: <span class="m">I have dogs at home</span><br>
+        They said: <span class="b">here's a telephone</span><br>
+        I said: <span class="e">phones cause me distress</span><br>
+        They said: <span class="b">noted. Call, nonetheless.</span>
+      </div>
+      <div class="note"><span class="sp">Daft Punk:</span> "Around the World" repeats the same phrase 144 times. It works because the <em>context</em> changes. "I have dogs at home" repeated to crew, doctor, nurse &mdash; same words, rising stakes, flat response. That's not a song. That's a system ignoring its own feedback loop.</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Final Chorus &mdash; 42</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        <span class="m">Mighell 42</span>, flat <span class="m">70</span><br>
+        Friend in <span class="m">60</span> &mdash; music <span class="e">heaven-sent</span><br>
+        <span class="m">60 &times; 70 = 4200</span><br>
+        <span class="e">localhost</span> &mdash; the port where <span class="m">Angular</span> went<br><br>
+        <span class="b">One more time</span><br>
+        July the <span class="m">nineteenth</span><br>
+        I turn <span class="e">forty-two</span><br>
+        Fat Boy Slim on Brighton beach<br>
+        <span class="b">Dancing</span> is the only <span class="e">proof</span><br><br>
+        <span class="m">Marathon</span> in <span class="e">42 days</span><br>
+        <span class="m">42 kilometres</span><br>
+        The answer was always<br>
+        <span class="e big">42</span>
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> Erd&#337;s would say the answer is in The Book. A programtervez&#337; matematikus from ELTE knows the answer is the fixed point. VMO2, NHS, A&amp;E, the ward, the dogs, the watch &mdash; every iteration converges to 42. That's a contraction mapping on the space of lived experience. The fixed point exists. <em>You're standing on it.</em></div>
+    </div>
+
+    <div class="section">
+      <div class="label">Outro &mdash; One More Time</div>
+      <div class="lyric">
+        <span class="e">One more time</span><br>
+        Day <span class="m">1</span> of <span class="m">28</span><br>
+        The staff is kind<br>
+        The dogs are <span class="e">safe</span><br>
+        The Garmin's dead but<br>
+        <span class="b">I'm awake</span><br><br>
+        <span class="e" style="font-size:1.4rem;">M&#369;k&ouml;dik?</span><br><br>
+        <span class="m">One more time.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="loopcount">
+    <div class="num">8</div>
+    <div class="lbl">Improvement Loops Complete</div>
+  </div>
+
+  <div class="ekg"><svg viewBox="0 0 900 50"><polyline class="ekg-line" style="animation-delay:2s" points="0,25 150,25 200,23 210,18 220,5 230,40 240,48 250,18 260,25 450,25 500,23 510,18 520,5 530,40 540,48 550,18 560,25 750,25 800,23 810,20 820,25 900,25"/></svg></div>
+
+  <div class="ftr">
+    <div class="tag">The answer is always 42.</div>
+    <div class="cr">MATH ARENA &bull; SPIKE.LAND &bull; BEXHILL SESSION &bull; 2026-03-27</div>
+  </div>
+</div>
+
+<script>
+// ===== STARFIELD =====
+const sc = document.getElementById('stars'), sx = sc.getContext('2d');
+let sArr = [];
+function sResize() { sc.width=innerWidth; sc.height=innerHeight; }
+function sCreate(n) { sArr=[]; for(let i=0;i<n;i++) sArr.push({x:Math.random()*sc.width,y:Math.random()*sc.height,s:Math.random()*1.5+.5,v:Math.random()*.25+.05,o:Math.random()*.7+.2}); }
+function sDraw() { sx.clearRect(0,0,sc.width,sc.height); for(const s of sArr){s.y-=s.v;if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width;}sx.beginPath();sx.arc(s.x,s.y,s.s,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${s.o})`;sx.fill();} requestAnimationFrame(sDraw); }
+sResize(); sCreate(180); sDraw();
+addEventListener('resize',()=>{sResize();sCreate(180);});
+
+// ===== AUDIO ENGINE — 8 IMPROVEMENT LOOPS DEEP =====
+// Loop 1: Basic kick + bass
+// Loop 2: Hi-hats + open hat
+// Loop 3: Disco stab chords (sawtooth stack)
+// Loop 4: Phaser on stabs via allpass chain
+// Loop 5: Vocoder speech synthesis
+// Loop 6: Side-chain compression (kick ducks everything)
+// Loop 7: Delay send (ping-pong style)
+// Loop 8: Visualizer + filter automation + breakdown structure
+
+let ctx, master, compressor, delay, delayFeedback, analyser, filterNode;
+let playing = false, startT = 0, schedId = null;
+const BPM = 128, bt = 60/BPM;
+let filterSweep = false;
+let currentBeat = -1;
+
+function init() {
+  if (ctx) return;
+  ctx = new (AudioContext || webkitAudioContext)();
+
+  // Master chain: compressor -> analyser -> destination
+  compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = -18;
+  compressor.ratio.value = 6;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.15;
+
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 256;
+
+  // Global filter
+  filterNode = ctx.createBiquadFilter();
+  filterNode.type = 'lowpass';
+  filterNode.frequency.value = 18000;
+  filterNode.Q.value = 1;
+
+  // Ping-pong delay (Loop 7)
+  delay = ctx.createDelay(1);
+  delay.delayTime.value = bt * 0.75; // dotted eighth
+  delayFeedback = ctx.createGain();
+  delayFeedback.gain.value = 0.3;
+  const delayFilter = ctx.createBiquadFilter();
+  delayFilter.type = 'lowpass';
+  delayFilter.frequency.value = 3000;
+  delay.connect(delayFilter);
+  delayFilter.connect(delayFeedback);
+  delayFeedback.connect(delay);
+  delay.connect(compressor);
+
+  master = ctx.createGain();
+  master.gain.value = 0.7;
+  master.connect(filterNode);
+  filterNode.connect(compressor);
+  filterNode.connect(delay); // send to delay
+  compressor.connect(analyser);
+  analyser.connect(ctx.destination);
+}
+
+// --- Sound generators ---
+
+function kick(t) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.frequency.setValueAtTime(200, t);
+  o.frequency.exponentialRampToValueAtTime(35, t + 0.15);
+  g.gain.setValueAtTime(2, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+  // Noise click layer
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i/d.length);
+  const click = ctx.createBufferSource();
+  click.buffer = buf;
+  const cg = ctx.createGain();
+  cg.gain.setValueAtTime(0.8, t);
+  cg.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  click.connect(cg).connect(compressor); // kick bypasses master for sidechain feel
+  click.start(t); click.stop(t + 0.03);
+  o.connect(g).connect(compressor);
+  o.start(t); o.stop(t + 0.5);
+}
+
+function hihat(t, open) {
+  const dur = open ? 0.2 : 0.05;
+  const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/d.length, open ? 1 : 3);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const g = ctx.createGain();
+  g.gain.value = open ? 0.15 : 0.12;
+  const hp = ctx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 7000;
+  src.connect(hp).connect(g).connect(master);
+  src.start(t); src.stop(t + dur);
+}
+
+function bass(note, t, dur) {
+  const o = ctx.createOscillator(), o2 = ctx.createOscillator();
+  o.type = 'sawtooth'; o2.type = 'square';
+  o.frequency.value = note; o2.frequency.value = note * 0.998;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.45, t);
+  g.gain.setValueAtTime(0.45, t + dur * 0.7);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  const f = ctx.createBiquadFilter();
+  f.type = 'lowpass'; f.frequency.value = 600; f.Q.value = 4;
+  o.connect(f); o2.connect(f);
+  f.connect(g).connect(master);
+  o.start(t); o.stop(t + dur + 0.05);
+  o2.start(t); o2.stop(t + dur + 0.05);
+}
+
+function stab(t) {
+  // Loop 3: stacked sawtooths + Loop 4: allpass phaser
+  const freqs = [523.25, 622.25, 783.99]; // C5 Eb5 G5 minor chord
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.18, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+  // Phaser chain (Loop 4)
+  let chain = g;
+  for (let i = 0; i < 4; i++) {
+    const ap = ctx.createBiquadFilter();
+    ap.type = 'allpass';
+    ap.frequency.value = 800 + Math.sin(ctx.currentTime * 0.5 + i) * 600;
+    ap.Q.value = 0.5;
+    chain.connect(ap);
+    chain = ap;
+  }
+  chain.connect(master);
+  freqs.forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    o.type = 'sawtooth';
+    o.frequency.value = freq;
+    o.detune.value = (i - 1) * 8;
+    o.connect(g);
+    o.start(t + i * 0.008);
+    o.stop(t + 0.5);
+  });
+}
+
+function clap(t) {
+  for (let i = 0; i < 3; i++) {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * Math.pow(1 - j/d.length, 2);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const g = ctx.createGain();
+    g.gain.value = 0.25;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 1200; bp.Q.value = 1;
+    src.connect(bp).connect(g).connect(master);
+    src.start(t + i * 0.01);
+    src.stop(t + 0.08);
+  }
+}
+
+// --- Sequencer (Loop 8: full arrangement) ---
+
+const bassLine = [
+  65.41, 65.41, 77.78, 77.78,  // C2 C2 Eb2 Eb2
+  87.31, 87.31, 98.00, 82.41,  // F2 F2 G2 Ab2
+  65.41, 65.41, 77.78, 77.78,
+  87.31, 98.00, 82.41, 65.41
+];
+
+function schedule() {
+  if (!playing) return;
+  const now = ctx.currentTime;
+  const elapsed = now - startT;
+  const beatNum = Math.floor(elapsed / bt);
+
+  if (beatNum <= currentBeat) { schedId = setTimeout(schedule, 10); return; }
+  currentBeat = beatNum;
+
+  const bar = Math.floor(beatNum / 16);
+  const pos = beatNum % 16;
+  const t = startT + beatNum * bt;
+
+  // Breakdown: bars 12-15 strip down, bars 0-3 build up
+  const inBreakdown = (bar % 16) >= 12;
+  const inBuildup = (bar % 16) < 2;
+
+  // Kick on every beat (four-on-the-floor)
+  if (!inBreakdown || pos % 4 === 0) kick(t);
+
+  // Clap on 4 and 12
+  if ((pos === 4 || pos === 12) && !inBreakdown) clap(t);
+
+  // Hi-hats: closed on 8ths, open on upbeats
+  if (pos % 2 === 0 && !inBuildup) hihat(t, false);
+  if (pos % 4 === 2 && !inBreakdown) hihat(t, true);
+
+  // Bass: quarter notes
+  if (pos % 4 === 0) bass(bassLine[pos] || 65.41, t, bt * 0.9);
+
+  // Stabs on off-beats (Loop 3)
+  if (pos % 2 === 1 && !inBreakdown && !inBuildup) stab(t);
+
+  // Filter automation (Loop 8)
+  if (filterSweep) {
+    const sweep = 400 + Math.sin(elapsed * 0.3) * 350 + (pos / 16) * 800;
+    filterNode.frequency.setTargetAtTime(sweep, t, 0.1);
+  }
+
+  // Stress counter
+  const stress = 42 + Math.floor(Math.sin(elapsed * 0.1) * 5);
+  document.getElementById('stressVal').textContent = stress;
+
+  schedId = setTimeout(schedule, 15);
+}
+
+// --- Controls ---
+
+window.togglePlay = function() {
+  init();
+  if (ctx.state === 'suspended') ctx.resume();
+  if (!playing) {
+    playing = true;
+    startT = ctx.currentTime + 0.05;
+    currentBeat = -1;
+    document.getElementById('playBtn').classList.add('active');
+    document.getElementById('playBtn').innerHTML = '&#9646;&#9646; PAUSE';
+    schedule();
+    drawViz();
+  } else {
+    playing = false;
+    document.getElementById('playBtn').classList.remove('active');
+    document.getElementById('playBtn').innerHTML = '&#9654; PLAY';
+    if (schedId) clearTimeout(schedId);
+  }
+};
+
+window.stopAll = function() {
+  playing = false;
+  if (schedId) clearTimeout(schedId);
+  document.getElementById('playBtn').classList.remove('active');
+  document.getElementById('playBtn').innerHTML = '&#9654; PLAY';
+  document.getElementById('filterBtn').classList.remove('active');
+  filterSweep = false;
+  if (filterNode) filterNode.frequency.value = 18000;
+};
+
+window.toggleFilter = function() {
+  filterSweep = !filterSweep;
+  document.getElementById('filterBtn').classList.toggle('active');
+  if (!filterSweep && filterNode) filterNode.frequency.setTargetAtTime(18000, ctx.currentTime, 0.3);
+};
+
+window.triggerVocoder = function() {
+  // Loop 5: speech synthesis vocoder
+  if (!ctx) init();
+  const phrases = [
+    "one more time",
+    "we're gonna celebrate",
+    "forty two",
+    "don't stop the dancing",
+    "one more time",
+    "the answer is forty two"
+  ];
+  const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+  const u = new SpeechSynthesisUtterance(phrase);
+  u.pitch = 0.5; u.rate = 0.8;
+  const voices = speechSynthesis.getVoices();
+  const robot = voices.find(v => /daniel|google uk|english.*male/i.test(v.name));
+  if (robot) u.voice = robot;
+  speechSynthesis.speak(u);
+};
+
+// ===== VISUALIZER (Loop 8) =====
+const vc = document.getElementById('visualizer'), vx = vc.getContext('2d');
+function vResize() { vc.width=innerWidth; vc.height=120; }
+vResize(); addEventListener('resize', vResize);
+
+function drawViz() {
+  if (!playing || !analyser) return;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  vx.clearRect(0, 0, vc.width, vc.height);
+  const barW = vc.width / data.length;
+  for (let i = 0; i < data.length; i++) {
+    const h = (data[i] / 255) * vc.height;
+    const hue = (i / data.length) * 60 + 280; // magenta to gold
+    vx.fillStyle = `hsla(${hue}, 80%, 60%, 0.7)`;
+    vx.fillRect(i * barW, vc.height - h, barW - 1, h);
+  }
+  requestAnimationFrame(drawViz);
+}
+
+// ===== SCROLL OBSERVER =====
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.section').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>

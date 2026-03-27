@@ -56,6 +56,7 @@ import {
   getMuskPersonaPrompt,
   getGatesPersonaPrompt,
 } from "../../core-logic/public-figure-personas.js";
+import { compressMessage, type PrdCompressionConfig } from "../../core-logic/prd-compression.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
 const MAX_TOOL_LOOPS = 3;
 const MAX_HISTORY_MESSAGES = 16;
@@ -558,10 +559,18 @@ spikeChat.post("/api/spike-chat", async (c) => {
   const userId =
     (c.get("userId") as string | undefined) ?? `guest-${crypto.randomUUID().slice(0, 8)}`;
 
-  const userMessage = body.message.trim();
+  const rawMessage = body.message.trim();
   const requestId = (c.get("requestId") as string | undefined) ?? crypto.randomUUID();
   const sessionId = `spike-chat-${userId}`;
   const persona = typeof body.persona === "string" ? body.persona.trim() : undefined;
+
+  // PRD compression — same pipeline as /api/chat
+  const prdConfig: PrdCompressionConfig = {
+    mode: (c.env.PRD_COMPRESSION_MODE as PrdCompressionConfig["mode"]) ?? "auto",
+    geminiApiKey: c.env.GEMINI_API_KEY,
+  };
+  const compression = await compressMessage(rawMessage, prdConfig);
+  const userMessage = compression.formattedMessage;
 
   // Get DO stub for session management (used for browser callbacks + history)
   interface SessionDOStub extends DurableObjectStub {
@@ -794,12 +803,12 @@ spikeChat.post("/api/spike-chat", async (c) => {
 
   const bgTask = (async () => {
     try {
-      // Persist user message to DO session history
+      // Persist user message to DO session history (raw, not compressed)
       if (sessionDO) {
         try {
           await sessionDO.addMessage({
             role: "user",
-            content: userMessage,
+            content: rawMessage,
             timestamp: Date.now(),
           });
           if (persona) {
@@ -820,6 +829,16 @@ spikeChat.post("/api/spike-chat", async (c) => {
         model: llmTarget.upstreamModel,
         keySource: llmTarget.keySource,
       });
+
+      if (compression.compressed && c.env.PRD_COMPRESSION_EXPOSE === "true") {
+        await sendEvent({
+          type: "prd_compression",
+          tier: compression.tier,
+          prd: compression.prd,
+          originalTokens: compression.originalTokenEstimate,
+          compressedTokens: compression.compressedTokenEstimate,
+        });
+      }
 
       // --- Stage 1: CLASSIFY ---
       await sendEvent({ type: "stage_update", stage: "classify" });

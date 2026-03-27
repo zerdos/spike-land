@@ -84,7 +84,7 @@ async function callXai(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "grok-3-mini",
+      model: "grok-4.20-0309-reasoning",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message },

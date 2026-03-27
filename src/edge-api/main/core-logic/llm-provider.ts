@@ -72,7 +72,7 @@ export const DEFAULT_PROVIDER_MODELS: Record<ProviderId, string> = {
   openai: "gpt-4.1",
   anthropic: "claude-sonnet-4-20250514",
   google: "gemini-2.5-flash",
-  xai: "grok-3-latest",
+  xai: "grok-4.20-0309-reasoning",
   ollama: "qwen3:8b",
 };
 
@@ -218,7 +218,8 @@ export function parseModelSelection(body: {
 
 export function getPlatformKey(env: Env, provider: ProviderId): string | null {
   if (provider === "openai") return env.OPENAI_API_KEY ?? null;
-  if (provider === "anthropic") return env.CLAUDE_OAUTH_TOKEN ?? null;
+  if (provider === "anthropic")
+    return env.CLAUDE_CODE_OAUTH_TOKEN ?? env.CLAUDE_OAUTH_TOKEN ?? null;
   if (provider === "google") return env.GEMINI_API_KEY ?? null;
   if (provider === "ollama") return "ollama-local"; // No key needed for local Ollama
   return env.XAI_API_KEY ?? null;
@@ -533,13 +534,31 @@ export async function callAnthropicProvider(
     .filter((m) => m.role !== "system")
     .map((m) => ({ role: m.role, content: m.content }));
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  // OAuth tokens (sk-ant-oat01-*) go through Cloudflare AI Gateway with Bearer auth;
+  // standard API keys go directly to api.anthropic.com with x-api-key.
+  const isOAuth = apiKey.startsWith("sk-ant-oat01-");
+  const endpoint = isOAuth
+    ? "https://gateway.ai.cloudflare.com/v1/1f98921051196545ebe79a450d3c71ed/z1/anthropic/v1/messages"
+    : "https://api.anthropic.com/v1/messages";
+  const headers: Record<string, string> = isOAuth
+    ? {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "anthropic-version": "2023-06-01",
+        "anthropic-beta":
+          "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
+        "user-agent": "claude-cli/2.1.42 (external, cli)",
+        "x-app": "cli",
+      }
+    : {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      };
+
+  const res = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
+    headers,
     body: JSON.stringify({
       model,
       max_tokens: options.maxTokens ?? 768,
