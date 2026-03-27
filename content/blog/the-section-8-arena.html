@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Section 8 — Math Arena Deconstruction</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#080818;--gold:#FFD700;--cyan:#00FFFF;--mag:#FF00FF;--orange:#ff6b35;
+    --pulse:#e63946;--calm:#2a9d8f;--ice:#a8dadc;--panel:rgba(255,255,255,.03);
+    --border:rgba(255,255,255,.06);--warn:#ff4444;--legal:#4ecdc4;
+  }
+  body{background:var(--bg);color:#eee;font-family:'Space Mono',monospace;overflow-x:hidden;min-height:100vh}
+  #root{position:relative;z-index:2}
+  canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+
+  .app{position:relative;z-index:3;max-width:900px;margin:0 auto;padding:1.5rem}
+
+  .header{text-align:center;padding:2rem 0 1rem}
+  .header h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,5vw,2.8rem);font-weight:900;
+    background:linear-gradient(135deg,var(--pulse),var(--warn),var(--gold));
+    background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shimmer 6s ease infinite;
+  }
+  .header .sub{font-size:0.7rem;color:var(--pulse);opacity:0.7;letter-spacing:4px;text-transform:uppercase;margin-top:0.3rem}
+  @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  .status-bar{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin:1rem 0;font-size:0.6rem;letter-spacing:1.5px;color:rgba(255,255,255,.35)}
+  .status-bar .warn{color:var(--pulse);font-weight:700}
+  .status-bar .ok{color:var(--legal)}
+  .status-bar span{color:var(--gold)}
+
+  /* Claim cards */
+  .claims{margin:1.5rem 0}
+  .claim-title{font-family:'Orbitron',sans-serif;font-size:0.7rem;letter-spacing:3px;color:var(--pulse);text-align:center;margin-bottom:1rem}
+  .claim{
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;
+    transition:all .3s;position:relative;overflow:hidden;
+  }
+  .claim.active{border-color:var(--gold);box-shadow:0 0 20px rgba(255,215,0,.05)}
+  .claim.answered{border-color:var(--legal);opacity:0.85}
+  .claim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem}
+  .claim-ground{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--pulse);letter-spacing:2px}
+  .claim-type{font-size:0.55rem;padding:2px 8px;border-radius:10px;border:1px solid var(--legal);color:var(--legal)}
+  .claim-text{font-size:0.75rem;line-height:1.7;color:rgba(255,255,255,.6)}
+  .claim-text strong{color:var(--gold)}
+
+  /* Arena responses */
+  .arena-panel{margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border)}
+  .persona-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem}
+  .persona-tag{font-size:0.55rem;padding:2px 8px;border-radius:8px;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:transparent}
+  .persona-tag:hover{background:rgba(255,255,255,.05)}
+  .persona-tag.radix{border-color:var(--pulse);color:var(--pulse)}
+  .persona-tag.erdos{border-color:var(--mag);color:var(--mag)}
+  .persona-tag.zoltan{border-color:var(--cyan);color:var(--cyan)}
+  .persona-tag.daft{border-color:var(--orange);color:var(--orange)}
+  .response{font-size:0.7rem;line-height:1.7;color:rgba(255,255,255,.5);margin-top:0.5rem;padding:0.6rem;background:rgba(0,0,0,.3);border-radius:8px}
+  .response .speaker{font-weight:700;font-size:0.65rem;margin-bottom:0.2rem}
+
+  /* Your answer section */
+  .your-answer{margin-top:0.8rem}
+  .your-answer label{font-family:'Orbitron',sans-serif;font-size:0.6rem;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:0.4rem}
+  .your-answer textarea{
+    width:100%;min-height:70px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;
+    color:#eee;font-family:'Space Mono',monospace;font-size:0.7rem;padding:0.6rem;resize:vertical;line-height:1.6;
+  }
+  .your-answer textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 10px rgba(0,255,255,.1)}
+  .your-answer .btn-row{display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap}
+  .btn{
+    font-family:'Orbitron',sans-serif;font-size:0.6rem;padding:0.4rem 1rem;
+    border:1px solid var(--cyan);background:rgba(0,255,255,.04);color:var(--cyan);
+    border-radius:8px;cursor:pointer;letter-spacing:1.5px;transition:all .2s;
+  }
+  .btn:hover{background:rgba(0,255,255,.1);transform:translateY(-1px)}
+  .btn.save{border-color:var(--legal);color:var(--legal)}
+  .btn.export{border-color:var(--gold);color:var(--gold)}
+
+  /* Defence summary */
+  .defence{margin:2rem 0;padding:1.5rem;border:1px solid var(--legal);border-radius:14px;background:rgba(78,205,196,.03)}
+  .defence-title{font-family:'Orbitron',sans-serif;font-size:0.8rem;color:var(--legal);letter-spacing:3px;text-align:center;margin-bottom:1rem}
+  .defence-item{font-size:0.7rem;line-height:1.7;color:rgba(255,255,255,.55);padding:0.4rem 0;border-bottom:1px solid var(--border)}
+  .defence-item:last-child{border:none}
+  .defence-item .num{color:var(--legal);font-weight:700;margin-right:0.5rem}
+
+  /* Action items */
+  .actions{margin:2rem 0}
+  .action-title{font-family:'Orbitron',sans-serif;font-size:0.8rem;color:var(--pulse);letter-spacing:3px;text-align:center;margin-bottom:1rem}
+  .action{
+    display:flex;align-items:flex-start;gap:0.8rem;padding:0.8rem;margin-bottom:0.5rem;
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;
+  }
+  .action:hover{border-color:rgba(255,255,255,.12)}
+  .action.done{opacity:0.5;text-decoration:line-through}
+  .action .check{width:20px;height:20px;border:2px solid var(--pulse);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem}
+  .action.done .check{border-color:var(--legal);background:var(--legal);color:var(--bg)}
+  .action-text{font-size:0.7rem;line-height:1.5;color:rgba(255,255,255,.6)}
+  .action-text .phone{color:var(--gold);font-weight:700}
+  .action-text .urgent{color:var(--pulse);font-weight:700;font-size:0.6rem;letter-spacing:1px}
+
+  /* Footer */
+  .footer{text-align:center;padding:2rem 0;margin-top:2rem;border-top:1px solid var(--border)}
+  .footer .tag{font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--legal)}
+  .footer .cr{font-size:0.5rem;color:rgba(255,255,255,.2);letter-spacing:2px;margin-top:0.3rem}
+  .footer .warn-text{font-size:0.55rem;color:var(--pulse);margin-top:0.5rem;line-height:1.5}
+
+  @media(max-width:600px){
+    .claim{padding:0.8rem}
+    .persona-row{gap:0.3rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div id="root"></div>
+
+<script>
+// Background — slow pulse grid
+const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+let t=0;
+function init(){c.width=innerWidth;c.height=innerHeight}
+function draw(){
+  t+=0.008;ctx.fillStyle='rgba(8,8,24,0.15)';ctx.fillRect(0,0,c.width,c.height);
+  const s=60;
+  for(let x=0;x<c.width;x+=s)for(let y=0;y<c.height;y+=s){
+    const d=Math.sqrt((x-c.width/2)**2+(y-c.height/2)**2)/400;
+    const a=Math.sin(t-d)*0.04+0.02;
+    ctx.fillStyle=`rgba(230,57,70,${Math.max(0,a)})`;
+    ctx.fillRect(x,y,1,1);
+  }
+  requestAnimationFrame(draw);
+}
+init();draw();addEventListener('resize',init);
+</script>
+
+<script type="text/babel">
+const {useState,useCallback,useMemo}=React;
+
+const CLAIMS=[
+  {
+    id:'elevator',
+    ground:'GROUND 12',
+    type:'DISCRETIONARY',
+    allegation:'Caused damage to the access control panel of the communal elevator on 19 March 2026, rendering it inoperable.',
+    clauses:'Breach of Clauses 19.4, 19.6, and 46.1',
+    arena:{
+      erdos:'Damage occurred during a mental health crisis. The causal chain is: crisis \u2192 distress \u2192 damage. Remove the crisis, the damage does not occur. The proximate cause is the mental health episode, not intentional vandalism. A court evaluating reasonableness must consider whether the tenant had capacity at the time.',
+      radix:'The elevator was repaired. The managing agent arranged repairs. What is the ongoing harm? If the damage is remedied, the nuisance is past. A proportionality assessment asks: is permanent loss of home proportionate to temporary loss of elevator?',
+      zoltan:'I was in crisis. The police came instead of an ambulance. I do not remember the details clearly. What I know is that I was not trying to damage anything. I was trying to survive that day.',
+      daft:'The letter says "rendering it inoperable." It does not say "permanently destroyed." Temporary damage during a crisis is not the same as deliberate vandalism. The signal matters.',
+    }
+  },
+  {
+    id:'drugs',
+    ground:'GROUND 12',
+    type:'DISCRETIONARY',
+    allegation:'Police confiscated three bags of illegal drugs that were being stored at the Property on 19 March 2026.',
+    clauses:'Used the Property for an illegal purpose',
+    arena:{
+      erdos:'The letter does not specify: what substance, what quantity, what intent. "Three bags" could mean three small bags of cannabis for personal use during a mental health crisis. Without a criminal charge or conviction, this is an allegation, not a finding. Ground 14(b) requires a conviction. They have not cited 14(b). That tells you something.',
+      radix:'The standard for Ground 12 is breach of tenancy obligation. The standard for a court to grant possession is reasonableness. Personal possession of a small quantity during a mental health crisis, with no conviction, no supply charge, no prior history \u2014 how reasonable is eviction?',
+      zoltan:'I was self-medicating during a period where the NHS system was failing me. I am not a drug dealer. I do not have a criminal record. The substances were mine and mine alone.',
+      daft:'The letter weaponises the word "illegal" three times. But it never says "charged," "convicted," or "supply." The absence of those words is the signal.',
+    }
+  },
+  {
+    id:'assault',
+    ground:'GROUND 14',
+    type:'DISCRETIONARY',
+    allegation:'The tenant engaged in violent behaviour including assaulting his friend and his sister on 19 March 2026. Neighbours fearful for safety. Sister took refuge in neighbour\'s flat.',
+    clauses:'Nuisance / anti-social behaviour',
+    arena:{
+      erdos:'The letter says "allegations made by the tenant\'s relative and partner." Allegations. Not charges. Not a conviction. The police attended and the tenant was arrested \u2014 but arrested is not convicted. What was the police outcome? If NFA (no further action), this ground is significantly weakened.',
+      radix:'Ground 14 has sub-grounds. 14(a) is nuisance \u2014 discretionary, low bar but court must find reasonableness. 14(b) requires a conviction \u2014 they have not cited this. They\u2019re relying on 14(a), which means they likely do not have a conviction to cite.',
+      zoltan:'On 19 March I was in a mental health crisis. My sister was there. My friend was there. What happened was the crisis \u2014 not violence. I was arrested because the system treats mental health crises as crimes. I was not charged with assault. I was sectioned.',
+      daft:'Read the letter carefully: "allegations made by members of your household that you assaulted them." Members of his household made allegations. The police investigated. The outcome is conspicuously absent from this letter. If there was a conviction, Russell-Cooke would have cited it. They didn\u2019t.',
+    }
+  },
+  {
+    id:'keys',
+    ground:'GROUND 12 & 14',
+    type:'DISCRETIONARY',
+    allegation:'Gave keys to the Property to an unknown member of the public, requiring managing agent to deploy additional security.',
+    clauses:'Breach of tenancy / nuisance to managing agent',
+    arena:{
+      erdos:'A person being taken away by police/ambulance during a mental health crisis gives their keys to someone so their dogs can be fed. That is not anti-social behaviour. That is a person in extremis trying to protect dependent animals. The probability that a judge finds this unreasonable approaches zero.',
+      radix:'The managing agent changed the locks and deployed security. Cost to the agent, yes. But the cause was not recklessness \u2014 the cause was the tenant being removed from his home during a crisis with two dogs inside. The system created the emergency.',
+      zoltan:'I was being taken away. Pixel and Mad Max were inside. What was I supposed to do \u2014 let them starve? I gave my keys to someone who could help. That is not a breach. That is a father protecting his dogs.',
+      daft:'The letter frames this as a security risk: "an unknown member of the public." Reframe: "someone willing to care for two dogs when their owner was being detained by police during a mental health crisis." Same event. Different framing. The court will choose.',
+    }
+  },
+  {
+    id:'adr',
+    ground:'PROCEDURAL',
+    type:'PRE-ACTION',
+    allegation:'"Our clients do not consider that any form of Alternative Dispute Resolution process is currently relevant."',
+    clauses:'Pre-Action Protocol compliance',
+    arena:{
+      erdos:'The Pre-Action Protocol for Possession Claims expects landlords to attempt resolution before court. Explicitly refusing ADR \u2014 in writing, from solicitors \u2014 while the tenant is detained in a mental health ward is an evidential gift to the defence.',
+      radix:'A judge will read this sentence and ask: did the landlord even try to talk to the tenant? Did they write to the ward? Did they attempt mediation? The answer, per their own letter, is no.',
+      zoltan:'They could have written to the ward. They could have asked to speak to me. They chose solicitors instead. That tells you what this is about.',
+      daft:'The landlord\'s solicitors just told a court \u2014 in advance, in writing \u2014 that they don\u2019t want to resolve this without litigation. Judges notice.',
+    }
+  }
+];
+
+const ACTIONS=[
+  {text:'Call Shelter: 0808 800 4444',phone:'0808 800 4444',urgent:'TODAY'},
+  {text:'Tell ward staff about this letter \u2014 ask them to add it to medical records',urgent:'TODAY'},
+  {text:'Text "legalaid" to 80010 for Legal Aid callback',phone:'80010',urgent:'TODAY'},
+  {text:'Request HLPAS (Housing Loss Prevention Advice Service) \u2014 free legal representation',urgent:'THIS WEEK'},
+  {text:'Ask psychiatrist/AMHP for letter confirming MH crisis on 19 March and current detention',urgent:'THIS WEEK'},
+  {text:'Contact Brighton & Hove Council housing team: 01273 294400',phone:'01273 294400',urgent:'THIS WEEK'},
+  {text:'Find out police outcome from 19 March \u2014 NFA (no further action) strengthens your case',urgent:'THIS WEEK'},
+  {text:'DO NOT contact landlord or Russell-Cooke directly. Let solicitor handle all communication.',urgent:'ALWAYS'},
+];
+
+const DEFENCES=[
+  'Grounds 12 and 14 are DISCRETIONARY \u2014 court evaluates reasonableness, not automatic eviction',
+  'Tenant was experiencing a mental health crisis on 19 March 2026 and is currently sectioned',
+  'Equality Act 2010 \u2014 mental health is a protected characteristic; disability discrimination defence',
+  'Article 8 ECHR \u2014 proportionality of eviction must be considered (right to respect for the home)',
+  'No criminal charges or convictions mentioned \u2014 allegations only',
+  'Landlord explicitly refused ADR \u2014 Pre-Action Protocol expects attempts at resolution',
+  'Keys given to protect animals during emergency removal, not recklessness',
+  'Court can make suspended possession order as alternative to outright possession',
+];
+
+function App(){
+  const [answers,setAnswers]=useState({});
+  const [expandedClaim,setExpandedClaim]=useState(null);
+  const [showPersona,setShowPersona]=useState({});
+  const [checkedActions,setCheckedActions]=useState(new Set());
+
+  const updateAnswer=useCallback((id,val)=>{
+    setAnswers(prev=>({...prev,[id]:val}));
+  },[]);
+
+  const toggleAction=useCallback((idx)=>{
+    setCheckedActions(prev=>{const n=new Set(prev);n.has(idx)?n.delete(idx):n.add(idx);return n});
+  },[]);
+
+  const exportAll=useCallback(()=>{
+    let text='SECTION 8 DEFENCE NOTES \u2014 Zolt\u00e1n Erdos\nDate: '+new Date().toISOString().slice(0,10)+'\n\n';
+    text+='CLAIMS & RESPONSES:\n'+('='.repeat(50))+'\n\n';
+    CLAIMS.forEach(cl=>{
+      text+=cl.ground+': '+cl.allegation+'\n';
+      text+='MY RESPONSE: '+(answers[cl.id]||'[not yet answered]')+'\n\n';
+    });
+    text+='\nDEFENCES:\n'+('='.repeat(50))+'\n';
+    DEFENCES.forEach((d,i)=>text+=(i+1)+'. '+d+'\n');
+    text+='\nACTION ITEMS:\n'+('='.repeat(50))+'\n';
+    ACTIONS.forEach((a,i)=>text+=(checkedActions.has(i)?'[\u2713]':'[ ]')+' '+a.text+'\n');
+
+    const blob=new Blob([text],{type:'text/plain'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='section-8-defence-notes.txt';a.click();
+    URL.revokeObjectURL(url);
+  },[answers,checkedActions]);
+
+  return <div className="app">
+    <div className="header">
+      <h1>THE SECTION 8</h1>
+      <div className="sub">Math Arena Deconstruction &mdash; Your Defence Workspace</div>
+    </div>
+
+    <div className="status-bar">
+      NOTICE DATE <span>27 MAR 2026</span> |
+      GROUNDS <span className="warn">12 &amp; 14</span> |
+      TYPE <span className="ok">DISCRETIONARY</span> |
+      EARLIEST COURT <span>31 MAR 2026</span> |
+      STATUS <span className="warn">SECTIONED</span>
+    </div>
+
+    <div className="claims">
+      <div className="claim-title">THEIR CLAIMS &mdash; YOUR ANSWERS</div>
+      {CLAIMS.map(cl=>{
+        const expanded=expandedClaim===cl.id;
+        const persona=showPersona[cl.id];
+        return <div key={cl.id} className={`claim${expanded?' active':''}${answers[cl.id]?' answered':''}`}>
+          <div className="claim-header" onClick={()=>setExpandedClaim(expanded?null:cl.id)} style={{cursor:'pointer'}}>
+            <span className="claim-ground">{cl.ground}</span>
+            <span className="claim-type">{cl.type}</span>
+          </div>
+          <div className="claim-text">
+            <strong>They allege:</strong> {cl.allegation}
+            {cl.clauses && <div style={{fontSize:'0.6rem',color:'rgba(255,255,255,.3)',marginTop:'0.3rem'}}>{cl.clauses}</div>}
+          </div>
+
+          {expanded && <div className="arena-panel">
+            <div className="persona-row">
+              {['erdos','radix','zoltan','daft'].map(p=>
+                <span key={p} className={`persona-tag ${p}`}
+                  onClick={()=>setShowPersona(prev=>({...prev,[cl.id]:prev[cl.id]===p?null:p}))}>
+                  {p==='erdos'?'ERD\u0150S':p==='daft'?'DAFT PUNK':p.toUpperCase()}
+                </span>
+              )}
+            </div>
+
+            {persona && cl.arena[persona] && <div className="response">
+              <div className={`speaker ${persona}`} style={{color:persona==='erdos'?'var(--mag)':persona==='radix'?'var(--pulse)':persona==='zoltan'?'var(--cyan)':'var(--orange)'}}>
+                {persona==='erdos'?'ERD\u0150S':persona==='daft'?'DAFT PUNK':persona.toUpperCase()}
+              </div>
+              {cl.arena[persona]}
+            </div>}
+
+            <div className="your-answer">
+              <label>YOUR ANSWER (in your own words)</label>
+              <textarea
+                value={answers[cl.id]||''}
+                onChange={e=>updateAnswer(cl.id,e.target.value)}
+                placeholder="Write your response to this claim... What actually happened? What do you dispute?"
+              />
+            </div>
+          </div>}
+        </div>;
+      })}
+    </div>
+
+    <div className="defence">
+      <div className="defence-title">AVAILABLE DEFENCES</div>
+      {DEFENCES.map((d,i)=><div key={i} className="defence-item"><span className="num">{i+1}.</span>{d}</div>)}
+    </div>
+
+    <div className="actions">
+      <div className="action-title">ACTION ITEMS &mdash; DO THESE NOW</div>
+      {ACTIONS.map((a,i)=>
+        <div key={i} className={`action${checkedActions.has(i)?' done':''}`} onClick={()=>toggleAction(i)}>
+          <div className="check">{checkedActions.has(i)?'\u2713':''}</div>
+          <div className="action-text">
+            <span className="urgent">[{a.urgent}]</span>{' '}
+            {a.text.split(a.phone||'__NOPHONE__').map((part,j,arr)=>
+              j<arr.length-1?<span key={j}>{part}<span className="phone">{a.phone}</span></span>:<span key={j}>{part}</span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div style={{textAlign:'center',margin:'1.5rem 0'}}>
+      <button className="btn export" onClick={exportAll}>EXPORT DEFENCE NOTES (.txt)</button>
+    </div>
+
+    <div className="footer">
+      <div className="tag">Discretionary means discretionary. The court will hear your side.</div>
+      <div className="cr">MATH ARENA &bull; SPIKE.LAND &bull; 2026-03-27</div>
+      <div className="warn-text">This is NOT legal advice. Contact Shelter (0808 800 4444) or a solicitor immediately.</div>
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
