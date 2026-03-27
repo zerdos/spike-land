@@ -19,6 +19,7 @@ export interface Env {
   OPENAI_API_KEY?: string;
   GEMINI_API_KEY: string;
   CLAUDE_OAUTH_TOKEN: string;
+  CLAUDE_CODE_OAUTH_TOKEN?: string;
   LLM_CONTEXT_WINDOW?: string;
   GITHUB_TOKEN: string;
   ALLOWED_ORIGINS: string;
