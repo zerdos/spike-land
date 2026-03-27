@@ -214,6 +214,7 @@ const WEVAL_PHRASES=[
 ];
 
 const BINAURAL_MODES=[
+  {name:'OFF',hz:0,desc:'disabled',lFreq:0,rFreq:0},
   {name:'ALPHA',hz:10,desc:'10Hz \u2014 calm focus',lFreq:200,rFreq:210},
   {name:'THETA',hz:6,desc:'6Hz \u2014 deep relax',lFreq:200,rFreq:206},
   {name:'DELTA',hz:2,desc:'2Hz \u2014 deep sleep',lFreq:200,rFreq:202},
@@ -285,24 +286,47 @@ function useRooftopEngine(binMode){
 
     const m=c.createGain();m.gain.value=0.45;m.connect(filt);filt.connect(comp);filt.connect(del);masterRef.current=m;
 
-    // Binaural
-    const bg=c.createGain();bg.gain.value=0.05;binGainRef.current=bg;
+    // Binaural — created but starts silent, controlled independently
+    const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
     const merger=c.createChannelMerger(2);
-    const bm=BINAURAL_MODES[binMode]||BINAURAL_MODES[0];
-    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=bm.lFreq;binLRef.current=oL;
-    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=bm.rFreq;binRRef.current=oR;
+    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
     const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
     oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
     merger.connect(bg);bg.connect(c.destination);
     oL.start();oR.start();
-  },[binMode]);
+  },[]);
 
+  // Set binaural mode — 0=OFF, 1+=modes. Works independently from music.
   const setBinaural=useCallback((mode)=>{
-    if(!binLRef.current||!ctxRef.current)return;
+    // Ensure AudioContext exists even if music hasn't started
+    if(!ctxRef.current){
+      const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+      // Create binaural chain if init() hasn't run
+      if(!binGainRef.current){
+        const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+        const merger=c.createChannelMerger(2);
+        const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+        const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
+        const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+        oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+        merger.connect(bg);bg.connect(c.destination);
+        oL.start();oR.start();
+      }
+    }
+    const c=ctxRef.current;
+    if(c.state==='suspended')c.resume();
+    if(!binLRef.current||!binGainRef.current)return;
     const bm=BINAURAL_MODES[mode]||BINAURAL_MODES[0];
-    const t=ctxRef.current.currentTime;
-    binLRef.current.frequency.setTargetAtTime(bm.lFreq,t,0.3);
-    binRRef.current.frequency.setTargetAtTime(bm.rFreq,t,0.3);
+    const t=c.currentTime;
+    if(bm.hz===0){
+      // OFF — fade out
+      binGainRef.current.gain.setTargetAtTime(0,t,0.3);
+    }else{
+      binLRef.current.frequency.setTargetAtTime(bm.lFreq,t,0.3);
+      binRRef.current.frequency.setTargetAtTime(bm.rFreq,t,0.3);
+      binGainRef.current.gain.setTargetAtTime(0.05,t,0.3);
+    }
   },[]);
 
   // === INSTRUMENTS ===
@@ -640,7 +664,7 @@ const DEFS=[
 // APP
 // ========================================================================
 function App(){
-  const [binMode,setBinMode]=useState(0);
+  const [binMode,setBinMode]=useState(0); // 0=OFF by default
   const engine=useRooftopEngine(binMode);
   const [playing,setPlaying]=useState(false);
   const [round,setRound]=useState(0);
@@ -690,12 +714,15 @@ function App(){
       </span>)}
     </div>
 
-    {/* Binaural chooser */}
-    <div className="bin-label">BINAURAL BEATS</div>
+    {/* Binaural chooser — works independently from music */}
+    <div className="bin-label">BINAURAL BEATS &mdash; PLAYS INDEPENDENTLY</div>
     <div className="bin-chooser">
       {BINAURAL_MODES.map((bm,i)=>
-        <div key={i} className={`bin-btn${binMode===i?' sel':''}`} onClick={()=>{setBinMode(i);engine.setBinaural(i);}}>
-          {bm.name}<br/><span style={{fontSize:'0.5rem',opacity:0.5}}>{bm.desc}</span>
+        <div key={i} className={`bin-btn${binMode===i?' sel':''}`}
+          style={i===0&&binMode===0?{borderColor:'rgba(255,255,255,.12)',color:'rgba(255,255,255,.25)'}:
+                 i===0?{borderColor:'rgba(255,255,255,.12)'}:{}}
+          onClick={()=>{setBinMode(i);engine.setBinaural(i);}}>
+          {bm.name}<br/><span style={{fontSize:'0.5rem',opacity:0.5}}>{bm.hz===0?'tap a mode below':bm.desc}</span>
         </div>
       )}
     </div>
