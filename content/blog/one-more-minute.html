@@ -121,6 +121,22 @@
   .stats .live{color:var(--pulse);animation:blink .8s step-end infinite}
   @keyframes blink{50%{opacity:0}}
 
+  /* Voice sample indicator */
+  .voice-active{
+    display:inline-flex;align-items:center;gap:6px;padding:0.3rem 0.8rem;
+    border:1px solid var(--mag);border-radius:20px;font-size:0.6rem;color:var(--mag);
+    letter-spacing:2px;animation:voicePulse 1.5s ease infinite;margin-top:0.5rem;
+  }
+  .voice-active .wave{display:inline-flex;gap:2px;align-items:center}
+  .voice-active .wave span{display:block;width:2px;background:var(--mag);border-radius:1px;animation:waveBar 0.6s ease infinite alternate}
+  .voice-active .wave span:nth-child(1){height:4px;animation-delay:0s}
+  .voice-active .wave span:nth-child(2){height:8px;animation-delay:0.1s}
+  .voice-active .wave span:nth-child(3){height:12px;animation-delay:0.2s}
+  .voice-active .wave span:nth-child(4){height:8px;animation-delay:0.3s}
+  .voice-active .wave span:nth-child(5){height:4px;animation-delay:0.4s}
+  @keyframes waveBar{to{height:14px}}
+  @keyframes voicePulse{0%,100%{opacity:.6}50%{opacity:1}}
+
   /* Footer */
   .footer{text-align:center;padding:2rem 0;margin-top:2rem;border-top:1px solid var(--border)}
   .footer .tag{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--calm)}
@@ -418,7 +434,44 @@ function useAudioEngine(){
     o.connect(f).connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP*2);
   },[]);
 
+  // Voice samples from cancer research audio
+  const voiceBufRef=useRef(null);
+  const voiceLoadedRef=useRef(false);
+  const voiceGainRef=useRef(null);
+
+  const loadVoice=useCallback(async()=>{
+    if(voiceLoadedRef.current)return;
+    try{
+      const c=ctxRef.current;if(!c)return;
+      // Create voice gain node routed through master
+      const vg=c.createGain();vg.gain.value=0.55;vg.connect(masterRef.current);voiceGainRef.current=vg;
+
+      const base=location.protocol==='file:'?'https://spike.land':'';
+      const resp=await fetch(base+'/blog/the-arena-traversing-the-cancer-graph/audio.m4a');
+      if(!resp.ok)throw new Error('Audio fetch failed');
+      const ab=await resp.arrayBuffer();
+      voiceBufRef.current=await c.decodeAudioData(ab);
+      voiceLoadedRef.current=true;
+      console.log('Cancer research audio loaded:',voiceBufRef.current.duration+'s');
+    }catch(e){console.warn('Voice sample load failed:',e)}
+  },[]);
+
+  // Play a slice of the cancer research audio
+  const playVoiceSample=useCallback((startSec,durSec,fadeIn=0.3,fadeOut=0.8)=>{
+    const c=ctxRef.current;const buf=voiceBufRef.current;
+    if(!c||!buf||!voiceGainRef.current)return;
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(1,c.currentTime+fadeIn);
+    g.gain.setValueAtTime(1,c.currentTime+durSec-fadeOut);
+    g.gain.linearRampToValueAtTime(0,c.currentTime+durSec);
+    src.connect(g).connect(voiceGainRef.current);
+    src.start(c.currentTime,startSec,durSec);
+  },[]);
+
   return{init,kick,snare,hihat,bassNote,stab,leadNote,arpNote,ride,toneNote,
+    loadVoice,playVoiceSample,voiceLoadedRef,
     ctxRef,masterRef,filterRef,analyserRef,delayFbRef,reverbGainRef,reverbDryRef,
     schedRef,stepRef,startRef,playingRef};
 }
@@ -493,6 +546,7 @@ function App(){
   const [grid,setGrid]=useState(()=>Array.from({length:ROWS},()=>Array(COLS).fill(false)));
   const [annotations,setAnnotations]=useState([]);
   const [intensity,setIntensity]=useState(0);
+  const [voicePlaying,setVoicePlaying]=useState(false);
   const roundRef=useRef(0);
   const leadWalkRef=useRef(69); // current lead note
   const announcedRef=useRef(new Set());
@@ -502,6 +556,20 @@ function App(){
   const toggleCell=useCallback((row,col)=>{
     setGrid(g=>{const n=g.map(r=>[...r]);n[row][col]=!n[row][col];return n});
   },[]);
+
+  // Voice sample cue points — slices of the cancer research audio
+  // These are spread across the ~11 min NotebookLM podcast
+  // Each entry: [startSec, durationSec] — chosen for impactful sentences
+  const VOICE_CUES = useMemo(()=>({
+    0: [3, 8],      // "Cancer is not one disease..." — opening narrator
+    2: [18, 7],     // "Every mutation is a node..." — Erdős on the graph
+    4: [35, 8],     // "No human can traverse this whole graph alone..." — Zoltán
+    6: [55, 6],     // "The machine is not the cure. It is the compression engine" — Einstein
+    9: [70, 8],     // "Millions of possibilities go in. A ranked set comes out" — narrator
+    11: [85, 6],    // "The machine maps the graph" — Erdős
+    13: [95, 7],    // "Complexity, compressed" — Einstein
+    15: [105, 10],  // "Not one cure for all cancers... a thousand graphs traversed" — narrator close
+  }),[]);
 
   // Announce round
   useEffect(()=>{
@@ -515,8 +583,19 @@ function App(){
         round,
         text:r.annotation
       }]);
+
+      // Play cancer research voice sample if cued for this round
+      if(engine.voiceLoadedRef.current && VOICE_CUES[round]){
+        const [start,dur]=VOICE_CUES[round];
+        // Brief delay so it doesn't collide with the round transition
+        setTimeout(()=>{
+          engine.playVoiceSample(start,dur,0.5,1.0);
+          setVoicePlaying(true);
+          setTimeout(()=>setVoicePlaying(false),(dur+0.5)*1000);
+        },1200);
+      }
     }
-  },[round,playing]);
+  },[round,playing,engine,VOICE_CUES]);
 
   // Main sequencer
   const scheduleStep=useCallback(()=>{
@@ -638,6 +717,7 @@ function App(){
 
   const handlePlay=useCallback(()=>{
     engine.init();
+    engine.loadVoice(); // Start loading cancer research audio in background
     const c=engine.ctxRef.current;
     if(c.state==='suspended')c.resume();
     if(!playing){
@@ -703,6 +783,12 @@ function App(){
         <div className="binaural-pulse"/>
         BINAURAL 10Hz ALPHA &mdash; BLOOD PRESSURE MODE
       </div>
+      {voicePlaying && <div style={{textAlign:'center',marginTop:'0.5rem'}}>
+        <span className="voice-active">
+          <span className="wave"><span/><span/><span/><span/><span/></span>
+          CANCER RESEARCH &mdash; THE ARENA
+        </span>
+      </div>}
     </div>
 
     <BeatGrid grid={grid} onToggle={toggleCell} currentStep={playing?step:-1} active={gridActive}/>
