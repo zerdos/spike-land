@@ -12,6 +12,11 @@ BN2 0AU. Dated 27 March 2026. Ref: 25/KMS/00196025/00000219.
 ### Ground 12 — Tenancy obligation breach
 - Breach of Clauses 19.4, 19.6, and 46.1 of tenancy agreement (dated 4 Aug 2025)
 - Damage to communal elevator access control panel on 19 March 2026
+  - **Counter-context**: That same access control panel caused the tenant an
+    average of 30 minutes of stress every day — malfunctioning, unreliable,
+    a daily obstacle for a person with ADHD and two dogs
+  - **Counter-context**: The same managing agent's building nearly killed both
+    of the tenant's dogs (Pixel and Mad Max)
 - Police confiscated "three bags of illegal drugs" from the Property on 19 March 2026
 - Keys given to "an unknown member of the public"
 

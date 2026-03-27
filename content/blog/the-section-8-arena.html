@@ -148,11 +148,12 @@ const CLAIMS=[
     type:'DISCRETIONARY',
     allegation:'Caused damage to the access control panel of the communal elevator on 19 March 2026, rendering it inoperable.',
     clauses:'Breach of Clauses 19.4, 19.6, and 46.1',
+    context:'That same access control panel caused me an average of 30 minutes of stress EVERY DAY. Malfunctioning, slow, unreliable. For a person with ADHD navigating a building with two dogs, one a 4-month puppy, it was a daily obstacle \u2014 not an amenity. And the same managing agent\u2019s building nearly killed both my dogs.',
     arena:{
-      erdos:'Damage occurred during a mental health crisis. The causal chain is: crisis \u2192 distress \u2192 damage. Remove the crisis, the damage does not occur. The proximate cause is the mental health episode, not intentional vandalism. A court evaluating reasonableness must consider whether the tenant had capacity at the time.',
-      radix:'The elevator was repaired. The managing agent arranged repairs. What is the ongoing harm? If the damage is remedied, the nuisance is past. A proportionality assessment asks: is permanent loss of home proportionate to temporary loss of elevator?',
-      zoltan:'I was in crisis. The police came instead of an ambulance. I do not remember the details clearly. What I know is that I was not trying to damage anything. I was trying to survive that day.',
-      daft:'The letter says "rendering it inoperable." It does not say "permanently destroyed." Temporary damage during a crisis is not the same as deliberate vandalism. The signal matters.',
+      erdos:'Damage occurred during a mental health crisis. The causal chain is: crisis \u2192 distress \u2192 damage. Remove the crisis, the damage does not occur. The proximate cause is the mental health episode, not intentional vandalism. A court evaluating reasonableness must consider whether the tenant had capacity at the time. Also relevant: the device itself was a chronic source of distress \u2014 30 minutes daily for a tenant with ADHD.',
+      radix:'The elevator was repaired. The managing agent arranged repairs. What is the ongoing harm? If the damage is remedied, the nuisance is past. A proportionality assessment asks: is permanent loss of home proportionate to temporary loss of elevator? Counter-question: what about the daily nuisance the access control caused the tenant? Where is the managing agent\u2019s accountability for that?',
+      zoltan:'I was in crisis. The police came instead of an ambulance. I do not remember the details clearly. What I know is that I was not trying to damage anything. I was trying to survive that day. That panel caused me 30 minutes of stress every single day. And the same building almost killed my dogs.',
+      daft:'The letter says "rendering it inoperable." It does not say "permanently destroyed." Temporary damage during a crisis is not the same as deliberate vandalism. The signal matters. Also: the same team managing this elevator nearly killed two dogs in the same building. Where is THEIR letter?',
     }
   },
   {
@@ -290,7 +291,16 @@ function App(){
           <div className="claim-text">
             <strong>They allege:</strong> {cl.allegation}
             {cl.clauses && <div style={{fontSize:'0.6rem',color:'rgba(255,255,255,.3)',marginTop:'0.3rem'}}>{cl.clauses}</div>}
+            {cl.context && <div style={{fontSize:'0.65rem',color:'var(--gold)',marginTop:'0.5rem',padding:'0.5rem',background:'rgba(255,215,0,.03)',border:'1px solid rgba(255,215,0,.1)',borderRadius:'6px',lineHeight:'1.6'}}>
+              <strong>CONTEXT:</strong> {cl.context}
+            </div>}
           </div>
+          {cl.id==='elevator' && <div style={{margin:'0.8rem 0',textAlign:'center'}}>
+            <img src="/content/PXL_20260120_131042766.jpg" alt="Pixel and Mad Max — the dogs the building nearly killed"
+              style={{maxWidth:'100%',maxHeight:'200px',borderRadius:'8px',border:'1px solid var(--border)',opacity:0.85}}
+              onError={(e)=>{e.target.style.display='none'}}/>
+            <div style={{fontSize:'0.55rem',color:'rgba(255,255,255,.3)',marginTop:'0.3rem'}}>Pixel and Mad Max — the dogs the managing agent's building nearly killed</div>
+          </div>}
 
           {expanded && <div className="arena-panel">
             <div className="persona-row">
