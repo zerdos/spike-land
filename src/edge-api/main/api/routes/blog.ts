@@ -614,6 +614,24 @@ blog.get("/api/blog-images/:slug/:filename", async (c) => {
   return resp ?? c.notFound();
 });
 
+// Serve static HTML files from R2 (arena pages, interactive content)
+blog.get("/blog/:slug", async (c, next) => {
+  const { slug } = c.req.param();
+  if (!slug.endsWith(".html") && !slug.includes("-arena")) return next();
+
+  // Try R2 key: blog-html/{slug}.html or blog-html/{slug}
+  const key = slug.endsWith(".html") ? `blog-html/${slug}` : `blog-html/${slug}.html`;
+  const obj = await c.env.SPA_ASSETS.get(key);
+  if (!obj) return next();
+
+  return new Response(obj.body, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300, s-maxage=600",
+    },
+  });
+});
+
 // Backward-compatible: serve /blog/{slug}/{filename} for inline MDX media (images, video, audio)
 blog.get("/blog/:slug/:filename", async (c, next) => {
   const { slug, filename } = c.req.param();
