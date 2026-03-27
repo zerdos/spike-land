@@ -49,8 +49,8 @@
   .transport-info{font-size:0.65rem;color:var(--lavender);opacity:0.4;text-align:center;letter-spacing:1px}
 
   /* Round ring */
-  .rounds{display:flex;justify-content:center;gap:3px;margin:0.6rem 0;flex-wrap:wrap}
-  .rdot{width:14px;height:14px;border-radius:50%;border:1px solid var(--border);transition:all .3s}
+  .rounds{display:flex;justify-content:center;gap:2px;margin:0.6rem 0;flex-wrap:wrap;max-width:100%}
+  .rdot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border);transition:all .3s}
   .rdot.done{background:var(--teal);border-color:var(--teal);box-shadow:0 0 4px rgba(42,157,143,.3)}
   .rdot.now{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,.4);transform:scale(1.2)}
 
@@ -169,7 +169,7 @@
 const {useState,useCallback,useRef,useEffect}=React;
 
 // ========================================================================
-// MUSIC ENGINE — 16 rounds, Weval + Vivaldi + Arena personas
+// MUSIC ENGINE — 32 rounds, continuous loop, Weval + Vivaldi + Arena personas
 // ========================================================================
 
 const BPM=108, BEAT=60/BPM, STEP=BEAT/4;
@@ -251,24 +251,52 @@ const PERSONAS=[
   {id:'daft',name:'DAFT PUNK',color:'var(--sunset)',icon:'\u{1F3B5}'},
 ];
 
-// 16 rounds — progressive complexity, melody-focused
+// 32 rounds — designed like software, structured like what makes humans love music.
+// WHY humans love songs: repetition (hook), tension→release, contrast (loud/quiet),
+// surprise (the unexpected note), groove (the body moves), dynamics (the journey),
+// and resolution (coming home). This is all of that, in 32 rounds.
+//
+// ACT I (1-8):   Genesis — one layer at a time, patience, the hook plants itself
+// ACT II (9-16):  First Climax → Breakdown — everything builds then strips bare
+// ACT III (17-24): Resurrection — rebuild stronger, new elements, second climax
+// ACT IV (25-32):  Transcendence — peak energy, final breakdown, infinite loop
 const ROUNDS=[
-  {p:'weval',  adds:'Warm pad + kick',           note:'The foundation. A single chord. A heartbeat. Weval starts every track this way \u2014 nothing rushed, just presence.'},
-  {p:'vivaldi',adds:'First violin phrase',        note:'Vivaldi enters with the simplest figure: four notes ascending. A minor. The same key he wrote a hundred concertos in. It still works.'},
-  {p:'weval',  adds:'Bass line + rim',            note:'The bass drops in \u2014 not heavy, just warm. The rim gives you the pulse. This is the groove Weval builds entire albums on.'},
-  {p:'vivaldi',adds:'Counter-melody (descending)',note:'A second voice descends while the first ascends. Counterpoint. Two lines, independent but harmonically bound. Bach learned this from Vivaldi.'},
-  {p:'radix',  adds:'Hi-hats + delay send',       note:'The engineer opens the delay line. Every note now echoes, creating polyrhythm from simplicity. The system amplifies what\'s already there.'},
-  {p:'erdos',  adds:'Stochastic melody variation', note:'Probability enters the melody. Each phrase has a chance of mutation \u2014 a note shifts, a rest appears. The melody evolves like a random walk.'},
-  {p:'weval',  adds:'Arpeggiator + filter sweep',  note:'The arpeggio breaks the chords into individual notes, cycling upward. The filter opens slowly. This is the Weval build \u2014 patient, inevitable.'},
-  {p:'vivaldi',adds:'Virtuoso run (fast notes)',    note:'Vivaldi accelerates. Sixteenth notes cascade down the scale. Four Seasons energy. The violin doesn\'t care about tempo \u2014 it cares about expression.'},
-  {p:'daft',   adds:'Chord stabs + sidechain',     note:'The stab cuts through everything. Sidechain compression ducks the pad on each kick. The space between beats becomes as important as the beats.'},
-  {p:'zoltan', adds:'Breakdown \u2014 melody only', note:'Strip everything. Just the melody and the binaural. Your blood pressure is lower now than when you pressed play. The rooftop is quiet. The city is below.'},
-  {p:'weval',  adds:'Rebuild with layered pads',    note:'Two pads now. Detuned against each other. The warmth doubles. Weval\'s signature: stacking simple things until they become complex.'},
-  {p:'vivaldi',adds:'Trills + ornaments',           note:'Vivaldi adds trills \u2014 rapid alternation between adjacent notes. Baroque ornamentation. Every note decorated. The melody becomes a garden.'},
-  {p:'erdos',  adds:'Probability percussion fills',  note:'The drums become probabilistic. Fills appear where you don\'t expect them. Erd\u0151s: "God has a transfinite book of proofs. This groove is in it."'},
-  {p:'daft',   adds:'THE DROP \u2014 everything',    note:'Full send. All layers. Both melodies. The bass. The arpeggio. The stabs. Vivaldi meets Weval at maximum volume on a rooftop in Brighton.'},
-  {p:'radix',  adds:'Melody duet (Weval + Vivaldi)',note:'The two melodies play together \u2014 Weval\'s sparse electronic line weaving through Vivaldi\'s baroque runs. Different centuries, same key, same rooftop.'},
-  {p:'zoltan', adds:'Fade to binaural \u2014 peace', note:'Everything fades. The binaural remains. The rooftop. The sunset. Pixel and Mad Max. 42 Mighell Street is not just a property in a legal letter. It is home.'},
+  // === ACT I: GENESIS ===
+  {p:'weval',  adds:'Warm pad + heartbeat kick',    note:'The foundation. A single chord. A heartbeat. Weval starts every track this way \u2014 nothing rushed, just presence. The rooftop at golden hour.'},
+  {p:'vivaldi',adds:'First violin phrase',           note:'Vivaldi enters with the simplest figure: four notes ascending. A minor. The same key he wrote a hundred concertos in. It still works.'},
+  {p:'weval',  adds:'Bass line + rim',               note:'The bass drops in \u2014 not heavy, just warm. The rim gives you the pulse. This is the groove Weval builds entire albums on.'},
+  {p:'vivaldi',adds:'Counter-melody (descending)',   note:'A second voice descends while the first ascends. Counterpoint. Two lines, independent but harmonically bound. Bach learned this from Vivaldi.'},
+  {p:'radix',  adds:'Hi-hats + delay send',          note:'The engineer opens the delay line. Every note now echoes, creating polyrhythm from simplicity. The system amplifies what\'s already there.'},
+  {p:'weval',  adds:'THE HOOK \u2014 Weval melody',       note:'Here it is. The melody that won\'t leave your head. Four notes, held long, repeated. Da-aa... da-aa... da da da-aa. You\'ll be humming this on the rooftop.'},
+  {p:'erdos',  adds:'Stochastic variation',           note:'Probability enters the melody. Each phrase has a 12% chance of mutation \u2014 a note shifts, a rest appears. The melody evolves like a random walk on a graph.'},
+  {p:'weval',  adds:'Arpeggiator + filter sweep',     note:'The arpeggio breaks the chords into individual notes, cycling upward. The filter opens slowly. This is the Weval build \u2014 patient, inevitable.'},
+  // === ACT II: FIRST CLIMAX \u2192 BREAKDOWN ===
+  {p:'vivaldi',adds:'Virtuoso run (fast notes)',      note:'Vivaldi accelerates. Sixteenth notes cascade down the scale. Four Seasons energy. The violin doesn\'t care about tempo \u2014 it cares about expression.'},
+  {p:'daft',   adds:'Chord stabs + punch',            note:'The stab cuts through everything. Sidechain compression ducks the pad on each kick. The space between beats becomes as important as the beats.'},
+  {p:'erdos',  adds:'Probability percussion fills',    note:'The drums become probabilistic. Fills appear where you don\'t expect them. Erd\u0151s: "God has a transfinite book of proofs. This groove is in it."'},
+  {p:'daft',   adds:'FIRST DROP \u2014 full energy',       note:'Full send. All layers. Both melodies. The bass. The arpeggio. The stabs. Vivaldi meets Weval at maximum volume on a rooftop in Brighton.'},
+  {p:'radix',  adds:'Melody duet (Weval + Vivaldi)',  note:'The two melodies play together \u2014 Weval\'s sparse electronic line weaving through Vivaldi\'s baroque runs. Different centuries, same key, same rooftop.'},
+  {p:'zoltan', adds:'Breakdown \u2014 melody solo',        note:'Strip everything. Just the melody and the binaural. Your blood pressure is lower now than when you pressed play. The rooftop is quiet. The city is below.'},
+  {p:'zoltan', adds:'Heartbeat only',                 note:'Just the kick. Just the heartbeat. The city lights below. Pixel sleeping on the terrace. Mad Max chasing pigeons. This is what they want to take.'},
+  {p:'weval',  adds:'Ghost pad \u2014 rising',              note:'A whisper of the pad returns. Filtered down, barely there. But you feel it coming. The build starts again. Weval taught me: the silence before the drop is the drop.'},
+  // === ACT III: RESURRECTION ===
+  {p:'vivaldi',adds:'Violin returns \u2014 new register',  note:'Vivaldi comes back an octave higher. Same phrase, different register. The familiar made fresh. This is why sonata form has survived 300 years.'},
+  {p:'weval',  adds:'Double bass + groove locked',     note:'The bass returns twice as deep. The groove locks. Your body knows this rhythm now \u2014 it moves before your mind decides to.'},
+  {p:'radix',  adds:'Delay feedback opens wide',       note:'The delay feedback increases. Every note trails into infinity. The rooftop expands. The system becomes generative \u2014 creating patterns from echoes.'},
+  {p:'vivaldi',adds:'Trills + baroque ornaments',      note:'Vivaldi adds trills \u2014 rapid alternation between adjacent notes. Baroque ornamentation. Every note decorated. The melody becomes a garden.'},
+  {p:'daft',   adds:'Four-on-floor + stabs',           note:'Daft Punk goes full club. Four kicks per bar. The stab on the upbeat. This is 2001 and 1723 at the same time. Versailles with a strobe light.'},
+  {p:'erdos',  adds:'Melody mutation peak',             note:'Every phrase now has maximum mutation chance. The melody you knew twists into new shapes. Erd\u0151s: "A mathematician is a device for turning coffee into theorems." A melody is a device for turning repetition into emotion.'},
+  {p:'weval',  adds:'SECOND CLIMAX \u2014 everything',     note:'Everything at once. Double pad. Both melodies. Arpeggio. Stabs. Drums full. Filter wide open. This is the peak. The rooftop at sunset when the whole sky is on fire.'},
+  {p:'radix',  adds:'Duet + runs + trills',            note:'All melodic elements simultaneously. Weval hook. Vivaldi theme. Fast runs. Trills. The system at maximum complexity \u2014 and it still grooves.'},
+  // === ACT IV: TRANSCENDENCE ===
+  {p:'zoltan', adds:'Second breakdown \u2014 breathe',     note:'Everything drops again. Just the hook and the heartbeat. You know this melody now. It\'s yours. This is not a legal letter. This is not a courtroom. This is home.'},
+  {p:'zoltan', adds:'Just binaural + pad',             note:'The binaural carries you. The pad is a blanket. The dogs are asleep. The rooftop is warm. 42 Mighell Street. BN2 0AU. Home.'},
+  {p:'weval',  adds:'Slow rebuild \u2014 bass first',       note:'The bass returns. One note. Then two. The groove assembles itself from memory. Your body remembers. The build is faster this time \u2014 you\'ve been here before.'},
+  {p:'vivaldi',adds:'Violin soars \u2014 highest note',    note:'Vivaldi reaches the highest note yet. A5, sustained, with vibrato. The voice of someone who has been through the fire and is still singing.'},
+  {p:'daft',   adds:'FINAL DROP \u2014 transcendence',      note:'Everything. Every layer. Every melody. Every beat. Every echo. The rooftop shakes. The neighbours can hear it. Good. Let them hear a person choosing to live.'},
+  {p:'erdos',  adds:'Controlled chaos \u2014 all mutations', note:'Maximum probability. Every instrument varies. No two bars identical. Yet the hook holds \u2014 the center of gravity that keeps the chaos from flying apart.'},
+  {p:'radix',  adds:'System at peace \u2014 gentle',        note:'Everything is playing but nothing is loud. Every instrument has found its space. The system self-organised. Complexity that sounds simple \u2014 the engineer\'s dream.'},
+  {p:'zoltan', adds:'Loop \u2014 the rooftop is forever',   note:'The music doesn\'t end. It cycles back. Because the rooftop is forever. Because the fight isn\'t over. Because Pixel and Mad Max are waiting. Press nothing \u2014 it continues.'},
 ];
 
 function useRooftopEngine(binMode){
@@ -462,7 +490,7 @@ function useRooftopEngine(binMode){
     });
   },[]);
 
-  // === SCHEDULER ===
+  // === SCHEDULER === 32 rounds, continuous, loops forever
   const schedule=useCallback(()=>{
     if(!playingRef.current)return;
     const c=ctxRef.current;
@@ -473,62 +501,49 @@ function useRooftopEngine(binMode){
     const t=startRef.current+sn*STEP;
     const pos=sn%16;
     const bar=Math.floor(sn/16);
-    const round=Math.min(Math.floor(bar/4),15); // 4 bars per round
+    // 32 rounds, 4 bars each = 128 bars total. Then LOOP.
+    const totalBars=32*4; // 128
+    const loopBar=bar%totalBars;
+    const round=Math.floor(loopBar/4); // 0-31, loops
+
+    // Breakdowns: R13(melody solo), R14(heartbeat), R15(ghost pad), R24(breathe), R25(binaural+pad)
+    const isBreakdown=(round===13||round===14||round===15||round===24||round===25);
+    // Gentle: R30(system at peace), R31(loop transition)
+    const isGentle=(round===30||round===31);
 
     // Get current chord
     const prog=PROG[progIdxRef.current%PROG.length];
-    const chordName=prog[bar%4];
+    const chordName=prog[loopBar%4];
     const chord=CHORDS[chordName]||CHORDS.Am;
-    const bassRoot=chord[0]-12; // bass octave down
+    const bassRoot=chord[0]-12;
 
-    // Filter follows round
-    const intens=(round+1)/16;
-    if(filterRef.current)filterRef.current.frequency.setTargetAtTime(round===9?1200:1500+intens*6500,t,0.2);
+    // Intensity curve: rises in acts, dips at breakdowns
+    const actIntens=round<=7?(round+1)/8:
+                    round<=15?(round<=12?(round-7)/5:round<=14?0.15:0.25+(round-15)*0.1):
+                    round<=23?(round<=22?(round-15)/8:1.0):
+                    round<=25?0.1:
+                    round<=28?(round-25)/3:
+                    round<=29?1.0:
+                    round===30?0.5:0.35;
+    const intens=Math.max(0.05,Math.min(1.0,actIntens));
 
-    // Delay opens from round 4
-    if(delayFbRef.current)delayFbRef.current.gain.setTargetAtTime(round>=4?0.12+intens*0.15:0,t,0.2);
-
-    // Round 15 fade
-    if(round>=15&&bar>=15*4+2){
-      if(masterRef.current)masterRef.current.gain.setTargetAtTime(Math.max(0.03,0.45-((bar-15*4-2)/2)*0.1),t,0.3);
+    // Master volume: always audible, never fades to silence
+    if(masterRef.current){
+      const vol=isBreakdown?0.25:isGentle?0.3:0.35+intens*0.15;
+      masterRef.current.gain.setTargetAtTime(vol,t,0.3);
     }
 
-    // R0+: Kick (soft 4-on-floor)
-    if(round>=0&&round!==9&&(pos===0||pos===8))kick(t);
-    if(round===9&&pos===0)kick(t); // breakdown sparse kick
-
-    // R2+: Rim
-    if(round>=2&&round!==9&&(pos===4||pos===12))rim(t);
-
-    // R4+: Hats
-    if(round>=4&&round!==9){
-      if(pos%2===0&&Math.random()<0.5)hat(t,true);
-      if(pos%4===2&&Math.random()<0.3)hat(t,false);
+    // Filter follows intensity
+    if(filterRef.current){
+      const fq=isBreakdown?1200:1500+intens*6500;
+      filterRef.current.frequency.setTargetAtTime(fq,t,0.2);
     }
 
-    // R0+: Pad (every 4 bars = new chord)
-    if(pos===0&&bar%4===0&&round!==9){
-      pad(t,chord,STEP*16*4);
-      if(round>=10){// R10: layered pad (detuned)
-        const detuned=chord.map(n=>n+0.15);
-        pad(t,detuned,STEP*16*4);
-      }
+    // Delay feedback
+    if(delayFbRef.current){
+      const fb=round>=4&&!isBreakdown?0.12+intens*0.15:isBreakdown?0.05:0;
+      delayFbRef.current.gain.setTargetAtTime(fb,t,0.2);
     }
-
-    // R2+: Bass
-    if(round>=2&&round!==9&&pos===0){
-      bassNote(t,bassRoot);
-    }
-
-    // === MELODY SYSTEM — duration-aware, catchy, held notes ===
-    // Helper: play a phrase starting at bar-local step 0, tracking position
-    // Phrases are arrays of [midi, duration_in_steps]. We play a note when
-    // pos matches the phrase's cumulative step position.
-
-    // Calculate which step in a 2-bar (32-step) phrase cycle we're at
-    const phrasePos=sn%(32); // 2 bars = 32 steps, phrases are ~16 steps, we play 2 per cycle
-    const halfPhrase=phrasePos<16?0:1; // first or second half
-    const localPos=phrasePos%16;
 
     // Get cumulative positions for a phrase
     function phraseSteps(phrase){
@@ -536,22 +551,87 @@ function useRooftopEngine(binMode){
       for(const [note,dur] of phrase){steps.push({note,dur,start:cum});cum+=dur;}
       return steps;
     }
+    const phrasePos=sn%(32);
+    const halfPhrase=phrasePos<16?0:1;
+    const localPos=phrasePos%16;
 
-    // R1+: Vivaldi melody — the singable theme with held notes
-    if(round>=1&&round!==9){
-      const pIdx=(Math.floor(bar/2))%VIVALDI_PHRASES.length; // change phrase every 2 bars
+    // === RHYTHM ENGINE ===
+    // Kick: always present except R25 (binaural only)
+    if(round!==25){
+      if(isBreakdown){
+        // Sparse kick in breakdowns
+        if(pos===0)kick(t);
+      }else if(round>=20||round>=11&&round<=12||round>=28){
+        // Four-on-floor for high energy
+        if(pos%4===0)kick(t);
+      }else{
+        // Standard two-beat kick
+        if(pos===0||pos===8)kick(t);
+      }
+    }
+
+    // Rim
+    if(round>=2&&!isBreakdown&&round!==25&&(pos===4||pos===12))rim(t);
+
+    // Hats — open up from R4, intensify in climax rounds
+    if(round>=4&&!isBreakdown&&round!==25){
+      const hatChance=round>=20?0.7:round>=8?0.5:0.35;
+      if(pos%2===0&&Math.random()<hatChance)hat(t,true);
+      if(pos%4===2&&Math.random()<(round>=20?0.5:0.3))hat(t,false);
+    }
+
+    // Probability fills — in climax rounds
+    if((round>=10&&round<=12)||(round>=21&&round<=23)||(round>=28&&round<=29)){
+      if(Math.random()<pos/24)rim(t);
+      if(pos>=12&&Math.random()<0.35)hat(t,false);
+    }
+
+    // === PAD ENGINE ===
+    if(pos===0&&loopBar%4===0&&round!==25){
+      if(!isBreakdown||round===15||round===24){
+        pad(t,chord,STEP*16*4);
+        // Double pad in climax rounds
+        if(round>=10&&round<=12||round>=22&&round<=23||round>=28){
+          const detuned=chord.map(n=>n+0.15);
+          pad(t,detuned,STEP*16*4);
+        }
+      }
+    }
+    // R25: gentle pad only
+    if(round===25&&pos===0&&loopBar%4===0){
+      pad(t,chord,STEP*16*4);
+    }
+
+    // === BASS ENGINE ===
+    if(round>=2&&!isBreakdown&&round!==25&&pos===0){
+      bassNote(t,bassRoot);
+    }
+    // R26: bass returns for rebuild
+    if(round>=26&&round<=27&&pos===0){
+      bassNote(t,bassRoot);
+    }
+
+    // === MELODY ENGINE ===
+
+    // Vivaldi melody — enters R1, returns R16 (higher), persists through climaxes
+    const vivaldiActive=(round>=1&&round<=12)||(round>=16&&round<=23)||(round>=27);
+    if(vivaldiActive&&!isBreakdown){
+      const pIdx=(Math.floor(loopBar/2))%VIVALDI_PHRASES.length;
       const phrase=VIVALDI_PHRASES[pIdx];
       const steps=phraseSteps(phrase);
+      const octaveUp=round>=16?12:0; // higher register in Act III+
+      const vol=round>=22||round>=11&&round<=12||round>=28?0.12:0.08;
       for(const s of steps){
         if(localPos===s.start&&halfPhrase===0){
-          violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.95,round>=14?0.12:0.08);
+          violinNote(t,s.note?s.note+12+octaveUp:0,STEP*s.dur*0.95,vol);
         }
       }
     }
 
-    // R3+: Vivaldi counter-melody — offset by half, quieter
-    if(round>=3&&round!==9){
-      const pIdx2=((Math.floor(bar/2))+2)%VIVALDI_PHRASES.length;
+    // Vivaldi counter-melody
+    const counterActive=(round>=3&&round<=12)||(round>=18&&round<=23)||(round>=28);
+    if(counterActive&&!isBreakdown){
+      const pIdx2=((Math.floor(loopBar/2))+2)%VIVALDI_PHRASES.length;
       const phrase2=VIVALDI_PHRASES[pIdx2];
       const steps2=phraseSteps(phrase2);
       for(const s of steps2){
@@ -561,75 +641,69 @@ function useRooftopEngine(binMode){
       }
     }
 
-    // R5+: Weval melody — THE HOOK. Sparse, held, emotional. REPEATS.
-    if(round>=5&&round!==9){
-      const wIdx=(Math.floor(bar/2))%WEVAL_PHRASES.length;
+    // Weval hook — THE melody. Enters R5, returns after breakdowns.
+    const hookActive=(round>=5&&round<=12)||(round>=16&&round<=23)||(round>=26);
+    if(hookActive&&!isBreakdown){
+      const wIdx=(Math.floor(loopBar/2))%WEVAL_PHRASES.length;
       const wPhrase=WEVAL_PHRASES[wIdx];
       const wSteps=phraseSteps(wPhrase);
+      // Mutation chance: R6=12%, R21=20%, R29=30%
+      const mutChance=round>=29?0.3:round>=21?0.2:round>=6?0.12:0;
       for(const s of wSteps){
         if(localPos===s.start&&halfPhrase===0){
-          // Erdős mutation from round 7+
           let note=s.note;
-          if(round>=7&&note&&Math.random()<0.12){note+=(Math.random()<0.5?2:-2)}
-          melodyNote(t,note,STEP*s.dur*0.9,0.08);
+          if(mutChance&&note&&Math.random()<mutChance){note+=(Math.random()<0.5?2:-2)}
+          melodyNote(t,note,STEP*s.dur*0.9,round>=22?0.1:0.08);
         }
       }
     }
 
-    // R6+: Arpeggio (Weval build)
-    if(round>=6&&round!==9&&pos===0&&bar%2===0){
-      arp(t,[...chord,...chord.map(n=>n+12)]);
-    }
-
-    // R7+: Vivaldi fast runs — only at end of 4-bar sections for drama
-    if(round>=7&&round!==9&&bar%4===3&&pos>=8){
-      const runSteps=phraseSteps(VIVALDI_RUN);
-      const runPos=pos-8; // 0-7 within the run zone
-      for(const s of runSteps){
-        if(runPos===s.start)violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.06);
-      }
-    }
-
-    // R8+: Stabs (Daft Punk)
-    if(round>=8&&round!==9&&pos%4===1)stab(t);
-
-    // R9: Breakdown — just the Weval hook, slow, exposed, beautiful
-    if(round===9){
+    // Breakdown melodies — exposed, beautiful
+    if(round===13||round===24){
+      // Melody solo — just the Weval hook as violin
       const bkSteps=phraseSteps(WEVAL_HOOK);
       for(const s of bkSteps){
         if(localPos===s.start&&halfPhrase===0){
-          // Play as violin for warmth, longer sustain
           violinNote(t,s.note?s.note+12:0,STEP*s.dur*1.1,0.14);
         }
       }
     }
 
-    // R11+: Trills on long held notes
-    if(round>=11&&round!==9&&pos===8&&bar%2===0){
-      trill(t,76,STEP*3);
+    // Arpeggio — Weval build moments
+    const arpActive=(round>=7&&round<=12)||(round>=18&&round<=23)||(round>=28);
+    if(arpActive&&!isBreakdown&&pos===0&&loopBar%2===0){
+      arp(t,[...chord,...chord.map(n=>n+12)]);
     }
 
-    // R12+: Probability fills
-    if(round>=12&&round!==9){
-      if(Math.random()<pos/24)rim(t);
-      if(pos>=12&&Math.random()<0.35)hat(t,false);
+    // Vivaldi fast runs — drama at section ends
+    const runActive=(round>=8&&round<=12)||(round>=19&&round<=23)||(round>=28);
+    if(runActive&&!isBreakdown&&loopBar%4===3&&pos>=8){
+      const runSteps=phraseSteps(VIVALDI_RUN);
+      const runPos=pos-8;
+      for(const s of runSteps){
+        if(runPos===s.start)violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.06);
+      }
     }
 
-    // R13+: Full drop — four-on-floor
-    if(round>=13&&round!==9){
-      if(pos%4===0)kick(t);
+    // Stabs — Daft Punk energy
+    const stabActive=(round>=9&&round<=12)||(round>=20&&round<=23)||(round>=28&&round<=29);
+    if(stabActive&&!isBreakdown&&pos%4===1)stab(t);
+
+    // Trills — baroque ornamentation
+    const trillActive=(round>=11&&round<=12)||(round>=19&&round<=23)||(round>=28);
+    if(trillActive&&!isBreakdown&&pos===8&&loopBar%2===0){
+      trill(t,round>=19?81:76,STEP*3); // higher trill in Act III+
     }
 
-    // R14+: Melody duet — Weval hook + Vivaldi theme play TOGETHER
-    if(round>=14){
-      // Weval hook (always the hook — it's the catchiest)
+    // Melody duet — both themes together for climax
+    const duetActive=(round===12)||(round===23)||(round===28||round===29);
+    if(duetActive&&!isBreakdown){
       const hookSteps=phraseSteps(WEVAL_HOOK);
       for(const s of hookSteps){
         if(localPos===s.start&&halfPhrase===1){
           melodyNote(t,s.note,STEP*s.dur*0.9,0.1);
         }
       }
-      // Vivaldi A (the main theme)
       const vivSteps=phraseSteps(VIVALDI_A);
       for(const s of vivSteps){
         if(localPos===s.start&&halfPhrase===0){
@@ -638,11 +712,50 @@ function useRooftopEngine(binMode){
       }
     }
 
-    // Progress chord progression
-    if(pos===0&&bar%16===0)progIdxRef.current++;
+    // R27: Vivaldi soars — highest register
+    if(round===27){
+      const soarSteps=phraseSteps(VIVALDI_A);
+      for(const s of soarSteps){
+        if(localPos===s.start&&halfPhrase===0){
+          violinNote(t,s.note?s.note+24:0,STEP*s.dur*1.1,0.12); // 2 octaves up
+        }
+      }
+    }
+
+    // R30: System at peace — everything plays gently
+    if(round===30){
+      // Gentle version of everything
+      const hookSteps=phraseSteps(WEVAL_HOOK);
+      for(const s of hookSteps){
+        if(localPos===s.start&&halfPhrase===0){
+          melodyNote(t,s.note,STEP*s.dur*0.9,0.04); // very quiet
+        }
+      }
+      const vivSteps=phraseSteps(VIVALDI_A);
+      for(const s of vivSteps){
+        if(localPos===s.start&&halfPhrase===1){
+          violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.04);
+        }
+      }
+    }
+
+    // R31: Loop transition — fade melody, groove continues, seamless into R0
+    if(round===31){
+      // Just the hook, fading, preparing for R0's fresh start
+      const hookSteps=phraseSteps(WEVAL_HOOK);
+      const fadeVol=0.06*(1-(loopBar%4)/4); // fade across 4 bars
+      for(const s of hookSteps){
+        if(localPos===s.start&&halfPhrase===0&&fadeVol>0.01){
+          melodyNote(t,s.note,STEP*s.dur*0.9,fadeVol);
+        }
+      }
+    }
+
+    // Progress chord progression every 16 bars
+    if(pos===0&&loopBar%16===0)progIdxRef.current++;
 
     schedRef.current=setTimeout(schedule,6);
-    return{round,pos,bar,intens};
+    return{round,pos,bar:loopBar,intens};
   },[kick,rim,hat,pad,bassNote,melodyNote,violinNote,trill,arp,stab,midi2freq]);
 
   const toggle=useCallback(()=>{
@@ -742,7 +855,9 @@ function App(){
       if(!engine.ctxRef.current||!engine.playingRef.current)return;
       const elapsed=engine.ctxRef.current.currentTime-engine.startRef.current;
       const bar=Math.floor(elapsed/(STEP*16));
-      const r=Math.min(Math.floor(bar/4),15);
+      const totalBars=32*4;
+      const loopBar=bar%totalBars;
+      const r=Math.floor(loopBar/4);
       setRound(r);
     },200);
     return()=>clearInterval(iv);
@@ -753,7 +868,7 @@ function App(){
   return <div className="app">
     <div className="header">
       <h1>ROOFTOP PARADISE</h1>
-      <div className="sub">The Section 8 Arena &mdash; 16 Rounds</div>
+      <div className="sub">The Section 8 Arena &mdash; 32 Rounds</div>
       <div className="place">42 MIGHELL STREET &bull; BRIGHTON</div>
     </div>
 
@@ -762,12 +877,12 @@ function App(){
         {playing?'\u23F8':'\u25B6'}
       </div>
       <div className="transport-info">
-        {playing?`ROUND ${round+1}/16 \u2022 ${ROUNDS[round]?.adds} \u2022 108 BPM`:'TAP TO PLAY \u2022 WEVAL \u00D7 VIVALDI \u00D7 ARENA'}
+        {playing?`ROUND ${round+1}/32 \u2022 ${ROUNDS[round]?.adds} \u2022 108 BPM`:'TAP TO PLAY \u2022 WEVAL \u00D7 VIVALDI \u00D7 ARENA'}
       </div>
     </div>
 
     <div className="rounds">
-      {Array.from({length:16},(_,i)=><div key={i} className={`rdot${i<round?' done':''}${i===round?' now':''}`}/>)}
+      {Array.from({length:32},(_,i)=><div key={i} className={`rdot${i<round?' done':''}${i===round?' now':''}`}/>)}
     </div>
 
     <div className="personas-strip">
