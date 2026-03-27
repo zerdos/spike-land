@@ -1,0 +1,179 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+---
+
+<Layout
+  title="LearnIt — spike.land"
+  description="Interactive learning with AI personas. Pick a topic, get quizzed, track your progress."
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav />
+
+    <main id="main-content" class="learn-main">
+      <div class="rubik-container">
+        <header class="learn-header">
+          <p class="rubik-eyebrow">Interactive Learning</p>
+          <h1 class="learn-title">LearnIt</h1>
+          <p class="rubik-lede">Pick a topic. A persona teaches it. Get quizzed. Track your progress.</p>
+        </header>
+
+        <div class="topics-grid">
+          <a href="/learn/physics" class="topic-card">
+            <span class="topic-persona">EINSTEIN</span>
+            <h2 class="topic-title">Physics</h2>
+            <p class="topic-desc">Relativity, quantum mechanics, thought experiments.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/mathematics" class="topic-card">
+            <span class="topic-persona">ERDŐS</span>
+            <h2 class="topic-title">Mathematics</h2>
+            <p class="topic-desc">Graph theory, combinatorics, number theory, proofs.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/philosophy" class="topic-card">
+            <span class="topic-persona">SOCRATES</span>
+            <h2 class="topic-title">Philosophy</h2>
+            <p class="topic-desc">Ethics, epistemology, the Socratic method.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/music" class="topic-card">
+            <span class="topic-persona">DAFT PUNK</span>
+            <h2 class="topic-title">Music Production</h2>
+            <p class="topic-desc">Synthesis, arrangement, rhythm, sound design.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/coding" class="topic-card">
+            <span class="topic-persona">GATES</span>
+            <h2 class="topic-title">Programming</h2>
+            <p class="topic-desc">Algorithms, architecture, systems thinking.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/logic" class="topic-card">
+            <span class="topic-persona">WITTGENSTEIN</span>
+            <h2 class="topic-title">Logic</h2>
+            <p class="topic-desc">Formal logic, language games, tractatus.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/design" class="topic-card">
+            <span class="topic-persona">ARNOLD</span>
+            <h2 class="topic-title">UX Design</h2>
+            <p class="topic-desc">Interface critique, user flows, visual hierarchy.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+
+          <a href="/learn/strange-loops" class="topic-card">
+            <span class="topic-persona">RADIX</span>
+            <h2 class="topic-title">Strange Loops</h2>
+            <p class="topic-desc">Self-reference, recursion, emergent complexity.</p>
+            <span class="topic-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .learn-main {
+    flex: 1;
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+
+  .learn-header {
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .learn-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+  }
+
+  .topic-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.375rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    position: relative;
+  }
+
+  .topic-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .topic-persona {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+  }
+
+  .topic-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .topic-desc {
+    font-size: 0.8125rem;
+    color: var(--muted-fg);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .topic-arrow {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 1.25rem;
+    color: var(--muted-fg);
+    transition: transform 0.15s, color 0.15s;
+  }
+
+  .topic-card:hover .topic-arrow {
+    transform: translateX(4px);
+    color: var(--primary-color);
+  }
+</style>

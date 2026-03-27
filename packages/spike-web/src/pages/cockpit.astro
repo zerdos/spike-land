@@ -1,0 +1,198 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+---
+
+<Layout
+  title="Cockpit — spike.land"
+  description="Dashboard with roadmap, milestones, and real-time platform metrics."
+  noindex={true}
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav />
+
+    <main id="main-content" class="cockpit-main">
+      <div class="rubik-container">
+        <header class="cockpit-header">
+          <h1 class="cockpit-title">Cockpit</h1>
+          <p class="cockpit-sub">Roadmap &amp; milestones at a glance.</p>
+        </header>
+
+        <!-- Kanban -->
+        <div class="kanban">
+          <div class="kanban-col">
+            <h2 class="col-label col-planned">Planned</h2>
+            <div class="kanban-cards" id="col-planned"></div>
+          </div>
+          <div class="kanban-col">
+            <h2 class="col-label col-progress">In Progress</h2>
+            <div class="kanban-cards" id="col-in-progress"></div>
+          </div>
+          <div class="kanban-col">
+            <h2 class="col-label col-done">Done</h2>
+            <div class="kanban-cards" id="col-done"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<script is:inline>
+(function () {
+  'use strict';
+
+  var milestones = [
+    { title: 'Stripe billing integration', desc: 'Pro $29/mo, Business $99/mo. Checkout, webhooks, invoice.paid.', status: 'in-progress', priority: 'high' },
+    { title: 'Onboarding flow', desc: 'Welcome modal, interests selection, tool suggestions.', status: 'in-progress', priority: 'high' },
+    { title: 'MCP registry v2', desc: 'Tool versioning, categories, search, install counts, ratings.', status: 'planned', priority: 'high' },
+    { title: 'Marketplace revenue share', desc: 'price_cents on tools, paid install flow.', status: 'planned', priority: 'medium' },
+    { title: 'Mobile app (PWA)', desc: 'Offline-capable PWA with push notifications.', status: 'planned', priority: 'medium' },
+    { title: 'Auth + OAuth', desc: 'Better Auth with GitHub and Google providers.', status: 'done', priority: 'high' },
+    { title: 'MCP tool registry', desc: '170+ tools across 15+ categories.', status: 'done', priority: 'high' },
+    { title: 'Status monitoring', desc: '7/7 services with uptime tracking.', status: 'done', priority: 'high' },
+    { title: 'Blog + Content', desc: '50+ articles, MDX-powered, category filters.', status: 'done', priority: 'medium' },
+    { title: 'Music Arena', desc: '8-bar loop sequencer with Tone.js.', status: 'done', priority: 'low' },
+  ];
+
+  var cols = {
+    'planned': document.getElementById('col-planned'),
+    'in-progress': document.getElementById('col-in-progress'),
+    'done': document.getElementById('col-done'),
+  };
+
+  var priorityColors = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
+
+  milestones.forEach(function (m) {
+    var col = cols[m.status];
+    if (!col) return;
+    var card = document.createElement('div');
+    card.className = 'milestone-card';
+    card.innerHTML =
+      '<div class="card-header">' +
+        '<span class="priority-dot" style="background:' + priorityColors[m.priority] + '"></span>' +
+        '<span class="card-title">' + m.title + '</span>' +
+      '</div>' +
+      '<p class="card-desc">' + m.desc + '</p>';
+    col.appendChild(card);
+  });
+})();
+</script>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .cockpit-main {
+    flex: 1;
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+
+  .cockpit-header { margin-bottom: 2rem; }
+
+  .cockpit-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .cockpit-sub {
+    font-size: 0.9375rem;
+    color: var(--muted-fg);
+    margin: 0.25rem 0 0;
+  }
+
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .kanban-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .col-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    margin: 0;
+  }
+
+  .col-planned { color: #94a3b8; background: rgba(148,163,184,0.08); }
+  .col-progress { color: #3b82f6; background: rgba(59,130,246,0.08); }
+  .col-done { color: #22c55e; background: rgba(34,197,94,0.08); }
+
+  .kanban-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .milestone-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 0.875rem 1rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .milestone-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .priority-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fg);
+  }
+
+  .card-desc {
+    font-size: 0.8125rem;
+    color: var(--muted-fg);
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .kanban {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
