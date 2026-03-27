@@ -189,29 +189,50 @@ const PROG=[
   ['Am','Bdim','C','Dm'], // i ii III iv — tension
 ];
 
-// Vivaldi melody fragments (baroque sequences in Am)
-const VIVALDI_PHRASES=[
-  [69,72,74,76,74,72,69,67],   // ascending/descending A minor
-  [76,74,72,74,76,79,76,74],   // upper register run
-  [64,67,69,72,69,67,64,62],   // middle voice sequence
-  [69,71,72,74,76,77,79,81],   // full ascending scale
-  [81,79,77,76,74,72,71,69],   // descending scale
-  [69,64,67,69,72,69,67,64],   // arpeggio figure
-  [76,72,74,69,72,67,69,64],   // descending 3rds
-  [69,69,72,72,74,74,76,76],   // paired notes rising
+// === CATCHY MELODY SYSTEM ===
+// Notes use [midi, duration_in_steps] pairs. 0=rest. Phrases are 16 steps total.
+// H=half note (8 steps), Q=quarter (4), E=eighth (2), S=sixteenth (1)
+const H=8,Q=4,E=2,S=1;
+
+// THE HOOK — Weval main theme. Simple, held, repeating. Gets stuck in your head.
+// Think: da-aa... da-aa... da da da-aa (A..C..D E C..)
+const WEVAL_HOOK=[
+  [69,H],[72,H],                           // A---  C---        bar 1
+  [74,Q],[76,E],[74,E],[72,H],             // D- E D C---       bar 2
+];
+// Weval B section — answer to the hook
+const WEVAL_B=[
+  [76,H],[74,Q],[72,Q],                    // E---  D-  C-      bar 1
+  [69,H+Q],[0,Q],                          // A-----  rest      bar 2
+];
+// Weval C — the lift, goes higher
+const WEVAL_C=[
+  [76,Q],[79,H],[76,Q],                    // E-  G---  E-
+  [74,Q],[72,Q],[69,H],                    // D-  C-  A---
 ];
 
-// Weval melody fragments (electronic, sparse, emotive)
-const WEVAL_PHRASES=[
-  [69,0,72,0,74,0,69,0],       // sparse with rests (0=rest)
-  [76,0,0,74,0,72,0,69],       // delayed phrasing
-  [69,72,0,0,74,0,76,0],       // breathing space
-  [0,69,0,72,0,74,0,72],       // offbeat entry
-  [74,0,72,0,69,0,67,0],       // descending sparse
-  [69,0,0,0,76,0,0,74],        // ultra minimal
-  [72,74,76,0,0,74,72,0],      // grouped then space
-  [0,0,69,0,0,72,0,74],        // late bloomer
+// Vivaldi — baroque but singable. Longer notes with occasional fast ornament.
+const VIVALDI_A=[
+  [81,H],[79,Q],[77,Q],                    // A5-- G-  F-
+  [76,H],[74,Q],[72,Q],                    // E-- D- C-
 ];
+const VIVALDI_B=[
+  [72,Q],[74,Q],[76,H],                    // C- D- E---
+  [79,Q],[76,E],[74,E],[72,H],             // G- E D C---
+];
+const VIVALDI_C=[
+  [69,Q],[72,Q],[76,Q],[79,Q],             // A- C- E- G-  (arpeggio up)
+  [81,H],[79,Q],[76,Q],                    // A5--- G- E-
+];
+// Fast Vivaldi ornament (16ths) — used sparingly
+const VIVALDI_RUN=[
+  [76,S],[77,S],[79,S],[81,S],[79,S],[77,S],[76,S],[74,S],
+  [72,S],[74,S],[76,S],[74,S],[72,S],[71,S],[69,S],[0,S],
+];
+
+// Combine into phrase banks that repeat
+const WEVAL_PHRASES=[WEVAL_HOOK,WEVAL_HOOK,WEVAL_B,WEVAL_C]; // AABA form — hook repeats!
+const VIVALDI_PHRASES=[VIVALDI_A,VIVALDI_A,VIVALDI_B,VIVALDI_C]; // same AABA
 
 const BINAURAL_MODES=[
   {name:'OFF',hz:0,desc:'disabled',lFreq:0,rFreq:0},
@@ -499,81 +520,122 @@ function useRooftopEngine(binMode){
       bassNote(t,bassRoot);
     }
 
-    // R1+: Vivaldi melody
+    // === MELODY SYSTEM — duration-aware, catchy, held notes ===
+    // Helper: play a phrase starting at bar-local step 0, tracking position
+    // Phrases are arrays of [midi, duration_in_steps]. We play a note when
+    // pos matches the phrase's cumulative step position.
+
+    // Calculate which step in a 2-bar (32-step) phrase cycle we're at
+    const phrasePos=sn%(32); // 2 bars = 32 steps, phrases are ~16 steps, we play 2 per cycle
+    const halfPhrase=phrasePos<16?0:1; // first or second half
+    const localPos=phrasePos%16;
+
+    // Get cumulative positions for a phrase
+    function phraseSteps(phrase){
+      const steps=[];let cum=0;
+      for(const [note,dur] of phrase){steps.push({note,dur,start:cum});cum+=dur;}
+      return steps;
+    }
+
+    // R1+: Vivaldi melody — the singable theme with held notes
     if(round>=1&&round!==9){
-      const phrase=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
-      const noteIdx=pos%phrase.length;
-      if(pos%2===0&&phrase[noteIdx]){
-        const n=phrase[noteIdx]+12; // octave up for clarity
-        violinNote(t,n,STEP*1.8,round>=14?0.12:0.08);
+      const pIdx=(Math.floor(bar/2))%VIVALDI_PHRASES.length; // change phrase every 2 bars
+      const phrase=VIVALDI_PHRASES[pIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(localPos===s.start&&halfPhrase===0){
+          violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.95,round>=14?0.12:0.08);
+        }
       }
-      if(pos===15)vivaldiIdxRef.current++;
     }
 
-    // R3+: Vivaldi counter-melody (descending, offset)
+    // R3+: Vivaldi counter-melody — offset by half, quieter
     if(round>=3&&round!==9){
-      const phrase2=VIVALDI_PHRASES[(vivaldiIdxRef.current+4)%VIVALDI_PHRASES.length];
-      if(pos%4===2&&phrase2[pos%phrase2.length]){
-        violinNote(t,phrase2[pos%phrase2.length]+12,STEP*1.5,0.05);
+      const pIdx2=((Math.floor(bar/2))+2)%VIVALDI_PHRASES.length;
+      const phrase2=VIVALDI_PHRASES[pIdx2];
+      const steps2=phraseSteps(phrase2);
+      for(const s of steps2){
+        if(localPos===s.start&&halfPhrase===1){
+          violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.05);
+        }
       }
     }
 
-    // R5+: Stochastic melody variation (Erdős)
+    // R5+: Weval melody — THE HOOK. Sparse, held, emotional. REPEATS.
     if(round>=5&&round!==9){
-      const phrase=WEVAL_PHRASES[melodyIdxRef.current%WEVAL_PHRASES.length];
-      const n=phrase[pos%phrase.length];
-      if(n&&pos%2===0){
-        // Mutation probability increases with round
-        const mutated=Math.random()<(round-5)*0.08?n+(Math.random()<0.5?2:-2):n;
-        melodyNote(t,mutated,STEP*1.5,0.07);
+      const wIdx=(Math.floor(bar/2))%WEVAL_PHRASES.length;
+      const wPhrase=WEVAL_PHRASES[wIdx];
+      const wSteps=phraseSteps(wPhrase);
+      for(const s of wSteps){
+        if(localPos===s.start&&halfPhrase===0){
+          // Erdős mutation from round 7+
+          let note=s.note;
+          if(round>=7&&note&&Math.random()<0.12){note+=(Math.random()<0.5?2:-2)}
+          melodyNote(t,note,STEP*s.dur*0.9,0.08);
+        }
       }
-      if(pos===15)melodyIdxRef.current++;
     }
 
-    // R6+: Arpeggio (Weval)
+    // R6+: Arpeggio (Weval build)
     if(round>=6&&round!==9&&pos===0&&bar%2===0){
       arp(t,[...chord,...chord.map(n=>n+12)]);
     }
 
-    // R7+: Fast Vivaldi runs
-    if(round>=7&&round!==9&&pos>=12){
-      const scalePos=(bar*16+pos)%Am.length;
-      violinNote(t,Am[scalePos]+12,STEP*0.45,0.06);
-    }
-
-    // R8+: Stabs (Daft)
-    if(round>=8&&round!==9&&pos%4===1)stab(t);
-
-    // R9: Breakdown — just melody + binaural (handled by skipping others above)
-    if(round===9){
-      const phrase=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
-      if(pos%2===0&&phrase[pos%phrase.length]){
-        violinNote(t,phrase[pos%phrase.length]+12,STEP*3,0.12);
+    // R7+: Vivaldi fast runs — only at end of 4-bar sections for drama
+    if(round>=7&&round!==9&&bar%4===3&&pos>=8){
+      const runSteps=phraseSteps(VIVALDI_RUN);
+      const runPos=pos-8; // 0-7 within the run zone
+      for(const s of runSteps){
+        if(runPos===s.start)violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.06);
       }
     }
 
-    // R11+: Trills
-    if(round>=11&&round!==9&&pos===8){
-      trill(t,72,STEP*2);
+    // R8+: Stabs (Daft Punk)
+    if(round>=8&&round!==9&&pos%4===1)stab(t);
+
+    // R9: Breakdown — just the Weval hook, slow, exposed, beautiful
+    if(round===9){
+      const bkSteps=phraseSteps(WEVAL_HOOK);
+      for(const s of bkSteps){
+        if(localPos===s.start&&halfPhrase===0){
+          // Play as violin for warmth, longer sustain
+          violinNote(t,s.note?s.note+12:0,STEP*s.dur*1.1,0.14);
+        }
+      }
     }
 
-    // R12+: Probability percussion fills
+    // R11+: Trills on long held notes
+    if(round>=11&&round!==9&&pos===8&&bar%2===0){
+      trill(t,76,STEP*3);
+    }
+
+    // R12+: Probability fills
     if(round>=12&&round!==9){
-      if(Math.random()<pos/20)rim(t);
-      if(pos>=12&&Math.random()<0.4)hat(t,false);
+      if(Math.random()<pos/24)rim(t);
+      if(pos>=12&&Math.random()<0.35)hat(t,false);
     }
 
-    // R13+: Full drop — everything louder
+    // R13+: Full drop — four-on-floor
     if(round>=13&&round!==9){
-      if(pos===0||pos===4||pos===8||pos===12)kick(t);
+      if(pos%4===0)kick(t);
     }
 
-    // R14: Melody duet — Weval + Vivaldi simultaneously
+    // R14+: Melody duet — Weval hook + Vivaldi theme play TOGETHER
     if(round>=14){
-      const wp=WEVAL_PHRASES[melodyIdxRef.current%WEVAL_PHRASES.length];
-      const vp=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
-      if(wp[pos%wp.length])melodyNote(t,wp[pos%wp.length],STEP*1.2,0.09);
-      if(vp[pos%vp.length])violinNote(t,vp[pos%vp.length]+12,STEP*1.2,0.09);
+      // Weval hook (always the hook — it's the catchiest)
+      const hookSteps=phraseSteps(WEVAL_HOOK);
+      for(const s of hookSteps){
+        if(localPos===s.start&&halfPhrase===1){
+          melodyNote(t,s.note,STEP*s.dur*0.9,0.1);
+        }
+      }
+      // Vivaldi A (the main theme)
+      const vivSteps=phraseSteps(VIVALDI_A);
+      for(const s of vivSteps){
+        if(localPos===s.start&&halfPhrase===0){
+          violinNote(t,s.note?s.note+12:0,STEP*s.dur*0.9,0.1);
+        }
+      }
     }
 
     // Progress chord progression
