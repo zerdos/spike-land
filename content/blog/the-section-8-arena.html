@@ -14,148 +14,152 @@
     --bg:#0a0a1a;--sunset:#ff6b35;--warm:#ffa07a;--gold:#FFD700;--sky:#1a1a3e;
     --teal:#2a9d8f;--rose:#e63946;--lavender:#b8a9c9;--panel:rgba(255,255,255,.04);
     --border:rgba(255,255,255,.08);--legal:#4ecdc4;--text:rgba(255,255,255,.7);
+    --vivaldi:#c9a959;--weval:#7b68ee;
   }
   html{scroll-behavior:smooth}
   body{background:linear-gradient(180deg,#0a0a1a 0%,#1a1230 30%,#2a1a3e 60%,#1a1a3e 100%);
     color:#eee;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
-  #root{position:relative;z-index:2}
-
-  /* Rooftop gradient overlay */
   body::before{content:'';position:fixed;top:0;left:0;right:0;height:40vh;
     background:linear-gradient(180deg,rgba(255,107,53,.06) 0%,rgba(255,160,122,.03) 50%,transparent 100%);
     pointer-events:none;z-index:0}
 
   .app{position:relative;z-index:3;max-width:600px;margin:0 auto;padding:1rem}
 
-  /* Header — warm rooftop vibe */
-  .header{text-align:center;padding:1.5rem 0 1rem}
+  .header{text-align:center;padding:1.5rem 0 0.5rem}
   .header h1{
-    font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,7vw,2.5rem);font-weight:900;
-    background:linear-gradient(135deg,var(--sunset),var(--warm),var(--gold),var(--lavender));
-    background-size:400% 400%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;animation:warmShimmer 10s ease infinite;
+    font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,7vw,2.2rem);font-weight:900;
+    background:linear-gradient(135deg,var(--sunset),var(--warm),var(--gold),var(--lavender),var(--weval));
+    background-size:500% 500%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;animation:warmShimmer 12s ease infinite;
   }
-  .header .sub{font-size:0.8rem;color:var(--warm);opacity:0.6;margin-top:0.3rem;font-weight:300}
-  .header .place{font-size:0.65rem;color:var(--lavender);opacity:0.4;margin-top:0.2rem;letter-spacing:2px}
+  .header .sub{font-size:0.75rem;color:var(--warm);opacity:0.5;margin-top:0.2rem;font-weight:300}
+  .header .place{font-size:0.6rem;color:var(--lavender);opacity:0.35;margin-top:0.15rem;letter-spacing:2px}
   @keyframes warmShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-  /* Music control */
-  .music-bar{display:flex;justify-content:center;align-items:center;gap:0.8rem;margin:1rem 0;flex-wrap:wrap}
+  /* Transport */
+  .transport{display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin:1rem 0}
   .play-btn{
-    width:56px;height:56px;border-radius:50%;border:2px solid var(--sunset);background:rgba(255,107,53,.08);
-    color:var(--sunset);font-size:1.4rem;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+    width:64px;height:64px;border-radius:50%;border:2px solid var(--sunset);background:rgba(255,107,53,.06);
+    color:var(--sunset);font-size:1.6rem;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .3s;touch-action:manipulation;
   }
-  .play-btn:active{transform:scale(0.92);background:rgba(255,107,53,.2)}
-  .play-btn.playing{border-color:var(--teal);color:var(--teal);background:rgba(42,157,143,.08);animation:breathe 4s ease infinite}
-  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(42,157,143,.2)}50%{box-shadow:0 0 20px 4px rgba(42,157,143,.15)}}
-  .music-label{font-size:0.65rem;color:var(--lavender);opacity:0.5;letter-spacing:1px}
+  .play-btn:active{transform:scale(0.9);background:rgba(255,107,53,.2)}
+  .play-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(42,157,143,.06);animation:breathe 4s ease infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(42,157,143,.15)}50%{box-shadow:0 0 24px 6px rgba(42,157,143,.1)}}
+  .transport-info{font-size:0.65rem;color:var(--lavender);opacity:0.4;text-align:center;letter-spacing:1px}
+
+  /* Round ring */
+  .rounds{display:flex;justify-content:center;gap:3px;margin:0.6rem 0;flex-wrap:wrap}
+  .rdot{width:14px;height:14px;border-radius:50%;border:1px solid var(--border);transition:all .3s}
+  .rdot.done{background:var(--teal);border-color:var(--teal);box-shadow:0 0 4px rgba(42,157,143,.3)}
+  .rdot.now{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,.4);transform:scale(1.2)}
+
+  /* Persona strip */
+  .personas-strip{display:flex;justify-content:center;gap:0.4rem;margin:0.5rem 0;flex-wrap:wrap}
+  .ps{font-size:0.55rem;padding:3px 8px;border-radius:8px;border:1px solid var(--border);color:rgba(255,255,255,.3);transition:all .3s}
+  .ps.active{color:#fff;font-weight:600}
+  .ps.weval.active{border-color:var(--weval);color:var(--weval);background:rgba(123,104,238,.08)}
+  .ps.vivaldi.active{border-color:var(--vivaldi);color:var(--vivaldi);background:rgba(201,169,89,.08)}
+  .ps.radix.active{border-color:var(--rose);color:var(--rose);background:rgba(230,57,70,.08)}
+  .ps.erdos.active{border-color:var(--lavender);color:var(--lavender);background:rgba(184,169,201,.08)}
+  .ps.zoltan.active{border-color:var(--teal);color:var(--teal);background:rgba(42,157,143,.08)}
+  .ps.daft.active{border-color:var(--sunset);color:var(--sunset);background:rgba(255,107,53,.08)}
+
+  /* Binaural chooser */
+  .bin-chooser{display:flex;justify-content:center;gap:0.4rem;margin:0.8rem 0;flex-wrap:wrap}
+  .bin-btn{
+    font-size:0.6rem;padding:6px 12px;border-radius:10px;border:1px solid var(--border);
+    color:rgba(255,255,255,.35);cursor:pointer;touch-action:manipulation;transition:all .2s;
+  }
+  .bin-btn:active{transform:scale(0.95)}
+  .bin-btn.sel{border-color:var(--teal);color:var(--teal);background:rgba(42,157,143,.06)}
+  .bin-label{font-size:0.55rem;color:var(--teal);opacity:0.4;text-align:center;margin-bottom:0.3rem;letter-spacing:2px}
+
+  /* Annotation */
+  .anno{
+    padding:1rem;background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    margin:0.8rem 0;font-size:0.8rem;line-height:1.8;color:var(--text);animation:fadeIn .4s ease;
+    min-height:60px;
+  }
+  .anno .who{font-weight:600;font-size:0.7rem;margin-bottom:0.3rem;letter-spacing:1px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
   /* Status pills */
-  .status{display:flex;justify-content:center;gap:0.5rem;flex-wrap:wrap;margin:0.8rem 0}
-  .pill{font-size:0.6rem;padding:4px 10px;border-radius:12px;border:1px solid var(--border);color:var(--text);letter-spacing:1px}
+  .status{display:flex;justify-content:center;gap:0.4rem;flex-wrap:wrap;margin:0.6rem 0}
+  .pill{font-size:0.55rem;padding:3px 8px;border-radius:10px;border:1px solid var(--border);color:var(--text);letter-spacing:1px}
   .pill.warn{border-color:var(--rose);color:var(--rose)}
   .pill.ok{border-color:var(--legal);color:var(--legal)}
   .pill.gold{border-color:var(--gold);color:var(--gold)}
 
-  /* Cards — big touch targets */
-  .section-title{font-family:'Orbitron',sans-serif;font-size:0.7rem;letter-spacing:3px;
-    color:var(--sunset);text-align:center;margin:2rem 0 1rem;opacity:0.7}
+  /* Claims section */
+  .section-title{font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:3px;
+    color:var(--sunset);text-align:center;margin:1.5rem 0 0.8rem;opacity:0.6}
 
-  .card{
-    background:var(--panel);border:1px solid var(--border);border-radius:16px;
-    padding:1.2rem;margin-bottom:1rem;transition:all .3s;
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  }
-  .card.open{border-color:rgba(255,107,53,.2);box-shadow:0 4px 30px rgba(255,107,53,.04)}
-  .card-tap{
-    display:flex;justify-content:space-between;align-items:center;
-    min-height:44px;cursor:pointer;touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .card-ground{font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--sunset);letter-spacing:1px}
-  .card-badge{font-size:0.6rem;padding:3px 10px;border-radius:10px;border:1px solid var(--legal);color:var(--legal)}
-  .card-chevron{color:var(--warm);font-size:1.2rem;transition:transform .3s;opacity:0.4}
-  .card.open .card-chevron{transform:rotate(180deg)}
-
-  .card-body{margin-top:1rem;font-size:0.85rem;line-height:1.8;color:var(--text)}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:1rem;margin-bottom:0.8rem;transition:all .3s;backdrop-filter:blur(8px)}
+  .card.open{border-color:rgba(255,107,53,.15)}
+  .card-tap{display:flex;justify-content:space-between;align-items:center;min-height:44px;
+    cursor:pointer;touch-action:manipulation}
+  .card-ground{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--sunset)}
+  .card-badge{font-size:0.55rem;padding:2px 8px;border-radius:8px;border:1px solid var(--legal);color:var(--legal)}
+  .card-chev{color:var(--warm);font-size:1rem;opacity:0.3;transition:transform .3s}
+  .card.open .card-chev{transform:rotate(180deg)}
+  .card-body{margin-top:0.8rem;font-size:0.8rem;line-height:1.8;color:var(--text)}
   .card-body strong{color:var(--gold)}
-  .card-ctx{font-size:0.8rem;color:var(--gold);margin-top:0.8rem;padding:0.8rem;
-    background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.08);border-radius:10px;line-height:1.7}
-  .card-clauses{font-size:0.7rem;color:rgba(255,255,255,.3);margin-top:0.4rem}
+  .card-ctx{font-size:0.75rem;color:var(--gold);margin-top:0.6rem;padding:0.7rem;
+    background:rgba(255,215,0,.02);border:1px solid rgba(255,215,0,.06);border-radius:10px;line-height:1.7}
+  .dog-photo{margin:0.8rem 0;text-align:center}
+  .dog-photo img{max-width:100%;border-radius:10px;border:1px solid var(--border)}
+  .dog-photo .cap{font-size:0.65rem;color:var(--lavender);opacity:0.35;margin-top:0.3rem}
 
-  /* Dog photo */
-  .dog-photo{margin:1rem 0;text-align:center}
-  .dog-photo img{max-width:100%;border-radius:12px;border:1px solid var(--border)}
-  .dog-photo .cap{font-size:0.7rem;color:var(--lavender);opacity:0.4;margin-top:0.4rem}
+  .p-btns{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.8rem}
+  .pb{flex:1;min-width:60px;padding:8px 4px;border-radius:8px;text-align:center;font-size:0.6rem;font-weight:600;
+    border:1px solid var(--border);color:var(--text);cursor:pointer;touch-action:manipulation;transition:all .2s}
+  .pb:active{transform:scale(0.95)}
+  .pb.sel{background:rgba(255,255,255,.04)}
+  .pb.radix{border-color:rgba(230,57,70,.25);color:var(--rose)}.pb.radix.sel{background:rgba(230,57,70,.06)}
+  .pb.erdos{border-color:rgba(184,169,201,.25);color:var(--lavender)}.pb.erdos.sel{background:rgba(184,169,201,.06)}
+  .pb.zoltan{border-color:rgba(42,157,143,.25);color:var(--teal)}.pb.zoltan.sel{background:rgba(42,157,143,.06)}
+  .pb.daft{border-color:rgba(255,107,53,.25);color:var(--sunset)}.pb.daft.sel{background:rgba(255,107,53,.06)}
 
-  /* Persona buttons — big for mobile */
-  .personas{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem}
-  .p-btn{
-    flex:1;min-width:70px;padding:10px 6px;border-radius:10px;text-align:center;
-    font-size:0.65rem;font-weight:600;letter-spacing:1px;cursor:pointer;
-    border:1px solid var(--border);background:transparent;color:var(--text);
-    transition:all .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  }
-  .p-btn:active{transform:scale(0.95)}
-  .p-btn.sel{background:rgba(255,255,255,.05)}
-  .p-btn.radix{border-color:rgba(230,57,70,.3);color:var(--rose)}.p-btn.radix.sel{background:rgba(230,57,70,.08)}
-  .p-btn.erdos{border-color:rgba(184,169,201,.3);color:var(--lavender)}.p-btn.erdos.sel{background:rgba(184,169,201,.08)}
-  .p-btn.zoltan{border-color:rgba(42,157,143,.3);color:var(--teal)}.p-btn.zoltan.sel{background:rgba(42,157,143,.08)}
-  .p-btn.daft{border-color:rgba(255,107,53,.3);color:var(--sunset)}.p-btn.daft.sel{background:rgba(255,107,53,.08)}
+  .p-resp{margin-top:0.6rem;padding:0.8rem;background:rgba(0,0,0,.2);border-radius:8px;
+    font-size:0.75rem;line-height:1.7;color:rgba(255,255,255,.5);animation:fadeIn .3s ease}
+  .p-resp .who{font-weight:600;font-size:0.65rem;margin-bottom:0.2rem}
 
-  .p-resp{margin-top:0.8rem;padding:1rem;background:rgba(0,0,0,.2);border-radius:10px;
-    font-size:0.8rem;line-height:1.8;color:rgba(255,255,255,.55);animation:fadeIn .3s ease}
-  .p-resp .who{font-weight:600;font-size:0.7rem;margin-bottom:0.3rem}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .answer{margin-top:0.8rem}
+  .answer label{font-size:0.65rem;color:var(--gold);opacity:0.5;display:block;margin-bottom:0.3rem}
+  .answer textarea{width:100%;min-height:70px;background:rgba(0,0,0,.3);border:1px solid var(--border);
+    border-radius:8px;color:#eee;font-family:'Inter',sans-serif;font-size:0.8rem;padding:0.7rem;
+    resize:vertical;line-height:1.6;-webkit-appearance:none}
+  .answer textarea:focus{outline:none;border-color:var(--teal)}
 
-  /* Textarea */
-  .answer{margin-top:1rem}
-  .answer label{font-size:0.7rem;color:var(--gold);opacity:0.6;display:block;margin-bottom:0.4rem}
-  .answer textarea{
-    width:100%;min-height:80px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;
-    color:#eee;font-family:'Inter',sans-serif;font-size:0.85rem;padding:0.8rem;resize:vertical;line-height:1.7;
-    -webkit-appearance:none;
-  }
-  .answer textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 12px rgba(42,157,143,.1)}
-
-  /* Defences */
-  .def-card{padding:1.2rem;border:1px solid var(--legal);border-radius:14px;background:rgba(78,205,196,.02);margin:1.5rem 0}
-  .def-item{font-size:0.8rem;line-height:1.8;color:rgba(255,255,255,.55);padding:0.5rem 0;
-    border-bottom:1px solid rgba(255,255,255,.04)}
+  .def-card{padding:1rem;border:1px solid var(--legal);border-radius:12px;background:rgba(78,205,196,.02);margin:1rem 0}
+  .def-item{font-size:0.75rem;line-height:1.7;color:rgba(255,255,255,.5);padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
   .def-item:last-child{border:none}
-  .def-num{color:var(--legal);font-weight:600;margin-right:0.5rem}
+  .def-num{color:var(--legal);font-weight:600;margin-right:0.4rem}
 
-  /* Actions */
-  .act{
-    display:flex;align-items:flex-start;gap:0.8rem;padding:1rem;margin-bottom:0.6rem;
-    background:var(--panel);border:1px solid var(--border);border-radius:12px;
-    cursor:pointer;transition:all .2s;touch-action:manipulation;min-height:48px;
-    -webkit-tap-highlight-color:transparent;
-  }
+  .act{display:flex;align-items:flex-start;gap:0.7rem;padding:0.8rem;margin-bottom:0.5rem;
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    cursor:pointer;touch-action:manipulation;min-height:44px}
   .act:active{transform:scale(0.98)}
-  .act.done{opacity:0.4}
-  .act .dot{width:22px;height:22px;border:2px solid var(--rose);border-radius:50%;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;font-size:0.75rem;margin-top:2px}
+  .act.done{opacity:0.35}
+  .act .dot{width:20px;height:20px;border:2px solid var(--rose);border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:0.7rem;margin-top:1px}
   .act.done .dot{border-color:var(--legal);background:var(--legal);color:var(--bg)}
-  .act-text{font-size:0.8rem;line-height:1.6;color:var(--text)}
+  .act-text{font-size:0.75rem;line-height:1.5;color:var(--text)}
   .act-text .phone{color:var(--gold);font-weight:600}
-  .act-text .urg{color:var(--rose);font-weight:600;font-size:0.65rem;letter-spacing:1px}
+  .act-text .urg{color:var(--rose);font-weight:600;font-size:0.6rem}
 
-  /* Export */
-  .export-btn{
-    display:block;width:100%;padding:14px;margin:1.5rem 0;border-radius:12px;
-    font-family:'Orbitron',sans-serif;font-size:0.75rem;letter-spacing:2px;
-    border:1px solid var(--gold);background:rgba(255,215,0,.04);color:var(--gold);
-    cursor:pointer;touch-action:manipulation;text-align:center;
-  }
-  .export-btn:active{background:rgba(255,215,0,.1);transform:scale(0.98)}
+  .export-btn{display:block;width:100%;padding:14px;margin:1.5rem 0;border-radius:12px;
+    font-family:'Orbitron',sans-serif;font-size:0.7rem;letter-spacing:2px;
+    border:1px solid var(--gold);background:rgba(255,215,0,.03);color:var(--gold);
+    cursor:pointer;touch-action:manipulation;text-align:center}
+  .export-btn:active{background:rgba(255,215,0,.08);transform:scale(0.98)}
 
-  /* Footer */
-  .footer{text-align:center;padding:2rem 0 3rem;border-top:1px solid var(--border);margin-top:2rem}
-  .footer .tag{font-size:0.85rem;color:var(--teal);font-weight:300;line-height:1.6}
-  .footer .cr{font-size:0.6rem;color:rgba(255,255,255,.15);letter-spacing:2px;margin-top:0.5rem}
-  .footer .warn{font-size:0.65rem;color:var(--rose);margin-top:0.6rem;line-height:1.5;opacity:0.7}
+  .footer{text-align:center;padding:2rem 0 3rem;border-top:1px solid var(--border);margin-top:1.5rem}
+  .footer .tag{font-size:0.8rem;color:var(--teal);font-weight:300;line-height:1.5}
+  .footer .cr{font-size:0.55rem;color:rgba(255,255,255,.12);letter-spacing:2px;margin-top:0.4rem}
+  .footer .warn{font-size:0.6rem;color:var(--rose);margin-top:0.5rem;opacity:0.6}
 </style>
 </head>
 <body>
@@ -165,375 +169,608 @@
 const {useState,useCallback,useRef,useEffect}=React;
 
 // ========================================================================
-// WEVAL-STYLE AUDIO ENGINE — warm deep house, rooftop paradise
+// MUSIC ENGINE — 16 rounds, Weval + Vivaldi + Arena personas
 // ========================================================================
 
-function useRooftopAudio(){
+const BPM=108, BEAT=60/BPM, STEP=BEAT/4;
+
+// Am scale: A B C D E F G
+const Am=[57,59,60,62,64,65,67,69,71,72,74,76,77,79,81];
+// Chord voicings (MIDI)
+const CHORDS={
+  Am:[57,60,64,69], C:[60,64,67,72], F:[53,60,65,69],
+  Dm:[62,65,69,74], G:[55,59,62,67], Em:[52,55,59,64],
+  Bdim:[59,62,65,71], Am7:[57,60,64,67],
+};
+const PROG=[
+  ['Am','C','F','G'],     // i III VI VII — cinematic
+  ['Am','Em','F','C'],    // i v VI III — rooftop
+  ['Dm','G','C','Am'],    // iv VII III i — vivaldi
+  ['Am','Bdim','C','Dm'], // i ii III iv — tension
+];
+
+// Vivaldi melody fragments (baroque sequences in Am)
+const VIVALDI_PHRASES=[
+  [69,72,74,76,74,72,69,67],   // ascending/descending A minor
+  [76,74,72,74,76,79,76,74],   // upper register run
+  [64,67,69,72,69,67,64,62],   // middle voice sequence
+  [69,71,72,74,76,77,79,81],   // full ascending scale
+  [81,79,77,76,74,72,71,69],   // descending scale
+  [69,64,67,69,72,69,67,64],   // arpeggio figure
+  [76,72,74,69,72,67,69,64],   // descending 3rds
+  [69,69,72,72,74,74,76,76],   // paired notes rising
+];
+
+// Weval melody fragments (electronic, sparse, emotive)
+const WEVAL_PHRASES=[
+  [69,0,72,0,74,0,69,0],       // sparse with rests (0=rest)
+  [76,0,0,74,0,72,0,69],       // delayed phrasing
+  [69,72,0,0,74,0,76,0],       // breathing space
+  [0,69,0,72,0,74,0,72],       // offbeat entry
+  [74,0,72,0,69,0,67,0],       // descending sparse
+  [69,0,0,0,76,0,0,74],        // ultra minimal
+  [72,74,76,0,0,74,72,0],      // grouped then space
+  [0,0,69,0,0,72,0,74],        // late bloomer
+];
+
+const BINAURAL_MODES=[
+  {name:'ALPHA',hz:10,desc:'10Hz \u2014 calm focus',lFreq:200,rFreq:210},
+  {name:'THETA',hz:6,desc:'6Hz \u2014 deep relax',lFreq:200,rFreq:206},
+  {name:'DELTA',hz:2,desc:'2Hz \u2014 deep sleep',lFreq:200,rFreq:202},
+  {name:'BETA',hz:15,desc:'15Hz \u2014 alert',lFreq:200,rFreq:215},
+];
+
+const PERSONAS=[
+  {id:'weval',name:'WEVAL',color:'var(--weval)',icon:'\u{1F30A}'},
+  {id:'vivaldi',name:'VIVALDI',color:'var(--vivaldi)',icon:'\u{1F3BB}'},
+  {id:'radix',name:'RADIX',color:'var(--rose)',icon:'\u{1F916}'},
+  {id:'erdos',name:'ERD\u0150S',color:'var(--lavender)',icon:'\u{1F3B2}'},
+  {id:'zoltan',name:'ZOLT\u00C1N',color:'var(--teal)',icon:'\u{1F9EE}'},
+  {id:'daft',name:'DAFT PUNK',color:'var(--sunset)',icon:'\u{1F3B5}'},
+];
+
+// 16 rounds — progressive complexity, melody-focused
+const ROUNDS=[
+  {p:'weval',  adds:'Warm pad + kick',           note:'The foundation. A single chord. A heartbeat. Weval starts every track this way \u2014 nothing rushed, just presence.'},
+  {p:'vivaldi',adds:'First violin phrase',        note:'Vivaldi enters with the simplest figure: four notes ascending. A minor. The same key he wrote a hundred concertos in. It still works.'},
+  {p:'weval',  adds:'Bass line + rim',            note:'The bass drops in \u2014 not heavy, just warm. The rim gives you the pulse. This is the groove Weval builds entire albums on.'},
+  {p:'vivaldi',adds:'Counter-melody (descending)',note:'A second voice descends while the first ascends. Counterpoint. Two lines, independent but harmonically bound. Bach learned this from Vivaldi.'},
+  {p:'radix',  adds:'Hi-hats + delay send',       note:'The engineer opens the delay line. Every note now echoes, creating polyrhythm from simplicity. The system amplifies what\'s already there.'},
+  {p:'erdos',  adds:'Stochastic melody variation', note:'Probability enters the melody. Each phrase has a chance of mutation \u2014 a note shifts, a rest appears. The melody evolves like a random walk.'},
+  {p:'weval',  adds:'Arpeggiator + filter sweep',  note:'The arpeggio breaks the chords into individual notes, cycling upward. The filter opens slowly. This is the Weval build \u2014 patient, inevitable.'},
+  {p:'vivaldi',adds:'Virtuoso run (fast notes)',    note:'Vivaldi accelerates. Sixteenth notes cascade down the scale. Four Seasons energy. The violin doesn\'t care about tempo \u2014 it cares about expression.'},
+  {p:'daft',   adds:'Chord stabs + sidechain',     note:'The stab cuts through everything. Sidechain compression ducks the pad on each kick. The space between beats becomes as important as the beats.'},
+  {p:'zoltan', adds:'Breakdown \u2014 melody only', note:'Strip everything. Just the melody and the binaural. Your blood pressure is lower now than when you pressed play. The rooftop is quiet. The city is below.'},
+  {p:'weval',  adds:'Rebuild with layered pads',    note:'Two pads now. Detuned against each other. The warmth doubles. Weval\'s signature: stacking simple things until they become complex.'},
+  {p:'vivaldi',adds:'Trills + ornaments',           note:'Vivaldi adds trills \u2014 rapid alternation between adjacent notes. Baroque ornamentation. Every note decorated. The melody becomes a garden.'},
+  {p:'erdos',  adds:'Probability percussion fills',  note:'The drums become probabilistic. Fills appear where you don\'t expect them. Erd\u0151s: "God has a transfinite book of proofs. This groove is in it."'},
+  {p:'daft',   adds:'THE DROP \u2014 everything',    note:'Full send. All layers. Both melodies. The bass. The arpeggio. The stabs. Vivaldi meets Weval at maximum volume on a rooftop in Brighton.'},
+  {p:'radix',  adds:'Melody duet (Weval + Vivaldi)',note:'The two melodies play together \u2014 Weval\'s sparse electronic line weaving through Vivaldi\'s baroque runs. Different centuries, same key, same rooftop.'},
+  {p:'zoltan', adds:'Fade to binaural \u2014 peace', note:'Everything fades. The binaural remains. The rooftop. The sunset. Pixel and Mad Max. 42 Mighell Street is not just a property in a legal letter. It is home.'},
+];
+
+function useRooftopEngine(binMode){
   const ctxRef=useRef(null);
   const masterRef=useRef(null);
+  const compRef=useRef(null);
+  const filterRef=useRef(null);
+  const delayRef=useRef(null);
+  const delayFbRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
   const playingRef=useRef(false);
   const schedRef=useRef(null);
   const stepRef=useRef(-1);
   const startRef=useRef(0);
+  const melodyIdxRef=useRef(0);
+  const vivaldiIdxRef=useRef(0);
+  const chordIdxRef=useRef(0);
+  const progIdxRef=useRef(0);
 
-  const BPM=108; // Weval tempo — slower, warmer
-  const STEP=60/BPM/4;
+  const midi2freq=useCallback((n)=>440*Math.pow(2,(n-69)/12),[]);
 
   const init=useCallback(()=>{
     if(ctxRef.current)return;
     const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
 
-    // Master -> compressor -> destination
-    const comp=c.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=4;
-    comp.connect(c.destination);
+    const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=5;comp.connect(c.destination);compRef.current=comp;
 
-    const m=c.createGain();m.gain.value=0.4;m.connect(comp);masterRef.current=m;
+    const filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=6000;filt.Q.value=0.7;filterRef.current=filt;
 
-    // Binaural (keep the therapeutic element)
-    const bg=c.createGain();bg.gain.value=0.04;
+    const del=c.createDelay(1);del.delayTime.value=BEAT*0.75;delayRef.current=del;
+    const dfb=c.createGain();dfb.gain.value=0;delayFbRef.current=dfb;
+    const dFilt=c.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=2500;
+    del.connect(dFilt);dFilt.connect(dfb);dfb.connect(del);del.connect(comp);
+
+    const m=c.createGain();m.gain.value=0.45;m.connect(filt);filt.connect(comp);filt.connect(del);masterRef.current=m;
+
+    // Binaural
+    const bg=c.createGain();bg.gain.value=0.05;binGainRef.current=bg;
     const merger=c.createChannelMerger(2);
-    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;
-    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;
+    const bm=BINAURAL_MODES[binMode]||BINAURAL_MODES[0];
+    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=bm.lFreq;binLRef.current=oL;
+    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=bm.rFreq;binRRef.current=oR;
     const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
     oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
     merger.connect(bg);bg.connect(c.destination);
     oL.start();oR.start();
+  },[binMode]);
+
+  const setBinaural=useCallback((mode)=>{
+    if(!binLRef.current||!ctxRef.current)return;
+    const bm=BINAURAL_MODES[mode]||BINAURAL_MODES[0];
+    const t=ctxRef.current.currentTime;
+    binLRef.current.frequency.setTargetAtTime(bm.lFreq,t,0.3);
+    binRRef.current.frequency.setTargetAtTime(bm.rFreq,t,0.3);
   },[]);
 
-  // Warm pad — Weval signature
-  const pad=useCallback((t,notes)=>{
+  // === INSTRUMENTS ===
+
+  const pad=useCallback((t,notes,dur)=>{
     const c=ctxRef.current;if(!c)return;
-    notes.forEach((note,i)=>{
-      const freq=440*Math.pow(2,(note-69)/12);
-      const o=c.createOscillator();o.type='sine';
-      o.frequency.value=freq;
-      const o2=c.createOscillator();o2.type='triangle';
-      o2.frequency.value=freq*1.002;
-      const g=c.createGain();
-      g.gain.setValueAtTime(0,t);
-      g.gain.linearRampToValueAtTime(0.06,t+0.8);
-      g.gain.setValueAtTime(0.06,t+STEP*14);
-      g.gain.linearRampToValueAtTime(0,t+STEP*16);
-      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=1200;f.Q.value=0.5;
+    notes.forEach(n=>{
+      const o=c.createOscillator();o.type='sine';o.frequency.value=midi2freq(n);
+      const o2=c.createOscillator();o2.type='triangle';o2.frequency.value=midi2freq(n)*1.003;
+      const g=c.createGain();g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.04,t+0.6);
+      g.gain.setValueAtTime(0.04,t+dur-0.8);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=1400;
       o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
-      o.start(t);o.stop(t+STEP*16+0.1);o2.start(t);o2.stop(t+STEP*16+0.1);
+      o.start(t);o.stop(t+dur+0.1);o2.start(t);o2.stop(t+dur+0.1);
     });
-  },[]);
+  },[midi2freq]);
 
-  // Deep kick — soft, round
   const kick=useCallback((t)=>{
     const c=ctxRef.current;if(!c)return;
     const o=c.createOscillator();const g=c.createGain();
-    o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(40,t+0.15);
-    g.gain.setValueAtTime(0.6,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
-    o.connect(g).connect(masterRef.current);o.start(t);o.stop(t+0.45);
+    o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(38,t+0.14);
+    g.gain.setValueAtTime(0.55,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.38);
+    o.connect(g).connect(compRef.current);o.start(t);o.stop(t+0.4);
   },[]);
 
-  // Rimshot — gentle
   const rim=useCallback((t)=>{
     const c=ctxRef.current;if(!c)return;
-    const buf=c.createBuffer(1,c.sampleRate*0.015,c.sampleRate);
+    const buf=c.createBuffer(1,c.sampleRate*0.012,c.sampleRate);
     const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,6);
     const src=c.createBufferSource();src.buffer=buf;
-    const g=c.createGain();g.gain.value=0.12;
-    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=800;bp.Q.value=2;
-    src.connect(bp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.02);
-    const o=c.createOscillator();o.type='triangle';o.frequency.value=300;
-    const og=c.createGain();og.gain.setValueAtTime(0.08,t);og.gain.exponentialRampToValueAtTime(0.001,t+0.03);
-    o.connect(og).connect(masterRef.current);o.start(t);o.stop(t+0.04);
+    const g=c.createGain();g.gain.value=0.1;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=2;
+    src.connect(bp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.015);
   },[]);
 
-  // Soft hat
-  const hat=useCallback((t)=>{
+  const hat=useCallback((t,soft)=>{
     const c=ctxRef.current;if(!c)return;
-    const buf=c.createBuffer(1,c.sampleRate*0.02,c.sampleRate);
-    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,5)*0.3;
+    const dur=soft?0.012:0.025;
+    const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,soft?6:4)*0.2;
     const src=c.createBufferSource();src.buffer=buf;
-    const g=c.createGain();g.gain.value=0.04;
+    const g=c.createGain();g.gain.value=soft?0.03:0.05;
     const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=9000;
-    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+0.025);
+    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+dur);
   },[]);
 
-  // Deep bass note
-  const bass=useCallback((t,note)=>{
+  const bassNote=useCallback((t,note)=>{
     const c=ctxRef.current;if(!c)return;
-    const freq=440*Math.pow(2,(note-69)/12);
-    const o=c.createOscillator();o.type='sine';o.frequency.value=freq;
-    const g=c.createGain();g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*3.5);
-    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=400;
-    o.connect(f).connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP*4);
+    const o=c.createOscillator();o.type='sine';o.frequency.value=midi2freq(note);
+    const g=c.createGain();g.gain.setValueAtTime(0.22,t);g.gain.exponentialRampToValueAtTime(0.001,t+STEP*3.8);
+    o.connect(g).connect(masterRef.current);o.start(t);o.stop(t+STEP*4);
+  },[midi2freq]);
+
+  // Melody note — warm sawtooth with filter
+  const melodyNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();o.type='sawtooth';o.frequency.value=midi2freq(note);
+    const o2=c.createOscillator();o2.type='sawtooth';o2.frequency.value=midi2freq(note)*1.005;
+    const g=c.createGain();g.gain.setValueAtTime(vol||0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=3000;f.Q.value=1;
+    o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // Violin note — triangle wave with vibrato (Vivaldi)
+  const violinNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=midi2freq(note);
+    // Vibrato
+    const lfo=c.createOscillator();lfo.type='sine';lfo.frequency.value=5.5;
+    const lfoG=c.createGain();lfoG.gain.value=3;
+    lfo.connect(lfoG).connect(o.frequency);
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol||0.1,t+0.05);
+    g.gain.setValueAtTime(vol||0.1,t+dur*0.7);
+    g.gain.linearRampToValueAtTime(0,t+dur);
+    o.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);lfo.start(t);lfo.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // Trill (Vivaldi ornament)
+  const trill=useCallback((t,note,dur)=>{
+    const c=ctxRef.current;if(!c)return;
+    const upper=note+2;const steps=Math.floor(dur/0.06);
+    for(let i=0;i<steps;i++){
+      const n=i%2===0?note:upper;
+      violinNote(t+i*0.06,n,0.055,0.06);
+    }
+  },[violinNote]);
+
+  // Arpeggio
+  const arp=useCallback((t,notes)=>{
+    const c=ctxRef.current;if(!c)return;
+    notes.forEach((n,i)=>{
+      const o=c.createOscillator();o.type='triangle';o.frequency.value=midi2freq(n);
+      const g=c.createGain();g.gain.setValueAtTime(0.05,t+i*STEP);g.gain.exponentialRampToValueAtTime(0.001,t+i*STEP+STEP*0.9);
+      o.connect(g).connect(masterRef.current);o.start(t+i*STEP);o.stop(t+i*STEP+STEP);
+    });
+  },[midi2freq]);
+
+  // Stab
+  const stab=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    [440,523.25,659.25].forEach((freq,i)=>{
+      const o=c.createOscillator();o.type='sawtooth';o.frequency.value=freq;o.detune.value=(i-1)*6;
+      const g=c.createGain();g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o.connect(g).connect(masterRef.current);o.start(t+i*0.004);o.stop(t+0.3);
+    });
   },[]);
 
-  // Am progression — warm Weval chords
-  const CHORDS=[[57,60,64,69],[55,60,64,67],[53,57,60,65],[52,55,60,64]]; // Am, C, F, Dm
-  const BASS_LINE=[45,48,53,52]; // bass roots
-  const chordRef=useRef(0);
-
+  // === SCHEDULER ===
   const schedule=useCallback(()=>{
     if(!playingRef.current)return;
     const c=ctxRef.current;
     const now=c.currentTime,elapsed=now-startRef.current;
-    const stepNum=Math.floor(elapsed/STEP);
-    if(stepNum<=stepRef.current){schedRef.current=setTimeout(schedule,8);return}
-    stepRef.current=stepNum;
-    const t=startRef.current+stepNum*STEP;
-    const pos=stepNum%16;
-    const bar=Math.floor(stepNum/16);
+    const sn=Math.floor(elapsed/STEP);
+    if(sn<=stepRef.current){schedRef.current=setTimeout(schedule,6);return}
+    stepRef.current=sn;
+    const t=startRef.current+sn*STEP;
+    const pos=sn%16;
+    const bar=Math.floor(sn/16);
+    const round=Math.min(Math.floor(bar/4),15); // 4 bars per round
 
-    // Kick: 1 and 3 (soft 4-on-floor but sparser)
-    if(pos===0||pos===8)kick(t);
+    // Get current chord
+    const prog=PROG[progIdxRef.current%PROG.length];
+    const chordName=prog[bar%4];
+    const chord=CHORDS[chordName]||CHORDS.Am;
+    const bassRoot=chord[0]-12; // bass octave down
 
-    // Rim: offbeat
-    if(pos===4||pos===12)rim(t);
+    // Filter follows round
+    const intens=(round+1)/16;
+    if(filterRef.current)filterRef.current.frequency.setTargetAtTime(round===9?1200:1500+intens*6500,t,0.2);
 
-    // Hats: gentle shuffle
-    if(pos%2===0&&Math.random()<0.6)hat(t);
+    // Delay opens from round 4
+    if(delayFbRef.current)delayFbRef.current.gain.setTargetAtTime(round>=4?0.12+intens*0.15:0,t,0.2);
 
-    // Pad: every 4 bars, change chord
-    if(pos===0&&bar%4===0){
-      const ci=chordRef.current%CHORDS.length;
-      pad(t,CHORDS[ci]);
-      chordRef.current++;
+    // Round 15 fade
+    if(round>=15&&bar>=15*4+2){
+      if(masterRef.current)masterRef.current.gain.setTargetAtTime(Math.max(0.03,0.45-((bar-15*4-2)/2)*0.1),t,0.3);
     }
 
-    // Bass: every bar on beat 1
-    if(pos===0){
-      const bi=(bar)%BASS_LINE.length;
-      bass(t,BASS_LINE[bi]);
+    // R0+: Kick (soft 4-on-floor)
+    if(round>=0&&round!==9&&(pos===0||pos===8))kick(t);
+    if(round===9&&pos===0)kick(t); // breakdown sparse kick
+
+    // R2+: Rim
+    if(round>=2&&round!==9&&(pos===4||pos===12))rim(t);
+
+    // R4+: Hats
+    if(round>=4&&round!==9){
+      if(pos%2===0&&Math.random()<0.5)hat(t,true);
+      if(pos%4===2&&Math.random()<0.3)hat(t,false);
     }
 
-    schedRef.current=setTimeout(schedule,8);
-  },[kick,rim,hat,pad,bass]);
+    // R0+: Pad (every 4 bars = new chord)
+    if(pos===0&&bar%4===0&&round!==9){
+      pad(t,chord,STEP*16*4);
+      if(round>=10){// R10: layered pad (detuned)
+        const detuned=chord.map(n=>n+0.15);
+        pad(t,detuned,STEP*16*4);
+      }
+    }
+
+    // R2+: Bass
+    if(round>=2&&round!==9&&pos===0){
+      bassNote(t,bassRoot);
+    }
+
+    // R1+: Vivaldi melody
+    if(round>=1&&round!==9){
+      const phrase=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
+      const noteIdx=pos%phrase.length;
+      if(pos%2===0&&phrase[noteIdx]){
+        const n=phrase[noteIdx]+12; // octave up for clarity
+        violinNote(t,n,STEP*1.8,round>=14?0.12:0.08);
+      }
+      if(pos===15)vivaldiIdxRef.current++;
+    }
+
+    // R3+: Vivaldi counter-melody (descending, offset)
+    if(round>=3&&round!==9){
+      const phrase2=VIVALDI_PHRASES[(vivaldiIdxRef.current+4)%VIVALDI_PHRASES.length];
+      if(pos%4===2&&phrase2[pos%phrase2.length]){
+        violinNote(t,phrase2[pos%phrase2.length]+12,STEP*1.5,0.05);
+      }
+    }
+
+    // R5+: Stochastic melody variation (Erdős)
+    if(round>=5&&round!==9){
+      const phrase=WEVAL_PHRASES[melodyIdxRef.current%WEVAL_PHRASES.length];
+      const n=phrase[pos%phrase.length];
+      if(n&&pos%2===0){
+        // Mutation probability increases with round
+        const mutated=Math.random()<(round-5)*0.08?n+(Math.random()<0.5?2:-2):n;
+        melodyNote(t,mutated,STEP*1.5,0.07);
+      }
+      if(pos===15)melodyIdxRef.current++;
+    }
+
+    // R6+: Arpeggio (Weval)
+    if(round>=6&&round!==9&&pos===0&&bar%2===0){
+      arp(t,[...chord,...chord.map(n=>n+12)]);
+    }
+
+    // R7+: Fast Vivaldi runs
+    if(round>=7&&round!==9&&pos>=12){
+      const scalePos=(bar*16+pos)%Am.length;
+      violinNote(t,Am[scalePos]+12,STEP*0.45,0.06);
+    }
+
+    // R8+: Stabs (Daft)
+    if(round>=8&&round!==9&&pos%4===1)stab(t);
+
+    // R9: Breakdown — just melody + binaural (handled by skipping others above)
+    if(round===9){
+      const phrase=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
+      if(pos%2===0&&phrase[pos%phrase.length]){
+        violinNote(t,phrase[pos%phrase.length]+12,STEP*3,0.12);
+      }
+    }
+
+    // R11+: Trills
+    if(round>=11&&round!==9&&pos===8){
+      trill(t,72,STEP*2);
+    }
+
+    // R12+: Probability percussion fills
+    if(round>=12&&round!==9){
+      if(Math.random()<pos/20)rim(t);
+      if(pos>=12&&Math.random()<0.4)hat(t,false);
+    }
+
+    // R13+: Full drop — everything louder
+    if(round>=13&&round!==9){
+      if(pos===0||pos===4||pos===8||pos===12)kick(t);
+    }
+
+    // R14: Melody duet — Weval + Vivaldi simultaneously
+    if(round>=14){
+      const wp=WEVAL_PHRASES[melodyIdxRef.current%WEVAL_PHRASES.length];
+      const vp=VIVALDI_PHRASES[vivaldiIdxRef.current%VIVALDI_PHRASES.length];
+      if(wp[pos%wp.length])melodyNote(t,wp[pos%wp.length],STEP*1.2,0.09);
+      if(vp[pos%vp.length])violinNote(t,vp[pos%vp.length]+12,STEP*1.2,0.09);
+    }
+
+    // Progress chord progression
+    if(pos===0&&bar%16===0)progIdxRef.current++;
+
+    schedRef.current=setTimeout(schedule,6);
+    return{round,pos,bar,intens};
+  },[kick,rim,hat,pad,bassNote,melodyNote,violinNote,trill,arp,stab,midi2freq]);
 
   const toggle=useCallback(()=>{
     init();
-    const c=ctxRef.current;
-    if(c.state==='suspended')c.resume();
+    const c=ctxRef.current;if(c.state==='suspended')c.resume();
     if(!playingRef.current){
       playingRef.current=true;
       startRef.current=c.currentTime+0.05;
       stepRef.current=-1;
-      chordRef.current=0;
-      schedule();
-      return true;
+      melodyIdxRef.current=0;vivaldiIdxRef.current=0;chordIdxRef.current=0;progIdxRef.current=0;
+      schedule();return true;
     }else{
       playingRef.current=false;
-      if(schedRef.current)clearTimeout(schedRef.current);
-      return false;
+      if(schedRef.current)clearTimeout(schedRef.current);return false;
     }
   },[init,schedule]);
 
-  return{toggle,playingRef};
+  const stop=useCallback(()=>{
+    playingRef.current=false;
+    if(schedRef.current)clearTimeout(schedRef.current);
+  },[]);
+
+  return{toggle,stop,setBinaural,ctxRef,startRef,stepRef,playingRef};
 }
 
 // ========================================================================
-// DATA
+// CLAIMS DATA (same as before)
 // ========================================================================
-
 const CLAIMS=[
-  {
-    id:'elevator',ground:'GROUND 12',type:'DISCRETIONARY',
-    text:'Caused damage to the access control panel of the communal elevator on 19 March 2026, rendering it inoperable.',
+  {id:'elevator',ground:'GROUND 12',type:'DISCRETIONARY',
+    text:'Caused damage to the access control panel of the communal elevator on 19 March 2026.',
     clauses:'Breach of Clauses 19.4, 19.6, and 46.1',
-    context:'That same access control panel caused me 30 minutes of stress EVERY DAY. Malfunctioning, slow, unreliable. For a person with ADHD navigating a building with two dogs, one a 4-month puppy, it was a daily obstacle. And the same building nearly killed both my dogs.',
+    context:'That panel caused me 30 min stress EVERY DAY. Same building nearly killed both my dogs.',
     showDogs:true,
-    arena:{
-      radix:'The elevator was repaired. What is the ongoing harm? Is permanent loss of home proportionate to temporary loss of elevator? And what about the daily nuisance the access control caused the tenant?',
-      erdos:'Crisis \u2192 distress \u2192 damage. Remove the crisis, the damage does not occur. The device itself was a chronic stressor \u2014 30 min daily for a tenant with ADHD.',
-      zoltan:'That panel caused me 30 minutes of stress every single day. And the same building almost killed my dogs. I was in crisis. I was trying to survive that day.',
-      daft:'"Rendering it inoperable" is not "permanently destroyed." Temporary damage during a crisis is not vandalism. Where is the managing agent\'s letter about nearly killing two dogs?',
-    }
-  },
-  {
-    id:'drugs',ground:'GROUND 12',type:'DISCRETIONARY',
-    text:'Police confiscated three bags of illegal drugs stored at the Property on 19 March 2026.',
-    clauses:'Used the Property for an illegal purpose',
-    arena:{
-      radix:'Personal possession during a mental health crisis, no conviction, no supply charge, no prior history \u2014 how reasonable is eviction?',
-      erdos:'The letter doesn\'t specify: what substance, what quantity, what intent. Ground 14(b) requires a conviction. They haven\'t cited 14(b). That tells you something.',
-      zoltan:'I was self-medicating during a period where the NHS system was failing me. I am not a drug dealer. I do not have a criminal record.',
-      daft:'The letter uses "illegal" three times. But never "charged," "convicted," or "supply." The absence is the signal.',
-    }
-  },
-  {
-    id:'assault',ground:'GROUND 14',type:'DISCRETIONARY',
-    text:'Violent behaviour including assaulting friend and sister on 19 March 2026. Neighbours fearful. Sister took refuge in neighbour\'s flat.',
-    clauses:'Nuisance / anti-social behaviour',
-    arena:{
-      radix:'Ground 14(b) requires a conviction \u2014 not cited. They\'re on 14(a) only. They likely don\'t have a conviction.',
-      erdos:'"Allegations made by the tenant\'s relative." Allegations, not charges. The police outcome is conspicuously absent from this letter.',
-      zoltan:'On 19 March I was in a mental health crisis. What happened was the crisis \u2014 not violence. I was not charged. I was sectioned.',
-      daft:'If there was a conviction, Russell-Cooke would have cited it. They didn\'t. Read the silence.',
-    }
-  },
-  {
-    id:'keys',ground:'GROUND 12 & 14',type:'DISCRETIONARY',
-    text:'Gave keys to an unknown member of the public, requiring additional security.',
-    clauses:'Breach of tenancy / nuisance',
-    arena:{
-      radix:'The cause was not recklessness \u2014 the tenant was being removed from his home with two dogs inside. The system created the emergency.',
-      erdos:'A person being taken away gives keys so their dogs can be fed. The probability a judge finds this unreasonable approaches zero.',
-      zoltan:'Pixel and Mad Max were inside. What was I supposed to do \u2014 let them starve? That is not a breach. That is protecting my dogs.',
-      daft:'Reframe: "someone willing to care for two dogs when their owner was detained during a mental health crisis." Same event. Different story.',
-    }
-  },
-  {
-    id:'adr',ground:'PROCEDURAL',type:'PRE-ACTION',
-    text:'"Our clients do not consider that any form of Alternative Dispute Resolution process is currently relevant."',
-    clauses:'Pre-Action Protocol compliance',
-    arena:{
-      radix:'A judge will ask: did the landlord even try to talk to the tenant in the mental health ward? Per their own letter \u2014 no.',
-      erdos:'Explicitly refusing ADR in writing while the tenant is detained is an evidential gift to the defence.',
-      zoltan:'They could have written to the ward. They chose solicitors. That tells you what this is about.',
-      daft:'The landlord\'s solicitors just told a court \u2014 in advance, in writing \u2014 they don\'t want resolution. Judges notice.',
-    }
-  }
+    arena:{radix:'Damage remedied. Is permanent home loss proportionate to temporary elevator loss?',
+      erdos:'Crisis\u2192distress\u2192damage. 30 min daily stress from the device itself.',
+      zoltan:'I was in crisis. That panel caused me 30 min stress daily. Same building almost killed my dogs.',
+      daft:'"Rendering inoperable" \u2260 "permanently destroyed." Where is THEIR letter about nearly killing two dogs?'}},
+  {id:'drugs',ground:'GROUND 12',type:'DISCRETIONARY',
+    text:'Police confiscated three bags of illegal drugs on 19 March 2026.',clauses:'Illegal purpose',
+    arena:{radix:'No conviction, no supply charge, no prior history. How reasonable is eviction?',
+      erdos:'No substance specified, no quantity, no intent. They haven\'t cited 14(b). That tells you something.',
+      zoltan:'I was self-medicating. The NHS was failing me. I am not a dealer.',
+      daft:'"Illegal" three times. Never "charged" or "convicted." Listen to the silence.'}},
+  {id:'assault',ground:'GROUND 14',type:'DISCRETIONARY',
+    text:'Violent behaviour including assaulting friend and sister. Neighbours fearful.',clauses:'Nuisance',
+    arena:{radix:'14(b) requires conviction \u2014 not cited. They\'re on 14(a) only.',
+      erdos:'Allegations, not charges. Police outcome conspicuously absent.',
+      zoltan:'Mental health crisis. Not violence. Not charged. Sectioned.',
+      daft:'If there was a conviction, they\'d have cited it. They didn\'t.'}},
+  {id:'keys',ground:'GROUND 12 & 14',type:'DISCRETIONARY',
+    text:'Gave keys to unknown member of public.',clauses:'Breach / nuisance',
+    arena:{radix:'Tenant removed from home with two dogs inside. System created the emergency.',
+      erdos:'Person gives keys so dogs can be fed. Probability judge finds this unreasonable \u2248 zero.',
+      zoltan:'Pixel and Mad Max were inside. Let them starve? That\'s protecting my dogs.',
+      daft:'Reframe: "someone caring for two dogs when owner detained during crisis."'}},
+  {id:'adr',ground:'PROCEDURAL',type:'PRE-ACTION',
+    text:'"Our clients do not consider ADR currently relevant."',clauses:'Pre-Action Protocol',
+    arena:{radix:'Judge will ask: did landlord try talking to tenant in mental health ward? Answer: no.',
+      erdos:'Refusing ADR in writing while tenant is detained = evidential gift to defence.',
+      zoltan:'They chose solicitors over conversation. That tells you everything.',
+      daft:'Landlord told a court in advance they don\'t want resolution. Judges notice.'}},
 ];
-
 const ACTIONS=[
   {text:'Call Shelter',phone:'0808 800 4444',urg:'NOW',href:'tel:08088004444'},
-  {text:'Tell ward staff about this letter',urg:'NOW'},
+  {text:'Tell ward staff',urg:'NOW'},
   {text:'Text "legalaid" to 80010',phone:'80010',urg:'NOW',href:'sms:80010?body=legalaid'},
-  {text:'Request HLPAS \u2014 free legal rep',urg:'WEEK'},
-  {text:'Ask psychiatrist for MH crisis letter',urg:'WEEK'},
-  {text:'Brighton housing team',phone:'01273 294400',urg:'WEEK',href:'tel:01onal01273294400'},
-  {text:'Find police outcome from 19 March',urg:'WEEK'},
-  {text:'DO NOT contact landlord directly',urg:'ALWAYS'},
+  {text:'Request HLPAS',urg:'WEEK'},
+  {text:'Ask psychiatrist for MH letter',urg:'WEEK'},
+  {text:'Brighton housing',phone:'01273 294400',urg:'WEEK',href:'tel:01273294400'},
+  {text:'Police outcome from 19 March',urg:'WEEK'},
+  {text:'DO NOT contact landlord',urg:'ALWAYS'},
 ];
-
 const DEFS=[
-  'Grounds 12 & 14 are DISCRETIONARY \u2014 court evaluates reasonableness',
-  'Mental health crisis on 19 March \u2014 currently sectioned',
-  'Equality Act 2010 \u2014 disability discrimination defence',
-  'Article 8 ECHR \u2014 proportionality of eviction',
-  'No criminal charges or convictions mentioned',
-  'Landlord refused ADR \u2014 Pre-Action Protocol issue',
-  'Keys given to protect dogs during emergency',
-  'Court can make suspended order instead',
+  'Grounds 12 & 14 = DISCRETIONARY','MH crisis + currently sectioned',
+  'Equality Act 2010 \u2014 disability','Article 8 ECHR \u2014 proportionality',
+  'No charges or convictions','Landlord refused ADR','Keys = protecting dogs','Suspended order possible',
 ];
 
 // ========================================================================
 // APP
 // ========================================================================
-
 function App(){
-  const audio=useRooftopAudio();
+  const [binMode,setBinMode]=useState(0);
+  const engine=useRooftopEngine(binMode);
   const [playing,setPlaying]=useState(false);
+  const [round,setRound]=useState(0);
   const [open,setOpen]=useState({});
   const [persona,setPersona]=useState({});
   const [answers,setAnswers]=useState({});
   const [checked,setChecked]=useState(new Set());
 
-  const toggleCard=useCallback((id)=>setOpen(p=>({...p,[id]:!p[id]})),[]);
-  const toggleP=useCallback((cid,p)=>setPersona(prev=>({...prev,[cid]:prev[cid]===p?null:p})),[]);
-  const setAns=useCallback((id,v)=>setAnswers(p=>({...p,[id]:v})),[]);
-  const toggleCheck=useCallback((i)=>setChecked(p=>{const n=new Set(p);n.has(i)?n.delete(i):n.add(i);return n}),[]);
+  // Poll round from engine
+  useEffect(()=>{
+    if(!playing)return;
+    const iv=setInterval(()=>{
+      if(!engine.ctxRef.current||!engine.playingRef.current)return;
+      const elapsed=engine.ctxRef.current.currentTime-engine.startRef.current;
+      const bar=Math.floor(elapsed/(STEP*16));
+      const r=Math.min(Math.floor(bar/4),15);
+      setRound(r);
+    },200);
+    return()=>clearInterval(iv);
+  },[playing,engine]);
 
-  const doExport=useCallback(()=>{
-    let t='SECTION 8 DEFENCE NOTES \u2014 Zolt\u00e1n Erdos\n'+new Date().toISOString().slice(0,10)+'\n\n';
-    CLAIMS.forEach(cl=>{t+=cl.ground+': '+cl.text+'\nMY RESPONSE: '+(answers[cl.id]||'[pending]')+'\n\n'});
-    t+='\nDEFENCES:\n';DEFS.forEach((d,i)=>t+=(i+1)+'. '+d+'\n');
-    t+='\nACTIONS:\n';ACTIONS.forEach((a,i)=>t+=(checked.has(i)?'[x]':'[ ]')+' '+a.text+(a.phone?' '+a.phone:'')+'\n');
-    const blob=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=u;a.download='section-8-defence.txt';a.click();URL.revokeObjectURL(u);
-  },[answers,checked]);
+  const activePersona=ROUNDS[round]?.p||'weval';
 
   return <div className="app">
     <div className="header">
       <h1>ROOFTOP PARADISE</h1>
-      <div className="sub">The Section 8 Arena</div>
+      <div className="sub">The Section 8 Arena &mdash; 16 Rounds</div>
       <div className="place">42 MIGHELL STREET &bull; BRIGHTON</div>
     </div>
 
-    <div className="music-bar">
-      <div className={`play-btn${playing?' playing':''}`} onClick={()=>{
-        const p=audio.toggle();setPlaying(p);
-      }}>
+    <div className="transport">
+      <div className={`play-btn${playing?' on':''}`} onClick={()=>{const p=engine.toggle();setPlaying(p);if(!p)setRound(0);}}>
         {playing?'\u23F8':'\u25B6'}
       </div>
-      <div className="music-label">{playing?'ROOFTOP VIBES \u2022 108 BPM \u2022 BINAURAL':'TAP TO PLAY'}</div>
+      <div className="transport-info">
+        {playing?`ROUND ${round+1}/16 \u2022 ${ROUNDS[round]?.adds} \u2022 108 BPM`:'TAP TO PLAY \u2022 WEVAL \u00D7 VIVALDI \u00D7 ARENA'}
+      </div>
     </div>
+
+    <div className="rounds">
+      {Array.from({length:16},(_,i)=><div key={i} className={`rdot${i<round?' done':''}${i===round?' now':''}`}/>)}
+    </div>
+
+    <div className="personas-strip">
+      {PERSONAS.map(p=><span key={p.id} className={`ps ${p.id}${activePersona===p.id?' active':''}`}>
+        {p.icon} {p.name}
+      </span>)}
+    </div>
+
+    {/* Binaural chooser */}
+    <div className="bin-label">BINAURAL BEATS</div>
+    <div className="bin-chooser">
+      {BINAURAL_MODES.map((bm,i)=>
+        <div key={i} className={`bin-btn${binMode===i?' sel':''}`} onClick={()=>{setBinMode(i);engine.setBinaural(i);}}>
+          {bm.name}<br/><span style={{fontSize:'0.5rem',opacity:0.5}}>{bm.desc}</span>
+        </div>
+      )}
+    </div>
+
+    {/* Annotation for current round */}
+    {playing && <div className="anno">
+      <div className="who" style={{color:PERSONAS.find(p=>p.id===activePersona)?.color||'var(--warm)'}}>
+        {PERSONAS.find(p=>p.id===activePersona)?.icon} {PERSONAS.find(p=>p.id===activePersona)?.name} &mdash; Round {round+1}
+      </div>
+      {ROUNDS[round]?.note}
+    </div>}
 
     <div className="status">
       <span className="pill warn">GROUNDS 12 & 14</span>
       <span className="pill ok">DISCRETIONARY</span>
-      <span className="pill gold">COURT: 31 MAR</span>
+      <span className="pill gold">31 MAR</span>
       <span className="pill warn">SECTIONED</span>
     </div>
 
     <div className="section-title">THEIR CLAIMS</div>
-
     {CLAIMS.map(cl=>{
-      const isOpen=open[cl.id];
-      const selP=persona[cl.id];
+      const isOpen=open[cl.id];const selP=persona[cl.id];
       return <div key={cl.id} className={`card${isOpen?' open':''}`}>
-        <div className="card-tap" onClick={()=>toggleCard(cl.id)}>
-          <div>
-            <div className="card-ground">{cl.ground}</div>
-            <div style={{fontSize:'0.7rem',color:'var(--text)',marginTop:'2px',maxWidth:'250px'}}>{cl.text.slice(0,60)}...</div>
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+        <div className="card-tap" onClick={()=>setOpen(p=>({...p,[cl.id]:!p[cl.id]}))}>
+          <div><div className="card-ground">{cl.ground}</div>
+            <div style={{fontSize:'0.7rem',color:'var(--text)',marginTop:'2px'}}>{cl.text.slice(0,55)}...</div></div>
+          <div style={{display:'flex',alignItems:'center',gap:'0.4rem'}}>
             <span className="card-badge">{cl.type}</span>
-            <span className="card-chevron">{isOpen?'\u25B2':'\u25BC'}</span>
-          </div>
+            <span className="card-chev">{isOpen?'\u25B2':'\u25BC'}</span></div>
         </div>
-
         {isOpen && <div className="card-body">
           <strong>They allege:</strong> {cl.text}
-          <div className="card-clauses">{cl.clauses}</div>
+          <div className="card-clauses" style={{fontSize:'0.65rem',color:'rgba(255,255,255,.25)',marginTop:'0.3rem'}}>{cl.clauses}</div>
           {cl.context && <div className="card-ctx">{cl.context}</div>}
-
           {cl.showDogs && <div className="dog-photo">
-            <img src="/content/PXL_20260120_131042766.jpg" alt="Pixel and Mad Max"
-              onError={e=>{e.target.style.display='none'}}/>
-            <div className="cap">Pixel & Mad Max — the dogs the building nearly killed</div>
-          </div>}
-
-          <div className="personas">
-            {[['radix','RADIX'],['erdos','ERD\u0150S'],['zoltan','ZOLT\u00C1N'],['daft','DAFT PUNK']].map(([k,label])=>
-              <div key={k} className={`p-btn ${k}${selP===k?' sel':''}`} onClick={()=>toggleP(cl.id,k)}>{label}</div>
-            )}
+            <img src="/content/PXL_20260120_131042766.jpg" alt="Pixel and Mad Max" onError={e=>{e.target.style.display='none'}}/>
+            <div className="cap">Pixel & Mad Max</div></div>}
+          <div className="p-btns">
+            {['radix','erdos','zoltan','daft'].map(k=>
+              <div key={k} className={`pb ${k}${selP===k?' sel':''}`} onClick={()=>setPersona(p=>({...p,[cl.id]:p[cl.id]===k?null:k}))}>{k==='erdos'?'ERD\u0150S':k==='daft'?'DAFT':k.toUpperCase()}</div>)}
           </div>
-
-          {selP && cl.arena[selP] && <div className="p-resp">
-            <div className="who" style={{color:selP==='radix'?'var(--rose)':selP==='erdos'?'var(--lavender)':selP==='zoltan'?'var(--teal)':'var(--sunset)'}}>
-              {selP==='erdos'?'ERD\u0150S':selP==='daft'?'DAFT PUNK':selP.toUpperCase()}
-            </div>
-            {cl.arena[selP]}
-          </div>}
-
-          <div className="answer">
-            <label>YOUR WORDS</label>
-            <textarea value={answers[cl.id]||''} onChange={e=>setAns(cl.id,e.target.value)}
-              placeholder="What actually happened? Write your side..."/>
-          </div>
+          {selP&&cl.arena[selP]&&<div className="p-resp">
+            <div className="who" style={{color:selP==='radix'?'var(--rose)':selP==='erdos'?'var(--lavender)':selP==='zoltan'?'var(--teal)':'var(--sunset)'}}>{selP.toUpperCase()}</div>
+            {cl.arena[selP]}</div>}
+          <div className="answer"><label>YOUR WORDS</label>
+            <textarea value={answers[cl.id]||''} onChange={e=>setAnswers(p=>({...p,[cl.id]:e.target.value}))} placeholder="What actually happened?"/></div>
         </div>}
       </div>;
     })}
 
-    <div className="section-title">YOUR DEFENCES</div>
-    <div className="def-card">
-      {DEFS.map((d,i)=><div key={i} className="def-item"><span className="def-num">{i+1}.</span>{d}</div>)}
-    </div>
+    <div className="section-title">DEFENCES</div>
+    <div className="def-card">{DEFS.map((d,i)=><div key={i} className="def-item"><span className="def-num">{i+1}.</span>{d}</div>)}</div>
 
     <div className="section-title">DO THIS NOW</div>
     {ACTIONS.map((a,i)=>
-      <div key={i} className={`act${checked.has(i)?' done':''}`} onClick={()=>toggleCheck(i)}>
+      <div key={i} className={`act${checked.has(i)?' done':''}`} onClick={()=>setChecked(p=>{const n=new Set(p);n.has(i)?n.delete(i):n.add(i);return n})}>
         <div className="dot">{checked.has(i)?'\u2713':''}</div>
-        <div className="act-text">
-          <span className="urg">[{a.urg}]</span>{' '}
+        <div className="act-text"><span className="urg">[{a.urg}]</span>{' '}
           {a.href?<a href={a.href} style={{color:'inherit',textDecoration:'none'}} onClick={e=>e.stopPropagation()}>
-            {a.text}{a.phone && <span className="phone"> {a.phone}</span>}
-          </a>:<span>{a.text}{a.phone && <span className="phone"> {a.phone}</span>}</span>}
-        </div>
-      </div>
-    )}
+            {a.text}{a.phone&&<span className="phone"> {a.phone}</span>}</a>
+          :<span>{a.text}{a.phone&&<span className="phone"> {a.phone}</span>}</span>}</div>
+      </div>)}
 
-    <button className="export-btn" onClick={doExport}>EXPORT DEFENCE NOTES</button>
+    <button className="export-btn" onClick={()=>{
+      let t='SECTION 8 DEFENCE \u2014 Zolt\u00e1n Erdos\n'+new Date().toISOString().slice(0,10)+'\n\n';
+      CLAIMS.forEach(c=>{t+=c.ground+': '+c.text+'\nRESPONSE: '+(answers[c.id]||'[pending]')+'\n\n'});
+      t+='DEFENCES:\n';DEFS.forEach((d,i)=>t+=(i+1)+'. '+d+'\n');
+      t+='\nACTIONS:\n';ACTIONS.forEach((a,i)=>t+=(checked.has(i)?'[x]':'[ ]')+' '+a.text+'\n');
+      const blob=new Blob([t],{type:'text/plain'});const u=URL.createObjectURL(blob);
+      const el=document.createElement('a');el.href=u;el.download='section-8-defence.txt';el.click();
+    }}>EXPORT DEFENCE NOTES</button>
 
     <div className="footer">
       <div className="tag">Discretionary means discretionary.<br/>The court will hear your side.</div>
-      <div className="cr">MATH ARENA &bull; SPIKE.LAND &bull; ROOFTOP PARADISE &bull; 2026</div>
+      <div className="cr">WEVAL \u00D7 VIVALDI \u00D7 MATH ARENA &bull; ROOFTOP PARADISE &bull; 2026</div>
       <div className="warn">Not legal advice. Call Shelter: 0808 800 4444</div>
     </div>
   </div>;
