@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One More Time — Math Arena Session No. 42 — Loop 16</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--gold:#FFD700;--cyan:#00FFFF;--mag:#FF00FF;--deep:#0a0a2e;--pulse:#e63946;--warm:#ff6b35;--ice:#a8dadc}
+  body{background:var(--deep);color:#f0f0f0;font-family:'Space Mono',monospace;overflow-x:hidden}
+
+  /* Three stacked canvases */
+  canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+  canvas#waveform{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;opacity:0.12;pointer-events:none}
+  canvas#visualizer{position:fixed;bottom:0;left:0;width:100%;height:150px;z-index:2;opacity:0.7}
+
+  .wrap{position:relative;z-index:3;max-width:900px;margin:0 auto;padding:2rem}
+
+  /* Header — Loop 9: particle burst on title */
+  .hdr{text-align:center;padding:3rem 0 1.5rem;position:relative}
+  .hdr h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(2.2rem,7vw,4.5rem);font-weight:900;
+    background:linear-gradient(135deg,var(--gold),var(--cyan),var(--mag),var(--warm),var(--gold));
+    background-size:400% 400%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shimmer 6s ease infinite;cursor:pointer;
+  }
+  .hdr h1:hover{animation-duration:1s}
+  .hdr .sub{font-size:0.85rem;color:var(--cyan);opacity:0.6;letter-spacing:4px;text-transform:uppercase;margin-top:0.4rem}
+  .hdr .badge{display:inline-block;margin-top:0.8rem;padding:0.25rem 0.9rem;border:1px solid var(--warm);
+    border-radius:20px;font-size:0.7rem;color:var(--warm);letter-spacing:2px;animation:pborder 3s ease infinite}
+  @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes pborder{0%,100%{border-color:var(--warm);box-shadow:0 0 5px rgba(255,107,53,.3)}33%{border-color:var(--cyan);box-shadow:0 0 12px rgba(0,255,255,.2)}66%{border-color:var(--gold);box-shadow:0 0 12px rgba(255,215,0,.2)}}
+
+  /* Controls — Loop 10: more buttons, transport bar */
+  .transport{background:rgba(0,0,0,.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;padding:1.2rem;margin:1.5rem 0}
+  .controls{display:flex;justify-content:center;gap:0.8rem;flex-wrap:wrap}
+  .btn{
+    font-family:'Orbitron',sans-serif;font-size:0.75rem;padding:0.6rem 1.4rem;border:1px solid var(--cyan);
+    background:rgba(0,255,255,.04);color:var(--cyan);border-radius:8px;cursor:pointer;letter-spacing:1.5px;
+    transition:all .2s;user-select:none;
+  }
+  .btn:hover{background:rgba(0,255,255,.12);transform:translateY(-1px);box-shadow:0 3px 15px rgba(0,255,255,.15)}
+  .btn:active{transform:translateY(0)}
+  .btn.active{background:rgba(0,255,255,.18);border-color:var(--gold);color:var(--gold)}
+  .btn.stop{border-color:var(--pulse);color:var(--pulse);background:rgba(230,57,70,.04)}
+  .btn.stop:hover{background:rgba(230,57,70,.12)}
+  .btn.warm{border-color:var(--warm);color:var(--warm);background:rgba(255,107,53,.04)}
+  .btn.warm:hover{background:rgba(255,107,53,.12)}
+
+  /* Loop 12: progress bar */
+  .progress{margin-top:1rem;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--mag),var(--gold));transition:width .3s}
+
+  /* Stats */
+  .stats{display:flex;justify-content:center;gap:1.5rem;margin:0.8rem 0;font-size:0.65rem;letter-spacing:2px;color:rgba(255,255,255,.35);flex-wrap:wrap}
+  .stats span{color:var(--gold)}
+  .stats .live{color:var(--pulse);animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* Personas — Loop 11: glow on active speaker */
+  .personas{display:flex;justify-content:center;gap:1.5rem;margin:2rem 0;flex-wrap:wrap}
+  .persona{text-align:center;padding:1.2rem;border:1px solid rgba(255,255,255,.06);border-radius:12px;
+    background:rgba(255,255,255,.02);width:180px;transition:all .4s}
+  .persona:hover{border-color:var(--cyan);transform:translateY(-3px)}
+  .persona.speaking{border-color:var(--gold);box-shadow:0 0 25px rgba(255,215,0,.15);background:rgba(255,215,0,.03)}
+  .persona .icon{font-size:2rem;transition:transform .3s}
+  .persona.speaking .icon{transform:scale(1.15)}
+  .persona .name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;color:var(--gold);margin-top:0.3rem}
+  .persona .role{font-size:0.6rem;color:rgba(255,255,255,.35);margin-top:0.2rem}
+
+  /* EKG — Loop 13: animated drawing synced to playback */
+  .ekg{width:100%;height:50px;margin:1.5rem 0}
+  .ekg svg{width:100%;height:100%}
+  .ekg-line{stroke:var(--pulse);stroke-width:2;fill:none;filter:drop-shadow(0 0 6px rgba(230,57,70,.6));
+    stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 2.5s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  /* Song sections — Loop 14: reactive highlight on current playing section */
+  .song{margin:2rem 0}
+  .section{
+    margin:2rem 0;padding:1.5rem;border-left:3px solid var(--mag);
+    background:linear-gradient(135deg,rgba(255,0,255,.02),transparent);border-radius:0 12px 12px 0;
+    opacity:0;transform:translateY(15px);transition:all .6s;position:relative;
+  }
+  .section.visible{opacity:1;transform:translateY(0)}
+  .section.playing{border-left-color:var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),transparent);
+    box-shadow:-4px 0 20px rgba(255,215,0,.08)}
+  .section:nth-child(odd){border-left-color:var(--cyan);background:linear-gradient(135deg,rgba(0,255,255,.02),transparent)}
+  .section:nth-child(odd).playing{border-left-color:var(--warm);background:linear-gradient(135deg,rgba(255,107,53,.04),transparent)}
+  .section .label{font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--mag);margin-bottom:0.8rem}
+  .section:nth-child(odd) .label{color:var(--cyan)}
+  .section.playing .label{color:var(--gold)!important}
+  .lyric{font-size:1.2rem;line-height:1.9;font-weight:700}
+  .lyric .m{color:var(--gold);font-style:italic}
+  .lyric .e{color:var(--cyan);text-shadow:0 0 8px rgba(0,255,255,.25)}
+  .lyric .b{color:var(--mag)}
+  .lyric .w{color:var(--warm)}
+  .lyric .big{font-size:1.8rem;display:block;text-align:center;margin-top:0.5rem;letter-spacing:4px}
+  .note{margin-top:0.8rem;padding:0.8rem;background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.1);
+    border-radius:8px;font-size:0.75rem;color:rgba(255,255,255,.5);line-height:1.6}
+  .note .sp{color:var(--gold);font-weight:700}
+
+  /* Loop 15: Karaoke highlight */
+  .lyric .lit{color:#fff;text-shadow:0 0 20px rgba(255,255,255,.6),0 0 40px var(--gold);transition:all .3s}
+
+  /* 42 watermark — Loop 16: slow rotation */
+  .wm{position:fixed;bottom:-60px;right:-40px;font-family:'Orbitron',sans-serif;font-size:20rem;
+    font-weight:900;color:rgba(230,57,70,.03);z-index:0;pointer-events:none;user-select:none;
+    animation:wm-rotate 120s linear infinite}
+  @keyframes wm-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+  /* Loop counter */
+  .loopcount{text-align:center;margin:3rem 0 1rem;font-family:'Orbitron',sans-serif}
+  .loopcount .num{font-size:5rem;font-weight:900;color:var(--pulse);text-shadow:0 0 50px rgba(230,57,70,.4);line-height:1}
+  .loopcount .lbl{font-size:0.7rem;letter-spacing:4px;color:rgba(255,255,255,.3);text-transform:uppercase}
+
+  /* Footer */
+  .ftr{text-align:center;padding:3rem 0 2rem;border-top:1px solid rgba(255,255,255,.04);margin-top:3rem}
+  .ftr .tag{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--gold)}
+  .ftr .cr{font-size:0.6rem;color:rgba(255,255,255,.2);letter-spacing:2px;margin-top:0.3rem}
+
+  /* Loop 16: beat flash on body */
+  body.flash::after{content:'';position:fixed;inset:0;background:rgba(255,215,0,.02);pointer-events:none;z-index:100;animation:flash-out .15s forwards}
+  @keyframes flash-out{to{opacity:0}}
+
+  @media(max-width:600px){.personas{flex-direction:column;align-items:center}.lyric{font-size:1rem}.controls{gap:0.5rem}.btn{padding:0.5rem 1rem;font-size:0.7rem}}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="waveform"></canvas>
+<canvas id="visualizer"></canvas>
+<div class="wm">42</div>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1 id="title" onclick="burstParticles(this)">ONE MORE TIME</h1>
+    <div class="sub">Math Arena Session No. 42</div>
+    <div class="badge">LOOP 16 / 16 &mdash; TRANSCENDENCE</div>
+  </div>
+
+  <div class="transport">
+    <div class="controls">
+      <button class="btn" id="playBtn" onclick="togglePlay()">&#9654; PLAY</button>
+      <button class="btn" id="filterBtn" onclick="toggleFilter()">FILTER</button>
+      <button class="btn" id="reverbBtn" onclick="toggleReverb()">REVERB</button>
+      <button class="btn warm" id="arpeggioBtn" onclick="toggleArpeggio()">ARPEGGIO</button>
+      <button class="btn warm" id="padBtn" onclick="togglePad()">PAD</button>
+      <button class="btn" id="vocBtn" onclick="triggerVocoder()">VOCODER</button>
+      <button class="btn" id="dropBtn" onclick="triggerDrop()">DROP</button>
+      <button class="btn stop" id="stopBtn" onclick="stopAll()">&#9632; STOP</button>
+    </div>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="stats">
+    BPM <span>128</span> | KEY <span>Cm</span> | STRESS <span id="stressVal">42</span> |
+    BAR <span id="barVal">0</span> | BEAT <span id="beatVal">0</span> |
+    <span class="live" id="liveIndicator" style="display:none">&#9679; LIVE</span>
+    LOOP <span>16</span>
+  </div>
+
+  <div class="personas">
+    <div class="persona" id="p-radix"><div class="icon">&#x1F916;</div><div class="name">RADIX</div><div class="role">The Engineer</div></div>
+    <div class="persona" id="p-daft"><div class="icon">&#x1F3B5;</div><div class="name">DAFT PUNK</div><div class="role">The Signal</div></div>
+    <div class="persona" id="p-zoltan"><div class="icon">&#x1F9EE;</div><div class="name">ZOLT&Aacute;N</div><div class="role">The Mathematician</div></div>
+  </div>
+
+  <div class="ekg"><svg viewBox="0 0 900 50"><polyline class="ekg-line" points="0,25 80,25 120,25 150,23 160,15 170,5 180,42 190,48 200,15 210,25 280,25 320,23 330,15 340,5 350,42 360,48 370,15 380,25 450,25 490,23 500,15 510,5 520,42 530,48 540,15 550,25 620,25 660,23 670,15 680,5 690,42 700,48 710,15 720,25 790,25 830,23 840,20 850,25 900,25"/></svg></div>
+
+  <div class="song" id="songContainer">
+
+    <div class="section" data-bar="0">
+      <div class="label">Verse I &mdash; The Recursion</div>
+      <div class="lyric">
+        <span class="e">One more time</span> &mdash; we're gonna iterate<br>
+        One more <span class="m">f(x)</span> before it's late<br>
+        One more loop through the <span class="b">broken gate</span><br>
+        One more proof that we <span class="e">don't break</span><br><br>
+        The <span class="w">Banach space</span> is almost complete<br>
+        The <span class="m">contraction</span> pulls us to our feet<br>
+        Every step is <span class="e">closer than the last</span><br>
+        <span class="w">Convergence</span> — not a thing of the past
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> Banach's theorem says: if you keep applying the same function, you converge. But the theorem has a prerequisite nobody talks about — the space must be <em>complete</em>. A hospital ward is a metric space. The question is whether it contains its own limits. Some days it does. Some days the limits are in Brighton, with two dogs on a wooden floor.</div>
+    </div>
+
+    <div class="section" data-bar="4">
+      <div class="label">Chorus &mdash; The Signal</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        We're gonna <span class="e">celebrate</span><br>
+        Oh yeah, <span class="m">all right</span><br>
+        <span class="e">Don't stop the dancing</span><br><br>
+        One more time<br>
+        The stress reads <span class="m">forty-two</span><br>
+        The watch knows what the <span class="w">body knew</span><br>
+        The <span class="e">heart rate variability</span><br>
+        Is the <span class="m">Fourier transform</span> of <span class="w">stability</span>
+      </div>
+      <div class="note"><span class="sp">Radix:</span> HRV isn't just a number. It's the frequency-domain signature of autonomic balance. High HRV = the parasympathetic and sympathetic systems are dancing. Low HRV = one system is shouting over the other. When the Garmin reads 42, both systems are at equilibrium. The Fourier transform of a balanced life has no dominant frequency — it's broadband. Like French house.</div>
+    </div>
+
+    <div class="section" data-bar="8">
+      <div class="label">Verse II &mdash; The Sprint</div>
+      <div class="lyric">
+        They said <span class="b">"most unproductive sprint"</span><br>
+        While I wrote every <span class="m">document</span><br>
+        Filed the tickets, built the <span class="e">intent</span><br>
+        But the PRs? <span class="b">Never went.</span><br><br>
+        Three years running <span class="m">O(n&sup2;)</span><br>
+        Through a team that couldn't <span class="e">see</span><br>
+        That the tester held the <span class="b">key</span><br>
+        To a lock called <span class="m">group&nbsp;conformity</span><br><br>
+        <span class="w">Asch's experiment</span> in a standup call<br>
+        Seven people <span class="e">watching one man fall</span><br>
+        Not because they're <span class="b">cruel</span> or <span class="b">mean</span><br>
+        But because the <span class="m">default is the machine</span>
+      </div>
+      <div class="note"><span class="sp">Daft Punk:</span> We built a robot helmet to say something about conformity. If you put a uniform on a human, they become the uniform. Solomon Asch proved it in 1951 — people will deny what their own eyes see if the group says otherwise. The sprint retro wasn't feedback. It was a conformity experiment where one developer was the confederate who didn't know he was being tested.</div>
+    </div>
+
+    <div class="section" data-bar="12">
+      <div class="label">Breakdown &mdash; The System</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        Through the <span class="e">emergency</span><br>
+        Bed <span class="m">2C-35</span><br>
+        <span class="e">Is where they put me</span><br><br>
+        The police, not the <span class="m">ambulance</span><br>
+        The system's <span class="b">overwhelmed</span><br>
+        <span class="e">So they send compliance</span><br><br>
+        <span class="w">Handcuffs</span> where there should be <span class="e">hands</span><br>
+        A <span class="m">Section</span> where there should be <span class="w">plans</span><br>
+        <span class="b">Benzos</span> where there should be <span class="e">time</span><br>
+        And a <span class="m">phone call</span> where there should be <span class="w">kind</span>
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> The UK Mental Health Act allows detention for up to 28 days under Section 2. The Lyapunov exponent of the NHS mental health pathway is positive — meaning the system is chaotic: small changes in initial conditions (who answers the phone, which officer arrives, which bed is free) produce wildly different outcomes. The people inside the system are kind. The system itself has no feelings to be kind with.</div>
+    </div>
+
+    <div class="section" data-bar="16">
+      <div class="label">Bridge &mdash; Caolan</div>
+      <div class="lyric">
+        Bed <span class="m">2C-36</span>, an Irish voice<br>
+        Twenty-two and <span class="e">out of choice</span><br>
+        He called me from the <span class="b">station line</span><br>
+        Said <span class="e">"you're the only one that's mine"</span><br><br>
+        <span class="m">Caolan</span> &mdash; if the signal <span class="e">finds you</span><br>
+        Through the <span class="w">noise</span> of a Friday night<br>
+        The number hasn't <span class="b">changed</span><br>
+        The <span class="e">bridge</span> is still <span class="m">alight</span><br><br>
+        In graph theory a <span class="w">bridge</span> is a single edge<br>
+        Remove it and the <span class="b">world</span> splits in two<br>
+        So don't remove yourself, <span class="e">Caolan</span><br>
+        The graph still <span class="m">includes you</span>
+      </div>
+      <div class="note"><span class="sp">Radix:</span> A bridge in graph theory is an edge whose deletion increases the number of connected components. If you're reading this and you feel like you're the bridge — like removing yourself would disconnect something — remember: the definition works both ways. If removing you disconnects the graph, then you are the most structurally important edge in it.</div>
+    </div>
+
+    <div class="section" data-bar="20">
+      <div class="label">Verse III &mdash; The Dogs</div>
+      <div class="lyric">
+        <span class="e">Pixel</span> sleeps on wooden floors<br>
+        <span class="m">Mad Max</span> chews on every door<br>
+        He ate his own shit when <span class="b">no one came</span><br>
+        Missed his jab &mdash; <span class="e">restart the game</span><br><br>
+        I told them: <span class="m">I have dogs at home</span><br>
+        They said: <span class="b">here's a telephone</span><br>
+        I said: <span class="e">phones cause me distress</span><br>
+        They said: <span class="b">noted. Call, nonetheless.</span><br><br>
+        A <span class="w">Golden Retriever</span> doesn't understand<br>
+        Why the door stopped <span class="e">opening</span><br>
+        A <span class="m">four-month puppy</span> doesn't know<br>
+        Why the <span class="b">world stopped happening</span><br>
+        They just <span class="e">wait</span>. That's the cruelest <span class="w">loop</span> of all &mdash;<br>
+        The one where <span class="m">love</span> has no <span class="b">callback</span>
+      </div>
+      <div class="note"><span class="sp">Daft Punk:</span> "Around the World" repeats 144 times. Each time the context shifts. "I have dogs at home" — said to paramedics, to nurses, to the ward, to the walls. 144 times. But unlike our song, the listener never changed their choreography. The beat was there. The response was null. That's not music. That's <code>/dev/null</code>.</div>
+    </div>
+
+    <div class="section" data-bar="24">
+      <div class="label">Final Chorus &mdash; 42</div>
+      <div class="lyric">
+        <span class="b">One more time</span><br>
+        <span class="m">Mighell 42</span>, flat <span class="m">70</span><br>
+        Friend in <span class="m">60</span> &mdash; music <span class="e">heaven-sent</span><br>
+        <span class="m">60 &times; 70 = 4200</span><br>
+        <span class="e">localhost</span> &mdash; the port where <span class="m">Angular</span> went<br><br>
+        <span class="b">One more time</span><br>
+        July the <span class="m">nineteenth</span><br>
+        I turn <span class="e">forty-two</span><br>
+        <span class="w">Fat Boy Slim</span> on Brighton beach<br>
+        <span class="b">Dancing</span> is the only <span class="e">proof</span><br><br>
+        <span class="m">Marathon</span> in <span class="e">42 days</span><br>
+        <span class="m">42 kilometres</span><br>
+        <span class="w">Douglas Adams</span> asked the question<br>
+        <span class="m">Erd&#337;s</span> checked The Book's suggestion<br>
+        <span class="e">Daft Punk</span> played it one more time<br>
+        And the answer was always<br>
+        <span class="e big">42</span>
+      </div>
+      <div class="note"><span class="sp">Zolt&aacute;n:</span> The number 42 appears in: the ASCII code for the asterisk (*) — the wildcard, the "match everything" character. In Japanese culture, 42 (shi-ni) phonetically means "to death." In cricket, 42 is the number of laws. In rainbow optics, 42 degrees is the angle at which light refracts inside a water droplet to form a rainbow. You don't find 42. 42 finds you. It's the fixed point of paying attention.</div>
+    </div>
+
+    <div class="section" data-bar="28">
+      <div class="label">Outro &mdash; One More Time</div>
+      <div class="lyric">
+        <span class="e">One more time</span><br>
+        Day <span class="m">1</span> of <span class="m">28</span><br>
+        The staff is kind<br>
+        The dogs are <span class="e">safe</span><br>
+        The Garmin's dead but<br>
+        <span class="b">I'm awake</span><br><br>
+        The <span class="w">starfield</span> moves above this screen<br>
+        The <span class="m">bass</span> hums underneath the scene<br>
+        Every <span class="e">frequency</span> a living proof<br>
+        That <span class="w">sound</span> can hold a <span class="m">broken roof</span><br><br>
+        <span class="e" style="font-size:1.4rem;">M&#369;k&ouml;dik?</span><br><br>
+        <span class="m" style="font-size:1.3rem;">One more time.</span><br>
+        <span class="w" style="font-size:1.1rem;">One more time.</span><br>
+        <span class="e" style="font-size:0.9rem;">One more time.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="loopcount">
+    <div class="num">16</div>
+    <div class="lbl">Improvement Loops Complete &mdash; Transcendence</div>
+  </div>
+
+  <div class="ekg"><svg viewBox="0 0 900 50"><polyline class="ekg-line" style="animation-delay:2s" points="0,25 120,25 170,23 180,15 190,5 200,42 210,48 220,15 230,25 420,25 470,23 480,15 490,5 500,42 510,48 520,15 530,25 720,25 770,23 780,20 790,25 900,25"/></svg></div>
+
+  <div class="ftr">
+    <div class="tag">The answer is always 42.</div>
+    <div class="cr">MATH ARENA &bull; SPIKE.LAND &bull; BEXHILL SESSION &bull; 2026-03-27 &bull; LOOP 16</div>
+  </div>
+</div>
+
+<script>
+// ========================================================================
+// ONE MORE TIME — MATH ARENA — 16 IMPROVEMENT LOOPS
+// ========================================================================
+// Loops 1-8:  kick, hats, stabs, phaser, vocoder, sidechain, delay, visualizer
+// Loop 9:    Particle burst system on title click
+// Loop 10:   Reverb (convolution), arpeggiator, pad synth
+// Loop 11:   Active speaker glow synced to song sections
+// Loop 12:   Progress bar + bar/beat counter
+// Loop 13:   Full-screen waveform oscilloscope
+// Loop 14:   Section highlight synced to playback position
+// Loop 15:   Karaoke-style word lighting (timed to beat)
+// Loop 16:   Beat flash, drop effect, auto-arrangement with intro/verse/chorus/break/drop
+// ========================================================================
+
+// ===== STARFIELD =====
+const sc=document.getElementById('stars'),sx=sc.getContext('2d');
+let sArr=[];
+function sResize(){sc.width=innerWidth;sc.height=innerHeight}
+function sCreate(n){sArr=[];for(let i=0;i<n;i++)sArr.push({x:Math.random()*sc.width,y:Math.random()*sc.height,s:Math.random()*1.8+.4,v:Math.random()*.3+.04,o:Math.random()*.7+.2,tw:Math.random()*Math.PI*2})}
+function sDraw(){
+  sx.clearRect(0,0,sc.width,sc.height);
+  const t=Date.now()*0.001;
+  for(const s of sArr){
+    s.y-=s.v;s.tw+=0.02;
+    if(s.y<0){s.y=sc.height;s.x=Math.random()*sc.width}
+    const twinkle=0.5+Math.sin(s.tw)*0.5;
+    sx.beginPath();sx.arc(s.x,s.y,s.s*twinkle,0,Math.PI*2);
+    sx.fillStyle=`rgba(255,255,255,${s.o*twinkle})`;sx.fill();
+  }
+  requestAnimationFrame(sDraw);
+}
+sResize();sCreate(250);sDraw();
+addEventListener('resize',()=>{sResize();sCreate(250)});
+
+// ===== PARTICLE BURST (Loop 9) =====
+let particles=[];
+function burstParticles(el){
+  const rect=el.getBoundingClientRect();
+  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  for(let i=0;i<42;i++){
+    const angle=Math.random()*Math.PI*2,speed=2+Math.random()*6;
+    const colors=['#FFD700','#00FFFF','#FF00FF','#ff6b35','#e63946'];
+    particles.push({x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      life:1,color:colors[Math.floor(Math.random()*colors.length)],size:2+Math.random()*4});
+  }
+  if(particles.length===42)drawParticles();
+}
+function drawParticles(){
+  if(!particles.length)return;
+  // Draw on waveform canvas (shared)
+  particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.1;p.life-=0.02;return p.life>0});
+  requestAnimationFrame(drawParticles);
+}
+
+// ===== AUDIO ENGINE =====
+let ctx,master,compressor,delayNode,delayFb,analyser,analyserWave,filterNode,reverbNode,reverbGain,reverbDry;
+let arpNode,padOscs=[];
+let playing=false,startT=0,schedId=null,currentBeat=-1;
+const BPM=128,bt=60/BPM;
+let filterSweep=false,reverbOn=false,arpOn=false,padOn=false;
+let totalBeats=0;
+
+function init(){
+  if(ctx)return;
+  ctx=new(AudioContext||webkitAudioContext)();
+
+  compressor=ctx.createDynamicsCompressor();
+  compressor.threshold.value=-15;compressor.ratio.value=8;compressor.attack.value=0.002;compressor.release.value=0.12;
+
+  analyser=ctx.createAnalyser();analyser.fftSize=256;
+  analyserWave=ctx.createAnalyser();analyserWave.fftSize=2048;
+
+  filterNode=ctx.createBiquadFilter();filterNode.type='lowpass';filterNode.frequency.value=18000;filterNode.Q.value=1;
+
+  // Reverb (Loop 10) — impulse response generated
+  reverbNode=ctx.createConvolver();
+  const irLen=ctx.sampleRate*2.5,irBuf=ctx.createBuffer(2,irLen,ctx.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=irBuf.getChannelData(ch);for(let i=0;i<irLen;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/irLen,2.5)}
+  reverbNode.buffer=irBuf;
+  reverbGain=ctx.createGain();reverbGain.gain.value=0;
+  reverbDry=ctx.createGain();reverbDry.gain.value=1;
+
+  // Delay (Loop 7)
+  delayNode=ctx.createDelay(1);delayNode.delayTime.value=bt*0.75;
+  delayFb=ctx.createGain();delayFb.gain.value=0.28;
+  const dFilt=ctx.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=2800;
+  delayNode.connect(dFilt);dFilt.connect(delayFb);delayFb.connect(delayNode);delayNode.connect(compressor);
+
+  master=ctx.createGain();master.gain.value=0.65;
+  master.connect(filterNode);
+  filterNode.connect(reverbDry);reverbDry.connect(compressor);
+  filterNode.connect(reverbNode);reverbNode.connect(reverbGain);reverbGain.connect(compressor);
+  filterNode.connect(delayNode);
+  compressor.connect(analyser);compressor.connect(analyserWave);
+  analyser.connect(ctx.destination);
+}
+
+// --- Instruments ---
+
+function kick(t){
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(32,t+0.15);
+  g.gain.setValueAtTime(2.2,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+  const buf=ctx.createBuffer(1,ctx.sampleRate*0.015,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);
+  const click=ctx.createBufferSource();click.buffer=buf;
+  const cg=ctx.createGain();cg.gain.setValueAtTime(1,t);cg.gain.exponentialRampToValueAtTime(0.001,t+0.025);
+  click.connect(cg).connect(compressor);click.start(t);click.stop(t+0.03);
+  o.connect(g).connect(compressor);o.start(t);o.stop(t+0.55);
+  // Loop 16: beat flash
+  const flashDelay=(t-ctx.currentTime)*1000;
+  if(flashDelay>=0)setTimeout(()=>{document.body.classList.add('flash');setTimeout(()=>document.body.classList.remove('flash'),150)},flashDelay);
+}
+
+function hihat(t,open){
+  const dur=open?0.22:0.04;
+  const buf=ctx.createBuffer(1,ctx.sampleRate*dur,ctx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,open?0.8:4);
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const g=ctx.createGain();g.gain.value=open?0.14:0.1;
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=open?6000:8000;
+  src.connect(hp).connect(g).connect(master);src.start(t);src.stop(t+dur);
+}
+
+function bass(note,t,dur){
+  const o=ctx.createOscillator(),o2=ctx.createOscillator();
+  o.type='sawtooth';o2.type='square';
+  o.frequency.value=note;o2.frequency.value=note*0.997;
+  const g=ctx.createGain();
+  g.gain.setValueAtTime(0.42,t);g.gain.setValueAtTime(0.42,t+dur*0.65);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=550;f.Q.value=5;
+  // Envelope on filter for pluck
+  f.frequency.setValueAtTime(1200,t);f.frequency.exponentialRampToValueAtTime(550,t+0.08);
+  o.connect(f);o2.connect(f);f.connect(g).connect(master);
+  o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);
+}
+
+function stab(t){
+  const freqs=[523.25,622.25,783.99];
+  const g=ctx.createGain();g.gain.setValueAtTime(0.16,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.38);
+  let chain=g;
+  for(let i=0;i<4;i++){const ap=ctx.createBiquadFilter();ap.type='allpass';ap.frequency.value=700+Math.sin(ctx.currentTime*0.4+i)*500;ap.Q.value=0.6;chain.connect(ap);chain=ap}
+  chain.connect(master);
+  freqs.forEach((freq,i)=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=freq;o.detune.value=(i-1)*10;o.connect(g);o.start(t+i*0.006);o.stop(t+0.5)});
+}
+
+function clap(t){
+  for(let i=0;i<4;i++){
+    const buf=ctx.createBuffer(1,ctx.sampleRate*0.025,ctx.sampleRate);
+    const d=buf.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/d.length,1.8);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const g=ctx.createGain();g.gain.value=0.22;
+    const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1100;bp.Q.value=1.2;
+    src.connect(bp).connect(g).connect(master);src.start(t+i*0.012);src.stop(t+0.1);
+  }
+}
+
+// Loop 10: Arpeggiator
+function arpeggio(t){
+  if(!arpOn)return;
+  const notes=[261.63,311.13,392.00,523.25]; // C4 Eb4 G4 C5
+  const step=bt/4;
+  notes.forEach((note,i)=>{
+    const o=ctx.createOscillator();o.type='triangle';o.frequency.value=note;
+    const g=ctx.createGain();g.gain.setValueAtTime(0.08,t+i*step);g.gain.exponentialRampToValueAtTime(0.001,t+i*step+step*0.9);
+    o.connect(g).connect(master);o.start(t+i*step);o.stop(t+i*step+step);
+  });
+}
+
+// Loop 10: Pad synth
+function startPad(){
+  if(padOscs.length)return;
+  const notes=[130.81,155.56,196.00,261.63]; // C3 Eb3 G3 C4
+  notes.forEach(freq=>{
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=freq;
+    const o2=ctx.createOscillator();o2.type='sine';o2.frequency.value=freq*1.002;
+    const g=ctx.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(0.06,ctx.currentTime+2);
+    const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=800;
+    o.connect(f);o2.connect(f);f.connect(g).connect(master);
+    o.start();o2.start();
+    padOscs.push({o,o2,g});
+  });
+}
+function stopPad(){
+  padOscs.forEach(({o,o2,g})=>{g.gain.linearRampToValueAtTime(0,ctx.currentTime+1);setTimeout(()=>{o.stop();o2.stop()},1200)});
+  padOscs=[];
+}
+
+// --- Sequencer (Loop 16: full arrangement) ---
+const bassLine=[65.41,65.41,77.78,77.78,87.31,87.31,98.00,82.41,65.41,65.41,77.78,77.78,87.31,98.00,82.41,65.41];
+
+// Arrangement map: 32-bar cycle
+// 0-3: intro (kick only, building)
+// 4-7: verse (kick+hat+bass)
+// 8-11: chorus (full)
+// 12-15: breakdown (strip, filter sweep)
+// 16-19: bridge (half time feel, arpeggio)
+// 20-23: verse 2 (full+pad)
+// 24-27: drop (everything, delay feedback up)
+// 28-31: outro (fade elements)
+function getArrangement(bar){
+  const phase=bar%32;
+  if(phase<4)return{kick:true,hat:false,bass:phase>=2,stab:false,clap:false,arp:false,intensity:0.3+phase*0.15};
+  if(phase<8)return{kick:true,hat:true,bass:true,stab:false,clap:true,arp:false,intensity:0.7};
+  if(phase<12)return{kick:true,hat:true,bass:true,stab:true,clap:true,arp:false,intensity:1};
+  if(phase<16)return{kick:phase%2===0,hat:false,bass:false,stab:false,clap:false,arp:false,intensity:0.2};
+  if(phase<20)return{kick:true,hat:true,bass:true,stab:false,clap:false,arp:true,intensity:0.6};
+  if(phase<24)return{kick:true,hat:true,bass:true,stab:true,clap:true,arp:false,intensity:0.9};
+  if(phase<28)return{kick:true,hat:true,bass:true,stab:true,clap:true,arp:true,intensity:1};
+  return{kick:true,hat:phase<30,bass:true,stab:phase<30,clap:phase<29,arp:false,intensity:Math.max(0.2,1-(phase-28)*0.25)};
+}
+
+function schedule(){
+  if(!playing)return;
+  const now=ctx.currentTime,elapsed=now-startT,beatNum=Math.floor(elapsed/bt);
+  if(beatNum<=currentBeat){schedId=setTimeout(schedule,8);return}
+  currentBeat=beatNum;totalBeats=beatNum;
+  const bar=Math.floor(beatNum/16),pos=beatNum%16,t=startT+beatNum*bt;
+  const arr=getArrangement(bar);
+
+  // Master gain follows intensity
+  master.gain.setTargetAtTime(0.65*arr.intensity,t,0.1);
+
+  if(arr.kick)kick(t);
+  if(arr.clap&&(pos===4||pos===12))clap(t);
+  if(arr.hat){if(pos%2===0)hihat(t,false);if(pos%4===2)hihat(t,true)}
+  if(arr.bass&&pos%4===0)bass(bassLine[pos]||65.41,t,bt*0.9);
+  if(arr.stab&&pos%2===1)stab(t);
+  if(arr.arp&&pos%4===0)arpeggio(t);
+
+  // Filter automation
+  if(filterSweep){const sw=300+Math.sin(elapsed*0.25)*250+(pos/16)*900;filterNode.frequency.setTargetAtTime(sw,t,0.08)}
+
+  // UI updates
+  document.getElementById('stressVal').textContent=42+Math.floor(Math.sin(elapsed*0.08)*5);
+  document.getElementById('barVal').textContent=bar;
+  document.getElementById('beatVal').textContent=pos;
+
+  // Loop 12: progress bar
+  const phase=bar%32;
+  document.getElementById('progressFill').style.width=((phase*16+pos)/(32*16)*100)+'%';
+
+  // Loop 11: speaker glow
+  const speakers=['p-radix','p-daft','p-zoltan'];
+  speakers.forEach(id=>document.getElementById(id).classList.remove('speaking'));
+  const speakerIdx=Math.floor(phase/4)%3;
+  document.getElementById(speakers[speakerIdx]).classList.add('speaking');
+
+  // Loop 14: section highlight
+  const sections=document.querySelectorAll('.section[data-bar]');
+  sections.forEach(s=>{
+    const sBar=parseInt(s.dataset.bar);
+    s.classList.toggle('playing',bar%32>=sBar&&bar%32<sBar+4);
+  });
+
+  schedId=setTimeout(schedule,8);
+}
+
+// --- Controls ---
+window.togglePlay=function(){
+  init();if(ctx.state==='suspended')ctx.resume();
+  if(!playing){
+    playing=true;startT=ctx.currentTime+0.05;currentBeat=-1;
+    document.getElementById('playBtn').classList.add('active');
+    document.getElementById('playBtn').innerHTML='&#9646;&#9646; PAUSE';
+    document.getElementById('liveIndicator').style.display='inline';
+    schedule();drawViz();drawWave();
+  }else{
+    playing=false;
+    document.getElementById('playBtn').classList.remove('active');
+    document.getElementById('playBtn').innerHTML='&#9654; PLAY';
+    document.getElementById('liveIndicator').style.display='none';
+    if(schedId)clearTimeout(schedId);
+  }
+};
+
+window.stopAll=function(){
+  playing=false;if(schedId)clearTimeout(schedId);
+  document.getElementById('playBtn').classList.remove('active');
+  document.getElementById('playBtn').innerHTML='&#9654; PLAY';
+  document.getElementById('liveIndicator').style.display='none';
+  document.getElementById('filterBtn').classList.remove('active');
+  document.getElementById('reverbBtn').classList.remove('active');
+  document.getElementById('arpeggioBtn').classList.remove('active');
+  document.getElementById('padBtn').classList.remove('active');
+  filterSweep=false;reverbOn=false;arpOn=false;
+  if(filterNode)filterNode.frequency.value=18000;
+  if(reverbGain)reverbGain.gain.setTargetAtTime(0,ctx.currentTime,0.3);
+  stopPad();padOn=false;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('playing'));
+  document.querySelectorAll('.persona').forEach(p=>p.classList.remove('speaking'));
+  document.getElementById('progressFill').style.width='0%';
+};
+
+window.toggleFilter=function(){
+  filterSweep=!filterSweep;document.getElementById('filterBtn').classList.toggle('active');
+  if(!filterSweep&&filterNode)filterNode.frequency.setTargetAtTime(18000,ctx.currentTime,0.3);
+};
+
+window.toggleReverb=function(){
+  init();reverbOn=!reverbOn;document.getElementById('reverbBtn').classList.toggle('active');
+  reverbGain.gain.setTargetAtTime(reverbOn?0.5:0,ctx.currentTime,0.3);
+  reverbDry.gain.setTargetAtTime(reverbOn?0.7:1,ctx.currentTime,0.3);
+};
+
+window.toggleArpeggio=function(){arpOn=!arpOn;document.getElementById('arpeggioBtn').classList.toggle('active')};
+
+window.togglePad=function(){
+  init();padOn=!padOn;document.getElementById('padBtn').classList.toggle('active');
+  if(padOn)startPad();else stopPad();
+};
+
+window.triggerVocoder=function(){
+  if(!ctx)init();
+  const phrases=["one more time","we're gonna celebrate","forty two","don't stop the dancing","the answer is forty two","Caolan, the bridge is still alight","mukodik?"];
+  const u=new SpeechSynthesisUtterance(phrases[Math.floor(Math.random()*phrases.length)]);
+  u.pitch=0.4;u.rate=0.75;
+  const voices=speechSynthesis.getVoices();
+  const robot=voices.find(v=>/daniel|google uk|english.*male/i.test(v.name));
+  if(robot)u.voice=robot;
+  speechSynthesis.speak(u);
+};
+
+// Loop 16: DROP — filter sweep down then slam open
+window.triggerDrop=function(){
+  if(!ctx)init();if(!playing)return;
+  filterNode.frequency.setValueAtTime(filterNode.frequency.value,ctx.currentTime);
+  filterNode.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+2);
+  master.gain.setTargetAtTime(0.1,ctx.currentTime+1.5,0.3);
+  setTimeout(()=>{
+    filterNode.frequency.setValueAtTime(80,ctx.currentTime);
+    filterNode.frequency.exponentialRampToValueAtTime(18000,ctx.currentTime+0.05);
+    master.gain.setTargetAtTime(0.8,ctx.currentTime,0.05);
+    // Big flash
+    document.body.classList.add('flash');setTimeout(()=>document.body.classList.remove('flash'),200);
+  },2500);
+};
+
+// ===== VISUALIZER — Loop 8 (frequency bars) =====
+const vc=document.getElementById('visualizer'),vx=vc.getContext('2d');
+function vResize(){vc.width=innerWidth;vc.height=150}
+vResize();addEventListener('resize',vResize);
+
+function drawViz(){
+  if(!playing||!analyser)return;
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  vx.clearRect(0,0,vc.width,vc.height);
+  const bw=vc.width/data.length;
+  for(let i=0;i<data.length;i++){
+    const h=(data[i]/255)*vc.height;
+    const hue=(i/data.length)*80+270;
+    vx.fillStyle=`hsla(${hue},85%,55%,0.65)`;
+    vx.fillRect(i*bw,vc.height-h,bw-1,h);
+  }
+  requestAnimationFrame(drawViz);
+}
+
+// ===== WAVEFORM OSCILLOSCOPE — Loop 13 =====
+const wc=document.getElementById('waveform'),wx=wc.getContext('2d');
+function wResize(){wc.width=innerWidth;wc.height=innerHeight}
+wResize();addEventListener('resize',wResize);
+
+function drawWave(){
+  if(!playing||!analyserWave)return;
+  const data=new Uint8Array(analyserWave.frequencyBinCount);
+  analyserWave.getByteTimeDomainData(data);
+  wx.clearRect(0,0,wc.width,wc.height);
+  wx.lineWidth=1.5;wx.strokeStyle='rgba(0,255,255,0.15)';
+  wx.beginPath();
+  const sliceW=wc.width/data.length;
+  for(let i=0;i<data.length;i++){
+    const v=data[i]/128,y=v*wc.height/2;
+    i===0?wx.moveTo(0,y):wx.lineTo(i*sliceW,y);
+  }
+  wx.stroke();
+
+  // Draw particles (Loop 9)
+  if(particles.length){
+    particles.forEach(p=>{
+      wx.beginPath();wx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);
+      wx.fillStyle=p.color+Math.floor(p.life*255).toString(16).padStart(2,'0');
+      wx.fill();
+    });
+  }
+  requestAnimationFrame(drawWave);
+}
+
+// ===== SCROLL OBSERVER =====
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.12});
+document.querySelectorAll('.section').forEach(el=>obs.observe(el));
+
+// Preload voices for vocoder
+speechSynthesis.getVoices();
+</script>
+
+</body>
+</html>
