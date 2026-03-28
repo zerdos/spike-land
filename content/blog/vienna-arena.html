@@ -329,7 +329,7 @@ function App(){
   useEffect(()=>{
     const a=new Audio(AUDIO_SRC);
     a.preload='auto';
-    a.addEventListener('loadedmetadata',()=>{if(a.duration&&isFinite(a.duration))setDur(a.duration)});
+    a.addEventListener('loadedmetadata',()=>{if(a.duration&&Number.isFinite(a.duration))setDur(a.duration)});
     a.addEventListener('ended',()=>{setPlaying(false)});
     audioRef.current=a;
     return()=>{a.pause();a.src=''}
@@ -381,7 +381,7 @@ function App(){
     if(audioRef.current){audioRef.current.currentTime=v;setTime(v)}
   },[]);
 
-  const fmt=s=>{const m=Math.floor(s/60);const sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec};
+  const fmt=s=>{const m=Math.floor(s/60);const sec=Math.floor(s%60);return `${m}:${sec<10?'0':''}${sec}`};
 
   // Find active line
   let activeLine=-1;
@@ -391,16 +391,16 @@ function App(){
 
   return R.createElement('div',{className:'app'},
     // Ambient glow
-    R.createElement('div',{className:'ambient'+(playing?' on':'')},
+    R.createElement('div',{className:`ambient${playing?' on':''}`},
       R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(100,140,220,.12),transparent 70%)'}}),
       R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(255,214,165,.08),transparent 70%)'}})
     ),
 
     // Lyrics
     R.createElement('div',{className:'lyrics-wrap'},
-      R.createElement('div',{className:'lyrics-scroll',style:{transform:'translateY('+(-activeLine*3.2)+'rem)'}},
+      R.createElement('div',{className:'lyrics-scroll',style:{transform:`translateY(${-activeLine*3.2}rem)`}},
         LYRICS.map((line,li)=>{
-          let cls='line '+line.sz;
+          let cls=`line ${line.sz}`;
           if(li===activeLine)cls+=' active';
           else if(li<activeLine)cls+=' sung';
           else if(li===activeLine+1)cls+=' next';
@@ -432,9 +432,9 @@ function App(){
           if(time>=syl.t&&time<sylEnd)dc+=' active';
           else if(time>=sylEnd)dc+=' sung';
           const pct=((i+.5)/PITCHES[activeLine].length)*100;
-          return R.createElement('div',{key:i,className:dc,style:{left:pct+'%',top:(85-p*70)+'%'}});
+          return R.createElement('div',{key:i,className:dc,style:{left:`${pct}%`,top:`${85-p*70}%`}});
         }):null,
-      R.createElement('div',{className:'pitch-head',style:{left:(dur>0?(time/dur)*100:0)+'%'}})
+      R.createElement('div',{className:'pitch-head',style:{left:`${dur>0?(time/dur)*100:0}%`}})
     ),
 
     // Controls
@@ -448,7 +448,7 @@ function App(){
         )
       ),
       R.createElement('button',{
-        className:'bin-btn'+(binIdx>0?' on':''),
+        className:`bin-btn${binIdx>0?' on':''}`,
         onClick:()=>setBinIdx(i=>(i+1)%BIN.length)
       },BIN[binIdx].n)
     ),
