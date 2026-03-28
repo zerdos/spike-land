@@ -1,0 +1,333 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+---
+
+<Layout
+  title="Support spike.land"
+  description="Support the spike.land project — open-source AI personas, tools, and the human behind them."
+  noindex={true}
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav />
+
+    <main id="main-content" class="support-main">
+      <div class="rubik-container">
+
+        <header class="support-header">
+          <p class="rubik-eyebrow">Support</p>
+          <h1 class="support-title">Keep the dream alive</h1>
+          <p class="rubik-lede" id="support-lede">
+            spike.land is built by one person, two dogs, and 26 AI personas. Every contribution keeps it running.
+          </p>
+        </header>
+
+        <div class="support-grid">
+          <div class="support-card support-card--primary">
+            <div class="card-icon">♥</div>
+            <h2 class="card-title">Direct Support</h2>
+            <p class="card-desc">Help Zoltán keep the servers running, the dogs fed, and the code open source.</p>
+            <div class="card-actions">
+              <a href="https://github.com/sponsors/spike-land-ai" class="support-btn support-btn--primary" target="_blank" rel="noopener">
+                GitHub Sponsors
+              </a>
+            </div>
+          </div>
+
+          <div class="support-card">
+            <div class="card-icon">⭐</div>
+            <h2 class="card-title">Star the Repo</h2>
+            <p class="card-desc">Free and takes 2 seconds. Stars help others discover spike.land.</p>
+            <div class="card-actions">
+              <a href="https://github.com/spike-land-ai/spike.land" class="support-btn" target="_blank" rel="noopener">
+                Star on GitHub
+              </a>
+            </div>
+          </div>
+
+          <div class="support-card">
+            <div class="card-icon">🔑</div>
+            <h2 class="card-title">Donate an API Key</h2>
+            <p class="card-desc">Donated keys power the entire platform. Every key serves everyone.</p>
+            <div class="card-actions">
+              <a href="/ai#donate" class="support-btn">
+                Donate a Token
+              </a>
+            </div>
+          </div>
+
+          <div class="support-card">
+            <div class="card-icon">📢</div>
+            <h2 class="card-title">Share the Story</h2>
+            <p class="card-desc">Read the blog. Share what resonates. The best support is visibility.</p>
+            <div class="card-actions">
+              <a href="/blog" class="support-btn">
+                Read the Blog
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <section class="context-section" id="context-section" hidden>
+          <div class="context-card">
+            <h2 class="context-title" id="context-title"></h2>
+            <p class="context-desc" id="context-desc"></p>
+            <a class="context-link" id="context-link" href="/blog">Read the full story →</a>
+          </div>
+        </section>
+
+        <section class="why-section">
+          <h2 class="why-title">Where it goes</h2>
+          <div class="why-grid">
+            <div class="why-item">
+              <span class="why-pct">40%</span>
+              <span class="why-label">Infrastructure — servers, domains, API costs</span>
+            </div>
+            <div class="why-item">
+              <span class="why-pct">30%</span>
+              <span class="why-label">Dog food — Pixel and Mad Max eat a lot</span>
+            </div>
+            <div class="why-item">
+              <span class="why-pct">20%</span>
+              <span class="why-label">Marketing — so more people discover this</span>
+            </div>
+            <div class="why-item">
+              <span class="why-pct">10%</span>
+              <span class="why-label">Rent — 42 Mighell Street, Brighton</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <Footer />
+    <CookieConsent />
+  </div>
+</Layout>
+
+<script is:inline>
+(function() {
+  'use strict';
+
+  // Read context from URL params
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  var ref = params.get('ref');
+
+  if (slug) {
+    var section = document.getElementById('context-section');
+    var title = document.getElementById('context-title');
+    var desc = document.getElementById('context-desc');
+    var link = document.getElementById('context-link');
+
+    var contexts = {
+      'the-section-8': {
+        title: 'The Section 8: When the System Evicts During a Crisis',
+        desc: 'A Section 8 eviction notice arrived while Zoltán was sectioned in a mental health ward. The grounds are discretionary. The fight is not over.',
+        link: '/blog/the-section-8'
+      },
+      'the-human-audit': {
+        title: 'The Human Audit: UX-Reviewing Your Own Life',
+        desc: 'A contract developer with ADHD gets sectioned, separated from his dogs, and decides to audit the system that put him there.',
+        link: '/blog/the-human-audit'
+      }
+    };
+
+    var ctx = contexts[slug];
+    if (ctx) {
+      title.textContent = ctx.title;
+      desc.textContent = ctx.desc;
+      link.href = ctx.link;
+      section.hidden = false;
+    }
+  }
+})();
+</script>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .support-main {
+    flex: 1;
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+
+  .support-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .support-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1.25rem;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .support-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .support-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .support-card--primary {
+    border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
+    background: color-mix(in srgb, var(--primary-color) 3%, var(--card-bg));
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0;
+  }
+
+  .card-desc {
+    font-size: 0.8125rem;
+    color: var(--muted-fg);
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+  }
+
+  .card-actions {
+    margin-top: 0.5rem;
+  }
+
+  .support-btn {
+    display: inline-flex;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--fg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .support-btn:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
+    background: var(--muted-bg);
+  }
+
+  .support-btn--primary {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: transparent;
+  }
+
+  .support-btn--primary:hover {
+    opacity: 0.88;
+    background: var(--fg);
+  }
+
+  .context-section {
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .context-card {
+    background: color-mix(in srgb, var(--primary-color) 4%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .context-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 0.5rem;
+  }
+
+  .context-desc {
+    font-size: 0.875rem;
+    color: var(--muted-fg);
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+
+  .context-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  .context-link:hover {
+    text-decoration: underline;
+  }
+
+  .why-section {
+    max-width: 36rem;
+  }
+
+  .why-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin: 0 0 1rem;
+  }
+
+  .why-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .why-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .why-pct {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    min-width: 3rem;
+  }
+
+  .why-label {
+    font-size: 0.8125rem;
+    color: var(--muted-fg);
+    line-height: 1.5;
+  }
+</style>

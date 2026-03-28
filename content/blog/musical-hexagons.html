@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Musical Hexagons — spike.land</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#06060e;
+  --glow-1:#ff6b9d;--glow-2:#c084fc;--glow-3:#60a5fa;--glow-4:#34d399;
+  --glow-5:#fbbf24;--glow-6:#f87171;--glow-7:#a78bfa;
+  --rec:#f87171;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:#eee;
+  font-family:'Rubik',system-ui,sans-serif;
+  display:flex;flex-direction:column;
+  user-select:none;-webkit-user-select:none;
+}
+
+.app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+/* Ambient */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0}
+.ambient .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.06;transition:opacity 1.5s}
+.ambient.active .orb{opacity:.12}
+
+/* Header */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem 1rem;z-index:10;flex-shrink:0;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.header-title{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:rgba(255,255,255,.6)}
+.header-sub{font-size:.55rem;color:rgba(255,255,255,.2);letter-spacing:.1em}
+.header-right{display:flex;gap:.5rem;align-items:center}
+.help-btn{
+  font-size:.6rem;padding:4px 10px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3);
+  cursor:pointer;font-family:inherit;background:none;transition:all .2s;
+}
+.help-btn:hover{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)}
+
+/* Canvas */
+.canvas-wrap{flex:1;position:relative;z-index:1;overflow:hidden;touch-action:none}
+canvas{width:100%;height:100%;display:block}
+
+/* Step bar */
+.step-bar{
+  display:flex;align-items:center;gap:2px;
+  padding:6px 1rem;z-index:10;
+  background:rgba(0,0,0,.35);
+  justify-content:center;
+}
+.step-dot{
+  width:8px;height:8px;border-radius:50%;
+  transition:background .08s,transform .08s;
+  cursor:pointer;
+}
+.step-dot.empty{background:rgba(255,255,255,.06)}
+.step-dot.has-notes{background:rgba(96,165,250,.35)}
+.step-dot.current{transform:scale(1.4);background:var(--glow-3);box-shadow:0 0 8px rgba(96,165,250,.4)}
+.step-dot.current.recording{background:var(--rec);box-shadow:0 0 8px rgba(248,113,113,.4)}
+.step-dot.editing{outline:2px solid var(--glow-3);outline-offset:2px}
+
+/* Footer */
+.footer{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem .75rem;z-index:10;flex-shrink:0;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,255,255,.04);
+  flex-wrap:wrap;
+}
+.btn-group{display:flex;gap:.35rem;align-items:center}
+
+.play-btn,.rec-btn{
+  width:36px;height:36px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:all .15s;flex-shrink:0;border:none;
+}
+.play-btn{
+  border:1px solid var(--glow-3);
+  background:rgba(96,165,250,.06);color:var(--glow-3);
+}
+.play-btn:active{transform:scale(.9)}
+.play-btn.on{background:rgba(96,165,250,.15);box-shadow:0 0 16px rgba(96,165,250,.15)}
+
+.rec-btn{
+  border:1px solid var(--rec);
+  background:rgba(248,113,113,.06);color:var(--rec);
+}
+.rec-btn:active{transform:scale(.9)}
+.rec-btn.on{background:rgba(248,113,113,.2);box-shadow:0 0 16px rgba(248,113,113,.2);animation:rec-pulse 1s ease infinite}
+@keyframes rec-pulse{0%,100%{box-shadow:0 0 16px rgba(248,113,113,.2)}50%{box-shadow:0 0 24px rgba(248,113,113,.35)}}
+
+.scale-select{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.5);font-size:.6rem;padding:4px 6px;
+  border-radius:6px;font-family:inherit;cursor:pointer;
+}
+.scale-select option{background:#111;color:#eee}
+
+.bpm-wrap{display:flex;align-items:center;gap:.25rem}
+.bpm-label{font-size:.5rem;color:rgba(255,255,255,.2)}
+.bpm-val{font-size:.6rem;color:rgba(255,255,255,.5);min-width:2em;text-align:center}
+.bpm-btn{
+  width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.08);
+  background:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.65rem;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.bpm-btn:hover{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)}
+
+.small-btn{
+  font-size:.5rem;padding:3px 8px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.2);
+  cursor:pointer;font-family:inherit;background:none;
+}
+.small-btn:hover{border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)}
+
+/* Note display */
+.note-display{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(3rem,10vw,6rem);font-weight:800;
+  pointer-events:none;z-index:20;
+  opacity:0;transition:opacity .15s;
+  text-shadow:0 0 40px currentColor;
+}
+.note-display.show{opacity:.35;transition:opacity 0s}
+
+/* ── WALKTHROUGH OVERLAY ── */
+.walkthrough{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(6,6,14,.92);backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.wt-card{
+  max-width:420px;width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:1.5rem;
+}
+.wt-step-num{
+  font-size:.6rem;letter-spacing:.15em;color:rgba(255,255,255,.2);
+  text-transform:uppercase;
+}
+.wt-icon{font-size:3rem;line-height:1}
+.wt-title{
+  font-size:1.3rem;font-weight:700;text-align:center;
+  line-height:1.3;letter-spacing:-.01em;
+}
+.wt-desc{
+  font-size:.85rem;color:rgba(255,255,255,.5);text-align:center;
+  line-height:1.6;max-width:340px;
+}
+.wt-highlight{color:var(--glow-3);font-weight:600}
+.wt-highlight.rec{color:var(--rec)}
+.wt-highlight.gold{color:var(--glow-5)}
+
+.wt-nav{display:flex;gap:.75rem;align-items:center;margin-top:.5rem}
+.wt-btn{
+  padding:.5rem 1.5rem;border-radius:8px;font-size:.8rem;
+  font-weight:600;cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.wt-btn.primary{
+  background:var(--glow-3);color:var(--bg);border:none;
+}
+.wt-btn.primary:hover{filter:brightness(1.15)}
+.wt-btn.secondary{
+  background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);
+}
+.wt-btn.secondary:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.6)}
+
+.wt-dots{display:flex;gap:6px;margin-top:.25rem}
+.wt-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.1);transition:background .2s}
+.wt-dot.active{background:var(--glow-3)}
+
+.wt-skip{
+  position:absolute;top:1rem;right:1rem;
+  font-size:.6rem;color:rgba(255,255,255,.15);cursor:pointer;
+  border:none;background:none;font-family:inherit;padding:.5rem;
+}
+.wt-skip:hover{color:rgba(255,255,255,.35)}
+
+/* Recording indicator */
+.rec-indicator{
+  position:fixed;top:.5rem;left:50%;transform:translateX(-50%);
+  z-index:30;display:flex;align-items:center;gap:.4rem;
+  padding:.25rem .75rem;border-radius:20px;
+  background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);
+  font-size:.6rem;color:var(--rec);font-weight:600;
+  animation:fadeIn .2s ease;
+}
+.rec-dot-live{width:8px;height:8px;border-radius:50%;background:var(--rec);animation:rec-blink 1s ease infinite}
+@keyframes rec-blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Status bar */
+.status{
+  font-size:.5rem;color:rgba(255,255,255,.12);
+  text-align:right;padding:0 .5rem;
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// MUSICAL HEXAGONS — spike.land
+// Tap hexagons to play notes. Record loops. Make music.
+// ========================================================================
+
+var R = React;
+var useState = R.useState, useCallback = R.useCallback, useRef = R.useRef,
+    useEffect = R.useEffect, useMemo = R.useMemo;
+
+// ── Scales ──────────────────────────────────────────────────────────────
+var SCALES = {
+  'Pentatonic': [0, 2, 4, 7, 9],
+  'Major': [0, 2, 4, 5, 7, 9, 11],
+  'Minor': [0, 2, 3, 5, 7, 8, 10],
+  'Dorian': [0, 2, 3, 5, 7, 9, 10],
+  'Blues': [0, 3, 5, 6, 7, 10],
+  'Japanese': [0, 1, 5, 7, 8],
+  'Hungarian': [0, 2, 3, 6, 7, 8, 11],
+};
+
+var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var BASE_FREQ = 261.63;
+
+function getFreq(semi) { return BASE_FREQ * Math.pow(2, semi / 12); }
+
+function getScaleNote(scale, idx) {
+  var notes = SCALES[scale];
+  var oct = Math.floor(idx / notes.length);
+  var deg = ((idx % notes.length) + notes.length) % notes.length;
+  return notes[deg] + oct * 12;
+}
+
+function getNoteName(semi) {
+  var n = ((semi % 12) + 12) % 12;
+  return NOTE_NAMES[n] + (Math.floor(semi / 12) + 4);
+}
+
+var COLORS = ['#ff6b9d','#c084fc','#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa','#38bdf8','#fb923c','#4ade80','#e879f9','#f472b6'];
+
+function getColor(i, scale) {
+  var len = SCALES[scale].length;
+  return COLORS[((i % len) + len) % len];
+}
+
+// ── Hex geometry ────────────────────────────────────────────────────────
+var HEX_SIZE = 38, HEX_GAP = 4;
+
+function hexToPixel(q, r) {
+  var s = HEX_SIZE + HEX_GAP;
+  return [s * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r), s * (3 / 2 * r)];
+}
+
+function pixelToHex(px, py) {
+  var s = HEX_SIZE + HEX_GAP;
+  var q = (Math.sqrt(3) / 3 * px - 1 / 3 * py) / s;
+  var r = (2 / 3 * py) / s;
+  var rq = Math.round(q), rr = Math.round(r), rs = Math.round(-q - r);
+  var dq = Math.abs(rq - q), dr = Math.abs(rr - r), ds = Math.abs(rs - (-q - r));
+  if (dq > dr && dq > ds) rq = -rr - rs;
+  else if (dr > ds) rr = -rq - rs;
+  return [rq, rr];
+}
+
+function hexPath(cx, cy) {
+  var pts = '';
+  for (var i = 0; i < 6; i++) {
+    var a = Math.PI / 180 * (60 * i - 30);
+    pts += (i === 0 ? 'M' : 'L') + (cx + HEX_SIZE * Math.cos(a)) + ',' + (cy + HEX_SIZE * Math.sin(a));
+  }
+  return pts + 'Z';
+}
+
+function generateGrid(radius) {
+  var hexes = [];
+  for (var q = -radius; q <= radius; q++) {
+    for (var r = -radius; r <= radius; r++) {
+      if (Math.abs(-q - r) <= radius) hexes.push({q: q, r: r});
+    }
+  }
+  hexes.sort(function(a, b) {
+    var da = Math.max(Math.abs(a.q), Math.abs(a.r), Math.abs(-a.q - a.r));
+    var db = Math.max(Math.abs(b.q), Math.abs(b.r), Math.abs(-b.q - b.r));
+    if (da !== db) return da - db;
+    return Math.atan2(a.r, a.q) - Math.atan2(b.r, b.q);
+  });
+  return hexes;
+}
+
+// ── Audio ───────────────────────────────────────────────────────────────
+var audioCtx = null;
+
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playNote(freq, dur) {
+  var ctx = ensureAudio();
+  var now = ctx.currentTime;
+
+  var osc = ctx.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(freq, now);
+
+  var sub = ctx.createOscillator();
+  sub.type = 'sine';
+  sub.frequency.setValueAtTime(freq * 0.5, now);
+
+  var shim = ctx.createOscillator();
+  shim.type = 'sine';
+  shim.frequency.setValueAtTime(freq * 2.01, now);
+
+  var g1 = ctx.createGain();
+  g1.gain.setValueAtTime(0, now);
+  g1.gain.linearRampToValueAtTime(0.12, now + 0.02);
+  g1.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+  var g2 = ctx.createGain();
+  g2.gain.setValueAtTime(0, now);
+  g2.gain.linearRampToValueAtTime(0.07, now + 0.03);
+  g2.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+  var g3 = ctx.createGain();
+  g3.gain.setValueAtTime(0, now);
+  g3.gain.linearRampToValueAtTime(0.015, now + 0.05);
+  g3.gain.exponentialRampToValueAtTime(0.001, now + dur * 0.5);
+
+  var flt = ctx.createBiquadFilter();
+  flt.type = 'lowpass';
+  flt.frequency.setValueAtTime(freq * 4, now);
+  flt.frequency.exponentialRampToValueAtTime(freq * 1.5, now + dur);
+  flt.Q.value = 1.5;
+
+  var dly = ctx.createDelay(); dly.delayTime.value = 0.15;
+  var dg = ctx.createGain(); dg.gain.value = 0.18;
+
+  osc.connect(g1); sub.connect(g2); shim.connect(g3);
+  g1.connect(flt); g2.connect(flt); g3.connect(flt);
+  flt.connect(ctx.destination);
+  flt.connect(dly); dly.connect(dg); dg.connect(ctx.destination);
+
+  osc.start(now); sub.start(now); shim.start(now);
+  var end = now + dur + 0.1;
+  osc.stop(end); sub.stop(end); shim.stop(end);
+}
+
+// ── Sequencer config ────────────────────────────────────────────────────
+var SEQ_STEPS = 16;
+
+// ── Presets ─────────────────────────────────────────────────────────────
+// Each preset: { name, scale, bpm, steps: [[noteIndex, ...], ...] }
+// noteIndex = index into the sorted grid (0 = center, outward by ring)
+var PRESETS = [
+  {
+    name: 'Vienna (Intro)',
+    scale: 'Major',
+    bpm: 100,
+    // "Slow down, you crazy child" — descending melody
+    steps: [[0],[],[2],[],[4],[],[2],[],[1],[],[3],[],[5],[],[4],[]]
+  },
+  {
+    name: 'Vienna (Chorus)',
+    scale: 'Major',
+    bpm: 110,
+    // "Vienna waits for you" — uplifting, wider intervals
+    steps: [[0,7],[],[4],[],[7],[],[9],[],[11],[],[9],[],[7,0],[],[4],[]]
+  },
+  {
+    name: 'Vienna (Bridge)',
+    scale: 'Major',
+    bpm: 100,
+    // "Dream on, but don't imagine they'll all come true"
+    steps: [[5],[3],[5],[],[7],[5],[3],[],[2],[],[0],[],[2,5],[],[3],[]]
+  },
+  {
+    name: 'Vienna (Piano)',
+    scale: 'Major',
+    bpm: 90,
+    // Gentle piano arpeggios — "It's alright, it's alright"
+    steps: [[0],[4],[7],[11],[7],[4],[0],[4],[7],[11],[14],[11],[7],[4],[0],[]]
+  },
+  {
+    name: 'Pentatonic Calm',
+    scale: 'Pentatonic',
+    bpm: 80,
+    steps: [[0],[],[2],[],[4],[],[2],[],[0],[],[3],[],[5],[],[3],[]]
+  },
+  {
+    name: 'Blues Riff',
+    scale: 'Blues',
+    bpm: 100,
+    steps: [[0],[],[3],[],[4],[5],[4],[],[3],[],[0],[],[3],[0],[],[]]
+  },
+  {
+    name: 'Japanese Garden',
+    scale: 'Japanese',
+    bpm: 70,
+    steps: [[0],[],[],[2],[],[],[4],[],[],[2],[],[],[0],[],[],[]]
+  },
+];
+
+// ── Walkthrough steps ───────────────────────────────────────────────────
+var WT_STEPS = [
+  {
+    icon: '\uD83D\uDD2E',
+    title: 'Welcome to Musical Hexagons',
+    desc: 'Each hexagon is a musical note. Tap any hexagon to hear it. Drag across many to play melodies.',
+  },
+  {
+    icon: '\uD83C\uDFB5',
+    title: 'Choose a Scale',
+    desc: 'The <span class="wt-highlight">scale selector</span> at the bottom changes which notes are available. Pentatonic is the easiest — every combination sounds good!',
+  },
+  {
+    icon: '\uD83D\uDD34',
+    title: 'Record a Loop',
+    desc: 'Press the <span class="wt-highlight rec">red record button</span> to start recording. Now tap hexagons — your notes are captured into a 16-step loop. Press record again to stop.',
+  },
+  {
+    icon: '\u25B6\uFE0F',
+    title: 'Play It Back',
+    desc: 'Press the <span class="wt-highlight">blue play button</span> to hear your loop! The 16 dots show which steps have notes. You can record more layers while it plays.',
+  },
+  {
+    icon: '\uD83C\uDFA8',
+    title: 'Edit Steps Directly',
+    desc: 'Click any <span class="wt-highlight">step dot</span> to jump to that step and edit it. Tap hexagons to add/remove notes from that step. Click the dot again to deselect.',
+  },
+  {
+    icon: '\uD83C\uDF1F',
+    title: "You're ready!",
+    desc: 'Change scales, adjust BPM, layer sounds. There are no wrong notes in Pentatonic. Just play!',
+  },
+];
+
+// ========================================================================
+// APP
+// ========================================================================
+function App() {
+  var canvasRef = useRef(null);
+  var _scale = useState('Pentatonic'), scale = _scale[0], setScale = _scale[1];
+  var _bpm = useState(120), bpm = _bpm[0], setBpm = _bpm[1];
+  var _playing = useState(false), playing = _playing[0], setPlaying = _playing[1];
+  var _recording = useState(false), recording = _recording[0], setRecording = _recording[1];
+  var _step = useState(-1), step = _step[0], setStep = _step[1];
+  var _editStep = useState(-1), editStep = _editStep[0], setEditStep = _editStep[1];
+  var _lastNote = useState(''), lastNote = _lastNote[0], setLastNote = _lastNote[1];
+  var _showNote = useState(false), showNote = _showNote[0], setShowNote = _showNote[1];
+  var _wt = useState(0), wtStep = _wt[0], setWtStep = _wt[1];
+  var _showWt = useState(true), showWt = _showWt[0], setShowWt = _showWt[1];
+  var _seqVer = useState(0), seqVer = _seqVer[0], bumpSeq = _seqVer[1];
+
+  var seqRef = useRef(Array.from({length: SEQ_STEPS}, function() { return new Set(); }));
+  var stepRef = useRef(-1);
+  var timerRef = useRef(null);
+  var hoverRef = useRef(null);
+  var pressedRef = useRef(new Set());
+  var noteTimerRef = useRef(null);
+  var animRef = useRef(null);
+  var glowsRef = useRef(new Map());
+  var recStepRef = useRef(0);
+
+  var GRID_RADIUS = 5;
+  var grid = useMemo(function() { return generateGrid(GRID_RADIUS); }, []);
+
+  // ── Canvas ──────────────────────────────────────────────────────────
+  var draw = useCallback(function() {
+    var canvas = canvasRef.current;
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+
+    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+    }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+
+    var cx = rect.width / 2;
+    var cy = rect.height / 2;
+
+    grid.forEach(function(hex, i) {
+      var p = hexToPixel(hex.q, hex.r);
+      var x = cx + p[0], y = cy + p[1];
+      var key = hex.q + ',' + hex.r;
+      var color = getColor(i, scale);
+
+      var isHovered = hoverRef.current === key;
+      var isPressed = pressedRef.current.has(key);
+      var glow = glowsRef.current.get(key);
+
+      // Check if this hex is in the edit step
+      var inEditStep = editStep >= 0 && seqRef.current[editStep] && seqRef.current[editStep].has(key);
+
+      var path = new Path2D(hexPath(x, y));
+
+      // Check if hex is in any seq step
+      var inAnyStep = false;
+      for (var s = 0; s < SEQ_STEPS; s++) {
+        if (seqRef.current[s].has(key)) { inAnyStep = true; break; }
+      }
+
+      // DEFAULT fill — always visible
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.07;
+      ctx.fill(path);
+      ctx.globalAlpha = 1;
+
+      // State-based fill on top
+      if (isPressed || (glow && glow.intensity > 0.01)) {
+        var intensity = isPressed ? 0.4 : glow.intensity;
+        var c = glow && glow.color ? glow.color : color;
+        ctx.fillStyle = c;
+        ctx.globalAlpha = intensity;
+        ctx.fill(path);
+        ctx.globalAlpha = 1;
+        if (intensity > 0.1) {
+          ctx.shadowColor = c;
+          ctx.shadowBlur = 25 * intensity;
+          ctx.fill(path);
+          ctx.shadowBlur = 0;
+        }
+      } else if (inEditStep) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.25;
+        ctx.fill(path);
+        ctx.globalAlpha = 1;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 10;
+        ctx.fill(path);
+        ctx.shadowBlur = 0;
+      } else if (inAnyStep) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.12;
+        ctx.fill(path);
+        ctx.globalAlpha = 1;
+      } else if (isHovered) {
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fill(path);
+      }
+
+      // Stroke — always visible
+      ctx.strokeStyle = isPressed ? color : isHovered ? 'rgba(255,255,255,0.2)' : inEditStep ? color : 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = (isHovered || inEditStep || isPressed) ? 1.5 : 0.8;
+      ctx.globalAlpha = inEditStep ? 0.5 : 1;
+      ctx.stroke(path);
+      ctx.globalAlpha = 1;
+
+      // Label — always readable
+      var semi = getScaleNote(scale, i);
+      var name = getNoteName(semi);
+      var dist = Math.max(Math.abs(hex.q), Math.abs(hex.r), Math.abs(-hex.q - hex.r));
+      var alpha = isPressed ? 1 : inEditStep ? 0.7 : isHovered ? 0.6 : glow && glow.intensity > 0.05 ? 0.5 : inAnyStep ? 0.3 : dist <= 2 ? 0.2 : 0.12;
+      ctx.fillStyle = (isPressed || inEditStep) ? color : 'rgba(255,255,255,' + alpha + ')';
+      ctx.font = ((isPressed || inEditStep) ? '700 ' : '400 ') + ((isPressed || inEditStep) ? '12' : '9') + 'px Rubik,system-ui,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(name, x, y);
+    });
+
+    // Decay glows
+    glowsRef.current.forEach(function(g, key) {
+      g.intensity *= 0.94;
+      if (g.intensity < 0.005) glowsRef.current.delete(key);
+    });
+
+    animRef.current = requestAnimationFrame(draw);
+  }, [grid, scale, editStep]);
+
+  useEffect(function() {
+    animRef.current = requestAnimationFrame(draw);
+    return function() { cancelAnimationFrame(animRef.current); };
+  }, [draw]);
+
+  // ── Hex from pointer ────────────────────────────────────────────────
+  var getHex = useCallback(function(e) {
+    var canvas = canvasRef.current;
+    if (!canvas) return null;
+    var rect = canvas.getBoundingClientRect();
+    var cx = rect.width / 2, cy = rect.height / 2;
+    var ex = e.touches ? e.touches[0].clientX : e.clientX;
+    var ey = e.touches ? e.touches[0].clientY : e.clientY;
+    var qr = pixelToHex(ex - rect.left - cx, ey - rect.top - cy);
+    return grid.find(function(h) { return h.q === qr[0] && h.r === qr[1]; }) || null;
+  }, [grid]);
+
+  // ── Trigger a hex ───────────────────────────────────────────────────
+  var triggerHex = useCallback(function(hex) {
+    var key = hex.q + ',' + hex.r;
+    var i = grid.findIndex(function(h) { return h.q === hex.q && h.r === hex.r; });
+    if (i < 0) return;
+
+    var semi = getScaleNote(scale, i);
+    var freq = getFreq(semi);
+    var color = getColor(i, scale);
+
+    playNote(freq, 1.2);
+    glowsRef.current.set(key, {intensity: 0.4, color: color});
+
+    setLastNote(getNoteName(semi));
+    setShowNote(true);
+    clearTimeout(noteTimerRef.current);
+    noteTimerRef.current = setTimeout(function() { setShowNote(false); }, 600);
+
+    // Recording: add to current record step
+    if (recording) {
+      var s = recStepRef.current;
+      seqRef.current[s].add(key);
+      bumpSeq(function(v) { return v + 1; });
+    }
+
+    // Editing a specific step: toggle
+    if (editStep >= 0 && !recording) {
+      var seq = seqRef.current[editStep];
+      if (seq.has(key)) seq.delete(key);
+      else seq.add(key);
+      bumpSeq(function(v) { return v + 1; });
+    }
+  }, [grid, scale, recording, editStep]);
+
+  // ── Pointer handlers ────────────────────────────────────────────────
+  var onDown = useCallback(function(e) {
+    e.preventDefault();
+    var hex = getHex(e);
+    if (!hex) return;
+    pressedRef.current.add(hex.q + ',' + hex.r);
+    triggerHex(hex);
+  }, [getHex, triggerHex]);
+
+  var onMove = useCallback(function(e) {
+    var hex = getHex(e);
+    if (!hex) { hoverRef.current = null; return; }
+    var key = hex.q + ',' + hex.r;
+    hoverRef.current = key;
+    if (e.buttons > 0 || (e.touches && e.touches.length > 0)) {
+      if (!pressedRef.current.has(key)) {
+        pressedRef.current.add(key);
+        triggerHex(hex);
+      }
+    }
+  }, [getHex, triggerHex]);
+
+  var onUp = useCallback(function() { pressedRef.current.clear(); }, []);
+
+  // ── Sequencer playback ──────────────────────────────────────────────
+  useEffect(function() {
+    if (!playing) {
+      clearInterval(timerRef.current);
+      setStep(-1);
+      stepRef.current = -1;
+      return;
+    }
+    var interval = (60 / bpm / 4) * 1000;
+    var s = 0;
+    stepRef.current = 0;
+    setStep(0);
+
+    function tick() {
+      // Advance record step when recording
+      if (recording) recStepRef.current = s;
+
+      var seq = seqRef.current[s];
+      if (seq && seq.size > 0) {
+        seq.forEach(function(key) {
+          var parts = key.split(',');
+          var q = parseInt(parts[0]), r = parseInt(parts[1]);
+          var i = grid.findIndex(function(h) { return h.q === q && h.r === r; });
+          if (i >= 0) {
+            var semi = getScaleNote(scale, i);
+            playNote(getFreq(semi), 0.8);
+            glowsRef.current.set(key, {intensity: 0.35, color: getColor(i, scale)});
+          }
+        });
+      }
+      s = (s + 1) % SEQ_STEPS;
+      stepRef.current = s;
+      setStep(s);
+    }
+
+    tick();
+    timerRef.current = setInterval(tick, interval);
+    return function() { clearInterval(timerRef.current); };
+  }, [playing, bpm, scale, grid, recording]);
+
+  // ── Record toggle ───────────────────────────────────────────────────
+  var toggleRec = useCallback(function() {
+    if (!recording) {
+      // Start recording — also start playback if not already playing
+      setRecording(true);
+      recStepRef.current = 0;
+      if (!playing) setPlaying(true);
+    } else {
+      setRecording(false);
+    }
+  }, [recording, playing]);
+
+  var clearSeq = useCallback(function() {
+    seqRef.current = Array.from({length: SEQ_STEPS}, function() { return new Set(); });
+    setEditStep(-1);
+    bumpSeq(function(v) { return v + 1; });
+  }, []);
+
+  // ── Load preset ─────────────────────────────────────────────────────
+  var loadPreset = useCallback(function(preset) {
+    // Stop playback first
+    setPlaying(false);
+    setRecording(false);
+    setEditStep(-1);
+
+    // Set scale and bpm
+    setScale(preset.scale);
+    setBpm(preset.bpm);
+
+    // Build sequence from note indices
+    var newSeq = Array.from({length: SEQ_STEPS}, function() { return new Set(); });
+    preset.steps.forEach(function(noteIndices, stepIdx) {
+      if (stepIdx >= SEQ_STEPS) return;
+      noteIndices.forEach(function(ni) {
+        if (ni < grid.length) {
+          var hex = grid[ni];
+          newSeq[stepIdx].add(hex.q + ',' + hex.r);
+        }
+      });
+    });
+    seqRef.current = newSeq;
+    bumpSeq(function(v) { return v + 1; });
+
+    // Auto-play after a tiny delay
+    setTimeout(function() { setPlaying(true); }, 200);
+  }, [grid]);
+
+  // ── Step dot click → edit that step ─────────────────────────────────
+  var onStepClick = useCallback(function(i) {
+    if (editStep === i) setEditStep(-1);
+    else setEditStep(i);
+  }, [editStep]);
+
+  // ── Note color ──────────────────────────────────────────────────────
+  var noteColor = useMemo(function() {
+    if (!lastNote) return '#fff';
+    var base = lastNote.replace(/\d+/, '');
+    var idx = NOTE_NAMES.indexOf(base);
+    return idx >= 0 ? COLORS[idx % COLORS.length] : '#fff';
+  }, [lastNote]);
+
+  // ── Step dots ───────────────────────────────────────────────────────
+  var dots = [];
+  for (var i = 0; i < SEQ_STEPS; i++) {
+    var hasNotes = seqRef.current[i] && seqRef.current[i].size > 0;
+    var cls = 'step-dot';
+    if (hasNotes) cls += ' has-notes';
+    if (i === step) cls += ' current';
+    if (i === step && recording) cls += ' recording';
+    if (i === editStep) cls += ' editing';
+    if (!hasNotes && i !== step && i !== editStep) cls += ' empty';
+    dots.push(R.createElement('div', {key: i, className: cls, onClick: onStepClick.bind(null, i)}));
+  }
+
+  // ── Walkthrough ─────────────────────────────────────────────────────
+  if (showWt) {
+    var ws = WT_STEPS[wtStep];
+    return R.createElement('div', {className: 'walkthrough'},
+      R.createElement('button', {className: 'wt-skip', onClick: function() { setShowWt(false); }}, 'SKIP'),
+      R.createElement('div', {className: 'wt-card'},
+        R.createElement('div', {className: 'wt-step-num'}, 'Step ' + (wtStep + 1) + ' of ' + WT_STEPS.length),
+        R.createElement('div', {className: 'wt-icon'}, ws.icon),
+        R.createElement('div', {className: 'wt-title'}, ws.title),
+        R.createElement('div', {className: 'wt-desc', dangerouslySetInnerHTML: {__html: ws.desc}}),
+        R.createElement('div', {className: 'wt-nav'},
+          wtStep > 0 ? R.createElement('button', {
+            className: 'wt-btn secondary',
+            onClick: function() { setWtStep(function(s) { return s - 1; }); }
+          }, 'Back') : null,
+          R.createElement('button', {
+            className: 'wt-btn primary',
+            onClick: function() {
+              if (wtStep < WT_STEPS.length - 1) setWtStep(function(s) { return s + 1; });
+              else setShowWt(false);
+            }
+          }, wtStep < WT_STEPS.length - 1 ? 'Next' : "Let's Go!")
+        ),
+        R.createElement('div', {className: 'wt-dots'},
+          WT_STEPS.map(function(_, j) {
+            return R.createElement('div', {key: j, className: 'wt-dot' + (j === wtStep ? ' active' : '')});
+          })
+        )
+      )
+    );
+  }
+
+  // ── Main UI ─────────────────────────────────────────────────────────
+  return R.createElement('div', {className: 'app'},
+    // Ambient
+    R.createElement('div', {className: 'ambient' + (playing ? ' active' : '')},
+      R.createElement('div', {className: 'orb', style: {width: '50vw', height: '50vw', left: '-15vw', top: '5%', background: 'radial-gradient(circle,rgba(192,132,252,.15),transparent 70%)'}}),
+      R.createElement('div', {className: 'orb', style: {width: '40vw', height: '40vw', right: '-10vw', bottom: '10%', background: 'radial-gradient(circle,rgba(96,165,250,.1),transparent 70%)'}})
+    ),
+
+    // Note display
+    R.createElement('div', {className: 'note-display' + (showNote ? ' show' : ''), style: {color: noteColor}}, lastNote),
+
+    // Recording indicator
+    recording ? R.createElement('div', {className: 'rec-indicator'},
+      R.createElement('div', {className: 'rec-dot-live'}),
+      'REC \u2022 Step ' + (recStepRef.current + 1) + '/' + SEQ_STEPS
+    ) : null,
+
+    // Header
+    R.createElement('div', {className: 'header'},
+      R.createElement('div', null,
+        R.createElement('div', {className: 'header-title'}, 'MUSICAL HEXAGONS'),
+        R.createElement('div', {className: 'header-sub'},
+          recording ? 'TAP HEXAGONS TO RECORD' :
+          editStep >= 0 ? 'EDITING STEP ' + (editStep + 1) + ' \u2022 TAP TO ADD/REMOVE' :
+          'TAP \u00B7 DRAG \u00B7 PLAY'
+        )
+      ),
+      R.createElement('div', {className: 'header-right'},
+        R.createElement('button', {className: 'help-btn', onClick: function() { setShowWt(true); setWtStep(0); }}, '? HELP')
+      )
+    ),
+
+    // Canvas
+    R.createElement('div', {className: 'canvas-wrap'},
+      R.createElement('canvas', {
+        ref: canvasRef,
+        onMouseDown: onDown, onMouseMove: onMove, onMouseUp: onUp, onMouseLeave: onUp,
+        onTouchStart: onDown, onTouchMove: onMove, onTouchEnd: onUp,
+      })
+    ),
+
+    // Step bar
+    R.createElement('div', {className: 'step-bar'}, dots),
+
+    // Footer
+    R.createElement('div', {className: 'footer'},
+      R.createElement('div', {className: 'btn-group'},
+        R.createElement('button', {
+          className: 'play-btn' + (playing ? ' on' : ''),
+          onClick: function() { setPlaying(function(p) { return !p; }); },
+          title: 'Play / Stop'
+        }, playing ? '\u275A\u275A' : '\u25B6'),
+        R.createElement('button', {
+          className: 'rec-btn' + (recording ? ' on' : ''),
+          onClick: toggleRec,
+          title: 'Record'
+        }, '\u23FA')
+      ),
+      R.createElement('select', {
+        className: 'scale-select', value: scale,
+        onChange: function(e) { setScale(e.target.value); }
+      }, Object.keys(SCALES).map(function(s) {
+        return R.createElement('option', {key: s, value: s}, s);
+      })),
+      R.createElement('div', {className: 'bpm-wrap'},
+        R.createElement('button', {className: 'bpm-btn', onClick: function() { setBpm(function(b) { return Math.max(40, b - 10); }); }}, '\u2212'),
+        R.createElement('span', {className: 'bpm-val'}, bpm),
+        R.createElement('button', {className: 'bpm-btn', onClick: function() { setBpm(function(b) { return Math.min(240, b + 10); }); }}, '+'),
+        R.createElement('span', {className: 'bpm-label'}, 'BPM')
+      ),
+      R.createElement('select', {
+        className: 'scale-select',
+        value: '',
+        onChange: function(e) {
+          var idx = parseInt(e.target.value);
+          if (!isNaN(idx) && PRESETS[idx]) loadPreset(PRESETS[idx]);
+          e.target.value = '';
+        }
+      },
+        R.createElement('option', {value: '', disabled: true, selected: true}, '\uD83C\uDFB5 Presets'),
+        PRESETS.map(function(p, i) {
+          return R.createElement('option', {key: i, value: i}, p.name);
+        })
+      ),
+      R.createElement('button', {className: 'small-btn', onClick: clearSeq}, 'CLEAR')
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(R.createElement(App));
+</script>
+</body>
+</html>

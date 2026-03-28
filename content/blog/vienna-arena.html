@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vienna — Karaoke</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#07080d;--gold:#a8c4ff;--gold-dim:rgba(168,196,255,.2);
+    --sung:rgba(168,196,255,.6);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(168,196,255,.2),0 0 48px rgba(168,196,255,.06);
+    --warm:#ffd6a5;--warm-dim:rgba(255,214,165,.2);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(100px)}
+
+  /* === LYRICS === */
+  .lyrics-wrap{
+    flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    overflow:hidden;position:relative;z-index:1;padding:1rem;
+  }
+  .lyrics-scroll{
+    display:flex;flex-direction:column;align-items:center;gap:.6rem;
+    transition:transform .45s cubic-bezier(.25,.46,.45,.94);
+  }
+  .line{
+    text-align:center;line-height:1.25;letter-spacing:-.01em;
+    transition:opacity .3s,transform .3s;
+    opacity:.12;transform:scale(.92);
+    display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em;
+  }
+  .line.active{opacity:1;transform:scale(1)}
+  .line.sung{opacity:.35;transform:scale(.95)}
+  .line.next{opacity:.25;transform:scale(.96)}
+
+  .syl{
+    display:inline-block;position:relative;
+    transition:color .15s,font-variation-settings .2s;
+    font-variation-settings:'wght' 350;
+    color:var(--upcoming);
+  }
+  .syl.active{
+    color:var(--gold);
+    font-variation-settings:'wght' 800;
+    filter:drop-shadow(0 0 8px rgba(168,196,255,.3));
+  }
+  .syl.active::after{
+    content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
+    background:var(--gold);border-radius:2px;
+    animation:sweep .35s ease-out forwards;
+  }
+  @keyframes sweep{from{width:0}to{width:100%}}
+  .syl.sung{color:var(--sung);font-variation-settings:'wght' 500}
+
+  .sz-s{font-size:clamp(1.1rem,3vw,1.4rem)}
+  .sz-m{font-size:clamp(1.4rem,4vw,1.8rem)}
+  .sz-l{font-size:clamp(1.8rem,5vw,2.4rem)}
+  .sz-xl{font-size:clamp(2.2rem,6vw,3rem)}
+  .sz-xxl{font-size:clamp(2.6rem,7vw,3.6rem)}
+
+  /* === PITCH BAR === */
+  .pitch-bar{
+    height:28px;position:relative;z-index:1;margin:0 1rem;
+    background:rgba(255,255,255,.03);border-radius:14px;overflow:hidden;
+  }
+  .pitch-dot{
+    position:absolute;width:6px;height:6px;border-radius:50%;
+    background:rgba(168,196,255,.15);top:50%;transform:translateY(-50%);
+  }
+  .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .pitch-dot.sung{background:var(--sung)}
+  .pitch-head{
+    position:absolute;top:0;bottom:0;width:2px;background:var(--gold);
+    opacity:.5;transition:left .08s linear;
+  }
+
+  /* === CONTROLS === */
+  .controls{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.75rem 1rem;z-index:2;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+  }
+  .play-btn{
+    width:48px;height:48px;border-radius:50%;border:none;
+    background:var(--gold);color:var(--bg);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;flex-shrink:0;
+    transition:transform .15s;
+  }
+  .play-btn:active{transform:scale(.92)}
+
+  .seek-wrap{flex:1;display:flex;flex-direction:column;gap:.2rem}
+  .seek{
+    width:100%;height:6px;-webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.08);border-radius:3px;cursor:pointer;outline:none;
+  }
+  .seek::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--gold);border:none;cursor:pointer;
+  }
+  .time-label{font-size:.65rem;color:rgba(255,255,255,.3);display:flex;justify-content:space-between}
+
+  .bin-btn{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.4);border-radius:8px;padding:.3rem .6rem;
+    font-size:.6rem;cursor:pointer;white-space:nowrap;font-family:inherit;
+    transition:border-color .2s,color .2s;
+  }
+  .bin-btn.on{border-color:var(--gold);color:var(--gold)}
+
+  .credit{
+    font-size:.55rem;padding:.3rem 1rem .5rem;
+    color:rgba(168,196,255,.2);text-align:center;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// VIENNA — Billy Joel — Real Karaoke
+// Syllable-synced to YouTube version: 1dAAznRs7uw
+// Designed for: dyslexia, insomnia, calming, first time singing
+// ========================================================================
+
+const AUDIO_SRC = '/blog-images/vienna/vienna-billy-joel.opus';
+
+// Each line: { t: start time (s), sz: size class, syls: [{t, w}] }
+// t = syllable start time, w = syllable text
+const LYRICS = [
+  // Verse 1
+  {t:17.0, sz:'sz-m', syls:[
+    {t:17.0,w:'Slow'},{t:17.5,w:'down,'},{t:18.3,w:'you'},{t:18.6,w:'cra-'},{t:18.9,w:'zy'},{t:19.3,w:'child'}
+  ]},
+  {t:20.5, sz:'sz-m', syls:[
+    {t:20.5,w:"You're"},{t:20.9,w:'so'},{t:21.3,w:'am-'},{t:21.6,w:'bi-'},{t:21.9,w:'tious'},{t:22.4,w:'for'},{t:22.7,w:'a'},{t:23.0,w:'ju-'},{t:23.3,w:'ve-'},{t:23.6,w:'nile'}
+  ]},
+  {t:24.8, sz:'sz-m', syls:[
+    {t:24.8,w:'But'},{t:25.1,w:'then'},{t:25.5,w:'if'},{t:25.8,w:"you're"},{t:26.1,w:'so'},{t:26.5,w:'smart'}
+  ]},
+  {t:27.8, sz:'sz-m', syls:[
+    {t:27.8,w:'Tell'},{t:28.1,w:'me'},{t:28.8,w:'why'},{t:29.2,w:'are'},{t:29.5,w:'you'},{t:29.8,w:'still'},{t:30.2,w:'so'},{t:30.6,w:'a-'},{t:30.9,w:'fraid?'}
+  ]},
+
+  // Interlude
+  {t:34.0, sz:'sz-s', syls:[
+    {t:34.0,w:'Mm-'},{t:34.5,w:'mm-'},{t:35.0,w:'mm...'}
+  ]},
+
+  // Verse 2
+  {t:38.5, sz:'sz-m', syls:[
+    {t:38.5,w:"Where's"},{t:39.0,w:'the'},{t:39.4,w:'fire,'},{t:40.2,w:"what's"},{t:40.6,w:'the'},{t:41.0,w:'hur-'},{t:41.3,w:'ry'},{t:41.6,w:'a-'},{t:41.9,w:'bout?'}
+  ]},
+  {t:43.0, sz:'sz-m', syls:[
+    {t:43.0,w:'You'},{t:43.3,w:'bet-'},{t:43.6,w:'ter'},{t:44.0,w:'cool'},{t:44.4,w:'it'},{t:44.7,w:'off'},{t:45.1,w:'be-'},{t:45.4,w:'fore'},{t:45.7,w:'you'},{t:46.0,w:'burn'},{t:46.4,w:'it'},{t:46.7,w:'out'}
+  ]},
+  {t:48.0, sz:'sz-m', syls:[
+    {t:48.0,w:'You'},{t:48.3,w:'got'},{t:48.7,w:'so'},{t:49.0,w:'much'},{t:49.4,w:'to'},{t:49.7,w:'do'},{t:50.1,w:'and'},{t:50.5,w:'on-'},{t:50.8,w:'ly'}
+  ]},
+  {t:51.5, sz:'sz-l', syls:[
+    {t:51.5,w:'So'},{t:52.0,w:'ma-'},{t:52.3,w:'ny'},{t:52.8,w:'hours'},{t:53.3,w:'in'},{t:53.6,w:'a'},{t:54.0,w:'day'}
+  ]},
+
+  // Pre-chorus
+  {t:56.5, sz:'sz-m', syls:[
+    {t:56.5,w:'But'},{t:57.0,w:'you'},{t:57.3,w:'know'},{t:57.7,w:'that'},{t:58.1,w:'when'},{t:58.5,w:'the'},{t:58.8,w:'truth'},{t:59.2,w:'is'},{t:59.5,w:'told'}
+  ]},
+  {t:60.5, sz:'sz-l', syls:[
+    {t:60.5,w:'That'},{t:60.9,w:'you'},{t:61.2,w:'can'},{t:61.6,w:'get'},{t:62.0,w:'what'},{t:62.3,w:'you'},{t:62.6,w:'want'},{t:63.2,w:'or'},{t:63.5,w:'you'},{t:63.8,w:'can'},{t:64.1,w:'just'},{t:64.5,w:'get'},{t:65.0,w:'old'}
+  ]},
+
+  // Chorus 1
+  {t:66.5, sz:'sz-xl', syls:[
+    {t:66.5,w:"You're"},{t:67.0,w:'gon-'},{t:67.3,w:'na'},{t:67.8,w:'kick'},{t:68.2,w:'off'},{t:68.8,w:'be-'},{t:69.1,w:'fore'},{t:69.5,w:'you'},{t:69.8,w:'e-'},{t:70.2,w:'ven'},{t:70.6,w:'get'},{t:71.0,w:'half-'},{t:71.5,w:'way'},{t:72.0,w:'through'}
+  ]},
+  {t:73.5, sz:'sz-xxl', syls:[
+    {t:73.5,w:'When'},{t:74.2,w:'will'},{t:74.8,w:'you'},{t:75.4,w:'re-'},{t:75.8,w:'a-'},{t:76.2,w:'lize...'}
+  ]},
+  {t:78.5, sz:'sz-xxl', syls:[
+    {t:78.5,w:'Vi-'},{t:79.5,w:'en-'},{t:80.5,w:'na'},{t:81.5,w:'waits'},{t:82.5,w:'for'},{t:83.5,w:'you?'}
+  ]},
+
+  // Verse 3
+  {t:88.0, sz:'sz-m', syls:[
+    {t:88.0,w:'Slow'},{t:88.5,w:'down,'},{t:89.3,w:'you'},{t:89.6,w:'cra-'},{t:89.9,w:'zy'},{t:90.3,w:'child'}
+  ]},
+  {t:91.5, sz:'sz-m', syls:[
+    {t:91.5,w:'And'},{t:91.8,w:'take'},{t:92.2,w:'the'},{t:92.5,w:'phone'},{t:93.0,w:'off'},{t:93.4,w:'the'},{t:93.7,w:'hook'},{t:94.2,w:'and'},{t:94.5,w:'dis-'},{t:94.8,w:'ap-'},{t:95.1,w:'pear'},{t:95.5,w:'for'},{t:95.8,w:'a'},{t:96.1,w:'while'}
+  ]},
+  {t:97.5, sz:'sz-l', syls:[
+    {t:97.5,w:"It's"},{t:97.8,w:'al-'},{t:98.1,w:'right,'},{t:98.8,w:"it's"},{t:99.1,w:'al-'},{t:99.4,w:'right'}
+  ]},
+  {t:100.5, sz:'sz-m', syls:[
+    {t:100.5,w:'You'},{t:100.8,w:'can'},{t:101.1,w:'af-'},{t:101.4,w:'ford'},{t:101.8,w:'to'},{t:102.1,w:'lose'},{t:102.5,w:'a'},{t:102.8,w:'day'},{t:103.2,w:'or'},{t:103.5,w:'two'}
+  ]},
+
+  // Pre-chorus 2
+  {t:106.0, sz:'sz-l', syls:[
+    {t:106.0,w:'When'},{t:106.5,w:'will'},{t:106.9,w:'you'},{t:107.3,w:'re-'},{t:107.7,w:'a-'},{t:108.1,w:'lize...'}
+  ]},
+  {t:110.0, sz:'sz-xxl', syls:[
+    {t:110.0,w:'Vi-'},{t:111.0,w:'en-'},{t:112.0,w:'na'},{t:113.0,w:'waits'},{t:114.0,w:'for'},{t:115.0,w:'you?'}
+  ]},
+
+  // Bridge
+  {t:120.0, sz:'sz-m', syls:[
+    {t:120.0,w:'You'},{t:120.3,w:'got'},{t:120.6,w:'your'},{t:121.0,w:'pas-'},{t:121.3,w:'sion,'},{t:122.0,w:'you'},{t:122.3,w:'got'},{t:122.6,w:'your'},{t:123.0,w:'pride'}
+  ]},
+  {t:124.0, sz:'sz-m', syls:[
+    {t:124.0,w:'But'},{t:124.3,w:"don't"},{t:124.7,w:'you'},{t:125.0,w:'know'},{t:125.4,w:'that'},{t:125.7,w:'on-'},{t:126.0,w:'ly'},{t:126.4,w:'fools'},{t:126.8,w:'are'},{t:127.2,w:'sat-'},{t:127.5,w:'is-'},{t:127.8,w:'fied?'}
+  ]},
+  {t:129.5, sz:'sz-l', syls:[
+    {t:129.5,w:'Dream'},{t:130.2,w:'on,'},{t:131.0,w:'but'},{t:131.5,w:"don't"},{t:132.0,w:'i-'},{t:132.3,w:'ma-'},{t:132.6,w:'gine'},{t:133.0,w:"they'll"},{t:133.4,w:'all'},{t:133.8,w:'come'},{t:134.2,w:'true'}
+  ]},
+
+  // Pre-chorus 3
+  {t:136.0, sz:'sz-l', syls:[
+    {t:136.0,w:'When'},{t:136.5,w:'will'},{t:136.9,w:'you'},{t:137.3,w:'re-'},{t:137.7,w:'a-'},{t:138.1,w:'lize...'}
+  ]},
+  {t:140.0, sz:'sz-xxl', syls:[
+    {t:140.0,w:'Vi-'},{t:141.0,w:'en-'},{t:142.0,w:'na'},{t:143.0,w:'waits'},{t:144.0,w:'for'},{t:145.0,w:'you?'}
+  ]},
+
+  // Verse 4 (gentle, piano)
+  {t:153.0, sz:'sz-m', syls:[
+    {t:153.0,w:'Slow'},{t:153.5,w:'down,'},{t:154.3,w:'you'},{t:154.6,w:'cra-'},{t:154.9,w:'zy'},{t:155.3,w:'child'}
+  ]},
+  {t:156.5, sz:'sz-m', syls:[
+    {t:156.5,w:'And'},{t:156.8,w:'take'},{t:157.2,w:'the'},{t:157.5,w:'phone'},{t:158.0,w:'off'},{t:158.4,w:'the'},{t:158.7,w:'hook'},{t:159.2,w:'and'},{t:159.5,w:'dis-'},{t:159.8,w:'ap-'},{t:160.1,w:'pear'},{t:160.5,w:'for'},{t:160.8,w:'a'},{t:161.1,w:'while'}
+  ]},
+  {t:162.5, sz:'sz-l', syls:[
+    {t:162.5,w:"It's"},{t:162.8,w:'al-'},{t:163.1,w:'right,'},{t:163.8,w:"it's"},{t:164.1,w:'al-'},{t:164.4,w:'right'}
+  ]},
+  {t:165.5, sz:'sz-l', syls:[
+    {t:165.5,w:'You'},{t:165.8,w:'can'},{t:166.1,w:'af-'},{t:166.4,w:'ford'},{t:166.8,w:'to'},{t:167.1,w:'lose'},{t:167.5,w:'a'},{t:167.8,w:'day'},{t:168.2,w:'or'},{t:168.5,w:'two'}
+  ]},
+
+  // Final chorus
+  {t:171.0, sz:'sz-xl', syls:[
+    {t:171.0,w:'When'},{t:171.5,w:'will'},{t:172.0,w:'you'},{t:172.5,w:'re-'},{t:172.9,w:'a-'},{t:173.3,w:'lize...'}
+  ]},
+  {t:175.5, sz:'sz-xxl', syls:[
+    {t:175.5,w:'Vi-'},{t:176.5,w:'en-'},{t:177.5,w:'na'},{t:178.5,w:'waits'},{t:179.5,w:'for'},{t:180.5,w:'you?'}
+  ]},
+
+  // Outro
+  {t:185.0, sz:'sz-l', syls:[
+    {t:185.0,w:'Vi-'},{t:186.0,w:'en-'},{t:187.0,w:'na'},{t:188.0,w:'waits'},{t:189.0,w:'for'},{t:190.0,w:'you...'}
+  ]},
+];
+
+// Approximate pitch contour (0-1, low to high) per line
+const PITCHES = [
+  [.4,.35,.5,.55,.6,.5],
+  [.4,.45,.5,.55,.6,.5,.45,.5,.55,.5],
+  [.4,.45,.5,.55,.6,.65],
+  [.5,.55,.6,.55,.5,.45,.4,.35,.3],
+  [.3,.35,.3],
+  [.4,.45,.5,.55,.5,.45,.4,.45,.5],
+  [.4,.45,.5,.55,.5,.45,.4,.45,.5,.55,.5,.45],
+  [.4,.45,.5,.55,.5,.55,.5,.45,.4],
+  [.5,.55,.6,.65,.6,.55,.5],
+  [.4,.45,.5,.55,.6,.5,.55,.6,.55],
+  [.5,.55,.6,.55,.5,.55,.6,.55,.5,.55,.6,.65,.6],
+  [.5,.55,.6,.65,.7,.6,.55,.5,.55,.6,.65,.7,.75,.8],
+  [.6,.65,.7,.75,.8,.85],
+  [.7,.8,.9,.85,.8,.7],
+  [.4,.35,.5,.55,.6,.5],
+  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
+  [.5,.55,.65,.5,.55,.65],
+  [.4,.45,.5,.55,.5,.55,.5,.45,.4,.35],
+  [.6,.65,.7,.75,.8,.85],
+  [.7,.8,.9,.85,.8,.7],
+  [.4,.45,.5,.55,.6,.5,.55,.6,.5],
+  [.4,.45,.5,.55,.5,.45,.5,.55,.6,.65,.6,.55],
+  [.5,.55,.6,.65,.6,.55,.5,.55,.6,.65,.7],
+  [.6,.65,.7,.75,.8,.85],
+  [.7,.8,.9,.85,.8,.7],
+  [.4,.35,.5,.55,.6,.5],
+  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
+  [.5,.55,.65,.5,.55,.65],
+  [.5,.55,.6,.55,.5,.55,.5,.45,.4,.35],
+  [.6,.65,.7,.75,.8,.85],
+  [.7,.8,.9,.85,.8,.7],
+  [.6,.7,.8,.75,.7,.6],
+];
+
+// Binaural presets
+const BIN=[
+  {n:'OFF',l:0,r:0},
+  {n:'THETA 6Hz',l:200,r:206},
+  {n:'DELTA 2Hz',l:200,r:202},
+];
+
+// ========================================================================
+// APP
+// ========================================================================
+const R=React,{useState,useCallback,useRef,useEffect}=R;
+
+function App(){
+  const [playing,setPlaying]=useState(false);
+  const [time,setTime]=useState(0);
+  const [binIdx,setBinIdx]=useState(0);
+  const audioRef=useRef(null);
+  const binCtxRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const rafRef=useRef(null);
+  const [dur,setDur]=useState(235);
+
+  // Audio element
+  useEffect(()=>{
+    const a=new Audio(AUDIO_SRC);
+    a.preload='auto';
+    a.addEventListener('loadedmetadata',()=>{if(a.duration&&isFinite(a.duration))setDur(a.duration)});
+    a.addEventListener('ended',()=>{setPlaying(false)});
+    audioRef.current=a;
+    return()=>{a.pause();a.src=''}
+  },[]);
+
+  // RAF loop
+  useEffect(()=>{
+    function tick(){
+      if(audioRef.current)setTime(audioRef.current.currentTime);
+      rafRef.current=requestAnimationFrame(tick);
+    }
+    if(playing){rafRef.current=requestAnimationFrame(tick)}
+    else{cancelAnimationFrame(rafRef.current)}
+    return()=>cancelAnimationFrame(rafRef.current);
+  },[playing]);
+
+  // Binaural
+  useEffect(()=>{
+    const b=BIN[binIdx];
+    if(b.l===0){
+      if(binCtxRef.current){binGainRef.current.gain.setValueAtTime(0,binCtxRef.current.currentTime)}
+      return;
+    }
+    if(!binCtxRef.current){
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const gain=ctx.createGain();gain.gain.value=0.07;gain.connect(ctx.destination);
+      const oL=ctx.createOscillator();oL.type='sine';
+      const oR=ctx.createOscillator();oR.type='sine';
+      const mL=ctx.createStereoPanner();mL.pan.value=-1;
+      const mR=ctx.createStereoPanner();mR.pan.value=1;
+      oL.connect(mL);mL.connect(gain);
+      oR.connect(mR);mR.connect(gain);
+      oL.start();oR.start();
+      binCtxRef.current=ctx;binLRef.current=oL;binRRef.current=oR;binGainRef.current=gain;
+    }
+    binLRef.current.frequency.setValueAtTime(b.l,binCtxRef.current.currentTime);
+    binRRef.current.frequency.setValueAtTime(b.r,binCtxRef.current.currentTime);
+    binGainRef.current.gain.setValueAtTime(0.07,binCtxRef.current.currentTime);
+  },[binIdx]);
+
+  const toggle=useCallback(()=>{
+    const a=audioRef.current;if(!a)return;
+    if(playing){a.pause();setPlaying(false)}
+    else{a.play().then(()=>setPlaying(true)).catch(()=>{})}
+  },[playing]);
+
+  const seek=useCallback(e=>{
+    const v=parseFloat(e.target.value);
+    if(audioRef.current){audioRef.current.currentTime=v;setTime(v)}
+  },[]);
+
+  const fmt=s=>{const m=Math.floor(s/60);const sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec};
+
+  // Find active line
+  let activeLine=-1;
+  for(let i=LYRICS.length-1;i>=0;i--){
+    if(time>=LYRICS[i].t-0.3){activeLine=i;break}
+  }
+
+  return R.createElement('div',{className:'app'},
+    // Ambient glow
+    R.createElement('div',{className:'ambient'+(playing?' on':'')},
+      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(100,140,220,.12),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(255,214,165,.08),transparent 70%)'}})
+    ),
+
+    // Lyrics
+    R.createElement('div',{className:'lyrics-wrap'},
+      R.createElement('div',{className:'lyrics-scroll',style:{transform:'translateY('+(-activeLine*3.2)+'rem)'}},
+        LYRICS.map((line,li)=>{
+          let cls='line '+line.sz;
+          if(li===activeLine)cls+=' active';
+          else if(li<activeLine)cls+=' sung';
+          else if(li===activeLine+1)cls+=' next';
+
+          return R.createElement('div',{key:li,className:cls},
+            line.syls.map((syl,si)=>{
+              let sc='syl';
+              const nextSyl=line.syls[si+1];
+              const sylEnd=nextSyl?nextSyl.t:(LYRICS[li+1]?LYRICS[li+1].t:syl.t+2);
+              if(time>=syl.t&&time<sylEnd&&li===activeLine)sc+=' active';
+              else if(time>=sylEnd||li<activeLine)sc+=' sung';
+              return R.createElement('span',{key:si,className:sc},syl.w);
+            })
+          );
+        })
+      )
+    ),
+
+    // Pitch bar
+    R.createElement('div',{className:'pitch-bar'},
+      activeLine>=0&&PITCHES[activeLine]?
+        PITCHES[activeLine].map((p,i)=>{
+          const line=LYRICS[activeLine];
+          const syl=line.syls[i];
+          if(!syl)return null;
+          const nextSyl=line.syls[i+1];
+          const sylEnd=nextSyl?nextSyl.t:(LYRICS[activeLine+1]?LYRICS[activeLine+1].t:syl.t+2);
+          let dc='pitch-dot';
+          if(time>=syl.t&&time<sylEnd)dc+=' active';
+          else if(time>=sylEnd)dc+=' sung';
+          const pct=((i+.5)/PITCHES[activeLine].length)*100;
+          return R.createElement('div',{key:i,className:dc,style:{left:pct+'%',top:(85-p*70)+'%'}});
+        }):null,
+      R.createElement('div',{className:'pitch-head',style:{left:(dur>0?(time/dur)*100:0)+'%'}})
+    ),
+
+    // Controls
+    R.createElement('div',{className:'controls'},
+      R.createElement('button',{className:'play-btn',onClick:toggle},playing?'❚❚':'▶'),
+      R.createElement('div',{className:'seek-wrap'},
+        R.createElement('input',{type:'range',className:'seek',min:0,max:dur,step:.1,value:time,onChange:seek}),
+        R.createElement('div',{className:'time-label'},
+          R.createElement('span',null,fmt(time)),
+          R.createElement('span',null,fmt(dur))
+        )
+      ),
+      R.createElement('button',{
+        className:'bin-btn'+(binIdx>0?' on':''),
+        onClick:()=>setBinIdx(i=>(i+1)%BIN.length)
+      },BIN[binIdx].n)
+    ),
+
+    R.createElement('div',{className:'credit'},'Billy Joel — Vienna — spike.land karaoke')
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(R.createElement(App));
+</script>
+</body>
+</html>

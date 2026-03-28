@@ -63,7 +63,7 @@ import TrackPageView from '../components/TrackPageView.astro';
       var layoutBtn = document.getElementById('layout-btn');
       var split = document.getElementById('split');
       var debounceTimer = null;
-      var TRANSPILE_URL = 'https://js.spike.land';
+      var TRANSPILE_URL = 'https://esbuild.spikeland.workers.dev';
       var STORAGE_KEY = 'spike-vibe-editor';
       var DEFAULT_CODE = 'import React from "react";\n\nfunction App() {\n  var [count, setCount] = React.useState(0);\n\n  return (\n    <div style={{ padding: "2rem", fontFamily: "system-ui", textAlign: "center" }}>\n      <h1>Hello from Vibe Code</h1>\n      <p style={{ fontSize: "3rem", margin: "1rem 0" }}>{count}</p>\n      <button\n        onClick={function() { setCount(function(c) { return c + 1; }); }}\n        style={{\n          padding: "0.75rem 2rem",\n          fontSize: "1rem",\n          borderRadius: "0.5rem",\n          border: "none",\n          background: "#2563eb",\n          color: "white",\n          cursor: "pointer",\n        }}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}\n\nexport default App;';
 
@@ -96,16 +96,18 @@ import TrackPageView from '../components/TrackPageView.astro';
 
         fetch(TRANSPILE_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: code, format: 'esm' }),
+          headers: { 'Content-Type': 'text/plain' },
+          body: code,
         })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data.error) { showError(data.error); return; }
-            var html = data.html || buildHtml(data.code || code);
-            frame.srcdoc = html;
+          .then(function (r) {
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+            return r.text();
+          })
+          .then(function (transpiled) {
+            frame.srcdoc = buildHtml(transpiled);
           })
           .catch(function (err) {
+            showError(err.message || 'Transpile failed');
             // Fallback: inject raw code into iframe
             frame.srcdoc = buildHtml(code);
           });

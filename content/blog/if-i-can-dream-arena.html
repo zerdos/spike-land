@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>If I Can Dream — Karaoke</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#08080f;--gold:#FFD700;--gold-dim:rgba(255,215,0,.25);
+    --blue:#4466cc;--blue-dim:rgba(68,102,204,.15);
+    --sung:rgba(255,215,0,.65);--upcoming:rgba(255,255,255,.13);
+    --active-glow:0 0 24px rgba(255,215,0,.25),0 0 48px rgba(255,215,0,.08);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+
+  /* === LAYOUT — fullscreen karaoke === */
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  /* Gentle ambient glow that breathes */
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(100px)}
+  .orb-1{width:50vw;height:50vw;top:-10vw;left:-10vw;background:var(--blue);opacity:.04}
+  .orb-2{width:40vw;height:40vw;bottom:-5vw;right:-5vw;background:var(--gold);opacity:.03}
+
+  /* Top bar — minimal */
+  .top{
+    flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+    padding:.6rem 1rem;z-index:2;
+  }
+  .title{font-size:.7rem;font-weight:600;color:rgba(255,255,255,.2);letter-spacing:2px}
+  .time{font-size:.65rem;font-weight:400;color:rgba(255,255,255,.15);font-variant-numeric:tabular-nums}
+
+  /* === LYRICS — the main event === */
+  .lyrics-area{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:1rem 1.5rem;z-index:1;position:relative;gap:.8rem;
+    overflow:hidden;
+  }
+
+  /* Previous line — fading out */
+  .prev-line{
+    font-size:clamp(.8rem,2.5vw,1rem);
+    color:rgba(255,255,255,.06);font-weight:300;
+    text-align:center;min-height:1.4em;
+    transition:opacity .5s;
+  }
+
+  /* Current line container */
+  .current-line{
+    text-align:center;padding:0 .25rem;
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;
+    gap:0;line-height:1.4;min-height:3em;
+  }
+
+  /* Syllables — dyslexia-friendly: big, high contrast, clear spacing */
+  .syl{
+    display:inline-block;position:relative;
+    transition:color .12s,transform .12s,text-shadow .25s;
+    padding:0 1px;
+  }
+  .syl.upcoming{color:var(--upcoming);font-weight:400}
+  .syl.sung{color:var(--sung);font-weight:500}
+  .syl.active{
+    color:var(--gold);font-weight:700;
+    transform:scale(1.08);
+    text-shadow:var(--active-glow);
+  }
+  /* Underline sweep on active syllable */
+  .syl.active::after{
+    content:'';position:absolute;bottom:-.08em;left:0;right:0;height:3px;
+    background:var(--gold);border-radius:2px;
+    animation:sweepIn .15s ease-out forwards;
+  }
+  @keyframes sweepIn{from{transform:scaleX(0);transform-origin:left}to{transform:scaleX(1);transform-origin:left}}
+
+  .spc{display:inline-block;width:.4em}
+  .br{flex-basis:100%;height:0}
+
+  /* Size variants — big and readable */
+  .sz-m .syl{font-size:clamp(1.2rem,4vw,1.6rem)}
+  .sz-l .syl{font-size:clamp(1.5rem,5.5vw,2.2rem)}
+  .sz-xl .syl{font-size:clamp(1.8rem,7vw,2.8rem)}
+  .sz-xxl .syl{font-size:clamp(2.2rem,8.5vw,3.4rem)}
+
+  /* Next line — preview */
+  .next-line{
+    font-size:clamp(.75rem,2.2vw,.95rem);
+    color:rgba(255,255,255,.07);font-weight:300;
+    text-align:center;min-height:1.4em;
+    transition:opacity .5s;
+  }
+
+  /* Pitch guide — simple dots showing melody contour */
+  .pitch-bar{
+    width:min(100%,400px);height:32px;position:relative;
+    border-radius:8px;background:rgba(255,255,255,.015);
+    overflow:hidden;margin-top:.3rem;
+  }
+  .pitch-dot{
+    position:absolute;width:8px;height:8px;border-radius:50%;
+    background:var(--upcoming);transition:background .15s,box-shadow .15s;
+  }
+  .pitch-dot.sung{background:var(--sung);opacity:.5}
+  .pitch-dot.active{background:var(--gold);box-shadow:0 0 10px rgba(255,215,0,.4);width:12px;height:12px;margin:-2px}
+  .pitch-head{
+    position:absolute;top:0;bottom:0;width:2px;
+    background:linear-gradient(180deg,rgba(255,215,0,.3),transparent);
+    transition:left .12s linear;
+  }
+
+  /* === CONTROLS — bottom === */
+  .controls{
+    flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.5rem;
+    padding:.5rem 1rem 1.2rem;z-index:2;
+  }
+
+  /* Progress */
+  .progress{width:min(100%,360px);height:4px;background:rgba(255,255,255,.05);border-radius:2px;cursor:pointer;position:relative}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;transition:width .2s linear;pointer-events:none}
+
+  .play-btn{
+    width:56px;height:56px;border-radius:50%;border:2px solid var(--gold-dim);
+    background:rgba(255,215,0,.03);color:var(--gold);font-size:1.3rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .2s;touch-action:manipulation;
+    font-family:'Rubik',system-ui,sans-serif;
+  }
+  .play-btn:active{transform:scale(.92);background:rgba(255,215,0,.08)}
+  .play-btn.on{border-color:var(--blue-dim);color:var(--blue);animation:pulse 4s ease infinite}
+  @keyframes pulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 20px rgba(68,102,204,.08)}}
+
+  .hint{font-size:.55rem;color:rgba(255,255,255,.1);letter-spacing:1px;text-align:center}
+
+  /* Binaural toggle — tiny, out of the way */
+  .bin-row{display:flex;gap:.25rem;justify-content:center}
+  .bin-btn{
+    font-size:.5rem;padding:3px 8px;border-radius:6px;
+    border:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.15);
+    cursor:pointer;font-family:'Rubik',system-ui,sans-serif;background:none;transition:all .2s;
+  }
+  .bin-btn.sel{border-color:var(--blue-dim);color:var(--blue)}
+
+  /* Section label */
+  .sec-label{
+    font-size:.45rem;letter-spacing:3px;text-transform:uppercase;
+    color:rgba(68,102,204,.25);text-align:center;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// IF I CAN DREAM — Real Karaoke (plays actual Elvis audio)
+// Syllable-synced to YouTube version: u-pP_dCenJA
+// Designed for: dyslexia, insomnia, 1:26am, first time singing
+// ========================================================================
+
+const AUDIO_SRC = '/blog-images/if-i-can-dream/elvis-1968.opus';
+const TOTAL = 200; // ~3:20
+
+// Each line: { t:startSec, end:endSec, size, section, syls:[[text,start,dur,midi],...] }
+// | = line break, midi 0 = silent/rest
+// Timestamps hand-synced to the YouTube audio
+const L = [
+  // INTRO — instrumental
+  {t:0,end:14.5,size:'l',section:'INTRO',
+   syls:[['\u266A',2,12,0]]},
+
+  // 0:15 "There must be lights burning brighter somewhere"
+  {t:14.5,end:22,size:'l',section:'VERSE 1',
+   syls:[
+    ['There',14.8,0.45,65],['must',15.35,0.45,65],['be',15.9,0.35,67],
+    ['lights',16.4,0.6,69],['burn',17.2,0.4,70],['-ing',17.6,0.35,69],
+    ['bright',18.1,0.5,67],['-er',18.6,0.3,65],
+    ['some',19.2,0.55,67],['-where',19.75,1.4,65],
+  ]},
+
+  // 0:22 "Got to be birds flying higher in a sky more blue"
+  {t:22,end:29.8,size:'l',section:'VERSE 1',
+   syls:[
+    ['Got',22.1,0.3,65],['to',22.5,0.25,65],['be',22.8,0.3,67],
+    ['birds',23.2,0.55,69],['fly',23.9,0.4,72],['-ing',24.3,0.3,70],
+    ['high',24.8,0.5,69],['-er',25.3,0.3,67],
+    ['in',25.8,0.2,65],['a',26.05,0.2,65],['sky',26.4,0.55,67],
+    ['more',27.1,0.5,69],['blue',27.7,1.8,70],
+  ]},
+
+  // 0:30 "If I can dream of a better land"
+  {t:29.8,end:34.2,size:'xl',section:'CHORUS',
+   syls:[
+    ['If',30.0,0.3,70],['I',30.4,0.35,72],['can',30.85,0.45,74],
+    ['dream',31.4,0.85,77],['of',32.3,0.2,74],['a',32.6,0.2,72],
+    ['bet',32.9,0.4,70],['-ter',33.3,0.35,69],['land',33.7,0.9,67],
+  ]},
+
+  // "Where all my brothers walk hand in hand"
+  {t:34.2,end:38.5,size:'xl',section:'CHORUS',
+   syls:[
+    ['Where',34.4,0.35,67],['all',34.85,0.3,69],['my',35.2,0.25,70],
+    ['bro',35.5,0.4,72],['-thers',35.95,0.35,70],
+    ['walk',36.5,0.5,69],['hand',37.1,0.5,67],['in',37.7,0.2,65],['hand',38.0,1.2,65],
+  ]},
+
+  // 0:37 "Tell me why, oh why, oh why"
+  {t:38.5,end:44,size:'xl',section:'BRIDGE',
+   syls:[
+    ['Tell',38.8,0.4,74],['me',39.3,0.35,72],['why,',39.75,1.1,70],
+    ['oh',41.0,0.45,72],['why,',41.55,0.9,74],
+    ['oh',42.6,0.4,72],['why',43.1,1.3,70],
+  ]},
+
+  // "Can't my dream come true"
+  {t:44,end:49,size:'xl',section:'BRIDGE',
+   syls:[
+    ['Can\'t',44.2,0.45,67],['my',44.75,0.3,69],['dream',45.15,0.85,70],
+    ['come',46.15,0.55,67],['true',46.8,2.0,65],
+  ]},
+
+  // 0:49 "Oh, why"
+  {t:49,end:52,size:'xxl',section:'',
+   syls:[
+    ['Oh,',49.3,0.6,74],['why',50.0,2.0,70],
+  ]},
+
+  // "There must be peace and understanding sometime"
+  {t:52,end:58.5,size:'l',section:'VERSE 2',
+   syls:[
+    ['There',52.2,0.4,65],['must',52.7,0.4,65],['be',53.2,0.3,67],
+    ['peace',53.6,0.65,69],['and',54.35,0.3,67],
+    ['un',54.8,0.25,65],['-der',55.1,0.3,67],['-stand',55.5,0.5,69],['-ing',56.0,0.3,67],
+    ['some',56.5,0.55,65],['-time',57.1,1.2,62],
+  ]},
+
+  // 0:59 "Strong winds of promise"
+  {t:58.5,end:62,size:'l',section:'VERSE 2',
+   syls:[
+    ['Strong',59.0,0.5,65],['winds',59.6,0.5,67],['of',60.2,0.25,69],
+    ['pro',60.55,0.45,70],['-mise',61.1,1.0,69],
+  ]},
+
+  // "That will blow away all the doubt and fear"
+  {t:62,end:67,size:'l',section:'VERSE 2',
+   syls:[
+    ['That',62.1,0.3,67],['will',62.5,0.3,69],['blow',62.9,0.5,70],
+    ['a',63.5,0.3,72],['-way',63.9,0.55,70],
+    ['all',64.6,0.3,69],['the',65.0,0.2,67],['doubt',65.3,0.45,65],
+    ['and',65.85,0.2,63],['fear',66.15,1.3,62],
+  ]},
+
+  // 1:07 "If I can dream of a warmer sun"
+  {t:67,end:71.5,size:'xl',section:'CHORUS',
+   syls:[
+    ['If',67.2,0.3,70],['I',67.6,0.3,72],['can',68.0,0.4,74],
+    ['dream',68.5,0.75,77],['of',69.35,0.2,74],['a',69.6,0.2,72],
+    ['warm',69.9,0.45,70],['-er',70.35,0.3,69],['sun',70.75,1.0,67],
+  ]},
+
+  // "Where hope keeps shining on everyone"
+  {t:71.5,end:76,size:'xl',section:'CHORUS',
+   syls:[
+    ['Where',71.8,0.3,67],['hope',72.2,0.45,69],['keeps',72.75,0.35,70],
+    ['shin',73.2,0.4,72],['-ing',73.65,0.3,70],
+    ['on',74.1,0.3,69],['eve',74.5,0.3,67],['-ry',74.85,0.3,65],['-one',75.2,1.0,62],
+  ]},
+
+  // 1:15 "Tell me why, oh why, oh why"
+  {t:76,end:81.5,size:'xl',section:'BRIDGE',
+   syls:[
+    ['Tell',76.2,0.4,74],['me',76.7,0.3,72],['why,',77.1,1.0,70],
+    ['oh',78.3,0.4,72],['why,',78.8,0.85,74],
+    ['oh',79.8,0.4,72],['why',80.3,1.3,70],
+  ]},
+
+  // "Won't that sun appear"
+  {t:81.5,end:90,size:'xl',section:'BRIDGE',
+   syls:[
+    ['Won\'t',81.8,0.45,67],['that',82.35,0.3,69],['sun',82.8,0.85,70],
+    ['ap',83.8,0.5,67],['-pear',84.4,3.0,65],
+  ]},
+
+  // --- instrumental break ---
+  {t:88,end:92,size:'l',section:'INTERLUDE',
+   syls:[['\u266A',88,4,0]]},
+
+  // 1:32 "We're lost in a cloud with too much rain"
+  {t:92,end:98.5,size:'xl',section:'VERSE 3',
+   syls:[
+    ['We\'re',92.2,0.4,70],['lost',92.7,0.55,72],['in',93.35,0.2,74],
+    ['a',93.65,0.2,74],['cloud',93.95,1.1,77],
+    ['|',95.1,0,0],
+    ['With',95.3,0.35,74],['too',95.75,0.5,72],['much',96.35,0.5,70],
+    ['rain',96.95,1.5,67],
+  ]},
+
+  // 1:39 "We're trapped in a world that's troubled with pain"
+  {t:98.5,end:106,size:'xl',section:'VERSE 3',
+   syls:[
+    ['We\'re',99.0,0.4,70],['trapped',99.5,0.55,72],['in',100.15,0.2,74],
+    ['a',100.45,0.2,74],['world',100.75,1.0,77],
+    ['|',101.8,0,0],
+    ['That\'s',102.0,0.35,74],['trou',102.45,0.4,72],['-bled',102.95,0.4,70],
+    ['with',103.45,0.3,69],['pain',103.85,2.0,67],
+  ]},
+
+  // 1:47 "But as long as a man has the strength to dream"
+  {t:106,end:113,size:'xl',section:'BUILD',
+   syls:[
+    ['But',107.0,0.3,65],['as',107.4,0.25,67],['long',107.75,0.55,69],
+    ['as',108.4,0.2,70],['a',108.7,0.2,72],['man',109.0,0.85,74],
+    ['|',110.0,0,0],
+    ['Has',110.2,0.3,72],['the',110.6,0.2,74],['strength',110.9,0.65,77],
+    ['to',111.65,0.25,74],['dream',112.0,1.5,79],
+  ]},
+
+  // 1:53 "He can redeem his soul and fly"
+  {t:113,end:120,size:'xxl',section:'SOARING',
+   syls:[
+    ['He',113.2,0.35,74],['can',113.65,0.45,77],
+    ['re',114.2,0.3,79],['-deem',114.6,0.9,82],
+    ['his',115.7,0.3,79],['soul',116.1,0.65,77],
+    ['and',116.9,0.3,74],['fly',117.3,3.0,82],
+  ]},
+
+  // 2:01 "He can fly"
+  {t:120.5,end:124,size:'xxl',section:'',
+   syls:[
+    ['He',121.0,0.35,82],['can',121.45,0.4,79],['fly',122.0,2.5,77],
+  ]},
+
+  // "Deep in my heart there's a trembling question"
+  {t:124,end:131,size:'l',section:'BRIDGE',
+   syls:[
+    ['Deep',124.5,0.4,65],['in',125.0,0.2,67],['my',125.3,0.3,69],
+    ['heart',125.7,0.7,70],['there\'s',126.5,0.3,69],['a',126.9,0.2,67],
+    ['trem',127.2,0.4,69],['-bling',127.7,0.4,70],
+    ['ques',128.3,0.5,72],['-tion',128.9,1.0,70],
+  ]},
+
+  // 2:12 "Still I am sure that the answer's gonna come somehow"
+  {t:131,end:140,size:'l',section:'BRIDGE',
+   syls:[
+    ['Still',132.0,0.35,65],['I',132.45,0.2,67],['am',132.75,0.3,69],
+    ['sure',133.15,0.55,70],['that',133.8,0.25,69],['the',134.1,0.2,67],
+    ['an',134.4,0.35,69],['-swer',134.85,0.55,70],
+    ['|',135.5,0,0],
+    ['An',135.7,0.3,69],['-swer\'s',136.1,0.35,70],['gon',136.55,0.3,72],['-na',136.9,0.2,70],
+    ['come',137.2,0.4,69],['some',137.7,0.5,67],['-how',138.3,1.5,65],
+  ]},
+
+  // 2:20 "Out there in the dark, there's a beckoning candle"
+  {t:140,end:148,size:'xl',section:'BUILD',
+   syls:[
+    ['Out',140.2,0.35,70],['there',140.65,0.4,72],['in',141.15,0.2,74],
+    ['the',141.45,0.2,74],['dark',141.75,1.1,77],
+    ['|',143.0,0,0],
+    ['There\'s',143.2,0.3,74],['a',143.6,0.2,72],
+    ['beck',143.9,0.4,74],['-on',144.4,0.3,77],['-ing',144.8,0.3,74],
+    ['can',145.2,0.5,72],['-dle,',145.8,0.5,70],
+    ['oh,',146.5,0.3,72],['yeah',146.9,1.2,74],
+  ]},
+
+  // 2:28 "And while I can think, while I can talk / While I can stand, while I can walk"
+  {t:148,end:155.5,size:'xxl',section:'PEAK',
+   syls:[
+    ['And',148.2,0.2,74],['while',148.5,0.3,77],['I',148.9,0.2,79],
+    ['can',149.2,0.35,79],['think,',149.65,0.5,82],
+    ['while',150.3,0.3,79],['I',150.7,0.2,77],['can',151.0,0.3,77],['talk',151.4,0.6,74],
+    ['|',152.1,0,0],
+    ['While',152.3,0.3,74],['I',152.7,0.2,77],['can',153.0,0.35,79],
+    ['stand,',153.45,0.55,82],
+    ['while',154.1,0.3,79],['I',154.5,0.2,77],['can',154.8,0.3,77],['walk',155.2,0.7,74],
+  ]},
+
+  // 2:35 "While I can dream / Oh, please let my dream"
+  {t:155.5,end:162.5,size:'xxl',section:'THE DREAM',
+   syls:[
+    ['While',155.7,0.35,77],['I',156.15,0.3,79],['can',156.55,0.5,82],
+    ['dream',157.15,2.5,84],
+    ['|',159.8,0,0],
+    ['Oh,',160.0,0.35,82],['please',160.45,0.5,79],
+    ['let',161.05,0.3,77],['my',161.45,0.3,79],['dream',161.85,1.5,82],
+  ]},
+
+  // 2:43 "Come true / Whoa"
+  {t:162.5,end:170,size:'xxl',section:'CLIMAX',
+   syls:[
+    ['Come',163.0,0.55,82],['true',163.65,3.0,84],
+    ['|',166.8,0,0],
+    ['Whoa',167.0,3.0,82],
+  ]},
+
+  // 2:51 "Right now / Oh, let it come true right now"
+  {t:170,end:178,size:'xl',section:'RESOLVE',
+   syls:[
+    ['Right',170.5,0.45,77],['now',171.05,1.8,74],
+    ['|',173.0,0,0],
+    ['Oh,',173.2,0.3,77],['let',173.6,0.3,74],['it',174.0,0.2,72],
+    ['come',174.3,0.4,74],['true',174.8,0.65,77],
+    ['right',175.55,0.4,74],['now',176.05,2.0,70],
+  ]},
+
+  // 2:58 "Oh, yeah / Thank you / Good night"
+  {t:178,end:195,size:'l',section:'OUTRO',
+   syls:[
+    ['Oh,',178.5,0.4,72],['yeah',179.0,2.5,70],
+    ['|',182.0,0,0],
+    ['Thank',183.5,0.5,67],['you.',184.1,2.0,65],
+    ['|',186.5,0,0],
+    ['Good',188.0,0.5,62],['night.',188.6,3.0,58],
+  ]},
+];
+
+// Binaural for insomnia — theta and delta are sleep-friendly
+const BIN=[
+  {n:'OFF',l:0,r:0},
+  {n:'THETA 6Hz',l:200,r:206},
+  {n:'DELTA 2Hz',l:200,r:202},
+];
+
+// ========================================================================
+// APP
+// ========================================================================
+const R=React,{useState,useCallback,useRef,useEffect}=R;
+
+function App(){
+  const [playing,setPlaying]=useState(false);
+  const [time,setTime]=useState(0);
+  const [binIdx,setBinIdx]=useState(0);
+  const audioRef=useRef(null);
+  const binCtxRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const rafRef=useRef(null);
+
+  // Create audio element once
+  useEffect(()=>{
+    const a=new Audio(AUDIO_SRC);
+    a.preload='auto';
+    a.loop=true;
+    audioRef.current=a;
+    return ()=>{a.pause();a.src=''}
+  },[]);
+
+  // Animation frame loop for smooth updates
+  const tick=useCallback(()=>{
+    if(audioRef.current){
+      setTime(audioRef.current.currentTime%TOTAL);
+    }
+    rafRef.current=requestAnimationFrame(tick);
+  },[]);
+
+  const toggle=useCallback(()=>{
+    const a=audioRef.current;if(!a)return;
+    if(playing){
+      a.pause();
+      cancelAnimationFrame(rafRef.current);
+      setPlaying(false);
+    }else{
+      a.play().then(()=>{
+        rafRef.current=requestAnimationFrame(tick);
+        setPlaying(true);
+      }).catch(()=>{});
+    }
+  },[playing,tick]);
+
+  // Binaural — separate from music
+  const setBin=useCallback(i=>{
+    setBinIdx(i);
+    const b=BIN[i];
+    if(!b.l){
+      if(binGainRef.current)binGainRef.current.gain.setTargetAtTime(0,binCtxRef.current.currentTime,0.3);
+      return;
+    }
+    if(!binCtxRef.current){
+      const c=new(AudioContext||webkitAudioContext)();binCtxRef.current=c;
+      const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+      const m=c.createChannelMerger(2);
+      const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+      const oR=c.createOscillator();oR.type='sine';oR.frequency.value=206;binRRef.current=oR;
+      const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+      oL.connect(gL);gL.connect(m,0,0);oR.connect(gR);gR.connect(m,0,1);
+      m.connect(bg);bg.connect(c.destination);oL.start();oR.start();
+    }
+    const c=binCtxRef.current;if(c.state==='suspended')c.resume();
+    const t=c.currentTime;
+    binLRef.current.frequency.setTargetAtTime(b.l,t,0.3);
+    binRRef.current.frequency.setTargetAtTime(b.r,t,0.3);
+    binGainRef.current.gain.setTargetAtTime(0.045,t,0.3);
+  },[]);
+
+  // Seek on progress bar click
+  const seek=useCallback(e=>{
+    const a=audioRef.current;if(!a)return;
+    const r=e.currentTarget.getBoundingClientRect();
+    const pct=(e.clientX-r.left)/r.width;
+    a.currentTime=pct*TOTAL;
+    setTime(pct*TOTAL);
+  },[]);
+
+  // Find current line
+  const li=L.findIndex(l=>time>=l.t&&time<l.end);
+  const cur=li>=0?L[li]:L[0];
+  const prev=li>0?L[li-1]:null;
+  const next=li<L.length-1?L[li+1]:null;
+
+  // Time display
+  const mm=Math.floor(time/60);
+  const ss=Math.floor(time%60);
+  const ts=mm+':'+(ss<10?'0':'')+ss;
+
+  // Flatten syls for prev/next display
+  const flat=l=>l?l.syls.filter(s=>s[0]!=='|'&&s[0]!=='\u266A').map(s=>s[0].replace(/^-/,'')).join(' '):'';
+
+  return R.createElement('div',{className:'app'},
+    // Ambient
+    R.createElement('div',{className:'ambient'+(playing?' on':'')},
+      R.createElement('div',{className:'orb orb-1'}),
+      R.createElement('div',{className:'orb orb-2'}),
+    ),
+
+    // Top bar
+    R.createElement('div',{className:'top'},
+      R.createElement('span',{className:'title'},'IF I CAN DREAM'),
+      R.createElement('span',{className:'time'},ts),
+    ),
+
+    // Lyrics area
+    R.createElement('div',{className:'lyrics-area'},
+      // Previous line
+      R.createElement('div',{className:'prev-line'},flat(prev)),
+
+      // Current line with syllable highlighting
+      R.createElement(SylLine,{line:cur,time:time}),
+
+      // Next line
+      R.createElement('div',{className:'next-line'},flat(next)),
+
+      // Pitch bar
+      R.createElement(PitchBar,{line:cur,time:time}),
+
+      // Section label
+      cur.section?R.createElement('div',{className:'sec-label'},cur.section):null,
+    ),
+
+    // Controls
+    R.createElement('div',{className:'controls'},
+      R.createElement('div',{className:'progress',onClick:seek},
+        R.createElement('div',{className:'progress-fill',style:{width:(time/TOTAL*100)+'%'}}),
+      ),
+      R.createElement('button',{className:'play-btn'+(playing?' on':''),onClick:toggle},
+        playing?'\u275A\u275A':'\u25B6'
+      ),
+      !playing?R.createElement('div',{className:'hint'},'TAP TO PLAY \u00B7 SING ALONG \u00B7 ELVIS WILL LIP-SYNC'):null,
+      R.createElement('div',{className:'bin-row'},
+        BIN.map((b,i)=>R.createElement('button',{
+          key:i,className:'bin-btn'+(binIdx===i?' sel':''),onClick:()=>setBin(i)
+        },b.n))
+      ),
+    ),
+  );
+}
+
+// Syllable line renderer
+function SylLine({line,time}){
+  if(!line)return null;
+  const sc='sz-'+(line.size||'l');
+  const els=line.syls.map(([txt,st,dur,mid],i)=>{
+    if(txt==='|')return R.createElement('div',{key:i,className:'br'});
+    if(txt==='\u266A')return R.createElement('span',{key:i,className:'syl '+(time>=st?'sung':'upcoming'),
+      style:{fontSize:'clamp(1.5rem,5vw,2.5rem)',opacity:.15}},txt);
+    const active=time>=st&&time<st+dur;
+    const sung=time>=st+dur;
+    const cls='syl '+(active?'active':sung?'sung':'upcoming');
+    const needSpc=i<line.syls.length-1&&line.syls[i+1][0]!=='|'&&!txt.endsWith('-')&&!txt.startsWith('-')&&line.syls[i+1][0]!=='-'&&txt!=='\u266A';
+    return R.createElement(R.Fragment,{key:i},
+      R.createElement('span',{className:cls},txt.replace(/^-/,'')),
+      needSpc?R.createElement('span',{className:'spc'}):null,
+    );
+  });
+  return R.createElement('div',{className:'current-line '+sc},els);
+}
+
+// Pitch visualization bar
+function PitchBar({line,time}){
+  if(!line)return null;
+  const syls=line.syls.filter(s=>s[3]>0);
+  if(!syls.length)return R.createElement('div',{className:'pitch-bar'});
+  const lo=Math.min(...syls.map(s=>s[3]))-2;
+  const hi=Math.max(...syls.map(s=>s[3]))+2;
+  const range=hi-lo||1;
+  const dur=line.end-line.t;
+
+  const dots=syls.map(([txt,st,d,mid],i)=>{
+    const x=((st-line.t)/dur)*100;
+    const y=((mid-lo)/range)*70+10;
+    const active=time>=st&&time<st+d;
+    const sung=time>=st+d;
+    return R.createElement('div',{key:i,className:'pitch-dot'+(active?' active':sung?' sung':''),
+      style:{left:x+'%',bottom:y+'%'}});
+  });
+
+  const headX=Math.max(0,Math.min(100,((time-line.t)/dur)*100));
+
+  return R.createElement('div',{className:'pitch-bar'},
+    dots,
+    R.createElement('div',{className:'pitch-head',style:{left:headX+'%'}}),
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(R.createElement(App));
+</script>
+</body>
+</html>
