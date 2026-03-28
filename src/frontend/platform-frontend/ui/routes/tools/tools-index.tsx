@@ -9,7 +9,7 @@ export function ToolsIndexPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const tools = data?.tools ?? [];
+  const tools = useMemo(() => data?.tools ?? [], [data?.tools]);
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
@@ -40,8 +40,12 @@ export function ToolsIndexPage() {
     const map = new Map<string, typeof filtered>();
     for (const t of filtered) {
       const cat = t.category || "other";
-      if (!map.has(cat)) map.set(cat, []);
-      map.get(cat)!.push(t);
+      const existing = map.get(cat);
+      if (existing) {
+        existing.push(t);
+      } else {
+        map.set(cat, [t]);
+      }
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [filtered]);
@@ -56,8 +60,8 @@ export function ToolsIndexPage() {
               {tools.length}+ MCP tools. Try them live.
             </h1>
             <p className="rubik-lede">
-              No signup. No API key. Pick a tool, fill the form, hit execute.
-              Every tool runs on Cloudflare Workers edge.
+              No signup. No API key. Pick a tool, fill the form, hit execute. Every tool runs on
+              Cloudflare Workers edge.
             </p>
           </div>
         </div>
