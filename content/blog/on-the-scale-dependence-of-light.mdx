@@ -1,10 +1,10 @@
 ---
 title: "On the Scale-Dependence of Light: A Thought Experiment in Self-Referential Measurement"
 slug: "on-the-scale-dependence-of-light"
-description: "Can we know whether the speed of light is scale-invariant when our rulers and clocks are made of light? A thought experiment on dimensionless observables, self-referential measurement, and the distinction between Lorentz invariance and scale invariance."
+description: "A standalone scale dependence of a dimensional constant is not operationally meaningful. Only anomalous resolution dependence of dimensionless observables beyond standard RG running is testable. A thought experiment about why — and what the data says."
 date: "2026-03-28"
 author: "Zoltan Erdos"
-tags: ["physics", "relativity", "scale-invariance", "thought-experiment", "dimensionless-observables"]
+tags: ["physics", "relativity", "resolution-dependence", "thought-experiment", "dimensionless-observables"]
 featured: true
 draft: false
 primer: "A ruler always measures itself as one ruler long. The speed of light may have the same problem."
@@ -16,9 +16,9 @@ heroImage: "/blog/on-the-scale-dependence-of-light/hero.png"
 
 ---
 
-> **Abstract.** I propose a thought experiment — the vehicle with no windows — that exposes a gap between two symmetry claims: Einstein's postulate that $c$ is the same for all inertial observers (Lorentz invariance), and the unstated assumption that $c$ is the same at all operational resolution scales (scale invariance). I argue that no single-scale measurement of a dimensional constant can distinguish between true constancy and co-variant scaling, because the measuring apparatus is built from the same physics as the thing being measured. The only escape is through dimensionless observables. I define a falsifiable parameter $\delta_\alpha$ — the anomalous scaling exponent of the fine-structure constant — and survey current experimental bounds. This is not a new theory. It is a question that the existing data has not yet closed.
+> **Abstract.** I present a thought experiment — the "vehicle with no windows" — to clarify why a putative resolution dependence of a dimensional constant such as $c$ is not, by itself, operationally observable. If measuring devices co-scale with the physics they probe, single-scale measurements cannot distinguish genuine variation from a change of units. The physically meaningful question is therefore not whether $c$ alone varies with operational resolution, but whether dimensionless observables — such as the fine-structure constant $\alpha$ — exhibit anomalous resolution dependence beyond standard renormalization-group running. Framed this way, the proposal reduces to a falsifiable search for residual departures in dimensionless couplings. I define an anomalous residual $\Delta \ln \alpha$ and survey current experimental bounds. Existing laboratory, astrophysical, and cosmological constraints are consistent with zero anomaly, so any such effect must be very small.
 >
-> **Keywords:** scale invariance, fine-structure constant, self-referential measurement, varying constants, dimensionless observables
+> **Keywords:** resolution dependence, fine-structure constant, self-referential measurement, varying constants, anomalous residual, dimensionless observables
 >
 > **Zoltan Erdos** — Brighton, UK, March 2026
 
@@ -32,78 +32,83 @@ You measure the speed of light. You get $299{,}792{,}458$ m/s.
 
 The vehicle shrinks you by a factor of $10^{35}$. Your ruler shrinks. Your clock shrinks. Your laser, your nervous system, your concept of "one meter" — all shrink with you. You measure again. $299{,}792{,}458$ m/s.
 
-The vehicle grows you to cosmological size. Same number.
+The vehicle grows you to cosmological size. You measure again. Same number.
 
-You will *always* get this number. Not because the speed of light is constant at every scale — but because your measuring apparatus scales with the thing being measured. A ruler always measures itself as one ruler long.
+You will always get this number. Not because the speed of light is constant at every scale — but because your measuring apparatus scales with the thing being measured. A ruler always measures itself as one ruler long.
 
-This is not a paradox. It is a constraint on what measurement can tell us: **a dimensional constant measured with instruments made of the same physics is self-referential.** To ask whether $c$ varies with scale, we must look at *dimensionless* combinations of constants — ratios that do not depend on our choice of units.
+This is not a paradox. It is a constraint on what measurement can tell us: **a dimensional constant measured with instruments made of the same physics is self-referential.** To ask whether $c$ varies with operational resolution, we must look at *dimensionless* combinations of constants — ratios that do not depend on our choice of units.
 
 ---
 
 ## 2. Two symmetries, not one
 
-In 1905, Einstein postulated that the speed of light is the same for all *inertial observers*. That is Lorentz invariance — a symmetry under changes of velocity. He did not postulate that $c$ is the same at all *operational resolutions*. These are different claims. Lorentz invariance is about motion. Scale invariance would be about resolution. One has been tested to extraordinary precision. The other has barely been asked about — because our instruments always sit at one scale.
+In 1905, Einstein postulated that the speed of light is the same for all *inertial observers*. That is Lorentz invariance — a symmetry under changes of velocity. He did not postulate that $c$ is the same at all *operational resolutions*. These are different symmetry claims. Lorentz invariance is about motion. The distinct question here is whether changing operational resolution introduces any unit-independent effect beyond standard renormalization-group running. One claim has been tested to extraordinary precision. The other is the subject of a long-running literature that most people outside the field have never encountered.
 
-This gap was noticed decades ago. Nottale proposed *scale relativity* in 1993, postulating exactly this symmetry: the laws of physics should be invariant under changes of resolution scale, just as they are under Lorentz boosts [1]. Magueijo and Albrecht developed varying-speed-of-light cosmologies in 1999, with a concrete dynamical model [2]. Barrow explored the broader question of varying constants in 2002 [3]. I am not inventing a new idea. I am trying to state the old one as clearly as I can.
+This question was formalized decades ago. Nottale proposed *scale relativity* in 1993, postulating that the laws of physics should be invariant under changes of resolution scale, just as they are under Lorentz boosts [1]. Magueijo and Albrecht developed varying-speed-of-light cosmologies in 1999, with a concrete dynamical model and a Lagrangian [2]. Barrow explored the broader question of varying constants in 2002 [3]. Duff, Okun, and Veneziano argued in their 2002 *trialogue* that only variations of dimensionless constants are operationally meaningful — varying a dimensional constant like $c$ alone is ambiguous without specifying which dimensionless observable changes [4]. Uzan published comprehensive reviews of varying fundamental couplings [5]. I am not asking an unasked question. I am restating a known question with what I hope is a better metaphor.
 
-In quantum field theory, the electromagnetic coupling $\alpha$ runs with the energy at which you probe it — well-tested QED. The question I am asking is different: does $\alpha$ show any *additional* scale-dependence beyond standard running, tied to the operational resolution of the measurement itself?
+In quantum field theory, the electromagnetic coupling $\alpha$ runs with the energy at which you probe it — well-tested QED. The question is different from ordinary running: does $\alpha$ show any *anomalous* resolution dependence beyond what the Standard Model predicts?
 
-The natural dimensionless observable is the fine-structure constant:
+The natural dimensionless observable is the fine-structure constant. In Gaussian CGS units:
 
-$$\alpha = \frac{e^2}{\hbar c}$$
+$$\alpha = \frac{e^2}{\hbar c} \approx \frac{1}{137.036}$$
 
-If $c$ varies with scale while $e$ and $\hbar$ vary differently, $\alpha$ will change. That change is measurable. That is the way out of the vehicle.
+(In SI, the denominator includes $4\pi\varepsilon_0$: $\alpha = e^2 / (4\pi\varepsilon_0 \hbar c)$. The numerical value is the same.)
+
+If $c$ varies with resolution while $e$ and $\hbar$ vary differently, $\alpha$ will change. That change is measurable. That is the way out of the vehicle.
 
 ---
 
-## 3. A toy model
+## 3. A toy model — and its limits
 
-Let $L$ be the operational resolution scale — the wavelength of the probe, or the size of the measuring apparatus. (I will be honest: what exactly $L$ *is* remains ambiguous. A real theory would need to pin this down. For now, it is a placeholder.) Assume:
+I want to be honest about this section: what follows is the simplest function I could write down, not a derived result. It is a toy.
 
-$$c(L) = c_0 \left(\frac{L}{L_P}\right)^{\delta}$$
+Let $L$ be an operational resolution scale. I will not pretend I know exactly what $L$ is. It could be the probe wavelength, the apparatus size, the coarse-graining cutoff, or an RG scale $\mu$ in some future theory. These are not interchangeable, and until someone pins $L$ to a specific physical observable, the model has a free variable on top of its free parameter. I am stating this upfront because hiding it would be dishonest.
 
-where $L_P$ is the Planck length and $\delta \ll 1$ is a dimensionless scaling exponent. If $\delta = 0$, there is nothing here — $c$ is truly constant. If $\delta \neq 0$, then $c$ changes with scale, but no single-scale observer can detect it because their instruments co-scale.
+The simplest ansatz for a resolution-dependent speed of light:
 
-Now suppose other constants ($e$, $\hbar$) co-vary with their own exponents. The fine-structure constant at scale $L$ becomes:
+$$c(L) = c_0 \left(\frac{L}{L_{P,0}}\right)^{\delta}$$
 
-$$\alpha(L) \propto \frac{e(L)^2}{\hbar(L) \, c(L)}$$
+where $L_{P,0}$ is the Planck length defined as a *fixed fiducial value* at one reference scale (not recalculated if the constants vary — otherwise the formula is circular, since $L_P = \sqrt{\hbar G / c^3}$ depends on the very constants in question), and $\delta \ll 1$ is a dimensionless scaling exponent.
 
-If the exponents do not cancel perfectly:
+Now, $\alpha$ already runs with energy in standard QED. The question is whether there is an *additional* departure — an anomalous residual beyond the Standard Model prediction. Define the anomalous residual at operational resolution $L$ (in momentum-space language, this corresponds roughly to a probe scale $\mu \sim 1/L$):
 
-$$\frac{\alpha(L_1)}{\alpha(L_2)} = \left(\frac{L_1}{L_2}\right)^{\delta_\alpha}$$
+$$\Delta \ln \alpha(L) = \ln \alpha_{\text{obs}}(L) - \ln \alpha_{\text{SM}}(L)$$
 
-Here $\delta_\alpha$ is the combination of individual scaling exponents that survives in the dimensionless ratio. This is the one number that matters:
+This is the physically meaningful quantity. If $\Delta \ln \alpha = 0$ at all resolutions, the framework is empty — any variation of $c$ is just a choice of units, exactly as Duff argues [4]. If $\Delta \ln \alpha \neq 0$ at some resolution, the framework has physical content.
 
-- **$\delta_\alpha = 0$**: The framework is empty. All constants co-vary perfectly. Varying $c$ is a choice of units. I am wrong in a boring way.
-- **$\delta_\alpha \neq 0$**: The framework has physical content. It can be tested.
+In the simplest power-law parametrization:
 
-I should be honest about what this model is: two free parameters ($\delta$ and the identification of $L$), zero data points. It is a bet, not a result.
+$$\Delta \ln \alpha \approx \delta_\alpha \cdot \ln\!\left(\frac{L_1}{L_2}\right)$$
+
+where $\delta_\alpha$ is the anomalous scaling exponent — the part that is *not* accounted for by standard QED running.
+
+This model has two free parameters ($\delta$ and the identification of $L$) and zero data points. It is a bet, not a result.
 
 ---
 
 ## 4. What the data say
 
-The fine-structure constant has been measured across different scales and epochs. The most sensitive constraints:
+Short answer: current data is consistent with $\Delta \ln \alpha = 0$. The bounds are tight. Any anomalous effect must be very small.
 
-**Laboratory tests.** Atomic clock comparisons bound $\dot{\alpha}/\alpha$ at $\sim 10^{-17}$ per year. These constrain *temporal* variation — how fast $\alpha$ drifts over time. The mapping from temporal drift to the kind of scale-dependence I am describing is an additional assumption, not a direct measurement.
+**Laboratory tests.** Atomic clock comparisons constrain the fractional drift of $\alpha$ at the $\sim 10^{-17}$ yr$^{-1}$ level. The older NIST Hg$^+$/Al$^+$ result was $(-1.6 \pm 2.3) \times 10^{-17}$ yr$^{-1}$, consistent with zero [6]. These measure *temporal* variation, not resolution dependence directly. The mapping from temporal drift to the kind of anomalous residual described here is an additional assumption.
 
-**Astrophysical quasar spectra.** Early claims of a dipole variation at $\sim 10^{-5}$ (Webb et al.) have not held up in larger, more carefully calibrated samples. Current combined analyses find no statistically significant deviation, with some bounds at sub-ppm precision. These constrain $\alpha$ at high *redshift* — a different epoch and distance — but not necessarily at a different operational resolution scale in the sense of this toy model.
+**Astrophysical quasar spectra.** High-precision ESPRESSO measurements found $\Delta\alpha/\alpha = 1.3 \pm 1.3_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm for the well-studied system HE 0515-4414, and a weighted mean from better-calibrated measurements of $-0.5 \pm 0.5_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm — both consistent with zero [7]. Earlier claims of a spatial dipole at the $\sim 10^{-5}$ level (Webb et al.) have not held up in larger, more carefully calibrated samples.
 
-**Cosmic microwave background.** The recombination history constrains $\alpha$ at redshift $z \sim 1100$ to within $\sim 10^{-3}$ of its present value.
+**Cosmic microwave background.** Planck-era recombination constraints are also consistent with no anomaly. Hart and Chluba report $\alpha_{\text{EM}}/\alpha_{\text{EM},0} = 1.0005 \pm 0.0024$ from Planck 2018 CMB-only data, and $1.0019 \pm 0.0022$ when BAO is added [8]. These place percent-to-subpercent-level bounds on recombination-era departures.
 
-If $\delta_\alpha$ exists, it must be very small — consistent with zero given current data. But "not yet detected" is not the same as "ruled out." The bounds constrain. They do not eliminate.
+Current bounds leave little room for any beyond-Standard-Model residual. The allowed space is very small — but it is not zero.
 
 ---
 
 ## 5. What would make this physics?
 
-Three things are missing before this thought experiment becomes a testable theory:
+Three things are missing before this thought experiment becomes testable:
 
-1. **A concrete definition of $L$.** In RG theory, the scale is the probe energy, and running is derived from QFT. Here, $L$ is ambiguous — apparatus size? probe wavelength? coarse-graining cutoff? Without pinning $L$ to a physical observable, $\delta$ and $L$ absorb each other.
+1. **A concrete definition of $L$.** Is it an RG scale? A geometric length? A detector bandwidth? Without pinning $L$ to a physical observable, $\delta$ and $L$ absorb each other and the model says nothing.
 
-2. **A mechanism.** The ansatz $c(L) \propto L^{\delta}$ is a placeholder. Why should $c$ scale? How should the other constants scale? Nottale offered a fractal spacetime geometry. Magueijo and Albrecht offered a dynamical scalar field. I am offering neither — only the question.
+2. **A mechanism.** Why should $c$ depend on resolution? How should the other constants vary? Nottale offered a fractal spacetime geometry. Magueijo and Albrecht offered a dynamical scalar field. This essay offers neither — only the question and a toy parametrization.
 
-3. **A dimensionless falsifiable prediction.** Measure $\alpha$ at two widely separated scales with enough precision to detect deviation from standard QED running. This is already being done. So far, no extra scale-dependence has been found.
+3. **A testable anomalous residual.** Measure $\alpha$ at two widely separated operational resolutions with enough precision to detect $\Delta \ln \alpha \neq 0$ beyond standard QED running — and distinguish that departure from temporal drift. This is already being done. So far, no anomaly has been found.
 
 ---
 
@@ -111,11 +116,11 @@ Three things are missing before this thought experiment becomes a testable theor
 
 I am a programmer, not a physicist. I have two dogs. I live in Brighton. I have no business writing about the fine-structure constant.
 
-But I had this image in my head — a vehicle that changes your size, with no windows — and I could not get rid of it. The image said something simple: *you cannot tell if c changes with scale because you change with it.* That felt like it should be either obviously wrong or obviously known. It turned out to be known — Nottale, Magueijo, Barrow, others got there decades before me. But the *image* — the sticky, human-scale version of the argument — I had not seen stated this way.
+But I had this image in my head — a vehicle that changes your size, with no windows — and I could not get rid of it. The image said something simple: *you cannot tell if $c$ changes with resolution because you change with it.* That felt like it should be either obviously wrong or obviously known. It turned out to be known — Nottale, Magueijo, Barrow, Duff, Uzan, others got there decades before me. But the *image* — the sticky, human-scale version of the argument — I had not seen stated this way.
 
-So I wrote it down. I put it through a math arena with three personas who tried to destroy it. They could not destroy the thought experiment — but they showed me, correctly, that a thought experiment is not a theory. For that I need $\delta_\alpha$. I do not have it. Nobody does — yet.
+So I wrote it down. I put it through a [math arena](/blog/strange-loops-arena) — 42 rounds, three personas, three external reviews. They could not destroy the thought experiment. But they showed me, correctly, that a thought experiment is not a theory. The metaphor is mine. The physics belongs to the people who did it properly.
 
-The vehicle has no windows. But it has a door. The door is marked $\delta_\alpha$.
+This note does not propose a new dynamical theory. Its contribution is operational: a measurement argument showing why a standalone resolution dependence of a dimensional constant is not observable, and a falsifiable way to restate the question in terms of anomalous residuals of dimensionless observables. Current bounds leave little room for any such anomaly. But the question the vehicle asks is real.
 
 ---
 
@@ -127,6 +132,16 @@ The vehicle has no windows. But it has a door. The door is marked $\delta_\alpha
 
 [3] J. D. Barrow, *The Constants of Nature: From Alpha to Omega*, Jonathan Cape, 2002.
 
+[4] M. J. Duff, L. B. Okun & G. Veneziano, "Trialogue on the number of fundamental constants," *JHEP* **03**, 023, 2002.
+
+[5] J.-P. Uzan, "Varying constants, gravitation and cosmology," *Living Rev. Relativity* **14**, 2, 2011.
+
+[6] T. Rosenband et al., "Frequency ratio of Al$^+$ and Hg$^+$ single-ion optical clocks; metrology at the 17th decimal place," *Science* **319**, 1808, 2008.
+
+[7] M. T. Murphy et al., "Fundamental physics with ESPRESSO," *Astron. Astrophys.* **658**, A123, 2022.
+
+[8] P. Hart & J. Chluba, "Updated fundamental constant constraints from Planck 2018 data," *Mon. Not. R. Astron. Soc.* **493**, 3255, 2020.
+
 ---
 
-*The full derivation and stress test — 31 rounds across four arena sessions — is at [Strange Loops Arena](/blog/strange-loops-arena).*
+*The full derivation and stress test — 42 rounds across seven arena sessions — is at [Strange Loops Arena](/blog/strange-loops-arena).*

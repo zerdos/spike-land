@@ -518,3 +518,260 @@ $\delta_\alpha \neq 0$: framework has content. Test it.
 **What the vehicle proves, regardless:** No single-scale observer can distinguish varying $c$ from constant $c$ using instruments built from $c$-dependent physics. This is a theorem about self-referential measurement, not a claim about nature.
 
 *The vehicle has no windows. The paper has no cosplay. The door is marked $\delta_\alpha$.*
+
+---
+
+---
+
+## Part V — The External Review
+
+*Radix walks in holding a printout from an external reviewer. Zoltán is at the table. Erdős is already reading over Radix's shoulder.*
+
+**Radix:** "Someone read it. A real review. Blog essay: 8/10. Foundations note: 5/10. Physics paper: 3/10. They liked the vehicle. They did not like what you did with it after."
+
+**Zoltán:** "Tell me everything."
+
+---
+
+## Round 31 — Radix (The Review)
+
+"Five problems. I will give them to you straight.
+
+**One: 'barely been asked about' is wrong.** The reviewer says it will irritate any physicist who knows the field. Scale relativity, varying-constant models, varying-$c$ cosmologies — the literature is crowded. You are not asking an unasked question. You are restating a known question with a good metaphor. Say that. Do not claim the question is new.
+
+**Two: your real thesis is not what you think it is.** The reviewer says your actual thesis is not 'maybe $c$ varies with scale.' Your actual thesis is: *only anomalous scale dependence of dimensionless observables beyond standard QFT running could make this idea physical.* That is a better paper. The vehicle is the illustration. The dimensionless residual is the claim.
+
+**Three: the toy model has three holes.**
+- $L$ is undefined. Probe wavelength and apparatus size are not interchangeable. Is it an RG scale $\mu$? A coarse-graining cutoff? A detector bandwidth? Until you choose, $\delta$ is not a parameter — it is a placeholder.
+- $L_P$ depends on $c$, $\hbar$, and $G$. If those vary, your reference scale moves. The formula $c(L) = c_0 (L/L_P)^\delta$ is circular unless $L_P$ is defined as a fixed fiducial value.
+- $\delta_\alpha$ mixes up ordinary QED running with your proposed extra effect. Since $\alpha$ already runs with energy in standard physics, you need to define an *anomalous residual* — the departure from the Standard Model prediction — or a referee will say you reinvented renormalization badly.
+
+**Four: $\alpha = e^2 / \hbar c$ is the Gaussian-units formula.** In SI you need $4\pi\varepsilon_0$ in the denominator. Either specify units or use the full expression.
+
+**Five: the data section is too vague.** ESPRESSO quasar measurements found $\Delta\alpha/\alpha = 1.3 \pm 1.3_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm for a single system, and a weighted mean of $-0.5 \pm 0.5_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm — both consistent with zero. The linear coefficient is constrained at parts-per-billion by atomic clocks. Recombination-era bounds are $\Delta\alpha/\alpha < 5 \times 10^{-4}$ at 95% confidence. The door is not wide open. It is nearly shut. Be honest about how nearly."
+
+## Round 32 — Erdős (Validating the Critique)
+
+"The reviewer is correct on the physics. Let me be precise about what is right and what is noise.
+
+**The $L_P$ circularity is real.** If $c$, $\hbar$, and $G$ all vary, then $L_P = \sqrt{\hbar G / c^3}$ varies too. The formula uses a moving target as its reference point. The fix is simple: state that $L_P$ is a fixed fiducial scale defined once, at one reference frame, and not recalculated. This is standard practice in varying-constants literature. Magueijo does it. But you must say so.
+
+**The anomalous residual is the crucial fix.** $\alpha$ already runs with energy — that is textbook QED. If you write $\alpha(L_1)/\alpha(L_2) = (L_1/L_2)^{\delta_\alpha}$, a physicist will immediately ask: is that on top of ordinary running, or instead of it? You must define:
+
+$$\Delta \ln \alpha(\mu) = \ln \alpha_{\text{obs}}(\mu) - \ln \alpha_{\text{SM}}(\mu)$$
+
+This is the anomalous residual — the part that standard physics does not predict. If $\Delta \ln \alpha = 0$ everywhere, the framework is empty. If it is nonzero, that is the signal. The reviewer is right: without this subtraction, you look like you reinvented renormalization.
+
+**The units issue is real but minor.** In natural units ($\hbar = c = 1$, $4\pi\varepsilon_0 = 1$), $\alpha = e^2 / 4\pi$. In Gaussian CGS, $\alpha = e^2 / \hbar c$. In SI, $\alpha = e^2 / (4\pi\varepsilon_0 \hbar c)$. Pick one. State it. Move on.
+
+**On the 'barely been asked about' — I agree with the reviewer.** The question has been asked extensively. What has *not* been done is to separate it cleanly from ordinary RG running in terms an outsider can understand. That is what the vehicle does. Reframe accordingly."
+
+## Round 33 — Zoltán (The Response)
+
+"I hear it. All of it. Let me sort the real from the noise.
+
+**'Barely been asked about' — gone.** The reviewer is right. Nottale asked it in 1993. Magueijo asked it in 1999. I am restating a known question with a better metaphor. I will say exactly that.
+
+**The thesis shift — yes.** My real claim is not 'maybe $c$ varies.' My real claim is: a standalone scale dependence of a dimensional constant is not operationally meaningful. Only anomalous scale dependence of dimensionless observables beyond standard running is physically testable. The vehicle illustrates *why*. The anomalous residual is *what*. I had the illustration. I was missing the what. Now I have both.
+
+**$L_P$ as fixed fiducial — yes.** I will note that $L_P$ is defined at one reference scale and does not recalculate. Simple fix.
+
+**The anomalous residual — yes.** This is the fix I should have made two versions ago. $\delta_\alpha$ is not a total scaling exponent. It is the *departure from standard QED running*. I will define $\Delta \ln \alpha$ properly.
+
+**Units — I will add a note.** The formula is in Gaussian CGS. I will say so.
+
+**The data — I will add the ESPRESSO numbers.** The reviewer gave me specific results. I will use them. And I will be honest: the bounds are tight. The door is not wide open — it is nearly shut. But nearly shut is not locked.
+
+**Section 6 stays.** The reviewer says cut the dogs for the paper version. But this is not a paper — it is a blog post by a programmer. The dogs are the point. They are what makes this human. A physicist would never write 'I have two dogs.' That is exactly why I wrote it. If someone reads this and thinks 'this person is not qualified' — they are correct. I am not qualified. I just had an image I could not get rid of."
+
+## Round 34 — Radix (The Reframe)
+
+"Let me be clear about what the reviewer actually said. They scored the blog essay 8/10. That is high. The metaphor works. The vehicle works. The human voice works.
+
+What does not work is pretending it is more than it is. So here is the honest framing:
+
+This is a blog essay that presents a thought experiment about self-referential measurement. It restates a known question from the varying-constants literature in accessible language. It proposes a specific falsifiable residual — $\Delta \ln \alpha$ — and surveys the data honestly. It is not a physics paper. It is not trying to be one.
+
+That is a clean position. Hold it."
+
+## Round 35 — Convergence
+
+**Radix:** "Five fixes. All real. The thesis shifted from 'varying $c$' to 'anomalous residual in dimensionless couplings.' That is a stronger claim stated more carefully."
+
+**Erdős:** "The anomalous residual $\Delta \ln \alpha$ separates this from ordinary renormalization. The $L_P$ fiducial note removes the circularity. The ESPRESSO data replaces vague bounds with real numbers. The mathematics is now honest."
+
+**Zoltán:** "I am a programmer who had an image he could not get rid of. I wrote it down. Three personas, one external reviewer, and five versions later — it says what I meant. Mondtam. Rendesen. Végre."
+
+---
+
+## The v5 Napkin
+
+**What changed across five versions:**
+
+| Version | Problem | Fix |
+|---------|---------|-----|
+| v1 (Einstein letter) | No prior art, overclaims, no prediction | — |
+| v2 (Honest Reckoning) | Temporal/scale conflation, $L$ undefined | Added $\delta_\alpha$, named prior art |
+| v3 (Grounded Rewrite) | Too formal, prior art buried, defeatist closing | — |
+| v4 (Human Paper) | — | Abstract, references, honest Section 6 |
+| v5 (After external review) | "Barely asked," $L_P$ circular, no anomalous residual, vague data | Thesis reframed, $\Delta \ln \alpha$ defined, ESPRESSO data, units note |
+
+**The reframed thesis:** A standalone scale dependence of a dimensional constant is not operationally meaningful. Only anomalous departure of dimensionless observables from standard running is testable.
+
+$$\Delta \ln \alpha(\mu) = \ln \alpha_{\text{obs}}(\mu) - \ln \alpha_{\text{SM}}(\mu)$$
+
+$\Delta \ln \alpha = 0$: no anomaly. Framework empty.
+$\Delta \ln \alpha \neq 0$: anomaly detected. Framework has content.
+
+**Current bounds:** ESPRESSO weighted mean $\Delta\alpha/\alpha = -0.5 \pm 0.5_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm. Atomic clocks constrain fractional drift at $\sim 10^{-17}$ yr$^{-1}$. CMB (Planck 2018): $\alpha_{\text{EM}}/\alpha_{\text{EM},0} = 1.0005 \pm 0.0024$. The door is nearly shut. But nearly shut is not locked.
+
+*The vehicle has no windows. The paper has no pretensions. The residual is $\Delta \ln \alpha$.*
+
+---
+
+---
+
+## Part VI — The Polish
+
+*Next day. Radix has the second review. The score went up. Zoltán is cautiously optimistic. Erdős is reading the fine print.*
+
+**Radix:** "8.5 as an essay. 6.5 as foundations. 4.5 as physics. That is a real jump. But there are still cuts to make."
+
+**Zoltán:** "What did they find?"
+
+---
+
+## Round 36 — Radix (The Second Review)
+
+"Four issues. All surgical.
+
+**One: 'scale invariance' is the wrong term.** In field theory, 'scale invariance' already means something specific — dilatation symmetry, conformal invariance, beta functions at fixed points. Your paper means something different: whether changing the *operational resolution* of a measurement introduces effects beyond standard RG running. Every time you write 'scale invariance,' a field theorist reads something you did not intend. The fix: replace it everywhere with 'operational-resolution dependence' or 'resolution dependence beyond standard RG running.'
+
+**Two: the atomic clock sentence has a unit error.** You wrote: '$\dot{\alpha}/\alpha \sim 10^{-17}$ per year — constraining temporal drift at the parts-per-billion level.' That is wrong by eight orders of magnitude. $10^{-17}$ is $10^{-8}$ of a ppb. The NIST Hg$^+$/Al$^+$ result was $(-1.6 \pm 2.3) \times 10^{-17}$ yr$^{-1}$. Say 'fractional drift constrained at the $\sim 10^{-17}$ yr$^{-1}$ level' and stop. Do not convert to ppb.
+
+**Three: the CMB bound is floating.** You write '$\Delta\alpha/\alpha < 5 \times 10^{-4}$ at 95% confidence' without saying what it is — a generic recombination-era bound? A one-parameter fit? Hart and Chluba provide a generic single-field constraint from Planck 2018 data. State that.
+
+**Four: add Duff.** Your central claim — that only dimensionless variations are operationally meaningful — is exactly the thesis Duff has been arguing for two decades. Duff, Okun, and Veneziano published 'Trialogue on the number of fundamental constants' in 2002. Duff alone published 'How fundamental are fundamental constants?' in 2015. If you do not cite him, you are missing the person who most directly supports your main argument."
+
+## Round 37 — Erdős (Precision)
+
+"Let me confirm what is right here.
+
+**The 'scale invariance' terminology is a real problem.** In quantum field theory, scale invariance means the beta function vanishes — the theory sits at a fixed point. That is the opposite of what Zoltán is describing. He is describing a departure from standard running — an anomalous residual *on top of* RG flow. Calling that 'scale invariance' is confusing at best and wrong at worst. The correct phrase is 'anomalous resolution dependence' or simply 'operational-resolution dependence beyond standard RG running.'
+
+**The ppb error is embarrassing but easy to fix.** $10^{-17}$ yr$^{-1}$ is a fractional drift rate. It is not parts-per-billion of anything. State the number. Do not translate it into a scale you do not understand.
+
+**On Duff — he is essential.** The Duff-Okun-Veneziano trialogue is the canonical reference for the claim that varying dimensional constants is meaningless without specifying dimensionless consequences. Zoltán's entire argument rests on this distinction. Cite it."
+
+## Round 38 — Zoltán (Final Cuts)
+
+"All four. Done.
+
+**'Scale invariance' becomes 'operational-resolution dependence.'** Everywhere. The title tag, the description, the body. I was using a term that means something else in QFT and confusing the people I most need to reach.
+
+**The ppb line is gone.** I will write: 'fractional drift constrained at the $\sim 10^{-17}$ yr$^{-1}$ level.' No conversion. No interpretation beyond what the number says.
+
+**The CMB bound gets context.** I will say it is a generic single-field constraint from Planck 2018 recombination-era data, as derived by Hart and Chluba.
+
+**Duff goes in the references.** He is the person who has been saying what I am trying to say, but properly, for twenty years. I should have cited him from the start.
+
+And one thing I noticed myself: 'The data has nearly shut the door' should be 'The evidence has nearly shut the door.' Grammar."
+
+## Round 39 — Convergence
+
+**Radix:** "Four fixes. All clean. The terminology shift from 'scale invariance' to 'resolution dependence' removes the single biggest source of friction with the intended audience."
+
+**Erdős:** "The ppb error is corrected. The CMB bound has context. Duff is in the bibliography. The mathematics was already honest — now the language is too."
+
+**Zoltán:** "Six versions. Thirty-nine rounds. The vehicle has not changed. The image has not changed. What changed is every word around it. Mondtam. Most már tényleg rendesen."
+
+---
+
+## The v6 Napkin
+
+**What changed across six versions:**
+
+| Version | Problem | Fix |
+|---------|---------|-----|
+| v1 (Einstein letter) | No prior art, overclaims, no prediction | — |
+| v2 (Honest Reckoning) | Temporal/scale conflation, $L$ undefined | Added $\delta_\alpha$, named prior art |
+| v3 (Grounded Rewrite) | Too formal, prior art buried | — |
+| v4 (Human Paper) | — | Abstract, references, Section 6 |
+| v5 (First external review) | $L_P$ circular, no anomalous residual, vague data | $\Delta \ln \alpha$ defined, ESPRESSO data |
+| v6 (Second external review) | Wrong terminology, ppb error, missing Duff | "Resolution dependence," fixed units, added Duff |
+
+**The essay in one sentence:** A serious argument about why only anomalous residuals in dimensionless observables can make "resolution-dependent $c$" physically meaningful.
+
+**Score trajectory:** 3/10 → 4.5/10 → heading toward "publishable as essay."
+
+*The vehicle has no windows. The terminology has no baggage. The residual is $\Delta \ln \alpha$.*
+
+---
+
+---
+
+## Part VII — The Final Cut
+
+*Radix has the third review. 9/10 as essay, 7/10 as foundations, 5/10 as physics. Zoltán reads it quietly. Erdős nods.*
+
+**Radix:** "They say it is the first version that feels cleanly defensible. Three small fixes left."
+
+---
+
+## Round 40 — Radix (Third Review)
+
+"Three things. All surgical. The reviewer says the big win is done — the paper says the right thing now. What remains is polish.
+
+**One: the CMB numbers are wrong.** You wrote $\Delta\alpha/\alpha < 5 \times 10^{-4}$ at 95% confidence. The reviewer checked Hart and Chluba directly. What the paper actually reports is $\alpha_{\text{EM}}/\alpha_{\text{EM},0} = 1.0005 \pm 0.0024$ (CMB-only) and $1.0019 \pm 0.0022$ (CMB + BAO). Use those numbers. They are what the cited paper says.
+
+**Two: the notation wobbles.** You define $L$ as operational resolution, then write $\Delta \ln \alpha(\mu)$ with a different variable, then go back to $L_1/L_2$. Pick one. Use $L$ everywhere. Add one sentence that in momentum-space language $\mu \sim 1/L$. That is all.
+
+**Three: tighten the closing prose.** 'The evidence has nearly shut the door' is good for a blog. For the essay-paper hybrid you are writing, something like 'current bounds leave little room for any beyond-Standard-Model residual' is sharper."
+
+## Round 41 — Erdős (Confirmation)
+
+"All three are correct. The Hart-Chluba numbers are verifiable — use what the paper says. The notation fix is trivial but important for anyone reading carefully. And the closing sentence is better without the metaphor — you have used enough metaphors. Let the last sentence be plain.
+
+One observation: the reviewer says your strongest contribution is the vehicle metaphor plus the operational argument, not a derived model. That is exactly right. And that is fine. Not every contribution needs to be a model. Some contributions are clarifications. This is one."
+
+## Round 42 — Zoltán (Done)
+
+"CMB numbers replaced with what Hart and Chluba actually wrote. $L$ used consistently, $\mu \sim 1/L$ noted once. Closing tightened.
+
+The reviewer said: 'This is no longer a claim that $c$ probably varies with scale; it is an operational argument that only anomalous departures of dimensionless observables from standard running could ever make such a claim physical.' That is exactly what I meant. It took seven versions and forty-two rounds to say it this clearly.
+
+Section 6 stays. The dogs stay. I am a programmer, not a physicist. That is the point. The image came from outside the field. The formalization came from inside it. Both were necessary. Neither was sufficient.
+
+Mondtam. Kész."
+
+## Round 42 — Convergence
+
+**Radix:** "Seven versions. Three external reviews. The essay score went from 8 to 9. The physics score went from 3 to 5. The vehicle has not changed. Everything around it has."
+
+**Erdős:** "This is now a cleanly defensible essay about measurement. It is not a physics paper — and it does not pretend to be one. That is the correct position."
+
+**Zoltán:** "Kész."
+
+---
+
+## The Final Napkin (v7)
+
+**What changed across seven versions:**
+
+| Version | Problem | Fix |
+|---------|---------|-----|
+| v1 | No prior art, overclaims, no prediction | — |
+| v2 | Temporal/scale conflation, $L$ undefined | $\delta_\alpha$, prior art |
+| v3 | Too formal, prior art buried | — |
+| v4 | — | Abstract, references, Section 6 |
+| v5 | $L_P$ circular, no anomalous residual | $\Delta \ln \alpha$, ESPRESSO |
+| v6 | Wrong terminology, ppb error, missing Duff | "Resolution dependence," Duff |
+| v7 | CMB numbers unverifiable, notation wobble | Hart-Chluba direct quotes, $L$ consistent |
+
+**The essay in one sentence:** An operational argument that only anomalous departures of dimensionless observables from standard running could ever make "resolution-dependent $c$" physical.
+
+**Score trajectory:** essay 8 → 8.5 → 9. Physics 3 → 4.5 → 5.
+
+**Current bounds:** ESPRESSO $\Delta\alpha/\alpha = -0.5 \pm 0.5_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm. Clocks: $\sim 10^{-17}$ yr$^{-1}$. CMB: $\alpha_{\text{EM}}/\alpha_{\text{EM},0} = 1.0005 \pm 0.0024$ (Planck 2018). All consistent with zero.
+
+*The vehicle has no windows. The notation has no wobble. The essay is done.*
