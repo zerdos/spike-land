@@ -1,5 +1,5 @@
 ---
-title: "On the Scale-Dependence of Light: A Thought Experiment in Self-Referential Measurement"
+title: "Self-Referential Measurement and the Operational Meaning of Varying Dimensional Constants"
 slug: "on-the-scale-dependence-of-light"
 description: "A standalone scale dependence of a dimensional constant is not operationally meaningful. Only anomalous resolution dependence of dimensionless observables beyond standard RG running is testable. A thought experiment about why — and what the data says."
 date: "2026-03-28"
@@ -42,7 +42,7 @@ This is not a paradox. It is a constraint on what measurement can tell us: **a d
 
 ## 2. Two symmetries, not one
 
-In 1905, Einstein postulated that the speed of light is the same for all *inertial observers*. That is Lorentz invariance — a symmetry under changes of velocity. He did not postulate that $c$ is the same at all *operational resolutions*. These are different symmetry claims. Lorentz invariance is about motion. The distinct question here is whether changing operational resolution introduces any unit-independent effect beyond standard renormalization-group running. One claim has been tested to extraordinary precision. The other is the subject of a long-running literature that most people outside the field have never encountered.
+In 1905, Einstein postulated that the speed of light is the same for all *inertial observers*. That is Lorentz invariance — a symmetry under changes of velocity. He did not postulate that $c$ is the same at all *operational resolutions*. These are different symmetry claims. Lorentz invariance is about motion. The distinct question here is whether changing operational resolution introduces any unit-independent effect beyond standard renormalization-group running. One claim has been tested to extraordinary precision. The other has been explored in a substantial literature on varying constants.
 
 This question was formalized decades ago. Nottale proposed *scale relativity* in 1993, postulating that the laws of physics should be invariant under changes of resolution scale, just as they are under Lorentz boosts [1]. Magueijo and Albrecht developed varying-speed-of-light cosmologies in 1999, with a concrete dynamical model and a Lagrangian [2]. Barrow explored the broader question of varying constants in 2002 [3]. Duff, Okun, and Veneziano argued in their 2002 *trialogue* that only variations of dimensionless constants are operationally meaningful — varying a dimensional constant like $c$ alone is ambiguous without specifying which dimensionless observable changes [4]. Uzan published comprehensive reviews of varying fundamental couplings [5]. I am not asking an unasked question. I am restating a known question with what I hope is a better metaphor.
 
@@ -60,17 +60,13 @@ If $c$ varies with resolution while $e$ and $\hbar$ vary differently, $\alpha$ w
 
 ## 3. A toy model — and its limits
 
-I want to be honest about this section: what follows is the simplest function I could write down, not a derived result. It is a toy.
+The vehicle motivates a question. To make that question precise, we need to move from the dimensional constant $c$ — which cannot be tested in isolation — to a dimensionless observable that can.
 
-Let $L$ be an operational resolution scale. I will not pretend I know exactly what $L$ is. It could be the probe wavelength, the apparatus size, the coarse-graining cutoff, or an RG scale $\mu$ in some future theory. These are not interchangeable, and until someone pins $L$ to a specific physical observable, the model has a free variable on top of its free parameter. I am stating this upfront because hiding it would be dishonest.
+Let $L$ be an operational resolution scale. I will not pretend I know exactly what $L$ is. It could be the probe wavelength, the apparatus size, the coarse-graining cutoff, or an RG scale in some future theory (in momentum-space language, roughly $\mu \sim 1/L$). These are not interchangeable, and until someone pins $L$ to a specific physical observable, the framework has a free variable on top of its free parameter. I am stating this upfront because hiding it would be dishonest.
 
-The simplest ansatz for a resolution-dependent speed of light:
+One could write a toy ansatz like $c(L) = c_0 (L/L_{P,0})^\delta$, where $L_{P,0}$ is a fixed fiducial Planck length and $\delta \ll 1$. But this equation is a disposable heuristic — it is not doing the real work. Its only purpose is to motivate the move to a dimensionless quantity that *can* be tested.
 
-$$c(L) = c_0 \left(\frac{L}{L_{P,0}}\right)^{\delta}$$
-
-where $L_{P,0}$ is the Planck length defined as a *fixed fiducial value* at one reference scale (not recalculated if the constants vary — otherwise the formula is circular, since $L_P = \sqrt{\hbar G / c^3}$ depends on the very constants in question), and $\delta \ll 1$ is a dimensionless scaling exponent.
-
-Now, $\alpha$ already runs with energy in standard QED. The question is whether there is an *additional* departure — an anomalous residual beyond the Standard Model prediction. Define the anomalous residual at operational resolution $L$ (in momentum-space language, this corresponds roughly to a probe scale $\mu \sim 1/L$):
+That quantity is $\alpha$. The electromagnetic coupling already runs with energy in standard QED. The question is whether there is an *additional* departure — an anomalous residual beyond the Standard Model prediction. Define:
 
 $$\Delta \ln \alpha(L) = \ln \alpha_{\text{obs}}(L) - \ln \alpha_{\text{SM}}(L)$$
 
@@ -108,17 +104,13 @@ Three things are missing before this thought experiment becomes testable:
 
 2. **A mechanism.** Why should $c$ depend on resolution? How should the other constants vary? Nottale offered a fractal spacetime geometry. Magueijo and Albrecht offered a dynamical scalar field. This essay offers neither — only the question and a toy parametrization.
 
-3. **A testable anomalous residual.** Measure $\alpha$ at two widely separated operational resolutions with enough precision to detect $\Delta \ln \alpha \neq 0$ beyond standard QED running — and distinguish that departure from temporal drift. This is already being done. So far, no anomaly has been found.
+3. **A testable anomalous residual.** Compare precision measurements of $\alpha$ across widely separated probe scales against Standard Model running, and search for a nonzero residual $\Delta \ln \alpha$ — distinguishing any departure from temporal drift. This is already being done. So far, no anomaly has been found.
 
 ---
 
-## 6. Why I wrote this
+## 6. Closing
 
-I am a programmer, not a physicist. I have two dogs. I live in Brighton. I have no business writing about the fine-structure constant.
-
-But I had this image in my head — a vehicle that changes your size, with no windows — and I could not get rid of it. The image said something simple: *you cannot tell if $c$ changes with resolution because you change with it.* That felt like it should be either obviously wrong or obviously known. It turned out to be known — Nottale, Magueijo, Barrow, Duff, Uzan, others got there decades before me. But the *image* — the sticky, human-scale version of the argument — I had not seen stated this way.
-
-So I wrote it down. I put it through a [math arena](/blog/strange-loops-arena) — 42 rounds, three personas, three external reviews. They could not destroy the thought experiment. But they showed me, correctly, that a thought experiment is not a theory. The metaphor is mine. The physics belongs to the people who did it properly.
+I am a programmer, not a physicist. I had an image in my head — a vehicle that changes your size, with no windows — and I could not get rid of it. It said something simple: *you cannot tell if $c$ changes with resolution because you change with it.* That turned out to be a known question — Nottale, Magueijo, Barrow, Duff, Uzan got there decades before me. The image was mine. The physics was theirs. I put it through a [math arena](/blog/strange-loops-arena) — 45 rounds, three personas, three external reviews — to find out where the image stopped and the physics started.
 
 This note does not propose a new dynamical theory. Its contribution is operational: a measurement argument showing why a standalone resolution dependence of a dimensional constant is not observable, and a falsifiable way to restate the question in terms of anomalous residuals of dimensionless observables. Current bounds leave little room for any such anomaly. But the question the vehicle asks is real.
 
@@ -144,4 +136,4 @@ This note does not propose a new dynamical theory. Its contribution is operation
 
 ---
 
-*The full derivation and stress test — 42 rounds across seven arena sessions — is at [Strange Loops Arena](/blog/strange-loops-arena).*
+*The full derivation and stress test — 45 rounds across eight arena sessions — is at [Strange Loops Arena](/blog/strange-loops-arena).*
