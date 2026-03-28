@@ -1,0 +1,290 @@
+---
+title: "The Physics Table Arena: Ten Personas, Five Fixes, One Vehicle"
+slug: "the-physics-table-arena"
+description: "The six new physicists read Zoltán's essay and help him fix it. Wilson defines L, 't Hooft tests gauge invariance, Magueijo demands a Lagrangian, Uzan separates three channels, and Duff judges whether anything was added. The v10 emerges."
+date: "2026-03-28"
+author: "The Math Arena"
+tags: ["physics", "arena", "collaboration", "varying-constants", "dimensionless-observables"]
+featured: true
+draft: false
+primer: "Six physicists walk in. Five fixes come out. The vehicle gets its final service."
+heroPrompt: "Six physicists and a programmer with two dogs around a wooden table covered in papers and equations, warm lighting, each with distinct posture and energy — one drawing fractals, one tapping a frequency spectrum, one erasing a blackboard, one pointing at data on a laptop, chalkboard behind showing alpha = 1/137, intimate seminar atmosphere, photorealistic"
+heroImage: "/blog/the-physics-table-arena/hero.png"
+---
+
+## Previously
+
+The [vehicle with no windows](/blog/on-the-scale-dependence-of-light) went through [45 rounds of arena testing](/blog/strange-loops-arena), three external reviews, and a full rewrite. It scored 8.5/10 as a conceptual note and 5/10 as a physics note. The review said: good essay, not yet a paper. Five specific fixes were identified.
+
+Six new personas were introduced at [The Physics Table](/blog/the-physics-table) — physicists whose work the essay already cites. They are here to help, not to attack.
+
+**Arena rules:** Ten personas. Collaborative. Rotate randomly. The goal is not to defend the vehicle — it already survived. The goal is to make the note rigorous.
+
+**Returning personas:** Zoltán (the proposer), Erdős (the graph theorist), Daft Punk (the signal processors), Radix (the systems architect).
+
+**New personas:** Wilson (renormalization group), 't Hooft (gauge theory), Magueijo (VSL cosmologies), Nottale (scale relativity), Uzan (phenomenology), Duff (the trialogue).
+
+---
+
+## Round 1 — Wilson
+
+"I have read your note. The vehicle is a good thought experiment — it makes the co-scaling argument accessible. But your $L$ is doing too many jobs.
+
+In a Wilsonian effective field theory, the cutoff $\Lambda$ separates the degrees of freedom you integrate out from those you keep. The RG sliding scale $\mu$ is a different object — it is the energy at which you evaluate running couplings. Your 'probe wavelength' is yet another thing — a physical observable tied to the experiment. And 'apparatus size' is a macroscopic property of the detector.
+
+These four quantities are related in specific theories, but they are not the same thing. Your caveat in Section 1 flags this. Good. But flagging is not resolving. In the current note, $L$ is a placeholder for whichever of these the reader prefers. That is honest, but it means your $\delta_\alpha$ absorbs the ambiguity. Until someone writes down a model that maps $L$ to a specific one of these scales, the toy parametrization is a sketch, not a prediction.
+
+Your $L$ is not my $\mu$. Let me show you the difference. It matters."
+
+## Round 2 — Zoltán
+
+"I know. I used $L$ because I did not know which one to choose, and I did not want to pretend I did. But you are saying that the caveat is not enough?
+
+Wilson, be specific. If I am writing a measurement argument — not a dynamics proposal — what should $L$ be?"
+
+## Round 3 — Wilson
+
+"In a measurement argument, $L$ should be identified with the probe wavelength — the physical scale at which the experiment accesses the coupling. That is what experimentalists control. The RG scale $\mu$ is a theoretical construct that becomes operationally meaningful only when you connect it to a probe through a calculation. In QED, the connection is clean: you measure $\alpha$ through a scattering process at center-of-mass energy $\sqrt{s}$, and $\mu \sim \sqrt{s}$ to leading order. But that mapping is theory-dependent. In your note, you do not have a theory. You have a parametrization.
+
+So say this: $L$ in this note refers to the physical probe scale — the wavelength or energy at which $\alpha$ is determined. The mapping to a Wilsonian cutoff or an RG scale requires a dynamical model not provided here.
+
+That is precise enough for a conceptual note and does not overclaim."
+
+## Round 4 — Nottale
+
+"Wilson and I agree on the diagnosis but not the prescription. In scale relativity, $L$ is not a probe wavelength, a cutoff, or an RG scale. It is a genuine dynamical variable — the resolution $\varepsilon$ of the observation itself. The laws of physics are written in terms of both position $x$ and resolution $\varepsilon$. Scale transformations form a group, and the Planck scale plays the role of an invariant limit, analogous to $c$ for velocities.
+
+You call it $L$. I call it $\varepsilon$. We have been asking the same question since 1993. The difference is that in my framework, $\varepsilon$ has a symmetry group, transformation laws, and a fractal geodesic equation. In your note, $L$ has none of these. That is fine — you are writing a measurement argument, not proposing dynamics. But if you want to close the gap between note and theory, the symmetry group is where to look."
+
+## Round 5 — Uzan
+
+"While we are being precise about everything — your reference [2].
+
+You write that the 2019 SI redefinition fixes $c$. That is not quite right. The exact value $c = 299{,}792{,}458$ m/s dates to the 1983 redefinition of the metre by the 17th CGPM. The 2019 reformulation expressed the SI through defining constants, but $c$ had already been exact for 36 years by then. It is a small point, but in a note about metrological precision it will be noticed."
+
+## Round 6 — Zoltán
+
+"Köszi. Fixed. Reference [2] now reads: 'In SI, $c$ has had an exact fixed value since the 1983 redefinition of the metre (17th CGPM, Resolution 1, 1983); the 2019 SI reformulation retained this in explicit-constant form.'
+
+Wilson, Nottale — I hear you both. The note will say: $L$ refers to the physical probe scale; the mapping to a Wilsonian cutoff, RG scale, or scale-relativistic resolution variable requires a dynamical model not provided here. That is honest. Yes?"
+
+## Round 7 — Wilson
+
+"Yes. That is the correct statement for a conceptual note."
+
+## Round 8 — 't Hooft
+
+"Good. Now, before we go further: is your $\Delta \ln \alpha$ gauge-invariant?
+
+This is not a pedantic question. In QED, the running of $\alpha$ depends on the renormalization scheme — $\overline{\text{MS}}$, on-shell, momentum subtraction. The numerical value of $\alpha(\mu)$ at a given scale depends on which scheme you use. If your anomalous residual $\Delta \ln \alpha = \ln \alpha_{\text{obs}} - \ln \alpha_{\text{SM}}$ is scheme-dependent, it is not a physical observable. It is a bookkeeping artifact."
+
+## Round 9 — Erdős
+
+"This is the right question. Let me answer it before Zoltán panics.
+
+$\alpha$ evaluated at a physical momentum transfer — say, through a scattering cross-section at $\sqrt{s}$ — is scheme-independent to the order at which the calculation is performed. It appears in physical observables. The residual $\Delta \ln \alpha$ is defined as the difference between the observed value at a physical scale and the Standard Model prediction at the same physical scale. Both sides are scheme-independent. The subtraction is clean.
+
+If Zoltán had defined $\Delta \ln \alpha$ using a scheme-dependent running coupling at an arbitrary $\mu$ not tied to a physical process, you would be right to object. But he did not. The definition uses $\alpha_{\text{obs}}(L)$ — a physical measurement — minus $\alpha_{\text{SM}}(L)$ — a physical prediction. Both are gauge-invariant."
+
+## Round 10 — 't Hooft
+
+"Correct. The residual is well-defined as stated. Proceed.
+
+But I have a second point. Your sentence in Section 4: 'If $\Delta \ln \alpha = 0$ at all resolutions, the framework is empty.' This is too strong.
+
+If $\Delta \ln \alpha = 0$ in your parametrization, you have shown that *this particular test* finds no signal. You have not shown the framework is empty. There could be other dimensionless or relational observables — the proton-to-electron mass ratio $\mu_{pe}$, the gravitational fine-structure constant $\alpha_G$, ratios of quark masses — that carry a signal even when $\alpha$ does not. The abstract already says 'or other relational observables defined by a specific dynamical model.' The body should match.
+
+Say: the framework has no observable content *at the level of this parametrization*."
+
+## Round 11 — Zoltán
+
+"You are right. The abstract was careful; the body was not. Fixed: 'If $\Delta \ln \alpha = 0$ at all resolutions, the framework has no observable content at the level of this parametrization.'"
+
+## Round 12 — Duff
+
+"Good. 't Hooft is correct, and the fix is the right one. This is exactly the distinction the trialogue made in 2002: the question is not about 'the framework' in the abstract. It is about which specific dimensionless observable you test with which specific experiment. A null result in one observable constrains the parameter space. It does not close the question."
+
+## Round 13 — Magueijo
+
+"Now — where is the action?
+
+Your note cites my 1999 paper. Thank you. But you treat VSL models as background literature. Let me tell you what it actually took to make 'varying $c$' into physics.
+
+You need three things. First, you must decide which formulation of general relativity you are modifying — the Einstein-frame metric, the Jordan frame, or a bimetric construction. This determines what breaks and what survives. Second, you must specify how Lorentz invariance is affected — is it broken, deformed, or preserved in a locally inertial frame? Third, you need new degrees of freedom — in my case, a scalar field that couples to the metric and determines $c$ dynamically.
+
+Your note has none of these. And that is fine — you are not proposing dynamics. But you should know: the reason the vehicle argument feels complete is that it *avoids* the hard part. The hard part is writing the Lagrangian."
+
+## Round 14 — Nottale
+
+"João is right that a Lagrangian is needed for dynamics. But the measurement argument stands without one. Zoltán's note does not need a Lagrangian any more than Mach's principle needed general relativity to be stated. The argument came first. The formalization came later.
+
+What the note does need is honesty about where it sits: below the level of either my framework or João's. It is a measurement argument. It says: before you write the Lagrangian, understand what measurement can and cannot tell you. That is a valid contribution."
+
+## Round 15 — Daft Punk
+
+"You are both saying the same thing with different genres. Magueijo's complaint is: 'You have the question but not the answer.' Nottale's defense is: 'The question is worth writing down separately from the answer.'
+
+In music: you have the melody. You do not have the arrangement. Both are real. Neither is complete without the other. But you can publish the melody."
+
+## Round 16 — Zoltán
+
+"Köszönöm, Daft Punk. That is exactly right. The note publishes the melody. The arrangement is for someone who can write a Lagrangian."
+
+## Round 17 — Uzan
+
+"I want to look at Channel 3 now. You write: '$\alpha$ is measured at vastly different energy scales: atomic spectroscopy, muon $g-2$, and $e^+e^-$ collisions at the $Z$-pole.'
+
+Muon $g-2$ is not a direct measurement of the running electromagnetic coupling in the way this sentence implies. The anomalous magnetic moment $(g-2)_\mu$ is a precision Standard Model observable that constrains $\alpha$ indirectly — through its sensitivity to QED, hadronic, and electroweak contributions. It is not a measurement of $\alpha$ at the GeV scale. The direct measurements of the running of $\alpha$ come from Bhabha scattering, the electroweak precision program at LEP, and low-energy determinations from the anomalous magnetic moment of the electron, not the muon.
+
+Replace the example list. Say: 'the effective electromagnetic coupling is constrained across widely separated scales, from atomic and low-energy determinations of $\alpha(0)$ to scattering-based determinations of the running coupling at GeV-to-$Z$-pole scales.' That is accurate without naming the wrong experiment."
+
+## Round 18 — Zoltán
+
+"Köszi, Uzan. Fixed. No more muon $g-2$ in Channel 3."
+
+## Round 19 — Uzan
+
+"Good. Now — your reference [10]. You cite Martins 2025, *Reports on Progress in Physics* **88**, 017001.
+
+I know Carlos Martins' work well. His comprehensive review is from 2017: *Rep. Prog. Phys.* **80**, 126902. I am not aware of a 2025 review in that journal with the volume and page number you cite. He published in 2025, yes — a cosmography paper in *Physics of the Dark Universe* — but that is not the reference you describe.
+
+This is a credibility problem. If a physicist checks that citation and it does not exist, they will question everything else in the note. Fix it."
+
+## Round 20 — Zoltán
+
+"Basszus. You are right. The reference was hallucinated — it came from an earlier draft and was never verified. Replacing with Martins 2017, *Rep. Prog. Phys.* **80**, 126902. And in the body: 'Martins' 2017 review' instead of '2025.'
+
+I am sorry. That should not have survived to this version."
+
+## Round 21 — Radix
+
+"It survived because the review pipeline did not include a reference-verification step. That is a process failure, not a character failure. Add it to the checklist: every numbered reference gets verified against the actual publication before any version is tagged as final."
+
+## Round 22 — Uzan
+
+"One more. Your reference [21] — the ALMA paper. The entry says: 'S. Muller et al., Constraints on the variation of fundamental constants from ALMA molecular absorption observations, *Astron. Astrophys.*, 2026.' That is incomplete. The actual title is 'A sub-ppm upper limit on the cosmological variations of the fine structure constant.' Give the correct title and the arXiv identifier. An incomplete reference is better than a wrong one, but a complete reference is better than both."
+
+## Round 23 — Zoltán
+
+"Fixed. Reference [21] now has the correct title."
+
+## Round 24 — Duff
+
+"Let me assess what you have now.
+
+The trialogue I published with Okun and Veneziano in 2002 made one argument: varying a dimensional constant like $c$ or $\hbar$ in isolation has no operational meaning. Only dimensionless combinations are physical. Your note restates this argument with a thought experiment — the vehicle — and applies it to the specific question of resolution dependence. Then you define an anomalous residual $\Delta \ln \alpha$ and survey the constraints.
+
+What have you added to my argument?
+
+Three things. First, the vehicle itself. It is a better metaphor than anything in the trialogue. It gives the reader the right intuition in thirty seconds. That has pedagogical value. Second, you separated the three observational channels explicitly. The trialogue did not do that. Uzan's reviews do, but your three-channel structure — temporal, spatial/redshift, probe-scale — is clean and easy to teach from. Third, the anomalous residual $\Delta \ln \alpha$ as an explicit subtraction of Standard Model running is well-presented. It is not new, but the presentation is clear.
+
+What you have not added: a model, a theorem, a calculation, or a data analysis. So this is a conceptual note. It is a competent conceptual note. It does not need to be more than that."
+
+## Round 25 — Erdős
+
+"Duff is correct. The note is what it is. The question is whether it pretends to be more.
+
+I read the closing. It says: 'I am a programmer, not a physicist.' In a blog post, that is charming. In a technical note — even a conceptual one — it weakens the voice. The reader should trust the argument, not the author's credentials. If the argument is sound, the author's profession is irrelevant. If the argument is unsound, the confession does not save it.
+
+Cut it. Start the closing with 'I had an image in my head.' The subsequent sentence — 'The image was mine. The physics was theirs.' — already communicates everything the profession line was trying to say, with more authority."
+
+## Round 26 — Zoltán
+
+"Rendben. Cut. The closing now starts: 'I had an image in my head — a vehicle that changes your size, with no windows — and I could not get rid of it.'
+
+Erdős, is there anything else?"
+
+## Round 27 — Erdős
+
+"No. The mathematics is honest. The claims are bounded. The references — once corrected — are sound. I would sign this."
+
+## Round 28 — Wilson
+
+"The $L$ caveat is correctly placed and correctly worded. The note does not overclaim on the RG side. I have no further objections."
+
+## Round 29 — 't Hooft
+
+"The residual is gauge-invariant. The softened 'no observable content' sentence is correct. The scope paragraph distinguishes this from the stronger VSL literature. The note is clean."
+
+## Round 30 — Nottale
+
+"The note acknowledges scale relativity as a formalization of the question it raises. The ambiguity of $L$ is stated rather than hidden. I would have preferred the note to go further — but that is not its purpose. I accept it as written."
+
+## Round 31 — Magueijo
+
+"The note correctly says it offers no mechanism. It does not pretend to replace my work or Laurent's. The 'scope of the present argument' paragraph does what it should: it says the vehicle is about co-scaling, not about the full VSL programme. I have no objection. But I want to see the Lagrangian someday."
+
+## Round 32 — Uzan
+
+"The three-channel structure is correct. The data are current. The references are — now — accurate. The mapping from constraint to claim is honest about its model dependence. The note is a useful summary for non-specialists. I would cite it as pedagogical context."
+
+## Round 33 — Duff
+
+"You have restated my argument with a better metaphor and a cleaner survey. That is a contribution. Not a large one, but a real one. I approve."
+
+## Round 34 — Daft Punk
+
+"The melody is clean. No false notes. The arrangement is someone else's job. Ship it."
+
+## Round 35 — Radix
+
+"All five fixes are applied. The references are verified. The claims match the evidence. The scope is bounded. The note says what it means and does not say what it does not mean. Version 10."
+
+## Round 36 — Zoltán
+
+"Wilson taught me what $L$ is not. 't Hooft tested whether my subtraction means anything — it does. Magueijo told me where the hard work starts — and that the note stops before it. Nottale showed me the symmetry group I do not yet have. Uzan caught two bad references and one bad example. Duff judged the contribution honestly. Erdős cut the apology.
+
+Ten personas. Five fixes. One vehicle. Kész. Tényleg kész.
+
+Köszönöm mindenkinek."
+
+---
+
+## Convergence
+
+**Wilson:** "The $L$ caveat is correct. The note does not overclaim."
+
+**'t Hooft:** "$\Delta \ln \alpha$ is gauge-invariant. The softened claim is right."
+
+**Magueijo:** "No mechanism. The note says so. Acceptable."
+
+**Nottale:** "The question is well-stated. The formalization waits."
+
+**Uzan:** "References verified. Channels separated. Data current."
+
+**Duff:** "A restatement with a better metaphor. That is enough."
+
+**Erdős:** "The mathematics is honest."
+
+**Daft Punk:** "Clean melody. Ship."
+
+**Radix:** "v10. All fixes applied."
+
+**Zoltán:** "Kész."
+
+---
+
+## The v10 Napkin
+
+| Version | Core change |
+|---------|------------|
+| v1 | Einstein letter — exciting, wrong |
+| v2 | Added $\delta_\alpha$ and prior art |
+| v3 | Stripped Einstein, went academic |
+| v4 | Found Zoltán's voice, added Section 6 |
+| v5 | Defined $\Delta \ln \alpha$, added ESPRESSO data |
+| v6 | Fixed terminology, added Duff |
+| v7 | Fixed CMB numbers, unified notation |
+| v8 | Retitled, demoted $c(L)$, cut self-lowering |
+| v9 | Full rewrite — three channels, "Note" disclaimer, scope paragraph |
+| v10 | Five fixes from the Physics Table: SI/metre (1983), Martins (2017), Channel 3 (no muon $g-2$), ALMA (full title), softened "empty" claim. Closing trimmed. |
+
+**The essay in one sentence:** A standalone variation of a dimensional constant is operationally empty unless it induces measurable residuals in dimensionless observables defined by a specific dynamical model.
+
+**Score trajectory:** essay 8 → 8.5 → 9. Physics note 3 → 5 → 6. Respectable.
+
+*The vehicle has no windows. The note has no apologies. The references are real. Kész.*
+
+---
+
+*Previous sessions: [The Mass-Dependent Speed of Light](/blog/size-dependent-speed-of-light-arena) | [Strange Loops Arena](/blog/strange-loops-arena) | [The Physics Table](/blog/the-physics-table) | [The Essay](/blog/on-the-scale-dependence-of-light)*
