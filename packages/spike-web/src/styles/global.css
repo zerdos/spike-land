@@ -245,6 +245,22 @@ h4 {
   --tw-prose-td-borders: var(--border-color);
 }
 
+/* ── KaTeX inside prose — prevent Tailwind Typography from breaking math ── */
+.prose .katex-mathml {
+  position: absolute !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden !important;
+}
+
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 /* ── Article page base typography ──────────────────────────────────────── */
 .article-base {
   font-size: 18px;
