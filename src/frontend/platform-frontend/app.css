@@ -791,3 +791,9 @@
 @utility animate-typing-bounce {
   animation: typing-bounce 1.2s ease-in-out infinite;
 }
+
+/* Spike Load — scanline sweep for the branded loading animation */
+@keyframes scan {
+  from { background-position: 0 0; }
+  to { background-position: 0 100%; }
+}

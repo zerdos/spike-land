@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { RootLayout } from "./routes/__root";
 import { NotFoundPage } from "./routes/not-found";
+import { SpikeLoad } from "./components/SpikeLoad";
 
 function withSuspense(
   load: () => Promise<{ [key: string]: React.ComponentType }>,
@@ -20,19 +21,7 @@ function withSuspense(
     return createElement(
       Suspense,
       {
-        fallback: createElement(
-          "div",
-          {
-            role: "status",
-            "aria-label": "Loading",
-            className: "flex items-center justify-center py-20",
-          },
-          createElement("div", {
-            className: "h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary",
-            "aria-hidden": "true",
-          }),
-          createElement("span", { className: "sr-only" }, "Loading..."),
-        ),
+        fallback: createElement(SpikeLoad),
       },
       createElement(LazyComponent),
     );

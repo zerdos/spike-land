@@ -1,0 +1,25 @@
+---
+import SpikeLoadDemo from '../components/react/SpikeLoadDemo.tsx';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spike Load — Animation Test</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; background: #0a0a0a; overflow: hidden; }
+      @keyframes scan {
+        from { background-position: 0 0; }
+        to { background-position: 0 100%; }
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <SpikeLoadDemo client:only="react" />
+  </body>
+</html>
