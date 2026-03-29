@@ -1,6 +1,6 @@
 import type { BlogPost } from "./seed-blog-lib.js";
 
-const BLOG_IMAGE_PATH_RE = /^\/blog\/([^/]+)\/([^/?#]+)$/;
+const BLOG_IMAGE_PATH_RE = /^\/blog(?:-images)?\/([^/]+)\/([^/?#]+)$/;
 
 export interface WarmableBlogHero {
   slug: string;
