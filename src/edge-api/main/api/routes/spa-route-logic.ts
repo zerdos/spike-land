@@ -41,10 +41,14 @@ const EXACT_SPA_ROUTES = new Set([
 const PREFIXED_SPA_ROUTES = [
   "/apps",
   "/blog",
+  "/create",
   "/dashboard",
   "/docs",
   "/learn",
+  "/learnit",
+  "/lumevabarber",
   "/messages",
+  "/music",
   "/packages",
 ];
 const API_PREFIXES = ["/oauth/", "/api/"];

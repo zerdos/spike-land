@@ -57,19 +57,20 @@ export function registerBlogTools(
             }>
           >(`/api/blog/posts?${params.toString()}`);
 
-          if (posts.length === 0) return textResult("No blog posts found.");
+          if (!Array.isArray(posts) || posts.length === 0)
+            return textResult("No blog posts found.");
 
           let text = `**Blog Posts (${posts.length}):**\n\n`;
           for (const post of posts) {
+            const fm = post.frontmatter;
+            if (!fm) continue;
             text +=
-              `- **${post.frontmatter.title}** (${post.slug})\n` +
-              `  ${post.frontmatter.description}\n` +
-              `  Category: ${post.frontmatter.category} | Tags: ${post.frontmatter.tags.join(
+              `- **${fm.title}** (${post.slug})\n` +
+              `  ${fm.description}\n` +
+              `  Category: ${fm.category} | Tags: ${(fm.tags ?? []).join(
                 ", ",
               )} | ${post.readingTime}\n` +
-              `  Date: ${post.frontmatter.date}${
-                post.frontmatter.featured ? " | Featured" : ""
-              }\n\n`;
+              `  Date: ${fm.date}${fm.featured ? " | Featured" : ""}\n\n`;
           }
           return textResult(text);
         });

@@ -16,9 +16,9 @@ import type { Env } from "../env";
 type ChatEnv = Pick<Env, "ANTHROPIC_API_KEY">;
 
 const MODEL_MAP: { opus: string; sonnet: string; haiku: string } = {
-  opus: "claude-4-6-opus",
-  sonnet: "claude-4-6-sonnet",
-  haiku: "claude-4-5-haiku",
+  opus: "claude-opus-4-6-20250610",
+  sonnet: "claude-sonnet-4-6-20250514",
+  haiku: "claude-haiku-4-5-20251001",
 };
 
 interface AnthropicContentBlock {

@@ -187,9 +187,6 @@ export function registerWorkspacesTools(
       .meta({ category: "workspaces", tier: "free" })
       .handler(async ({ input, ctx }) => {
         const { workspace_id, name, slug: newSlug } = input;
-        const data: Record<string, unknown> = { updatedAt: Date.now() };
-        if (name) data["name"] = name;
-        if (newSlug) data["slug"] = newSlug;
 
         if (!name && !newSlug) {
           return textResult(
@@ -197,7 +194,13 @@ export function registerWorkspacesTools(
           );
         }
 
-        await ctx.db.update(workspaces).set(data).where(eq(workspaces.id, workspace_id));
+        const updates: Partial<typeof workspaces.$inferInsert> = {
+          updatedAt: Date.now(),
+          ...(name ? { name } : {}),
+          ...(newSlug ? { slug: newSlug } : {}),
+        };
+
+        await ctx.db.update(workspaces).set(updates).where(eq(workspaces.id, workspace_id));
 
         return textResult(
           `**Workspace Updated!** ${name || "(unchanged)"} (${newSlug || "(unchanged)"})`,

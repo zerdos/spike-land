@@ -49,9 +49,9 @@ export function _getSandboxCount(): number {
   return sandboxes.size;
 }
 
-function getSandboxOrError(sandboxId: string): SandboxState | CallToolResult {
+function getSandboxOrError(sandboxId: string, userId: string): SandboxState | CallToolResult {
   const sandbox = sandboxes.get(sandboxId);
-  if (!sandbox) {
+  if (!sandbox || sandbox.userId !== userId) {
     return {
       content: [{ type: "text", text: `Sandbox "${sandboxId}" not found.` }],
       isError: true,
@@ -146,7 +146,7 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
       .handler(async ({ input }) => {
         const { sandbox_id, code, language } = input;
 
-        const result = getSandboxOrError(sandbox_id);
+        const result = getSandboxOrError(sandbox_id, userId);
         if (!isSandboxState(result)) return result;
 
         const sandbox = result;
@@ -195,7 +195,7 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
       .handler(async ({ input }) => {
         const { sandbox_id, file_path } = input;
 
-        const result = getSandboxOrError(sandbox_id);
+        const result = getSandboxOrError(sandbox_id, userId);
         if (!isSandboxState(result)) return result;
 
         const sandbox = result;
@@ -229,7 +229,7 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
       .handler(async ({ input }) => {
         const { sandbox_id, file_path, content } = input;
 
-        const result = getSandboxOrError(sandbox_id);
+        const result = getSandboxOrError(sandbox_id, userId);
         if (!isSandboxState(result)) return result;
 
         const sandbox = result;
@@ -304,7 +304,7 @@ export function registerSandboxTools(registry: ToolRegistry, userId: string, db:
       .handler(async ({ input }) => {
         const { sandbox_id } = input;
 
-        const result = getSandboxOrError(sandbox_id);
+        const result = getSandboxOrError(sandbox_id, userId);
         if (!isSandboxState(result)) return result;
 
         const sandbox = result;

@@ -74,10 +74,10 @@ export function registerAuditQuestionnaireTools(
         },
       )
       .meta({ category: "persona", tier: "free" })
-      .handler(async ({ input }) => {
+      .handler(async ({ input, ctx }) => {
         const resultId = crypto.randomUUID();
 
-        await db.insert(personaAuditResults).values({
+        await ctx.db.insert(personaAuditResults).values({
           id: resultId,
           batchId: input.batch_id,
           personaSlug: input.persona_slug,
@@ -94,7 +94,7 @@ export function registerAuditQuestionnaireTools(
           createdAt: Date.now(),
         });
 
-        await db.run(
+        await ctx.db.run(
           sql`UPDATE persona_audit_batches SET completed_count = completed_count + 1, status = CASE WHEN completed_count + 1 >= total_personas THEN 'completed' ELSE 'in_progress' END, completed_at = CASE WHEN completed_count + 1 >= total_personas THEN ${Date.now()} ELSE completed_at END WHERE id = ${input.batch_id}`,
         );
 
@@ -116,8 +116,8 @@ export function registerAuditQuestionnaireTools(
         },
       )
       .meta({ category: "persona", tier: "free" })
-      .handler(async ({ input }) => {
-        const batches = await db
+      .handler(async ({ input, ctx }) => {
+        const batches = await ctx.db
           .select()
           .from(personaAuditBatches)
           .where(eq(personaAuditBatches.id, input.batch_id));
@@ -127,7 +127,7 @@ export function registerAuditQuestionnaireTools(
           return jsonResult(`Batch "${input.batch_id}" not found.`, { error: "not_found" });
         }
 
-        const results = await db
+        const results = await ctx.db
           .select()
           .from(personaAuditResults)
           .where(eq(personaAuditResults.batchId, input.batch_id));
@@ -167,8 +167,8 @@ export function registerAuditQuestionnaireTools(
         },
       )
       .meta({ category: "persona", tier: "free" })
-      .handler(async ({ input }) => {
-        const results = await db
+      .handler(async ({ input, ctx }) => {
+        const results = await ctx.db
           .select()
           .from(personaAuditResults)
           .where(eq(personaAuditResults.batchId, input.batch_id));

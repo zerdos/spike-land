@@ -224,7 +224,7 @@ export function registerMarketplaceTools(
         await ctx.db
           .update(registeredTools)
           .set({
-            installCount: sql`MAX(${registeredTools.installCount} - 1, 0)`,
+            installCount: sql`CASE WHEN ${registeredTools.installCount} > 0 THEN ${registeredTools.installCount} - 1 ELSE 0 END`,
             updatedAt: Date.now(),
           })
           .where(eq(registeredTools.id, tool_id));

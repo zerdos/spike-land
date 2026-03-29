@@ -48,6 +48,7 @@ export function registerErrorQueryTools(
         const conditions = [
           eq(skillUsageEvents.outcome, "error"),
           gt(skillUsageEvents.createdAt, sinceTs),
+          eq(skillUsageEvents.userId, ctx.userId),
         ];
         if (service) conditions.push(eq(skillUsageEvents.serverName, service));
         if (skill) conditions.push(eq(skillUsageEvents.skillName, skill));
@@ -97,7 +98,11 @@ export function registerErrorQueryTools(
           })
           .from(skillUsageEvents)
           .where(
-            and(eq(skillUsageEvents.outcome, "error"), gt(skillUsageEvents.createdAt, sinceTs)),
+            and(
+              eq(skillUsageEvents.outcome, "error"),
+              gt(skillUsageEvents.createdAt, sinceTs),
+              eq(skillUsageEvents.userId, ctx.userId),
+            ),
           )
           .groupBy(skillUsageEvents.serverName, skillUsageEvents.skillName)
           .orderBy(sql`count(*) DESC`);

@@ -44,7 +44,9 @@ export function registerMcpObservabilityTools(
               ),
           })
           .from(skillUsageEvents)
-          .where(gte(skillUsageEvents.createdAt, sinceTs));
+          .where(
+            and(gte(skillUsageEvents.createdAt, sinceTs), eq(skillUsageEvents.userId, ctx.userId)),
+          );
 
         const total = totals?.total ?? 0;
         const errors = totals?.errors ?? 0;
@@ -57,7 +59,11 @@ export function registerMcpObservabilityTools(
           })
           .from(skillUsageEvents)
           .where(
-            and(eq(skillUsageEvents.outcome, "error"), gte(skillUsageEvents.createdAt, sinceTs)),
+            and(
+              eq(skillUsageEvents.outcome, "error"),
+              gte(skillUsageEvents.createdAt, sinceTs),
+              eq(skillUsageEvents.userId, ctx.userId),
+            ),
           )
           .groupBy(skillUsageEvents.skillName)
           .orderBy(sql`count(*) DESC`)
@@ -96,7 +102,7 @@ export function registerMcpObservabilityTools(
           cutoffDate.getUTCDate(),
         );
 
-        const conditions = [gte(toolCallDaily.day, sinceDay)];
+        const conditions = [gte(toolCallDaily.day, sinceDay), eq(toolCallDaily.userId, ctx.userId)];
         if (tool_name) conditions.push(eq(toolCallDaily.toolName, tool_name));
 
         const rows = await ctx.db

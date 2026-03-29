@@ -15,7 +15,7 @@ import type { ToolRegistryAdapter } from "../../lazy-imports/types";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
 import { apiRequest, SPIKE_LAND_BASE_URL, textResult } from "../../core-logic/lib/tool-helpers";
 import type { DrizzleDB } from "../db/db-index.ts";
-import { registeredTools, vaultSecrets, workspaceMembers, workspaces } from "../db/schema";
+import { registeredTools, users, vaultSecrets, workspaceMembers, workspaces } from "../db/schema";
 
 export function registerBootstrapTools(
   registry: ToolRegistryAdapter,
@@ -43,6 +43,24 @@ export function registerBootstrapTools(
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "");
+
+        // Verify the user exists in the local DB before any FK-constrained INSERT.
+        // D1 in production enforces foreign keys; if the user row is missing the
+        // workspace INSERT fails with "FOREIGN KEY constraint failed".
+        const existingUser = await ctx.db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.id, ctx.userId))
+          .limit(1);
+
+        if (existingUser.length === 0) {
+          return textResult(
+            `**Error: USER_NOT_FOUND**\n` +
+              `Your account is not yet registered in the platform database.\n` +
+              `Please complete signup at https://spike.land/login and then try again.\n\n` +
+              `**Retryable:** false`,
+          );
+        }
 
         // Check if user already has a workspace
         const existing = await ctx.db

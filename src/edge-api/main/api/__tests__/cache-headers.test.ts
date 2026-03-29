@@ -87,7 +87,14 @@ describe("SPA cache headers", () => {
     expect(isKnownSpaRoute("/blog/some-post")).toBe(true);
     expect(isKnownSpaRoute("/docs")).toBe(true);
     expect(isKnownSpaRoute("/docs/getting-started")).toBe(true);
-    expect(isKnownSpaRoute("/bugbook")).toBe(true);
+    expect(isKnownSpaRoute("/create")).toBe(true);
+    expect(isKnownSpaRoute("/create/my-app")).toBe(true);
+    expect(isKnownSpaRoute("/learnit")).toBe(true);
+    expect(isKnownSpaRoute("/learnit/typescript")).toBe(true);
+    expect(isKnownSpaRoute("/music")).toBe(true);
+    expect(isKnownSpaRoute("/music/some-track")).toBe(true);
+    expect(isKnownSpaRoute("/lumevabarber")).toBe(true);
+    expect(isKnownSpaRoute("/lumevabarber/logos")).toBe(true);
     expect(isKnownSpaRoute("/unknown-route")).toBe(false);
     expect(isApiLikeSpaPath("/api/health")).toBe(true);
     expect(isApiLikeSpaPath("/mcp/tools")).toBe(true);

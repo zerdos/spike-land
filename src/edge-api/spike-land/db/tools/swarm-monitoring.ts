@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import type { ToolRegistry } from "../../lazy-imports/registry";
 import { freeTool, textResult } from "../../lazy-imports/procedures-index.ts";
 import { agentMessages, claudeCodeAgents } from "../db/schema";
@@ -102,7 +102,9 @@ export function registerSwarmMonitoringTools(
           ? await ctx.db
               .select()
               .from(claudeCodeAgents)
-              .where(eq(claudeCodeAgents.id, agent_id))
+              .where(
+                and(eq(claudeCodeAgents.id, agent_id), eq(claudeCodeAgents.userId, ctx.userId)),
+              )
               .limit(1)
           : await ctx.db
               .select()
