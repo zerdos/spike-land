@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { eq, or, like, desc, and } from "drizzle-orm";
+import { eq, or, like, desc, and, sql } from "drizzle-orm";
 import type { ToolRegistryAdapter } from "../../lazy-imports/types";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
 import { safeToolCall, textResult } from "../lib/tool-helpers";
@@ -75,7 +75,7 @@ export function registerLearnItTools(
           // Increment view count
           await db
             .update(learnItContent)
-            .set({ viewCount: topic.viewCount + 1 })
+            .set({ viewCount: sql`${learnItContent.viewCount} + 1` })
             .where(eq(learnItContent.id, topic.id));
 
           const truncatedContent =
@@ -115,7 +115,8 @@ export function registerLearnItTools(
       .handler(async ({ input }) => {
         return safeToolCall("learnit_search_topics", async () => {
           const limit = input.limit ?? 10;
-          const searchPattern = `%${input.query}%`;
+          const escapedQuery = input.query.replace(/%/g, "\\%").replace(/_/g, "\\_");
+          const searchPattern = `%${escapedQuery}%`;
 
           const topics = await db
             .select({

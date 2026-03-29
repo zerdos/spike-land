@@ -9,6 +9,7 @@ import { z } from "zod";
 import { and, desc, eq, gt, gte, lte } from "drizzle-orm";
 import type { ToolRegistry } from "../../lazy-imports/registry";
 import { freeTool, textResult } from "../../lazy-imports/procedures-index.ts";
+import { safeToolCall } from "../../core-logic/lib/tool-helpers";
 import { auditLogs } from "../db/schema";
 import type { DrizzleDB } from "../db/db-index.ts";
 
@@ -31,37 +32,38 @@ export function registerAuditTools(registry: ToolRegistry, userId: string, db: D
       )
       .meta({ category: "audit", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { action, resource_type, days, limit } = input;
+        return safeToolCall("audit_query_logs", async () => {
+          const { action, resource_type, days, limit } = input;
 
-        const sinceTs = Date.now() - days * 24 * 60 * 60 * 1000;
+          const sinceTs = Date.now() - days * 24 * 60 * 60 * 1000;
 
-        // Build conditions
-        const conditions = [eq(auditLogs.userId, ctx.userId), gt(auditLogs.createdAt, sinceTs)];
-        if (action) conditions.push(eq(auditLogs.action, action));
-        if (resource_type) {
-          conditions.push(eq(auditLogs.resourceType, resource_type));
-        }
+          const conditions = [eq(auditLogs.userId, ctx.userId), gt(auditLogs.createdAt, sinceTs)];
+          if (action) conditions.push(eq(auditLogs.action, action));
+          if (resource_type) {
+            conditions.push(eq(auditLogs.resourceType, resource_type));
+          }
 
-        const logs = await ctx.db
-          .select()
-          .from(auditLogs)
-          .where(and(...conditions))
-          .orderBy(desc(auditLogs.createdAt))
-          .limit(limit);
+          const logs = await ctx.db
+            .select()
+            .from(auditLogs)
+            .where(and(...conditions))
+            .orderBy(desc(auditLogs.createdAt))
+            .limit(limit);
 
-        if (logs.length === 0) {
-          return textResult("**No audit logs found** matching the given filters.");
-        }
+          if (logs.length === 0) {
+            return textResult("**No audit logs found** matching the given filters.");
+          }
 
-        const lines = logs.map(
-          (log) =>
-            `- [${new Date(
-              log.createdAt,
-            ).toISOString()}] **${log.action}** on ${log.resourceType ?? "unknown"} (${
-              log.resourceId ?? "n/a"
-            })`,
-        );
-        return textResult(`**Audit Logs (${logs.length})**\n\n${lines.join("\n")}`);
+          const lines = logs.map(
+            (log) =>
+              `- [${new Date(
+                log.createdAt,
+              ).toISOString()}] **${log.action}** on ${log.resourceType ?? "unknown"} (${
+                log.resourceId ?? "n/a"
+              })`,
+          );
+          return textResult(`**Audit Logs (${logs.length})**\n\n${lines.join("\n")}`);
+        });
       }),
   );
 
@@ -73,41 +75,42 @@ export function registerAuditTools(registry: ToolRegistry, userId: string, db: D
       })
       .meta({ category: "audit", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { from_date, to_date } = input;
-        const fromTs = new Date(from_date).getTime();
-        const toTs = new Date(to_date).getTime();
+        return safeToolCall("audit_export", async () => {
+          const { from_date, to_date } = input;
+          const fromTs = new Date(from_date).getTime();
+          const toTs = new Date(to_date).getTime();
 
-        const logs = await ctx.db
-          .select()
-          .from(auditLogs)
-          .where(
-            and(
-              eq(auditLogs.userId, ctx.userId),
-              gte(auditLogs.createdAt, fromTs),
-              lte(auditLogs.createdAt, toTs),
-            ),
-          )
-          .orderBy(desc(auditLogs.createdAt));
+          const logs = await ctx.db
+            .select()
+            .from(auditLogs)
+            .where(
+              and(
+                eq(auditLogs.userId, ctx.userId),
+                gte(auditLogs.createdAt, fromTs),
+                lte(auditLogs.createdAt, toTs),
+              ),
+            )
+            .orderBy(desc(auditLogs.createdAt));
 
-        // Summarize by action
-        const actionCounts = new Map<string, number>();
-        for (const log of logs) {
-          actionCounts.set(log.action, (actionCounts.get(log.action) ?? 0) + 1);
-        }
-
-        let text =
-          `**Audit Export Summary**\n\n` +
-          `**Date Range:** ${from_date} to ${to_date}\n` +
-          `**Total Records:** ${logs.length}\n\n`;
-
-        if (actionCounts.size > 0) {
-          text += `**By Action:**\n`;
-          for (const [action, count] of actionCounts) {
-            text += `- ${action}: ${count}\n`;
+          const actionCounts = new Map<string, number>();
+          for (const log of logs) {
+            actionCounts.set(log.action, (actionCounts.get(log.action) ?? 0) + 1);
           }
-        }
 
-        return textResult(text);
+          let text =
+            `**Audit Export Summary**\n\n` +
+            `**Date Range:** ${from_date} to ${to_date}\n` +
+            `**Total Records:** ${logs.length}\n\n`;
+
+          if (actionCounts.size > 0) {
+            text += `**By Action:**\n`;
+            for (const [action, count] of actionCounts) {
+              text += `- ${action}: ${count}\n`;
+            }
+          }
+
+          return textResult(text);
+        });
       }),
   );
 
@@ -121,25 +124,27 @@ export function registerAuditTools(registry: ToolRegistry, userId: string, db: D
       })
       .meta({ category: "audit", tier: "free", stability: "not-implemented" })
       .handler(async ({ input, ctx }) => {
-        const { action, resource_type, resource_id, metadata } = input;
+        return safeToolCall("audit_log_event", async () => {
+          const { action, resource_type, resource_id, metadata } = input;
 
-        const id = crypto.randomUUID();
-        await ctx.db.insert(auditLogs).values({
-          id,
-          userId: ctx.userId,
-          action,
-          resourceType: resource_type ?? null,
-          resourceId: resource_id ?? null,
-          metadata: metadata ?? "{}",
-          createdAt: Date.now(),
+          const id = crypto.randomUUID();
+          await ctx.db.insert(auditLogs).values({
+            id,
+            userId: ctx.userId,
+            action,
+            resourceType: resource_type ?? null,
+            resourceId: resource_id ?? null,
+            metadata: metadata ?? "{}",
+            createdAt: Date.now(),
+          });
+
+          return textResult(
+            `**Audit log created.**\n\n` +
+              `**ID:** ${id}\n` +
+              `**Action:** ${action}\n` +
+              `**Resource:** ${resource_type ?? "n/a"} / ${resource_id ?? "n/a"}`,
+          );
         });
-
-        return textResult(
-          `**Audit log created.**\n\n` +
-            `**ID:** ${id}\n` +
-            `**Action:** ${action}\n` +
-            `**Resource:** ${resource_type ?? "n/a"} / ${resource_id ?? "n/a"}`,
-        );
       }),
   );
 }

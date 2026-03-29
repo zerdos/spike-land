@@ -19,6 +19,7 @@ import {
 } from "../../../core-logic/lib/persona-data";
 import type { ToolRegistry } from "../../../lazy-imports/registry";
 import { freeTool, jsonResult } from "../../../lazy-imports/procedures-index.ts";
+import { safeToolCall } from "../../../core-logic/lib/tool-helpers";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -217,22 +218,24 @@ export function registerPlanGeneratorTools(
       )
       .meta({ category: "persona", tier: "free" })
       .handler(async ({ input }) => {
-        const persona = getPersonaBySlug(input.persona_slug);
-        if (!persona) {
-          throw new Error(
-            `Unknown persona slug "${input.persona_slug}". Valid slugs: ${PERSONAS.map((p) => p.slug).join(", ")}`,
+        return safeToolCall("plan_generate_persona_audit", async () => {
+          const persona = getPersonaBySlug(input.persona_slug);
+          if (!persona) {
+            throw new Error(
+              `Unknown persona slug "${input.persona_slug}". Valid slugs: ${PERSONAS.map((p) => p.slug).join(", ")}`,
+            );
+          }
+
+          const plan = generatePersonaAuditPlan(input.persona_slug);
+
+          return jsonResult(
+            `Generated ${plan.length}-step audit plan for persona "${persona.name}"`,
+            {
+              persona,
+              plan,
+            },
           );
-        }
-
-        const plan = generatePersonaAuditPlan(input.persona_slug);
-
-        return jsonResult(
-          `Generated ${plan.length}-step audit plan for persona "${persona.name}"`,
-          {
-            persona,
-            plan,
-          },
-        );
+        });
       }),
   );
 
@@ -246,25 +249,30 @@ export function registerPlanGeneratorTools(
       )
       .meta({ category: "persona", tier: "free" })
       .handler(async ({ ctx }) => {
-        const batchId = crypto.randomUUID();
+        return safeToolCall("plan_generate_batch_audit", async () => {
+          const batchId = crypto.randomUUID();
 
-        await ctx.db.insert(personaAuditBatches).values({
-          id: batchId,
-          userId: ctx.userId,
-          status: "pending",
-          totalPersonas: PERSONAS.length,
-          completedCount: 0,
-          createdAt: Date.now(),
-        });
+          await ctx.db.insert(personaAuditBatches).values({
+            id: batchId,
+            userId: ctx.userId,
+            status: "pending",
+            totalPersonas: PERSONAS.length,
+            completedCount: 0,
+            createdAt: Date.now(),
+          });
 
-        const results = PERSONAS.map((persona) => ({
-          persona,
-          plan: generatePersonaAuditPlan(persona.slug, batchId),
-        }));
+          const results = PERSONAS.map((persona) => ({
+            persona,
+            plan: generatePersonaAuditPlan(persona.slug, batchId),
+          }));
 
-        return jsonResult(`Created batch "${batchId}" with ${results.length} persona audit plans`, {
-          batchId,
-          audits: results,
+          return jsonResult(
+            `Created batch "${batchId}" with ${results.length} persona audit plans`,
+            {
+              batchId,
+              audits: results,
+            },
+          );
         });
       }),
   );
@@ -284,47 +292,49 @@ export function registerPlanGeneratorTools(
       )
       .meta({ category: "persona", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const batches = await ctx.db
-          .select()
-          .from(personaAuditBatches)
-          .where(eq(personaAuditBatches.id, input.batch_id))
-          .limit(1);
+        return safeToolCall("plan_get_status", async () => {
+          const batches = await ctx.db
+            .select()
+            .from(personaAuditBatches)
+            .where(eq(personaAuditBatches.id, input.batch_id))
+            .limit(1);
 
-        const batch = batches[0];
-        if (!batch) {
-          throw new Error(`Batch "${input.batch_id}" not found`);
-        }
+          const batch = batches[0];
+          if (!batch) {
+            throw new Error(`Batch "${input.batch_id}" not found`);
+          }
 
-        const results = await ctx.db
-          .select()
-          .from(personaAuditResults)
-          .where(eq(personaAuditResults.batchId, input.batch_id));
+          const results = await ctx.db
+            .select()
+            .from(personaAuditResults)
+            .where(eq(personaAuditResults.batchId, input.batch_id));
 
-        const summary = results.map((r) => ({
-          personaSlug: r.personaSlug,
-          uxScore: r.uxScore,
-          contentRelevance: r.contentRelevance,
-          ctaCompelling: r.ctaCompelling,
-          recommendedAppsRelevant: r.recommendedAppsRelevant,
-          wouldSignUp: r.wouldSignUp,
-          blockers: r.blockers,
-          highlights: r.highlights,
-        }));
+          const summary = results.map((r) => ({
+            personaSlug: r.personaSlug,
+            uxScore: r.uxScore,
+            contentRelevance: r.contentRelevance,
+            ctaCompelling: r.ctaCompelling,
+            recommendedAppsRelevant: r.recommendedAppsRelevant,
+            wouldSignUp: r.wouldSignUp,
+            blockers: r.blockers,
+            highlights: r.highlights,
+          }));
 
-        return jsonResult(
-          `Batch "${input.batch_id}": ${batch.status} — ${results.length}/${batch.totalPersonas} completed`,
-          {
-            batch: {
-              id: batch.id,
-              status: batch.status,
-              totalPersonas: batch.totalPersonas,
-              completedCount: results.length,
-              createdAt: batch.createdAt,
-              completedAt: batch.completedAt,
+          return jsonResult(
+            `Batch "${input.batch_id}": ${batch.status} — ${results.length}/${batch.totalPersonas} completed`,
+            {
+              batch: {
+                id: batch.id,
+                status: batch.status,
+                totalPersonas: batch.totalPersonas,
+                completedCount: results.length,
+                createdAt: batch.createdAt,
+                completedAt: batch.completedAt,
+              },
+              results: summary,
             },
-            results: summary,
-          },
-        );
+          );
+        });
       }),
   );
 }

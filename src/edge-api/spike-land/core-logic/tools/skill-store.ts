@@ -11,10 +11,25 @@
  */
 
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 import type { ToolRegistryAdapter } from "../../lazy-imports/types";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
 import { apiRequest, SPIKE_LAND_BASE_URL, textResult } from "../lib/tool-helpers";
 import type { DrizzleDB } from "../../db/db/db-index.ts";
+import { users } from "../../db/db/schema";
+
+async function requireAdmin(ctx: { db: DrizzleDB; userId: string }): Promise<string | null> {
+  const result = await ctx.db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, ctx.userId))
+    .limit(1);
+  const user = result[0];
+  if (!user || user.role !== "admin") {
+    return "**Error: FORBIDDEN**\nAdmin access required.\n**Retryable:** false";
+  }
+  return null;
+}
 
 const SKILL_CATEGORIES = [
   "QUALITY",
@@ -214,8 +229,10 @@ export function registerSkillStoreTools(
           .default(0)
           .describe("Offset for pagination (default 0)."),
       })
-      .meta({ category: "skill-store", tier: "free" })
-      .handler(async ({ input }) => {
+      .meta({ category: "skill-store", tier: "workspace" })
+      .handler(async ({ input, ctx }) => {
+        const denied = await requireAdmin(ctx);
+        if (denied) return textResult(denied);
         const { status, limit, offset } = input;
         const params = new URLSearchParams();
         if (status) params.set("status", status);
@@ -330,8 +347,10 @@ export function registerSkillStoreTools(
             .describe("Whether the skill is featured."),
         },
       )
-      .meta({ category: "skill-store", tier: "free" })
-      .handler(async ({ input }) => {
+      .meta({ category: "skill-store", tier: "workspace" })
+      .handler(async ({ input, ctx }) => {
+        const denied = await requireAdmin(ctx);
+        if (denied) return textResult(denied);
         try {
           const skill = await apiRequest<{
             id: string;
@@ -407,8 +426,10 @@ export function registerSkillStoreTools(
           isFeatured: z.coerce.boolean().optional().describe("Whether the skill is featured."),
         },
       )
-      .meta({ category: "skill-store", tier: "free" })
-      .handler(async ({ input }) => {
+      .meta({ category: "skill-store", tier: "workspace" })
+      .handler(async ({ input, ctx }) => {
+        const denied = await requireAdmin(ctx);
+        if (denied) return textResult(denied);
         const { skill_id, ...fields } = input;
 
         try {
@@ -433,8 +454,10 @@ export function registerSkillStoreTools(
       .tool("skill_store_admin_delete", "Archive a skill (soft-delete). Sets status to ARCHIVED.", {
         skill_id: z.string().min(1).describe("Skill ID to archive."),
       })
-      .meta({ category: "skill-store", tier: "free" })
-      .handler(async ({ input }) => {
+      .meta({ category: "skill-store", tier: "workspace" })
+      .handler(async ({ input, ctx }) => {
+        const denied = await requireAdmin(ctx);
+        if (denied) return textResult(denied);
         const { skill_id } = input;
 
         try {

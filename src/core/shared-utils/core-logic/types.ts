@@ -70,6 +70,7 @@ export interface ToolMeta {
   examples?: ToolExample[] | undefined;
   version?: string | undefined;
   stability?: "stable" | "beta" | "experimental" | "deprecated" | "not-implemented" | undefined;
+  requiredRole?: "admin" | "super_admin" | undefined;
 }
 
 // ─── Built tool (output of builder) ───

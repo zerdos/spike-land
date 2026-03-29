@@ -9,7 +9,7 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import type { ToolRegistry } from "../../lazy-imports/registry";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
-import { textResult } from "../../core-logic/lib/tool-helpers";
+import { safeToolCall, textResult } from "../../core-logic/lib/tool-helpers";
 import type { DrizzleDB } from "../db/db-index.ts";
 import { workspaceMembers, workspaces } from "../db/schema";
 
@@ -33,28 +33,30 @@ export function registerWorkspacesTools(
       .tool("workspaces_list", "List all workspaces you are a member of.", {})
       .meta({ category: "workspaces", tier: "free" })
       .handler(async ({ ctx }) => {
-        const memberships = await ctx.db
-          .select({
-            role: workspaceMembers.role,
-            workspaceId: workspaces.id,
-            workspaceName: workspaces.name,
-            workspaceSlug: workspaces.slug,
-            workspacePlan: workspaces.plan,
-            workspaceCreatedAt: workspaces.createdAt,
-          })
-          .from(workspaceMembers)
-          .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
-          .where(eq(workspaceMembers.userId, ctx.userId));
+        return safeToolCall("workspaces_list", async () => {
+          const memberships = await ctx.db
+            .select({
+              role: workspaceMembers.role,
+              workspaceId: workspaces.id,
+              workspaceName: workspaces.name,
+              workspaceSlug: workspaces.slug,
+              workspacePlan: workspaces.plan,
+              workspaceCreatedAt: workspaces.createdAt,
+            })
+            .from(workspaceMembers)
+            .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
+            .where(eq(workspaceMembers.userId, ctx.userId));
 
-        if (memberships.length === 0) return textResult("No workspaces found.");
+          if (memberships.length === 0) return textResult("No workspaces found.");
 
-        let text = `**Workspaces (${memberships.length}):**\n\n`;
-        for (const m of memberships) {
-          text += `- **${m.workspaceName}** [${m.workspacePlan}] (${m.role})\n  Slug: ${m.workspaceSlug}\n  ID: ${m.workspaceId}\n  Created: ${new Date(
-            m.workspaceCreatedAt,
-          ).toISOString()}\n\n`;
-        }
-        return textResult(text);
+          let text = `**Workspaces (${memberships.length}):**\n\n`;
+          for (const m of memberships) {
+            text += `- **${m.workspaceName}** [${m.workspacePlan}] (${m.role})\n  Slug: ${m.workspaceSlug}\n  ID: ${m.workspaceId}\n  Created: ${new Date(
+              m.workspaceCreatedAt,
+            ).toISOString()}\n\n`;
+          }
+          return textResult(text);
+        });
       }),
   );
 
@@ -71,49 +73,50 @@ export function registerWorkspacesTools(
       })
       .meta({ category: "workspaces", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { name, slug } = input;
-        const baseSlug = slug || generateSlug(name);
+        return safeToolCall("workspaces_create", async () => {
+          const { name, slug } = input;
+          const baseSlug = slug || generateSlug(name);
 
-        // Ensure slug uniqueness
-        let finalSlug = baseSlug;
-        let suffix = 0;
-        while (true) {
-          const existing = await ctx.db
-            .select({ id: workspaces.id })
-            .from(workspaces)
-            .where(eq(workspaces.slug, finalSlug))
-            .limit(1);
-          if (existing.length === 0) break;
-          suffix++;
-          finalSlug = `${baseSlug}-${suffix}`;
-        }
+          let finalSlug = baseSlug;
+          let suffix = 0;
+          while (true) {
+            const existing = await ctx.db
+              .select({ id: workspaces.id })
+              .from(workspaces)
+              .where(eq(workspaces.slug, finalSlug))
+              .limit(1);
+            if (existing.length === 0) break;
+            suffix++;
+            finalSlug = `${baseSlug}-${suffix}`;
+          }
 
-        const now = Date.now();
-        const workspaceId = crypto.randomUUID();
+          const now = Date.now();
+          const workspaceId = crypto.randomUUID();
 
-        await ctx.db.insert(workspaces).values({
-          id: workspaceId,
-          ownerId: ctx.userId,
-          name,
-          slug: finalSlug,
-          createdAt: now,
-          updatedAt: now,
+          await ctx.db.insert(workspaces).values({
+            id: workspaceId,
+            ownerId: ctx.userId,
+            name,
+            slug: finalSlug,
+            createdAt: now,
+            updatedAt: now,
+          });
+
+          await ctx.db.insert(workspaceMembers).values({
+            id: crypto.randomUUID(),
+            workspaceId,
+            userId: ctx.userId,
+            role: "owner",
+            createdAt: now,
+          });
+
+          return textResult(
+            `**Workspace Created!**\n\n` +
+              `**ID:** ${workspaceId}\n` +
+              `**Name:** ${name}\n` +
+              `**Slug:** ${finalSlug}`,
+          );
         });
-
-        await ctx.db.insert(workspaceMembers).values({
-          id: crypto.randomUUID(),
-          workspaceId,
-          userId: ctx.userId,
-          role: "owner",
-          createdAt: now,
-        });
-
-        return textResult(
-          `**Workspace Created!**\n\n` +
-            `**ID:** ${workspaceId}\n` +
-            `**Name:** ${name}\n` +
-            `**Slug:** ${finalSlug}`,
-        );
       }),
   );
 
@@ -125,55 +128,57 @@ export function registerWorkspacesTools(
       })
       .meta({ category: "workspaces", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { workspace_id, slug: inputSlug } = input;
+        return safeToolCall("workspaces_get", async () => {
+          const { workspace_id, slug: inputSlug } = input;
 
-        if (!workspace_id && !inputSlug) {
+          if (!workspace_id && !inputSlug) {
+            return textResult(
+              "**Error: VALIDATION_ERROR**\nProvide either workspace_id or slug.\n**Retryable:** false",
+            );
+          }
+
+          const conditions = [eq(workspaceMembers.userId, ctx.userId)];
+          if (workspace_id) conditions.push(eq(workspaces.id, workspace_id));
+          if (inputSlug) conditions.push(eq(workspaces.slug, inputSlug));
+
+          const result = await ctx.db
+            .select({
+              id: workspaces.id,
+              name: workspaces.name,
+              slug: workspaces.slug,
+              description: workspaces.description,
+              plan: workspaces.plan,
+              createdAt: workspaces.createdAt,
+              updatedAt: workspaces.updatedAt,
+            })
+            .from(workspaces)
+            .innerJoin(
+              workspaceMembers,
+              and(
+                eq(workspaceMembers.workspaceId, workspaces.id),
+                eq(workspaceMembers.userId, ctx.userId),
+              ),
+            )
+            .where(and(...conditions))
+            .limit(1);
+
+          const workspace = result[0];
+          if (!workspace) {
+            return textResult(
+              "**Error: NOT_FOUND**\nWorkspace not found or you are not a member.\n**Retryable:** false",
+            );
+          }
           return textResult(
-            "**Error: VALIDATION_ERROR**\nProvide either workspace_id or slug.\n**Retryable:** false",
+            `**Workspace**\n\n` +
+              `**ID:** ${workspace.id}\n` +
+              `**Name:** ${workspace.name}\n` +
+              `**Slug:** ${workspace.slug}\n` +
+              `**Description:** ${workspace.description || "(none)"}\n` +
+              `**Plan:** ${workspace.plan}\n` +
+              `**Created:** ${new Date(workspace.createdAt).toISOString()}\n` +
+              `**Updated:** ${new Date(workspace.updatedAt).toISOString()}`,
           );
-        }
-
-        const conditions = [eq(workspaceMembers.userId, ctx.userId)];
-        if (workspace_id) conditions.push(eq(workspaces.id, workspace_id));
-        if (inputSlug) conditions.push(eq(workspaces.slug, inputSlug));
-
-        const result = await ctx.db
-          .select({
-            id: workspaces.id,
-            name: workspaces.name,
-            slug: workspaces.slug,
-            description: workspaces.description,
-            plan: workspaces.plan,
-            createdAt: workspaces.createdAt,
-            updatedAt: workspaces.updatedAt,
-          })
-          .from(workspaces)
-          .innerJoin(
-            workspaceMembers,
-            and(
-              eq(workspaceMembers.workspaceId, workspaces.id),
-              eq(workspaceMembers.userId, ctx.userId),
-            ),
-          )
-          .where(and(...conditions))
-          .limit(1);
-
-        const workspace = result[0];
-        if (!workspace) {
-          return textResult(
-            "**Error: NOT_FOUND**\nWorkspace not found or you are not a member.\n**Retryable:** false",
-          );
-        }
-        return textResult(
-          `**Workspace**\n\n` +
-            `**ID:** ${workspace.id}\n` +
-            `**Name:** ${workspace.name}\n` +
-            `**Slug:** ${workspace.slug}\n` +
-            `**Description:** ${workspace.description || "(none)"}\n` +
-            `**Plan:** ${workspace.plan}\n` +
-            `**Created:** ${new Date(workspace.createdAt).toISOString()}\n` +
-            `**Updated:** ${new Date(workspace.updatedAt).toISOString()}`,
-        );
+        });
       }),
   );
 
@@ -186,25 +191,27 @@ export function registerWorkspacesTools(
       })
       .meta({ category: "workspaces", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { workspace_id, name, slug: newSlug } = input;
+        return safeToolCall("workspaces_update", async () => {
+          const { workspace_id, name, slug: newSlug } = input;
 
-        if (!name && !newSlug) {
+          if (!name && !newSlug) {
+            return textResult(
+              "**Error: VALIDATION_ERROR**\nNo fields to update.\n**Retryable:** false",
+            );
+          }
+
+          const updates: Partial<typeof workspaces.$inferInsert> = {
+            updatedAt: Date.now(),
+            ...(name ? { name } : {}),
+            ...(newSlug ? { slug: newSlug } : {}),
+          };
+
+          await ctx.db.update(workspaces).set(updates).where(eq(workspaces.id, workspace_id));
+
           return textResult(
-            "**Error: VALIDATION_ERROR**\nNo fields to update.\n**Retryable:** false",
+            `**Workspace Updated!** ${name || "(unchanged)"} (${newSlug || "(unchanged)"})`,
           );
-        }
-
-        const updates: Partial<typeof workspaces.$inferInsert> = {
-          updatedAt: Date.now(),
-          ...(name ? { name } : {}),
-          ...(newSlug ? { slug: newSlug } : {}),
-        };
-
-        await ctx.db.update(workspaces).set(updates).where(eq(workspaces.id, workspace_id));
-
-        return textResult(
-          `**Workspace Updated!** ${name || "(unchanged)"} (${newSlug || "(unchanged)"})`,
-        );
+        });
       }),
   );
 }

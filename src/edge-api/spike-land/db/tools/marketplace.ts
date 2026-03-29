@@ -10,7 +10,7 @@ import { z } from "zod";
 import { and, desc, eq, sql, sum } from "drizzle-orm";
 import type { ToolRegistryAdapter } from "../../lazy-imports/types";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
-import { textResult } from "../../core-logic/lib/tool-helpers";
+import { safeToolCall, textResult } from "../../core-logic/lib/tool-helpers";
 import type { DrizzleDB } from "../db/db-index.ts";
 import { registeredTools, toolPurchases, users } from "../db/schema";
 
@@ -51,46 +51,48 @@ export function registerMarketplaceTools(
         },
       ])
       .handler(async ({ input, ctx }) => {
-        const { query, limit } = input;
-        const pattern = `%${query}%`;
+        return safeToolCall("marketplace_search", async () => {
+          const { query, limit } = input;
+          const pattern = `%${query}%`;
 
-        const tools = await ctx.db
-          .select({
-            id: registeredTools.id,
-            name: registeredTools.name,
-            description: registeredTools.description,
-            installCount: registeredTools.installCount,
-            priceCents: registeredTools.priceCents,
-            authorName: users.name,
-          })
-          .from(registeredTools)
-          .leftJoin(users, eq(registeredTools.userId, users.id))
-          .where(
-            and(
-              eq(registeredTools.status, "published"),
-              sql`(${registeredTools.name} LIKE ${pattern} OR ${registeredTools.description} LIKE ${pattern})`,
-            ),
-          )
-          .orderBy(desc(registeredTools.installCount))
-          .limit(limit);
+          const tools = await ctx.db
+            .select({
+              id: registeredTools.id,
+              name: registeredTools.name,
+              description: registeredTools.description,
+              installCount: registeredTools.installCount,
+              priceCents: registeredTools.priceCents,
+              authorName: users.name,
+            })
+            .from(registeredTools)
+            .leftJoin(users, eq(registeredTools.userId, users.id))
+            .where(
+              and(
+                eq(registeredTools.status, "published"),
+                sql`(${registeredTools.name} LIKE ${pattern} OR ${registeredTools.description} LIKE ${pattern})`,
+              ),
+            )
+            .orderBy(desc(registeredTools.installCount))
+            .limit(limit);
 
-        if (tools.length === 0) {
-          return textResult(
-            `No marketplace tools found matching "${query}". Try different keywords.`,
-          );
-        }
+          if (tools.length === 0) {
+            return textResult(
+              `No marketplace tools found matching "${query}". Try different keywords.`,
+            );
+          }
 
-        let text = `**Marketplace Results (${tools.length} tool(s) matching "${query}"):**\n\n`;
-        for (const tool of tools) {
-          const author = tool.authorName ?? "Unknown";
-          const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
-          text += `- **${tool.name}** — ${price}\n`;
-          text += `  ${tool.description}\n`;
-          text += `  Author: ${author} | Installs: ${tool.installCount} | ID: ${tool.id}\n\n`;
-        }
-        text += `Use \`marketplace_install\` with a tool ID to install a tool.`;
+          let text = `**Marketplace Results (${tools.length} tool(s) matching "${query}"):**\n\n`;
+          for (const tool of tools) {
+            const author = tool.authorName ?? "Unknown";
+            const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
+            text += `- **${tool.name}** — ${price}\n`;
+            text += `  ${tool.description}\n`;
+            text += `  Author: ${author} | Installs: ${tool.installCount} | ID: ${tool.id}\n\n`;
+          }
+          text += `Use \`marketplace_install\` with a tool ID to install a tool.`;
 
-        return textResult(text);
+          return textResult(text);
+        });
       }),
   );
 
@@ -111,93 +113,91 @@ export function registerMarketplaceTools(
       )
       .meta({ category: "marketplace", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { tool_id, confirm_purchase } = input;
+        return safeToolCall("marketplace_install", async () => {
+          const { tool_id, confirm_purchase } = input;
 
-        const rows = await ctx.db
-          .select({
-            id: registeredTools.id,
-            name: registeredTools.name,
-            priceCents: registeredTools.priceCents,
-            userId: registeredTools.userId,
-          })
-          .from(registeredTools)
-          .where(and(eq(registeredTools.id, tool_id), eq(registeredTools.status, "published")))
-          .limit(1);
-
-        const tool = rows[0];
-        if (!tool) {
-          return textResult("Tool not found or not published.");
-        }
-
-        // Paid tool flow
-        if (tool.priceCents > 0) {
-          // Check if already purchased
-          const existing = await ctx.db
-            .select({ id: toolPurchases.id })
-            .from(toolPurchases)
-            .where(
-              and(
-                eq(toolPurchases.toolId, tool_id),
-                eq(toolPurchases.buyerUserId, ctx.userId),
-                eq(toolPurchases.status, "completed"),
-              ),
-            )
+          const rows = await ctx.db
+            .select({
+              id: registeredTools.id,
+              name: registeredTools.name,
+              priceCents: registeredTools.priceCents,
+              userId: registeredTools.userId,
+            })
+            .from(registeredTools)
+            .where(and(eq(registeredTools.id, tool_id), eq(registeredTools.status, "published")))
             .limit(1);
 
-          if (existing.length > 0) {
-            return textResult(
-              `You already purchased **${tool.name}**. It is available in your workspace.`,
-            );
+          const tool = rows[0];
+          if (!tool) {
+            return textResult("Tool not found or not published.");
           }
 
-          if (!confirm_purchase) {
-            const price = `$${(tool.priceCents / 100).toFixed(2)}`;
-            return textResult(
-              `**Payment Required**\n\n` +
-                `**Tool:** ${tool.name}\n` +
-                `**Price:** ${price}\n\n` +
-                `To confirm, call \`marketplace_install\` again with \`confirm_purchase: true\`.`,
-            );
+          if (tool.priceCents > 0) {
+            const existing = await ctx.db
+              .select({ id: toolPurchases.id })
+              .from(toolPurchases)
+              .where(
+                and(
+                  eq(toolPurchases.toolId, tool_id),
+                  eq(toolPurchases.buyerUserId, ctx.userId),
+                  eq(toolPurchases.status, "completed"),
+                ),
+              )
+              .limit(1);
+
+            if (existing.length > 0) {
+              return textResult(
+                `You already purchased **${tool.name}**. It is available in your workspace.`,
+              );
+            }
+
+            if (!confirm_purchase) {
+              const price = `$${(tool.priceCents / 100).toFixed(2)}`;
+              return textResult(
+                `**Payment Required**\n\n` +
+                  `**Tool:** ${tool.name}\n` +
+                  `**Price:** ${price}\n\n` +
+                  `To confirm, call \`marketplace_install\` again with \`confirm_purchase: true\`.`,
+              );
+            }
+
+            const platformFeeCents = Math.round(tool.priceCents * 0.3);
+            const sellerEarningsCents = tool.priceCents - platformFeeCents;
+            const purchaseId = crypto.randomUUID();
+
+            await ctx.db.insert(toolPurchases).values({
+              id: purchaseId,
+              toolId: tool_id,
+              buyerUserId: ctx.userId,
+              sellerUserId: tool.userId,
+              priceCents: tool.priceCents,
+              platformFeeCents,
+              sellerEarningsCents,
+              status: "completed",
+            });
           }
 
-          // Create purchase record with 70/30 split
-          const platformFeeCents = Math.round(tool.priceCents * 0.3);
-          const sellerEarningsCents = tool.priceCents - platformFeeCents;
-          const purchaseId = crypto.randomUUID();
+          await ctx.db
+            .update(registeredTools)
+            .set({
+              installCount: sql`${registeredTools.installCount} + 1`,
+              updatedAt: Date.now(),
+            })
+            .where(eq(registeredTools.id, tool_id));
 
-          await ctx.db.insert(toolPurchases).values({
-            id: purchaseId,
-            toolId: tool_id,
-            buyerUserId: ctx.userId,
-            sellerUserId: tool.userId,
-            priceCents: tool.priceCents,
-            platformFeeCents,
-            sellerEarningsCents,
-            status: "completed",
-          });
-        }
+          const priceInfo =
+            tool.priceCents > 0
+              ? `**Price:** $${(tool.priceCents / 100).toFixed(2)} (charged)\n`
+              : "";
 
-        // Increment install count
-        await ctx.db
-          .update(registeredTools)
-          .set({
-            installCount: sql`${registeredTools.installCount} + 1`,
-            updatedAt: Date.now(),
-          })
-          .where(eq(registeredTools.id, tool_id));
-
-        const priceInfo =
-          tool.priceCents > 0
-            ? `**Price:** $${(tool.priceCents / 100).toFixed(2)} (charged)\n`
-            : "";
-
-        return textResult(
-          `**Tool Installed!**\n\n` +
-            `**Name:** ${tool.name}\n` +
-            `**ID:** ${tool_id}\n` +
-            priceInfo +
-            `\nThe tool is now available in your workspace.`,
-        );
+          return textResult(
+            `**Tool Installed!**\n\n` +
+              `**Name:** ${tool.name}\n` +
+              `**ID:** ${tool_id}\n` +
+              priceInfo +
+              `\nThe tool is now available in your workspace.`,
+          );
+        });
       }),
   );
 
@@ -208,32 +208,34 @@ export function registerMarketplaceTools(
       })
       .meta({ category: "marketplace", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { tool_id } = input;
+        return safeToolCall("marketplace_uninstall", async () => {
+          const { tool_id } = input;
 
-        const rows = await ctx.db
-          .select({ id: registeredTools.id, name: registeredTools.name })
-          .from(registeredTools)
-          .where(eq(registeredTools.id, tool_id))
-          .limit(1);
+          const rows = await ctx.db
+            .select({ id: registeredTools.id, name: registeredTools.name })
+            .from(registeredTools)
+            .where(eq(registeredTools.id, tool_id))
+            .limit(1);
 
-        const tool = rows[0];
-        if (!tool) {
-          return textResult("Tool is not installed.");
-        }
+          const tool = rows[0];
+          if (!tool) {
+            return textResult("Tool is not installed.");
+          }
 
-        await ctx.db
-          .update(registeredTools)
-          .set({
-            installCount: sql`CASE WHEN ${registeredTools.installCount} > 0 THEN ${registeredTools.installCount} - 1 ELSE 0 END`,
-            updatedAt: Date.now(),
-          })
-          .where(eq(registeredTools.id, tool_id));
+          await ctx.db
+            .update(registeredTools)
+            .set({
+              installCount: sql`CASE WHEN ${registeredTools.installCount} > 0 THEN ${registeredTools.installCount} - 1 ELSE 0 END`,
+              updatedAt: Date.now(),
+            })
+            .where(eq(registeredTools.id, tool_id));
 
-        return textResult(
-          `**Tool Uninstalled!**\n\n` +
-            `**Name:** ${tool.name}\n\n` +
-            `The tool has been removed from your workspace.`,
-        );
+          return textResult(
+            `**Tool Uninstalled!**\n\n` +
+              `**Name:** ${tool.name}\n\n` +
+              `The tool has been removed from your workspace.`,
+          );
+        });
       }),
   );
 
@@ -247,77 +249,80 @@ export function registerMarketplaceTools(
       )
       .meta({ category: "marketplace", tier: "free" })
       .handler(async ({ ctx }) => {
-        // Get published tools
-        const tools = await ctx.db
-          .select({
-            id: registeredTools.id,
-            name: registeredTools.name,
-            installCount: registeredTools.installCount,
-            priceCents: registeredTools.priceCents,
-          })
-          .from(registeredTools)
-          .where(
-            and(eq(registeredTools.userId, ctx.userId), eq(registeredTools.status, "published")),
-          )
-          .orderBy(desc(registeredTools.installCount));
+        return safeToolCall("marketplace_my_earnings", async () => {
+          const tools = await ctx.db
+            .select({
+              id: registeredTools.id,
+              name: registeredTools.name,
+              installCount: registeredTools.installCount,
+              priceCents: registeredTools.priceCents,
+            })
+            .from(registeredTools)
+            .where(
+              and(eq(registeredTools.userId, ctx.userId), eq(registeredTools.status, "published")),
+            )
+            .orderBy(desc(registeredTools.installCount));
 
-        if (tools.length === 0) {
-          return textResult(
-            "**Marketplace Earnings**\n\n" +
-              "You have no published tools. Publish a tool to start earning from installs.\n\n" +
-              "Use `register_tool` to create a tool, then `publish_tool` to make it available.",
-          );
-        }
-
-        // Get per-tool earnings from purchases
-        const earningsRows = await ctx.db
-          .select({
-            toolId: toolPurchases.toolId,
-            totalEarnings: sum(toolPurchases.sellerEarningsCents),
-            purchaseCount: sql<number>`COUNT(*)`,
-          })
-          .from(toolPurchases)
-          .where(
-            and(eq(toolPurchases.sellerUserId, ctx.userId), eq(toolPurchases.status, "completed")),
-          )
-          .groupBy(toolPurchases.toolId);
-
-        const earningsMap = new Map<string, { totalEarnings: number; purchaseCount: number }>();
-        for (const row of earningsRows) {
-          earningsMap.set(row.toolId, {
-            totalEarnings: Number(row.totalEarnings) || 0,
-            purchaseCount: row.purchaseCount,
-          });
-        }
-
-        let totalInstalls = 0;
-        let totalEarningsCents = 0;
-        let text = `**Marketplace Earnings Dashboard**\n\n`;
-
-        for (const tool of tools) {
-          totalInstalls += tool.installCount;
-          const earnings = earningsMap.get(tool.id);
-          if (earnings) {
-            totalEarningsCents += earnings.totalEarnings;
+          if (tools.length === 0) {
+            return textResult(
+              "**Marketplace Earnings**\n\n" +
+                "You have no published tools. Publish a tool to start earning from installs.\n\n" +
+                "Use `register_tool` to create a tool, then `publish_tool` to make it available.",
+            );
           }
-        }
 
-        text += `**Total Installs:** ${totalInstalls}\n`;
-        text += `**Total Earnings:** $${(totalEarningsCents / 100).toFixed(2)}\n`;
-        text += `**Published Tools:** ${tools.length}\n\n`;
-        text += `### Per-Tool Breakdown\n\n`;
+          const earningsRows = await ctx.db
+            .select({
+              toolId: toolPurchases.toolId,
+              totalEarnings: sum(toolPurchases.sellerEarningsCents),
+              purchaseCount: sql<number>`COUNT(*)`,
+            })
+            .from(toolPurchases)
+            .where(
+              and(
+                eq(toolPurchases.sellerUserId, ctx.userId),
+                eq(toolPurchases.status, "completed"),
+              ),
+            )
+            .groupBy(toolPurchases.toolId);
 
-        for (const tool of tools) {
-          const earnings = earningsMap.get(tool.id);
-          const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
-          const earned = earnings
-            ? `$${(earnings.totalEarnings / 100).toFixed(2)} (${earnings.purchaseCount} sale(s))`
-            : "$0.00";
-          text += `- **${tool.name}** — ${price}\n`;
-          text += `  Installs: ${tool.installCount} | Earned: ${earned}\n\n`;
-        }
+          const earningsMap = new Map<string, { totalEarnings: number; purchaseCount: number }>();
+          for (const row of earningsRows) {
+            earningsMap.set(row.toolId, {
+              totalEarnings: Number(row.totalEarnings) || 0,
+              purchaseCount: row.purchaseCount,
+            });
+          }
 
-        return textResult(text);
+          let totalInstalls = 0;
+          let totalEarningsCents = 0;
+          let text = `**Marketplace Earnings Dashboard**\n\n`;
+
+          for (const tool of tools) {
+            totalInstalls += tool.installCount;
+            const earnings = earningsMap.get(tool.id);
+            if (earnings) {
+              totalEarningsCents += earnings.totalEarnings;
+            }
+          }
+
+          text += `**Total Installs:** ${totalInstalls}\n`;
+          text += `**Total Earnings:** $${(totalEarningsCents / 100).toFixed(2)}\n`;
+          text += `**Published Tools:** ${tools.length}\n\n`;
+          text += `### Per-Tool Breakdown\n\n`;
+
+          for (const tool of tools) {
+            const earnings = earningsMap.get(tool.id);
+            const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
+            const earned = earnings
+              ? `$${(earnings.totalEarnings / 100).toFixed(2)} (${earnings.purchaseCount} sale(s))`
+              : "$0.00";
+            text += `- **${tool.name}** — ${price}\n`;
+            text += `  Installs: ${tool.installCount} | Earned: ${earned}\n\n`;
+          }
+
+          return textResult(text);
+        });
       }),
   );
 
@@ -339,43 +344,43 @@ export function registerMarketplaceTools(
       )
       .meta({ category: "marketplace", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { tool_id, price_cents } = input;
+        return safeToolCall("marketplace_set_price", async () => {
+          const { tool_id, price_cents } = input;
 
-        // Validate price range
-        if (price_cents !== 0 && (price_cents < 100 || price_cents > 5000)) {
+          if (price_cents !== 0 && (price_cents < 100 || price_cents > 5000)) {
+            return textResult(
+              "Invalid price. Must be 0 (free) or between 100–5000 cents ($1.00–$50.00).",
+            );
+          }
+
+          const rows = await ctx.db
+            .select({ id: registeredTools.id, name: registeredTools.name })
+            .from(registeredTools)
+            .where(and(eq(registeredTools.id, tool_id), eq(registeredTools.userId, ctx.userId)))
+            .limit(1);
+
+          const tool = rows[0];
+          if (!tool) {
+            return textResult("Tool not found or you are not the author.");
+          }
+
+          await ctx.db
+            .update(registeredTools)
+            .set({
+              priceCents: price_cents,
+              updatedAt: Date.now(),
+            })
+            .where(eq(registeredTools.id, tool_id));
+
+          const priceDisplay = price_cents === 0 ? "Free" : `$${(price_cents / 100).toFixed(2)}`;
+
           return textResult(
-            "Invalid price. Must be 0 (free) or between 100–5000 cents ($1.00–$50.00).",
+            `**Price Updated!**\n\n` +
+              `**Tool:** ${tool.name}\n` +
+              `**New Price:** ${priceDisplay}\n\n` +
+              `Sellers receive 70% of each sale. Platform fee is 30%.`,
           );
-        }
-
-        // Verify ownership
-        const rows = await ctx.db
-          .select({ id: registeredTools.id, name: registeredTools.name })
-          .from(registeredTools)
-          .where(and(eq(registeredTools.id, tool_id), eq(registeredTools.userId, ctx.userId)))
-          .limit(1);
-
-        const tool = rows[0];
-        if (!tool) {
-          return textResult("Tool not found or you are not the author.");
-        }
-
-        await ctx.db
-          .update(registeredTools)
-          .set({
-            priceCents: price_cents,
-            updatedAt: Date.now(),
-          })
-          .where(eq(registeredTools.id, tool_id));
-
-        const priceDisplay = price_cents === 0 ? "Free" : `$${(price_cents / 100).toFixed(2)}`;
-
-        return textResult(
-          `**Price Updated!**\n\n` +
-            `**Tool:** ${tool.name}\n` +
-            `**New Price:** ${priceDisplay}\n\n` +
-            `Sellers receive 70% of each sale. Platform fee is 30%.`,
-        );
+        });
       }),
   );
 }

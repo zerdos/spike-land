@@ -271,7 +271,7 @@ describe("apps_get", () => {
     const { registry } = createRegistry();
     mockFetchOk(baseApp);
     const result = await registry.callToolDirect("apps_get", { app_id: "app-detail-1" });
-    expect(getText(result)).toContain("https://testing.spike.land/live/live-cs");
+    expect(getText(result)).toContain("https://spike.land/live/live-cs");
   });
 
   it("shows count stats when _count is present", async () => {
@@ -322,7 +322,7 @@ describe("apps_preview", () => {
     const result = await registry.callToolDirect("apps_preview", { app_id: "a1" });
     const text = getText(result);
     expect(result.isError).toBeUndefined();
-    expect(text).toContain("https://testing.spike.land/live/preview-cs");
+    expect(text).toContain("https://spike.land/live/preview-cs");
     expect(text).toContain("Preview App");
   });
 

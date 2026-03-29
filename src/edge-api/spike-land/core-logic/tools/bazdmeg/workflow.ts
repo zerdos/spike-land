@@ -10,12 +10,15 @@
  */
 
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 import type { ToolRegistry } from "../../../lazy-imports/registry";
 import { freeTool, jsonResult } from "../../../lazy-imports/procedures-index.ts";
 import type { DrizzleDB } from "../../../db/db/db-index.ts";
+import { quizSessions } from "../../../db/db/schema.ts";
 import type { ToolRegistrationEnv } from "../../mcp/manifest";
 import {
   type BadgePayload,
+  type QuizSession,
   QUESTIONS_PER_ROUND,
   computeScore,
   createQuizSession,
@@ -23,12 +26,61 @@ import {
   generateBadgeToken,
   generateNextRound,
   generatePlanningConcepts,
-  getSession,
   sanitizeRound,
-  setSession,
 } from "../../lib/quiz-engine";
 
 const MAX_CONTRADICTIONS = 3;
+
+function serializeSession(session: QuizSession): string {
+  return JSON.stringify(session, (_key, value) => {
+    if (value instanceof Map) {
+      return { __type: "Map", entries: [...value.entries()] };
+    }
+    return value;
+  });
+}
+
+function deserializeSession(json: string): QuizSession {
+  return JSON.parse(json, (_key, value) => {
+    if (value && typeof value === "object" && value.__type === "Map") {
+      return new Map(value.entries);
+    }
+    return value;
+  }) as QuizSession;
+}
+
+async function getSessionFromDb(db: DrizzleDB, id: string): Promise<QuizSession | undefined> {
+  const rows = await db.select().from(quizSessions).where(eq(quizSessions.id, id)).limit(1);
+  const row = rows[0];
+  if (!row) return undefined;
+  return deserializeSession(row.data);
+}
+
+async function saveSessionToDb(
+  db: DrizzleDB,
+  id: string,
+  userId: string,
+  session: QuizSession,
+): Promise<void> {
+  const now = Date.now();
+  const data = serializeSession(session);
+  const existing = await db
+    .select({ id: quizSessions.id })
+    .from(quizSessions)
+    .where(eq(quizSessions.id, id))
+    .limit(1);
+  if (existing.length > 0) {
+    await db.update(quizSessions).set({ data, updatedAt: now }).where(eq(quizSessions.id, id));
+  } else {
+    await db.insert(quizSessions).values({
+      id,
+      userId,
+      data,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+}
 
 export function registerBazdmegWorkflowTools(
   registry: ToolRegistry,
@@ -67,7 +119,7 @@ export function registerBazdmegWorkflowTools(
 
         const id = crypto.randomUUID();
         const session = createQuizSession(id, userId, input.task_description, concepts);
-        setSession(id, session);
+        await saveSessionToDb(db, id, userId, session);
 
         return jsonResult(
           `Planning interview started — ${concepts.length} concepts to master. ` +
@@ -107,7 +159,7 @@ export function registerBazdmegWorkflowTools(
       )
       .meta({ category: "bazdmeg", tier: "free" })
       .handler(async ({ input }) => {
-        const session = getSession(input.session_id);
+        const session = await getSessionFromDb(db, input.session_id);
         if (!session) throw new Error(`Session ${input.session_id} not found`);
         if (session.completed) throw new Error("Interview already completed");
 
@@ -128,6 +180,7 @@ export function registerBazdmegWorkflowTools(
         if (correctThisRound < Math.ceil(QUESTIONS_PER_ROUND / 2)) {
           session.completed = true;
           session.completedAt = Date.now();
+          await saveSessionToDb(db, input.session_id, session.userId, session);
           return jsonResult(
             `FAILED — Score too low (${correctThisRound}/${QUESTIONS_PER_ROUND} correct). ` +
               `Research the task before continuing.`,
@@ -147,6 +200,7 @@ export function registerBazdmegWorkflowTools(
         if (session.conflicts.length >= MAX_CONTRADICTIONS) {
           session.completed = true;
           session.completedAt = Date.now();
+          await saveSessionToDb(db, input.session_id, session.userId, session);
           return jsonResult(
             `FAILED — ${session.conflicts.length} contradictions detected. ` +
               `Review the codebase before continuing.`,
@@ -175,6 +229,7 @@ export function registerBazdmegWorkflowTools(
           };
           const token = generateBadgeToken(badgePayload, "planning-interview-secret");
 
+          await saveSessionToDb(db, input.session_id, session.userId, session);
           return jsonResult(
             `PASSED — All ${session.concepts.length} concepts mastered! Proceed to implementation.`,
             {
@@ -197,6 +252,7 @@ export function registerBazdmegWorkflowTools(
         session.roundNumber++;
         session.currentRound = generateNextRound(session);
 
+        await saveSessionToDb(db, input.session_id, session.userId, session);
         return jsonResult(
           `Round ${session.roundNumber - 1}: ${correctThisRound}/${QUESTIONS_PER_ROUND} correct` +
             (conflicts.length > 0 ? `. ${conflicts.length} contradiction(s)!` : "") +

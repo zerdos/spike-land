@@ -301,6 +301,7 @@ export class ToolRegistry {
       ...(built.meta.version ? { version: built.meta.version } : {}),
       ...(built.meta.stability ? { stability: built.meta.stability as ToolStability } : {}),
       ...(built.meta.examples ? { examples: built.meta.examples as ToolExample[] } : {}),
+      ...(built.meta.requiredRole ? { requiredRole: built.meta.requiredRole } : {}),
       inputSchema: built.inputSchema,
       handler: built.handler as unknown as ToolDefinition["handler"],
     });

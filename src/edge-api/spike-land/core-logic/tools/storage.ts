@@ -55,7 +55,7 @@ export function registerStorageTools(
           .max(500),
       },
     )
-    .meta({ category: "storage", tier: "workspace", stability: "stable" })
+    .meta({ category: "storage", tier: "workspace", stability: "stable", requiredRole: "admin" })
     .handler(async ({ input }) => {
       if (!spaAssets) {
         return textResult("R2 not configured (SPA_ASSETS binding missing).");
@@ -107,7 +107,6 @@ export function registerStorageTools(
       });
     });
 
-  (diffTool as unknown as { requiredRole?: string }).requiredRole = "admin";
   registry.registerBuilt(diffTool);
 
   const uploadTool = t
@@ -128,7 +127,7 @@ export function registerStorageTools(
           .max(50),
       },
     )
-    .meta({ category: "storage", tier: "workspace", stability: "stable" })
+    .meta({ category: "storage", tier: "workspace", stability: "stable", requiredRole: "admin" })
     .handler(async ({ input }) => {
       if (!spaAssets) {
         return textResult("R2 not configured (SPA_ASSETS binding missing).");
@@ -200,7 +199,6 @@ export function registerStorageTools(
       return jsonResult("Upload complete", { successes, errors });
     });
 
-  (uploadTool as unknown as { requiredRole?: string }).requiredRole = "admin";
   registry.registerBuilt(uploadTool);
 
   const listTool = t
@@ -213,7 +211,7 @@ export function registerStorageTools(
         cursor: z.string().optional(),
       },
     )
-    .meta({ category: "storage", tier: "workspace", stability: "stable" })
+    .meta({ category: "storage", tier: "workspace", stability: "stable", requiredRole: "admin" })
     .handler(async ({ input }) => {
       if (!spaAssets) {
         return textResult("R2 not configured (SPA_ASSETS binding missing).");
@@ -244,6 +242,5 @@ export function registerStorageTools(
       });
     });
 
-  (listTool as unknown as { requiredRole?: string }).requiredRole = "admin";
   registry.registerBuilt(listTool);
 }

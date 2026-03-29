@@ -11,7 +11,7 @@
 import { z } from "zod";
 import type { ToolRegistryAdapter } from "../../lazy-imports/types";
 import { freeTool } from "../../lazy-imports/procedures-index.ts";
-import { apiRequest, textResult } from "../lib/tool-helpers";
+import { apiRequest, SPIKE_LAND_BASE_URL, textResult } from "../lib/tool-helpers";
 import type { DrizzleDB } from "../../db/db/db-index.ts";
 
 export function registerAppsTools(
@@ -217,7 +217,7 @@ export function registerAppsTools(
         if (app.description) text += `**Description:** ${app.description}\n`;
         if (app.codespaceId) text += `**Codespace:** ${app.codespaceId}\n`;
         if (app.codespaceUrl) {
-          text += `**Preview:** https://testing.spike.land/live/${app.codespaceId}\n`;
+          text += `**Preview:** ${SPIKE_LAND_BASE_URL}/live/${app.codespaceId}\n`;
         }
         text += `**Created:** ${app.createdAt}\n`;
         text += `**Updated:** ${app.updatedAt}\n`;
@@ -265,7 +265,7 @@ export function registerAppsTools(
           );
         }
 
-        const previewUrl = `https://testing.spike.land/live/${app.codespaceId}`;
+        const previewUrl = `${SPIKE_LAND_BASE_URL}/live/${app.codespaceId}`;
 
         return textResult(
           `**Live Preview**\n\n` +

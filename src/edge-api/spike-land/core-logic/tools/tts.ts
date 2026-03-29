@@ -85,12 +85,11 @@ export function registerTtsTools(
 
           const audioBuffer = await response.arrayBuffer();
           const bytes = new Uint8Array(audioBuffer);
-          // Convert to base64 in chunks to avoid stack overflow
-          let binary = "";
+          const chunks: string[] = [];
           for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i] ?? 0);
+            chunks.push(String.fromCharCode(bytes[i] ?? 0));
           }
-          const base64Audio = btoa(binary);
+          const base64Audio = btoa(chunks.join(""));
 
           return textResult(
             `**TTS Result**\n\n` +
@@ -186,12 +185,16 @@ export function registerTtsTools(
           },
         ];
 
-        let text = `**Available TTS Voices (${voices.length})**\n\n`;
-        text += `_Default voice: Rachel (${DEFAULT_VOICE_ID})_\n\n`;
-        for (const v of voices) {
-          text += `- **${v.name}** — ${v.gender}, ${v.accent}\n  ID: \`${v.id}\` | Style: ${v.style}\n\n`;
-        }
-        text += `Use a voice ID with \`tts_synthesize\` via the \`voice_id\` parameter.`;
+        const parts: string[] = [
+          `**Available TTS Voices (${voices.length})**\n\n`,
+          `_Default voice: Rachel (${DEFAULT_VOICE_ID})_\n\n`,
+          ...voices.map(
+            (v) =>
+              `- **${v.name}** — ${v.gender}, ${v.accent}\n  ID: \`${v.id}\` | Style: ${v.style}\n\n`,
+          ),
+          `Use a voice ID with \`tts_synthesize\` via the \`voice_id\` parameter.`,
+        ];
+        const text = parts.join("");
 
         return textResult(text);
       }),

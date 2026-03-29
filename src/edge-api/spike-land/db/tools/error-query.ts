@@ -9,6 +9,7 @@ import { z } from "zod";
 import { and, count, desc, eq, gt, sql } from "drizzle-orm";
 import type { ToolRegistry } from "../../lazy-imports/registry";
 import { freeTool, textResult } from "../../lazy-imports/procedures-index.ts";
+import { safeToolCall } from "../../core-logic/lib/tool-helpers";
 import { skillUsageEvents } from "../db/schema";
 import type { DrizzleDB } from "../db/db-index.ts";
 
@@ -41,34 +42,36 @@ export function registerErrorQueryTools(
       )
       .meta({ category: "mcp-observability", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { service, skill, limit, since } = input;
+        return safeToolCall("query_errors", async () => {
+          const { service, skill, limit, since } = input;
 
-        const sinceTs = since ? new Date(since).getTime() : Date.now() - 24 * 60 * 60 * 1000;
+          const sinceTs = since ? new Date(since).getTime() : Date.now() - 24 * 60 * 60 * 1000;
 
-        const conditions = [
-          eq(skillUsageEvents.outcome, "error"),
-          gt(skillUsageEvents.createdAt, sinceTs),
-          eq(skillUsageEvents.userId, ctx.userId),
-        ];
-        if (service) conditions.push(eq(skillUsageEvents.serverName, service));
-        if (skill) conditions.push(eq(skillUsageEvents.skillName, skill));
+          const conditions = [
+            eq(skillUsageEvents.outcome, "error"),
+            gt(skillUsageEvents.createdAt, sinceTs),
+            eq(skillUsageEvents.userId, ctx.userId),
+          ];
+          if (service) conditions.push(eq(skillUsageEvents.serverName, service));
+          if (skill) conditions.push(eq(skillUsageEvents.skillName, skill));
 
-        const errors = await ctx.db
-          .select()
-          .from(skillUsageEvents)
-          .where(and(...conditions))
-          .orderBy(desc(skillUsageEvents.createdAt))
-          .limit(limit);
+          const errors = await ctx.db
+            .select()
+            .from(skillUsageEvents)
+            .where(and(...conditions))
+            .orderBy(desc(skillUsageEvents.createdAt))
+            .limit(limit);
 
-        if (errors.length === 0) {
-          return textResult("**No errors found** matching the given filters.");
-        }
+          if (errors.length === 0) {
+            return textResult("**No errors found** matching the given filters.");
+          }
 
-        const lines = errors.map(
-          (e) =>
-            `- [${new Date(e.createdAt).toISOString()}] **${e.skillName}** (${e.serverName}): ${e.errorMessage ?? "no message"}${e.durationMs !== null ? ` [${e.durationMs}ms]` : ""}`,
-        );
-        return textResult(`**Errors (${errors.length})**\n\n${lines.join("\n")}`);
+          const lines = errors.map(
+            (e) =>
+              `- [${new Date(e.createdAt).toISOString()}] **${e.skillName}** (${e.serverName}): ${e.errorMessage ?? "no message"}${e.durationMs !== null ? ` [${e.durationMs}ms]` : ""}`,
+          );
+          return textResult(`**Errors (${errors.length})**\n\n${lines.join("\n")}`);
+        });
       }),
   );
 
@@ -87,40 +90,42 @@ export function registerErrorQueryTools(
       )
       .meta({ category: "mcp-observability", tier: "free" })
       .handler(async ({ input, ctx }) => {
-        const { hours } = input;
-        const sinceTs = Date.now() - hours * 60 * 60 * 1000;
+        return safeToolCall("error_summary", async () => {
+          const { hours } = input;
+          const sinceTs = Date.now() - hours * 60 * 60 * 1000;
 
-        const rows = await ctx.db
-          .select({
-            serverName: skillUsageEvents.serverName,
-            skillName: skillUsageEvents.skillName,
-            errorCount: count(),
-          })
-          .from(skillUsageEvents)
-          .where(
-            and(
-              eq(skillUsageEvents.outcome, "error"),
-              gt(skillUsageEvents.createdAt, sinceTs),
-              eq(skillUsageEvents.userId, ctx.userId),
-            ),
-          )
-          .groupBy(skillUsageEvents.serverName, skillUsageEvents.skillName)
-          .orderBy(sql`count(*) DESC`);
+          const rows = await ctx.db
+            .select({
+              serverName: skillUsageEvents.serverName,
+              skillName: skillUsageEvents.skillName,
+              errorCount: count(),
+            })
+            .from(skillUsageEvents)
+            .where(
+              and(
+                eq(skillUsageEvents.outcome, "error"),
+                gt(skillUsageEvents.createdAt, sinceTs),
+                eq(skillUsageEvents.userId, ctx.userId),
+              ),
+            )
+            .groupBy(skillUsageEvents.serverName, skillUsageEvents.skillName)
+            .orderBy(sql`count(*) DESC`);
 
-        if (rows.length === 0) {
-          return textResult(`**No errors** in the last ${hours} hour(s).`);
-        }
+          if (rows.length === 0) {
+            return textResult(`**No errors** in the last ${hours} hour(s).`);
+          }
 
-        const totalErrors = rows.reduce((sum, r) => sum + r.errorCount, 0);
-        const lines = rows.map(
-          (r) => `- **${r.serverName}** / ${r.skillName}: ${r.errorCount} error(s)`,
-        );
+          const totalErrors = rows.reduce((sum, r) => sum + r.errorCount, 0);
+          const lines = rows.map(
+            (r) => `- **${r.serverName}** / ${r.skillName}: ${r.errorCount} error(s)`,
+          );
 
-        return textResult(
-          `**Error Summary (last ${hours}h)**\n\n` +
-            `**Total errors:** ${totalErrors}\n\n` +
-            lines.join("\n"),
-        );
+          return textResult(
+            `**Error Summary (last ${hours}h)**\n\n` +
+              `**Total errors:** ${totalErrors}\n\n` +
+              lines.join("\n"),
+          );
+        });
       }),
   );
 }

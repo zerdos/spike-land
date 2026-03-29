@@ -144,6 +144,7 @@ async function searchAllRegistries(query: string, limit: number): Promise<McpSer
   // Deduplicate by name (case-insensitive)
   const seen = new Map<string, McpServerInfo>();
   for (const server of results) {
+    if (!server.name) continue;
     const k = server.name.toLowerCase();
     if (!seen.has(k)) seen.set(k, server);
   }

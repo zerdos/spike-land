@@ -915,6 +915,22 @@ export const appInstallsRelations = relations(appInstalls, ({ one }) => ({
   app: one(mcpApps, { fields: [appInstalls.appSlug], references: [mcpApps.slug] }),
 }));
 
+// ─── Quiz Sessions ──────────────────────────────────────────────────────────
+
+export const quizSessions = sqliteTable(
+  "quiz_sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    data: text("data").notNull(),
+    createdAt: integer("created_at", { mode: "number" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+  },
+  (t) => ({
+    userIdx: index("quiz_sessions_user_id_idx").on(t.userId),
+  }),
+);
+
 // ─── LearnIt Content ─────────────────────────────────────────────────────────
 
 export const learnItContent = sqliteTable(
