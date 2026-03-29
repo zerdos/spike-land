@@ -3,7 +3,15 @@
  * for spike.land. Reduces bundle size and removes external dependency.
  */
 
-export type ClassValue = string | number | boolean | null | undefined | ClassValue[];
+export type ClassDictionary = Record<string, unknown>;
+export type ClassValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ClassDictionary
+  | ClassValue[];
 
 export function clsx(...inputs: ClassValue[]): string {
   let str = "";

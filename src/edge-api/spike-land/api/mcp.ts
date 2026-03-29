@@ -181,9 +181,9 @@ mcpRoute.get("/health", (c) => {
 });
 
 mcpRoute.post("/", async (c) => {
-  const userId = c.var.userId;
+  let userId = c.var.userId;
   const db = c.var.db;
-  const userRole = c.var.userRole;
+  let userRole = c.var.userRole;
   const agentId = c.req.header("X-Agent-Id");
 
   let callerElo = 1200;
@@ -301,7 +301,13 @@ mcpRoute.post("/", async (c) => {
   let session = sessionId ? mcpSessions.get(sessionId) : undefined;
   const isNewSession = !session && !sessionId && isInitializeRequest;
 
-  if (session && session.userId !== userId) {
+  // When the middleware sets userId to "session" (session-based passthrough),
+  // adopt the session's authenticated userId instead of invalidating it.
+  if (session && userId === "session") {
+    userId = session.userId;
+    // Re-resolve role from session context (already set during session creation)
+    userRole = c.var.userRole;
+  } else if (session && session.userId !== userId) {
     session = undefined;
   }
 

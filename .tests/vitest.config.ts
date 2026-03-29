@@ -36,6 +36,7 @@ const forksPool = {
 const packagePathMap: Record<string, string> = {
   "bazdmeg-mcp": "mcp-tools/bazdmeg",
   "block-sdk": "core/block-sdk",
+  "code-eval-mcp": "mcp-tools/code-eval",
   "block-tasks": "core/block-tasks",
   "block-website": "core/block-website",
   "chess-engine": "core/chess",
@@ -115,6 +116,8 @@ interface PkgConfig {
 // ── Package registry ───────────────────────────────────────────────
 const packages: Record<string, PkgConfig> = {
   "bazdmeg-mcp": { tier: 1, pool: "forks" },
+
+  "code-eval-mcp": { tier: 2, pool: "forks" },
 
   "block-sdk": {
     tier: 2,

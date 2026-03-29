@@ -203,13 +203,13 @@ function scheduleStep(engine: SynthEngine) {
 
   // Bass
   if (section >= 1 && section !== 4 && BASS_PATTERN[step]) {
-    createBass(ctx, nextStepTime, BASS_NOTES[step]!, masterGain);
+    createBass(ctx, nextStepTime, BASS_NOTES[step] ?? 55, masterGain);
   }
 
   // Arpeggio
   if (section >= 2 && section <= 3 && step % 2 === 0) {
     const noteIdx = (currentStep / 2) % ARP_NOTES.length;
-    createArp(ctx, nextStepTime, ARP_NOTES[noteIdx]!, filterNode, masterGain);
+    createArp(ctx, nextStepTime, ARP_NOTES[noteIdx] ?? 220, filterNode, masterGain);
   }
 
   // Filter sweep: slowly open over sections
@@ -244,7 +244,7 @@ const TOTAL_STEPS = SECTION_STEPS.reduce((a, b) => a + b, 0);
 function getSectionForStep(step: number): number {
   let acc = 0;
   for (let i = 0; i < SECTION_STEPS.length; i++) {
-    acc += SECTION_STEPS[i]!;
+    acc += SECTION_STEPS[i] ?? 0;
     if (step < acc) return i;
   }
   return 0;
@@ -253,7 +253,7 @@ function getSectionForStep(step: number): number {
 function getSectionProgress(step: number): number {
   let acc = 0;
   for (let i = 0; i < SECTION_STEPS.length; i++) {
-    const sLen = SECTION_STEPS[i]!;
+    const sLen = SECTION_STEPS[i] ?? 0;
     if (step < acc + sLen) return (step - acc) / sLen;
     acc += sLen;
   }
@@ -283,14 +283,14 @@ function drawVisualizer(canvas: HTMLCanvasElement, analyser: AnalyserNode, secti
     "rgba(99, 102, 241, ", // indigo - breakdown
     "rgba(16, 185, 129, ", // emerald - outro
   ];
-  const color = colors[section] ?? colors[0]!;
+  const color = colors[section] ?? "rgba(139, 92, 246, ";
 
   const barCount = 32;
   const barWidth = w / barCount - 2;
   const step = Math.floor(bufferLength / barCount);
 
   for (let i = 0; i < barCount; i++) {
-    const value = dataArray[i * step]! / 255;
+    const value = (dataArray[i * step] ?? 0) / 255;
     const barHeight = value * h * 0.9;
     const x = i * (barWidth + 2);
     const y = h - barHeight;
@@ -341,7 +341,7 @@ export function MusicWidget() {
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(() => parseFloat(readStorage(STORAGE_KEY_VOLUME, "0.4")));
 
-  const sectionInfo = SECTIONS[section] ?? SECTIONS[0]!;
+  const sectionInfo = SECTIONS[section] ?? SECTIONS[0] ?? { name: "Intro", bars: 4 };
 
   const initEngine = useCallback((): SynthEngine => {
     const ctx = new AudioContext();
@@ -375,7 +375,7 @@ export function MusicWidget() {
     }
 
     if (engine.ctx.state === "suspended") {
-      engine.ctx.resume();
+      void engine.ctx.resume();
     }
 
     engine.nextStepTime = engine.ctx.currentTime + 0.05;
@@ -422,7 +422,7 @@ export function MusicWidget() {
         clearInterval(engine.schedulerTimer);
         engine.schedulerTimer = null;
       }
-      engine.ctx.close();
+      void engine.ctx.close();
       engineRef.current = null;
     }
     cancelAnimationFrame(animFrameRef.current);

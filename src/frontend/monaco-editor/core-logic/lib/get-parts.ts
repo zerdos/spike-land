@@ -49,7 +49,7 @@ const cleanMessageText = (text: string, isUser: boolean): string => {
       const parts = text.split("<user_prompt>");
       const userPrompt = parts[1];
       const userPromptParts = userPrompt?.split("</user_prompt>") || [];
-      return userPromptParts[0]?.trim();
+      return userPromptParts[0]?.trim() ?? "";
     }
 
     return (
@@ -89,7 +89,7 @@ const parseMessageParts = (
     const language = getLanguage(match[1]);
     const code = match[2];
 
-    parts.push({ type: "code", language, content: code });
+    parts.push({ type: "code", language, content: code ?? "" });
 
     lastIndex = codeBlockRegex.lastIndex;
   }

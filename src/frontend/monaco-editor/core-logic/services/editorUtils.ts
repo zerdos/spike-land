@@ -99,7 +99,10 @@ export function memoizeWithAbort<TArgs extends unknown[], TReturn>(
     const key = keyResolver ? keyResolver(...fnArgs) : JSON.stringify(fnArgs);
 
     if (cache.has(key)) {
-      const entry = cache.get(key);
+      const entry = cache.get(key) as {
+        promise: Promise<TReturn>;
+        callbacks: MemoizeCallbacks<TReturn>[];
+      };
       const { promise, callbacks } = entry;
 
       if (signal.aborted) {
@@ -115,10 +118,10 @@ export function memoizeWithAbort<TArgs extends unknown[], TReturn>(
 
       promise.then(
         (value: TReturn) => {
-          callbacks.forEach((cb) => cb.resolve(value));
+          callbacks.forEach((cb: MemoizeCallbacks<TReturn>) => cb.resolve(value));
         },
         (error: unknown) => {
-          callbacks.forEach((cb) => cb.reject(error));
+          callbacks.forEach((cb: MemoizeCallbacks<TReturn>) => cb.reject(error));
         },
       );
 
@@ -151,10 +154,10 @@ export function memoizeWithAbort<TArgs extends unknown[], TReturn>(
 
       promise.then(
         (value: TReturn) => {
-          callbacks.forEach((cb) => cb.resolve(value));
+          callbacks.forEach((cb: MemoizeCallbacks<TReturn>) => cb.resolve(value));
         },
         (error: unknown) => {
-          callbacks.forEach((cb) => cb.reject(error));
+          callbacks.forEach((cb: MemoizeCallbacks<TReturn>) => cb.reject(error));
         },
       );
 

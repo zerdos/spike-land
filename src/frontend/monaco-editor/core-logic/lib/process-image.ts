@@ -40,7 +40,7 @@ export const processImage = (file: File): Promise<ImageData> => {
       ctx?.drawImage(img, 0, 0, width, height);
 
       canvas.toBlob((blob) => {
-        resolve(blob);
+        resolve(blob ?? new Blob());
       }, file.type);
     });
   };

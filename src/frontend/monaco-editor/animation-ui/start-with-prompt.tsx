@@ -47,7 +47,7 @@ export const StartWithPrompt: React.FC = () => {
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0 && images.length < 5) {
-      const file = files[0];
+      const file = files[0] as File;
       try {
         const imageData = await processImage(file);
         setImages((prevImages) => [...prevImages, imageData]);
@@ -64,7 +64,7 @@ export const StartWithPrompt: React.FC = () => {
     event.preventDefault();
     const files = event.dataTransfer.files;
     if (files && files.length > 0 && images.length < 5) {
-      const file = files[0];
+      const file = files[0] as File;
       try {
         const imageData = await processImage(file);
         setImages((prevImages) => [...prevImages, imageData]);

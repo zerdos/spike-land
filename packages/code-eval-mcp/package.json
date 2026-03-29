@@ -1,0 +1,47 @@
+{
+  "name": "@spike-land-ai/code-eval-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for LLM code evaluation with Elo rating and test amplification",
+  "type": "module",
+  "bin": "dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --quiet .",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.27.1",
+    "@spike-land-ai/mcp-server-base": "workspace:*",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "25.4.0",
+    "@vitest/coverage-v8": "4.1.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "source": "./index.ts"
+}

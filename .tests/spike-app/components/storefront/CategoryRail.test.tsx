@@ -124,7 +124,7 @@ describe("CategoryRail", () => {
   it("navigates forward with ArrowDown key", async () => {
     render(<CategoryRail groups={mockGroups} activeCategory={null} onSelectCategory={vi.fn()} />);
 
-    const discoverLink = screen.getByText("Discover").closest("a")!;
+    const discoverLink = screen.getByText("Discover").closest("a") as HTMLAnchorElement;
     discoverLink.focus();
     await userEvent.keyboard("{ArrowDown}");
 
@@ -136,7 +136,7 @@ describe("CategoryRail", () => {
   it("navigates backward with ArrowUp key", async () => {
     render(<CategoryRail groups={mockGroups} activeCategory={null} onSelectCategory={vi.fn()} />);
 
-    const productivityLink = screen.getByText("Productivity").closest("a")!;
+    const productivityLink = screen.getByText("Productivity").closest("a") as HTMLAnchorElement;
     productivityLink.focus();
     await userEvent.keyboard("{ArrowUp}");
 

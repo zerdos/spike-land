@@ -73,7 +73,7 @@ export function registerGatewayMetaTools(
             .describe("Filter results by stability tag"),
         },
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .examples([
         {
           name: "keyword_search",
@@ -247,7 +247,7 @@ export function registerGatewayMetaTools(
         "List all available tool categories with descriptions and tool counts.",
         {},
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async () => {
         const categories = registry.listCategories();
 
@@ -309,7 +309,7 @@ export function registerGatewayMetaTools(
       .tool("enable_category", "Activate all tools in a specific category.", {
         category: z.string().min(1).describe("Category name to activate"),
       })
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .examples([
         {
           name: "enable_codegen",
@@ -367,7 +367,7 @@ export function registerGatewayMetaTools(
         "Get current AI credit balance. Returns balance in credits with USD approximation.",
         {},
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .examples([
         {
           name: "check_credits",
@@ -427,7 +427,7 @@ export function registerGatewayMetaTools(
         "START HERE. Get a guided overview of spike.land capabilities, active tools, and recommended next steps.",
         {},
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .examples([
         {
           name: "check_platform",
@@ -532,7 +532,7 @@ export function registerGatewayMetaTools(
           tool_name: z.string().describe("The name of the tool to get help for"),
         },
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async ({ input }) => {
         const { tool_name } = input;
         const definitions = registry.getToolDefinitions();
@@ -591,7 +591,7 @@ export function registerGatewayMetaTools(
           limit: z.number().optional().describe("Max results to show"),
         },
       )
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async ({ input }) => {
         const { stability, limit } = input;
         const matching = registry.filterByStability(stability);
@@ -628,7 +628,7 @@ export function registerGatewayMetaTools(
       .tool("list_tool_versions", "List all registered versions of a specific tool.", {
         tool_name: z.string().describe("The name of the tool"),
       })
-      .meta({ category: "gateway-meta", tier: "free" })
+      .meta({ category: "gateway-meta", tier: "free", alwaysEnabled: true })
       .handler(async ({ input }) => {
         const { tool_name } = input;
         const versions = registry.listVersions(tool_name);

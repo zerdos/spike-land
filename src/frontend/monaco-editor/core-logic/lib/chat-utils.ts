@@ -118,9 +118,8 @@ function parseSingleDiffBlock(blockText: string): CodeModification | null {
     if (parts.length >= 2) {
       // We need at least one separator to define search and replace parts
       // Trim the part first, then check for and remove markers.
-      let tempSearch = parts[0]?.trim();
+      let tempSearch = parts[0]?.trim() ?? "";
       if (tempSearch.startsWith(searchMarker)) {
-        // Remove marker and then trim any leading whitespace from the actual search content.
         tempSearch = tempSearch.substring(searchMarker.length).trimStart();
       }
       searchText = tempSearch;
@@ -214,7 +213,7 @@ function parseModification(mod: string): CodeModification | null {
     .split(SEARCH_REPLACE_MARKERS.SEPARATOR);
 
   if (parts.length === 2) {
-    const search = parts[0]?.trim();
+    const search = parts[0]?.trim() ?? "";
     const replace = parts[1]?.trim() ?? "";
 
     return {

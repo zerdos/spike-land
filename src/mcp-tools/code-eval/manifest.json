@@ -1,0 +1,20 @@
+{
+  "name": "code-eval",
+  "category": "mcp-tools",
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
+  "files": [
+    "core-logic/sandbox.ts",
+    "core-logic/evaluator.ts",
+    "core-logic/amplifier.ts",
+    "core-logic/elo.ts",
+    "core-logic/challenges.ts",
+    "core-logic/report.ts",
+    "core-logic/challenge-templates/arrays.ts",
+    "core-logic/challenge-templates/strings.ts",
+    "core-logic/challenge-templates/math.ts",
+    "core-logic/challenge-templates/sorting.ts",
+    "core-logic/challenge-templates/data-structures.ts",
+    "mcp/index.ts",
+    "mcp/types.ts"
+  ]
+}

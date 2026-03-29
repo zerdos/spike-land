@@ -19,7 +19,7 @@ function encodeRandom(len: number): string {
   crypto.getRandomValues(bytes);
   let str = "";
   for (let i = 0; i < len; i++) {
-    str += CROCKFORD.charAt(bytes[i]! % 32);
+    str += CROCKFORD.charAt((bytes[i] ?? 0) % 32);
   }
   return str;
 }

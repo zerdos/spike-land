@@ -54,22 +54,46 @@ export const authMiddleware = createMiddleware<{
     return next();
   }
 
+  // Session-based MCP requests: if the client presents a Mcp-Session-Id, the
+  // session was already authenticated at creation time. Let the MCP route
+  // handler validate the session ID and reject stale/missing ones. We still
+  // set userId to the placeholder "session" so downstream code has a value —
+  // the route handler will override it from the stored session state.
+  const sessionId = c.req.header("Mcp-Session-Id");
+  if (sessionId && c.req.method === "POST") {
+    c.set("userId", "session");
+    c.set("db", db);
+    c.set("userRole", "user" as UserRole);
+    return next();
+  }
+
   const reqClone = c.req.raw.clone();
   try {
     const body = (await reqClone.json()) as Record<string, unknown>;
-    if (
-      c.req.method === "POST" &&
-      body &&
-      typeof body === "object" &&
-      body["method"] === "tools/call" &&
-      body["params"] &&
-      typeof body["params"] === "object" &&
-      ANONYMOUS_TOOLS.has((body["params"] as Record<string, unknown>)["name"] as string)
-    ) {
-      c.set("userId", "anonymous");
-      c.set("db", db);
-      c.set("userRole", "user" as UserRole);
-      return next();
+    if (c.req.method === "POST" && body && typeof body === "object") {
+      const method = body["method"] as string | undefined;
+
+      // Allow only post-auth notifications anonymously. The `initialize` method
+      // must NOT be allowed without a bearer token — doing so would create a
+      // session with userId = "anonymous", which violates the FK constraint on
+      // workspaces.owner_id and any other tool that writes user-scoped rows.
+      const isLifecycle = method === "notifications/initialized";
+
+      const isAnonymousTool =
+        method === "tools/call" &&
+        body["params"] &&
+        typeof body["params"] === "object" &&
+        ANONYMOUS_TOOLS.has((body["params"] as Record<string, unknown>)["name"] as string);
+
+      // Also allow tools/list so anonymous clients can discover available tools
+      const isToolsList = method === "tools/list";
+
+      if (isLifecycle || isAnonymousTool || isToolsList) {
+        c.set("userId", "anonymous");
+        c.set("db", db);
+        c.set("userRole", "user" as UserRole);
+        return next();
+      }
     }
   } catch (_e) {
     // Ignore parse errors, let regular auth or downstream handle it
