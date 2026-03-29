@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vienna — Karaoke</title>
+<title>Smooth Operator — Karaoke</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   :root{
-    --bg:#07080d;--gold:#a8c4ff;--gold-dim:rgba(168,196,255,.2);
-    --sung:rgba(168,196,255,.6);--upcoming:rgba(255,255,255,.11);
-    --active-glow:0 0 24px rgba(168,196,255,.2),0 0 48px rgba(168,196,255,.06);
-    --warm:#ffd6a5;--warm-dim:rgba(255,214,165,.2);
+    --bg:#09080e;--gold:#c471ed;--gold-dim:rgba(196,113,237,.2);
+    --sung:rgba(196,113,237,.6);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(196,113,237,.2),0 0 48px rgba(196,113,237,.06);
+    --warm:#e8c4f0;--warm-dim:rgba(232,196,240,.2);
   }
   html,body{height:100%;overflow:hidden}
   body{
@@ -55,7 +55,7 @@
   .syl.active{
     color:var(--gold);
     font-variation-settings:'wght' 800;
-    filter:drop-shadow(0 0 8px rgba(168,196,255,.3));
+    filter:drop-shadow(0 0 8px rgba(196,113,237,.3));
   }
   .syl.active::after{
     content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
@@ -78,7 +78,7 @@
   }
   .pitch-dot{
     position:absolute;width:6px;height:6px;border-radius:50%;
-    background:rgba(168,196,255,.15);top:50%;transform:translateY(-50%);
+    background:rgba(196,113,237,.15);top:50%;transform:translateY(-50%);
   }
   .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
   .pitch-dot.sung{background:var(--sung)}
@@ -123,7 +123,7 @@
 
   .credit{
     font-size:.55rem;padding:.3rem 1rem .5rem;
-    color:rgba(168,196,255,.2);text-align:center;
+    color:rgba(196,113,237,.2);text-align:center;
   }
 </style>
 </head>
@@ -134,171 +134,230 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script>
 // ========================================================================
-// VIENNA — Billy Joel — Real Karaoke
-// Syllable-synced to YouTube version: 1dAAznRs7uw
-// Designed for: dyslexia, insomnia, calming, first time singing
+// SMOOTH OPERATOR — Sade — Real Karaoke
+// Syllable-synced to the 1984 album version (~4:18)
+// Designed for: smooth jazz, velvet nights, late sessions
 // ========================================================================
 
-const AUDIO_SRC = '/blog-images/vienna/vienna-billy-joel.opus';
+const AUDIO_SRC = '/blog-images/smooth-operator/smooth-operator.opus';
 
 // Each line: { t: start time (s), sz: size class, syls: [{t, w}] }
 // t = syllable start time, w = syllable text
 const LYRICS = [
   // Verse 1
-  {t:17.0, sz:'sz-m', syls:[
-    {t:17.0,w:'Slow'},{t:17.5,w:'down,'},{t:18.3,w:'you'},{t:18.6,w:'cra-'},{t:18.9,w:'zy'},{t:19.3,w:'child'}
+  {t:30.0, sz:'sz-m', syls:[
+    {t:30.0,w:'Dia-'},{t:30.4,w:'mond'},{t:30.9,w:'life,'},{t:31.5,w:'lov-'},{t:31.8,w:'er'},{t:32.2,w:'boy'}
   ]},
-  {t:20.5, sz:'sz-m', syls:[
-    {t:20.5,w:"You're"},{t:20.9,w:'so'},{t:21.3,w:'am-'},{t:21.6,w:'bi-'},{t:21.9,w:'tious'},{t:22.4,w:'for'},{t:22.7,w:'a'},{t:23.0,w:'ju-'},{t:23.3,w:'ve-'},{t:23.6,w:'nile'}
+  {t:34.0, sz:'sz-m', syls:[
+    {t:34.0,w:'He'},{t:34.4,w:'moves'},{t:34.8,w:'in'},{t:35.1,w:'space'},{t:35.6,w:'with'},{t:36.0,w:'min-'},{t:36.3,w:'i-'},{t:36.6,w:'mum'},{t:37.0,w:'waste'}
   ]},
-  {t:24.8, sz:'sz-m', syls:[
-    {t:24.8,w:'But'},{t:25.1,w:'then'},{t:25.5,w:'if'},{t:25.8,w:"you're"},{t:26.1,w:'so'},{t:26.5,w:'smart'}
-  ]},
-  {t:27.8, sz:'sz-m', syls:[
-    {t:27.8,w:'Tell'},{t:28.1,w:'me'},{t:28.8,w:'why'},{t:29.2,w:'are'},{t:29.5,w:'you'},{t:29.8,w:'still'},{t:30.2,w:'so'},{t:30.6,w:'a-'},{t:30.9,w:'fraid?'}
-  ]},
-
-  // Interlude
-  {t:34.0, sz:'sz-s', syls:[
-    {t:34.0,w:'Mm-'},{t:34.5,w:'mm-'},{t:35.0,w:'mm...'}
-  ]},
-
-  // Verse 2
   {t:38.5, sz:'sz-m', syls:[
-    {t:38.5,w:"Where's"},{t:39.0,w:'the'},{t:39.4,w:'fire,'},{t:40.2,w:"what's"},{t:40.6,w:'the'},{t:41.0,w:'hur-'},{t:41.3,w:'ry'},{t:41.6,w:'a-'},{t:41.9,w:'bout?'}
+    {t:38.5,w:'And'},{t:38.8,w:'max-'},{t:39.1,w:'i-'},{t:39.4,w:'mum'},{t:39.8,w:'joy'}
   ]},
-  {t:43.0, sz:'sz-m', syls:[
-    {t:43.0,w:'You'},{t:43.3,w:'bet-'},{t:43.6,w:'ter'},{t:44.0,w:'cool'},{t:44.4,w:'it'},{t:44.7,w:'off'},{t:45.1,w:'be-'},{t:45.4,w:'fore'},{t:45.7,w:'you'},{t:46.0,w:'burn'},{t:46.4,w:'it'},{t:46.7,w:'out'}
+  {t:41.0, sz:'sz-m', syls:[
+    {t:41.0,w:'Cit-'},{t:41.3,w:'y'},{t:41.6,w:'lights'},{t:42.0,w:'and'},{t:42.3,w:'bus-'},{t:42.6,w:'i-'},{t:42.9,w:'ness'},{t:43.3,w:'nights'}
   ]},
-  {t:48.0, sz:'sz-m', syls:[
-    {t:48.0,w:'You'},{t:48.3,w:'got'},{t:48.7,w:'so'},{t:49.0,w:'much'},{t:49.4,w:'to'},{t:49.7,w:'do'},{t:50.1,w:'and'},{t:50.5,w:'on-'},{t:50.8,w:'ly'}
+  {t:45.0, sz:'sz-m', syls:[
+    {t:45.0,w:'When'},{t:45.3,w:'you'},{t:45.6,w:'re-'},{t:45.9,w:'quire'},{t:46.4,w:'street-'},{t:46.8,w:'car'},{t:47.2,w:'de-'},{t:47.5,w:'sire'}
   ]},
-  {t:51.5, sz:'sz-l', syls:[
-    {t:51.5,w:'So'},{t:52.0,w:'ma-'},{t:52.3,w:'ny'},{t:52.8,w:'hours'},{t:53.3,w:'in'},{t:53.6,w:'a'},{t:54.0,w:'day'}
+  {t:49.0, sz:'sz-m', syls:[
+    {t:49.0,w:'For'},{t:49.4,w:'high-'},{t:49.8,w:'er'},{t:50.2,w:'heights'}
   ]},
 
   // Pre-chorus
-  {t:56.5, sz:'sz-m', syls:[
-    {t:56.5,w:'But'},{t:57.0,w:'you'},{t:57.3,w:'know'},{t:57.7,w:'that'},{t:58.1,w:'when'},{t:58.5,w:'the'},{t:58.8,w:'truth'},{t:59.2,w:'is'},{t:59.5,w:'told'}
+  {t:52.0, sz:'sz-m', syls:[
+    {t:52.0,w:'No'},{t:52.3,w:'place'},{t:52.7,w:'for'},{t:53.0,w:'be-'},{t:53.3,w:'gin-'},{t:53.6,w:'ners'},{t:54.0,w:'or'},{t:54.3,w:'sen-'},{t:54.6,w:'si-'},{t:54.9,w:'tive'},{t:55.3,w:'hearts'}
   ]},
-  {t:60.5, sz:'sz-l', syls:[
-    {t:60.5,w:'That'},{t:60.9,w:'you'},{t:61.2,w:'can'},{t:61.6,w:'get'},{t:62.0,w:'what'},{t:62.3,w:'you'},{t:62.6,w:'want'},{t:63.2,w:'or'},{t:63.5,w:'you'},{t:63.8,w:'can'},{t:64.1,w:'just'},{t:64.5,w:'get'},{t:65.0,w:'old'}
+  {t:57.0, sz:'sz-m', syls:[
+    {t:57.0,w:'When'},{t:57.3,w:'sen-'},{t:57.6,w:'ti-'},{t:57.9,w:'ment'},{t:58.3,w:'is'},{t:58.6,w:'left'},{t:59.0,w:'to'},{t:59.3,w:'chance'}
+  ]},
+  {t:61.0, sz:'sz-m', syls:[
+    {t:61.0,w:'No'},{t:61.3,w:'place'},{t:61.7,w:'to'},{t:62.0,w:'be'},{t:62.3,w:'end-'},{t:62.6,w:'ing'},{t:63.0,w:'but'},{t:63.3,w:'some-'},{t:63.6,w:'where'},{t:64.0,w:'to'},{t:64.3,w:'start'}
   ]},
 
   // Chorus 1
-  {t:66.5, sz:'sz-xl', syls:[
-    {t:66.5,w:"You're"},{t:67.0,w:'gon-'},{t:67.3,w:'na'},{t:67.8,w:'kick'},{t:68.2,w:'off'},{t:68.8,w:'be-'},{t:69.1,w:'fore'},{t:69.5,w:'you'},{t:69.8,w:'e-'},{t:70.2,w:'ven'},{t:70.6,w:'get'},{t:71.0,w:'half-'},{t:71.5,w:'way'},{t:72.0,w:'through'}
+  {t:66.0, sz:'sz-xl', syls:[
+    {t:66.0,w:'Coast'},{t:66.5,w:'to'},{t:66.8,w:'coast,'},{t:67.5,w:'L.A.'},{t:68.2,w:'to'},{t:68.5,w:'Chi-'},{t:68.9,w:'ca-'},{t:69.3,w:'go'}
   ]},
-  {t:73.5, sz:'sz-xxl', syls:[
-    {t:73.5,w:'When'},{t:74.2,w:'will'},{t:74.8,w:'you'},{t:75.4,w:'re-'},{t:75.8,w:'a-'},{t:76.2,w:'lize...'}
+  {t:70.5, sz:'sz-xl', syls:[
+    {t:70.5,w:'West-'},{t:71.0,w:'ern'},{t:71.5,w:'male'}
   ]},
-  {t:78.5, sz:'sz-xxl', syls:[
-    {t:78.5,w:'Vi-'},{t:79.5,w:'en-'},{t:80.5,w:'na'},{t:81.5,w:'waits'},{t:82.5,w:'for'},{t:83.5,w:'you?'}
+  {t:73.0, sz:'sz-xl', syls:[
+    {t:73.0,w:'A-'},{t:73.4,w:'cross'},{t:73.8,w:'the'},{t:74.1,w:'north'},{t:74.5,w:'and'},{t:74.8,w:'south,'},{t:75.4,w:'to'},{t:75.7,w:'Key'},{t:76.1,w:'Lar-'},{t:76.6,w:'go'}
   ]},
-
-  // Verse 3
-  {t:88.0, sz:'sz-m', syls:[
-    {t:88.0,w:'Slow'},{t:88.5,w:'down,'},{t:89.3,w:'you'},{t:89.6,w:'cra-'},{t:89.9,w:'zy'},{t:90.3,w:'child'}
-  ]},
-  {t:91.5, sz:'sz-m', syls:[
-    {t:91.5,w:'And'},{t:91.8,w:'take'},{t:92.2,w:'the'},{t:92.5,w:'phone'},{t:93.0,w:'off'},{t:93.4,w:'the'},{t:93.7,w:'hook'},{t:94.2,w:'and'},{t:94.5,w:'dis-'},{t:94.8,w:'ap-'},{t:95.1,w:'pear'},{t:95.5,w:'for'},{t:95.8,w:'a'},{t:96.1,w:'while'}
-  ]},
-  {t:97.5, sz:'sz-l', syls:[
-    {t:97.5,w:"It's"},{t:97.8,w:'al-'},{t:98.1,w:'right,'},{t:98.8,w:"it's"},{t:99.1,w:'al-'},{t:99.4,w:'right'}
-  ]},
-  {t:100.5, sz:'sz-m', syls:[
-    {t:100.5,w:'You'},{t:100.8,w:'can'},{t:101.1,w:'af-'},{t:101.4,w:'ford'},{t:101.8,w:'to'},{t:102.1,w:'lose'},{t:102.5,w:'a'},{t:102.8,w:'day'},{t:103.2,w:'or'},{t:103.5,w:'two'}
+  {t:77.5, sz:'sz-xl', syls:[
+    {t:77.5,w:'Love'},{t:78.0,w:'for'},{t:78.5,w:'sale'}
   ]},
 
-  // Pre-chorus 2
-  {t:106.0, sz:'sz-l', syls:[
-    {t:106.0,w:'When'},{t:106.5,w:'will'},{t:106.9,w:'you'},{t:107.3,w:'re-'},{t:107.7,w:'a-'},{t:108.1,w:'lize...'}
+  // Hook 1
+  {t:80.0, sz:'sz-xxl', syls:[
+    {t:80.0,w:'Smooth'},{t:80.8,w:'op-'},{t:81.2,w:'er-'},{t:81.6,w:'a-'},{t:82.1,w:'tor'}
   ]},
-  {t:110.0, sz:'sz-xxl', syls:[
-    {t:110.0,w:'Vi-'},{t:111.0,w:'en-'},{t:112.0,w:'na'},{t:113.0,w:'waits'},{t:114.0,w:'for'},{t:115.0,w:'you?'}
+  {t:84.0, sz:'sz-xxl', syls:[
+    {t:84.0,w:'Smoo-'},{t:84.6,w:'ooth'},{t:85.3,w:'op-'},{t:85.7,w:'er-'},{t:86.1,w:'a-'},{t:86.6,w:'tor'}
   ]},
-
-  // Bridge
-  {t:120.0, sz:'sz-m', syls:[
-    {t:120.0,w:'You'},{t:120.3,w:'got'},{t:120.6,w:'your'},{t:121.0,w:'pas-'},{t:121.3,w:'sion,'},{t:122.0,w:'you'},{t:122.3,w:'got'},{t:122.6,w:'your'},{t:123.0,w:'pride'}
+  {t:88.0, sz:'sz-xxl', syls:[
+    {t:88.0,w:'Smooth'},{t:88.8,w:'op-'},{t:89.2,w:'er-'},{t:89.6,w:'a-'},{t:90.1,w:'tor'}
   ]},
-  {t:124.0, sz:'sz-m', syls:[
-    {t:124.0,w:'But'},{t:124.3,w:"don't"},{t:124.7,w:'you'},{t:125.0,w:'know'},{t:125.4,w:'that'},{t:125.7,w:'on-'},{t:126.0,w:'ly'},{t:126.4,w:'fools'},{t:126.8,w:'are'},{t:127.2,w:'sat-'},{t:127.5,w:'is-'},{t:127.8,w:'fied?'}
-  ]},
-  {t:129.5, sz:'sz-l', syls:[
-    {t:129.5,w:'Dream'},{t:130.2,w:'on,'},{t:131.0,w:'but'},{t:131.5,w:"don't"},{t:132.0,w:'i-'},{t:132.3,w:'ma-'},{t:132.6,w:'gine'},{t:133.0,w:"they'll"},{t:133.4,w:'all'},{t:133.8,w:'come'},{t:134.2,w:'true'}
+  {t:92.0, sz:'sz-xxl', syls:[
+    {t:92.0,w:'Smoo-'},{t:92.6,w:'ooth'},{t:93.3,w:'op-'},{t:93.7,w:'er-'},{t:94.1,w:'a-'},{t:94.6,w:'tor'}
   ]},
 
-  // Pre-chorus 3
-  {t:136.0, sz:'sz-l', syls:[
-    {t:136.0,w:'When'},{t:136.5,w:'will'},{t:136.9,w:'you'},{t:137.3,w:'re-'},{t:137.7,w:'a-'},{t:138.1,w:'lize...'}
+  // Verse 2
+  {t:98.0, sz:'sz-m', syls:[
+    {t:98.0,w:'His'},{t:98.3,w:'eyes'},{t:98.7,w:'are'},{t:99.0,w:'like'},{t:99.4,w:'an-'},{t:99.7,w:'gels'},{t:100.1,w:'so'},{t:100.5,w:'far'}
   ]},
-  {t:140.0, sz:'sz-xxl', syls:[
-    {t:140.0,w:'Vi-'},{t:141.0,w:'en-'},{t:142.0,w:'na'},{t:143.0,w:'waits'},{t:144.0,w:'for'},{t:145.0,w:'you?'}
+  {t:102.0, sz:'sz-m', syls:[
+    {t:102.0,w:"He's"},{t:102.3,w:'a'},{t:102.6,w:'boy'},{t:103.0,w:'from'},{t:103.3,w:'the'},{t:103.6,w:'great'},{t:104.1,w:'un-'},{t:104.5,w:'known'}
   ]},
-
-  // Verse 4 (gentle, piano)
-  {t:153.0, sz:'sz-m', syls:[
-    {t:153.0,w:'Slow'},{t:153.5,w:'down,'},{t:154.3,w:'you'},{t:154.6,w:'cra-'},{t:154.9,w:'zy'},{t:155.3,w:'child'}
+  {t:106.0, sz:'sz-m', syls:[
+    {t:106.0,w:'Sent'},{t:106.4,w:'from'},{t:106.7,w:'a-'},{t:107.0,w:'bove'},{t:107.4,w:'with'},{t:107.7,w:'a'},{t:108.0,w:'love'},{t:108.4,w:'so'},{t:108.7,w:'nice'},{t:109.1,w:'and'},{t:109.5,w:'so'},{t:109.8,w:'raw'}
   ]},
-  {t:156.5, sz:'sz-m', syls:[
-    {t:156.5,w:'And'},{t:156.8,w:'take'},{t:157.2,w:'the'},{t:157.5,w:'phone'},{t:158.0,w:'off'},{t:158.4,w:'the'},{t:158.7,w:'hook'},{t:159.2,w:'and'},{t:159.5,w:'dis-'},{t:159.8,w:'ap-'},{t:160.1,w:'pear'},{t:160.5,w:'for'},{t:160.8,w:'a'},{t:161.1,w:'while'}
+  {t:111.0, sz:'sz-m', syls:[
+    {t:111.0,w:'And'},{t:111.3,w:'with'},{t:111.6,w:'a'},{t:111.9,w:'bod-'},{t:112.2,w:'y'},{t:112.5,w:'you'},{t:112.8,w:'love'},{t:113.2,w:'and'},{t:113.5,w:'his'},{t:113.8,w:'face'},{t:114.2,w:'so'},{t:114.5,w:'soft'}
   ]},
-  {t:162.5, sz:'sz-l', syls:[
-    {t:162.5,w:"It's"},{t:162.8,w:'al-'},{t:163.1,w:'right,'},{t:163.8,w:"it's"},{t:164.1,w:'al-'},{t:164.4,w:'right'}
-  ]},
-  {t:165.5, sz:'sz-l', syls:[
-    {t:165.5,w:'You'},{t:165.8,w:'can'},{t:166.1,w:'af-'},{t:166.4,w:'ford'},{t:166.8,w:'to'},{t:167.1,w:'lose'},{t:167.5,w:'a'},{t:167.8,w:'day'},{t:168.2,w:'or'},{t:168.5,w:'two'}
+  {t:116.0, sz:'sz-m', syls:[
+    {t:116.0,w:'Some-'},{t:116.4,w:'how'},{t:116.8,w:'turn-'},{t:117.1,w:'ing'},{t:117.5,w:'this'},{t:117.8,w:'heart'},{t:118.2,w:'of'},{t:118.5,w:'stone'}
   ]},
 
-  // Final chorus
-  {t:171.0, sz:'sz-xl', syls:[
-    {t:171.0,w:'When'},{t:171.5,w:'will'},{t:172.0,w:'you'},{t:172.5,w:'re-'},{t:172.9,w:'a-'},{t:173.3,w:'lize...'}
+  // Chorus 2
+  {t:120.0, sz:'sz-xl', syls:[
+    {t:120.0,w:'Coast'},{t:120.5,w:'to'},{t:120.8,w:'coast,'},{t:121.5,w:'L.A.'},{t:122.2,w:'to'},{t:122.5,w:'Chi-'},{t:122.9,w:'ca-'},{t:123.3,w:'go'}
   ]},
-  {t:175.5, sz:'sz-xxl', syls:[
-    {t:175.5,w:'Vi-'},{t:176.5,w:'en-'},{t:177.5,w:'na'},{t:178.5,w:'waits'},{t:179.5,w:'for'},{t:180.5,w:'you?'}
+  {t:124.5, sz:'sz-xl', syls:[
+    {t:124.5,w:'West-'},{t:125.0,w:'ern'},{t:125.5,w:'male'}
+  ]},
+  {t:127.0, sz:'sz-xl', syls:[
+    {t:127.0,w:'A-'},{t:127.4,w:'cross'},{t:127.8,w:'the'},{t:128.1,w:'north'},{t:128.5,w:'and'},{t:128.8,w:'south,'},{t:129.4,w:'to'},{t:129.7,w:'Key'},{t:130.1,w:'Lar-'},{t:130.6,w:'go'}
+  ]},
+  {t:131.5, sz:'sz-xl', syls:[
+    {t:131.5,w:'Love'},{t:132.0,w:'for'},{t:132.5,w:'sale'}
   ]},
 
-  // Outro
-  {t:185.0, sz:'sz-l', syls:[
-    {t:185.0,w:'Vi-'},{t:186.0,w:'en-'},{t:187.0,w:'na'},{t:188.0,w:'waits'},{t:189.0,w:'for'},{t:190.0,w:'you...'}
+  // Hook 2
+  {t:134.0, sz:'sz-xxl', syls:[
+    {t:134.0,w:'Smooth'},{t:134.8,w:'op-'},{t:135.2,w:'er-'},{t:135.6,w:'a-'},{t:136.1,w:'tor'}
+  ]},
+  {t:138.0, sz:'sz-xxl', syls:[
+    {t:138.0,w:'Smoo-'},{t:138.6,w:'ooth'},{t:139.3,w:'op-'},{t:139.7,w:'er-'},{t:140.1,w:'a-'},{t:140.6,w:'tor'}
+  ]},
+  {t:142.0, sz:'sz-xxl', syls:[
+    {t:142.0,w:'Smooth'},{t:142.8,w:'op-'},{t:143.2,w:'er-'},{t:143.6,w:'a-'},{t:144.1,w:'tor'}
+  ]},
+  {t:146.0, sz:'sz-xxl', syls:[
+    {t:146.0,w:'Smoo-'},{t:146.6,w:'ooth'},{t:147.3,w:'op-'},{t:147.7,w:'er-'},{t:148.1,w:'a-'},{t:148.6,w:'tor'}
+  ]},
+
+  // Sax solo marker
+  {t:152.0, sz:'sz-s', syls:[
+    {t:152.0,w:'~'},{t:155.0,w:'~'},{t:158.0,w:'~'}
+  ]},
+
+  // Chorus 3
+  {t:190.0, sz:'sz-xl', syls:[
+    {t:190.0,w:'Coast'},{t:190.5,w:'to'},{t:190.8,w:'coast,'},{t:191.5,w:'L.A.'},{t:192.2,w:'to'},{t:192.5,w:'Chi-'},{t:192.9,w:'ca-'},{t:193.3,w:'go'}
+  ]},
+  {t:194.5, sz:'sz-xl', syls:[
+    {t:194.5,w:'West-'},{t:195.0,w:'ern'},{t:195.5,w:'male'}
+  ]},
+
+  // Outro Hook
+  {t:198.0, sz:'sz-xxl', syls:[
+    {t:198.0,w:'Smooth'},{t:198.8,w:'op-'},{t:199.2,w:'er-'},{t:199.6,w:'a-'},{t:200.1,w:'tor'}
+  ]},
+  {t:202.0, sz:'sz-xxl', syls:[
+    {t:202.0,w:'Smoo-'},{t:202.6,w:'ooth'},{t:203.3,w:'op-'},{t:203.7,w:'er-'},{t:204.1,w:'a-'},{t:204.6,w:'tor'}
+  ]},
+  {t:206.0, sz:'sz-xxl', syls:[
+    {t:206.0,w:'Smooth'},{t:206.8,w:'op-'},{t:207.2,w:'er-'},{t:207.6,w:'a-'},{t:208.1,w:'tor'}
+  ]},
+  {t:210.0, sz:'sz-xxl', syls:[
+    {t:210.0,w:'Smoo-'},{t:210.6,w:'ooth'},{t:211.3,w:'op-'},{t:211.7,w:'er-'},{t:212.1,w:'a-'},{t:212.6,w:'tor'}
+  ]},
+  {t:218.0, sz:'sz-l', syls:[
+    {t:218.0,w:'Smooth'},{t:219.2,w:'op-'},{t:219.8,w:'er-'},{t:220.4,w:'a-'},{t:221.2,w:'tor..'}
   ]},
 ];
 
-// Approximate pitch contour (0-1, low to high) per line
+// Approximate pitch contour (0-1, low to high) per syllable per line
+// Sade's smooth jazz mid-range: mostly 0.3-0.65, hooks at 0.5-0.65
 const PITCHES = [
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.6,.5,.45,.5,.55,.5],
-  [.4,.45,.5,.55,.6,.65],
-  [.5,.55,.6,.55,.5,.45,.4,.35,.3],
-  [.3,.35,.3],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4],
-  [.5,.55,.6,.65,.6,.55,.5],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.55],
-  [.5,.55,.6,.55,.5,.55,.6,.55,.5,.55,.6,.65,.6],
-  [.5,.55,.6,.65,.7,.6,.55,.5,.55,.6,.65,.7,.75,.8],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.55,.6,.65,.6,.55],
-  [.5,.55,.6,.65,.6,.55,.5,.55,.6,.65,.7],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.5,.55,.6,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.6,.7,.8,.75,.7,.6],
+  // "Diamond life, lover boy"
+  [.45,.40,.50,.55,.50,.48],
+  // "He moves in space with minimum waste"
+  [.40,.50,.45,.55,.45,.50,.45,.42,.52],
+  // "And maximum joy"
+  [.38,.48,.45,.42,.55],
+  // "City lights and business nights"
+  [.44,.40,.55,.42,.50,.45,.42,.55],
+  // "When you require streetcar desire"
+  [.42,.38,.50,.55,.52,.48,.45,.58],
+  // "For higher heights"
+  [.40,.55,.50,.60],
+  // "No place for beginners or sensitive hearts"
+  [.40,.50,.42,.48,.52,.48,.40,.48,.45,.42,.55],
+  // "When sentiment is left to chance"
+  [.42,.50,.45,.52,.40,.55,.42,.58],
+  // "No place to be ending but somewhere to start"
+  [.40,.50,.42,.45,.50,.48,.40,.50,.48,.42,.55],
+  // "Coast to coast, L.A. to Chicago"
+  [.55,.50,.60,.58,.52,.55,.58,.62],
+  // "Western male"
+  [.50,.48,.55],
+  // "Across the north and south, to Key Largo"
+  [.50,.55,.48,.58,.45,.60,.48,.55,.60,.58],
+  // "Love for sale"
+  [.52,.48,.55],
+  // "Smooth operator" (hook 1)
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // "Smooth operator"
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // "His eyes are like angels so far"
+  [.40,.52,.45,.50,.48,.45,.42,.50],
+  // "He's a boy from the great unknown"
+  [.40,.38,.50,.45,.42,.58,.50,.55],
+  // "Sent from above with a love so nice and so raw"
+  [.44,.40,.48,.55,.42,.40,.55,.50,.58,.42,.48,.52],
+  // "And with a body you love and his face so soft"
+  [.40,.44,.38,.50,.48,.44,.55,.40,.44,.58,.48,.52],
+  // "Somehow turning this heart of stone"
+  [.45,.50,.55,.52,.48,.58,.44,.52],
+  // "Coast to coast, L.A. to Chicago"
+  [.55,.50,.60,.58,.52,.55,.58,.62],
+  // "Western male"
+  [.50,.48,.55],
+  // "Across the north and south, to Key Largo"
+  [.50,.55,.48,.58,.45,.60,.48,.55,.60,.58],
+  // "Love for sale"
+  [.52,.48,.55],
+  // "Smooth operator" (hook 2)
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // "Smooth operator"
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // sax solo marker
+  [.35,.35,.35],
+  // "Coast to coast, L.A. to Chicago" (chorus 3)
+  [.55,.50,.60,.58,.52,.55,.58,.62],
+  // "Western male"
+  [.50,.48,.55],
+  // "Smooth operator" (outro)
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // "Smooth operator"
+  [.58,.55,.60,.62,.58],
+  // "Smoo-ooth operator"
+  [.55,.60,.58,.62,.60,.55],
+  // "Smooth operator..."
+  [.50,.48,.45,.42,.38],
 ];
 
 // Binaural presets
@@ -323,7 +382,7 @@ function App(){
   const binRRef=useRef(null);
   const binGainRef=useRef(null);
   const rafRef=useRef(null);
-  const [dur,setDur]=useState(235);
+  const [dur,setDur]=useState(258);
 
   // Audio element
   useEffect(()=>{
@@ -392,8 +451,8 @@ function App(){
   return R.createElement('div',{className:'app'},
     // Ambient glow
     R.createElement('div',{className:`ambient${playing?' on':''}`},
-      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(100,140,220,.12),transparent 70%)'}}),
-      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(255,214,165,.08),transparent 70%)'}})
+      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(196,113,237,.12),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(232,196,240,.08),transparent 70%)'}})
     ),
 
     // Lyrics
@@ -453,7 +512,7 @@ function App(){
       },BIN[binIdx].n)
     ),
 
-    R.createElement('div',{className:'credit'},'Billy Joel — Vienna — spike.land karaoke')
+    R.createElement('div',{className:'credit'},'Sade — Smooth Operator (1984) — spike.land karaoke')
   );
 }
 

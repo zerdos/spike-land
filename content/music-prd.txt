@@ -1,0 +1,664 @@
+================================================================================
+MUSIC PRD: Universal Song Format
+A Math Arena Dialogue in 16 Rounds
+Daft Punk vs Zoltan
+================================================================================
+
+ROUND 1 — "What is a song?"
+--------------------------------------------------------------------------------
+
+DAFT PUNK: We have been thinking about this. A song is a function. It takes
+time as input and produces sound as output. f(t) -> amplitude. Everything else
+is metadata.
+
+ZOLTAN: Sure, but you are skipping the part where a human needs to find the
+song first. Before f(t) there is identity. A slug. A title. An artist. A year.
+If I cannot grep for it, it does not exist.
+
+DAFT PUNK: Agreed. Identity is the hash. We propose: id as a slug string.
+"take-on-me". "if-i-can-dream". Deterministic, URL-safe, unique.
+
+ZOLTAN: And then the obvious fields — title, artist, year. Year as a number
+because I do not want to parse date strings at 3am. I have insomnia. I will be
+using this at 3am.
+
+DAFT PUNK: We also need duration. Total seconds. A song is a bounded interval
+on the real line. Not infinite. We tried infinite once. The label said no.
+
+ZOLTAN: Duration in seconds, float. So we have our atom:
+  { id, title, artist, year, duration }
+Five fields. A song exists. We can build everything else on top.
+
+DAFT PUNK: One more time — we want to emphasize: the id must be a slug. No
+spaces. No unicode. Lowercase. Hyphens. This is the primary key of music.
+
+ZOLTAN: Agreed. Round 1 done. We have identity.
+
+
+ROUND 2 — Time
+--------------------------------------------------------------------------------
+
+DAFT PUNK: Now we must talk about time. A song lives in continuous time but
+computers live in discrete time. We must quantize.
+
+ZOLTAN: The question is: what is the resolution? Milliseconds? Seconds?
+Samples at 44100 Hz?
+
+DAFT PUNK: Seconds as floating point. Milliseconds are a trap — you end up
+with integers like 143520 and nobody can read that. 143.52 seconds is
+readable. A human can reason about it.
+
+ZOLTAN: I looked at our existing karaoke pages. The Elvis one uses seconds
+with two decimal places. The Billy Joel one uses milliseconds divided by 1000.
+They are both doing the same thing but differently. This is exactly the
+problem.
+
+DAFT PUNK: One format. Seconds. Float64. The universal time coordinate of
+music. Every timestamp in the entire schema will be in seconds.
+
+ZOLTAN: What about BPM? Beats per minute is how musicians think. 120 BPM
+means a beat every 0.5 seconds. Can we store both?
+
+DAFT PUNK: BPM is optional metadata. It helps with quantization, snap-to-grid,
+visual pulse effects. But the source of truth is always seconds. BPM is
+derived, seconds are fundamental.
+
+ZOLTAN: Like how in Erdos's combinatorics — you pick the right representation
+and the proof writes itself. Seconds are the right representation.
+
+DAFT PUNK: We also want musical key. "E major", "Bb minor". Optional. But
+when you have it, the renderer can do intelligent pitch visualization.
+
+ZOLTAN: So we add: bpm?: number, key?: string. Both optional. Round 2 done.
+
+
+ROUND 3 — Lyrics
+--------------------------------------------------------------------------------
+
+ZOLTAN: Now the hard part. Lyrics. Our existing pages store them completely
+differently. Some have plain text arrays. Some have word-by-word timing. Some
+have syllable-level data with pitch information.
+
+DAFT PUNK: The fundamental unit is not the line. It is the syllable. "A-round
+the world" is four syllables. Each syllable has a start time and a duration.
+The line is just a container.
+
+ZOLTAN: But most lyric sources give you lines, not syllables. We need to
+support both. A line with no syllable breakdown is still valid — it just has
+coarser timing.
+
+DAFT PUNK: No. We refuse. If a line has no syllables, you generate a single
+syllable containing the entire line text. The data structure is always
+syllables. Uniformity is beautiful.
+
+ZOLTAN: Fine, fine. So a LyricLine has an array of Syllable objects. Each
+syllable has: word (the text), t (start time), dur (duration).
+
+DAFT PUNK: And optionally pitch. A MIDI note number. Middle C is 60. Each
+syllable can carry its melodic target.
+
+ZOLTAN: This is the key insight. The syllable is the atom of karaoke. Not the
+word, not the line. The syllable. Everything else is grouping.
+
+DAFT PUNK: A line then becomes: start time t, end time, and an array of
+syllables. The line is the molecule. The syllable is the atom.
+
+ZOLTAN: I like this. It means our dumbest format (plain lines with timestamps)
+and our richest format (pitch-tracked syllables) use the same interface. Just
+different levels of detail in the syllable array.
+
+
+ROUND 4 — Synchronization
+--------------------------------------------------------------------------------
+
+DAFT PUNK: Synchronization is the alignment problem. You have audio. You have
+text. They must move together. This is a signal processing problem.
+
+ZOLTAN: In practice it is a data entry problem. Someone sits with the audio
+and marks timestamps. Or an algorithm does forced alignment. Either way, you
+get (text, time) pairs.
+
+DAFT PUNK: The critical constraint: syllable.t + syllable.dur must not exceed
+the parent line's end time. And line[n].end must be <= line[n+1].t. The
+timeline must be monotonically non-decreasing.
+
+ZOLTAN: What about overlapping vocals? Background harmonies?
+
+DAFT PUNK: That is a separate track. Or a persona — we will get to that. For a
+single vocal line, no overlaps. Strict ordering.
+
+ZOLTAN: Our Elvis karaoke has a nice effect where the current syllable lights
+up as the audio plays. The renderer binary-searches for the active syllable
+using the current playback time. With sorted timestamps, that is O(log n).
+
+DAFT PUNK: Correct. And because all timestamps are in seconds (not
+milliseconds, not frames, not ticks), the comparison is trivial.
+currentTime >= syllable.t && currentTime < syllable.t + syllable.dur.
+
+ZOLTAN: The Billy Joel one does something similar but it recalculates from
+milliseconds every frame. Wasteful. With our format, it is a single
+comparison per syllable.
+
+DAFT PUNK: We should also note: the audio source is separate from the lyric
+data. audioSrc is a path to an .opus or .mp3 file. The lyrics do not contain
+audio. They contain time references into the audio.
+
+ZOLTAN: Separation of concerns. The lyrics are the score. The audio is the
+performance. They meet at time t.
+
+
+ROUND 5 — Pitch
+--------------------------------------------------------------------------------
+
+ZOLTAN: Pitch. This is where it gets musical. Each syllable can optionally
+carry a MIDI note number. Why MIDI?
+
+DAFT PUNK: Because MIDI is the universal language of pitch in digital music.
+Note 60 is middle C. Note 69 is A440. The mapping is deterministic:
+frequency = 440 * 2^((note - 69) / 12). Every synthesizer on Earth speaks
+MIDI.
+
+ZOLTAN: And it is an integer. Clean. No floating point ambiguity for the base
+pitch. If you want microtonal, you add pitch bend, but for karaoke we do not
+need that.
+
+DAFT PUNK: With pitch data, the renderer can draw a melody contour. A visual
+guide showing the singer where the note goes next. Up, down, same. This is
+what makes karaoke accessible to people who cannot read sheet music.
+
+ZOLTAN: Which is most people. Including me. I studied math, not music. But I
+can follow a line going up and down.
+
+DAFT PUNK: The pitch field on Syllable is optional. pitch?: number. If
+present, it is a MIDI note. If absent, the renderer shows text only, no pitch
+guide.
+
+ZOLTAN: And for our existing songs — Elvis has some pitch data, Billy Joel has
+none. Both work. The format degrades gracefully.
+
+DAFT PUNK: Graceful degradation. We like this phrase. It is what we do with
+our helmets when the LEDs fail.
+
+
+ROUND 6 — Structure
+--------------------------------------------------------------------------------
+
+DAFT PUNK: A song has structure. Verse, chorus, bridge, intro, outro. This is
+not decoration. It is the skeleton.
+
+ZOLTAN: In our format, each LyricLine can optionally have a section field.
+section?: string. "VERSE 1", "CHORUS", "BRIDGE", "OUTRO".
+
+DAFT PUNK: The section is a label, not a container. We debated making sections
+a separate array with start/end times, containing lines. But that creates a
+tree. Trees are complex. A flat array of lines with optional section labels is
+simpler.
+
+ZOLTAN: I agree. Flat is better than nested. I learned this from Python's zen,
+not from Python's actual code, which nests everything.
+
+DAFT PUNK: When the section label changes from one line to the next, the
+renderer knows a new section has begun. It can draw a divider, change the
+background color, pulse the lights.
+
+ZOLTAN: The sections also help with navigation. "Skip to chorus" means: find
+the first line where section === "CHORUS" and seek to line.t.
+
+DAFT PUNK: Repetition is the soul of music. A song might have CHORUS appearing
+four times. Each is a separate set of lines with section: "CHORUS". The
+renderer can detect repeated sections and apply consistent styling.
+
+ZOLTAN: One more thing — should section names be an enum or free text?
+
+DAFT PUNK: Free text. Music is too creative for enums. "VERSE 1", "VERSE 2",
+"PRE-CHORUS", "BREAKDOWN", "DROP", "GUITAR SOLO" — you cannot enumerate
+human creativity.
+
+ZOLTAN: String it is.
+
+
+ROUND 7 — Visual Emphasis
+--------------------------------------------------------------------------------
+
+ZOLTAN: Our existing karaoke pages have this concept of visual weight. Some
+lines are bigger than others. The climax of "If I Can Dream" — "RIGHT NOW" —
+is rendered in giant text. It is the emotional peak.
+
+DAFT PUNK: This is the typography of music. We propose a size field on
+LyricLine: "s", "m", "l", "xl", "xxl". Five levels. Like t-shirt sizes
+but for emotional intensity.
+
+ZOLTAN: "s" is a whispered aside. "m" is the default verse. "l" is a strong
+chorus. "xl" is the emotional peak. "xxl" is the moment the entire audience
+screams along.
+
+DAFT PUNK: In "Around the World", every line would be "m". It is uniform. That
+is the point. The repetition IS the emphasis.
+
+ZOLTAN: In "If I Can Dream", the verses are "m", the chorus is "l", and
+"RIGHT NOW, oh RIGHT NOW" is "xxl". The size guides the renderer's CSS —
+font-size, maybe animation intensity, glow radius.
+
+DAFT PUNK: We considered using a numeric scale, 1-100. But that leads to
+bikeshedding. Is this moment a 73 or a 74? Five discrete sizes eliminate that
+debate.
+
+ZOLTAN: It is like how Fibonacci story points work in agile. You do not argue
+about the difference between 7 and 8. You argue about 5 vs 8. Coarse
+quantization reduces noise.
+
+DAFT PUNK: size is optional. Default is "m". If you do not annotate, every
+line is medium. The song still works.
+
+ZOLTAN: The xxl moment. I like that concept. Every great song has one. Even
+the quiet ones — the xxl moment might be a silence.
+
+
+ROUND 8 — Audio Sources
+--------------------------------------------------------------------------------
+
+DAFT PUNK: The audio. We have been avoiding this. audioSrc is a path to a
+file. But what kind of file?
+
+ZOLTAN: Our existing pages use mp3. Some use opus. The Billy Joel one
+synthesizes some audio with Web Audio API oscillators.
+
+DAFT PUNK: We support any browser-playable format via audioSrc. The renderer
+creates an Audio element or uses Web Audio API. The format does not care what
+codec is inside the file. That is the browser's problem.
+
+ZOLTAN: audioSrc is optional. A song without audioSrc is an a cappella lyric
+display. Or an interactive instrument. Or a score waiting for a singer.
+
+DAFT PUNK: Correct. And this connects to the binaural presets — those are
+synthesized in real-time. They do not need a file. They need oscillator
+parameters.
+
+ZOLTAN: We also need coverArt. An optional path to an image. Album cover,
+promotional photo, AI-generated artwork. The catalog page needs thumbnails.
+
+DAFT PUNK: coverArt?: string. A path. The renderer decides how to display it.
+As a background, a thumbnail, a vinyl spin animation. That is presentation,
+not data.
+
+ZOLTAN: So audioSrc and coverArt are both optional string paths. Simple. The
+format describes what exists, not how to render it.
+
+
+ROUND 9 — Binaural
+--------------------------------------------------------------------------------
+
+ZOLTAN: OK, this is my favorite part. Binaural beats. I have insomnia. I use
+binaural beats to sleep. A theta wave at 6 Hz is the difference between two
+tones — say 200 Hz in the left ear and 206 Hz in the right ear. Your brain
+perceives the 6 Hz difference and entrains to it.
+
+DAFT PUNK: We are familiar. The brain is a mixer. Two frequencies in, one
+phantom frequency out. It is like sidechain compression but for
+consciousness.
+
+ZOLTAN: Our karaoke pages already have binaural presets. OFF, THETA 6Hz,
+DELTA 2Hz. The user picks one and it layers under the music. It is
+accessibility for the brain.
+
+DAFT PUNK: The BinauralPreset interface: name, left frequency, right
+frequency. Simple. The renderer creates two oscillators, pans them hard
+left and right.
+
+ZOLTAN: The presets are per-song because different songs work with different
+base frequencies. A quiet ballad might use 200/206 Hz. A loud rock song needs
+higher base frequencies to not be masked.
+
+DAFT PUNK: binaural is optional on Song. An array of BinauralPreset. If empty
+or absent, no binaural option is shown. If present, the UI offers a dropdown.
+
+ZOLTAN: The delta preset at 2 Hz is for deep sleep. I put on a slow song with
+delta binaural and I am out in 20 minutes. This is not pseudoscience — there
+are EEG studies. Though the effect size is modest.
+
+DAFT PUNK: We do not need to prove it works in the PRD. We need to prove the
+data model supports it. And it does. Two numbers and a name.
+
+
+ROUND 10 — Personas
+--------------------------------------------------------------------------------
+
+DAFT PUNK: We are two. We have always been two. Thomas and Guy-Manuel. When
+we perform, there are two voices, two helmets, two perspectives. Music can
+have multiple personas.
+
+ZOLTAN: Right. Our "Rooftop Paradise" arena has multiple characters speaking
+and singing. It is not a simple karaoke — it is a staged performance with
+roles.
+
+DAFT PUNK: A Persona has: id, name, color, icon. The id links to lyric lines
+or syllables. The name is displayed. The color drives the CSS. The icon is a
+small visual identifier.
+
+ZOLTAN: Color is key. In the arena format, each persona's lyrics appear in
+their color. You instantly know who is speaking. It is like syntax highlighting
+but for people.
+
+DAFT PUNK: The personas array on Song is optional. A standard karaoke has one
+implicit persona — the singer. An arena might have three or four.
+
+ZOLTAN: How do we link a lyric line to a persona?
+
+DAFT PUNK: We could add persona?: string to LyricLine. Referencing the
+persona id.
+
+ZOLTAN: That works. But we did not include it in our LyricLine interface yet.
+Let us note that for Round 16. For now, the Persona interface is defined and
+the linkage mechanism is clear.
+
+DAFT PUNK: Two interfaces talking to each other through a shared id. Like us
+talking through shared frequencies.
+
+
+ROUND 11 — Interactive
+--------------------------------------------------------------------------------
+
+ZOLTAN: Not everything is karaoke. Our "Musical Hexagons" page is an
+instrument. You tap hexagons and they play notes. There are no lyrics. There
+is no linear timeline. It is spatial, not temporal.
+
+DAFT PUNK: This is why the type field matters. A song of type "interactive" or
+"sequencer" may have no lyrics array at all. Or a minimal one. The format must
+not assume linearity.
+
+ZOLTAN: The lyrics array can be empty. An interactive song might only have
+metadata — title, artist, type: "interactive", tags, and then the renderer
+knows to load the instrument UI instead of the karaoke UI.
+
+DAFT PUNK: The sequencer type is for step-based music creation. A grid of
+beats. You toggle cells on and off. The timing is quantized to BPM.
+
+ZOLTAN: So bpm becomes important for sequencers. It is optional for karaoke
+but essential for sequencers. The format does not enforce this — the renderer
+does.
+
+DAFT PUNK: This is the beauty of optional fields. The same interface serves
+a 1968 Elvis ballad and a hexagonal synthesizer. The fields that matter
+change, but the container is the same.
+
+ZOLTAN: In Hungarian we have a word, "egyetemes" — universal. That is what we
+are building. Egyetemes dal formatum. Universal song format.
+
+DAFT PUNK: We like that. Though we would have called it "format universel de
+la chanson". But yours has fewer syllables.
+
+
+ROUND 12 — The Type System
+--------------------------------------------------------------------------------
+
+DAFT PUNK: Four types. "karaoke", "arena", "sequencer", "interactive". Each
+implies a different renderer behavior but uses the same data model.
+
+ZOLTAN: Let me map them:
+  karaoke — single voice, lyrics synced to audio, the classic experience
+  arena — multiple personas, dialogue or multi-voice performance
+  sequencer — beat grid, BPM-driven, user creates patterns
+  interactive — freeform instrument, spatial not temporal
+
+DAFT PUNK: The type is a discriminant. In TypeScript terms, it is a tagged
+union without the union. One interface, but the type field tells the renderer
+which code path to take.
+
+ZOLTAN: Why not a discriminated union with different interfaces per type?
+
+DAFT PUNK: Because the boundaries are soft. A karaoke can have personas. An
+arena can have binaural. A sequencer can have lyrics. The types are hints,
+not walls.
+
+ZOLTAN: Good point. An enum field beats a type hierarchy when the categories
+leak into each other. Erdos would approve — he hated unnecessary structure.
+
+DAFT PUNK: The renderer can switch on type for the primary layout, but every
+field is available to every type. Maximum flexibility, minimal constraint.
+
+ZOLTAN: I have seen too many projects die because they over-structured their
+data model in v1. We keep it flat. We keep it flexible. We add constraints
+later when we know what they should be.
+
+DAFT PUNK: One more time — the type field is the most important single
+decision in this schema. It is what makes this a universal format and not
+just a karaoke format.
+
+
+ROUND 13 — The Catalog
+--------------------------------------------------------------------------------
+
+ZOLTAN: Now we need to talk about discovery. We have songs. How do people
+find them? The /music route needs a catalog page.
+
+DAFT PUNK: The catalog is an array of Song objects. But you do not need the
+full lyrics for a catalog listing. You need: id, title, artist, year,
+coverArt, type, tags.
+
+ZOLTAN: So the catalog index is a projection of Song. The full Song object is
+loaded when the user selects one. This is standard list/detail pattern.
+
+DAFT PUNK: Each song lives as a JSON file or a TypeScript module. The catalog
+is generated at build time by scanning all song files and extracting the
+index fields.
+
+ZOLTAN: Or it is a single songs.json with the full array. For our initial set
+of 8 songs, the overhead is negligible. Premature optimization is the root
+of all evil — Knuth said that, and he is practically Hungarian.
+
+DAFT PUNK: He studied at Case Western, not in Budapest.
+
+ZOLTAN: He received an honorary doctorate from ELTE. Close enough.
+
+DAFT PUNK: The catalog page shows cards. Each card has coverArt as background,
+title, artist, year, type badge, and tags as small pills. Click to enter.
+
+ZOLTAN: And sorting. By year, by artist, by recently added. The year field
+makes chronological sorting trivial. Our initial songs span 1968 to present.
+
+
+ROUND 14 — Tags and Filtering
+--------------------------------------------------------------------------------
+
+ZOLTAN: Tags. Free-form string array. tags: string[]. No enum. No taxonomy.
+Just strings.
+
+DAFT PUNK: We see: "karaoke", "80s", "synth-pop", "ballad", "rock",
+"electronic", "sleep", "instrument", "multi-voice". These emerge from the
+content. They are not imposed from above.
+
+ZOLTAN: The UI shows all unique tags across the catalog as filter buttons.
+Toggle a tag, the catalog filters. Simple. No hierarchical category trees.
+No ontology committee.
+
+DAFT PUNK: Tags also serve as the mood system. "energetic", "calm", "dreamy",
+"defiant". A song about dreaming can be tagged "dreamy" and "defiant" because
+Elvis is dreaming defiantly.
+
+ZOLTAN: The decade tags are useful: "60s", "80s", "90s". Computed from year
+but stored explicitly because "80s" is a vibe, not just a date range. 1979
+can feel very 80s.
+
+DAFT PUNK: We agree. Genre boundaries and decade boundaries are both fuzzy
+sets. Tags capture the fuzziness that enums cannot.
+
+ZOLTAN: For the initial catalog:
+  Elvis - If I Can Dream: ["karaoke", "60s", "ballad", "soul", "dreamy"]
+  Billy Joel - Vienna: ["karaoke", "70s", "ballad", "piano"]
+  AHA - Take On Me: ["karaoke", "80s", "synth-pop", "energetic"]
+  Sade - Smooth Operator: ["karaoke", "80s", "smooth-jazz", "calm"]
+  Alphaville - Forever Young: ["karaoke", "80s", "synth-pop", "dreamy"]
+  Bronski Beat - Smalltown Boy: ["karaoke", "80s", "synth-pop", "defiant"]
+  Rooftop Paradise: ["arena", "multi-voice", "electronic"]
+  Musical Hexagons: ["interactive", "instrument", "electronic"]
+
+DAFT PUNK: Eight songs, eight different tag profiles. The filter UI has real
+data to work with from day one.
+
+
+ROUND 15 — The Renderer
+--------------------------------------------------------------------------------
+
+DAFT PUNK: One player. Many formats. The renderer reads Song.type and switches
+behavior. But the core loop is the same: track time, update display, respond
+to input.
+
+ZOLTAN: For karaoke and arena types, the core loop is:
+  1. Get currentTime from audio element
+  2. Binary search lyrics for active line and syllable
+  3. Highlight active syllable, dim past, show future
+  4. Apply size class to current line
+  5. If binaural is active, ensure oscillators are running
+  6. If personas exist, apply persona color to text
+
+DAFT PUNK: For sequencer type, the core loop is BPM-driven:
+  1. Calculate current beat from time and BPM
+  2. Highlight active column in the grid
+  3. Trigger samples for active cells in that column
+  4. Loop at pattern boundary
+
+ZOLTAN: For interactive type, there is no core loop. It is event-driven.
+User taps a hexagon, sound plays, visual responds. The Song object provides
+metadata and configuration, not a timeline.
+
+DAFT PUNK: The renderer is NOT part of this schema. The schema is the data
+contract. The renderer is the interpreter. We define the score, not the
+orchestra.
+
+ZOLTAN: But the schema must be renderable. Every field must have a clear
+rendering intent. size: "xxl" means "make this big". section: "CHORUS" means
+"this is structurally important". These are rendering hints encoded in data.
+
+DAFT PUNK: Agreed. The schema is data with rendering semantics. Not rendering
+instructions. The difference is: "this is the climax" vs "use font-size 72px".
+
+ZOLTAN: The renderer can be React, vanilla JS, a native app, even a terminal
+with ANSI colors. The schema does not care. It is renderer-agnostic.
+
+DAFT PUNK: Like MIDI. MIDI does not care if you are a piano or a synthesizer
+or a light show. It is the universal bus. Our Song interface is the universal
+bus for musical experiences.
+
+
+ROUND 16 — The Final Spec
+--------------------------------------------------------------------------------
+
+DAFT PUNK: Sixteen rounds. Like sixteen steps in a drum machine. We have
+arrived at the final pattern.
+
+ZOLTAN: Let me write it out. The complete TypeScript interfaces, incorporating
+every decision from the previous fifteen rounds.
+
+```typescript
+interface Song {
+  id: string;                    // slug: "take-on-me", "if-i-can-dream"
+  title: string;
+  artist: string;
+  year: number;
+  duration: number;              // total seconds
+  audioSrc?: string;             // path to .opus/.mp3
+  coverArt?: string;             // path to cover image
+  bpm?: number;
+  key?: string;                  // musical key (e.g. "E major")
+  tags: string[];                // ["karaoke", "80s", "synth-pop"]
+  type: "karaoke" | "arena" | "sequencer" | "interactive";
+  lyrics: LyricLine[];
+  binaural?: BinauralPreset[];
+  personas?: Persona[];
+}
+
+interface LyricLine {
+  t: number;          // start time (seconds)
+  end: number;        // end time
+  section?: string;   // "VERSE 1", "CHORUS", "BRIDGE"
+  size?: "s" | "m" | "l" | "xl" | "xxl";
+  syllables: Syllable[];
+}
+
+interface Syllable {
+  word: string;
+  t: number;          // start time
+  dur: number;        // duration in seconds
+  pitch?: number;     // MIDI note
+}
+
+interface BinauralPreset {
+  name: string;       // "OFF", "THETA 6Hz", "DELTA 2Hz"
+  left: number;       // left ear frequency
+  right: number;      // right ear frequency
+}
+
+interface Persona {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+}
+```
+
+DAFT PUNK: Five interfaces. Twenty-seven fields total. Thirteen required,
+fourteen optional. The ratio is important — roughly half the schema is
+mandatory, half is progressive enhancement.
+
+ZOLTAN: Every existing karaoke page on spike.land can be expressed in this
+format. I checked. The Elvis page maps cleanly. The Billy Joel page maps
+cleanly. The arena pages map with personas. The hexagon page maps as type
+"interactive" with an empty lyrics array.
+
+DAFT PUNK: And every future song can be expressed too. Because the optionality
+gives room to grow. If we need chords, we add chords?: string to LyricLine.
+If we need translations, we add lang?: string to Syllable. The schema
+extends without breaking.
+
+ZOLTAN: The initial catalog:
+
+  1. Elvis Presley - If I Can Dream (1968)
+     type: "karaoke", full syllable timing, size annotations, binaural presets
+
+  2. Billy Joel - Vienna (1977)
+     type: "karaoke", line-level timing, no pitch data yet
+
+  3. A-ha - Take On Me (1985)
+     type: "karaoke", syllable timing, pitch data for that wild vocal range
+
+  4. Sade - Smooth Operator (1984)
+     type: "karaoke", smooth syllable flow, calm size profile
+
+  5. Alphaville - Forever Young (1984)
+     type: "karaoke", synth-driven timing, dreamy size profile
+
+  6. Bronski Beat - Smalltown Boy (1984)
+     type: "karaoke", defiant climax moments in xxl
+
+  7. Rooftop Paradise
+     type: "arena", multiple personas with colors, dialogue format
+
+  8. Musical Hexagons
+     type: "interactive", no lyrics, spatial instrument
+
+DAFT PUNK: Eight songs. Four from 1984. The 80s were a good year for synths.
+
+ZOLTAN: 1984 was a single year, not years. But yes. Three of our six karaoke
+tracks are from 1984. Orwell would have appreciated the synchronization.
+
+DAFT PUNK: The /music route serves the catalog. The player loads a Song by id.
+The renderer inspects type and switches. One URL pattern: /music/:id. One
+player component. Many experiences.
+
+ZOLTAN: And we ship it. Not perfectly — nothing is perfect on the first pass.
+But the schema is sound. The math works. The types are clean. We can iterate.
+
+DAFT PUNK: Around the world, around the world. Or in this case — around the
+schema, around the schema. It is a loop. Version 1 feeds version 2. Each
+iteration tightens the spec.
+
+ZOLTAN: Sixteen rounds. We started with "what is a song" and ended with a
+shipping spec. Not bad for two robots and one insomniac.
+
+DAFT PUNK: We are not robots. We are human after all.
+
+ZOLTAN: That is your best song. Goodnight.
+
+================================================================================
+END OF PRD
+================================================================================

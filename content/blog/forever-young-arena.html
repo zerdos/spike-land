@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Forever Young — Karaoke</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#080810;--gold:#667eea;--gold-dim:rgba(102,126,234,.2);
+    --sung:rgba(102,126,234,.6);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(102,126,234,.2),0 0 48px rgba(102,126,234,.06);
+    --warm:#b8c8ff;--warm-dim:rgba(184,200,255,.2);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(100px)}
+
+  /* === LYRICS === */
+  .lyrics-wrap{
+    flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    overflow:hidden;position:relative;z-index:1;padding:1rem;
+  }
+  .lyrics-scroll{
+    display:flex;flex-direction:column;align-items:center;gap:.6rem;
+    transition:transform .45s cubic-bezier(.25,.46,.45,.94);
+  }
+  .line{
+    text-align:center;line-height:1.25;letter-spacing:-.01em;
+    transition:opacity .3s,transform .3s;
+    opacity:.12;transform:scale(.92);
+    display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em;
+  }
+  .line.active{opacity:1;transform:scale(1)}
+  .line.sung{opacity:.35;transform:scale(.95)}
+  .line.next{opacity:.25;transform:scale(.96)}
+
+  .syl{
+    display:inline-block;position:relative;
+    transition:color .15s,font-variation-settings .2s;
+    font-variation-settings:'wght' 350;
+    color:var(--upcoming);
+  }
+  .syl.active{
+    color:var(--gold);
+    font-variation-settings:'wght' 800;
+    filter:drop-shadow(0 0 8px rgba(102,126,234,.3));
+  }
+  .syl.active::after{
+    content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
+    background:var(--gold);border-radius:2px;
+    animation:sweep .35s ease-out forwards;
+  }
+  @keyframes sweep{from{width:0}to{width:100%}}
+  .syl.sung{color:var(--sung);font-variation-settings:'wght' 500}
+
+  .sz-s{font-size:clamp(1.1rem,3vw,1.4rem)}
+  .sz-m{font-size:clamp(1.4rem,4vw,1.8rem)}
+  .sz-l{font-size:clamp(1.8rem,5vw,2.4rem)}
+  .sz-xl{font-size:clamp(2.2rem,6vw,3rem)}
+  .sz-xxl{font-size:clamp(2.6rem,7vw,3.6rem)}
+
+  /* === PITCH BAR === */
+  .pitch-bar{
+    height:28px;position:relative;z-index:1;margin:0 1rem;
+    background:rgba(255,255,255,.03);border-radius:14px;overflow:hidden;
+  }
+  .pitch-dot{
+    position:absolute;width:6px;height:6px;border-radius:50%;
+    background:rgba(102,126,234,.15);top:50%;transform:translateY(-50%);
+  }
+  .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .pitch-dot.sung{background:var(--sung)}
+  .pitch-head{
+    position:absolute;top:0;bottom:0;width:2px;background:var(--gold);
+    opacity:.5;transition:left .08s linear;
+  }
+
+  /* === CONTROLS === */
+  .controls{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.75rem 1rem;z-index:2;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+  }
+  .play-btn{
+    width:48px;height:48px;border-radius:50%;border:none;
+    background:var(--gold);color:var(--bg);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;flex-shrink:0;
+    transition:transform .15s;
+  }
+  .play-btn:active{transform:scale(.92)}
+
+  .seek-wrap{flex:1;display:flex;flex-direction:column;gap:.2rem}
+  .seek{
+    width:100%;height:6px;-webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.08);border-radius:3px;cursor:pointer;outline:none;
+  }
+  .seek::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--gold);border:none;cursor:pointer;
+  }
+  .time-label{font-size:.65rem;color:rgba(255,255,255,.3);display:flex;justify-content:space-between}
+
+  .bin-btn{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.4);border-radius:8px;padding:.3rem .6rem;
+    font-size:.6rem;cursor:pointer;white-space:nowrap;font-family:inherit;
+    transition:border-color .2s,color .2s;
+  }
+  .bin-btn.on{border-color:var(--gold);color:var(--gold)}
+
+  .credit{
+    font-size:.55rem;padding:.3rem 1rem .5rem;
+    color:rgba(102,126,234,.2);text-align:center;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// FOREVER YOUNG — Alphaville (1984) — Real Karaoke
+// Syllable-synced, dreamy synth-wave edition
+// Designed for: nostalgia, late nights, stargazing, first time singing
+// ========================================================================
+
+const AUDIO_SRC = '/blog-images/forever-young/forever-young.opus';
+
+// Each line: { t: start time (s), sz: size class, syls: [{t, w}] }
+// t = syllable start time, w = syllable text
+const LYRICS = [
+  // Verse 1
+  {t:18.0, sz:'sz-m', syls:[
+    {t:18.0,w:"Let's"},{t:18.4,w:'dance'},{t:18.9,w:'in'},{t:19.2,w:'style,'},{t:19.8,w:"let's"},{t:20.2,w:'dance'},{t:20.7,w:'for'},{t:21.0,w:'a'},{t:21.3,w:'while'}
+  ]},
+  {t:23.0, sz:'sz-m', syls:[
+    {t:23.0,w:'Hea-'},{t:23.4,w:'ven'},{t:23.8,w:'can'},{t:24.1,w:'wait,'},{t:24.7,w:"we're"},{t:25.1,w:'on-'},{t:25.4,w:'ly'},{t:25.8,w:'watch-'},{t:26.2,w:'ing'},{t:26.5,w:'the'},{t:26.9,w:'skies'}
+  ]},
+  {t:28.0, sz:'sz-m', syls:[
+    {t:28.0,w:'Ho-'},{t:28.3,w:'ping'},{t:28.7,w:'for'},{t:29.0,w:'the'},{t:29.3,w:'best'},{t:29.7,w:'but'},{t:30.0,w:'ex-'},{t:30.3,w:'pect-'},{t:30.7,w:'ing'},{t:31.0,w:'the'},{t:31.3,w:'worst'}
+  ]},
+  {t:33.0, sz:'sz-m', syls:[
+    {t:33.0,w:'Are'},{t:33.3,w:'you'},{t:33.6,w:'gon-'},{t:34.0,w:'na'},{t:34.3,w:'drop'},{t:34.7,w:'the'},{t:35.0,w:'bomb'},{t:35.4,w:'or'},{t:35.7,w:'not?'}
+  ]},
+
+  // Verse 2
+  {t:37.0, sz:'sz-m', syls:[
+    {t:37.0,w:'Let'},{t:37.3,w:'us'},{t:37.6,w:'die'},{t:38.0,w:'young'},{t:38.4,w:'or'},{t:38.7,w:'let'},{t:39.0,w:'us'},{t:39.3,w:'live'},{t:39.7,w:'for-'},{t:40.1,w:'ev-'},{t:40.5,w:'er'}
+  ]},
+  {t:42.0, sz:'sz-m', syls:[
+    {t:42.0,w:'We'},{t:42.3,w:"don't"},{t:42.6,w:'have'},{t:43.0,w:'the'},{t:43.3,w:'pow-'},{t:43.6,w:'er'},{t:44.0,w:'but'},{t:44.3,w:'we'},{t:44.6,w:'nev-'},{t:45.0,w:'er'},{t:45.3,w:'say'},{t:45.7,w:'nev-'},{t:46.1,w:'er'}
+  ]},
+  {t:47.0, sz:'sz-m', syls:[
+    {t:47.0,w:'Sit-'},{t:47.3,w:'ting'},{t:47.6,w:'in'},{t:47.9,w:'a'},{t:48.2,w:'sand-'},{t:48.6,w:'pit,'},{t:49.2,w:'life'},{t:49.5,w:'is'},{t:49.8,w:'a'},{t:50.1,w:'short'},{t:50.5,w:'trip'}
+  ]},
+  {t:52.0, sz:'sz-m', syls:[
+    {t:52.0,w:'The'},{t:52.3,w:'mu-'},{t:52.6,w:"sic's"},{t:53.0,w:'for'},{t:53.4,w:'the'},{t:53.7,w:'sad'},{t:54.1,w:'man'}
+  ]},
+
+  // Pre-chorus
+  {t:55.0, sz:'sz-l', syls:[
+    {t:55.0,w:'Can'},{t:55.3,w:'you'},{t:55.6,w:'i-'},{t:55.9,w:'ma-'},{t:56.3,w:'gine'},{t:56.8,w:'when'},{t:57.1,w:'this'},{t:57.4,w:'race'},{t:57.8,w:'is'},{t:58.1,w:'won?'}
+  ]},
+  {t:59.5, sz:'sz-l', syls:[
+    {t:59.5,w:'Turn'},{t:59.9,w:'our'},{t:60.2,w:'gol-'},{t:60.6,w:'den'},{t:61.0,w:'fac-'},{t:61.4,w:'es'},{t:61.7,w:'in-'},{t:62.0,w:'to'},{t:62.3,w:'the'},{t:62.7,w:'sun'}
+  ]},
+  {t:63.5, sz:'sz-l', syls:[
+    {t:63.5,w:'Prais-'},{t:64.0,w:'ing'},{t:64.4,w:'our'},{t:64.7,w:'lead-'},{t:65.1,w:'ers,'},{t:65.7,w:"we're"},{t:66.0,w:'get-'},{t:66.4,w:'ting'},{t:66.7,w:'in'},{t:67.1,w:'tune'}
+  ]},
+  {t:68.0, sz:'sz-l', syls:[
+    {t:68.0,w:'The'},{t:68.3,w:'mu-'},{t:68.6,w:"sic's"},{t:69.0,w:'played'},{t:69.4,w:'by'},{t:69.7,w:'the,'},{t:70.1,w:'the'},{t:70.4,w:'mad'},{t:70.8,w:'man'}
+  ]},
+
+  // Chorus 1
+  {t:72.0, sz:'sz-xxl', syls:[
+    {t:72.0,w:'For-'},{t:72.6,w:'ev-'},{t:73.2,w:'er'},{t:73.7,w:'young'}
+  ]},
+  {t:75.0, sz:'sz-xxl', syls:[
+    {t:75.0,w:'I'},{t:75.4,w:'want'},{t:75.8,w:'to'},{t:76.1,w:'be'},{t:76.5,w:'for-'},{t:77.1,w:'ev-'},{t:77.7,w:'er'},{t:78.2,w:'young'}
+  ]},
+  {t:80.0, sz:'sz-xl', syls:[
+    {t:80.0,w:'Do'},{t:80.4,w:'you'},{t:80.7,w:'real-'},{t:81.1,w:'ly'},{t:81.4,w:'want'},{t:81.8,w:'to'},{t:82.1,w:'live'},{t:82.5,w:'for-'},{t:83.1,w:'ev-'},{t:83.7,w:'er?'}
+  ]},
+  {t:85.0, sz:'sz-xl', syls:[
+    {t:85.0,w:'For-'},{t:85.6,w:'ev-'},{t:86.2,w:'er,'},{t:86.8,w:'and'},{t:87.3,w:'ev-'},{t:87.8,w:'er'}
+  ]},
+  {t:88.5, sz:'sz-xxl', syls:[
+    {t:88.5,w:'For-'},{t:89.1,w:'ev-'},{t:89.7,w:'er'},{t:90.2,w:'young'}
+  ]},
+  {t:91.5, sz:'sz-xxl', syls:[
+    {t:91.5,w:'I'},{t:91.9,w:'want'},{t:92.3,w:'to'},{t:92.6,w:'be'},{t:93.0,w:'for-'},{t:93.6,w:'ev-'},{t:94.2,w:'er'},{t:94.7,w:'young'}
+  ]},
+  {t:96.5, sz:'sz-xl', syls:[
+    {t:96.5,w:'Do'},{t:96.9,w:'you'},{t:97.2,w:'real-'},{t:97.6,w:'ly'},{t:97.9,w:'want'},{t:98.3,w:'to'},{t:98.6,w:'live'},{t:99.0,w:'for-'},{t:99.6,w:'ev-'},{t:100.2,w:'er?'}
+  ]},
+  {t:101.0, sz:'sz-xxl', syls:[
+    {t:101.0,w:'For-'},{t:101.6,w:'ev-'},{t:102.2,w:'er'},{t:102.7,w:'young'}
+  ]},
+
+  // Verse 3
+  {t:120.0, sz:'sz-m', syls:[
+    {t:120.0,w:'Some'},{t:120.4,w:'are'},{t:120.7,w:'like'},{t:121.0,w:'wa-'},{t:121.4,w:'ter,'},{t:122.0,w:'some'},{t:122.4,w:'are'},{t:122.7,w:'like'},{t:123.0,w:'the'},{t:123.4,w:'heat'}
+  ]},
+  {t:125.0, sz:'sz-m', syls:[
+    {t:125.0,w:'Some'},{t:125.3,w:'are'},{t:125.6,w:'a'},{t:125.9,w:'mel-'},{t:126.3,w:'o-'},{t:126.7,w:'dy'},{t:127.0,w:'and'},{t:127.3,w:'some'},{t:127.6,w:'are'},{t:128.0,w:'the'},{t:128.3,w:'beat'}
+  ]},
+  {t:130.0, sz:'sz-m', syls:[
+    {t:130.0,w:'Soon-'},{t:130.4,w:'er'},{t:130.7,w:'or'},{t:131.0,w:'lat-'},{t:131.4,w:'er'},{t:131.7,w:'they'},{t:132.0,w:'all'},{t:132.3,w:'will'},{t:132.6,w:'be'},{t:133.0,w:'gone'}
+  ]},
+  {t:135.0, sz:'sz-l', syls:[
+    {t:135.0,w:'Why'},{t:135.4,w:"don't"},{t:135.8,w:'they'},{t:136.2,w:'stay'},{t:136.6,w:'young?'}
+  ]},
+
+  // Pre-chorus 2
+  {t:138.0, sz:'sz-l', syls:[
+    {t:138.0,w:"It's"},{t:138.4,w:'so'},{t:138.7,w:'hard'},{t:139.1,w:'to'},{t:139.4,w:'get'},{t:139.7,w:'old'},{t:140.1,w:'with-'},{t:140.5,w:'out'},{t:140.9,w:'a'},{t:141.2,w:'cause'}
+  ]},
+  {t:142.5, sz:'sz-l', syls:[
+    {t:142.5,w:'I'},{t:142.8,w:"don't"},{t:143.2,w:'want'},{t:143.6,w:'to'},{t:143.9,w:'per-'},{t:144.3,w:'ish'},{t:144.7,w:'like'},{t:145.1,w:'a'},{t:145.4,w:'fad-'},{t:145.8,w:'ing'},{t:146.2,w:'horse'}
+  ]},
+  {t:147.0, sz:'sz-l', syls:[
+    {t:147.0,w:"Youth's"},{t:147.5,w:'like'},{t:147.9,w:'dia-'},{t:148.3,w:'monds'},{t:148.8,w:'in'},{t:149.1,w:'the'},{t:149.5,w:'sun'}
+  ]},
+  {t:150.5, sz:'sz-xl', syls:[
+    {t:150.5,w:'And'},{t:151.0,w:'dia-'},{t:151.5,w:'monds'},{t:152.0,w:'are'},{t:152.5,w:'for-'},{t:153.1,w:'ev-'},{t:153.7,w:'er'}
+  ]},
+
+  // Chorus 2
+  {t:154.0, sz:'sz-xxl', syls:[
+    {t:154.0,w:'For-'},{t:154.6,w:'ev-'},{t:155.2,w:'er'},{t:155.7,w:'young'}
+  ]},
+  {t:157.0, sz:'sz-xxl', syls:[
+    {t:157.0,w:'I'},{t:157.4,w:'want'},{t:157.8,w:'to'},{t:158.1,w:'be'},{t:158.5,w:'for-'},{t:159.1,w:'ev-'},{t:159.7,w:'er'},{t:160.2,w:'young'}
+  ]},
+  {t:162.0, sz:'sz-xl', syls:[
+    {t:162.0,w:'Do'},{t:162.4,w:'you'},{t:162.7,w:'real-'},{t:163.1,w:'ly'},{t:163.4,w:'want'},{t:163.8,w:'to'},{t:164.1,w:'live'},{t:164.5,w:'for-'},{t:165.1,w:'ev-'},{t:165.7,w:'er?'}
+  ]},
+  {t:167.0, sz:'sz-xl', syls:[
+    {t:167.0,w:'For-'},{t:167.6,w:'ev-'},{t:168.2,w:'er,'},{t:168.8,w:'and'},{t:169.3,w:'ev-'},{t:169.8,w:'er'}
+  ]},
+  {t:170.5, sz:'sz-xxl', syls:[
+    {t:170.5,w:'For-'},{t:171.1,w:'ev-'},{t:171.7,w:'er'},{t:172.2,w:'young'}
+  ]},
+  {t:173.5, sz:'sz-xxl', syls:[
+    {t:173.5,w:'I'},{t:173.9,w:'want'},{t:174.3,w:'to'},{t:174.6,w:'be'},{t:175.0,w:'for-'},{t:175.6,w:'ev-'},{t:176.2,w:'er'},{t:176.7,w:'young'}
+  ]},
+  {t:178.5, sz:'sz-xl', syls:[
+    {t:178.5,w:'Do'},{t:178.9,w:'you'},{t:179.2,w:'real-'},{t:179.6,w:'ly'},{t:179.9,w:'want'},{t:180.3,w:'to'},{t:180.6,w:'live'},{t:181.0,w:'for-'},{t:181.6,w:'ev-'},{t:182.2,w:'er?'}
+  ]},
+  {t:183.5, sz:'sz-xxl', syls:[
+    {t:183.5,w:'For-'},{t:184.1,w:'ev-'},{t:184.7,w:'er,'},{t:185.2,w:'for-'},{t:185.8,w:'ev-'},{t:186.4,w:'er'},{t:186.9,w:'young'}
+  ]},
+
+  // Outro
+  {t:188.0, sz:'sz-xl', syls:[
+    {t:188.0,w:'For-'},{t:188.8,w:'ev-'},{t:189.6,w:'er'},{t:190.4,w:'young...'}
+  ]},
+  {t:194.0, sz:'sz-l', syls:[
+    {t:194.0,w:'For-'},{t:194.8,w:'ev-'},{t:195.6,w:'er'},{t:196.4,w:'young...'}
+  ]},
+];
+
+// Approximate pitch contour (0-1, low to high) per line
+// Alphaville: mid-range verse, dreamy rises, chorus peaks at 0.75-0.85
+const PITCHES = [
+  // Verse 1
+  [.45,.5,.4,.45,.45,.5,.4,.4,.5],                              // Let's dance in style...
+  [.4,.45,.5,.45,.5,.5,.45,.5,.5,.45,.5],                       // Heaven can wait...
+  [.4,.45,.4,.45,.5,.45,.5,.5,.5,.45,.5],                       // Hoping for the best...
+  [.4,.45,.5,.5,.55,.45,.5,.5,.45],                             // Are you gonna drop...
+
+  // Verse 2
+  [.4,.45,.5,.55,.45,.4,.45,.5,.55,.6,.55],                     // Let us die young...
+  [.4,.45,.5,.45,.5,.5,.45,.4,.45,.5,.5,.5,.45],                // We don't have the power...
+  [.4,.45,.4,.4,.5,.5,.45,.4,.45,.5,.5],                        // Sitting in a sandpit...
+  [.35,.4,.45,.4,.45,.4,.4],                                    // The music's for the sad man
+
+  // Pre-chorus
+  [.5,.55,.55,.6,.6,.65,.6,.65,.6,.6],                          // Can you imagine...
+  [.6,.65,.65,.7,.7,.65,.65,.6,.6,.65],                         // Turn our golden faces...
+  [.6,.65,.65,.65,.65,.65,.65,.65,.6,.65],                      // Praising our leaders...
+  [.55,.6,.6,.65,.6,.6,.55,.6,.6],                              // The music's played by the mad man
+
+  // Chorus 1
+  [.7,.75,.8,.85],                                              // Forever young
+  [.65,.75,.7,.75,.75,.8,.85,.85],                              // I want to be forever young
+  [.6,.65,.7,.7,.7,.65,.7,.75,.8,.8],                           // Do you really want to live forever?
+  [.7,.75,.8,.8,.75,.75],                                       // Forever, and ever
+  [.7,.75,.8,.85],                                              // Forever young
+  [.65,.75,.7,.75,.75,.8,.85,.85],                              // I want to be forever young
+  [.6,.65,.7,.7,.7,.65,.7,.75,.8,.8],                           // Do you really want to live forever?
+  [.7,.75,.8,.85],                                              // Forever young
+
+  // Verse 3
+  [.45,.5,.5,.5,.5,.5,.5,.5,.5,.5],                             // Some are like water...
+  [.45,.5,.45,.5,.55,.55,.5,.5,.5,.5,.5],                       // Some are a melody...
+  [.4,.45,.45,.5,.5,.5,.5,.5,.45,.45],                          // Sooner or later...
+  [.5,.6,.6,.65,.65],                                           // Why don't they stay young?
+
+  // Pre-chorus 2
+  [.5,.55,.6,.55,.6,.6,.6,.55,.5,.55],                          // It's so hard to get old...
+  [.5,.55,.6,.55,.6,.6,.55,.5,.55,.6,.6],                       // I don't want to perish...
+  [.6,.65,.7,.7,.65,.6,.65],                                    // Youth's like diamonds in the sun
+  [.65,.7,.75,.75,.75,.8,.8],                                   // And diamonds are forever
+
+  // Chorus 2
+  [.7,.75,.8,.85],                                              // Forever young
+  [.65,.75,.7,.75,.75,.8,.85,.85],                              // I want to be forever young
+  [.6,.65,.7,.7,.7,.65,.7,.75,.8,.8],                           // Do you really want to live forever?
+  [.7,.75,.8,.8,.75,.75],                                       // Forever, and ever
+  [.7,.75,.8,.85],                                              // Forever young
+  [.65,.75,.7,.75,.75,.8,.85,.85],                              // I want to be forever young
+  [.6,.65,.7,.7,.7,.65,.7,.75,.8,.8],                           // Do you really want to live forever?
+  [.7,.75,.8,.8,.8,.8,.85],                                     // Forever, forever young
+
+  // Outro
+  [.65,.75,.8,.7],                                              // Forever young...
+  [.55,.65,.7,.6],                                              // Forever young...
+];
+
+// Binaural presets
+const BIN=[
+  {n:'OFF',l:0,r:0},
+  {n:'THETA 6Hz',l:200,r:206},
+  {n:'DELTA 2Hz',l:200,r:202},
+];
+
+// ========================================================================
+// APP
+// ========================================================================
+const R=React,{useState,useCallback,useRef,useEffect}=R;
+
+function App(){
+  const [playing,setPlaying]=useState(false);
+  const [time,setTime]=useState(0);
+  const [binIdx,setBinIdx]=useState(0);
+  const audioRef=useRef(null);
+  const binCtxRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const rafRef=useRef(null);
+  const [dur,setDur]=useState(224);
+
+  // Audio element
+  useEffect(()=>{
+    const a=new Audio(AUDIO_SRC);
+    a.preload='auto';
+    a.addEventListener('loadedmetadata',()=>{if(a.duration&&Number.isFinite(a.duration))setDur(a.duration)});
+    a.addEventListener('ended',()=>{setPlaying(false)});
+    audioRef.current=a;
+    return()=>{a.pause();a.src=''}
+  },[]);
+
+  // RAF loop
+  useEffect(()=>{
+    function tick(){
+      if(audioRef.current)setTime(audioRef.current.currentTime);
+      rafRef.current=requestAnimationFrame(tick);
+    }
+    if(playing){rafRef.current=requestAnimationFrame(tick)}
+    else{cancelAnimationFrame(rafRef.current)}
+    return()=>cancelAnimationFrame(rafRef.current);
+  },[playing]);
+
+  // Binaural
+  useEffect(()=>{
+    const b=BIN[binIdx];
+    if(b.l===0){
+      if(binCtxRef.current){binGainRef.current.gain.setValueAtTime(0,binCtxRef.current.currentTime)}
+      return;
+    }
+    if(!binCtxRef.current){
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const gain=ctx.createGain();gain.gain.value=0.07;gain.connect(ctx.destination);
+      const oL=ctx.createOscillator();oL.type='sine';
+      const oR=ctx.createOscillator();oR.type='sine';
+      const mL=ctx.createStereoPanner();mL.pan.value=-1;
+      const mR=ctx.createStereoPanner();mR.pan.value=1;
+      oL.connect(mL);mL.connect(gain);
+      oR.connect(mR);mR.connect(gain);
+      oL.start();oR.start();
+      binCtxRef.current=ctx;binLRef.current=oL;binRRef.current=oR;binGainRef.current=gain;
+    }
+    binLRef.current.frequency.setValueAtTime(b.l,binCtxRef.current.currentTime);
+    binRRef.current.frequency.setValueAtTime(b.r,binCtxRef.current.currentTime);
+    binGainRef.current.gain.setValueAtTime(0.07,binCtxRef.current.currentTime);
+  },[binIdx]);
+
+  const toggle=useCallback(()=>{
+    const a=audioRef.current;if(!a)return;
+    if(playing){a.pause();setPlaying(false)}
+    else{a.play().then(()=>setPlaying(true)).catch(()=>{})}
+  },[playing]);
+
+  const seek=useCallback(e=>{
+    const v=parseFloat(e.target.value);
+    if(audioRef.current){audioRef.current.currentTime=v;setTime(v)}
+  },[]);
+
+  const fmt=s=>{const m=Math.floor(s/60);const sec=Math.floor(s%60);return `${m}:${sec<10?'0':''}${sec}`};
+
+  // Find active line
+  let activeLine=-1;
+  for(let i=LYRICS.length-1;i>=0;i--){
+    if(time>=LYRICS[i].t-0.3){activeLine=i;break}
+  }
+
+  return R.createElement('div',{className:'app'},
+    // Ambient glow
+    R.createElement('div',{className:`ambient${playing?' on':''}`},
+      R.createElement('div',{className:'orb',style:{width:'50vw',height:'50vw',left:'-15vw',top:'5%',background:'radial-gradient(circle,rgba(102,126,234,.1),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',right:'-10vw',bottom:'20%',background:'radial-gradient(circle,rgba(180,160,255,.07),transparent 70%)'}})
+    ),
+
+    // Lyrics
+    R.createElement('div',{className:'lyrics-wrap'},
+      R.createElement('div',{className:'lyrics-scroll',style:{transform:`translateY(${-activeLine*3.2}rem)`}},
+        LYRICS.map((line,li)=>{
+          let cls=`line ${line.sz}`;
+          if(li===activeLine)cls+=' active';
+          else if(li<activeLine)cls+=' sung';
+          else if(li===activeLine+1)cls+=' next';
+
+          return R.createElement('div',{key:li,className:cls},
+            line.syls.map((syl,si)=>{
+              let sc='syl';
+              const nextSyl=line.syls[si+1];
+              const sylEnd=nextSyl?nextSyl.t:(LYRICS[li+1]?LYRICS[li+1].t:syl.t+2);
+              if(time>=syl.t&&time<sylEnd&&li===activeLine)sc+=' active';
+              else if(time>=sylEnd||li<activeLine)sc+=' sung';
+              return R.createElement('span',{key:si,className:sc},syl.w);
+            })
+          );
+        })
+      )
+    ),
+
+    // Pitch bar
+    R.createElement('div',{className:'pitch-bar'},
+      activeLine>=0&&PITCHES[activeLine]?
+        PITCHES[activeLine].map((p,i)=>{
+          const line=LYRICS[activeLine];
+          const syl=line.syls[i];
+          if(!syl)return null;
+          const nextSyl=line.syls[i+1];
+          const sylEnd=nextSyl?nextSyl.t:(LYRICS[activeLine+1]?LYRICS[activeLine+1].t:syl.t+2);
+          let dc='pitch-dot';
+          if(time>=syl.t&&time<sylEnd)dc+=' active';
+          else if(time>=sylEnd)dc+=' sung';
+          const pct=((i+.5)/PITCHES[activeLine].length)*100;
+          return R.createElement('div',{key:i,className:dc,style:{left:`${pct}%`,top:`${85-p*70}%`}});
+        }):null,
+      R.createElement('div',{className:'pitch-head',style:{left:`${dur>0?(time/dur)*100:0}%`}})
+    ),
+
+    // Controls
+    R.createElement('div',{className:'controls'},
+      R.createElement('button',{className:'play-btn',onClick:toggle},playing?'❚❚':'▶'),
+      R.createElement('div',{className:'seek-wrap'},
+        R.createElement('input',{type:'range',className:'seek',min:0,max:dur,step:.1,value:time,onChange:seek}),
+        R.createElement('div',{className:'time-label'},
+          R.createElement('span',null,fmt(time)),
+          R.createElement('span',null,fmt(dur))
+        )
+      ),
+      R.createElement('button',{
+        className:`bin-btn${binIdx>0?' on':''}`,
+        onClick:()=>setBinIdx(i=>(i+1)%BIN.length)
+      },BIN[binIdx].n)
+    ),
+
+    R.createElement('div',{className:'credit'},'Alphaville — Forever Young (1984) — spike.land karaoke')
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(R.createElement(App));
+</script>
+</body>
+</html>

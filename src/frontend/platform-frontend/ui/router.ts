@@ -38,6 +38,7 @@ export const ROUTE_PRD_MAP: Record<string, string> = {
   "/apps": "route:/apps",
   "/chess": "route:/chess",
   "/blog": "route:/blog",
+  "/music": "route:/music",
   "/cockpit": "route:/dashboard",
   "/vibe-code": "route:/vibe-code",
 };
@@ -202,6 +203,24 @@ const blogPostRoute = createRoute({
   getParentRoute: () => blogRoute,
   path: "$slug",
   component: withSuspense(() => import("./routes/blog/$slug"), "BlogPostPage"),
+});
+
+// Music routes
+const musicRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/music",
+});
+
+const musicIndexRoute = createRoute({
+  getParentRoute: () => musicRoute,
+  path: "/",
+  component: withSuspense(() => import("./routes/music/music-index.tsx"), "MusicIndexPage"),
+});
+
+const musicPlayerRoute = createRoute({
+  getParentRoute: () => musicRoute,
+  path: "$songId",
+  component: withSuspense(() => import("./routes/music/$songId"), "MusicPlayerPage"),
 });
 
 // Learn routes
@@ -508,6 +527,7 @@ const routeTree = rootRoute.addChildren([
   ]),
   docsRoute.addChildren([docsIndexRoute, docsSlugRoute]),
   blogRoute.addChildren([blogIndexRoute, blogPostRoute]),
+  musicRoute.addChildren([musicIndexRoute, musicPlayerRoute]),
   learnRoute.addChildren([learnIndexRoute, learnSessionRoute, learnBadgeRoute]),
   messagesRoute.addChildren([messagesIndexRoute, messageThreadRoute]),
   appsRoute.addChildren([

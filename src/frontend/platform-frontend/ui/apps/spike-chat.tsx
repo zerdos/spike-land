@@ -52,6 +52,7 @@ const PERSONA_OPTIONS = [
   { slug: "erdos", label: "Erdős" },
   { slug: "radix", label: "Radix" },
   { slug: "gov", label: "Gov" },
+  { slug: "attila", label: "Attila" },
 ] as const;
 
 type StageVisualState = "idle" | "upcoming" | "active" | "done";

@@ -33,6 +33,7 @@ import { getRajuPersonaPrompt } from "../../core-logic/raju-persona-prompt.js";
 import { getSwitchboardPersonaPrompt } from "../../core-logic/switchboard-persona-prompt.js";
 import { getErdosPersonaPrompt } from "../../core-logic/erdos-persona-prompt.js";
 import { getEinsteinPersonaPrompt } from "../../core-logic/einstein-persona-prompt.js";
+import { getAttilaPersonaPrompt } from "../../core-logic/attila-persona-prompt.js";
 import { getZoltanQualityGate } from "../../core-logic/zoltan-quality-gate.js";
 import { getHungarianConcepts } from "../../core-logic/hungarian-concepts.js";
 import {
@@ -691,6 +692,11 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Einstein physics + thought experiments persona
   if (persona === "einstein") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getEinsteinPersonaPrompt()}`;
+  }
+
+  // Attila ómagyar elder persona (for Csaba Katona)
+  if (persona === "attila") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getAttilaPersonaPrompt()}`;
   }
 
   // --- Philosophers (Arena residents — all loops closed) ---

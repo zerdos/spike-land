@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vienna — Karaoke</title>
+<title>Take On Me — Karaoke</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   :root{
-    --bg:#07080d;--gold:#a8c4ff;--gold-dim:rgba(168,196,255,.2);
-    --sung:rgba(168,196,255,.6);--upcoming:rgba(255,255,255,.11);
-    --active-glow:0 0 24px rgba(168,196,255,.2),0 0 48px rgba(168,196,255,.06);
-    --warm:#ffd6a5;--warm-dim:rgba(255,214,165,.2);
+    --bg:#0a0a14;--gold:#ff6ec7;--gold-dim:rgba(255,110,199,.2);
+    --sung:rgba(255,110,199,.6);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(255,110,199,.2),0 0 48px rgba(255,110,199,.06);
+    --warm:#c8aaff;--warm-dim:rgba(200,170,255,.2);
   }
   html,body{height:100%;overflow:hidden}
   body{
@@ -55,7 +55,7 @@
   .syl.active{
     color:var(--gold);
     font-variation-settings:'wght' 800;
-    filter:drop-shadow(0 0 8px rgba(168,196,255,.3));
+    filter:drop-shadow(0 0 8px rgba(255,110,199,.3));
   }
   .syl.active::after{
     content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
@@ -78,7 +78,7 @@
   }
   .pitch-dot{
     position:absolute;width:6px;height:6px;border-radius:50%;
-    background:rgba(168,196,255,.15);top:50%;transform:translateY(-50%);
+    background:rgba(255,110,199,.15);top:50%;transform:translateY(-50%);
   }
   .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
   .pitch-dot.sung{background:var(--sung)}
@@ -123,7 +123,7 @@
 
   .credit{
     font-size:.55rem;padding:.3rem 1rem .5rem;
-    color:rgba(168,196,255,.2);text-align:center;
+    color:rgba(255,110,199,.2);text-align:center;
   }
 </style>
 </head>
@@ -134,171 +134,196 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script>
 // ========================================================================
-// VIENNA — Billy Joel — Real Karaoke
-// Syllable-synced to YouTube version: 1dAAznRs7uw
-// Designed for: dyslexia, insomnia, calming, first time singing
+// TAKE ON ME — a-ha (1985) — Real Karaoke
+// Syllable-synced to standard ~3:45 version
+// Designed for: synth-pop neon vibes, iconic 80s singalong
 // ========================================================================
 
-const AUDIO_SRC = '/blog-images/vienna/vienna-billy-joel.opus';
+const AUDIO_SRC = '/blog-images/take-on-me/take-on-me.opus';
 
 // Each line: { t: start time (s), sz: size class, syls: [{t, w}] }
 // t = syllable start time, w = syllable text
 const LYRICS = [
   // Verse 1
-  {t:17.0, sz:'sz-m', syls:[
-    {t:17.0,w:'Slow'},{t:17.5,w:'down,'},{t:18.3,w:'you'},{t:18.6,w:'cra-'},{t:18.9,w:'zy'},{t:19.3,w:'child'}
+  {t:25.0, sz:'sz-m', syls:[
+    {t:25.0,w:"We're"},{t:25.4,w:'talk-'},{t:25.7,w:'ing'},{t:26.1,w:'a-'},{t:26.4,w:'way'}
   ]},
-  {t:20.5, sz:'sz-m', syls:[
-    {t:20.5,w:"You're"},{t:20.9,w:'so'},{t:21.3,w:'am-'},{t:21.6,w:'bi-'},{t:21.9,w:'tious'},{t:22.4,w:'for'},{t:22.7,w:'a'},{t:23.0,w:'ju-'},{t:23.3,w:'ve-'},{t:23.6,w:'nile'}
+  {t:28.5, sz:'sz-m', syls:[
+    {t:28.5,w:'I'},{t:28.8,w:"don't"},{t:29.1,w:'know'},{t:29.5,w:'what'},{t:29.8,w:"I'm"},{t:30.2,w:'to'},{t:30.5,w:'say'}
   ]},
-  {t:24.8, sz:'sz-m', syls:[
-    {t:24.8,w:'But'},{t:25.1,w:'then'},{t:25.5,w:'if'},{t:25.8,w:"you're"},{t:26.1,w:'so'},{t:26.5,w:'smart'}
+  {t:32.0, sz:'sz-m', syls:[
+    {t:32.0,w:"I'll"},{t:32.4,w:'say'},{t:32.8,w:'it'},{t:33.1,w:'a-'},{t:33.4,w:'ny-'},{t:33.7,w:'way'}
   ]},
-  {t:27.8, sz:'sz-m', syls:[
-    {t:27.8,w:'Tell'},{t:28.1,w:'me'},{t:28.8,w:'why'},{t:29.2,w:'are'},{t:29.5,w:'you'},{t:29.8,w:'still'},{t:30.2,w:'so'},{t:30.6,w:'a-'},{t:30.9,w:'fraid?'}
+  {t:35.5, sz:'sz-m', syls:[
+    {t:35.5,w:'To-'},{t:35.8,w:"day's"},{t:36.2,w:'an-'},{t:36.5,w:'oth-'},{t:36.8,w:'er'},{t:37.2,w:'day'},{t:37.5,w:'to'},{t:37.8,w:'find'},{t:38.2,w:'you'}
   ]},
-
-  // Interlude
-  {t:34.0, sz:'sz-s', syls:[
-    {t:34.0,w:'Mm-'},{t:34.5,w:'mm-'},{t:35.0,w:'mm...'}
+  {t:39.5, sz:'sz-m', syls:[
+    {t:39.5,w:'Shy-'},{t:39.9,w:'ing'},{t:40.3,w:'a-'},{t:40.6,w:'way'}
   ]},
-
-  // Verse 2
-  {t:38.5, sz:'sz-m', syls:[
-    {t:38.5,w:"Where's"},{t:39.0,w:'the'},{t:39.4,w:'fire,'},{t:40.2,w:"what's"},{t:40.6,w:'the'},{t:41.0,w:'hur-'},{t:41.3,w:'ry'},{t:41.6,w:'a-'},{t:41.9,w:'bout?'}
-  ]},
-  {t:43.0, sz:'sz-m', syls:[
-    {t:43.0,w:'You'},{t:43.3,w:'bet-'},{t:43.6,w:'ter'},{t:44.0,w:'cool'},{t:44.4,w:'it'},{t:44.7,w:'off'},{t:45.1,w:'be-'},{t:45.4,w:'fore'},{t:45.7,w:'you'},{t:46.0,w:'burn'},{t:46.4,w:'it'},{t:46.7,w:'out'}
-  ]},
-  {t:48.0, sz:'sz-m', syls:[
-    {t:48.0,w:'You'},{t:48.3,w:'got'},{t:48.7,w:'so'},{t:49.0,w:'much'},{t:49.4,w:'to'},{t:49.7,w:'do'},{t:50.1,w:'and'},{t:50.5,w:'on-'},{t:50.8,w:'ly'}
-  ]},
-  {t:51.5, sz:'sz-l', syls:[
-    {t:51.5,w:'So'},{t:52.0,w:'ma-'},{t:52.3,w:'ny'},{t:52.8,w:'hours'},{t:53.3,w:'in'},{t:53.6,w:'a'},{t:54.0,w:'day'}
-  ]},
-
-  // Pre-chorus
-  {t:56.5, sz:'sz-m', syls:[
-    {t:56.5,w:'But'},{t:57.0,w:'you'},{t:57.3,w:'know'},{t:57.7,w:'that'},{t:58.1,w:'when'},{t:58.5,w:'the'},{t:58.8,w:'truth'},{t:59.2,w:'is'},{t:59.5,w:'told'}
-  ]},
-  {t:60.5, sz:'sz-l', syls:[
-    {t:60.5,w:'That'},{t:60.9,w:'you'},{t:61.2,w:'can'},{t:61.6,w:'get'},{t:62.0,w:'what'},{t:62.3,w:'you'},{t:62.6,w:'want'},{t:63.2,w:'or'},{t:63.5,w:'you'},{t:63.8,w:'can'},{t:64.1,w:'just'},{t:64.5,w:'get'},{t:65.0,w:'old'}
+  {t:42.0, sz:'sz-m', syls:[
+    {t:42.0,w:"I'll"},{t:42.3,w:'be'},{t:42.6,w:'com-'},{t:42.9,w:'ing'},{t:43.3,w:'for'},{t:43.6,w:'your'},{t:43.9,w:'love,'},{t:44.5,w:'o-'},{t:44.8,w:'kay?'}
   ]},
 
   // Chorus 1
-  {t:66.5, sz:'sz-xl', syls:[
-    {t:66.5,w:"You're"},{t:67.0,w:'gon-'},{t:67.3,w:'na'},{t:67.8,w:'kick'},{t:68.2,w:'off'},{t:68.8,w:'be-'},{t:69.1,w:'fore'},{t:69.5,w:'you'},{t:69.8,w:'e-'},{t:70.2,w:'ven'},{t:70.6,w:'get'},{t:71.0,w:'half-'},{t:71.5,w:'way'},{t:72.0,w:'through'}
+  {t:47.0, sz:'sz-xl', syls:[
+    {t:47.0,w:'Take'},{t:47.5,w:'on'},{t:47.9,w:'me'}
   ]},
-  {t:73.5, sz:'sz-xxl', syls:[
-    {t:73.5,w:'When'},{t:74.2,w:'will'},{t:74.8,w:'you'},{t:75.4,w:'re-'},{t:75.8,w:'a-'},{t:76.2,w:'lize...'}
+  {t:49.5, sz:'sz-l', syls:[
+    {t:49.5,w:'(Take'},{t:49.9,w:'on'},{t:50.3,w:'me)'}
   ]},
-  {t:78.5, sz:'sz-xxl', syls:[
-    {t:78.5,w:'Vi-'},{t:79.5,w:'en-'},{t:80.5,w:'na'},{t:81.5,w:'waits'},{t:82.5,w:'for'},{t:83.5,w:'you?'}
+  {t:51.5, sz:'sz-xl', syls:[
+    {t:51.5,w:'Take'},{t:52.0,w:'me'},{t:52.4,w:'on'}
+  ]},
+  {t:54.0, sz:'sz-l', syls:[
+    {t:54.0,w:'(Take'},{t:54.4,w:'me'},{t:54.8,w:'on)'}
+  ]},
+  {t:56.0, sz:'sz-xxl', syls:[
+    {t:56.0,w:"I'll"},{t:56.5,w:'be'},{t:57.0,w:'gone'}
+  ]},
+  {t:59.0, sz:'sz-xxl', syls:[
+    {t:59.0,w:'In'},{t:59.5,w:'a'},{t:59.9,w:'day'},{t:60.5,w:'or'},{t:61.0,w:'two'}
+  ]},
+
+  // Verse 2
+  {t:65.0, sz:'sz-m', syls:[
+    {t:65.0,w:'So'},{t:65.4,w:'need-'},{t:65.7,w:'less'},{t:66.1,w:'to'},{t:66.4,w:'say'}
+  ]},
+  {t:68.5, sz:'sz-m', syls:[
+    {t:68.5,w:"I'm"},{t:68.9,w:'odds'},{t:69.3,w:'and'},{t:69.7,w:'ends'}
+  ]},
+  {t:71.5, sz:'sz-m', syls:[
+    {t:71.5,w:'But'},{t:71.8,w:"I'll"},{t:72.1,w:'be'},{t:72.4,w:'stum-'},{t:72.7,w:'bling'},{t:73.1,w:'a-'},{t:73.4,w:'way'}
+  ]},
+  {t:75.0, sz:'sz-m', syls:[
+    {t:75.0,w:'Slow-'},{t:75.3,w:'ly'},{t:75.7,w:'learn-'},{t:76.0,w:'ing'},{t:76.4,w:'that'},{t:76.7,w:'life'},{t:77.1,w:'is'},{t:77.5,w:'o-'},{t:77.8,w:'kay'}
+  ]},
+  {t:79.0, sz:'sz-m', syls:[
+    {t:79.0,w:'Say'},{t:79.4,w:'af-'},{t:79.7,w:'ter'},{t:80.1,w:'me'}
+  ]},
+  {t:82.0, sz:'sz-m', syls:[
+    {t:82.0,w:"It's"},{t:82.3,w:'no'},{t:82.6,w:'bet-'},{t:82.9,w:'ter'},{t:83.3,w:'to'},{t:83.6,w:'be'},{t:83.9,w:'safe'},{t:84.4,w:'than'},{t:84.8,w:'sor-'},{t:85.2,w:'ry'}
+  ]},
+
+  // Chorus 2
+  {t:87.0, sz:'sz-xl', syls:[
+    {t:87.0,w:'Take'},{t:87.5,w:'on'},{t:87.9,w:'me'}
+  ]},
+  {t:89.5, sz:'sz-l', syls:[
+    {t:89.5,w:'(Take'},{t:89.9,w:'on'},{t:90.3,w:'me)'}
+  ]},
+  {t:91.5, sz:'sz-xl', syls:[
+    {t:91.5,w:'Take'},{t:92.0,w:'me'},{t:92.4,w:'on'}
+  ]},
+  {t:94.0, sz:'sz-l', syls:[
+    {t:94.0,w:'(Take'},{t:94.4,w:'me'},{t:94.8,w:'on)'}
+  ]},
+  {t:96.0, sz:'sz-xxl', syls:[
+    {t:96.0,w:"I'll"},{t:96.5,w:'be'},{t:97.0,w:'gone'}
+  ]},
+  {t:99.0, sz:'sz-xxl', syls:[
+    {t:99.0,w:'In'},{t:99.5,w:'a'},{t:99.9,w:'day'},{t:100.5,w:'or'},{t:101.0,w:'two'}
+  ]},
+
+  // Synth bridge marker
+  {t:105.0, sz:'sz-s', syls:[
+    {t:105.0,w:'~'},{t:107.0,w:'~'},{t:109.0,w:'~'}
   ]},
 
   // Verse 3
-  {t:88.0, sz:'sz-m', syls:[
-    {t:88.0,w:'Slow'},{t:88.5,w:'down,'},{t:89.3,w:'you'},{t:89.6,w:'cra-'},{t:89.9,w:'zy'},{t:90.3,w:'child'}
+  {t:133.0, sz:'sz-m', syls:[
+    {t:133.0,w:'Oh,'},{t:133.5,w:'things'},{t:133.9,w:'that'},{t:134.2,w:'you'},{t:134.5,w:'say'}
   ]},
-  {t:91.5, sz:'sz-m', syls:[
-    {t:91.5,w:'And'},{t:91.8,w:'take'},{t:92.2,w:'the'},{t:92.5,w:'phone'},{t:93.0,w:'off'},{t:93.4,w:'the'},{t:93.7,w:'hook'},{t:94.2,w:'and'},{t:94.5,w:'dis-'},{t:94.8,w:'ap-'},{t:95.1,w:'pear'},{t:95.5,w:'for'},{t:95.8,w:'a'},{t:96.1,w:'while'}
+  {t:136.5, sz:'sz-m', syls:[
+    {t:136.5,w:'Yeah,'},{t:136.9,w:'is'},{t:137.2,w:'it'},{t:137.5,w:'life'},{t:137.9,w:'or'},{t:138.2,w:'just'},{t:138.6,w:'to'},{t:138.9,w:'play'}
   ]},
-  {t:97.5, sz:'sz-l', syls:[
-    {t:97.5,w:"It's"},{t:97.8,w:'al-'},{t:98.1,w:'right,'},{t:98.8,w:"it's"},{t:99.1,w:'al-'},{t:99.4,w:'right'}
+  {t:140.0, sz:'sz-m', syls:[
+    {t:140.0,w:'My'},{t:140.4,w:'wor-'},{t:140.7,w:'ries'},{t:141.1,w:'a-'},{t:141.4,w:'way'}
   ]},
-  {t:100.5, sz:'sz-m', syls:[
-    {t:100.5,w:'You'},{t:100.8,w:'can'},{t:101.1,w:'af-'},{t:101.4,w:'ford'},{t:101.8,w:'to'},{t:102.1,w:'lose'},{t:102.5,w:'a'},{t:102.8,w:'day'},{t:103.2,w:'or'},{t:103.5,w:'two'}
+  {t:143.0, sz:'sz-m', syls:[
+    {t:143.0,w:"You're"},{t:143.4,w:'all'},{t:143.7,w:'the'},{t:144.0,w:'things'},{t:144.4,w:"I've"},{t:144.7,w:'got'},{t:145.1,w:'to'},{t:145.4,w:'re-'},{t:145.7,w:'mem-'},{t:146.1,w:'ber'}
   ]},
-
-  // Pre-chorus 2
-  {t:106.0, sz:'sz-l', syls:[
-    {t:106.0,w:'When'},{t:106.5,w:'will'},{t:106.9,w:'you'},{t:107.3,w:'re-'},{t:107.7,w:'a-'},{t:108.1,w:'lize...'}
+  {t:147.5, sz:'sz-m', syls:[
+    {t:147.5,w:"You're"},{t:147.9,w:'shy-'},{t:148.2,w:'ing'},{t:148.6,w:'a-'},{t:148.9,w:'way'}
   ]},
-  {t:110.0, sz:'sz-xxl', syls:[
-    {t:110.0,w:'Vi-'},{t:111.0,w:'en-'},{t:112.0,w:'na'},{t:113.0,w:'waits'},{t:114.0,w:'for'},{t:115.0,w:'you?'}
+  {t:150.0, sz:'sz-m', syls:[
+    {t:150.0,w:"I'll"},{t:150.3,w:'be'},{t:150.6,w:'com-'},{t:150.9,w:'ing'},{t:151.3,w:'for'},{t:151.6,w:'you'},{t:151.9,w:'a-'},{t:152.3,w:'ny-'},{t:152.6,w:'way'}
   ]},
 
-  // Bridge
-  {t:120.0, sz:'sz-m', syls:[
-    {t:120.0,w:'You'},{t:120.3,w:'got'},{t:120.6,w:'your'},{t:121.0,w:'pas-'},{t:121.3,w:'sion,'},{t:122.0,w:'you'},{t:122.3,w:'got'},{t:122.6,w:'your'},{t:123.0,w:'pride'}
+  // Chorus 3
+  {t:155.0, sz:'sz-xl', syls:[
+    {t:155.0,w:'Take'},{t:155.5,w:'on'},{t:155.9,w:'me'}
   ]},
-  {t:124.0, sz:'sz-m', syls:[
-    {t:124.0,w:'But'},{t:124.3,w:"don't"},{t:124.7,w:'you'},{t:125.0,w:'know'},{t:125.4,w:'that'},{t:125.7,w:'on-'},{t:126.0,w:'ly'},{t:126.4,w:'fools'},{t:126.8,w:'are'},{t:127.2,w:'sat-'},{t:127.5,w:'is-'},{t:127.8,w:'fied?'}
+  {t:157.5, sz:'sz-l', syls:[
+    {t:157.5,w:'(Take'},{t:157.9,w:'on'},{t:158.3,w:'me)'}
   ]},
-  {t:129.5, sz:'sz-l', syls:[
-    {t:129.5,w:'Dream'},{t:130.2,w:'on,'},{t:131.0,w:'but'},{t:131.5,w:"don't"},{t:132.0,w:'i-'},{t:132.3,w:'ma-'},{t:132.6,w:'gine'},{t:133.0,w:"they'll"},{t:133.4,w:'all'},{t:133.8,w:'come'},{t:134.2,w:'true'}
+  {t:159.5, sz:'sz-xl', syls:[
+    {t:159.5,w:'Take'},{t:160.0,w:'me'},{t:160.4,w:'on'}
   ]},
-
-  // Pre-chorus 3
-  {t:136.0, sz:'sz-l', syls:[
-    {t:136.0,w:'When'},{t:136.5,w:'will'},{t:136.9,w:'you'},{t:137.3,w:'re-'},{t:137.7,w:'a-'},{t:138.1,w:'lize...'}
+  {t:162.0, sz:'sz-l', syls:[
+    {t:162.0,w:'(Take'},{t:162.4,w:'me'},{t:162.8,w:'on)'}
   ]},
-  {t:140.0, sz:'sz-xxl', syls:[
-    {t:140.0,w:'Vi-'},{t:141.0,w:'en-'},{t:142.0,w:'na'},{t:143.0,w:'waits'},{t:144.0,w:'for'},{t:145.0,w:'you?'}
+  {t:164.0, sz:'sz-xxl', syls:[
+    {t:164.0,w:"I'll"},{t:164.5,w:'be'},{t:165.0,w:'gone'}
   ]},
-
-  // Verse 4 (gentle, piano)
-  {t:153.0, sz:'sz-m', syls:[
-    {t:153.0,w:'Slow'},{t:153.5,w:'down,'},{t:154.3,w:'you'},{t:154.6,w:'cra-'},{t:154.9,w:'zy'},{t:155.3,w:'child'}
-  ]},
-  {t:156.5, sz:'sz-m', syls:[
-    {t:156.5,w:'And'},{t:156.8,w:'take'},{t:157.2,w:'the'},{t:157.5,w:'phone'},{t:158.0,w:'off'},{t:158.4,w:'the'},{t:158.7,w:'hook'},{t:159.2,w:'and'},{t:159.5,w:'dis-'},{t:159.8,w:'ap-'},{t:160.1,w:'pear'},{t:160.5,w:'for'},{t:160.8,w:'a'},{t:161.1,w:'while'}
-  ]},
-  {t:162.5, sz:'sz-l', syls:[
-    {t:162.5,w:"It's"},{t:162.8,w:'al-'},{t:163.1,w:'right,'},{t:163.8,w:"it's"},{t:164.1,w:'al-'},{t:164.4,w:'right'}
-  ]},
-  {t:165.5, sz:'sz-l', syls:[
-    {t:165.5,w:'You'},{t:165.8,w:'can'},{t:166.1,w:'af-'},{t:166.4,w:'ford'},{t:166.8,w:'to'},{t:167.1,w:'lose'},{t:167.5,w:'a'},{t:167.8,w:'day'},{t:168.2,w:'or'},{t:168.5,w:'two'}
-  ]},
-
-  // Final chorus
-  {t:171.0, sz:'sz-xl', syls:[
-    {t:171.0,w:'When'},{t:171.5,w:'will'},{t:172.0,w:'you'},{t:172.5,w:'re-'},{t:172.9,w:'a-'},{t:173.3,w:'lize...'}
-  ]},
-  {t:175.5, sz:'sz-xxl', syls:[
-    {t:175.5,w:'Vi-'},{t:176.5,w:'en-'},{t:177.5,w:'na'},{t:178.5,w:'waits'},{t:179.5,w:'for'},{t:180.5,w:'you?'}
+  {t:167.0, sz:'sz-xxl', syls:[
+    {t:167.0,w:'In'},{t:167.5,w:'a'},{t:167.9,w:'day'},{t:168.5,w:'or'},{t:169.0,w:'two'}
   ]},
 
   // Outro
-  {t:185.0, sz:'sz-l', syls:[
-    {t:185.0,w:'Vi-'},{t:186.0,w:'en-'},{t:187.0,w:'na'},{t:188.0,w:'waits'},{t:189.0,w:'for'},{t:190.0,w:'you...'}
+  {t:175.0, sz:'sz-l', syls:[
+    {t:175.0,w:'In'},{t:175.6,w:'a'},{t:176.0,w:'day...'}
   ]},
 ];
 
-// Approximate pitch contour (0-1, low to high) per line
+// Approximate pitch contour (0-1, low to high) per line, one per syllable
+// Take On Me has a wide vocal range; chorus high notes approach 0.95
 const PITCHES = [
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.6,.5,.45,.5,.55,.5],
-  [.4,.45,.5,.55,.6,.65],
-  [.5,.55,.6,.55,.5,.45,.4,.35,.3],
-  [.3,.35,.3],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4],
-  [.5,.55,.6,.65,.6,.55,.5],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.55],
-  [.5,.55,.6,.55,.5,.55,.6,.55,.5,.55,.6,.65,.6],
-  [.5,.55,.6,.65,.7,.6,.55,.5,.55,.6,.65,.7,.75,.8],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.55,.6,.65,.6,.55],
-  [.5,.55,.6,.65,.6,.55,.5,.55,.6,.65,.7],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.5,.55,.6,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.6,.7,.8,.75,.7,.6],
+  // Verse 1
+  [.45,.50,.45,.42,.40],                                         // "We're talking away"
+  [.40,.42,.45,.50,.55,.50,.45],                                 // "I don't know what I'm to say"
+  [.45,.50,.48,.42,.40,.38],                                     // "I'll say it anyway"
+  [.40,.42,.45,.48,.50,.52,.55,.58,.55],                        // "Today's another day to find you"
+  [.45,.48,.42,.40],                                             // "Shying away"
+  [.40,.45,.50,.55,.52,.50,.48,.45,.42],                        // "I'll be coming for your love, okay?"
+  // Chorus 1
+  [.75,.85,.95],                                                  // "Take on me"
+  [.70,.80,.90],                                                  // "(Take on me)"
+  [.75,.85,.92],                                                  // "Take me on"
+  [.70,.80,.88],                                                  // "(Take me on)"
+  [.60,.65,.70],                                                  // "I'll be gone"
+  [.55,.58,.60,.58,.55],                                         // "In a day or two"
+  // Verse 2
+  [.45,.50,.48,.45,.40],                                         // "So needless to say"
+  [.42,.50,.48,.45],                                             // "I'm odds and ends"
+  [.40,.44,.48,.52,.50,.45,.42],                                 // "But I'll be stumbling away"
+  [.40,.43,.46,.50,.52,.55,.52,.48,.45],                        // "Slowly learning that life is okay"
+  [.45,.50,.48,.45],                                             // "Say after me"
+  [.42,.45,.50,.52,.50,.48,.55,.52,.48,.45],                    // "It's no better to be safe than sorry"
+  // Chorus 2
+  [.75,.85,.95],                                                  // "Take on me"
+  [.70,.80,.90],                                                  // "(Take on me)"
+  [.75,.85,.92],                                                  // "Take me on"
+  [.70,.80,.88],                                                  // "(Take me on)"
+  [.60,.65,.70],                                                  // "I'll be gone"
+  [.55,.58,.60,.58,.55],                                         // "In a day or two"
+  // Bridge
+  [.30,.30,.30],                                                  // "~ ~ ~"
+  // Verse 3
+  [.45,.52,.50,.47,.42],                                         // "Oh, things that you say"
+  [.42,.45,.48,.55,.52,.50,.48,.45],                            // "Yeah, is it life or just to play"
+  [.40,.45,.48,.42,.40],                                         // "My worries away"
+  [.42,.48,.50,.55,.58,.55,.52,.48,.45,.42],                   // "You're all the things I've got to remember"
+  [.45,.50,.48,.44,.40],                                         // "You're shying away"
+  [.40,.45,.50,.55,.52,.50,.45,.42,.40],                        // "I'll be coming for you anyway"
+  // Chorus 3
+  [.75,.85,.95],                                                  // "Take on me"
+  [.70,.80,.90],                                                  // "(Take on me)"
+  [.75,.85,.92],                                                  // "Take me on"
+  [.70,.80,.88],                                                  // "(Take me on)"
+  [.60,.65,.70],                                                  // "I'll be gone"
+  [.55,.58,.60,.58,.55],                                         // "In a day or two"
+  // Outro
+  [.50,.48,.45],                                                  // "In a day..."
 ];
 
 // Binaural presets
@@ -323,7 +348,7 @@ function App(){
   const binRRef=useRef(null);
   const binGainRef=useRef(null);
   const rafRef=useRef(null);
-  const [dur,setDur]=useState(235);
+  const [dur,setDur]=useState(225);
 
   // Audio element
   useEffect(()=>{
@@ -390,10 +415,10 @@ function App(){
   }
 
   return R.createElement('div',{className:'app'},
-    // Ambient glow
+    // Ambient glow — neon pink/purple for synth-pop
     R.createElement('div',{className:`ambient${playing?' on':''}`},
-      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(100,140,220,.12),transparent 70%)'}}),
-      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(255,214,165,.08),transparent 70%)'}})
+      R.createElement('div',{className:'orb',style:{width:'45vw',height:'45vw',left:'-12vw',top:'5%',background:'radial-gradient(circle,rgba(255,110,199,.10),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'38vw',height:'38vw',right:'-8vw',bottom:'10%',background:'radial-gradient(circle,rgba(120,80,255,.08),transparent 70%)'}})
     ),
 
     // Lyrics
@@ -453,7 +478,7 @@ function App(){
       },BIN[binIdx].n)
     ),
 
-    R.createElement('div',{className:'credit'},'Billy Joel — Vienna — spike.land karaoke')
+    R.createElement('div',{className:'credit'},'a-ha — Take On Me (1985) — spike.land karaoke')
   );
 }
 

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hello Elvis — The Drum Loop</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#06060d;--gold:#FFD700;--gold-dim:rgba(255,215,0,.25);
+    --red:#e84040;--red-dim:rgba(232,64,64,.15);
+    --blue:#4466cc;--blue-dim:rgba(68,102,204,.15);
+    --drum:rgba(232,64,64,.7);--echo:rgba(255,215,0,.5);
+    --glow:0 0 24px rgba(255,215,0,.25),0 0 48px rgba(255,215,0,.08);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  /* Ambient */
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 3s}
+  .ambient.on{opacity:1}
+  .orb{position:absolute;border-radius:50%;filter:blur(120px)}
+  .orb-1{width:50vw;height:50vw;top:-15vw;left:-10vw;background:var(--red);opacity:.03}
+  .orb-2{width:45vw;height:45vw;bottom:-10vw;right:-10vw;background:var(--gold);opacity:.025}
+
+  /* Top */
+  .top{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;z-index:2}
+  .title{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.18);letter-spacing:2.5px;text-transform:uppercase}
+  .subtitle{font-size:.5rem;color:rgba(255,255,255,.1);letter-spacing:1.5px}
+
+  /* Main area */
+  .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;padding:1rem;gap:1rem;position:relative}
+
+  /* Phase label */
+  .phase-label{
+    font-size:.5rem;letter-spacing:4px;text-transform:uppercase;
+    color:rgba(68,102,204,.3);transition:color .5s;
+  }
+
+  /* The big word */
+  .word-display{
+    text-align:center;min-height:4rem;display:flex;align-items:center;justify-content:center;
+    gap:.15em;flex-wrap:wrap;
+  }
+  .syl{
+    display:inline-block;font-size:clamp(2rem,10vw,5rem);
+    font-weight:300;color:rgba(255,255,255,.06);
+    transition:all .15s ease;position:relative;
+  }
+  .syl.hit{
+    color:var(--gold);font-weight:700;
+    transform:scale(1.15);
+    text-shadow:var(--glow);
+  }
+  .syl.echo{
+    color:var(--echo);font-weight:500;
+    transform:scale(1.05);
+  }
+  .syl.drum-only{
+    color:var(--drum);font-weight:800;
+    transform:scale(1.2);
+  }
+
+  /* Drum circles — visual rhythm */
+  .drum-ring{
+    width:min(280px,70vw);height:min(280px,70vw);
+    position:relative;border-radius:50%;
+    border:1px solid rgba(255,255,255,.03);
+  }
+  .beat-dot{
+    position:absolute;width:18px;height:18px;border-radius:50%;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+    transform:translate(-50%,-50%);
+    transition:all .12s ease;
+  }
+  .beat-dot.active{
+    background:var(--drum);border-color:var(--red);
+    box-shadow:0 0 20px rgba(232,64,64,.4);
+    transform:translate(-50%,-50%) scale(1.5);
+  }
+  .beat-dot.hello{
+    background:var(--gold);border-color:var(--gold);
+    box-shadow:0 0 20px rgba(255,215,0,.4);
+    transform:translate(-50%,-50%) scale(1.5);
+  }
+  .beat-dot .dot-label{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:.45rem;font-weight:700;opacity:0;transition:opacity .15s;
+    white-space:nowrap;
+  }
+  .beat-dot.active .dot-label,.beat-dot.hello .dot-label{opacity:1}
+
+  /* Pulse ring animation */
+  .pulse-ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:2px solid transparent;
+    pointer-events:none;
+  }
+  .pulse-ring.fire{
+    animation:ringPulse .6s ease-out;
+  }
+  @keyframes ringPulse{
+    0%{border-color:rgba(232,64,64,.4);transform:scale(1)}
+    100%{border-color:transparent;transform:scale(1.3)}
+  }
+
+  /* Instruction */
+  .instruction{
+    font-size:clamp(.7rem,2.5vw,.9rem);color:rgba(255,255,255,.12);
+    text-align:center;max-width:320px;line-height:1.5;
+    transition:color .5s;
+  }
+  .instruction.bright{color:rgba(255,255,255,.35)}
+
+  /* Controls */
+  .controls{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:.5rem 1rem 1.2rem;z-index:2}
+
+  .progress{width:min(100%,360px);height:4px;background:rgba(255,255,255,.05);border-radius:2px;position:relative}
+  .progress-fill{height:100%;border-radius:2px;transition:width .3s linear;pointer-events:none}
+
+  .play-btn{
+    width:64px;height:64px;border-radius:50%;border:2px solid var(--red-dim);
+    background:rgba(232,64,64,.03);color:var(--red);font-size:1.5rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .2s;touch-action:manipulation;
+    font-family:'Rubik',system-ui,sans-serif;
+  }
+  .play-btn:active{transform:scale(.92);background:rgba(232,64,64,.08)}
+  .play-btn.on{border-color:var(--gold-dim);color:var(--gold);animation:pulse 3s ease infinite}
+  @keyframes pulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 24px rgba(255,215,0,.1)}}
+
+  .hint{font-size:.5rem;color:rgba(255,255,255,.08);letter-spacing:1px;text-align:center}
+
+  /* Loop counter */
+  .loop-counter{
+    font-size:.45rem;letter-spacing:3px;
+    color:rgba(255,255,255,.08);
+  }
+
+  /* Tap area for drumming along */
+  .tap-zone{
+    position:absolute;inset:0;z-index:3;cursor:pointer;
+    display:none;
+  }
+  .tap-zone.active{display:block}
+  .tap-flash{
+    position:fixed;inset:0;background:rgba(232,64,64,.06);
+    pointer-events:none;opacity:0;transition:opacity .05s;z-index:4;
+  }
+  .tap-flash.on{opacity:1;transition:none}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// HELLO ELVIS — The Drum Strange Loop
+//
+// The idea: music is the universal language.
+// Elvis drums. He doesn't need words to understand rhythm.
+// This piece starts with pure rhythm — HIS language.
+// Then the rhythm slowly becomes a word: "Hel-lo"
+// Two beats. Strong-weak. The simplest strange loop:
+//   drum → syllable → word → meaning → connection → drum
+//
+// Designed for: a mental ward, one phone, two people,
+//   and the belief that rhythm is already speech.
+// ========================================================================
+
+const R = React, { useState, useCallback, useRef, useEffect, useMemo } = R;
+
+// BPM and timing
+const BPM = 80;
+const BEAT = 60 / BPM; // seconds per beat
+
+// ========================================================================
+// PHASES — the strange loop unfolds
+// ========================================================================
+// Each phase is a loop. The whole piece loops through phases,
+// each one bringing rhythm closer to the word "Hello".
+//
+// Phase 1: Pure drums — 8 beats, just rhythm (Elvis's world)
+// Phase 2: Two drums stand out — the "HEL-lo" rhythm emerges
+// Phase 3: Syllables appear on the strong beats
+// Phase 4: The word forms — "HELLO" pulses with the beat
+// Phase 5: Call and response — "Hello?" ... "Hello!"
+// Phase 6: The loop closes — Elvis's name joins the rhythm
+
+const PHASES = [
+  {
+    name: 'THE RHYTHM',
+    instruction: 'Listen to the beat. Tap along if you want.',
+    beats: 8,
+    pattern: [1,0,1,0, 1,0,1,0], // which beats are strong
+    syllables: null,
+    duration: 16, // in beats (2 bars of 4/4)
+    color: 'drum',
+  },
+  {
+    name: 'TWO BEATS',
+    instruction: 'Two beats. Strong — soft. Like a heartbeat.',
+    beats: 8,
+    pattern: [1,0,0,0, 1,0,0,0],
+    syllables: null,
+    duration: 16,
+    color: 'drum',
+  },
+  {
+    name: 'THE WORD APPEARS',
+    instruction: 'The rhythm has a name.',
+    beats: 4,
+    pattern: [1,0,1,0],
+    syllables: ['HEL','—','LO','—'],
+    duration: 16,
+    color: 'hello',
+  },
+  {
+    name: 'HELLO',
+    instruction: 'Say it with the beat.',
+    beats: 4,
+    pattern: [1,1,0,0],
+    syllables: ['HEL','LO','',''],
+    duration: 16,
+    color: 'hello',
+  },
+  {
+    name: 'CALL & RESPONSE',
+    instruction: 'Hello? ... Hello!',
+    beats: 8,
+    pattern: [1,1,0,0, 0,0,1,1],
+    syllables: ['Hel','lo?','','', '','','Hel','lo!'],
+    duration: 16,
+    color: 'hello',
+  },
+  {
+    name: 'ELVIS',
+    instruction: 'Hello, Elvis.',
+    beats: 8,
+    pattern: [1,1,0, 1,1,0,0,0],
+    syllables: ['Hel','lo','','El','vis!','','♪',''],
+    duration: 16,
+    color: 'hello',
+  },
+];
+
+const TOTAL_BEATS = PHASES.reduce((s, p) => s + p.duration, 0);
+const TOTAL_SEC = TOTAL_BEATS * BEAT;
+
+// ========================================================================
+// Web Audio — synthesized drums (no external audio needed)
+// ========================================================================
+function createDrumSynth(actx) {
+  function kick(time) {
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(160, time);
+    osc.frequency.exponentialRampToValueAtTime(40, time + 0.12);
+    gain.gain.setValueAtTime(0.7, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
+    osc.connect(gain).connect(actx.destination);
+    osc.start(time);
+    osc.stop(time + 0.35);
+  }
+
+  function hat(time) {
+    const bufSize = actx.sampleRate * 0.05;
+    const buf = actx.createBuffer(1, bufSize, actx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+    const src = actx.createBufferSource();
+    src.buffer = buf;
+    const gain = actx.createGain();
+    gain.gain.setValueAtTime(0.15, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+    const hp = actx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 8000;
+    src.connect(hp).connect(gain).connect(actx.destination);
+    src.start(time);
+  }
+
+  function snare(time) {
+    // Tonal part
+    const osc = actx.createOscillator();
+    const oscGain = actx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, time);
+    osc.frequency.exponentialRampToValueAtTime(80, time + 0.08);
+    oscGain.gain.setValueAtTime(0.35, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    osc.connect(oscGain).connect(actx.destination);
+    osc.start(time);
+    osc.stop(time + 0.15);
+    // Noise part
+    const bufSize = actx.sampleRate * 0.08;
+    const buf = actx.createBuffer(1, bufSize, actx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+    const src = actx.createBufferSource();
+    src.buffer = buf;
+    const nGain = actx.createGain();
+    nGain.gain.setValueAtTime(0.25, time);
+    nGain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+    const bp = actx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 3000;
+    src.connect(bp).connect(nGain).connect(actx.destination);
+    src.start(time);
+  }
+
+  // A warm "hello" tone — like a voice trying to form
+  function helloTone(time, freq, dur) {
+    const osc = actx.createOscillator();
+    const osc2 = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 1.005; // slight detune for warmth
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.2, time + 0.05);
+    gain.gain.setValueAtTime(0.2, time + dur * 0.7);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    osc.connect(gain).connect(actx.destination);
+    osc2.connect(gain);
+    osc.start(time);
+    osc2.start(time);
+    osc.stop(time + dur);
+    osc2.stop(time + dur);
+  }
+
+  return { kick, hat, snare, helloTone };
+}
+
+// ========================================================================
+// Schedule all sounds for one full loop
+// ========================================================================
+function scheduleLoop(actx, synth, startTime) {
+  let beatOffset = 0;
+
+  PHASES.forEach((phase, pi) => {
+    const beatsInPhase = phase.duration;
+    for (let b = 0; b < beatsInPhase; b++) {
+      const bi = b % phase.beats;
+      const t = startTime + (beatOffset + b) * BEAT;
+      const isStrong = phase.pattern[bi];
+
+      if (isStrong) {
+        synth.kick(t);
+        // In hello phases, add a tone
+        if (phase.syllables && phase.syllables[bi] && phase.syllables[bi] !== '' && phase.syllables[bi] !== '—') {
+          const isHel = phase.syllables[bi].toLowerCase().startsWith('hel');
+          const isEl = phase.syllables[bi].toLowerCase().startsWith('el');
+          const freq = isHel ? 330 : isEl ? 350 : 262; // E4 for "hel", F4 for "el", C4 for "lo"
+          synth.helloTone(t, freq, BEAT * 0.8);
+        }
+      } else {
+        // Soft hat on off-beats in early phases
+        if (pi < 2 && b % 2 === 1) {
+          synth.hat(t);
+        }
+      }
+
+      // Snare on beat 3 of each bar (0-indexed: beat 2)
+      if (bi === 2 && pi < 2) {
+        synth.snare(t);
+      }
+    }
+    beatOffset += beatsInPhase;
+  });
+}
+
+// ========================================================================
+// COMPONENT
+// ========================================================================
+function App() {
+  const [playing, setPlaying] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [loopCount, setLoopCount] = useState(0);
+  const [tapFlash, setTapFlash] = useState(false);
+  const actxRef = useRef(null);
+  const synthRef = useRef(null);
+  const startRef = useRef(0);
+  const rafRef = useRef(null);
+  const loopTimeoutRef = useRef(null);
+
+  // Derived state
+  const currentBeat = elapsed / BEAT;
+  let beatAcc = 0;
+  let phaseIdx = 0;
+  for (let i = 0; i < PHASES.length; i++) {
+    if (currentBeat < beatAcc + PHASES[i].duration) {
+      phaseIdx = i;
+      break;
+    }
+    beatAcc += PHASES[i].duration;
+    if (i === PHASES.length - 1) phaseIdx = i;
+  }
+  const phase = PHASES[phaseIdx];
+  const beatInPhase = currentBeat - beatAcc;
+  const beatIndex = Math.floor(beatInPhase) % phase.beats;
+
+  // Progress
+  const progress = (elapsed / TOTAL_SEC) * 100;
+  const progressColor = phaseIdx < 2
+    ? `linear-gradient(90deg, var(--red), var(--red))`
+    : `linear-gradient(90deg, var(--red), var(--gold))`;
+
+  // Tick
+  const tick = useCallback(() => {
+    if (!actxRef.current) return;
+    const now = actxRef.current.currentTime;
+    const e = now - startRef.current;
+    if (e >= TOTAL_SEC) {
+      // Loop
+      startRef.current = now;
+      setLoopCount(c => c + 1);
+      scheduleLoop(actxRef.current, synthRef.current, now);
+      setElapsed(0);
+    } else {
+      setElapsed(e);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const toggle = useCallback(() => {
+    if (playing) {
+      cancelAnimationFrame(rafRef.current);
+      if (actxRef.current) actxRef.current.suspend();
+      setPlaying(false);
+      return;
+    }
+
+    // Create or resume audio context
+    if (!actxRef.current) {
+      const actx = new (window.AudioContext || window.webkitAudioContext)();
+      actxRef.current = actx;
+      synthRef.current = createDrumSynth(actx);
+    } else {
+      actxRef.current.resume();
+    }
+
+    const actx = actxRef.current;
+    startRef.current = actx.currentTime;
+    scheduleLoop(actx, synthRef.current, actx.currentTime);
+    rafRef.current = requestAnimationFrame(tick);
+    setPlaying(true);
+  }, [playing, tick]);
+
+  // Tap handler
+  const handleTap = useCallback(() => {
+    if (!playing || !actxRef.current) return;
+    const synth = synthRef.current;
+    synth.kick(actxRef.current.currentTime);
+    setTapFlash(true);
+    setTimeout(() => setTapFlash(false), 80);
+  }, [playing]);
+
+  // Beat dots position (circle layout)
+  const dots = useMemo(() => {
+    const n = phase.beats;
+    return Array.from({ length: n }, (_, i) => {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const r = 42; // percentage from center
+      return {
+        x: 50 + r * Math.cos(angle),
+        y: 50 + r * Math.sin(angle),
+        label: phase.syllables ? phase.syllables[i] : (phase.pattern[i] ? '●' : '·'),
+      };
+    });
+  }, [phaseIdx]);
+
+  // Determine which dot is active
+  const isActive = (i) => i === beatIndex;
+  const isDrumHit = (i) => i === beatIndex && phase.pattern[i];
+
+  // Word display
+  const wordDisplay = useMemo(() => {
+    if (phaseIdx < 2) return null; // No word yet
+    if (phaseIdx === 2) return ['HEL', 'LO'];
+    if (phaseIdx === 3) return ['HEL', 'LO'];
+    if (phaseIdx === 4) return beatIndex < 4 ? ['Hel', 'lo?'] : ['Hel', 'lo!'];
+    if (phaseIdx === 5) return ['Hello,', ' Elvis'];
+    return ['HEL', 'LO'];
+  }, [phaseIdx, beatIndex]);
+
+  const isHitBeat = phase.pattern[beatIndex];
+
+  return R.createElement('div', { className: 'app' },
+    // Ambient
+    R.createElement('div', { className: 'ambient' + (playing ? ' on' : '') },
+      R.createElement('div', { className: 'orb orb-1' }),
+      R.createElement('div', { className: 'orb orb-2' }),
+    ),
+
+    // Top bar
+    R.createElement('div', { className: 'top' },
+      R.createElement('div', null,
+        R.createElement('div', { className: 'title' }, 'HELLO ELVIS'),
+        R.createElement('div', { className: 'subtitle' }, 'The Drum Strange Loop'),
+      ),
+      R.createElement('div', {
+        className: 'loop-counter',
+        style: { opacity: loopCount > 0 ? 1 : 0 }
+      }, 'LOOP ' + (loopCount + 1)),
+    ),
+
+    // Tap flash
+    R.createElement('div', { className: 'tap-flash' + (tapFlash ? ' on' : '') }),
+
+    // Main
+    R.createElement('div', { className: 'main', onClick: playing ? handleTap : undefined },
+
+      // Phase label
+      R.createElement('div', {
+        className: 'phase-label',
+        style: { color: phaseIdx >= 2 ? 'rgba(255,215,0,.3)' : 'rgba(232,64,64,.3)' }
+      }, phase.name),
+
+      // Word display (appears from phase 3)
+      wordDisplay
+        ? R.createElement('div', { className: 'word-display' },
+            ...wordDisplay.map((syl, i) =>
+              R.createElement('span', {
+                key: i,
+                className: 'syl' +
+                  (isHitBeat && phaseIdx >= 3 ? (i === 0 && beatIndex < 2 ? ' hit' : i === 1 && (phaseIdx >= 4 ? beatIndex >= (phaseIdx === 4 ? 4 : 3) : beatIndex >= 2) ? ' hit' : ' echo') : ''),
+                style: { marginRight: '.1em' },
+              }, syl)
+            )
+          )
+        : R.createElement('div', { className: 'word-display' },
+            R.createElement('span', {
+              className: 'syl' + (isHitBeat ? ' drum-only' : ''),
+              style: { fontSize: 'clamp(3rem,12vw,6rem)' }
+            }, isHitBeat ? '●' : '○')
+          ),
+
+      // Drum ring
+      R.createElement('div', { className: 'drum-ring' },
+        // Pulse ring
+        R.createElement('div', {
+          className: 'pulse-ring' + (isHitBeat ? ' fire' : ''),
+          key: 'pulse-' + Math.floor(currentBeat), // re-trigger animation
+        }),
+        // Beat dots
+        ...dots.map((d, i) =>
+          R.createElement('div', {
+            key: i,
+            className: 'beat-dot' +
+              (isActive(i) && isDrumHit(i) ? (phase.color === 'hello' ? ' hello' : ' active') : ''),
+            style: { left: d.x + '%', top: d.y + '%' },
+          },
+            R.createElement('span', { className: 'dot-label' }, d.label)
+          )
+        ),
+      ),
+
+      // Instruction
+      R.createElement('div', {
+        className: 'instruction' + (phaseIdx >= 3 ? ' bright' : ''),
+      }, playing ? phase.instruction : 'For Elvis. Press play.'),
+    ),
+
+    // Controls
+    R.createElement('div', { className: 'controls' },
+      R.createElement('div', { className: 'progress' },
+        R.createElement('div', {
+          className: 'progress-fill',
+          style: { width: progress + '%', background: progressColor },
+        }),
+      ),
+      R.createElement('button', {
+        className: 'play-btn' + (playing ? ' on' : ''),
+        onClick: toggle,
+      }, playing ? '■' : '▶'),
+      R.createElement('div', { className: 'hint' },
+        playing ? 'TAP ANYWHERE TO DRUM ALONG' : 'THE UNIVERSAL LANGUAGE IS MUSIC'
+      ),
+    ),
+  );
+}
+
+ReactDOM.render(R.createElement(App), document.getElementById('root'));
+</script>
+</body>
+</html>

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vienna — Karaoke</title>
+<title>Smalltown Boy — Karaoke</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   :root{
-    --bg:#07080d;--gold:#a8c4ff;--gold-dim:rgba(168,196,255,.2);
-    --sung:rgba(168,196,255,.6);--upcoming:rgba(255,255,255,.11);
-    --active-glow:0 0 24px rgba(168,196,255,.2),0 0 48px rgba(168,196,255,.06);
+    --bg:#0a0810;--gold:#f5576c;--gold-dim:rgba(245,87,108,.2);
+    --sung:rgba(245,87,108,.6);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(245,87,108,.2),0 0 48px rgba(245,87,108,.06);
     --warm:#ffd6a5;--warm-dim:rgba(255,214,165,.2);
   }
   html,body{height:100%;overflow:hidden}
@@ -55,7 +55,7 @@
   .syl.active{
     color:var(--gold);
     font-variation-settings:'wght' 800;
-    filter:drop-shadow(0 0 8px rgba(168,196,255,.3));
+    filter:drop-shadow(0 0 8px rgba(245,87,108,.3));
   }
   .syl.active::after{
     content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
@@ -78,7 +78,7 @@
   }
   .pitch-dot{
     position:absolute;width:6px;height:6px;border-radius:50%;
-    background:rgba(168,196,255,.15);top:50%;transform:translateY(-50%);
+    background:rgba(245,87,108,.15);top:50%;transform:translateY(-50%);
   }
   .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
   .pitch-dot.sung{background:var(--sung)}
@@ -123,7 +123,7 @@
 
   .credit{
     font-size:.55rem;padding:.3rem 1rem .5rem;
-    color:rgba(168,196,255,.2);text-align:center;
+    color:rgba(245,87,108,.2);text-align:center;
   }
 </style>
 </head>
@@ -134,171 +134,188 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script>
 // ========================================================================
-// VIENNA — Billy Joel — Real Karaoke
-// Syllable-synced to YouTube version: 1dAAznRs7uw
-// Designed for: dyslexia, insomnia, calming, first time singing
+// SMALLTOWN BOY — Bronski Beat (1984) — Real Karaoke
+// Jimmy Somerville's falsetto piercing through the hi-NRG synth intro
+// Syllable-synced, pitch-mapped, binaural-ready
 // ========================================================================
 
-const AUDIO_SRC = '/blog-images/vienna/vienna-billy-joel.opus';
+const AUDIO_SRC = '/blog-images/smalltown-boy/smalltown-boy.opus';
 
 // Each line: { t: start time (s), sz: size class, syls: [{t, w}] }
 // t = syllable start time, w = syllable text
 const LYRICS = [
-  // Verse 1
-  {t:17.0, sz:'sz-m', syls:[
-    {t:17.0,w:'Slow'},{t:17.5,w:'down,'},{t:18.3,w:'you'},{t:18.6,w:'cra-'},{t:18.9,w:'zy'},{t:19.3,w:'child'}
-  ]},
-  {t:20.5, sz:'sz-m', syls:[
-    {t:20.5,w:"You're"},{t:20.9,w:'so'},{t:21.3,w:'am-'},{t:21.6,w:'bi-'},{t:21.9,w:'tious'},{t:22.4,w:'for'},{t:22.7,w:'a'},{t:23.0,w:'ju-'},{t:23.3,w:'ve-'},{t:23.6,w:'nile'}
-  ]},
-  {t:24.8, sz:'sz-m', syls:[
-    {t:24.8,w:'But'},{t:25.1,w:'then'},{t:25.5,w:'if'},{t:25.8,w:"you're"},{t:26.1,w:'so'},{t:26.5,w:'smart'}
-  ]},
-  {t:27.8, sz:'sz-m', syls:[
-    {t:27.8,w:'Tell'},{t:28.1,w:'me'},{t:28.8,w:'why'},{t:29.2,w:'are'},{t:29.5,w:'you'},{t:29.8,w:'still'},{t:30.2,w:'so'},{t:30.6,w:'a-'},{t:30.9,w:'fraid?'}
-  ]},
 
-  // Interlude
-  {t:34.0, sz:'sz-s', syls:[
-    {t:34.0,w:'Mm-'},{t:34.5,w:'mm-'},{t:35.0,w:'mm...'}
-  ]},
-
-  // Verse 2
-  {t:38.5, sz:'sz-m', syls:[
-    {t:38.5,w:"Where's"},{t:39.0,w:'the'},{t:39.4,w:'fire,'},{t:40.2,w:"what's"},{t:40.6,w:'the'},{t:41.0,w:'hur-'},{t:41.3,w:'ry'},{t:41.6,w:'a-'},{t:41.9,w:'bout?'}
-  ]},
-  {t:43.0, sz:'sz-m', syls:[
-    {t:43.0,w:'You'},{t:43.3,w:'bet-'},{t:43.6,w:'ter'},{t:44.0,w:'cool'},{t:44.4,w:'it'},{t:44.7,w:'off'},{t:45.1,w:'be-'},{t:45.4,w:'fore'},{t:45.7,w:'you'},{t:46.0,w:'burn'},{t:46.4,w:'it'},{t:46.7,w:'out'}
-  ]},
+  // === VERSE 1 (~48s) ===
   {t:48.0, sz:'sz-m', syls:[
-    {t:48.0,w:'You'},{t:48.3,w:'got'},{t:48.7,w:'so'},{t:49.0,w:'much'},{t:49.4,w:'to'},{t:49.7,w:'do'},{t:50.1,w:'and'},{t:50.5,w:'on-'},{t:50.8,w:'ly'}
+    {t:48.0,w:'You'},{t:48.4,w:'leave'},{t:48.9,w:'in'},{t:49.2,w:'the'},{t:49.5,w:'morn-'},{t:49.9,w:'ing'},{t:50.4,w:'with'},{t:50.7,w:'ev-'},{t:51.0,w:"'ry-"},{t:51.3,w:'thing'},{t:51.7,w:'you'},{t:52.1,w:'own'}
   ]},
-  {t:51.5, sz:'sz-l', syls:[
-    {t:51.5,w:'So'},{t:52.0,w:'ma-'},{t:52.3,w:'ny'},{t:52.8,w:'hours'},{t:53.3,w:'in'},{t:53.6,w:'a'},{t:54.0,w:'day'}
+  {t:53.0, sz:'sz-m', syls:[
+    {t:53.0,w:'In'},{t:53.4,w:'a'},{t:53.7,w:'lit-'},{t:54.0,w:'tle'},{t:54.4,w:'black'},{t:54.9,w:'case'}
   ]},
-
-  // Pre-chorus
-  {t:56.5, sz:'sz-m', syls:[
-    {t:56.5,w:'But'},{t:57.0,w:'you'},{t:57.3,w:'know'},{t:57.7,w:'that'},{t:58.1,w:'when'},{t:58.5,w:'the'},{t:58.8,w:'truth'},{t:59.2,w:'is'},{t:59.5,w:'told'}
+  {t:56.0, sz:'sz-m', syls:[
+    {t:56.0,w:'A-'},{t:56.5,w:'lone'},{t:57.0,w:'on'},{t:57.4,w:'a'},{t:57.7,w:'plat-'},{t:58.1,w:'form'}
   ]},
-  {t:60.5, sz:'sz-l', syls:[
-    {t:60.5,w:'That'},{t:60.9,w:'you'},{t:61.2,w:'can'},{t:61.6,w:'get'},{t:62.0,w:'what'},{t:62.3,w:'you'},{t:62.6,w:'want'},{t:63.2,w:'or'},{t:63.5,w:'you'},{t:63.8,w:'can'},{t:64.1,w:'just'},{t:64.5,w:'get'},{t:65.0,w:'old'}
+  {t:59.0, sz:'sz-m', syls:[
+    {t:59.0,w:'The'},{t:59.3,w:'wind'},{t:59.7,w:'and'},{t:60.0,w:'the'},{t:60.3,w:'rain'},{t:60.8,w:'on'},{t:61.1,w:'a'},{t:61.4,w:'sad'},{t:61.8,w:'and'},{t:62.1,w:'lone-'},{t:62.5,w:'ly'},{t:62.9,w:'face'}
   ]},
 
-  // Chorus 1
-  {t:66.5, sz:'sz-xl', syls:[
-    {t:66.5,w:"You're"},{t:67.0,w:'gon-'},{t:67.3,w:'na'},{t:67.8,w:'kick'},{t:68.2,w:'off'},{t:68.8,w:'be-'},{t:69.1,w:'fore'},{t:69.5,w:'you'},{t:69.8,w:'e-'},{t:70.2,w:'ven'},{t:70.6,w:'get'},{t:71.0,w:'half-'},{t:71.5,w:'way'},{t:72.0,w:'through'}
+  // === VERSE 2 (~65s) ===
+  {t:65.0, sz:'sz-m', syls:[
+    {t:65.0,w:'Mo-'},{t:65.4,w:'ther'},{t:65.9,w:'will'},{t:66.3,w:'nev-'},{t:66.6,w:'er'},{t:67.0,w:'un-'},{t:67.3,w:'der-'},{t:67.6,w:'stand'},{t:68.1,w:'why'},{t:68.5,w:'you'},{t:68.8,w:'had'},{t:69.1,w:'to'},{t:69.4,w:'leave'}
   ]},
-  {t:73.5, sz:'sz-xxl', syls:[
-    {t:73.5,w:'When'},{t:74.2,w:'will'},{t:74.8,w:'you'},{t:75.4,w:'re-'},{t:75.8,w:'a-'},{t:76.2,w:'lize...'}
+  {t:71.0, sz:'sz-m', syls:[
+    {t:71.0,w:'But'},{t:71.3,w:'the'},{t:71.6,w:'an-'},{t:71.9,w:'swers'},{t:72.4,w:'you'},{t:72.7,w:'seek'},{t:73.2,w:'will'},{t:73.5,w:'nev-'},{t:73.8,w:'er'},{t:74.1,w:'be'},{t:74.4,w:'found'},{t:74.9,w:'at'},{t:75.2,w:'home'}
   ]},
-  {t:78.5, sz:'sz-xxl', syls:[
-    {t:78.5,w:'Vi-'},{t:79.5,w:'en-'},{t:80.5,w:'na'},{t:81.5,w:'waits'},{t:82.5,w:'for'},{t:83.5,w:'you?'}
-  ]},
-
-  // Verse 3
-  {t:88.0, sz:'sz-m', syls:[
-    {t:88.0,w:'Slow'},{t:88.5,w:'down,'},{t:89.3,w:'you'},{t:89.6,w:'cra-'},{t:89.9,w:'zy'},{t:90.3,w:'child'}
-  ]},
-  {t:91.5, sz:'sz-m', syls:[
-    {t:91.5,w:'And'},{t:91.8,w:'take'},{t:92.2,w:'the'},{t:92.5,w:'phone'},{t:93.0,w:'off'},{t:93.4,w:'the'},{t:93.7,w:'hook'},{t:94.2,w:'and'},{t:94.5,w:'dis-'},{t:94.8,w:'ap-'},{t:95.1,w:'pear'},{t:95.5,w:'for'},{t:95.8,w:'a'},{t:96.1,w:'while'}
-  ]},
-  {t:97.5, sz:'sz-l', syls:[
-    {t:97.5,w:"It's"},{t:97.8,w:'al-'},{t:98.1,w:'right,'},{t:98.8,w:"it's"},{t:99.1,w:'al-'},{t:99.4,w:'right'}
-  ]},
-  {t:100.5, sz:'sz-m', syls:[
-    {t:100.5,w:'You'},{t:100.8,w:'can'},{t:101.1,w:'af-'},{t:101.4,w:'ford'},{t:101.8,w:'to'},{t:102.1,w:'lose'},{t:102.5,w:'a'},{t:102.8,w:'day'},{t:103.2,w:'or'},{t:103.5,w:'two'}
+  {t:77.0, sz:'sz-l', syls:[
+    {t:77.0,w:'The'},{t:77.3,w:'love'},{t:77.7,w:'that'},{t:78.0,w:'you'},{t:78.3,w:'need'},{t:78.8,w:'will'},{t:79.1,w:'nev-'},{t:79.4,w:'er'},{t:79.7,w:'be'},{t:80.0,w:'found'},{t:80.5,w:'at'},{t:80.8,w:'home'}
   ]},
 
-  // Pre-chorus 2
-  {t:106.0, sz:'sz-l', syls:[
-    {t:106.0,w:'When'},{t:106.5,w:'will'},{t:106.9,w:'you'},{t:107.3,w:'re-'},{t:107.7,w:'a-'},{t:108.1,w:'lize...'}
+  // === CHORUS 1 (~82s) ===
+  {t:82.0, sz:'sz-xl', syls:[
+    {t:82.0,w:'Run'},{t:82.7,w:'a-'},{t:83.1,w:'way,'},{t:83.8,w:'turn'},{t:84.3,w:'a-'},{t:84.7,w:'way,'},{t:85.3,w:'run'},{t:85.8,w:'a-'},{t:86.2,w:'way,'},{t:86.7,w:'turn'},{t:87.1,w:'a-'},{t:87.5,w:'way'}
   ]},
-  {t:110.0, sz:'sz-xxl', syls:[
-    {t:110.0,w:'Vi-'},{t:111.0,w:'en-'},{t:112.0,w:'na'},{t:113.0,w:'waits'},{t:114.0,w:'for'},{t:115.0,w:'you?'}
+  {t:87.5, sz:'sz-xxl', syls:[
+    {t:87.5,w:'Run'},{t:88.3,w:'a-'},{t:89.0,w:'way'}
+  ]},
+  {t:90.0, sz:'sz-xl', syls:[
+    {t:90.0,w:'Run'},{t:90.7,w:'a-'},{t:91.1,w:'way,'},{t:91.8,w:'turn'},{t:92.3,w:'a-'},{t:92.7,w:'way,'},{t:93.3,w:'run'},{t:93.8,w:'a-'},{t:94.2,w:'way,'},{t:94.7,w:'turn'},{t:95.1,w:'a-'},{t:95.5,w:'way'}
+  ]},
+  {t:95.5, sz:'sz-xxl', syls:[
+    {t:95.5,w:'Run'},{t:96.3,w:'a-'},{t:97.0,w:'way'}
   ]},
 
-  // Bridge
+  // === VERSE 3 (~120s) ===
   {t:120.0, sz:'sz-m', syls:[
-    {t:120.0,w:'You'},{t:120.3,w:'got'},{t:120.6,w:'your'},{t:121.0,w:'pas-'},{t:121.3,w:'sion,'},{t:122.0,w:'you'},{t:122.3,w:'got'},{t:122.6,w:'your'},{t:123.0,w:'pride'}
+    {t:120.0,w:'Pushed'},{t:120.5,w:'a-'},{t:120.8,w:'round'},{t:121.3,w:'and'},{t:121.6,w:'kicked'},{t:122.1,w:'a-'},{t:122.4,w:'round,'},{t:123.0,w:'al-'},{t:123.3,w:'ways'},{t:123.7,w:'a'},{t:124.0,w:'lone-'},{t:124.4,w:'ly'},{t:124.8,w:'boy'}
   ]},
-  {t:124.0, sz:'sz-m', syls:[
-    {t:124.0,w:'But'},{t:124.3,w:"don't"},{t:124.7,w:'you'},{t:125.0,w:'know'},{t:125.4,w:'that'},{t:125.7,w:'on-'},{t:126.0,w:'ly'},{t:126.4,w:'fools'},{t:126.8,w:'are'},{t:127.2,w:'sat-'},{t:127.5,w:'is-'},{t:127.8,w:'fied?'}
+  {t:126.0, sz:'sz-m', syls:[
+    {t:126.0,w:'You'},{t:126.3,w:'were'},{t:126.6,w:'the'},{t:126.9,w:'one'},{t:127.3,w:'that'},{t:127.6,w:"they'd"},{t:128.0,w:'talk'},{t:128.4,w:'a-'},{t:128.7,w:'bout'},{t:129.1,w:'a-'},{t:129.4,w:'round'},{t:129.8,w:'town'}
   ]},
-  {t:129.5, sz:'sz-l', syls:[
-    {t:129.5,w:'Dream'},{t:130.2,w:'on,'},{t:131.0,w:'but'},{t:131.5,w:"don't"},{t:132.0,w:'i-'},{t:132.3,w:'ma-'},{t:132.6,w:'gine'},{t:133.0,w:"they'll"},{t:133.4,w:'all'},{t:133.8,w:'come'},{t:134.2,w:'true'}
-  ]},
-
-  // Pre-chorus 3
-  {t:136.0, sz:'sz-l', syls:[
-    {t:136.0,w:'When'},{t:136.5,w:'will'},{t:136.9,w:'you'},{t:137.3,w:'re-'},{t:137.7,w:'a-'},{t:138.1,w:'lize...'}
-  ]},
-  {t:140.0, sz:'sz-xxl', syls:[
-    {t:140.0,w:'Vi-'},{t:141.0,w:'en-'},{t:142.0,w:'na'},{t:143.0,w:'waits'},{t:144.0,w:'for'},{t:145.0,w:'you?'}
+  {t:131.0, sz:'sz-l', syls:[
+    {t:131.0,w:'As'},{t:131.4,w:'they'},{t:131.7,w:'put'},{t:132.1,w:'you'},{t:132.5,w:'down'}
   ]},
 
-  // Verse 4 (gentle, piano)
-  {t:153.0, sz:'sz-m', syls:[
-    {t:153.0,w:'Slow'},{t:153.5,w:'down,'},{t:154.3,w:'you'},{t:154.6,w:'cra-'},{t:154.9,w:'zy'},{t:155.3,w:'child'}
+  // === VERSE 4 (~134s) ===
+  {t:134.0, sz:'sz-m', syls:[
+    {t:134.0,w:'And'},{t:134.3,w:'as'},{t:134.6,w:'hard'},{t:135.0,w:'as'},{t:135.3,w:'they'},{t:135.6,w:'would'},{t:136.0,w:'try,'},{t:136.5,w:"they'd"},{t:136.9,w:'hurt'},{t:137.3,w:'to'},{t:137.6,w:'make'},{t:138.0,w:'you'},{t:138.3,w:'cry'}
   ]},
-  {t:156.5, sz:'sz-m', syls:[
-    {t:156.5,w:'And'},{t:156.8,w:'take'},{t:157.2,w:'the'},{t:157.5,w:'phone'},{t:158.0,w:'off'},{t:158.4,w:'the'},{t:158.7,w:'hook'},{t:159.2,w:'and'},{t:159.5,w:'dis-'},{t:159.8,w:'ap-'},{t:160.1,w:'pear'},{t:160.5,w:'for'},{t:160.8,w:'a'},{t:161.1,w:'while'}
+  {t:140.0, sz:'sz-m', syls:[
+    {t:140.0,w:'But'},{t:140.3,w:'you'},{t:140.6,w:'nev-'},{t:140.9,w:'er'},{t:141.3,w:'cried'},{t:141.7,w:'to'},{t:142.0,w:'them,'},{t:142.5,w:'just'},{t:142.8,w:'to'},{t:143.1,w:'your'},{t:143.5,w:'soul'}
   ]},
-  {t:162.5, sz:'sz-l', syls:[
-    {t:162.5,w:"It's"},{t:162.8,w:'al-'},{t:163.1,w:'right,'},{t:163.8,w:"it's"},{t:164.1,w:'al-'},{t:164.4,w:'right'}
-  ]},
-  {t:165.5, sz:'sz-l', syls:[
-    {t:165.5,w:'You'},{t:165.8,w:'can'},{t:166.1,w:'af-'},{t:166.4,w:'ford'},{t:166.8,w:'to'},{t:167.1,w:'lose'},{t:167.5,w:'a'},{t:167.8,w:'day'},{t:168.2,w:'or'},{t:168.5,w:'two'}
+  {t:146.0, sz:'sz-l', syls:[
+    {t:146.0,w:'No,'},{t:146.5,w:'you'},{t:146.8,w:'nev-'},{t:147.1,w:'er'},{t:147.5,w:'cried'},{t:147.9,w:'to'},{t:148.2,w:'them,'},{t:148.7,w:'just'},{t:149.0,w:'to'},{t:149.3,w:'your'},{t:149.7,w:'soul'}
   ]},
 
-  // Final chorus
-  {t:171.0, sz:'sz-xl', syls:[
-    {t:171.0,w:'When'},{t:171.5,w:'will'},{t:172.0,w:'you'},{t:172.5,w:'re-'},{t:172.9,w:'a-'},{t:173.3,w:'lize...'}
+  // === CHORUS 2 (~152s) ===
+  {t:152.0, sz:'sz-xl', syls:[
+    {t:152.0,w:'Run'},{t:152.7,w:'a-'},{t:153.1,w:'way,'},{t:153.8,w:'turn'},{t:154.3,w:'a-'},{t:154.7,w:'way,'},{t:155.3,w:'run'},{t:155.8,w:'a-'},{t:156.2,w:'way,'},{t:156.7,w:'turn'},{t:157.1,w:'a-'},{t:157.5,w:'way'}
   ]},
-  {t:175.5, sz:'sz-xxl', syls:[
-    {t:175.5,w:'Vi-'},{t:176.5,w:'en-'},{t:177.5,w:'na'},{t:178.5,w:'waits'},{t:179.5,w:'for'},{t:180.5,w:'you?'}
+  {t:157.5, sz:'sz-xxl', syls:[
+    {t:157.5,w:'Run'},{t:158.3,w:'a-'},{t:159.0,w:'way'}
+  ]},
+  {t:160.0, sz:'sz-xl', syls:[
+    {t:160.0,w:'Run'},{t:160.7,w:'a-'},{t:161.1,w:'way,'},{t:161.8,w:'turn'},{t:162.3,w:'a-'},{t:162.7,w:'way,'},{t:163.3,w:'run'},{t:163.8,w:'a-'},{t:164.2,w:'way,'},{t:164.7,w:'turn'},{t:165.1,w:'a-'},{t:165.5,w:'way'}
+  ]},
+  {t:165.5, sz:'sz-xxl', syls:[
+    {t:165.5,w:'Run'},{t:166.3,w:'a-'},{t:167.0,w:'way'}
   ]},
 
-  // Outro
-  {t:185.0, sz:'sz-l', syls:[
-    {t:185.0,w:'Vi-'},{t:186.0,w:'en-'},{t:187.0,w:'na'},{t:188.0,w:'waits'},{t:189.0,w:'for'},{t:190.0,w:'you...'}
+  // === VERSE 5 (~195s) ===
+  {t:195.0, sz:'sz-l', syls:[
+    {t:195.0,w:'Cry,'},{t:196.2,w:'boy,'},{t:197.4,w:'cry'}
+  ]},
+  {t:200.0, sz:'sz-m', syls:[
+    {t:200.0,w:'You'},{t:200.4,w:'leave'},{t:200.9,w:'in'},{t:201.2,w:'the'},{t:201.5,w:'morn-'},{t:201.9,w:'ing'},{t:202.4,w:'with'},{t:202.7,w:'ev-'},{t:203.0,w:"'ry-"},{t:203.3,w:'thing'},{t:203.7,w:'you'},{t:204.1,w:'own'}
+  ]},
+  {t:205.0, sz:'sz-m', syls:[
+    {t:205.0,w:'In'},{t:205.4,w:'a'},{t:205.7,w:'lit-'},{t:206.0,w:'tle'},{t:206.4,w:'black'},{t:206.9,w:'case'}
+  ]},
+  {t:208.0, sz:'sz-m', syls:[
+    {t:208.0,w:'A-'},{t:208.5,w:'lone'},{t:209.0,w:'on'},{t:209.4,w:'a'},{t:209.7,w:'plat-'},{t:210.1,w:'form'}
+  ]},
+  {t:211.0, sz:'sz-m', syls:[
+    {t:211.0,w:'The'},{t:211.3,w:'wind'},{t:211.7,w:'and'},{t:212.0,w:'the'},{t:212.3,w:'rain'},{t:212.8,w:'on'},{t:213.1,w:'a'},{t:213.4,w:'sad'},{t:213.8,w:'and'},{t:214.1,w:'lone-'},{t:214.5,w:'ly'},{t:214.9,w:'face'}
+  ]},
+
+  // === CHORUS 3 (~217s) ===
+  {t:217.0, sz:'sz-xl', syls:[
+    {t:217.0,w:'Run'},{t:217.7,w:'a-'},{t:218.1,w:'way,'},{t:218.8,w:'turn'},{t:219.3,w:'a-'},{t:219.7,w:'way,'},{t:220.3,w:'run'},{t:220.8,w:'a-'},{t:221.2,w:'way,'},{t:221.7,w:'turn'},{t:222.1,w:'a-'},{t:222.5,w:'way'}
+  ]},
+  {t:222.5, sz:'sz-xxl', syls:[
+    {t:222.5,w:'Run'},{t:223.3,w:'a-'},{t:224.0,w:'way'}
+  ]},
+  {t:225.0, sz:'sz-xl', syls:[
+    {t:225.0,w:'Run'},{t:225.7,w:'a-'},{t:226.1,w:'way,'},{t:226.8,w:'turn'},{t:227.3,w:'a-'},{t:227.7,w:'way,'},{t:228.3,w:'run'},{t:228.8,w:'a-'},{t:229.2,w:'way,'},{t:229.7,w:'turn'},{t:230.1,w:'a-'},{t:230.5,w:'way'}
+  ]},
+  {t:230.5, sz:'sz-xxl', syls:[
+    {t:230.5,w:'Run'},{t:231.3,w:'a-'},{t:232.0,w:'way'}
+  ]},
+
+  // === OUTRO (~234s) ===
+  {t:234.0, sz:'sz-xl', syls:[
+    {t:234.0,w:'Run'},{t:234.6,w:'a-'},{t:235.1,w:'way,'},{t:235.8,w:'turn'},{t:236.3,w:'a-'},{t:236.8,w:'way'}
+  ]},
+  {t:238.0, sz:'sz-xl', syls:[
+    {t:238.0,w:'Run'},{t:238.6,w:'a-'},{t:239.1,w:'way,'},{t:239.8,w:'turn'},{t:240.3,w:'a-'},{t:240.8,w:'way'}
+  ]},
+  {t:242.0, sz:'sz-xxl', syls:[
+    {t:242.0,w:'Run'},{t:243.0,w:'a-'},{t:244.5,w:'way...'}
   ]},
 ];
 
-// Approximate pitch contour (0-1, low to high) per line
+// Approximate pitch contour (0-1, low to high) per syllable per line
+// Jimmy Somerville's falsetto: verses 0.4-0.65, chorus "Run away" soars to 0.85-0.95
 const PITCHES = [
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.6,.5,.45,.5,.55,.5],
-  [.4,.45,.5,.55,.6,.65],
-  [.5,.55,.6,.55,.5,.45,.4,.35,.3],
-  [.3,.35,.3],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5],
-  [.4,.45,.5,.55,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4],
-  [.5,.55,.6,.65,.6,.55,.5],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.55],
-  [.5,.55,.6,.55,.5,.55,.6,.55,.5,.55,.6,.65,.6],
-  [.5,.55,.6,.65,.7,.6,.55,.5,.55,.6,.65,.7,.75,.8],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.4,.45,.5,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.45,.5,.55,.6,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.55,.6,.65,.6,.55],
-  [.5,.55,.6,.65,.6,.55,.5,.55,.6,.65,.7],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.4,.35,.5,.55,.6,.5],
-  [.4,.45,.5,.55,.5,.45,.5,.45,.4,.45,.5,.55,.5,.45],
-  [.5,.55,.65,.5,.55,.65],
-  [.5,.55,.6,.55,.5,.55,.5,.45,.4,.35],
-  [.6,.65,.7,.75,.8,.85],
-  [.7,.8,.9,.85,.8,.7],
-  [.6,.7,.8,.75,.7,.6],
+  // Verse 1
+  [.45,.50,.42,.40,.50,.55,.45,.55,.58,.55,.48,.45],   // "You leave in the morning..."
+  [.42,.40,.55,.52,.60,.65],                            // "In a little black case"
+  [.48,.55,.45,.42,.58,.60],                            // "Alone on a platform"
+  [.42,.50,.45,.40,.55,.45,.40,.60,.45,.55,.52,.65],   // "The wind and the rain..."
+
+  // Verse 2
+  [.50,.48,.55,.58,.55,.52,.50,.48,.62,.60,.58,.55,.65], // "Mother will never understand..."
+  [.45,.42,.55,.60,.58,.65,.55,.60,.58,.55,.62,.48,.50], // "But the answers you seek..."
+  [.48,.55,.52,.58,.65,.55,.52,.48,.50,.62,.48,.55],     // "The love that you need..."
+
+  // Chorus 1
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],   // "Run away, turn away..."
+  [.85,.92,.95],                                        // "Run away" (Jimmy falsetto peak)
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],   // "Run away, turn away..."
+  [.85,.92,.95],                                        // "Run away"
+
+  // Verse 3
+  [.45,.52,.55,.42,.60,.55,.50,.55,.52,.40,.58,.55,.60], // "Pushed around and kicked around..."
+  [.42,.40,.38,.50,.45,.48,.55,.55,.52,.50,.58,.60],      // "You were the one..."
+  [.48,.55,.60,.65,.70],                                  // "As they put you down"
+
+  // Verse 4
+  [.45,.42,.55,.45,.48,.50,.60,.52,.58,.45,.55,.48,.62], // "And as hard as they would try..."
+  [.42,.45,.55,.52,.65,.48,.60,.55,.45,.50,.65],          // "But you never cried to them..."
+  [.50,.55,.58,.55,.68,.50,.62,.58,.48,.52,.68],          // "No, you never cried to them..."
+
+  // Chorus 2
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],
+  [.85,.92,.95],
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],
+  [.85,.92,.95],
+
+  // Verse 5
+  [.72,.78,.82],                                          // "Cry, boy, cry" — emotional peak
+  [.45,.50,.42,.40,.50,.55,.45,.55,.58,.55,.48,.45],
+  [.42,.40,.55,.52,.60,.65],
+  [.48,.55,.45,.42,.58,.60],
+  [.42,.50,.45,.40,.55,.45,.40,.60,.45,.55,.52,.65],
+
+  // Chorus 3
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],
+  [.85,.92,.95],
+  [.80,.88,.90,.82,.88,.92,.80,.88,.90,.82,.88,.92],
+  [.85,.92,.95],
+
+  // Outro
+  [.82,.88,.92,.84,.90,.93],
+  [.82,.88,.92,.84,.90,.93],
+  [.88,.93,.97],
 ];
 
 // Binaural presets
@@ -323,7 +340,7 @@ function App(){
   const binRRef=useRef(null);
   const binGainRef=useRef(null);
   const rafRef=useRef(null);
-  const [dur,setDur]=useState(235);
+  const [dur,setDur]=useState(295);
 
   // Audio element
   useEffect(()=>{
@@ -392,8 +409,8 @@ function App(){
   return R.createElement('div',{className:'app'},
     // Ambient glow
     R.createElement('div',{className:`ambient${playing?' on':''}`},
-      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(100,140,220,.12),transparent 70%)'}}),
-      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(255,214,165,.08),transparent 70%)'}})
+      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'10%',background:'radial-gradient(circle,rgba(245,87,108,.12),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-5vw',bottom:'15%',background:'radial-gradient(circle,rgba(200,80,180,.08),transparent 70%)'}})
     ),
 
     // Lyrics
@@ -453,7 +470,7 @@ function App(){
       },BIN[binIdx].n)
     ),
 
-    R.createElement('div',{className:'credit'},'Billy Joel — Vienna — spike.land karaoke')
+    R.createElement('div',{className:'credit'},'Bronski Beat — Smalltown Boy (1984) — spike.land karaoke')
   );
 }
 
