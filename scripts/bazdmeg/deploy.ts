@@ -113,24 +113,34 @@ function injectBuildMeta(distDir: string, sha: string, time: string): void {
   writeFileSync(indexPath, html);
 }
 
-async function uploadFileAsync(filePath: string, key: string): Promise<void> {
+async function uploadFileAsync(filePath: string, key: string, retries = 3): Promise<void> {
   const contentType = getContentType(filePath);
-  await execFileAsync(
-    "yarn",
-    [
-      "wrangler",
-      "r2",
-      "object",
-      "put",
-      `${R2_BUCKET}/${key}`,
-      "--file",
-      filePath,
-      "--content-type",
-      contentType,
-      "--remote",
-    ],
-    { cwd: process.cwd() },
-  );
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await execFileAsync(
+        "yarn",
+        [
+          "wrangler",
+          "r2",
+          "object",
+          "put",
+          `${R2_BUCKET}/${key}`,
+          "--file",
+          filePath,
+          "--content-type",
+          contentType,
+          "--remote",
+        ],
+        { cwd: process.cwd() },
+      );
+      return;
+    } catch (err) {
+      if (attempt === retries) throw err;
+      const delay = Math.pow(2, attempt) * 1000;
+      console.warn(`    Retrying ${key} (${attempt}/${retries}) in ${delay}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
 }
 
 export async function deploySPA(): Promise<{ uploaded: number; skipped: number }> {
@@ -157,7 +167,7 @@ export async function deploySPA(): Promise<{ uploaded: number; skipped: number }
 
   // Upload all files in parallel with limit
   const localFiles = getAllFiles(distDir);
-  const CONCURRENCY = 20;
+  const CONCURRENCY = 15; // Reduced slightly for stability
   let uploaded = 0;
   const total = localFiles.length;
 
@@ -168,10 +178,15 @@ export async function deploySPA(): Promise<{ uploaded: number; skipped: number }
     await Promise.all(
       chunk.map(async (filePath) => {
         const key = relative(distDir, filePath);
-        await uploadFileAsync(filePath, key);
-        uploaded++;
-        if (uploaded % 50 === 0 || uploaded === total) {
-          console.log(`    Progress: ${uploaded}/${total} files...`);
+        try {
+          await uploadFileAsync(filePath, key);
+          uploaded++;
+          if (uploaded % 50 === 0 || uploaded === total) {
+            console.log(`    Progress: ${uploaded}/${total} files...`);
+          }
+        } catch (err) {
+          console.error(`  Failed to upload ${key} after retries.`);
+          throw err;
         }
       }),
     );
