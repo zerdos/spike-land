@@ -11,8 +11,8 @@ const ROOT = resolve(__dirname, "..");
 const BLOG_DIR = resolve(ROOT, "content/blog");
 const IMAGE_DIR = resolve(ROOT, "content/blog-images");
 const DEFAULT_BASE_URL = "https://spike-edge.spikeland.workers.dev";
-const DEFAULT_CONCURRENCY = 3;
-const HERO_WARM_TIMEOUT_MS = 90_000;
+const DEFAULT_CONCURRENCY = 1;
+const HERO_WARM_TIMEOUT_MS = 180_000;
 
 interface CliOptions {
   baseUrl: string;
