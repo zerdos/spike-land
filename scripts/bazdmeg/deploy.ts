@@ -113,7 +113,7 @@ function injectBuildMeta(distDir: string, sha: string, time: string): void {
   writeFileSync(indexPath, html);
 }
 
-async function uploadFileAsync(filePath: string, key: string, retries = 3): Promise<void> {
+async function uploadFileAsync(filePath: string, key: string, retries = 5): Promise<void> {
   const contentType = getContentType(filePath);
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -136,8 +136,8 @@ async function uploadFileAsync(filePath: string, key: string, retries = 3): Prom
       return;
     } catch (err) {
       if (attempt === retries) throw err;
-      const delay = Math.pow(2, attempt) * 1000;
-      console.warn(`    Retrying ${key} (${attempt}/${retries}) in ${delay}ms...`);
+      const delay = Math.pow(2, attempt) * 1000 + Math.random() * 2000;
+      console.warn(`    Retrying ${key} (${attempt}/${retries}) in ${Math.round(delay)}ms...`);
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -167,7 +167,7 @@ export async function deploySPA(): Promise<{ uploaded: number; skipped: number }
 
   // Upload all files in parallel with limit
   const localFiles = getAllFiles(distDir);
-  const CONCURRENCY = 15; // Reduced slightly for stability
+  const CONCURRENCY = 5; // Much safer
   let uploaded = 0;
   const total = localFiles.length;
 
@@ -185,11 +185,13 @@ export async function deploySPA(): Promise<{ uploaded: number; skipped: number }
             console.log(`    Progress: ${uploaded}/${total} files...`);
           }
         } catch (err) {
-          console.error(`  Failed to upload ${key} after retries.`);
+          console.error(`  Failed to upload ${key} after all retries.`);
           throw err;
         }
       }),
     );
+    // Intentional break between chunks to stay under rate limits
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
   // Update deploy state
