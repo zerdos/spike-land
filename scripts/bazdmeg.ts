@@ -364,11 +364,11 @@ function phase2(
 
 // ── Phase 3: Smart Deploy ───────────────────────────────────────────
 
-function phase3(log: ReturnType<typeof createRunLog>): Phase3Result {
+async function phase3(log: ReturnType<typeof createRunLog>): Promise<Phase3Result> {
   console.log("── Phase 3: Smart Deploy ──────────────");
 
   addLogEvent(log, "phase3", "start", {});
-  const result = runPhase3();
+  const result = await runPhase3();
 
   const workers = result.workersDeployed.length > 0 ? result.workersDeployed.join(", ") : "none";
   console.log(`  SPA: ${result.spaUploaded} upload, ${result.spaSkipped} skip (hash match)`);
@@ -403,7 +403,7 @@ async function main(): Promise<void> {
   try {
     const p1 = phase1(runId, log, promptsUsed);
     const p2 = phase2(runId, log, promptsUsed);
-    const p3 = phase3(log);
+    const p3 = await phase3(log);
 
     const totalDurationMs = Date.now() - totalStart;
     const record: RunRecord = {

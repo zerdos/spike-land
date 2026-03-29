@@ -1,8 +1,11 @@
-import { execFileSync, execSync } from "node:child_process";
+import { execFileSync, execSync, execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { join, relative, extname } from "node:path";
+import { promisify } from "node:util";
 import type { DeployState, Phase3Plan, Phase3Result, VersionInfo } from "./types.js";
+
+const execFileAsync = promisify(execFile);
 
 const DATA_DIR = join(process.cwd(), ".bazdmeg");
 const DEPLOY_STATE_FILE = join(DATA_DIR, "deploy-state.json");
@@ -110,9 +113,9 @@ function injectBuildMeta(distDir: string, sha: string, time: string): void {
   writeFileSync(indexPath, html);
 }
 
-function uploadFile(filePath: string, key: string): void {
+async function uploadFileAsync(filePath: string, key: string): Promise<void> {
   const contentType = getContentType(filePath);
-  execFileSync(
+  await execFileAsync(
     "yarn",
     [
       "wrangler",
@@ -126,11 +129,11 @@ function uploadFile(filePath: string, key: string): void {
       contentType,
       "--remote",
     ],
-    { cwd: process.cwd(), stdio: ["pipe", "pipe", "pipe"] },
+    { cwd: process.cwd() },
   );
 }
 
-export function deploySPA(): { uploaded: number; skipped: number } {
+export async function deploySPA(): Promise<{ uploaded: number; skipped: number }> {
   const distDir = join(process.cwd(), "packages/spike-web/dist");
   const sha = getHeadSha();
   const commitTime = getCommitTime();
@@ -152,14 +155,26 @@ export function deploySPA(): { uploaded: number; skipped: number } {
     return { uploaded: 0, skipped: 0 };
   }
 
-  // Upload all files (per-asset hash comparison no longer available from API)
+  // Upload all files in parallel with limit
   const localFiles = getAllFiles(distDir);
+  const CONCURRENCY = 20;
   let uploaded = 0;
+  const total = localFiles.length;
 
-  for (const filePath of localFiles) {
-    const key = relative(distDir, filePath);
-    uploadFile(filePath, key);
-    uploaded++;
+  console.log(`  Uploading ${total} files to R2 (concurrency=${CONCURRENCY})...`);
+
+  for (let i = 0; i < localFiles.length; i += CONCURRENCY) {
+    const chunk = localFiles.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      chunk.map(async (filePath) => {
+        const key = relative(distDir, filePath);
+        await uploadFileAsync(filePath, key);
+        uploaded++;
+        if (uploaded % 50 === 0 || uploaded === total) {
+          console.log(`    Progress: ${uploaded}/${total} files...`);
+        }
+      }),
+    );
   }
 
   // Update deploy state
@@ -269,11 +284,11 @@ function smokeTest(): SmokeResult[] {
   return results;
 }
 
-export function runPhase3(): Phase3Result {
+export async function runPhase3(): Promise<Phase3Result> {
   const start = Date.now();
 
   console.log("  SPA deploy:");
-  const { uploaded, skipped } = deploySPA();
+  const { uploaded, skipped } = await deploySPA();
   console.log(`  SPA: ${uploaded} upload, ${skipped} skip (hash match)`);
 
   console.log("  Worker deploy:");
