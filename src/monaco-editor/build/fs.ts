@@ -23,7 +23,9 @@ export function ensureDir(dirname: string) {
     if (!existingDirCache.has(dir)) {
       try {
         fs.mkdirSync(dir);
-      } catch (err) {}
+      } catch (_err) {
+        // directory may already exist — mkdirSync throws EEXIST, which is expected here
+      }
       existingDirCache.add(dir);
     }
   });

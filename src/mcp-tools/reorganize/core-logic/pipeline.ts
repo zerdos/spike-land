@@ -49,7 +49,9 @@ export async function runPipeline(srcDir?: string, _incremental = false): Promis
         .split("\n")
         .filter((f) => f.startsWith("src/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
         .map((f) => path.resolve(process.cwd(), f));
-    } catch (_e) {}
+    } catch (_e) {
+      // git diff unavailable (not a git repo, git not installed, etc.) — proceed without diff context
+    }
   }
 
   const allFiles = await glob("**/*.{ts,tsx}", {

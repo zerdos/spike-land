@@ -157,6 +157,9 @@ export function CollabProvider({
   const heartbeatInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const typingTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const isMounted = useRef(true);
+  // Stable refs for callbacks used inside connect() to break circular deps.
+  const handleMessageRef = useRef<((msg: Record<string, unknown>) => void) | null>(null);
+  const scheduleReconnectRef = useRef<(() => void) | null>(null);
 
   // Merge a partial update into the users map
   const updateUser = useCallback(
@@ -242,7 +245,7 @@ export function CollabProvider({
       if (typeof evt.data !== "string") return;
       try {
         const msg = JSON.parse(evt.data) as Record<string, unknown>;
-        handleMessage(msg);
+        handleMessageRef.current?.(msg);
       } catch {
         // ignore malformed
       }
@@ -252,16 +255,16 @@ export function CollabProvider({
       if (!isMounted.current) return;
       if (heartbeatInterval.current) clearInterval(heartbeatInterval.current);
       setConnectionStatus("reconnecting");
-      scheduleReconnect();
+      scheduleReconnectRef.current?.();
     };
 
     ws.onerror = () => {
       ws.close();
     };
-  }, [roomId, userId, userName, avatarUrl, sendJson]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [roomId, userId, userName, avatarUrl, sendJson]);
 
   const handleMessage = useCallback(
-    (msg: Record<string, unknown>) => {
+    (msg: Record<string, unknown>): void => {
       switch (msg.type) {
         case "presence_state": {
           // Full snapshot from DO on first connection
@@ -338,6 +341,9 @@ export function CollabProvider({
     },
     [userId, updateUser, removeUser],
   );
+  // Keep the ref pointing at the latest handleMessage so connect() can always
+  // call the up-to-date version without being listed as a dependency.
+  handleMessageRef.current = handleMessage;
 
   const scheduleReconnect = useCallback(() => {
     if (!isMounted.current) return;
@@ -347,6 +353,9 @@ export function CollabProvider({
       if (isMounted.current) connect();
     }, delay);
   }, [connect]);
+  // Same pattern: keep the ref current so connect() can call scheduleReconnect
+  // without it being a dependency (which would create a circular dep cycle).
+  scheduleReconnectRef.current = scheduleReconnect;
 
   useEffect(() => {
     isMounted.current = true;
