@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { randn, sampleGamma, sampleBeta } from "../core-logic/stats.js";
+import { randn, sampleGamma, sampleBeta } from "../../../src/core/shared-utils/core-logic/stats.js";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -23,7 +23,7 @@ describe("randn", () => {
 });
 
 describe("sampleGamma", () => {
-  it("returns a positive finite number", () => {
+  it("returns a positive finite number for shape >= 1", () => {
     const val = sampleGamma(1);
     expect(val).toBeGreaterThan(0);
     expect(Number.isFinite(val)).toBe(true);
@@ -41,7 +41,7 @@ describe("sampleGamma", () => {
     expect(Number.isFinite(val)).toBe(true);
   });
 
-  it("mean of samples is approximately equal to shape", () => {
+  it("mean of samples approximates the shape parameter", () => {
     const shape = 3;
     const N = 5000;
     const samples = Array.from({ length: N }, () => sampleGamma(shape));
@@ -61,7 +61,7 @@ describe("sampleBeta", () => {
     }
   });
 
-  it("symmetric Beta(alpha, alpha) has mean ~0.5", () => {
+  it("symmetric Beta(alpha, alpha) has mean approximately 0.5", () => {
     const N = 5000;
     const samples = Array.from({ length: N }, () => sampleBeta(5, 5));
     const mean = samples.reduce((a, b) => a + b, 0) / N;
@@ -70,7 +70,7 @@ describe("sampleBeta", () => {
     expect(mean).toBeLessThan(0.52);
   });
 
-  it("Beta(alpha=1, beta=9) is skewed toward 0", () => {
+  it("Beta(1, 9) is skewed toward 0 — mean approximately 0.1", () => {
     const N = 5000;
     const samples = Array.from({ length: N }, () => sampleBeta(1, 9));
     const mean = samples.reduce((a, b) => a + b, 0) / N;

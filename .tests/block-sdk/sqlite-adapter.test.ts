@@ -161,6 +161,38 @@ describe("SQLite StorageAdapter", () => {
       expect(results[1]?.rowsAffected).toBe(1);
       expect(results[2]?.rows).toHaveLength(2);
     });
+
+    it("should batch mix of SELECT and non-SELECT statements", async () => {
+      await adapter.sql.execute("CREATE TABLE logs (id INTEGER PRIMARY KEY, msg TEXT)");
+
+      // Mix: INSERT, SELECT, DELETE in one batch
+      const results = await adapter.sql.batch([
+        { query: "INSERT INTO logs (id, msg) VALUES (?, ?)", params: [1, "hello"] },
+        { query: "INSERT INTO logs (id, msg) VALUES (?, ?)", params: [2, "world"] },
+        { query: "SELECT * FROM logs ORDER BY id" },
+        { query: "DELETE FROM logs WHERE id = ?", params: [1] },
+      ]);
+
+      expect(results).toHaveLength(4);
+      expect(results[0]?.rowsAffected).toBe(1);
+      expect(results[1]?.rowsAffected).toBe(1);
+      expect(results[2]?.rows).toHaveLength(2);
+      expect(results[3]?.rowsAffected).toBe(1);
+    });
+
+    it("should batch non-SELECT statement without params", async () => {
+      await adapter.sql.execute("CREATE TABLE scratch (id INTEGER PRIMARY KEY, val TEXT)");
+      await adapter.sql.execute("INSERT INTO scratch (id, val) VALUES (1, 'x')");
+      await adapter.sql.execute("INSERT INTO scratch (id, val) VALUES (2, 'y')");
+
+      // DELETE all rows — no params, non-SELECT path in batch
+      const results = await adapter.sql.batch([{ query: "DELETE FROM scratch" }]);
+
+      expect(results[0]?.rowsAffected).toBe(2);
+
+      const remaining = await adapter.sql.execute("SELECT * FROM scratch");
+      expect(remaining.rows).toHaveLength(0);
+    });
   });
 
   describe("Blob adapter", () => {

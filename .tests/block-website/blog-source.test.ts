@@ -95,17 +95,14 @@ describe("extractHeroMedia — with frontmatter hero", () => {
   });
 
   it("falls back to findImagePrompt when frontmatter heroImage is not in candidateLines", () => {
-    const earlyLines = Array.from({ length: 5 }, (_, i) => `Paragraph ${i}.`);
-    const content = [
-      ...earlyLines,
-      "Later paragraph.",
-      "![Deep hero](/blog/deep.png)",
-      "Even more text.",
-    ].join("\n");
+    // Put the image reference after the first 8 lines so it's outside candidateLines
+    const earlyLines = Array.from({ length: 8 }, (_, i) => `Paragraph ${i}.`);
+    const content = [...earlyLines, "![Deep hero](/blog/deep.png)", "Even more text."].join("\n");
     const result = extractHeroMedia(content, "/blog/deep.png", null);
     expect(result.heroImage).toBe("/blog/deep.png");
+    // findImagePrompt should pick up the prompt from the body
     expect(result.heroPrompt).toBe("Deep hero");
-    // Body should NOT be stripped when found outside candidateLines
+    // Body is NOT stripped because the image is outside candidateLines
     expect(result.body).toContain("/blog/deep.png");
   });
 

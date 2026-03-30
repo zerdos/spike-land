@@ -158,12 +158,14 @@ describe("pulse", () => {
   });
 
   it("higher frequency means more cycles per second", () => {
-    // At freq=4, period is 7.5 frames; at freq=2, period is 15 frames
-    const half1 = pulse(fps / (2 * 2), fps, 2); // half-cycle for freq=2
-    const half4 = pulse(fps / (2 * 4), fps, 4); // half-cycle for freq=4
-    // Both should hit the peak (~1) at their respective half-cycle
-    expect(half1).toBeCloseTo(1, 5);
-    expect(half4).toBeCloseTo(1, 5);
+    // pulse = (sin(phase) + 1) / 2 where phase = (frame/fps) * freq * 2π
+    // Peak (value=1) occurs at phase = π/2, i.e. frame = fps / (4 * freq)
+    const peakFrame2 = fps / (4 * 2); // quarter-cycle for freq=2 → peak
+    const peakFrame4 = fps / (4 * 4); // quarter-cycle for freq=4 → peak
+    expect(pulse(peakFrame2, fps, 2)).toBeCloseTo(1, 5);
+    expect(pulse(peakFrame4, fps, 4)).toBeCloseTo(1, 5);
+    // Higher frequency reaches peak sooner (smaller frame number)
+    expect(peakFrame4).toBeLessThan(peakFrame2);
   });
 });
 
@@ -198,9 +200,10 @@ describe("glitchOffset", () => {
     expect(s0).not.toBe(s1);
   });
 
-  it("maxOffset=0 always returns 0", () => {
+  it("maxOffset=0 always returns 0 (or -0, which equals 0 numerically)", () => {
     for (let frame = 0; frame < 10; frame++) {
-      expect(glitchOffset(frame, 0, 0)).toBe(0);
+      // glitchOffset with maxOffset=0: ((hash * 2 - 1) * 0) = ±0
+      expect(Math.abs(glitchOffset(frame, 0, 0))).toBe(0);
     }
   });
 });
@@ -325,10 +328,11 @@ describe("rgbSplit", () => {
 
   it("intensity=0 results in zero offsets", () => {
     const { r, b } = rgbSplit(42, 0);
-    expect(r.x).toBe(0);
-    expect(r.y).toBe(0);
-    expect(b.x).toBe(0);
-    expect(b.y).toBe(0);
+    // May produce -0 due to multiplication; use Math.abs or toBeCloseTo
+    expect(Math.abs(r.x)).toBe(0);
+    expect(Math.abs(r.y)).toBe(0);
+    expect(Math.abs(b.x)).toBe(0);
+    expect(Math.abs(b.y)).toBe(0);
   });
 });
 
@@ -349,8 +353,8 @@ describe("shake", () => {
 
   it("intensity=0 returns zero offsets", () => {
     const result = shake(42, 0);
-    expect(result.x).toBe(0);
-    expect(result.y).toBe(0);
+    expect(Math.abs(result.x)).toBe(0);
+    expect(Math.abs(result.y)).toBe(0);
   });
 
   it("x and y components are independent (different seeds)", () => {

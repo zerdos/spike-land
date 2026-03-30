@@ -1,4 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// The view-transition module imports flushSync from "react-dom". The
+// block-website vitest project aliases "react-dom" to the custom react engine
+// which may not export flushSync. Mock it here so the import resolves.
+vi.mock("react-dom", () => ({
+  flushSync: (fn: () => void) => fn(),
+}));
+
 import { triggerViewTransition } from "../../src/core/block-website/core-logic/view-transition";
 
 // ---------------------------------------------------------------------------
@@ -115,14 +123,17 @@ describe("triggerViewTransition — with startViewTransition", () => {
     vi.restoreAllMocks();
   });
 
-  it("invokes startViewTransition instead of calling callback directly", () => {
+  it("invokes startViewTransition and captures the transition callback", () => {
     const callback = vi.fn();
     const ref = makeButtonRef({ top: 100, left: 200, width: 80, height: 40 });
 
     triggerViewTransition(ref, callback);
 
-    // The callback is not called synchronously — it's deferred through startViewTransition
+    // startViewTransition was called and its inner callback was captured
     expect(capturedTransitionCallback).not.toBeNull();
+    // animate should NOT be called yet (only after ready resolves)
+    const animateMock = document.documentElement.animate as unknown as ReturnType<typeof vi.fn>;
+    expect(animateMock.mock.calls).toHaveLength(0);
   });
 
   it("calls the user callback inside the transition callback", () => {

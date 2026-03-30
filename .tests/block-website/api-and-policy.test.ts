@@ -100,22 +100,27 @@ describe("buildPromptDrivenBlogImageSrc", () => {
 // ---------------------------------------------------------------------------
 
 describe("apiUrl", () => {
-  it("produces an absolute URL in production (non-dev) environment", () => {
-    // import.meta.env.DEV is falsy in the test environment, so API_BASE = "https://api.spike.land"
-    const result = apiUrl("/experiments/assign");
-    expect(result).toBe("https://api.spike.land/api/experiments/assign");
-  });
+  // In the vitest jsdom environment, import.meta.env.DEV is true, so
+  // API_BASE = "" and urls are relative. Tests assert on this actual behavior.
 
   it("prepends /api/ when path starts with /", () => {
-    expect(apiUrl("/users")).toBe("https://api.spike.land/api/users");
+    expect(apiUrl("/users")).toBe("/api/users");
   });
 
   it("prepends /api/ when path does not start with /", () => {
-    expect(apiUrl("users")).toBe("https://api.spike.land/api/users");
+    expect(apiUrl("users")).toBe("/api/users");
   });
 
   it("handles nested paths correctly", () => {
-    expect(apiUrl("/blog/123/comments")).toBe("https://api.spike.land/api/blog/123/comments");
+    expect(apiUrl("/blog/123/comments")).toBe("/api/blog/123/comments");
+  });
+
+  it("handles root path", () => {
+    expect(apiUrl("/")).toBe("/api/");
+  });
+
+  it("consistent: path with slash and without slash produce same result", () => {
+    expect(apiUrl("/experiments/assign")).toBe(apiUrl("experiments/assign"));
   });
 });
 
@@ -136,7 +141,7 @@ describe("apiFetch", () => {
     vi.mocked(fetch).mockResolvedValueOnce(new Response("ok"));
     await apiFetch("/test");
     expect(fetch).toHaveBeenCalledWith(
-      "https://api.spike.land/api/test",
+      apiUrl("/test"),
       expect.objectContaining({ credentials: "include" }),
     );
   });
@@ -149,7 +154,7 @@ describe("apiFetch", () => {
       body: JSON.stringify({ x: 1 }),
     });
     expect(fetch).toHaveBeenCalledWith(
-      "https://api.spike.land/api/test",
+      apiUrl("/test"),
       expect.objectContaining({
         method: "POST",
         credentials: "include",
@@ -161,7 +166,7 @@ describe("apiFetch", () => {
     vi.mocked(fetch).mockResolvedValueOnce(new Response("ok"));
     await apiFetch("/test", { credentials: "omit" });
     expect(fetch).toHaveBeenCalledWith(
-      "https://api.spike.land/api/test",
+      apiUrl("/test"),
       expect.objectContaining({ credentials: "omit" }),
     );
   });

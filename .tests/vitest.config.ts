@@ -63,6 +63,7 @@ const packagePathMap: Record<string, string> = {
   "spike-land-mcp": "edge-api/spike-land",
   "spike-review": "mcp-tools/code-review",
   "stripe-analytics-mcp": "mcp-tools/stripe-analytics",
+  "reorganize-mcp": "mcp-tools/reorganize",
   "state-machine": "core/statecharts",
   transpile: "edge-api/transpile",
   "vibe-dev": "cli/docker-dev",
@@ -443,6 +444,21 @@ const packages: Record<string, PkgConfig> = {
   },
 
   "stripe-analytics-mcp": { tier: 2, pool: "forks", aliases: baseAliases },
+
+  "reorganize-mcp": {
+    tier: 2,
+    pool: "forks",
+    includeTests: [
+      src("mcp-tools/reorganize/__tests__/**/*.test.ts"),
+      tests("reorganize-mcp/**/*.test.ts"),
+    ],
+    includeSrc: [
+      src("mcp-tools/reorganize/core-logic/**/*.ts"),
+      src("scripts/reorganize/**/*.ts"),
+      src("scripts/reorganize-config.ts"),
+    ],
+    coverageExclude: ["**/pipeline.ts", "**/apply.ts", "**/execution.ts"],
+  },
 
   "state-machine": {
     tier: 2,
