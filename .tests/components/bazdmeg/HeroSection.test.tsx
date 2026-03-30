@@ -11,7 +11,6 @@ vi.mock("framer-motion", () => ({
     {
       get:
         (_target, tag: string) =>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-unknown
         ({
           children,
           initial: _initial,
