@@ -204,5 +204,56 @@ describe("SQLite StorageAdapter", () => {
       const all = await adapter.blobs?.list();
       expect(all).toHaveLength(3);
     });
+
+    it("should put and get ReadableStream blob", async () => {
+      const text = "stream content for sqlite";
+      const encoded = new TextEncoder().encode(text);
+
+      // Build a ReadableStream with two chunks to exercise the chunk-accumulation loop
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoded.slice(0, 10));
+          controller.enqueue(encoded.slice(10));
+          controller.close();
+        },
+      });
+
+      await adapter.blobs?.put("stream-blob", stream);
+      const result = await adapter.blobs?.get("stream-blob");
+      expect(result).not.toBeNull();
+      expect(new TextDecoder().decode(result!)).toBe(text);
+    });
+
+    it("should overwrite existing blob key", async () => {
+      await adapter.blobs?.put("key1", new Uint8Array([1, 2]));
+      await adapter.blobs?.put("key1", new Uint8Array([9, 8, 7]));
+      const result = await adapter.blobs?.get("key1");
+      expect(new Uint8Array(result!)).toEqual(new Uint8Array([9, 8, 7]));
+    });
+  });
+
+  describe("SQL - WITH CTE queries", () => {
+    it("should execute WITH CTE queries via SELECT path", async () => {
+      await adapter.sql.execute("CREATE TABLE numbers (n INTEGER PRIMARY KEY)");
+      await adapter.sql.execute("INSERT INTO numbers (n) VALUES (?)", [1]);
+      await adapter.sql.execute("INSERT INTO numbers (n) VALUES (?)", [2]);
+      await adapter.sql.execute("INSERT INTO numbers (n) VALUES (?)", [3]);
+
+      // WITH CTE queries start with "WITH" — should be treated as SELECT
+      const result = await adapter.sql.execute<{ n: number }>(
+        "WITH filtered AS (SELECT n FROM numbers WHERE n > 1) SELECT * FROM filtered",
+      );
+      expect(result.rows).toHaveLength(2);
+      expect(result.rows.map((r) => r.n).sort()).toEqual([2, 3]);
+    });
+  });
+
+  describe("SQL - PRAGMA queries", () => {
+    it("should execute PRAGMA queries as SELECT path", async () => {
+      const result = await adapter.sql.execute<{ foreign_keys: number }>("PRAGMA foreign_keys");
+      expect(result.rows).toHaveLength(1);
+      // foreign_keys is ON (1) due to sqliteAdapter setup
+      expect(result.rows[0]?.foreign_keys).toBe(1);
+    });
   });
 });

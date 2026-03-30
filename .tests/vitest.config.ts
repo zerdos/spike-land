@@ -68,6 +68,7 @@ const packagePathMap: Record<string, string> = {
   "vibe-dev": "cli/docker-dev",
   video: "media/educational-videos",
   "whatsapp-mcp": "utilities/whatsapp",
+  components: "components",
 };
 
 const baseAliases: Record<string, string> = {
@@ -115,6 +116,15 @@ interface PkgConfig {
 
 // ── Package registry ───────────────────────────────────────────────
 const packages: Record<string, PkgConfig> = {
+  components: {
+    tier: 3,
+    env: "jsdom",
+    setup: [tests("spike-app/test-setup.ts")],
+    includeTests: [tests("components/**/*.test.ts"), tests("components/**/*.test.tsx")],
+    includeSrc: [src("components/**/*.ts"), src("components/**/*.tsx")],
+    coverageExclude: [],
+  },
+
   "bazdmeg-mcp": { tier: 1, pool: "forks" },
 
   "code-eval-mcp": { tier: 2, pool: "forks" },
