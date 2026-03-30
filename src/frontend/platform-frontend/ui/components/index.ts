@@ -13,6 +13,7 @@ export * from "./StatusBadge";
 export * from "./ThemeSwitcher";
 export * from "./Toast";
 export * from "./VersionHistory";
+export * from "./MadMaxProtocol";
 export * from "./WelcomeModal";
 export * from "./qa-studio";
 export * from "./context";

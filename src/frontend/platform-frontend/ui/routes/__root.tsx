@@ -12,6 +12,7 @@ import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppFooter } from "../components/AppFooter";
 import { CookieConsent } from "../components/CookieConsent";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
+import { MadMaxProtocol } from "../components/MadMaxProtocol";
 import { WelcomeModal } from "../components/WelcomeModal";
 
 import { QuizPersonaBanner } from "../components/quiz/QuizPersonaBanner";
@@ -624,6 +625,7 @@ export function RootLayout() {
           <AppFooter />
           <CookieConsent />
           <WelcomeModal userName={null} />
+          <MadMaxProtocol />
         </div>
 
         <AppDrawer />
