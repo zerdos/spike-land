@@ -67,12 +67,11 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
         const message = err instanceof Error ? err.message : "Failed to load content";
         setErrorMessage(message);
         setLoadState("error");
-        // Keep previous content visible while in error state
-        if (!content) {
-          setContent(`# ${appSlug}\n\nFailed to load MDX content.`);
-        }
+        // Keep previous content visible while in error state; use functional
+        // update to avoid reading stale `content` from the closure.
+        setContent((prev) => prev || `# ${appSlug}\n\nFailed to load MDX content.`);
       });
-  }, [appSlug, initialContent, content]);
+  }, [appSlug, initialContent]);
 
   // Fetch on mount and on retry
   useEffect(() => {
@@ -82,8 +81,7 @@ export function MdxSurface({ appSlug, content: initialContent, className = "" }:
       return;
     }
     fetchContent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- retryCount triggers re-fetch
-  }, [appSlug, initialContent, retryCount]);
+  }, [appSlug, initialContent, retryCount, fetchContent]);
 
   const handleRetry = useCallback(() => {
     setRetryCount((n) => n + 1);

@@ -3,7 +3,7 @@
  *
  * Tabs: Play, Leaderboard, My Games, Challenges
  */
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Navigate } from "@tanstack/react-router";
 import { useAuth } from "../hooks/useAuth";
 import { ChessBoard } from "../components/chess/ChessBoard";
@@ -353,15 +353,38 @@ function ActiveGameView({ gameId, myPlayerId, onClose, onRematch }: ActiveGameVi
 // ─── Main Chess Page ──────────────────────────────────────────────────────────
 
 export function ChessPage() {
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("play");
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchingTimeControl, setSearchingTimeControl] = useState<TimeControl>("BLITZ_5");
+  const [myPlayer, setMyPlayer] = useState<ChessPlayer | null>(null);
+  const [playerLoading, setPlayerLoading] = useState(false);
+  const [playerError, setPlayerError] = useState<string | null>(null);
 
-  // TODO: Replace with actual player profile lookup via /api/chess/players/me
-  const myPlayerId: string | null =
-    (user as { chessPlayerId?: string } | null)?.chessPlayerId ?? null;
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    setPlayerLoading(true);
+    setPlayerError(null);
+
+    fetch("/api/chess/players/me", { credentials: "include" })
+      .then(async (res) => {
+        if (!res.ok) throw new Error((await res.text()) || res.statusText);
+        return res.json() as Promise<ChessPlayer>;
+      })
+      .then((player) => {
+        setMyPlayer(player);
+      })
+      .catch((err: unknown) => {
+        setPlayerError(err instanceof Error ? err.message : "Failed to load chess profile");
+      })
+      .finally(() => {
+        setPlayerLoading(false);
+      });
+  }, [isAuthenticated]);
+
+  const myPlayerId: string | null = myPlayer?.id ?? null;
 
   const leaderboard = useLeaderboard();
 
@@ -434,7 +457,7 @@ export function ChessPage() {
 
   // ─── Auth guard ────────────────────────────────────────────────────────────
 
-  if (authLoading) {
+  if (authLoading || playerLoading) {
     return (
       <div className="flex h-[calc(100dvh-3.5rem)] items-center justify-center lg:h-[calc(100dvh-4.5rem)]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
@@ -472,6 +495,13 @@ export function ChessPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
+      {/* Player profile error banner */}
+      {playerError && (
+        <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          Could not load your chess profile: {playerError}. Some features may be limited.
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>

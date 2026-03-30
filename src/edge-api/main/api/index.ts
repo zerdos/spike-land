@@ -35,6 +35,7 @@ import { pricingApi } from "./routes/pricing-api.js";
 import { experiments } from "./routes/experiments.js";
 import { fixer } from "./routes/fixer.js";
 import { cachePurge } from "./routes/cache-purge.js";
+import { chess } from "./routes/chess.js";
 import { chat } from "./routes/chat.js";
 import { settings } from "./routes/settings.js";
 import { migrate } from "./routes/migrate.js";
@@ -371,6 +372,9 @@ app.use("/api/checkout/*", authMiddleware);
 // Auth middleware for credits routes
 app.use("/api/credits/*", authMiddleware);
 
+// Auth middleware for chess player routes
+app.use("/api/chess/*", authMiddleware);
+
 // Auth middleware for new user/billing/keys/cockpit routes
 app.use("/api/billing/*", authMiddleware);
 app.use("/api/keys", authMiddleware);
@@ -489,6 +493,7 @@ app.route("/", billing);
 app.route("/", apiKeys);
 app.route("/", cockpit);
 app.route("/", credits);
+app.route("/", chess);
 app.route("/", support);
 app.route("/", experiments);
 app.route("/", fixer);

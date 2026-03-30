@@ -19,8 +19,8 @@
     "lint": "eslint --quiet ."
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^3.2.0",
+    "@vitest/coverage-v8": "^4.1.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.0"
+    "vitest": "^4.1.0"
   }
 }

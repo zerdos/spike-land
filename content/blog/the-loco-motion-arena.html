@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Loco-Motion — Arena Remix</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#08060e;--gold:#f7c948;--gold-dim:rgba(247,201,72,.2);
+    --sung:rgba(247,201,72,.55);--upcoming:rgba(255,255,255,.11);
+    --active-glow:0 0 24px rgba(247,201,72,.2),0 0 48px rgba(247,201,72,.06);
+    --kylie:#ff4da6;--daft:#00d4ff;--zoltan:#f7c948;
+    --kylie-dim:rgba(255,77,166,.2);--daft-dim:rgba(0,212,255,.2);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(100px)}
+
+  /* === LYRICS === */
+  .lyrics-wrap{
+    flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    overflow:hidden;position:relative;z-index:1;padding:1rem;
+  }
+  .lyrics-scroll{
+    display:flex;flex-direction:column;align-items:center;gap:.6rem;
+    transition:transform .45s cubic-bezier(.25,.46,.45,.94);
+  }
+  .line{
+    text-align:center;line-height:1.25;letter-spacing:-.01em;
+    transition:opacity .3s,transform .3s;
+    opacity:.12;transform:scale(.92);
+    display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em;
+  }
+  .line.active{opacity:1;transform:scale(1)}
+  .line.sung{opacity:.35;transform:scale(.95)}
+  .line.next{opacity:.25;transform:scale(.96)}
+
+  .syl{
+    display:inline-block;position:relative;
+    transition:color .15s,font-variation-settings .2s;
+    font-variation-settings:'wght' 350;
+  }
+  .syl.active{
+    font-variation-settings:'wght' 800;
+    filter:drop-shadow(0 0 8px currentColor);
+  }
+  .syl.active::after{
+    content:'';position:absolute;bottom:-.08em;left:0;height:2.5px;
+    background:currentColor;border-radius:2px;
+    animation:sweep .35s ease-out forwards;
+  }
+  @keyframes sweep{from{width:0}to{width:100%}}
+  .syl.sung{font-variation-settings:'wght' 500}
+
+  /* Persona colors */
+  .p-kylie .syl{color:var(--upcoming)}
+  .p-kylie .syl.active{color:var(--kylie)}
+  .p-kylie .syl.sung{color:rgba(255,77,166,.55)}
+
+  .p-daft .syl{color:var(--upcoming)}
+  .p-daft .syl.active{color:var(--daft)}
+  .p-daft .syl.sung{color:rgba(0,212,255,.45)}
+
+  .p-zoltan .syl{color:var(--upcoming)}
+  .p-zoltan .syl.active{color:var(--zoltan)}
+  .p-zoltan .syl.sung{color:rgba(247,201,72,.45)}
+
+  .p-all .syl{color:var(--upcoming)}
+  .p-all .syl.active{color:#fff;text-shadow:0 0 12px var(--kylie),0 0 24px var(--daft),0 0 36px var(--zoltan)}
+  .p-all .syl.sung{color:rgba(255,255,255,.4)}
+
+  .persona-tag{
+    font-size:.5em;letter-spacing:.08em;text-transform:uppercase;
+    opacity:.4;margin-right:.3em;font-variation-settings:'wght' 400;
+  }
+  .line.active .persona-tag{opacity:.7}
+
+  .sz-s{font-size:clamp(1.1rem,3vw,1.4rem)}
+  .sz-m{font-size:clamp(1.4rem,4vw,1.8rem)}
+  .sz-l{font-size:clamp(1.8rem,5vw,2.4rem)}
+  .sz-xl{font-size:clamp(2.2rem,6vw,3rem)}
+  .sz-xxl{font-size:clamp(2.6rem,7vw,3.6rem)}
+
+  /* === PITCH BAR === */
+  .pitch-bar{
+    height:28px;position:relative;z-index:1;margin:0 1rem;
+    background:rgba(255,255,255,.03);border-radius:14px;overflow:hidden;
+  }
+  .pitch-dot{
+    position:absolute;width:6px;height:6px;border-radius:50%;
+    background:rgba(247,201,72,.15);top:50%;transform:translateY(-50%);
+  }
+  .pitch-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .pitch-dot.sung{background:var(--sung)}
+  .pitch-head{
+    position:absolute;top:0;bottom:0;width:2px;background:var(--gold);
+    opacity:.5;transition:left .08s linear;
+  }
+
+  /* === BPM PULSE === */
+  @keyframes bpm-pulse{
+    0%,100%{opacity:.03}
+    50%{opacity:.08}
+  }
+  .bpm-ring{
+    position:fixed;top:50%;left:50%;width:60vmin;height:60vmin;
+    border-radius:50%;border:1px solid rgba(247,201,72,.05);
+    transform:translate(-50%,-50%);pointer-events:none;z-index:0;
+  }
+  .bpm-ring.on{animation:bpm-pulse .4878s ease-in-out infinite} /* 123 BPM */
+
+  /* === CONTROLS === */
+  .controls{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.75rem 1rem;z-index:2;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+  }
+  .play-btn{
+    width:48px;height:48px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,var(--kylie),var(--daft));
+    color:var(--bg);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;flex-shrink:0;
+    transition:transform .15s;
+  }
+  .play-btn:active{transform:scale(.92)}
+
+  .seek-wrap{flex:1;display:flex;flex-direction:column;gap:.2rem}
+  .seek{
+    width:100%;height:6px;-webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.08);border-radius:3px;cursor:pointer;outline:none;
+  }
+  .seek::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--gold);border:none;cursor:pointer;
+  }
+  .time-label{font-size:.65rem;color:rgba(255,255,255,.3);display:flex;justify-content:space-between}
+
+  .bin-btn{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.4);border-radius:8px;padding:.3rem .6rem;
+    font-size:.6rem;cursor:pointer;white-space:nowrap;font-family:inherit;
+    transition:border-color .2s,color .2s;
+  }
+  .bin-btn.on{border-color:var(--gold);color:var(--gold)}
+
+  .credit{
+    font-size:.55rem;padding:.3rem 1rem .5rem;
+    color:rgba(247,201,72,.2);text-align:center;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="bpm-ring" id="bpmRing"></div>
+
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+// ========================================================================
+// THE LOCO-MOTION — Arena Remix
+// Kylie Minogue × Daft Punk × Zoltán
+// 123 BPM, F minor — 16-round arena mashup
+// ========================================================================
+
+// No audio source — this is a lyric-display arena (text-only mode)
+// To add audio: set AUDIO_SRC = '/blog-images/loco-motion/loco-motion.opus';
+const AUDIO_SRC = '';
+
+// Personas
+const P = {
+  K: 'kylie',   // Kylie — hot pink
+  D: 'daft',    // Daft Punk — cyan
+  Z: 'zoltan',  // Zoltán — gold
+  A: 'all',     // Everyone — white with triple glow
+};
+
+// LYRICS: 16-round arena structure
+// p = persona, t = start time (s), sz = size class, syls = [{t, w}]
+// Timed for ~123 BPM, total ~4:10
+const LYRICS = [
+  // === ROUND 1 — INTRO (Daft Punk vocoder build) ===
+  {p:P.D, t:0.0, sz:'sz-s', syls:[
+    {t:0.0,w:'[vo-'},{t:0.3,w:'co-'},{t:0.6,w:'der'},{t:1.0,w:'ini-'},{t:1.3,w:'tia-'},{t:1.6,w:'liz-'},{t:1.9,w:'ing]'}
+  ]},
+  {p:P.D, t:3.0, sz:'sz-m', syls:[
+    {t:3.0,w:'A-'},{t:3.3,w:'round'},{t:3.8,w:'the'},{t:4.1,w:'world,'},{t:4.8,w:'a-'},{t:5.1,w:'round'},{t:5.6,w:'the'},{t:5.9,w:'world...'}
+  ]},
+
+  // === ROUND 2 — KYLIE ENTERS ===
+  {p:P.K, t:8.0, sz:'sz-l', syls:[
+    {t:8.0,w:'Ev-'},{t:8.3,w:"'ry-"},{t:8.6,w:'bo-'},{t:8.9,w:'dy'}
+  ]},
+  {p:P.K, t:10.0, sz:'sz-l', syls:[
+    {t:10.0,w:'is'},{t:10.3,w:'do-'},{t:10.6,w:'ing'},{t:11.0,w:'a'},{t:11.3,w:'brand'},{t:11.7,w:'new'},{t:12.1,w:'dance'},{t:12.5,w:'now'}
+  ]},
+
+  // === ROUND 3 — ZOLTÁN SPEAKS ===
+  {p:P.Z, t:14.5, sz:'sz-m', syls:[
+    {t:14.5,w:'Zol-'},{t:14.8,w:'tán'},{t:15.3,w:'on'},{t:15.6,w:'the'},{t:15.9,w:'keys,'}
+  ]},
+  {p:P.Z, t:17.0, sz:'sz-m', syls:[
+    {t:17.0,w:'two'},{t:17.3,w:'dogs'},{t:17.7,w:'on'},{t:18.0,w:'the'},{t:18.3,w:'floor'}
+  ]},
+
+  // === ROUND 4 — DAFT PUNK FILTER DROP ===
+  {p:P.D, t:20.5, sz:'sz-l', syls:[
+    {t:20.5,w:'Hard-'},{t:20.9,w:'er,'},{t:21.4,w:'bet-'},{t:21.8,w:'ter,'}
+  ]},
+  {p:P.D, t:23.0, sz:'sz-l', syls:[
+    {t:23.0,w:'fast-'},{t:23.4,w:'er,'},{t:23.9,w:'strong-'},{t:24.4,w:'er'}
+  ]},
+
+  // === ROUND 5 — KYLIE VERSE 1 ===
+  {p:P.K, t:26.5, sz:'sz-m', syls:[
+    {t:26.5,w:'Come'},{t:26.8,w:'on'},{t:27.1,w:'ba-'},{t:27.4,w:'by,'}
+  ]},
+  {p:P.K, t:28.5, sz:'sz-l', syls:[
+    {t:28.5,w:'feel'},{t:29.0,w:'the'},{t:29.3,w:'lo-'},{t:29.6,w:'co-'},{t:30.0,w:'mo-'},{t:30.4,w:'tion'}
+  ]},
+
+  // === ROUND 6 — ZOLTÁN VERSE ===
+  {p:P.Z, t:32.5, sz:'sz-m', syls:[
+    {t:32.5,w:'Pix-'},{t:32.8,w:'el'},{t:33.2,w:'does'},{t:33.5,w:'the'},{t:33.8,w:'shuf-'},{t:34.1,w:'fle,'}
+  ]},
+  {p:P.Z, t:35.0, sz:'sz-m', syls:[
+    {t:35.0,w:'Mad'},{t:35.4,w:'Max'},{t:35.8,w:'wants'},{t:36.2,w:'more'}
+  ]},
+
+  // === ROUND 7 — DAFT PUNK BRIDGE ===
+  {p:P.D, t:38.0, sz:'sz-m', syls:[
+    {t:38.0,w:'Work'},{t:38.4,w:'it,'},{t:38.8,w:'make'},{t:39.2,w:'it,'}
+  ]},
+  {p:P.D, t:40.5, sz:'sz-m', syls:[
+    {t:40.5,w:'do'},{t:40.9,w:'it,'},{t:41.3,w:'long-'},{t:41.7,w:'er'}
+  ]},
+
+  // === ROUND 8 — CHORUS 1 (ALL) ===
+  {p:P.A, t:44.0, sz:'sz-xxl', syls:[
+    {t:44.0,w:'LO-'},{t:44.4,w:'CO-'},{t:44.8,w:'LO-'},{t:45.2,w:'CO-'},{t:45.6,w:'LO-'},{t:46.0,w:'CO-'},{t:46.4,w:'MO-'},{t:46.8,w:'TION!'}
+  ]},
+  {p:P.K, t:49.0, sz:'sz-xl', syls:[
+    {t:49.0,w:'Come'},{t:49.4,w:'on,'},{t:49.8,w:'come'},{t:50.2,w:'on,'}
+  ]},
+  {p:P.A, t:51.5, sz:'sz-xl', syls:[
+    {t:51.5,w:'do'},{t:51.9,w:'the'},{t:52.3,w:'lo-'},{t:52.6,w:'co-'},{t:53.0,w:'mo-'},{t:53.4,w:'tion'},{t:53.8,w:'with'},{t:54.2,w:'me!'}
+  ]},
+
+  // === ROUND 9 — DAFT PUNK VOCODER INTERLUDE ===
+  {p:P.D, t:57.0, sz:'sz-m', syls:[
+    {t:57.0,w:'Di-'},{t:57.3,w:'gi-'},{t:57.6,w:'tal'},{t:58.0,w:'love'}
+  ]},
+  {p:P.D, t:59.5, sz:'sz-m', syls:[
+    {t:59.5,w:'in'},{t:59.8,w:'lo-'},{t:60.1,w:'co-'},{t:60.5,w:'mo-'},{t:60.9,w:'tion'}
+  ]},
+
+  // === ROUND 10 — ZOLTÁN RAP VERSE ===
+  {p:P.Z, t:63.0, sz:'sz-m', syls:[
+    {t:63.0,w:'Brigh-'},{t:63.3,w:'ton'},{t:63.6,w:'to'},{t:63.9,w:'the'},{t:64.2,w:'code,'}
+  ]},
+  {p:P.Z, t:65.5, sz:'sz-m', syls:[
+    {t:65.5,w:'EL-'},{t:65.8,w:'TE'},{t:66.2,w:'to'},{t:66.5,w:'the'},{t:66.8,w:'beat'}
+  ]},
+  {p:P.Z, t:68.5, sz:'sz-m', syls:[
+    {t:68.5,w:'Ev-'},{t:68.8,w:"'ry"},{t:69.2,w:'loop'},{t:69.5,w:'you'},{t:69.8,w:'close'}
+  ]},
+  {p:P.Z, t:71.0, sz:'sz-l', syls:[
+    {t:71.0,w:'makes'},{t:71.4,w:'the'},{t:71.7,w:'track'},{t:72.1,w:'com-'},{t:72.5,w:'plete'}
+  ]},
+
+  // === ROUND 11 — KYLIE + DAFT CALL & RESPONSE ===
+  {p:P.K, t:75.0, sz:'sz-l', syls:[
+    {t:75.0,w:'Come'},{t:75.3,w:'on'},{t:75.6,w:'come'},{t:75.9,w:'on'}
+  ]},
+  {p:P.D, t:77.0, sz:'sz-l', syls:[
+    {t:77.0,w:'(One'},{t:77.4,w:'more'},{t:77.8,w:'time!)'}
+  ]},
+  {p:P.K, t:79.5, sz:'sz-l', syls:[
+    {t:79.5,w:'Do'},{t:79.8,w:'the'},{t:80.1,w:'lo-'},{t:80.4,w:'co-'},{t:80.7,w:'mo-'},{t:81.0,w:'tion'}
+  ]},
+  {p:P.D, t:82.5, sz:'sz-l', syls:[
+    {t:82.5,w:'(A-'},{t:82.8,w:'round'},{t:83.2,w:'the'},{t:83.5,w:'world!)'}
+  ]},
+
+  // === ROUND 12 — BREAKDOWN ===
+  {p:P.Z, t:86.0, sz:'sz-s', syls:[
+    {t:86.0,w:'Cu-'},{t:86.4,w:'ri-'},{t:86.8,w:'os-'},{t:87.2,w:'i-'},{t:87.6,w:'ty...'}
+  ]},
+  {p:P.Z, t:89.0, sz:'sz-s', syls:[
+    {t:89.0,w:'is'},{t:89.5,w:'ad-'},{t:89.9,w:'di-'},{t:90.3,w:'tive'}
+  ]},
+  {p:P.Z, t:92.0, sz:'sz-m', syls:[
+    {t:92.0,w:'not'},{t:92.5,w:'sub-'},{t:92.9,w:'sti-'},{t:93.3,w:'tu-'},{t:93.7,w:'tive'}
+  ]},
+  {p:P.D, t:95.5, sz:'sz-s', syls:[
+    {t:95.5,w:'[bass-'},{t:96.0,w:'line'},{t:96.5,w:'drops]'}
+  ]},
+
+  // === ROUND 13 — MCP VERSE ===
+  {p:P.Z, t:99.0, sz:'sz-m', syls:[
+    {t:99.0,w:'MCP'},{t:99.5,w:'tools'},{t:99.9,w:'spin-'},{t:100.3,w:'ning'}
+  ]},
+  {p:P.Z, t:101.5, sz:'sz-m', syls:[
+    {t:101.5,w:'like'},{t:101.8,w:'a'},{t:102.1,w:'dis-'},{t:102.4,w:'co'},{t:102.8,w:'ball'}
+  ]},
+  {p:P.Z, t:104.5, sz:'sz-m', syls:[
+    {t:104.5,w:'Eigh-'},{t:104.8,w:'ty'},{t:105.2,w:'func-'},{t:105.5,w:'tions'},{t:105.9,w:'deep'}
+  ]},
+  {p:P.Z, t:107.5, sz:'sz-l', syls:[
+    {t:107.5,w:'but'},{t:107.8,w:'we'},{t:108.1,w:'de-'},{t:108.4,w:'ploy'},{t:108.8,w:'them'},{t:109.2,w:'all'}
+  ]},
+
+  // === ROUND 14 — DAFT PUNK ANTHEM ===
+  {p:P.D, t:112.0, sz:'sz-m', syls:[
+    {t:112.0,w:'Spike'},{t:112.4,w:'dot'},{t:112.8,w:'land'}
+  ]},
+  {p:P.D, t:114.0, sz:'sz-m', syls:[
+    {t:114.0,w:'the'},{t:114.3,w:'o-'},{t:114.6,w:'pen'},{t:115.0,w:'store'},{t:115.4,w:'ig-'},{t:115.8,w:'nites'}
+  ]},
+  {p:P.D, t:117.5, sz:'sz-l', syls:[
+    {t:117.5,w:'Hu-'},{t:117.9,w:'man'},{t:118.3,w:'af-'},{t:118.7,w:'ter'},{t:119.1,w:'all,'}
+  ]},
+  {p:P.D, t:120.5, sz:'sz-l', syls:[
+    {t:120.5,w:'right?'}
+  ]},
+
+  // === ROUND 15 — FINAL CHORUS (EVERYONE AT ONCE) ===
+  {p:P.A, t:123.0, sz:'sz-xxl', syls:[
+    {t:123.0,w:"EV-"},{t:123.3,w:"'RY-"},{t:123.6,w:'BO-'},{t:123.9,w:"DY'S"}
+  ]},
+  {p:P.A, t:125.0, sz:'sz-xxl', syls:[
+    {t:125.0,w:'DO-'},{t:125.3,w:'ING'},{t:125.7,w:'THE'}
+  ]},
+  {p:P.A, t:127.0, sz:'sz-xxl', syls:[
+    {t:127.0,w:'LO-'},{t:127.3,w:'CO-'},{t:127.7,w:'MO-'},{t:128.1,w:'TION!'}
+  ]},
+  {p:P.K, t:130.5, sz:'sz-xl', syls:[
+    {t:130.5,w:'ONE'},{t:131.0,w:'MORE'},{t:131.5,w:'TIME,'}
+  ]},
+  {p:P.A, t:133.0, sz:'sz-xxl', syls:[
+    {t:133.0,w:'FEEL'},{t:133.4,w:'THE'},{t:133.8,w:'LO-'},{t:134.2,w:'CO-'},{t:134.6,w:'MO-'},{t:135.0,w:'TION!'}
+  ]},
+  {p:P.K, t:137.5, sz:'sz-xl', syls:[
+    {t:137.5,w:'COME'},{t:137.9,w:'ON'},{t:138.3,w:'BA-'},{t:138.7,w:'BY'}
+  ]},
+  {p:P.A, t:140.0, sz:'sz-xxl', syls:[
+    {t:140.0,w:'DO'},{t:140.3,w:'THE'},{t:140.7,w:'LO-'},{t:141.0,w:'CO-'},{t:141.4,w:'MO-'},{t:141.8,w:'TION!'}
+  ]},
+  {p:P.D, t:144.0, sz:'sz-xxl', syls:[
+    {t:144.0,w:'HARD-'},{t:144.4,w:'ER'},{t:144.8,w:'BET-'},{t:145.2,w:'TER'}
+  ]},
+  {p:P.A, t:147.0, sz:'sz-xxl', syls:[
+    {t:147.0,w:'FAST-'},{t:147.4,w:'ER'},{t:147.8,w:'ZOL-'},{t:148.2,w:'TÁN!'}
+  ]},
+
+  // === ROUND 16 — OUTRO (filters closing, vocoder fade) ===
+  {p:P.Z, t:152.0, sz:'sz-m', syls:[
+    {t:152.0,w:'E'},{t:152.5,w:'plu-'},{t:152.9,w:'ri-'},{t:153.3,w:'bus'},{t:153.8,w:'u-'},{t:154.2,w:'num...'}
+  ]},
+  {p:P.D, t:157.0, sz:'sz-s', syls:[
+    {t:157.0,w:'A-'},{t:157.5,w:'round'},{t:158.0,w:'the'},{t:158.5,w:'world...'}
+  ]},
+  {p:P.Z, t:161.0, sz:'sz-s', syls:[
+    {t:161.0,w:'E'},{t:161.5,w:'plu-'},{t:162.0,w:'ri-'},{t:162.5,w:'bus'},{t:163.0,w:'u-'},{t:163.5,w:'num...'}
+  ]},
+  {p:P.D, t:166.5, sz:'sz-s', syls:[
+    {t:166.5,w:'[kick'},{t:167.5,w:'fades'},{t:168.5,w:'out]'}
+  ]},
+];
+
+// Approximate pitch contour (0-1) per line
+const PITCHES = [
+  // R1 — Daft Punk intro
+  [.30,.32,.30,.35,.33,.30,.28],
+  [.40,.42,.45,.48,.40,.42,.45,.48],
+  // R2 — Kylie enters
+  [.55,.58,.60,.62],
+  [.50,.55,.58,.60,.65,.68,.70,.65],
+  // R3 — Zoltán speaks
+  [.45,.48,.42,.40,.38],
+  [.40,.42,.45,.48,.50],
+  // R4 — Daft Punk filter
+  [.55,.60,.65,.70],
+  [.70,.75,.78,.82],
+  // R5 — Kylie verse
+  [.60,.62,.58,.55],
+  [.65,.68,.72,.75,.78,.80],
+  // R6 — Zoltán verse
+  [.45,.48,.50,.52,.48,.45],
+  [.50,.55,.52,.48],
+  // R7 — Daft Punk bridge
+  [.55,.58,.62,.65],
+  [.62,.65,.60,.55],
+  // R8 — Chorus 1
+  [.75,.78,.80,.82,.85,.88,.90,.95],
+  [.70,.72,.68,.65],
+  [.75,.78,.80,.82,.85,.88,.90,.92],
+  // R9 — Vocoder interlude
+  [.50,.52,.55,.60],
+  [.55,.58,.60,.55,.50],
+  // R10 — Zoltán rap
+  [.42,.45,.48,.50,.52],
+  [.50,.52,.55,.58,.60],
+  [.48,.50,.55,.58,.60],
+  [.55,.58,.62,.65,.68],
+  // R11 — Call & response
+  [.65,.68,.65,.62],
+  [.70,.75,.80],
+  [.62,.65,.68,.70,.72,.75],
+  [.70,.72,.75,.78],
+  // R12 — Breakdown
+  [.35,.38,.40,.42,.45],
+  [.40,.35,.32,.30],
+  [.35,.40,.45,.48,.50],
+  [.25,.25,.25],
+  // R13 — MCP verse
+  [.48,.50,.52,.55],
+  [.50,.52,.55,.58,.60],
+  [.52,.55,.58,.60,.62],
+  [.55,.58,.62,.65,.68,.72],
+  // R14 — Daft anthem
+  [.55,.58,.62],
+  [.58,.60,.62,.65,.68,.72],
+  [.65,.70,.75,.78,.80],
+  [.75],
+  // R15 — Final chorus
+  [.80,.82,.85,.88],
+  [.85,.88,.90],
+  [.88,.90,.93,.95],
+  [.82,.85,.88],
+  [.90,.92,.93,.95,.97,.99],
+  [.85,.88,.90,.92],
+  [.90,.92,.95,.95,.97,.99],
+  [.85,.88,.90,.92],
+  [.92,.95,.97,.99],
+  // R16 — Outro
+  [.50,.48,.45,.42,.38,.35],
+  [.35,.32,.30,.28],
+  [.40,.38,.35,.32,.28,.25],
+  [.20,.15,.10],
+];
+
+// Binaural presets
+const BIN=[
+  {n:'OFF',l:0,r:0},
+  {n:'THETA 6Hz',l:200,r:206},
+  {n:'DELTA 2Hz',l:200,r:202},
+];
+
+// Section labels for round markers
+const SECTIONS = {
+  0: 'ROUND 1 — VOCODER INIT',
+  2: 'ROUND 2 — KYLIE ENTERS',
+  4: 'ROUND 3 — ZOLTÁN',
+  6: 'ROUND 4 — FILTER DROP',
+  8: 'ROUND 5 — THE INVITATION',
+  10: 'ROUND 6 — TWO DOGS',
+  12: 'ROUND 7 — THE BRIDGE',
+  14: 'ROUND 8 — CHORUS I',
+  17: 'ROUND 9 — DIGITAL LOVE',
+  19: 'ROUND 10 — THE CODE',
+  23: 'ROUND 11 — CALL & RESPONSE',
+  27: 'ROUND 12 — BREAKDOWN',
+  31: 'ROUND 13 — MCP',
+  35: 'ROUND 14 — HUMAN AFTER ALL',
+  39: 'ROUND 15 — FINAL CHORUS',
+  48: 'ROUND 16 — E PLURIBUS UNUM',
+};
+
+// ========================================================================
+// APP
+// ========================================================================
+const R=React,{useState,useCallback,useRef,useEffect}=R;
+
+function App(){
+  const [playing,setPlaying]=useState(false);
+  const [time,setTime]=useState(0);
+  const [binIdx,setBinIdx]=useState(0);
+  const [autoPlay,setAutoPlay]=useState(false);
+  const audioRef=useRef(null);
+  const binCtxRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const rafRef=useRef(null);
+  const totalDur = 172;
+  const [dur,setDur]=useState(totalDur);
+
+  // Audio element (if source exists)
+  useEffect(()=>{
+    if(!AUDIO_SRC) return;
+    const a=new Audio(AUDIO_SRC);
+    a.preload='auto';
+    a.addEventListener('loadedmetadata',()=>{if(a.duration&&Number.isFinite(a.duration))setDur(a.duration)});
+    a.addEventListener('ended',()=>{setPlaying(false)});
+    audioRef.current=a;
+    return()=>{a.pause();a.src=''}
+  },[]);
+
+  // Auto-play mode (no audio — simulate playback with timer)
+  useEffect(()=>{
+    if(!AUDIO_SRC && autoPlay){
+      const start=performance.now()-time*1000;
+      function tick(){
+        const elapsed=(performance.now()-start)/1000;
+        if(elapsed>=totalDur){setAutoPlay(false);setPlaying(false);return}
+        setTime(elapsed);
+        rafRef.current=requestAnimationFrame(tick);
+      }
+      rafRef.current=requestAnimationFrame(tick);
+      return()=>cancelAnimationFrame(rafRef.current);
+    }
+  },[autoPlay]);
+
+  // RAF loop for audio mode
+  useEffect(()=>{
+    if(!audioRef.current) return;
+    function tick(){
+      if(audioRef.current)setTime(audioRef.current.currentTime);
+      rafRef.current=requestAnimationFrame(tick);
+    }
+    if(playing){rafRef.current=requestAnimationFrame(tick)}
+    else{cancelAnimationFrame(rafRef.current)}
+    return()=>cancelAnimationFrame(rafRef.current);
+  },[playing]);
+
+  // BPM ring pulse
+  useEffect(()=>{
+    const ring=document.getElementById('bpmRing');
+    if(ring){ring.className='bpm-ring'+(playing||autoPlay?' on':'')}
+  },[playing,autoPlay]);
+
+  // Binaural
+  useEffect(()=>{
+    const b=BIN[binIdx];
+    if(b.l===0){
+      if(binCtxRef.current){binGainRef.current.gain.setValueAtTime(0,binCtxRef.current.currentTime)}
+      return;
+    }
+    if(!binCtxRef.current){
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const gain=ctx.createGain();gain.gain.value=0.07;gain.connect(ctx.destination);
+      const oL=ctx.createOscillator();oL.type='sine';
+      const oR=ctx.createOscillator();oR.type='sine';
+      const mL=ctx.createStereoPanner();mL.pan.value=-1;
+      const mR=ctx.createStereoPanner();mR.pan.value=1;
+      oL.connect(mL);mL.connect(gain);
+      oR.connect(mR);mR.connect(gain);
+      oL.start();oR.start();
+      binCtxRef.current=ctx;binLRef.current=oL;binRRef.current=oR;binGainRef.current=gain;
+    }
+    binLRef.current.frequency.setValueAtTime(b.l,binCtxRef.current.currentTime);
+    binRRef.current.frequency.setValueAtTime(b.r,binCtxRef.current.currentTime);
+    binGainRef.current.gain.setValueAtTime(0.07,binCtxRef.current.currentTime);
+  },[binIdx]);
+
+  const toggle=useCallback(()=>{
+    if(AUDIO_SRC){
+      const a=audioRef.current;if(!a)return;
+      if(playing){a.pause();setPlaying(false)}
+      else{a.play().then(()=>setPlaying(true)).catch(()=>{})}
+    } else {
+      if(autoPlay){setAutoPlay(false);setPlaying(false)}
+      else{setAutoPlay(true);setPlaying(true)}
+    }
+  },[playing,autoPlay]);
+
+  const seek=useCallback(e=>{
+    const v=parseFloat(e.target.value);
+    if(audioRef.current){audioRef.current.currentTime=v}
+    setTime(v);
+  },[]);
+
+  const fmt=s=>{const m=Math.floor(s/60);const sec=Math.floor(s%60);return `${m}:${sec<10?'0':''}${sec}`};
+
+  // Find active line
+  let activeLine=-1;
+  for(let i=LYRICS.length-1;i>=0;i--){
+    if(time>=LYRICS[i].t-0.3){activeLine=i;break}
+  }
+
+  // Current section label
+  let currentSection='';
+  for(let i=activeLine;i>=0;i--){
+    if(SECTIONS[i]){currentSection=SECTIONS[i];break}
+  }
+
+  const isPlaying = playing || autoPlay;
+
+  return R.createElement('div',{className:'app'},
+    // Ambient glow — triple color for arena
+    R.createElement('div',{className:`ambient${isPlaying?' on':''}`},
+      R.createElement('div',{className:'orb',style:{width:'40vw',height:'40vw',left:'-10vw',top:'8%',background:'radial-gradient(circle,rgba(255,77,166,.08),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'35vw',height:'35vw',right:'-8vw',top:'15%',background:'radial-gradient(circle,rgba(0,212,255,.06),transparent 70%)'}}),
+      R.createElement('div',{className:'orb',style:{width:'38vw',height:'38vw',left:'20%',bottom:'5%',background:'radial-gradient(circle,rgba(247,201,72,.06),transparent 70%)'}})
+    ),
+
+    // Lyrics
+    R.createElement('div',{className:'lyrics-wrap'},
+      R.createElement('div',{className:'lyrics-scroll',style:{transform:`translateY(${-activeLine*3.2}rem)`}},
+        LYRICS.map((line,li)=>{
+          let cls=`line ${line.sz} p-${line.p}`;
+          if(li===activeLine)cls+=' active';
+          else if(li<activeLine)cls+=' sung';
+          else if(li===activeLine+1)cls+=' next';
+
+          const tag = line.p===P.K?'KYLIE':line.p===P.D?'DAFT PUNK':line.p===P.Z?'ZOLTÁN':'ALL';
+
+          return R.createElement('div',{key:li,className:cls},
+            R.createElement('span',{className:'persona-tag'},tag),
+            line.syls.map((syl,si)=>{
+              let sc='syl';
+              const nextSyl=line.syls[si+1];
+              const sylEnd=nextSyl?nextSyl.t:(LYRICS[li+1]?LYRICS[li+1].t:syl.t+2);
+              if(time>=syl.t&&time<sylEnd&&li===activeLine)sc+=' active';
+              else if(time>=sylEnd||li<activeLine)sc+=' sung';
+              return R.createElement('span',{key:si,className:sc},syl.w);
+            })
+          );
+        })
+      )
+    ),
+
+    // Pitch bar
+    R.createElement('div',{className:'pitch-bar'},
+      activeLine>=0&&PITCHES[activeLine]?
+        PITCHES[activeLine].map((p,i)=>{
+          const line=LYRICS[activeLine];
+          const syl=line.syls[i];
+          if(!syl)return null;
+          const nextSyl=line.syls[i+1];
+          const sylEnd=nextSyl?nextSyl.t:(LYRICS[activeLine+1]?LYRICS[activeLine+1].t:syl.t+2);
+          let dc='pitch-dot';
+          if(time>=syl.t&&time<sylEnd)dc+=' active';
+          else if(time>=sylEnd)dc+=' sung';
+          const pct=((i+.5)/PITCHES[activeLine].length)*100;
+          return R.createElement('div',{key:i,className:dc,style:{left:`${pct}%`,top:`${85-p*70}%`}});
+        }):null,
+      R.createElement('div',{className:'pitch-head',style:{left:`${dur>0?(time/dur)*100:0}%`}})
+    ),
+
+    // Controls
+    R.createElement('div',{className:'controls'},
+      R.createElement('button',{className:'play-btn',onClick:toggle},isPlaying?'||':'|>'),
+      R.createElement('div',{className:'seek-wrap'},
+        R.createElement('input',{type:'range',className:'seek',min:0,max:dur,step:.1,value:time,onChange:seek}),
+        R.createElement('div',{className:'time-label'},
+          R.createElement('span',null,fmt(time)),
+          R.createElement('span',null,currentSection||'THE LOCO-MOTION ARENA'),
+          R.createElement('span',null,fmt(dur))
+        )
+      ),
+      R.createElement('button',{
+        className:`bin-btn${binIdx>0?' on':''}`,
+        onClick:()=>setBinIdx(i=>(i+1)%BIN.length)
+      },BIN[binIdx].n)
+    ),
+
+    R.createElement('div',{className:'credit'},'The Loco-Motion Arena — Kylie Minogue × Daft Punk × Zoltán — 123 BPM F minor — spike.land')
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(R.createElement(App));
+</script>
+</body>
+</html>

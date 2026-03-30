@@ -1,0 +1,27 @@
+{
+  "name": "llm-bench",
+  "category": "mcp-tools",
+  "dependencies": ["@spike-land-ai/mcp-server-base", "@spike-land-ai/shared"],
+  "files": [
+    "core-logic/types.ts",
+    "core-logic/session.ts",
+    "core-logic/dimensions.ts",
+    "core-logic/elo.ts",
+    "core-logic/leaderboard.ts",
+    "core-logic/rate-limiter.ts",
+    "core-logic/bug-injector.ts",
+    "core-logic/mutant-generator.ts",
+    "core-logic/evaluators/code-generation.ts",
+    "core-logic/evaluators/debugging.ts",
+    "core-logic/evaluators/test-writing.ts",
+    "core-logic/evaluators/tool-selection.ts",
+    "core-logic/evaluators/multi-step.ts",
+    "core-logic/evaluators/context-management.ts",
+    "challenge-banks/tool-selection-mcqs.ts",
+    "challenge-banks/multi-step-pipelines.ts",
+    "challenge-banks/context-scenarios.ts",
+    "db/migrations/0001_bench_sessions.sql",
+    "mcp/index.ts",
+    "mcp/types.ts"
+  ]
+}
