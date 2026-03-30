@@ -92,7 +92,6 @@ export function evaluateToolSelection(
   const passed = selectedIndex === evalData.correctIndex;
 
   const labels = ["A", "B", "C", "D"] as const;
-  const correctLabel = labels[evalData.correctIndex] ?? "?";
   const selectedLabel = selectedIndex !== null ? (labels[selectedIndex] ?? "?") : "none";
 
   return {
