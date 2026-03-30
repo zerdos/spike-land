@@ -6,7 +6,6 @@ import { wellKnown } from "../../../src/edge-api/main/api/routes/well-known.js";
 import { sitemap } from "../../../src/edge-api/main/api/routes/sitemap.js";
 import { githubStars } from "../../../src/edge-api/main/api/routes/github-stars.js";
 import { docsApi } from "../../../src/edge-api/main/api/routes/docs-api.js";
-import { userProfile } from "../../../src/edge-api/main/api/routes/user-profile.js";
 import { billing } from "../../../src/edge-api/main/api/routes/billing.js";
 import { apiKeys } from "../../../src/edge-api/main/api/routes/api-keys.js";
 import { cockpit } from "../../../src/edge-api/main/api/routes/cockpit.js";
@@ -290,145 +289,6 @@ describe("docs-api route", () => {
     expect(res.status).toBe(404);
     const body = await res.json<{ error: string }>();
     expect(body.error).toBe("Document not found");
-  });
-});
-
-// ─── user-profile route ───────────────────────────────────────────────────────
-
-describe("user-profile route", () => {
-  it("returns 401 when no userId in context", async () => {
-    const app = makeApp(userProfile as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: JSON.stringify({ name: "Alice" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(401);
-  });
-
-  it("returns 400 for invalid JSON body", async () => {
-    const base = makeApp(userProfile as unknown as Hono);
-    const app = new Hono<{ Bindings: Env }>();
-    app.use("*", async (c, next) => {
-      c.set("userId" as never, "user1" as never);
-      await next();
-    });
-    app.route("/", base);
-
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: "not json",
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-    const body = await res.json<{ error: string }>();
-    expect(body.error).toBe("Invalid JSON body");
-  });
-
-  it("returns 400 when name is not provided", async () => {
-    const base = makeApp(userProfile as unknown as Hono);
-    const app = new Hono<{ Bindings: Env }>();
-    app.use("*", async (c, next) => {
-      c.set("userId" as never, "user1" as never);
-      await next();
-    });
-    app.route("/", base);
-
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-    const body = await res.json<{ error: string }>();
-    expect(body.error).toContain("name is required");
-  });
-
-  it("updates name successfully", async () => {
-    const base = makeApp(userProfile as unknown as Hono);
-    const app = new Hono<{ Bindings: Env }>();
-    app.use("*", async (c, next) => {
-      c.set("userId" as never, "user1" as never);
-      await next();
-    });
-    app.route("/", base);
-
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: JSON.stringify({ name: "Alice" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(200);
-    const body = await res.json<{ success: boolean }>();
-    expect(body.success).toBe(true);
-  });
-
-  it("returns 400 when only email provided (email changes blocked)", async () => {
-    const base = makeApp(userProfile as unknown as Hono);
-    const app = new Hono<{ Bindings: Env }>();
-    app.use("*", async (c, next) => {
-      c.set("userId" as never, "user1" as never);
-      await next();
-    });
-    app.route("/", base);
-
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: JSON.stringify({ email: "alice@example.com" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-    const body = await res.json<{ error: string }>();
-    expect(body.error).toContain("Email cannot be changed");
-  });
-
-  it("returns 400 when email provided alongside name (email changes blocked)", async () => {
-    const base = makeApp(userProfile as unknown as Hono);
-    const app = new Hono<{ Bindings: Env }>();
-    app.use("*", async (c, next) => {
-      c.set("userId" as never, "user1" as never);
-      await next();
-    });
-    app.route("/", base);
-
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/user/profile",
-      {
-        method: "POST",
-        body: JSON.stringify({ name: "Bob", email: "bob@example.com" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-    const body = await res.json<{ error: string }>();
-    expect(body.error).toContain("Email cannot be changed");
   });
 });
 
@@ -1019,14 +879,14 @@ describe("cockpit route", () => {
   });
 });
 
-// ─── support route ────────────────────────────────────────────────────────────
+// ─── support route (migration-checkout) ──────────────────────────────────────
 
 describe("support route", () => {
-  it("returns 400 for invalid JSON on fistbump", async () => {
+  it("returns 400 for invalid JSON on migration-checkout", async () => {
     const app = makeApp(support as unknown as Hono);
     const env = createMockEnv();
     const res = await app.request(
-      "/api/support/fistbump",
+      "/api/support/migration-checkout",
       {
         method: "POST",
         body: "invalid json",
@@ -1037,281 +897,38 @@ describe("support route", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 400 when slug or clientId missing", async () => {
+  it("returns 400 for invalid tier", async () => {
     const app = makeApp(support as unknown as Hono);
     const env = createMockEnv();
     const res = await app.request(
-      "/api/support/fistbump",
+      "/api/support/migration-checkout",
       {
         method: "POST",
-        body: JSON.stringify({ slug: "my-post" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-  });
-
-  it("records fistbump successfully", async () => {
-    const db = {
-      prepare: vi.fn().mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        run: vi.fn().mockResolvedValue({}),
-        first: vi.fn().mockResolvedValue({ cnt: 1 }),
-        all: vi.fn().mockResolvedValue({ results: [] }),
-      }),
-      batch: vi.fn().mockResolvedValue([]),
-    } as unknown as D1Database;
-
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv({ DB: db });
-    const res = await app.request(
-      "/api/support/fistbump",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "my-post", clientId: "client-abc" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(200);
-    const body = await res.json<{ count: number }>();
-    expect(body.count).toBe(1);
-  });
-
-  it("returns alreadyBumped when UNIQUE constraint fires", async () => {
-    const db = {
-      prepare: vi.fn().mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        run: vi.fn().mockRejectedValue(new Error("UNIQUE constraint failed")),
-        first: vi.fn().mockResolvedValue({ cnt: 5 }),
-        all: vi.fn().mockResolvedValue({ results: [] }),
-      }),
-      batch: vi.fn().mockResolvedValue([]),
-    } as unknown as D1Database;
-
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv({ DB: db });
-    const res = await app.request(
-      "/api/support/fistbump",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "my-post", clientId: "client-abc" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(200);
-    const body = await res.json<{ alreadyBumped: boolean; count: number }>();
-    expect(body.alreadyBumped).toBe(true);
-    expect(body.count).toBe(5);
-  });
-
-  it("returns 500 on other DB errors for fistbump", async () => {
-    const db = {
-      prepare: vi.fn().mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        run: vi.fn().mockRejectedValue(new Error("DB crashed")),
-        first: vi.fn().mockResolvedValue(null),
-        all: vi.fn().mockResolvedValue({ results: [] }),
-      }),
-      batch: vi.fn().mockResolvedValue([]),
-    } as unknown as D1Database;
-
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv({ DB: db });
-    const res = await app.request(
-      "/api/support/fistbump",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "my-post", clientId: "client-abc" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(500);
-  });
-
-  it("returns 400 for slug too long in fistbump", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const longSlug = "a".repeat(201);
-    const res = await app.request(
-      "/api/support/fistbump",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: longSlug, clientId: "client" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-  });
-
-  it("returns engagement stats", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv({
-      DB: {
-        prepare: vi.fn().mockReturnValue({
-          bind: vi.fn().mockReturnThis(),
-          first: vi.fn().mockResolvedValue({ cnt: 3 }),
-          all: vi.fn().mockResolvedValue({ results: [] }),
-          run: vi.fn().mockResolvedValue({}),
-        }),
-        batch: vi.fn().mockResolvedValue([]),
-      } as unknown as D1Database,
-    });
-    const res = await app.request("/api/support/engagement/my-post", {}, env);
-    expect(res.status).toBe(200);
-    const body = await res.json<{ fistBumps: number; supporters: number }>();
-    expect(typeof body.fistBumps).toBe("number");
-  });
-
-  it("returns 400 for invalid slug in engagement", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const longSlug = "a".repeat(201);
-    const res = await app.request(`/api/support/engagement/${longSlug}`, {}, env);
-    expect(res.status).toBe(400);
-  });
-
-  it("returns 503 for donate when no Stripe key", async () => {
-    const env = createMockEnv({ STRIPE_SECRET_KEY: "" });
-    const app = makeApp(support as unknown as Hono);
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "post", amount: 5, clientId: "c" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(503);
-  });
-
-  it("returns 400 for invalid amount in donate", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "post", amount: 0, clientId: "c" }),
+        body: JSON.stringify({ tier: "invalid", clientId: "c1" }),
         headers: { "Content-Type": "application/json" },
       },
       env,
     );
     expect(res.status).toBe(400);
     const body = await res.json<{ error: string }>();
-    expect(body.error).toContain("Amount must be between");
+    expect(body.error).toContain("tier");
   });
 
-  it("creates donation checkout session", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ url: "https://checkout.stripe.com/session", id: "cs_123" }), {
-        status: 200,
-      }),
-    );
-    globalThis.fetch = fetchMock;
-
+  it("returns 503 when no Stripe key configured", async () => {
+    const env = createMockEnv({ STRIPE_SECRET_KEY: "" });
     const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
     const res = await app.request(
-      "/api/support/donate",
+      "/api/support/migration-checkout",
       {
         method: "POST",
-        body: JSON.stringify({ slug: "my-post", amount: 10, clientId: "c" }),
+        body: JSON.stringify({ tier: "blog", clientId: "c1" }),
         headers: { "Content-Type": "application/json" },
       },
       env,
     );
-    expect(res.status).toBe(200);
-    const body = await res.json<{ url: string }>();
-    expect(body.url).toContain("stripe.com");
-
-    const stripeParams = new URLSearchParams(String(fetchMock.mock.calls[0]?.[1]?.body ?? ""));
-    expect(stripeParams.get("line_items[0][price_data][currency]")).toBe("gbp");
-    expect(stripeParams.get("line_items[0][price_data][unit_amount]")).toBe("1000");
-    expect(stripeParams.get("line_items[0][price_data][product_data][name]")).toBe(
-      "Support spike.land — £10",
-    );
-  });
-
-  it("snaps custom donations in the magnetic range to 420", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ url: "https://checkout.stripe.com/session", id: "cs_420" }), {
-        status: 200,
-      }),
-    );
-    globalThis.fetch = fetchMock;
-
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "my-post", amount: 417, clientId: "c" }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-
-    expect(res.status).toBe(200);
-
-    const stripeParams = new URLSearchParams(String(fetchMock.mock.calls[0]?.[1]?.body ?? ""));
-    expect(stripeParams.get("line_items[0][price_data][unit_amount]")).toBe("42000");
-    expect(stripeParams.get("metadata[amount]")).toBe("420");
-  });
-
-  it("returns 400 for invalid slug in donate", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "a".repeat(201), amount: 5 }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
-  });
-
-  it("returns 502 when Stripe fails for donate", async () => {
-    globalThis.fetch = vi
-      .fn()
-      .mockResolvedValue(new Response(JSON.stringify({ error: "stripe down" }), { status: 500 }));
-
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: JSON.stringify({ slug: "my-post", amount: 5 }),
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(502);
-  });
-
-  it("returns 400 for invalid JSON in donate", async () => {
-    const app = makeApp(support as unknown as Hono);
-    const env = createMockEnv();
-    const res = await app.request(
-      "/api/support/donate",
-      {
-        method: "POST",
-        body: "bad json",
-        headers: { "Content-Type": "application/json" },
-      },
-      env,
-    );
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(503);
+    const body = await res.json<{ error: string }>();
+    expect(body.error).toContain("Stripe");
   });
 });
 
