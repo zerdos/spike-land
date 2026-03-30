@@ -8,12 +8,7 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { d1Adapter } from "../../src/core/block-sdk/core-logic/d1.js";
-import type {
-  D1AdapterOptions,
-  D1Database,
-  KVNamespace,
-  R2Bucket,
-} from "../../src/core/block-sdk/core-logic/d1.js";
+import type { D1Database, KVNamespace, R2Bucket } from "../../src/core/block-sdk/core-logic/d1.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 

@@ -224,7 +224,7 @@ describe("NARRATION_TIMESTAMPS (VCP)", () => {
   });
 
   it("word end >= word start for every word", () => {
-    for (const [key, entry] of Object.entries(NARRATION_TIMESTAMPS)) {
+    for (const [_key, entry] of Object.entries(NARRATION_TIMESTAMPS)) {
       for (const word of entry.words) {
         expect(word.end).toBeGreaterThanOrEqual(word.start);
       }

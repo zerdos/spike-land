@@ -296,7 +296,7 @@ describe("PRD definition files", () => {
       for (const prd of ALL_PRDS) {
         try {
           PrdDefinitionSchema.parse(prd);
-        } catch (err) {
+        } catch (_err) {
           failures.push(prd.id);
         }
       }
