@@ -261,6 +261,15 @@ app.use("*", async (c, next) => {
     const res = await forward(`/${prefix}`);
     return new Response(res.body, res);
   }
+  // API, OAuth, and analytics paths must NOT get the prefix — they are
+  // served by the main router, not under /<prefix>/.
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/oauth/") ||
+    url.pathname.startsWith("/analytics/")
+  ) {
+    return next();
+  }
   // Static assets must NOT get the prefix — they live at the root of the
   // R2 bucket, not under /<prefix>/. Covers Astro build output, fonts,
   // favicons, manifests, sitemaps, and image assets.
