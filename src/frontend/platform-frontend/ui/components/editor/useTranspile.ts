@@ -36,11 +36,11 @@ export interface TranspileError {
 // Constants
 // ---------------------------------------------------------------------------
 
-const TRANSPILE_ENDPOINT = "https://js.spike.land";
-const MODULE_ORIGIN = "https://js.spike.land";
-const REACT_VERSION = "19.2.4";
+const TRANSPILE_ENDPOINT = "https://esbuild.spikeland.workers.dev";
+const MODULE_CDN = "https://esm.sh";
+const REACT_VERSION = "19.0.0";
 const EMOTION_VERSION = "11.14.0";
-const TW_WORKER_URL = `${MODULE_ORIGIN}/@/workers/tw.worker.js`;
+const TW_CDN_URL = "https://cdn.tailwindcss.com";
 
 // ---------------------------------------------------------------------------
 // Theme tokens
@@ -158,32 +158,36 @@ export function buildPreviewHtml(transpiledCode: string, isDarkMode: boolean): s
   <script type="importmap">
   {
     "imports": {
-      "react": "${MODULE_ORIGIN}/react@${REACT_VERSION}?bundle",
-      "react/jsx-runtime": "${MODULE_ORIGIN}/react@${REACT_VERSION}/jsx-runtime?bundle",
-      "react/jsx-dev-runtime": "${MODULE_ORIGIN}/react@${REACT_VERSION}/jsx-dev-runtime?bundle",
-      "react-dom": "${MODULE_ORIGIN}/react-dom@${REACT_VERSION}?bundle&external=react",
-      "react-dom/client": "${MODULE_ORIGIN}/react-dom@${REACT_VERSION}/client?bundle&external=react",
-      "@emotion/react/jsx-runtime": "${MODULE_ORIGIN}/@emotion/react@${EMOTION_VERSION}/jsx-runtime?bundle&external=react",
-      "@emotion/react/jsx-dev-runtime": "${MODULE_ORIGIN}/@emotion/react@${EMOTION_VERSION}/jsx-dev-runtime?bundle&external=react",
-      "@emotion/react": "${MODULE_ORIGIN}/@emotion/react@${EMOTION_VERSION}?bundle&external=react",
-      "@emotion/styled": "${MODULE_ORIGIN}/@emotion/styled@${EMOTION_VERSION}?bundle&external=react,@emotion/react"
+      "react": "${MODULE_CDN}/react@${REACT_VERSION}?bundle",
+      "react/jsx-runtime": "${MODULE_CDN}/react@${REACT_VERSION}/jsx-runtime?bundle",
+      "react/jsx-dev-runtime": "${MODULE_CDN}/react@${REACT_VERSION}/jsx-dev-runtime?bundle",
+      "react-dom": "${MODULE_CDN}/react-dom@${REACT_VERSION}?bundle&external=react",
+      "react-dom/client": "${MODULE_CDN}/react-dom@${REACT_VERSION}/client?bundle&external=react",
+      "@emotion/react/jsx-runtime": "${MODULE_CDN}/@emotion/react@${EMOTION_VERSION}/jsx-runtime?bundle&external=react",
+      "@emotion/react/jsx-dev-runtime": "${MODULE_CDN}/@emotion/react@${EMOTION_VERSION}/jsx-dev-runtime?bundle&external=react",
+      "@emotion/react": "${MODULE_CDN}/@emotion/react@${EMOTION_VERSION}?bundle&external=react",
+      "@emotion/styled": "${MODULE_CDN}/@emotion/styled@${EMOTION_VERSION}?bundle&external=react,@emotion/react"
     }
   }
   </script>
-  <script src="${TW_WORKER_URL}"></script>
-  <style type="text/tailwindcss">
-    @theme inline {
-      --color-background: var(--bg);
-      --color-foreground: var(--fg);
-      --color-card: var(--card-bg);
-      --color-card-foreground: var(--card-fg);
-      --color-muted: var(--muted-bg);
-      --color-muted-foreground: var(--muted-fg);
-      --color-border: var(--border-color);
-      --color-primary: var(--primary-color);
-      --color-primary-foreground: var(--primary-fg);
-    }
-  </style>
+  <script src="${TW_CDN_URL}"></script>
+  <script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          background: "var(--bg)",
+          foreground: "var(--fg)",
+          card: { DEFAULT: "var(--card-bg)", foreground: "var(--card-fg)" },
+          muted: { DEFAULT: "var(--muted-bg)", foreground: "var(--muted-fg)" },
+          border: "var(--border-color)",
+          primary: { DEFAULT: "var(--primary-color)", foreground: "var(--primary-fg)" },
+        },
+      },
+    },
+  };
+  </script>
   <style>
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
