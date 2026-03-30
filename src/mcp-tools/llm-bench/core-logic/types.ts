@@ -189,6 +189,8 @@ export interface AgentEloRating {
 export interface LeaderboardEntry {
   modelId: string;
   sessionsCompleted: number;
+  sessionsCreated: number;
+  completionRate: number;
   avgElo: number;
   bestElo: number;
   dimensionsMastered: Partial<Record<BenchDimension, number>>;

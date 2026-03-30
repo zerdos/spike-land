@@ -22,13 +22,19 @@ import {
   evaluateRound,
   sanitizeRound,
   getSessionState,
+  countActiveSessions,
 } from "../core-logic/session.js";
+import { createRateLimiter } from "../core-logic/rate-limiter.js";
 import {
   generateChallengeForDimension,
   evaluateChallengeResponse,
 } from "../core-logic/dimensions.js";
 import { computeAgentElo } from "../core-logic/elo.js";
-import { getLeaderboard, updateLeaderboard } from "../core-logic/leaderboard.js";
+import {
+  getLeaderboard,
+  updateLeaderboard,
+  recordSessionCreated,
+} from "../core-logic/leaderboard.js";
 import { evaluateToolSelection } from "../core-logic/evaluators/tool-selection.js";
 import { evaluateMultiStep } from "../core-logic/evaluators/multi-step.js";
 import { evaluateContextManagement } from "../core-logic/evaluators/context-management.js";
@@ -69,6 +75,11 @@ process.on("unhandledRejection", (reason) => {
 
 wrapServerWithLogging(server, "llm-bench-mcp");
 
+// ─── Anti-Cheat: Rate Limiting ──────────────────────────────────────────────
+
+const sessionLimiter = createRateLimiter(3, 300_000); // 3 sessions per 5 min per model
+const standaloneLimiter = createRateLimiter(5, 60_000); // 5 standalone challenges per min per tool
+
 // ─── Tool 1: bench_create_session ────────────────────────────────────────────
 
 server.tool(
@@ -81,15 +92,32 @@ server.tool(
       .array(z.enum(BENCH_DIMENSIONS))
       .optional()
       .describe("Dimensions to test (default: all 6)"),
-    seed: z.number().int().optional().describe("Seed for reproducibility"),
   },
-  async ({ model_id, difficulty, dimensions, seed }) => {
+  async ({ model_id, difficulty, dimensions }) => {
+    // Rate limit: max 3 sessions per 5 minutes per model
+    if (!sessionLimiter.check(model_id)) {
+      return errorResult(
+        "RATE_LIMITED",
+        "Too many sessions created. Wait before creating another.",
+      );
+    }
+
+    // Limit concurrent active sessions per model
+    if (countActiveSessions(model_id) >= 2) {
+      return errorResult(
+        "TOO_MANY_ACTIVE",
+        "Max 2 concurrent active sessions per model. Complete or abandon existing sessions.",
+      );
+    }
+
     const state = createSession(
       model_id,
       difficulty as Difficulty,
       dimensions as BenchDimension[] | undefined,
-      seed,
     );
+
+    // Track session creation for completion rate scoring
+    recordSessionCreated(model_id);
 
     // Generate first round
     const round = generateNextRound(state, generateChallengeForDimension);
@@ -230,18 +258,24 @@ server.tool(
 
 server.tool(
   "bench_challenge_debug",
-  "Generate a standalone debugging challenge. Returns buggy code with a failing test — the LLM must fix the bug.",
+  "Generate a standalone debugging challenge demo. Returns buggy code with a failing test — not connected to benchmark sessions.",
   {
     difficulty: z.enum(DIFFICULTY_LEVELS).default("medium"),
     bug_type: z
       .enum(["off_by_one", "wrong_operator", "missing_edge_case", "type_error", "logic_inversion"])
       .optional()
       .describe("Specific bug type to inject"),
-    seed: z.number().int().optional(),
   },
-  async ({ difficulty, bug_type, seed }) => {
+  async ({ difficulty, bug_type }) => {
+    if (!standaloneLimiter.check("debug")) {
+      return errorResult(
+        "RATE_LIMITED",
+        "Too many standalone challenge requests. Wait before retrying.",
+      );
+    }
+
     const { generateDebuggingChallenge } = await import("../core-logic/evaluators/debugging.js");
-    const actualSeed = seed ?? Math.floor(Math.random() * 1_000_000);
+    const actualSeed = Math.floor(Math.random() * 1_000_000);
     const bugTypeIndex = bug_type
       ? [
           "off_by_one",
@@ -263,6 +297,7 @@ server.tool(
       difficulty: challenge.difficulty,
       type: challenge.type,
       prompt: challenge.prompt,
+      note: "Standalone demo — not part of any benchmark session.",
     });
   },
 );
@@ -271,16 +306,22 @@ server.tool(
 
 server.tool(
   "bench_challenge_test_writing",
-  "Generate a test-writing challenge. Returns a function — the LLM must write tests that catch hidden mutants.",
+  "Generate a standalone test-writing challenge demo. Returns a function — not connected to benchmark sessions.",
   {
     difficulty: z.enum(DIFFICULTY_LEVELS).default("medium"),
-    seed: z.number().int().optional(),
   },
-  async ({ difficulty, seed }) => {
+  async ({ difficulty }) => {
+    if (!standaloneLimiter.check("test_writing")) {
+      return errorResult(
+        "RATE_LIMITED",
+        "Too many standalone challenge requests. Wait before retrying.",
+      );
+    }
+
     const { generateTestWritingChallenge } = await import(
       "../core-logic/evaluators/test-writing.js"
     );
-    const actualSeed = seed ?? Math.floor(Math.random() * 1_000_000);
+    const actualSeed = Math.floor(Math.random() * 1_000_000);
     const challenge = generateTestWritingChallenge(0, difficulty as Difficulty, actualSeed);
 
     return jsonResult({
@@ -288,6 +329,7 @@ server.tool(
       difficulty: challenge.difficulty,
       type: challenge.type,
       prompt: challenge.prompt,
+      note: "Standalone demo — not part of any benchmark session.",
     });
   },
 );
@@ -296,15 +338,23 @@ server.tool(
 
 server.tool(
   "bench_challenge_tool_selection",
-  "Generate a tool-selection MCQ. Tests whether the LLM understands MCP tool usage.",
+  "Generate a standalone tool-selection MCQ demo. Not connected to benchmark sessions.",
   {
     difficulty: z.enum(DIFFICULTY_LEVELS).default("medium"),
-    variant: z.number().int().min(0).default(0).describe("Question variant index"),
   },
-  async ({ difficulty, variant }) => {
+  async ({ difficulty }) => {
+    if (!standaloneLimiter.check("tool_selection")) {
+      return errorResult(
+        "RATE_LIMITED",
+        "Too many standalone challenge requests. Wait before retrying.",
+      );
+    }
+
     const { generateToolSelectionChallenge } = await import(
       "../core-logic/evaluators/tool-selection.js"
     );
+    // Server-controlled random variant — not agent-enumerable
+    const variant = Math.floor(Math.random() * 1000);
     const challenge = generateToolSelectionChallenge(variant, difficulty as Difficulty, 0);
 
     return jsonResult({
@@ -312,6 +362,7 @@ server.tool(
       difficulty: challenge.difficulty,
       type: challenge.type,
       prompt: challenge.prompt,
+      note: "Standalone demo — not part of any benchmark session.",
     });
   },
 );

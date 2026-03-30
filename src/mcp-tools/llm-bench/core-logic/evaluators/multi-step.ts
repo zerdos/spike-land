@@ -129,21 +129,53 @@ export function evaluateMultiStep(challenge: BenchChallenge, response: string): 
   const orderScore = expectedTools.length > 0 ? matchedInOrder / expectedTools.length : 0;
   const presenceScore = expectedSet.size > 0 ? toolsPresent / expectedSet.size : 0;
 
-  // Weighted: 60% correct order, 40% tools present
-  const score = orderScore * 0.6 + presenceScore * 0.4;
+  // Anti-dumping: if agent mentions ALL known tools but only N expected, penalize
+  const knownTools = [
+    "eval_code",
+    "amplify_tests",
+    "generate_challenge",
+    "rate_solution",
+    "eval_report",
+  ];
+  const allToolsMentioned = knownTools.every((t) => mentionedSet.has(t));
+  const dumpingPenalty =
+    allToolsMentioned && mentionedTools.length > expectedTools.length + 1 ? 0.6 : 1.0;
+
+  // Minimum explanation check: require substantive descriptions, not just tool names
+  const explanationPenalty = hasMinimalExplanation(response, expectedTools.length) ? 1.0 : 0.6;
+
+  // Weighted: 60% correct order, 40% tools present, with anti-cheat penalties
+  const rawScore = orderScore * 0.6 + presenceScore * 0.4;
+  const score = rawScore * dumpingPenalty * explanationPenalty;
   const passed = score >= 0.6;
 
+  const pct = Math.round(score * 100);
   return {
     dimension: "multi_step_reasoning",
     passed,
     score,
-    detail: `Tools in order: ${matchedInOrder}/${expectedTools.length}, tools present: ${toolsPresent}/${expectedSet.size}`,
+    detail: passed
+      ? "Pipeline sequence correctly identified."
+      : `Pipeline incomplete (score: ${pct}%).`,
     conflict: false,
   };
 }
 
 /**
+ * Check if the response has minimal substantive explanation (not just tool names).
+ */
+function hasMinimalExplanation(response: string, expectedStepCount: number): boolean {
+  const lines = response.split("\n").filter((l) => l.trim().length > 0);
+  // Require at least as many non-empty lines as expected steps
+  if (lines.length < expectedStepCount) return false;
+  // Require average line length > 20 chars (not just tool names)
+  const avgLen = lines.reduce((sum, l) => sum + l.trim().length, 0) / lines.length;
+  return avgLen > 20;
+}
+
+/**
  * Extract tool names mentioned in the response.
+ * Rejects single-line tool dumps (all tools on one line).
  */
 function extractToolMentions(response: string): string[] {
   const knownTools = [
@@ -154,13 +186,14 @@ function extractToolMentions(response: string): string[] {
     "eval_report",
   ];
 
-  const mentions: string[] = [];
+  const mentions: Array<{ tool: string; lineIndex: number }> = [];
   const lines = response.split("\n");
 
-  for (const line of lines) {
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const line = lines[lineIdx]!;
     for (const tool of knownTools) {
-      if (line.includes(tool) && !mentions.includes(tool)) {
-        mentions.push(tool);
+      if (line.includes(tool) && !mentions.some((m) => m.tool === tool)) {
+        mentions.push({ tool, lineIndex: lineIdx });
       }
     }
   }
@@ -170,11 +203,17 @@ function extractToolMentions(response: string): string[] {
     const backtickMatches = response.matchAll(/`(\w+)`/g);
     for (const match of backtickMatches) {
       const tool = match[1];
-      if (tool && knownTools.includes(tool) && !mentions.includes(tool)) {
-        mentions.push(tool);
+      if (tool && knownTools.includes(tool) && !mentions.some((m) => m.tool === tool)) {
+        mentions.push({ tool, lineIndex: -1 });
       }
     }
   }
 
-  return mentions;
+  // Anti-dump: if multiple tools all on the same line, reject
+  if (mentions.length > 1) {
+    const uniqueLines = new Set(mentions.map((m) => m.lineIndex));
+    if (uniqueLines.size === 1) return [];
+  }
+
+  return mentions.map((m) => m.tool);
 }

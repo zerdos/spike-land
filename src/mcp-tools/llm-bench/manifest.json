@@ -8,6 +8,7 @@
     "core-logic/dimensions.ts",
     "core-logic/elo.ts",
     "core-logic/leaderboard.ts",
+    "core-logic/rate-limiter.ts",
     "core-logic/bug-injector.ts",
     "core-logic/mutant-generator.ts",
     "core-logic/evaluators/code-generation.ts",

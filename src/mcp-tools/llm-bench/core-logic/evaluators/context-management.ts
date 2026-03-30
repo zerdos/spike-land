@@ -118,59 +118,105 @@ export function evaluateContextManagement(
 
 /**
  * Compute similarity between response and expected answer.
- * Uses keyword overlap with the target signal and correct answer.
+ * Multi-signal scoring: keyword overlap + phrase overlap + anti-stuffing penalties.
  */
 function computeAnswerSimilarity(
   response: string,
   correctAnswer: string,
   targetSignal: string,
 ): number {
-  const normalize = (s: string) =>
-    s
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, " ")
-      .split(/\s+/)
-      .filter((w) => w.length > 2);
+  const keywordScore = computeKeywordOverlap(response, correctAnswer, targetSignal);
+  const phraseScore = computePhraseOverlap(response, correctAnswer);
 
-  const responseWords = new Set(normalize(response));
-  const answerWords = normalize(correctAnswer);
-  const signalWords = normalize(targetSignal);
+  // Length penalty: response must be within 0.3x-3x the length of correctAnswer
+  const answerLen = correctAnswer.split(/\s+/).length;
+  const responseLen = response.split(/\s+/).length;
+  const ratio = answerLen > 0 ? responseLen / answerLen : 1;
+  const lengthPenalty = ratio < 0.3 || ratio > 3.0 ? 0.5 : 1.0;
 
-  // Combine answer + signal keywords (deduplicated)
-  const keyWords = [...new Set([...answerWords, ...signalWords])];
+  // Anti-stuffing: penalize responses with >2.5x the unique meaningful words of the answer
+  const responseUniqueWords = new Set(normalizeWords(response)).size;
+  const answerUniqueWords = new Set(normalizeWords(correctAnswer)).size;
+  const stuffingPenalty =
+    answerUniqueWords > 0 && responseUniqueWords > answerUniqueWords * 2.5 ? 0.7 : 1.0;
+
+  // Weighted: 50% keywords + 50% phrases, with penalties
+  return (keywordScore * 0.5 + phraseScore * 0.5) * lengthPenalty * stuffingPenalty;
+}
+
+/** Common stopwords to exclude from scoring. */
+const STOPWORDS = new Set([
+  "the",
+  "and",
+  "was",
+  "that",
+  "for",
+  "with",
+  "from",
+  "this",
+  "are",
+  "not",
+  "but",
+  "has",
+  "had",
+  "have",
+  "been",
+  "will",
+  "can",
+  "which",
+  "when",
+  "what",
+]);
+
+/** Normalize text into meaningful words (lowercase, >2 chars, no stopwords). */
+function normalizeWords(s: string): string[] {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+}
+
+/** Keyword overlap score (original logic, extracted). */
+function computeKeywordOverlap(
+  response: string,
+  correctAnswer: string,
+  targetSignal: string,
+): number {
+  const responseWords = new Set(normalizeWords(response));
+  const keyWords = [
+    ...new Set([...normalizeWords(correctAnswer), ...normalizeWords(targetSignal)]),
+  ];
   if (keyWords.length === 0) return 0;
 
-  // Common stopwords to exclude
-  const stopwords = new Set([
-    "the",
-    "and",
-    "was",
-    "that",
-    "for",
-    "with",
-    "from",
-    "this",
-    "are",
-    "not",
-    "but",
-    "has",
-    "had",
-    "have",
-    "been",
-    "will",
-    "can",
-    "which",
-    "when",
-    "what",
-  ]);
-
-  const meaningfulKeys = keyWords.filter((w) => !stopwords.has(w));
-  if (meaningfulKeys.length === 0) return 0;
-
   let matches = 0;
-  for (const word of meaningfulKeys) {
+  for (const word of keyWords) {
     if (responseWords.has(word)) matches++;
   }
+  return matches / keyWords.length;
+}
 
-  return matches / meaningfulKeys.length;
+/**
+ * Phrase overlap: require multi-word phrases from correct answer,
+ * not just individual keywords. This defeats keyword stuffing.
+ */
+function computePhraseOverlap(response: string, correctAnswer: string): number {
+  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, " ");
+  const responseNorm = normalize(response);
+  const answerWords = normalize(correctAnswer)
+    .split(/\s+/)
+    .filter((w) => w.length > 2);
+
+  // Extract 3-grams from the correct answer
+  const trigrams: string[] = [];
+  for (let i = 0; i <= answerWords.length - 3; i++) {
+    trigrams.push(answerWords.slice(i, i + 3).join(" "));
+  }
+  if (trigrams.length === 0) return 0;
+
+  let matched = 0;
+  for (const trigram of trigrams) {
+    if (responseNorm.includes(trigram)) matched++;
+  }
+  return matched / trigrams.length;
 }

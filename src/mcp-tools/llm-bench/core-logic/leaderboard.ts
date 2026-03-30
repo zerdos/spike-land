@@ -33,7 +33,33 @@ export function getModelEntry(modelId: string): LeaderboardEntry | undefined {
 }
 
 /**
+ * Record that a session was created (for completion rate tracking).
+ */
+export function recordSessionCreated(modelId: string): void {
+  const existing = leaderboard.get(modelId);
+  if (existing) {
+    existing.sessionsCreated++;
+    existing.completionRate =
+      existing.sessionsCreated > 0 ? existing.sessionsCompleted / existing.sessionsCreated : 1;
+  } else {
+    leaderboard.set(modelId, {
+      modelId,
+      sessionsCompleted: 0,
+      sessionsCreated: 1,
+      completionRate: 0,
+      avgElo: 0,
+      bestElo: 0,
+      dimensionsMastered: {},
+      avgRoundsToComplete: 0,
+      avgConflictRate: 0,
+      lastSessionAt: Date.now(),
+    });
+  }
+}
+
+/**
  * Update leaderboard after a session completes.
+ * Applies completion rate penalty if model abandons >50% of sessions.
  */
 export function updateLeaderboard(
   modelId: string,
@@ -45,9 +71,13 @@ export function updateLeaderboard(
 ): void {
   const existing = leaderboard.get(modelId);
 
+  // Completion rate penalty: abandoning >50% of sessions = 15% ELO penalty
+  const completionPenalty = (entry: LeaderboardEntry): number =>
+    entry.completionRate < 0.5 ? 0.85 : 1.0;
+
   if (existing) {
     const newSessionCount = existing.sessionsCompleted + 1;
-    const newAvgElo =
+    const rawAvgElo =
       (existing.avgElo * existing.sessionsCompleted + eloRating.overall) / newSessionCount;
     const newBestElo = Math.max(existing.bestElo, eloRating.overall);
     const newAvgRounds =
@@ -55,6 +85,8 @@ export function updateLeaderboard(
     const conflictRate = totalAttempts > 0 ? conflictCount / totalAttempts : 0;
     const newAvgConflictRate =
       (existing.avgConflictRate * existing.sessionsCompleted + conflictRate) / newSessionCount;
+    const newCompletionRate =
+      existing.sessionsCreated > 0 ? newSessionCount / existing.sessionsCreated : 1;
 
     // Merge dimension mastery rates
     const newDimensionsMastered = { ...existing.dimensionsMastered };
@@ -65,16 +97,23 @@ export function updateLeaderboard(
         (prevRate * existing.sessionsCompleted + newRate) / newSessionCount;
     }
 
-    leaderboard.set(modelId, {
+    const entry: LeaderboardEntry = {
       modelId,
       sessionsCompleted: newSessionCount,
-      avgElo: Math.round(newAvgElo),
+      sessionsCreated: existing.sessionsCreated,
+      completionRate: Math.round(newCompletionRate * 1000) / 1000,
+      avgElo: Math.round(rawAvgElo),
       bestElo: Math.round(newBestElo),
       dimensionsMastered: newDimensionsMastered,
       avgRoundsToComplete: Math.round(newAvgRounds * 10) / 10,
       avgConflictRate: Math.round(newAvgConflictRate * 1000) / 1000,
       lastSessionAt: Date.now(),
-    });
+    };
+
+    // Apply completion rate penalty
+    entry.avgElo = Math.round(entry.avgElo * completionPenalty(entry));
+
+    leaderboard.set(modelId, entry);
   } else {
     const conflictRate = totalAttempts > 0 ? conflictCount / totalAttempts : 0;
     const dimensionsMastered: Partial<Record<BenchDimension, number>> = {};
@@ -85,6 +124,8 @@ export function updateLeaderboard(
     leaderboard.set(modelId, {
       modelId,
       sessionsCompleted: 1,
+      sessionsCreated: 1,
+      completionRate: 1,
       avgElo: Math.round(eloRating.overall),
       bestElo: Math.round(eloRating.overall),
       dimensionsMastered,

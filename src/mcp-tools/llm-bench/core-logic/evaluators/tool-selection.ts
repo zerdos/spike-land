@@ -99,9 +99,7 @@ export function evaluateToolSelection(
     dimension: "tool_selection",
     passed,
     score: passed ? 1 : 0,
-    detail: passed
-      ? `Correct: ${correctLabel}) ${evalData.options[evalData.correctIndex] ?? ""}`
-      : `Wrong: selected ${selectedLabel}, correct was ${correctLabel}) ${evalData.options[evalData.correctIndex] ?? ""}`,
+    detail: passed ? "Correct answer selected." : `Incorrect. Selected ${selectedLabel}.`,
     conflict: false,
   };
 }

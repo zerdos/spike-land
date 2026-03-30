@@ -52,6 +52,15 @@ export function clearSessions(): void {
   sessions.clear();
 }
 
+/** Count active sessions for a given model (anti-cherry-picking). */
+export function countActiveSessions(modelId: string): number {
+  let count = 0;
+  for (const state of sessions.values()) {
+    if (state.session.modelId === modelId && state.session.status === "active") count++;
+  }
+  return count;
+}
+
 // ─── Session Creation ───────────────────────────────────────────────────────
 
 let idCounter = 0;
