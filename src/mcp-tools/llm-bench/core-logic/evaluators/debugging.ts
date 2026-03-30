@@ -8,7 +8,7 @@
 import { evaluateCode } from "../../../code-eval/core-logic/evaluator.js";
 import { generateChallenge } from "../../../code-eval/core-logic/challenges.js";
 import { injectAnyBug } from "../bug-injector.js";
-import type { BenchChallenge, BugType, ChallengeResult, Difficulty, TestCase } from "../types.js";
+import type { BenchChallenge, BugType, ChallengeResult, Difficulty } from "../types.js";
 import { BUG_TYPES } from "../types.js";
 
 /**

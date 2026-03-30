@@ -55,7 +55,11 @@ type BugInjector = (code: string) => InjectedBug | undefined;
 const BUG_INJECTORS: Record<BugType, BugInjector> = {
   off_by_one: (code) => {
     // Change < to <= or > to >= (or vice versa)
-    const patterns: Array<{ from: RegExp; to: string; desc: string }> = [
+    const patterns: Array<{
+      from: RegExp;
+      to: string | ((match: string) => string);
+      desc: string;
+    }> = [
       {
         from: /(\w+)\s*<\s*(\w+\.length)/,
         to: "$1 <= $2",
@@ -85,8 +89,10 @@ const BUG_INJECTORS: Record<BugType, BugInjector> = {
 
     for (const pattern of patterns) {
       if (pattern.from.test(code)) {
-        const replacement = typeof pattern.to === "function" ? pattern.to : pattern.to;
-        const buggyCode = code.replace(pattern.from, replacement as string);
+        const buggyCode =
+          typeof pattern.to === "function"
+            ? code.replace(pattern.from, pattern.to)
+            : code.replace(pattern.from, pattern.to);
         if (buggyCode !== code) {
           return { buggyCode, bugType: "off_by_one", description: pattern.desc };
         }

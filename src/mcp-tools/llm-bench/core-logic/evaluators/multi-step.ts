@@ -8,7 +8,7 @@
  */
 
 import { getScenario } from "../../challenge-banks/multi-step-pipelines.js";
-import type { BenchChallenge, ChallengeResult, Difficulty, PipelineStep } from "../types.js";
+import type { BenchChallenge, ChallengeResult, Difficulty } from "../types.js";
 
 /**
  * Generate a multi_step_reasoning challenge.
@@ -23,10 +23,6 @@ export function generateMultiStepChallenge(
   if (!scenario) {
     return createFallbackMultiStep(variantIndex, difficulty);
   }
-
-  const stepsDescription = scenario.steps
-    .map((step, i) => `${i + 1}. ${step.description}`)
-    .join("\n");
 
   return {
     dimension: "multi_step_reasoning",
@@ -190,7 +186,7 @@ function extractToolMentions(response: string): string[] {
   const lines = response.split("\n");
 
   for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx]!;
+    const line = lines[lineIdx] ?? "";
     for (const tool of knownTools) {
       if (line.includes(tool) && !mentions.some((m) => m.tool === tool)) {
         mentions.push({ tool, lineIndex: lineIdx });

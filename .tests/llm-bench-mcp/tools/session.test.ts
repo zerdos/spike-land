@@ -103,7 +103,7 @@ describe("Session State Machine", () => {
   describe("evaluateRound", () => {
     it("evaluates correct MCQ answers", () => {
       const state = createSession("test-model", "medium", ["tool_selection"]);
-      const round = generateNextRound(state, mockChallengeGenerator);
+      generateNextRound(state, mockChallengeGenerator);
 
       const evaluation = evaluateRound(
         state,
