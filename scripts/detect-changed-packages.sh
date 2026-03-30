@@ -36,17 +36,24 @@ block-tasks|src/core/block-tasks
 block-website|src/core/block-website
 chess-engine|src/core/chess
 code|src/frontend/monaco-editor
+code-eval-mcp|src/mcp-tools/code-eval
+components|src/components
+docker-compose-mcp|src/mcp-tools/docker-compose
 esbuild-wasm-mcp|src/mcp-tools/esbuild-wasm
 google-analytics-mcp|src/mcp-tools/google-analytics
 google-ads-mcp|src/mcp-tools/google-ads
 hackernews-mcp|src/mcp-tools/hackernews
 image-studio-worker|src/edge-api/image-studio-worker
+iwd-spotlight-mcp|src/mcp-tools/iwd-spotlight
+llm-bench-mcp|src/mcp-tools/llm-bench
+math-engine|src/mcp-tools/math-engine
 mcp-auth|src/edge-api/auth
 mcp-image-studio|src/mcp-tools/image-studio
 mcp-server-base|src/core/server-base
 openclaw-mcp|src/mcp-tools/openclaw
 qa-studio|src/core/browser-automation
 react-ts-worker|src/core/react-engine
+reorganize-mcp|src/mcp-tools/reorganize
 shared|src/core/shared-utils
 spike-app|src/frontend/platform-frontend
 spike-cli|src/cli/spike-cli
@@ -55,6 +62,7 @@ spike-chat|src/edge-api/spike-chat
 spike-land-backend|src/edge-api/backend
 spike-land-mcp|src/edge-api/spike-land
 spike-review|src/mcp-tools/code-review
+status|src/edge-api/status
 stripe-analytics-mcp|src/mcp-tools/stripe-analytics
 state-machine|src/core/statecharts
 transpile|src/edge-api/transpile
@@ -144,7 +152,8 @@ root_package_json_requires_all() {
 # ---------------------------------------------------------------------------
 # Check for config-level ALL triggers first
 # ---------------------------------------------------------------------------
-if echo "$changed_files" | grep -qE '^(yarn\.lock|\.yarnrc\.yml)$'; then
+# .yarnrc.yml is a fundamental config change — always run ALL
+if echo "$changed_files" | grep -qx '\.yarnrc\.yml'; then
   echo "ALL"
   exit 0
 fi
@@ -152,6 +161,13 @@ fi
 if root_package_json_requires_all; then
   echo "ALL"
   exit 0
+fi
+
+# Track yarn.lock and vitest config changes as soft triggers:
+# they only force ALL if no specific packages are detected.
+YARN_LOCK_CHANGED=0
+if echo "$changed_files" | grep -qx 'yarn\.lock'; then
+  YARN_LOCK_CHANGED=1
 fi
 
 GLOBAL_TEST_CONFIG_CHANGED=0
@@ -184,9 +200,13 @@ while IFS= read -r f; do
   # src/<category>/<pkg-dir>/... files
   case "$f" in
     src/*/*)
-      # Extract first 3 path components: src/<cat>/<pkg>
+      # Try 3-component path first (src/<cat>/<pkg>), then 2-component (src/<pkg>)
       candidate=$(echo "$f" | cut -d'/' -f1-3)
       pkg=$(path_to_pkg "$candidate")
+      if [ -z "$pkg" ]; then
+        candidate2=$(echo "$f" | cut -d'/' -f1-2)
+        pkg=$(path_to_pkg "$candidate2")
+      fi
       if [ -z "$pkg" ]; then
         echo "WARNING: no package mapping for changed path: $f" >&2
         continue
@@ -229,9 +249,10 @@ unique_pkgs=$(sort -u "$TMP")
 
 num_affected=$(echo "$unique_pkgs" | grep -c . 2>/dev/null || echo 0)
 
-# Empty result
+# Empty result — fall back to ALL if yarn.lock or vitest config changed
+# (we can't determine the scope without specific package changes)
 if [ -z "$unique_pkgs" ] || [ "$num_affected" -eq 0 ]; then
-  if [ "$GLOBAL_TEST_CONFIG_CHANGED" -eq 1 ]; then
+  if [ "$YARN_LOCK_CHANGED" -eq 1 ] || [ "$GLOBAL_TEST_CONFIG_CHANGED" -eq 1 ]; then
     echo "ALL"
     exit 0
   fi
