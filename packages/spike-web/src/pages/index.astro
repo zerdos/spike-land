@@ -355,12 +355,15 @@ const morePosts = latestPosts.slice(1, 7);
 
   function trackEvent(event, detail) {
     if (typeof navigator.sendBeacon === 'function') {
-      navigator.sendBeacon('/api/analytics/pageview', JSON.stringify({
-        path: location.pathname,
-        event: event,
-        detail: detail,
-        ts: Date.now(),
-      }));
+      navigator.sendBeacon('/api/analytics/ingest', JSON.stringify([{
+        source: 'frontend',
+        eventType: event,
+        metadata: {
+          path: location.pathname,
+          detail: detail,
+          ts: Date.now(),
+        }
+      }]));
     }
   }
 

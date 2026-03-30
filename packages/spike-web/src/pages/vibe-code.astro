@@ -46,7 +46,7 @@ import TrackPageView from '../components/TrackPageView.astro';
         </div>
         <div class="divider" id="divider"></div>
         <div class="pane pane-preview" id="pane-preview">
-          <iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts allow-same-origin" title="Live preview"></iframe>
+          <iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts" title="Live preview"></iframe>
           <div id="error-overlay" class="error-overlay" hidden></div>
         </div>
       </div>
@@ -104,12 +104,16 @@ import TrackPageView from '../components/TrackPageView.astro';
             return r.text();
           })
           .then(function (transpiled) {
+            // Safety check: if transpiler returns HTML (e.g. error page), don't run it as JS
+            if (transpiled.trim().startsWith('<')) {
+              throw new Error('Invalid transpilation output');
+            }
             frame.srcdoc = buildHtml(transpiled);
           })
           .catch(function (err) {
             showError(err.message || 'Transpile failed');
-            // Fallback: inject raw code into iframe
-            frame.srcdoc = buildHtml(code);
+            // Clear frame on error to avoid showing stale/broken content
+            frame.srcdoc = '<!DOCTYPE html><html><body style="background:#0a0a0a;color:#ef4444;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui"><div>Transpilation Error</div></body></html>';
           });
       }
 

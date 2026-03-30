@@ -4,10 +4,14 @@
 ---
 <script is:inline>
   if (typeof navigator.sendBeacon === 'function') {
-    navigator.sendBeacon('/api/analytics/pageview', JSON.stringify({
-      path: location.pathname,
-      referrer: document.referrer || '',
-      ts: Date.now(),
-    }));
+    navigator.sendBeacon('/api/analytics/ingest', JSON.stringify([{
+      source: 'frontend',
+      eventType: 'page_view',
+      metadata: {
+        path: location.pathname,
+        referrer: document.referrer || '',
+        ts: Date.now(),
+      }
+    }]));
   }
 </script>

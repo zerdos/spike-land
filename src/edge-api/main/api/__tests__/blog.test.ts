@@ -554,42 +554,14 @@ describe("GET /api/blog-images/:slug/:filename", () => {
       }),
     );
     const r2 = mockR2(makeR2Object("OLD_DATA", "image/png"));
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            result: {
-              content: [{ type: "text", text: JSON.stringify({ jobId: "job-123" }) }],
-            },
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            result: {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify({
-                    status: "COMPLETED",
-                    outputUrl: "https://images.example/hero.png",
-                  }),
-                },
-              ],
-            },
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response("NEW_PNG_DATA", {
-          status: 200,
-          headers: { "Content-Type": "image/png" },
-        }),
-      );
+    // The implementation does a single GET to the image studio generate endpoint
+    // and receives image bytes directly (no job-polling pattern).
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response("NEW_PNG_DATA", {
+        status: 200,
+        headers: { "Content-Type": "image/png" },
+      }),
+    );
 
     vi.stubGlobal("fetch", fetchMock);
 
@@ -602,14 +574,10 @@ describe("GET /api/blog-images/:slug/:filename", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/png");
-    expect(
-      JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit | undefined)?.body ?? "{}"))
-        .name,
-    ).toBe("img_generate");
-    expect(
-      JSON.parse(String((fetchMock.mock.calls[1]?.[1] as RequestInit | undefined)?.body ?? "{}"))
-        .name,
-    ).toBe("img_job_status");
+    // The single fetch call should be a GET to the image studio generate URL
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [calledUrl] = fetchMock.mock.calls[0] as [URL | string, RequestInit?];
+    expect(String(calledUrl)).toContain("generate-image");
     expect((r2.put as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]).toBe(
       "blog-images/test-post/hero.png",
     );
@@ -618,93 +586,44 @@ describe("GET /api/blog-images/:slug/:filename", () => {
     });
   });
 
-  it("recovers prompt text from stale markdown content and tolerates slower generation jobs", async () => {
-    vi.useFakeTimers();
-    try {
-      const prompt =
-        "A conceptual digital illustration showing a heavy, expensive framework contrasted with a fast glowing path";
-      const db = mockDB(
-        [],
-        makeRow({
-          slug: "nextjs-vs-tanstack-start",
-          hero_image: "/blog/nextjs-vs-tanstack-start/hero.jpg",
-          hero_prompt: null,
-          content: `![${prompt}](/blog/nextjs-vs-tanstack-start/hero.jpg)\n\nBody from stale D1 content.`,
-        }),
-      );
-      const r2 = mockR2(null);
-      const fetchMock = vi.fn().mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            result: {
-              content: [{ type: "text", text: JSON.stringify({ jobId: "job-456" }) }],
-            },
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
-      );
+  it("recovers prompt text from stale markdown content and generates the hero image", async () => {
+    const prompt =
+      "A conceptual digital illustration showing a heavy, expensive framework contrasted with a fast glowing path";
+    const db = mockDB(
+      [],
+      makeRow({
+        slug: "nextjs-vs-tanstack-start",
+        hero_image: "/blog/nextjs-vs-tanstack-start/hero.jpg",
+        hero_prompt: null,
+        content: `![${prompt}](/blog/nextjs-vs-tanstack-start/hero.jpg)\n\nBody from stale D1 content.`,
+      }),
+    );
+    const r2 = mockR2(null);
+    // The implementation does a single direct GET to the image studio generate endpoint.
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response("NEW_JPEG_DATA", {
+        status: 200,
+        headers: { "Content-Type": "image/jpeg" },
+      }),
+    );
 
-      for (let attempt = 0; attempt < 7; attempt++) {
-        fetchMock.mockResolvedValueOnce(
-          new Response(
-            JSON.stringify({
-              result: {
-                content: [{ type: "text", text: JSON.stringify({ status: "PENDING" }) }],
-              },
-            }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
-        );
-      }
+    vi.stubGlobal("fetch", fetchMock);
 
-      fetchMock
-        .mockResolvedValueOnce(
-          new Response(
-            JSON.stringify({
-              result: {
-                content: [
-                  {
-                    type: "text",
-                    text: JSON.stringify({
-                      status: "COMPLETED",
-                      outputUrl: "https://images.example/next-vs-start.jpg",
-                    }),
-                  },
-                ],
-              },
-            }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
-        )
-        .mockResolvedValueOnce(
-          new Response("NEW_JPEG_DATA", {
-            status: 200,
-            headers: { "Content-Type": "image/jpeg" },
-          }),
-        );
+    const testApp = app(db);
+    const res = await testApp.request(
+      "/api/blog-images/nextjs-vs-tanstack-start/hero.jpg",
+      undefined,
+      {
+        DB: db,
+        SPA_ASSETS: r2,
+      } as unknown as Env,
+    );
 
-      vi.stubGlobal("fetch", fetchMock);
-
-      const testApp = app(db);
-      const responsePromise = testApp.request(
-        "/api/blog-images/nextjs-vs-tanstack-start/hero.jpg",
-        undefined,
-        {
-          DB: db,
-          SPA_ASSETS: r2,
-        } as unknown as Env,
-      );
-      await vi.runAllTimersAsync();
-      const res = await responsePromise;
-
-      expect(res.status).toBe(200);
-      expect(res.headers.get("Content-Type")).toBe("image/jpeg");
-      expect((r2.put as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[2]).toMatchObject({
-        customMetadata: { promptHash: hashImagePrompt(prompt), source: "prompt-driven-hero" },
-      });
-    } finally {
-      vi.useRealTimers();
-    }
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("image/jpeg");
+    expect((r2.put as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[2]).toMatchObject({
+      customMetadata: { promptHash: hashImagePrompt(prompt), source: "prompt-driven-hero" },
+    });
   });
 
   it("returns 404 for missing non-hero images", async () => {

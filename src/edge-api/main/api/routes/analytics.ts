@@ -70,23 +70,10 @@ function parseRange(range: string): number | null {
   return VALID_RANGES[range] ?? null;
 }
 
-analytics.post("/analytics/ingest", async (c) => {
-  const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
-
-  if (isRateLimited(clientIp)) {
-    return c.json({ error: "Rate limited", retryAfter: 60 }, 429);
-  }
-
-  const body = await c.req.json<unknown>();
-  if (!Array.isArray(body)) {
-    return c.json({ error: "Request body must be an array of events" }, 400);
-  }
-
-  const events = body.filter(isValidEvent);
-  if (events.length === 0) {
-    return c.json({ error: "No valid events in batch" }, 400);
-  }
-
+async function processEvents(
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+  events: AnalyticsEvent[],
+): Promise<import("hono").TypedResponse<{ accepted: number } | { error: string }>> {
   // 1. Try to get stable ID (Cookie or IP)
   let clientId = await getClientId(c.req.raw);
 
@@ -158,6 +145,57 @@ analytics.post("/analytics/ingest", async (c) => {
   }
 
   return c.json({ accepted: events.length });
+}
+
+analytics.post("/analytics/ingest", async (c) => {
+  const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
+
+  if (isRateLimited(clientIp)) {
+    return c.json({ error: "Rate limited", retryAfter: 60 }, 429);
+  }
+
+  const body = await c.req.json<unknown>();
+  if (!Array.isArray(body)) {
+    return c.json({ error: "Request body must be an array of events" }, 400);
+  }
+
+  const events = body.filter(isValidEvent);
+  if (events.length === 0) {
+    return c.json({ error: "No valid events in batch" }, 400);
+  }
+
+  return processEvents(c, events);
+});
+
+analytics.post("/analytics/pageview", async (c) => {
+  const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
+
+  if (isRateLimited(clientIp)) {
+    return c.json({ error: "Rate limited", retryAfter: 60 }, 429);
+  }
+
+  // Legacy pageview format handler for compatibility with older frontend builds
+  const body = await c.req.json<{
+    path?: string;
+    referrer?: string;
+    event?: string;
+    detail?: string;
+    ts?: number;
+  }>();
+
+  const eventType = body.event || "page_view";
+  const event: AnalyticsEvent = {
+    source: "frontend",
+    eventType,
+    metadata: {
+      path: body.path || "unknown",
+      referrer: body.referrer || "",
+      detail: body.detail || null,
+      legacy: true,
+    },
+  };
+
+  return processEvents(c, [event]);
 });
 
 analytics.get("/analytics/events", async (c) => {
