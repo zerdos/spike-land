@@ -1,5 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
+declare global {
+  interface Window {
+    getMusicState?: () => Record<string, unknown>;
+    handleMusicTool?: (toolName: string, toolArgs: unknown) => Promise<unknown>;
+  }
+}
+
 export interface RadixMessage {
   id: string;
   role: "user" | "assistant";
@@ -126,12 +133,12 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
           content: m.content,
         }));
 
-        let pageContext: any = undefined;
+        let pageContext: { title: string; contentSnippet: string } | undefined;
         // Inject music state if available globally
-        if (typeof window !== "undefined" && (window as any).getMusicState) {
+        if (typeof window !== "undefined" && window.getMusicState) {
           pageContext = {
             title: "Music Creator",
-            contentSnippet: `Current loop state: ${JSON.stringify((window as any).getMusicState())}`,
+            contentSnippet: `Current loop state: ${JSON.stringify(window.getMusicState())}`,
           };
         }
 
@@ -202,10 +209,10 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
                 if (
                   toolName.startsWith("music_") &&
                   typeof window !== "undefined" &&
-                  (window as any).handleMusicTool
+                  window.handleMusicTool
                 ) {
                   try {
-                    const result = await (window as any).handleMusicTool(toolName, toolArgs);
+                    const result = await window.handleMusicTool(toolName, toolArgs);
                     // Send result back to DO session
                     fetch(`${baseURL}/api/spike-chat/browser-results`, {
                       method: "POST",

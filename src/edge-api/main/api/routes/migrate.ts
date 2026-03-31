@@ -1,10 +1,11 @@
 import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
 import { migrateNextjsProject } from "../../core-logic/nextjs-transform/index.js";
+import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
 
-// TODO: Add per-IP rate limiting via LIMITERS Durable Object before
-// opening this to public traffic. Recommended: 10 req/min per IP for
-// /migrate/analyze (each call fans out to 50+ GitHub API requests).
+// Per-IP rate limiting: 10 requests per minute for migrate endpoints.
+// Each /migrate/analyze call fans out to 50+ GitHub API requests.
+const isRateLimited = createRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 
 const migrate = new Hono<{ Bindings: Env }>();
 
@@ -175,6 +176,11 @@ function validateTransformBody(body: unknown): body is TransformRequestBody {
 // ---------------------------------------------------------------------------
 
 migrate.post("/api/migrate/analyze", async (c) => {
+  const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
+  if (isRateLimited(clientIp)) {
+    return c.json({ error: "Rate limited", retryAfter: 60 }, 429);
+  }
+
   const body = await c.req.json<unknown>();
   if (!validateAnalyzeBody(body)) {
     return c.json({ error: "Invalid request body: repoUrl is required" }, 400);
@@ -312,6 +318,11 @@ migrate.post("/api/migrate/analyze", async (c) => {
 // ---------------------------------------------------------------------------
 
 migrate.post("/api/migrate/transform", async (c) => {
+  const clientIp = c.req.header("cf-connecting-ip") ?? "unknown";
+  if (isRateLimited(clientIp)) {
+    return c.json({ error: "Rate limited", retryAfter: 60 }, 429);
+  }
+
   const body = await c.req.json<unknown>();
   if (!validateTransformBody(body)) {
     return c.json(

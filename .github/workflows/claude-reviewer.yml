@@ -8,7 +8,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     steps:
       - name: Checkout repo
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Run Claude Review
         env:
@@ -80,20 +80,9 @@ jobs:
             const reply = data.content[0].text.trim();
 
             if (reply === 'APPROVE') {
-              console.log('Approving and merging PR...');
-              execSync(`gh pr review ${process.env.PR_NUMBER} --approve --body "LGTM! Code quality and conventions look good."`);
-              try {
-                // Try to merge the PR
-                execSync(`gh pr merge ${process.env.PR_NUMBER} --squash`);
-              } catch (e) {
-                console.log('Could not merge PR automatically:', e.message);
-                try {
-                  // Fallback to enable auto-merge
-                  execSync(`gh pr merge ${process.env.PR_NUMBER} --squash --auto`);
-                } catch (e2) {
-                  console.log('Could not enable auto-merge either:', e2.message);
-                }
-              }
+              console.log('AI review passed — posting approval comment.');
+              // NOTE: Human approval is required before merging. AI review is advisory only.
+              execSync(`gh pr review ${process.env.PR_NUMBER} --comment --body "AI Review: LGTM! Code quality and conventions look good. Awaiting human approval to merge."`);
             } else {
               console.log('Requesting changes...');
               fs.writeFileSync('reply.txt', reply);
