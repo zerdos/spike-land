@@ -92,8 +92,9 @@ export function McpTerminal({ appId }: McpTerminalProps) {
         setTools(fetched);
 
         // Group by package prefix if appId provided
+        const appPrefix = appId ? appId.replace(/-/g, "_") : "";
         const filtered = appId
-          ? fetched.filter((t) => t.name.startsWith(appId.replace(/-/g, "_")))
+          ? fetched.filter((t) => t.name.startsWith(appPrefix) || t.name.startsWith(appId))
           : fetched;
 
         if (filtered.length === 0 && appId) {

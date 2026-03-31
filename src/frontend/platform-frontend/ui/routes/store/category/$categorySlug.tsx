@@ -94,7 +94,7 @@ function collectAvailableTags(apps: McpAppSummary[]): string[] {
   }
 
   return Array.from(tagCounts.entries())
-    .filter(([, count]) => count >= 2)
+    .filter(([, count]) => count >= 1)
     .sort((a, b) => b[1] - a[1])
     .map(([tag]) => tag)
     .slice(0, 20);

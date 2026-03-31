@@ -1,0 +1,36 @@
+{
+  "esbuild-wasm": ["esbuild-wasm-mcp", "code", "transpile", "spike-land-backend"],
+  "esbuild-wasm-mcp": ["code", "spike-land-backend"],
+  "@spike-land-ai/code": ["transpile", "spike-land-backend"],
+  "@spike-land-ai/shared": ["mcp-image-studio", "spike-land-mcp"],
+  "@spike-land-ai/eslint-config": [
+    "chess-engine",
+    "code",
+    "esbuild-wasm-mcp",
+    "hackernews-mcp",
+    "mcp-image-studio",
+    "mcp-server-base",
+    "openclaw-mcp",
+    "react-ts-worker",
+    "shared",
+    "spike-app",
+    "spike-cli",
+    "spike-edge",
+    "spike-review",
+    "state-machine"
+  ],
+  "@spike-land-ai/tsconfig": [
+    "chess-engine",
+    "code",
+    "esbuild-wasm-mcp",
+    "hackernews-mcp",
+    "mcp-image-studio",
+    "mcp-server-base",
+    "openclaw-mcp",
+    "react-ts-worker",
+    "shared",
+    "spike-cli",
+    "spike-review",
+    "state-machine"
+  ]
+}

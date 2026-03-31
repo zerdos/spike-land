@@ -308,7 +308,7 @@ function fallbackTransform(source: string): string {
 
 /**
  * Extracts the name of the default export so the iframe bootstrap knows which
- * identifier to mount. Mirrors the logic in useTranspiler.ts.
+ * identifier to mount. Mirrors the logic in useTranspile.ts.
  */
 function extractDefaultExport(code: string): { code: string; appRef: string } {
   let processed = code;

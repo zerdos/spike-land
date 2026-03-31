@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ErrorReporter from '../components/ErrorReporter.astro';
 
 interface Props {
   title?: string;
@@ -92,6 +93,8 @@ const resolvedOgImage = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
 
     <!-- Additional head content (analytics, page-specific scripts, etc.) -->
     <slot name="head" />
+    <!-- Global error reporting -->
+    <ErrorReporter />
     <script>
       import { initBrowserSentry } from '../lib/sentry';
 

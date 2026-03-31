@@ -279,10 +279,6 @@ jobs:
       # No artifact download needed — wrangler compiles TypeScript directly
       # from src/ via the main field in each packages/*/wrangler.toml.
 
-      # D3: Validate migration SQL for zero-downtime risks
-      - name: Validate D1 migrations
-        run: bash .github/scripts/validate-migrations.sh
-
       - name: Validate Cloudflare token
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
@@ -292,6 +288,10 @@ jobs:
           echo "Cloudflare token is set (length: ${#CLOUDFLARE_API_TOKEN})"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # D3: Validate migration SQL for zero-downtime risks
+      - name: Validate D1 migrations
+        run: bash .github/scripts/validate-migrations.sh
 
       # D6: Run D1 migrations BEFORE deploying workers
       - name: Apply D1 migrations
