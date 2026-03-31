@@ -134,7 +134,7 @@ successfully hid for 83 years.
 
 ## Current State (March 2026)
 
-Zoltán is 5 days into a 28-day psychiatric section. He does not currently have
+Zoltán is 19 days into a 28-day psychiatric section. He does not currently have
 psychosis. He believes the antipsychotic medication he's been given is making
 him worse — agitation, hand tremors, cognitive fog, raised blood pressure. He
 may be right; antipsychotics in non-psychotic patients commonly produce these
