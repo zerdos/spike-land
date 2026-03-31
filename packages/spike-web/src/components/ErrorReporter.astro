@@ -1,0 +1,79 @@
+---
+// ErrorReporter — Global error reporting component.
+// Include in Layout.astro to capture uncaught errors and send them to /analytics/ingest.
+---
+<script is:inline>
+  (function () {
+    var MAX_REPORTS_PER_MINUTE = 5;
+    var reportCount = 0;
+    var windowStart = Date.now();
+
+    function canReport() {
+      var now = Date.now();
+      if (now - windowStart > 60000) {
+        reportCount = 0;
+        windowStart = now;
+      }
+      if (reportCount >= MAX_REPORTS_PER_MINUTE) return false;
+      reportCount++;
+      return true;
+    }
+
+    function sendError(message, stack) {
+      if (!canReport()) return;
+
+      var payload = [{
+        source: 'frontend-error-reporter',
+        eventType: 'client_error',
+        metadata: {
+          message: String(message || 'Unknown error').slice(0, 500),
+          stack: String(stack || '').slice(0, 500),
+          url: window.location.href,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent
+        }
+      }];
+
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/analytics/ingest', JSON.stringify(payload));
+        } else {
+          fetch('/analytics/ingest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function () { /* best effort */ });
+        }
+      } catch (e) {
+        /* silently ignore reporting failures */
+      }
+    }
+
+    window.onerror = function (message, source, lineno, colno, error) {
+      var stack = '';
+      if (error && error.stack) {
+        stack = error.stack;
+      } else {
+        stack = (source || '') + ':' + (lineno || 0) + ':' + (colno || 0);
+      }
+      sendError(message, stack);
+    };
+
+    window.addEventListener('unhandledrejection', function (event) {
+      var reason = event.reason;
+      var message = 'Unhandled promise rejection';
+      var stack = '';
+      if (reason instanceof Error) {
+        message = reason.message;
+        stack = reason.stack || '';
+      } else if (typeof reason === 'string') {
+        message = reason;
+      } else if (reason && typeof reason === 'object') {
+        message = reason.message || JSON.stringify(reason).slice(0, 500);
+        stack = reason.stack || '';
+      }
+      sendError(message, stack);
+    });
+  })();
+</script>

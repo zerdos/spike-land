@@ -37,10 +37,12 @@ export interface TranspileError {
 // ---------------------------------------------------------------------------
 
 const TRANSPILE_ENDPOINT = "https://esbuild.spikeland.workers.dev";
+const TRANSPILE_FALLBACK = "https://js.spike.land";
 const MODULE_CDN = "https://esm.sh";
-const REACT_VERSION = "19.0.0";
+const MODULE_CDN_FALLBACK = "https://cdn.jsdelivr.net/npm";
+const REACT_VERSION = "19.2.4";
 const EMOTION_VERSION = "11.14.0";
-const TW_CDN_URL = "https://cdn.tailwindcss.com";
+const TW_BROWSER_URL = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4/dist/cdn.min.js";
 
 // ---------------------------------------------------------------------------
 // Theme tokens
@@ -170,27 +172,31 @@ export function buildPreviewHtml(transpiledCode: string, isDarkMode: boolean): s
     }
   }
   </script>
-  <script src="${TW_CDN_URL}"></script>
-  <script>
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          background: "var(--bg)",
-          foreground: "var(--fg)",
-          card: { DEFAULT: "var(--card-bg)", foreground: "var(--card-fg)" },
-          muted: { DEFAULT: "var(--muted-bg)", foreground: "var(--muted-fg)" },
-          border: "var(--border-color)",
-          primary: { DEFAULT: "var(--primary-color)", foreground: "var(--primary-fg)" },
-        },
-      },
-    },
-  };
-  </script>
+  <script src="${TW_BROWSER_URL}"></script>
+  <style type="text/tailwindcss">
+    @theme inline {
+      --font-sans: var(--font-sans);
+      --font-display: var(--font-display);
+      --font-mono: var(--font-mono);
+      --color-background: var(--bg);
+      --color-foreground: var(--fg);
+      --color-card: var(--card-bg);
+      --color-card-foreground: var(--card-fg);
+      --color-muted: var(--muted-bg);
+      --color-muted-foreground: var(--muted-fg);
+      --color-border: var(--border-color);
+      --color-primary: var(--primary-color);
+      --color-primary-foreground: var(--primary-fg);
+      --color-primary-light: var(--primary-light);
+      --color-success-foreground: var(--success-fg);
+      --color-warning-foreground: var(--warning-fg);
+      --color-info-foreground: var(--info-fg);
+    }
+  </style>
   <style>
     :root {
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-sans: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
       --bg: ${t.bg};
       --fg: ${t.fg};
@@ -284,13 +290,27 @@ function parseTranspileError(raw: string): TranspileError {
 
 const transpileCache = new Map<string, string>();
 
+async function fetchWithFallback(
+  url: string,
+  fallbackUrl: string,
+  init: RequestInit,
+): Promise<Response> {
+  try {
+    const res = await fetch(url, init);
+    if (res.ok) return res;
+  } catch {
+    // Primary failed, try fallback
+  }
+  return fetch(fallbackUrl, init);
+}
+
 async function remoteTranspile(source: string): Promise<string> {
   const cached = transpileCache.get(source);
   if (cached) return cached;
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://spike.land";
 
-  const response = await fetch(TRANSPILE_ENDPOINT, {
+  const response = await fetchWithFallback(TRANSPILE_ENDPOINT, TRANSPILE_FALLBACK, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",

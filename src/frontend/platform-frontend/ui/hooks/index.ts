@@ -8,5 +8,4 @@ export * from "./useFocusTrap";
 export * from "./useInstalledApps";
 export * from "./useMonacoTypeAcquisition";
 export * from "./useQaStudioMcp";
-export * from "./useTranspiler";
 export * from "./usePricing";

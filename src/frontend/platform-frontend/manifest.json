@@ -73,7 +73,6 @@
     "ui/hooks/useDarkMode.ts",
     "ui/hooks/useFocusTrap.ts",
     "ui/hooks/useMonacoTypeAcquisition.ts",
-    "ui/hooks/useTranspiler.ts",
     "ui/hooks/useQaStudioMcp.ts",
     "ui/main.tsx",
     "ui/router.ts",

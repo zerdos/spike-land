@@ -96,6 +96,10 @@ const baseAliases: Record<string, string> = {
   "react/jsx-runtime": src("core/react-engine/core-logic/react/jsx-runtime.ts"),
 };
 
+function pkg(...segments: string[]) {
+  return path.join(root, "packages", ...segments);
+}
+
 // ── Per-package config type ────────────────────────────────────────
 interface PkgConfig {
   tier: 1 | 2 | 3;
@@ -125,6 +129,15 @@ const packages: Record<string, PkgConfig> = {
     includeTests: [tests("components/**/*.test.ts"), tests("components/**/*.test.tsx")],
     includeSrc: [src("components/**/*.ts"), src("components/**/*.tsx")],
     coverageExclude: [],
+  },
+
+  "spike-web": {
+    tier: 3,
+    env: "jsdom",
+    setup: [tests("spike-app/test-setup.ts")],
+    includeTests: [tests("spike-web/**/*.test.ts"), tests("spike-web/**/*.test.tsx")],
+    includeSrc: [pkg("spike-web/src/components/**/*.ts"), pkg("spike-web/src/components/**/*.tsx")],
+    coverageExclude: ["**/*.d.ts"],
   },
 
   "bazdmeg-mcp": { tier: 1, pool: "forks" },
