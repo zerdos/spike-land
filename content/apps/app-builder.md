@@ -3,6 +3,14 @@ slug: "app-builder"
 name: "App Builder"
 description: "Use MCP tools to create and manage other MCP apps. Meta-tooling at its finest."
 emoji: "🏗️"
+category: "Code & Developer Tools"
+tags:
+  - "developer"
+  - "meta-tooling"
+  - "mcp"
+  - "app-creation"
+tagline: "Build MCP apps with MCP tools."
+pricing: "free"
 status: "live"
 sort_order: 4
 tools:

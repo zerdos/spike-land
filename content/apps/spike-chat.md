@@ -4,7 +4,14 @@ slug: spike-chat
 emoji: "\u26A1"
 description: AI chat assistant powered by Grok with Bayesian memory and multi-stage pipeline.
 tagline: Remembers what matters. Forgets what doesn't.
-category: AI & Chat
+category: Agents & Collaboration
+tags:
+  - "ai"
+  - "chat"
+  - "memory"
+  - "grok"
+  - "assistant"
+pricing: free
 status: live
 is_featured: true
 is_new: true

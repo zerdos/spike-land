@@ -37,7 +37,6 @@ export interface TranspileError {
 // ---------------------------------------------------------------------------
 
 const TRANSPILE_ENDPOINT = "https://esbuild.spikeland.workers.dev";
-const TRANSPILE_FALLBACK = "https://js.spike.land";
 const MODULE_CDN = "https://esm.sh";
 const REACT_VERSION = "19.2.4";
 const EMOTION_VERSION = "11.14.0";
@@ -289,27 +288,13 @@ function parseTranspileError(raw: string): TranspileError {
 
 const transpileCache = new Map<string, string>();
 
-async function fetchWithFallback(
-  url: string,
-  fallbackUrl: string,
-  init: RequestInit,
-): Promise<Response> {
-  try {
-    const res = await fetch(url, init);
-    if (res.ok) return res;
-  } catch {
-    // Primary failed, try fallback
-  }
-  return fetch(fallbackUrl, init);
-}
-
 async function remoteTranspile(source: string): Promise<string> {
   const cached = transpileCache.get(source);
   if (cached) return cached;
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://spike.land";
 
-  const response = await fetchWithFallback(TRANSPILE_ENDPOINT, TRANSPILE_FALLBACK, {
+  const response = await fetch(TRANSPILE_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
@@ -333,6 +318,44 @@ async function remoteTranspile(source: string): Promise<string> {
   }
   transpileCache.set(source, text);
   return text;
+}
+
+// ---------------------------------------------------------------------------
+// Health check — verify transpiler is reachable before loading the editor
+// ---------------------------------------------------------------------------
+
+export function useTranspilerHealth(): { ready: boolean; error: string | null } {
+  const [ready, setReady] = useState(false);
+  const [healthError, setHealthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(TRANSPILE_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain", TR_ORIGIN: "https://spike.land" },
+          body: "const x = 1;",
+        });
+        if (!cancelled) {
+          if (res.ok) {
+            setReady(true);
+          } else {
+            setHealthError(`Transpiler returned HTTP ${res.status}`);
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setHealthError("Transpiler unreachable. Try again in 30s.");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return { ready, error: healthError };
 }
 
 // ---------------------------------------------------------------------------

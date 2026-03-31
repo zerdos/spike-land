@@ -3,6 +3,15 @@ slug: "orchestrator"
 name: "Agent Orchestrator"
 description: "Manage complex multi-step tasks by delegating sub-tasks to specialized agents and merging the results."
 emoji: "🎼"
+category: "Agents & Collaboration"
+tags:
+  - "agents"
+  - "orchestration"
+  - "multi-step"
+  - "delegation"
+  - "workflow"
+tagline: "Multi-agent task orchestration and result merging."
+pricing: "free"
 status: "live"
 sort_order: 3
 tools:

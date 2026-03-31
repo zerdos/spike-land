@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Star, Users } from "lucide-react";
+import { Star, Users, Play } from "lucide-react";
 import { cn } from "../../../styling/cn";
 import type { McpAppSummary } from "../../hooks/useApps";
 import { useInstall } from "../../hooks/useInstall";
@@ -134,13 +134,28 @@ function AppCardGrid({
         tabIndex={-1}
       />
 
-      {/* Header: icon + install button */}
+      {/* Header: icon + action buttons */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/30 text-3xl shadow-sm ring-1 ring-border/50 transition-transform group-hover:scale-105">
           {app.emoji || "🔧"}
         </div>
-        {/* Install button floats over the card link — needs z-index */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex items-center gap-1.5">
+          {app.tool_count > 0 && (
+            <Link
+              to="/apps/$appId"
+              params={{ appId: app.slug }}
+              search={{ tab: "Terminal" }}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5",
+                "text-xs font-semibold text-primary transition-colors",
+                "hover:bg-primary/20 hover:border-primary/30",
+              )}
+              aria-label={`Try ${app.name}`}
+            >
+              <Play className="size-3 fill-current" />
+              Try
+            </Link>
+          )}
           <InstallButton slug={app.slug} appName={app.name} size="sm" />
         </div>
       </div>
@@ -219,8 +234,24 @@ function AppCardList({
         </div>
       </div>
 
-      {/* Install button — z-index over the card link */}
-      <div className="relative z-10 shrink-0">
+      {/* Action buttons — z-index over the card link */}
+      <div className="relative z-10 flex shrink-0 items-center gap-1.5">
+        {app.tool_count > 0 && (
+          <Link
+            to="/apps/$appId"
+            params={{ appId: app.slug }}
+            search={{ tab: "Terminal" }}
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1",
+              "text-[11px] font-semibold text-primary transition-colors",
+              "hover:bg-primary/20 hover:border-primary/30",
+            )}
+            aria-label={`Try ${app.name}`}
+          >
+            <Play className="size-2.5 fill-current" />
+            Try
+          </Link>
+        )}
         <InstallButton slug={app.slug} appName={app.name} size="sm" />
       </div>
     </div>

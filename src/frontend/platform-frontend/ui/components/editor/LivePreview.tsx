@@ -43,7 +43,7 @@ import { cn } from "../../../styling/cn";
 import { Button } from "../../shared/ui/button";
 import { CodeEditor } from "../../../editor/CodeEditor";
 import { useDarkMode } from "../../hooks/useDarkMode";
-import { useTranspile } from "./useTranspile";
+import { useTranspile, useTranspilerHealth } from "./useTranspile";
 import { ErrorOverlay } from "./ErrorOverlay";
 import { HMRManager } from "./HMRManager";
 
@@ -288,6 +288,28 @@ export function LivePreview({
   className,
 }: LivePreviewProps) {
   const { isDarkMode } = useDarkMode();
+  const { ready: transpilerReady, error: transpilerError } = useTranspilerHealth();
+
+  // ---- Transpiler health gate ----
+  if (transpilerError) {
+    return (
+      <div
+        className={cn(
+          "flex items-center justify-center bg-background border border-border rounded-xl p-12",
+          className,
+        )}
+      >
+        <div className="text-center space-y-3 max-w-sm">
+          <Code2 className="mx-auto h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+          <p className="text-lg font-semibold text-foreground">Code editor is warming up</p>
+          <p className="text-sm text-muted-foreground">{transpilerError}</p>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+            <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // ---- Persistent file state ----
   const loadFiles = useCallback((): EditorFile[] => {

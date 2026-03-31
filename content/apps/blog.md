@@ -5,6 +5,12 @@ description: "Read the latest updates, tutorials, and announcements from the spi
 emoji: "📰"
 tagline: "Published articles and tutorials, callable directly from your workspace."
 category: "Docs & Knowledge"
+tags:
+  - "blog"
+  - "articles"
+  - "tutorials"
+  - "content"
+pricing: "free"
 status: "live"
 sort_order: 3
 tools:

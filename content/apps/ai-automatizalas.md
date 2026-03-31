@@ -4,7 +4,13 @@ slug: ai-automatizalas
 emoji: "🤖"
 description: AI automatizálási megoldások helyi magyar vállalkozásoknak.
 tagline: Kevesebb admin, gyorsabb működés, mérhető megtérülés.
-category: AI & Automation
+category: Agents & Collaboration
+tags:
+  - "ai"
+  - "automation"
+  - "hungarian"
+  - "business"
+pricing: free
 status: live
 is_featured: true
 is_new: true

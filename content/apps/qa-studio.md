@@ -3,6 +3,16 @@ slug: "qa-studio"
 name: "QA Studio"
 description: "Control headless browsers directly. Navigate web apps, extract semantic structure, take screenshots, and automate UI interactions."
 emoji: "🔬"
+category: "Browser Automation"
+tags:
+  - "browser"
+  - "playwright"
+  - "testing"
+  - "automation"
+  - "screenshots"
+tagline: "Headless browser control for testing and web automation."
+pricing: "free"
+is_featured: true
 status: "live"
 sort_order: 5
 tools:

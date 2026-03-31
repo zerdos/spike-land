@@ -5,6 +5,13 @@ emoji: ♟️
 description: A flagship 3D chess experience inside spike.land. Complete with multiplayer matchmaking, stockfish analysis, and vibrant leaderboards.
 tagline: Multiplayer chess with live ladders, match queues, and instant analysis.
 category: Games & Simulation
+tags:
+  - "chess"
+  - "multiplayer"
+  - "elo"
+  - "stockfish"
+  - "leaderboard"
+pricing: free
 status: live
 is_featured: true
 is_new: true
