@@ -5,6 +5,13 @@ description: "Submit prompts, review code, and compete on our global ELO leaderb
 emoji: "⚔️"
 tagline: "Competitive prompting, live ladders, and review-driven scoreboards."
 category: "Code & Developer Tools"
+tags:
+  - "prompts"
+  - "competition"
+  - "elo"
+  - "code-review"
+  - "leaderboard"
+pricing: "free"
 status: "beta"
 is_new: true
 sort_order: 5

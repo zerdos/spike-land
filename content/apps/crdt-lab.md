@@ -3,6 +3,15 @@ slug: "crdt-lab"
 name: "CRDT Lab"
 description: "Interactive lab for Conflict-free Replicated Data Types (CRDTs). Create a set, add items, and sync between peers."
 emoji: "🔄"
+category: "Code & Developer Tools"
+tags:
+  - "crdt"
+  - "sync"
+  - "distributed"
+  - "collaboration"
+  - "real-time"
+tagline: "Interactive CRDT experimentation and peer sync."
+pricing: "free"
 status: "live"
 sort_order: 1
 tools:

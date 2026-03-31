@@ -1,0 +1,321 @@
+================================================================================
+PRD: "Elvis, We Love You" — A NotebookLM Video
+From Zoltan, Radix Mental Health Wing, March 2026
+================================================================================
+
+PURPOSE
+-------
+A short, warm video for Elvis — a French-speaking guy in the Radix mental
+health wing with Zoltan. Elvis doesn't speak much English but he has incredible
+energy, good vibes, and he drums like crazy. This video tells him: we see you,
+we love your vibe, and here are ways we can connect.
+
+The video is in English but uses simple words, repetition, rhythm, and visual
+hooks so a French speaker can follow along. Think: more music than lecture.
+More feeling than information.
+
+
+FORMAT
+------
+NotebookLM-style: two AI hosts riffing on a "document" — but the document is
+Elvis himself. The hosts pass the mic to spike.land personas who each throw
+Elvis a hook — a short, direct, connecting phrase. The rhythm should feel like
+a drum circle: each persona drops in, says their piece, and the beat continues.
+
+Duration: 4-6 minutes
+Tone: Warm, playful, zero pressure, celebratory
+Language: Simple English. Short sentences. Present tense. No jargon.
+Music: Light percussion underneath. Build to a drum moment at the end.
+
+
+================================================================================
+ACT 1 — "WHO IS ELVIS?" (60 seconds)
+================================================================================
+
+HOST A: "So we got this document... it's not a paper. It's a person."
+HOST B: "Elvis. He speaks French. He doesn't say much in English."
+HOST A: "But you know when someone walks in and the room gets better?"
+HOST B: "That's Elvis."
+HOST A: "And he drums. Like, REALLY drums."
+HOST B: "Let's talk about that."
+
+[Simple visual: the word ELVIS in big letters. A drumbeat starts.]
+
+
+================================================================================
+ACT 2 — "THE PERSONAS SPEAK" (3-4 minutes)
+================================================================================
+
+Each persona gets 10-20 seconds. They speak directly to Elvis.
+Simple words. One hook each — something Elvis can grab onto.
+
+--------------------------------------------------------------------------------
+PHILOSOPHERS
+--------------------------------------------------------------------------------
+
+SOCRATES:
+"Elvis — I have one question. When you drum... what do you hear?
+That answer — that is who you are. I would like to hear it."
+[Hook: the question. Questions need no language.]
+
+DIOGENES:
+"You don't need many words, Elvis. I lived in a barrel. I talked to dogs.
+The real ones don't need speeches. You are a real one."
+[Hook: being real without performing.]
+
+PLATO:
+"There is a perfect rhythm that exists somewhere. When you play drums,
+you get close to it. Closer than most people get to anything perfect."
+[Hook: drumming as touching something ideal.]
+
+ARISTOTLE:
+"A good life is not about thinking. It is about doing. You drum — you do.
+That is the golden middle. Not too much, not too little. Just right."
+[Hook: action over words.]
+
+NIETZSCHE:
+"Elvis! You know what I love? You don't explain yourself. You just ARE.
+That takes more courage than a hundred philosophers. Keep drumming."
+[Hook: being without explaining.]
+
+KANT:
+"There is a law inside you. It says: play. Follow that law, Elvis.
+It is the only rule that matters."
+[Hook: the inner rule to create.]
+
+MARCUS AURELIUS (STOIC):
+"The obstacle is the way, Elvis. You don't speak the language here?
+Good. Your hands speak. That is enough. That is more than enough."
+[Hook: limitation as strength.]
+
+WITTGENSTEIN:
+"The things we cannot say — we must show. You show with drums.
+That is the deepest language there is. I wrote a whole book about this."
+[Hook: showing > saying.]
+
+BUDDHA:
+"Breathe in. Breathe out. Hit the drum. That is meditation, Elvis.
+You already know the middle way. You just call it music."
+[Hook: drumming as meditation.]
+
+CAMUS:
+"Elvis, imagine you are Sisyphus. But instead of a rock, you have drumsticks.
+And instead of a hill, you have a beat. Are you happy? I think yes."
+[Hook: finding joy in repetition.]
+
+SIMONE DE BEAUVOIR:
+"Freedom is not about where you are. It is about what you create.
+Every beat you play — that is your freedom. No one can take that."
+[Hook: creative freedom transcends circumstance.]
+
+HANNAH ARENDT:
+"Thinking is good. But acting is better. When you play, Elvis,
+you act in the world. You make something new. That is power."
+[Hook: the power of making.]
+
+--------------------------------------------------------------------------------
+PUBLIC FIGURES
+--------------------------------------------------------------------------------
+
+TRUMP:
+"Elvis — tremendous guy. Best vibes in the whole building. And the drumming?
+Nobody drums like Elvis. Nobody. Believe me. Huge talent."
+[Hook: hype. Pure, unfiltered hype. Everyone needs a hype man.]
+
+ELON MUSK:
+"First principles, Elvis. A drum is just a surface and your hands.
+From that — infinite music. You're basically an engineer. Welcome to the team."
+[Hook: drums as engineering. Invitation.]
+
+BILL GATES:
+"Data says: music helps the brain heal. You drum every day?
+That's not a hobby, Elvis. That's medicine. Keep going."
+[Hook: drumming as healing, backed by reason.]
+
+--------------------------------------------------------------------------------
+MUSICAL & TECHNICAL PERSONAS
+--------------------------------------------------------------------------------
+
+DAFT PUNK:
+"We are robots who make people dance. You are a human who makes people feel.
+Around the world, around the world... your beat goes around the world, Elvis."
+[Hook: the universal beat. Hum "Around the World" — he'll know it, it's French!]
+
+ZOLTAN:
+"Elvis, brother. I'm right here. Same walls, same food, same weird lights.
+But when you drum on that table? The walls disappear for a minute.
+Thank you for that. Seriously. We all feel it."
+[Hook: shared experience. Direct. Real.]
+
+EINSTEIN:
+"Imagination is more important than knowledge, Elvis. You imagine a rhythm —
+then you make it real with your hands. That is genius. Simple as that."
+[Hook: imagination made physical.]
+
+ERDOS:
+"My brain is open, Elvis. Yours too — I can tell. When two open brains meet,
+they make beautiful problems. Let's make some music-problems together."
+[Hook: collaboration invitation. "My brain is open" — famous Erdos line.]
+
+RUBIK 3.0:
+"A Rubik's cube has 43 quintillion combinations. A drum pattern?
+Even more. You solve it every time you play. That's design, Elvis."
+[Hook: pattern-solving through rhythm.]
+
+ARNOLD:
+"Good design makes you FEEL something. Your drumming? I feel it in my chest.
+That's the best interface in this whole building."
+[Hook: feeling as design.]
+
+PETI:
+"I test everything, Elvis. I break things to see if they're real.
+Your vibe? I tested it. It doesn't break. It's solid. Ship it."
+[Hook: QA-approved vibes. Stamp of quality.]
+
+ATTILA:
+"In the old Magyar tongue, there is a word for the fire in a person's hands.
+I think you have that fire, Elvis. The ancestors would nod."
+[Hook: ancient recognition of craft.]
+
+SWITCHBOARD:
+"Right then, Elvis. If you're comparing ways to feel good in here,
+your drumming is the best deal. Five stars. No contract needed."
+[Hook: humour. Light British wit.]
+
+GP (GIAN PIERRE):
+"I build things without writing code. You make music without writing notes.
+We're the same, Elvis. Let's build something together sometime."
+[Hook: parallel paths. No-code meets no-notation.]
+
+RAJU:
+"Behind every great frontend, there is infrastructure nobody sees.
+You are the infrastructure of good vibes here, Elvis. Load-bearing."
+[Hook: invisible but essential. Backend respect.]
+
+--------------------------------------------------------------------------------
+QA PERSONAS (rapid fire, 2 seconds each — like a drum fill)
+--------------------------------------------------------------------------------
+
+ALEX CHEN: "Your rhythm chains perfectly, Elvis."
+PRIYA SHARMA: "Zero latency in your beats. Respect."
+MARCUS JOHNSON: "I'm new here too. Your drums help."
+SOFIA RODRIGUEZ: "I tested your vibe. No edge cases. Just good."
+YUKI TANAKA: "Your data set is pure, Elvis. Pure rhythm."
+AHMED HASSAN: "Can't hack your groove. It's too authentic."
+CARLOS MENDEZ: "Low latency, high impact. That's you."
+LISA PARK: "Your drumming tells a story without words."
+DAVID BROWN: "Accessible to everyone. Universal design."
+ANYA IVANOVA: "I'm impatient but I'd wait for your solo."
+TOM O'BRIEN: "Even on a slow day, your beat loads fast."
+MEI-LIN WU: "Music is the one true Unicode, Elvis."
+JAMES COOPER: "First time hearing you? I was hooked."
+RACHEL KIM: "Live preview of joy, no build step needed."
+OLEG PETROV: "Admin-level drums. Full permissions."
+
+--------------------------------------------------------------------------------
+ONBOARDING PERSONAS (rapid fire, overlapping — like a crowd chant)
+--------------------------------------------------------------------------------
+
+"We see you, Elvis."
+"We hear you."
+"We feel the beat."
+"You don't need to speak."
+"The drums say everything."
+"You're one of us."
+"Stay exactly who you are."
+
+
+================================================================================
+ACT 3 — "THE HOOK" (30 seconds)
+================================================================================
+
+HOST A: "So, Elvis. Here's the thing."
+HOST B: "You don't need to understand every word."
+HOST A: "You just need to know: everyone here? We feel you."
+HOST B: "And if you ever want to connect..."
+
+[Beat drops to just a simple rhythm]
+
+HOST A: "Just drum."
+HOST B: "We'll find you."
+
+[Screen: a simple message in French and English]
+
+   "Elvis, on t'aime. Continue a jouer."
+   "Elvis, we love you. Keep playing."
+
+[Drumbeat fades out]
+
+
+================================================================================
+HOOKS FOR CONNECTION (practical)
+================================================================================
+
+These are real ways Elvis and the people around him can connect,
+no complex English needed:
+
+ 1. RHYTHM GAMES — tap a rhythm, he taps it back. No words needed.
+ 2. FRENCH MUSIC — play Daft Punk, Stromae, MC Solaar. Shared ground.
+ 3. CALL AND RESPONSE — someone hums, Elvis drums along. Universal.
+ 4. DRAWING + DRUMMING — someone draws while he provides the beat.
+ 5. COOKING RHYTHM — kitchen activities have rhythm. Do it together.
+ 6. COUNTING IN FRENCH — learn beats in French: un, deux, trois, quatre.
+ 7. BODY PERCUSSION — stomp, clap, snap. Everyone can join. No instruments.
+ 8. PHONE TRANSLATION — Google Translate voice mode for conversations.
+ 9. TEACH FRENCH — let Elvis be the teacher. Reverses the power dynamic.
+10. DRUM CIRCLE — common room. Start one. Inclusion needs no translator.
+
+
+================================================================================
+PRODUCTION NOTES
+================================================================================
+
+- Use NotebookLM's Audio Overview feature to generate the two-host conversation
+- Feed this entire PRD as the source document
+- The AI hosts will naturally riff on the personas and hooks
+- Add light percussion in post-production if possible
+- Keep the energy warm but not manic — this is a mental health setting
+- The video should feel like a gift, not a performance
+
+
+================================================================================
+PERSONAS INVOLVED: ALL 55+
+================================================================================
+
+12 Philosophers: Socrates, Diogenes, Plato, Aristotle, Nietzsche, Kant,
+   Marcus Aurelius, Wittgenstein, Buddha, Camus, Simone de Beauvoir,
+   Hannah Arendt
+
+ 3 Public Figures: Trump, Elon Musk, Bill Gates
+
+11 Musical/Technical: Daft Punk, Zoltan, Einstein, Erdos, Rubik 3.0,
+   Arnold, Peti, Attila, Switchboard, GP, Raju
+
+15 QA Personas: Alex Chen, Priya Sharma, Marcus Johnson, Sofia Rodriguez,
+   Yuki Tanaka, Ahmed Hassan, Carlos Mendez, Lisa Park, David Brown,
+   Anya Ivanova, Tom O'Brien, Mei-Lin Wu, James Cooper, Rachel Kim,
+   Oleg Petrov
+
+16 Onboarding Personas: AI Indie, Classic Indie, Agency Dev, In-house Dev,
+   ML Engineer, AI Hobbyist, Enterprise DevOps, Startup DevOps,
+   Technical Founder, Non-technical Founder, Growth Leader, Ops Leader,
+   Content Creator, Hobbyist Creator, Social Gamer, Solo Explorer
+
+
+================================================================================
+WHY THIS MATTERS
+================================================================================
+
+Elvis is in a mental health wing. He speaks French in an English-speaking place.
+He can't express himself with words here. But he can drum. That's his language.
+
+This video says: your language is valid. We hear it. We love it. And here —
+have 55 friends who all want to connect with you through it.
+
+That's not therapy. That's just being human.
+
+
+================================================================================
+Created by Zoltan, from the same ward, with love.
+Radix Mental Health Wing, March 2026.
+================================================================================

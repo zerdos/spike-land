@@ -65,7 +65,7 @@ import TrackPageView from '../components/TrackPageView.astro';
       var debounceTimer = null;
       var TRANSPILE_URL = 'https://esbuild.spikeland.workers.dev';
       var STORAGE_KEY = 'spike-vibe-editor';
-      var DEFAULT_CODE = 'import React from "react";\n\nfunction App() {\n  var [count, setCount] = React.useState(0);\n\n  return (\n    <div style={{ padding: "2rem", fontFamily: "system-ui", textAlign: "center" }}>\n      <h1>Hello from Vibe Code</h1>\n      <p style={{ fontSize: "3rem", margin: "1rem 0" }}>{count}</p>\n      <button\n        onClick={function() { setCount(function(c) { return c + 1; }); }}\n        style={{\n          padding: "0.75rem 2rem",\n          fontSize: "1rem",\n          borderRadius: "0.5rem",\n          border: "none",\n          background: "#2563eb",\n          color: "white",\n          cursor: "pointer",\n        }}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}\n\nexport default App;';
+      var DEFAULT_CODE = 'import { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-8">\n      <h1 className="text-4xl font-bold tracking-tight">Vibe Code</h1>\n      <p className="text-gray-500 text-lg">\n        Edit this code and see changes live.\n      </p>\n      <p className="text-6xl font-bold">{count}</p>\n      <button\n        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors"\n        onClick={() => setCount((c) => c + 1)}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}';
 
       // Restore saved code or use default
       try {
@@ -96,7 +96,7 @@ import TrackPageView from '../components/TrackPageView.astro';
 
         fetch(TRANSPILE_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain', 'TR_ORIGIN': window.location.origin },
           body: code,
         })
           .then(function (r) {
@@ -118,8 +118,46 @@ import TrackPageView from '../components/TrackPageView.astro';
       }
 
       function buildHtml(code) {
-        return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif}</style></head><body><div id="root"></div><script type="module">' +
-          code.replace(/<\/script>/g, '<\\/script>') +
+        // Strip export default and extract the component reference
+        var prepared = code;
+        var appRef = 'App';
+        var namedFn = prepared.match(/export\s+default\s+function\s+(\w+)/);
+        if (namedFn) {
+          appRef = namedFn[1];
+          prepared = prepared.replace(/export\s+default\s+function\s+/, 'function ');
+        } else if (/export\s+default\s+/.test(prepared)) {
+          prepared = prepared.replace(/export\s+default\s+/, 'const App = ');
+          appRef = 'App';
+        }
+        // Remove remaining export statements
+        prepared = prepared.replace(/^export\s+\{[^}]*\}\s*;?\s*$/gm, '');
+        prepared = prepared.replace(/^export\s+/gm, '');
+
+        return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+          '<script type="importmap">{"imports":{' +
+            '"react":"https://esm.sh/react@19.2.4?bundle",' +
+            '"react/jsx-runtime":"https://esm.sh/react@19.2.4/jsx-runtime?bundle",' +
+            '"react/jsx-dev-runtime":"https://esm.sh/react@19.2.4/jsx-dev-runtime?bundle",' +
+            '"react-dom":"https://esm.sh/react-dom@19.2.4?bundle&external=react",' +
+            '"react-dom/client":"https://esm.sh/react-dom@19.2.4/client?bundle&external=react"' +
+          '}}<\/script>' +
+          '<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4/dist/cdn.min.js"><\/script>' +
+          '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif}</style>' +
+          '</head><body><div id="root"></div>' +
+          '<div id="error-display" style="display:none;padding:1rem;color:#ef4444;font-family:monospace;font-size:13px;white-space:pre-wrap;background:#1a0000;margin:1rem;border-radius:8px;border:1px solid #7f1d1d"></div>' +
+          '<script>globalThis.process={env:{NODE_ENV:"development"}};globalThis.global=globalThis;<\/script>' +
+          '<script type="module">' +
+          'window.addEventListener("error",function(e){var el=document.getElementById("error-display");if(el){el.style.display="block";el.textContent=e.message;}});' +
+          prepared.replace(/<\/script>/g, '<\\/script>') +
+          '\ntry{' +
+            'var createRoot=(await import("react-dom/client")).createRoot;' +
+            'var createElement=(await import("react")).createElement;' +
+            'var _Comp=typeof ' + appRef + '!=="undefined"?' + appRef + ':null;' +
+            'if(_Comp){createRoot(document.getElementById("root")).render(createElement(_Comp));}' +
+            'else{document.getElementById("root").innerHTML="<p style=\\"padding:2rem;text-align:center;color:#666\\">No component found. Export a default function.</p>";}' +
+          '}catch(err){' +
+            'var el=document.getElementById("error-display");if(el){el.style.display="block";el.textContent=err.message;}' +
+          '}' +
           '<\/script></body></html>';
       }
 

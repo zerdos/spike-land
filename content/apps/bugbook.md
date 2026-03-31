@@ -5,6 +5,12 @@ description: "The global, public bug tracker for spike.land. Report issues, requ
 emoji: "🐛"
 tagline: "File bugs and feature requests without leaving the app surface."
 category: "Code & Developer Tools"
+tags:
+  - "bugs"
+  - "issue-tracker"
+  - "developer"
+  - "feedback"
+pricing: "free"
 status: "live"
 sort_order: 4
 tools:

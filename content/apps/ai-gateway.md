@@ -3,6 +3,15 @@ slug: "ai-gateway"
 name: "AI Gateway"
 description: "OpenAI-compatible chat surface for spike.land. Keep the /v1 contract, add local docs and MCP capability context, then route to the right provider."
 emoji: "🧠"
+category: "Integrations & APIs"
+tags:
+  - "ai"
+  - "openai"
+  - "gateway"
+  - "chat"
+  - "routing"
+tagline: "OpenAI-compatible multi-provider AI routing."
+pricing: "free"
 status: "live"
 sort_order: 2
 tools:
