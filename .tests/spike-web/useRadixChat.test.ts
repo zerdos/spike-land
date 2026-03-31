@@ -164,7 +164,6 @@ describe("isObject", () => {
   });
 
   it("returns false for a function", () => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     expect(isObject(() => {})).toBe(false);
   });
 });

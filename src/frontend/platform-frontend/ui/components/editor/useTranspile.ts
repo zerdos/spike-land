@@ -39,7 +39,6 @@ export interface TranspileError {
 const TRANSPILE_ENDPOINT = "https://esbuild.spikeland.workers.dev";
 const TRANSPILE_FALLBACK = "https://js.spike.land";
 const MODULE_CDN = "https://esm.sh";
-const MODULE_CDN_FALLBACK = "https://cdn.jsdelivr.net/npm";
 const REACT_VERSION = "19.2.4";
 const EMOTION_VERSION = "11.14.0";
 const TW_BROWSER_URL = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4/dist/cdn.min.js";
