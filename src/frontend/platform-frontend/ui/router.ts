@@ -114,9 +114,13 @@ const termsRoute = createRoute({
 const pricingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/pricing",
-  beforeLoad: () => {
-    throw redirect({ to: "/" });
-  },
+  component: withSuspense(() => import("./routes/pricing"), "PricingPage"),
+});
+
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/settings",
+  component: withSuspense(() => import("./routes/settings"), "SettingsPage"),
 });
 
 const storeRoute = createRoute({
@@ -516,6 +520,7 @@ const routeTree = rootRoute.addChildren([
   privacyRoute,
   termsRoute,
   pricingRoute,
+  settingsRoute,
   storeRoute,
   versionRoute,
   packagesRoute.addChildren([

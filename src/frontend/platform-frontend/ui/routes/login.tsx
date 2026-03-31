@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
+import { authClient } from "../../auth/auth";
 import { Link, Navigate } from "@tanstack/react-router";
 
 function GitHubIcon() {
@@ -36,6 +38,36 @@ function GoogleIcon() {
 export function LoginPage() {
   const { t } = useTranslation("auth");
   const { isAuthenticated, login, isLoading, error } = useAuth();
+
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  async function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormError(null);
+    setIsSubmitting(true);
+    try {
+      if (mode === "signin") {
+        const result = await authClient.signIn.email({ email, password });
+        if (result.error) {
+          setFormError(result.error.message ?? "Sign-in failed. Check your credentials.");
+        }
+      } else {
+        const name = email.split("@")[0] ?? email;
+        const result = await authClient.signUp.email({ email, password, name });
+        if (result.error) {
+          setFormError(result.error.message ?? "Sign-up failed. Try a different email.");
+        }
+      }
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/" />;
@@ -88,7 +120,96 @@ export function LoginPage() {
             {t("continueWithGoogle")}
           </button>
         </div>
-        <p className="mt-3 text-center text-xs text-muted-foreground">{t("emailPasswordSoon")}</p>
+        {/* Email / password form */}
+        <form onSubmit={(e) => void handleEmailSubmit(e)} noValidate className="space-y-3">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          {formError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              {formError}
+            </div>
+          )}
+
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            required
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isSubmitting}
+            className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
+          />
+
+          <input
+            type="password"
+            name="password"
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+            className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
+          />
+
+          <button
+            type="submit"
+            disabled={isSubmitting || isLoading}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+          >
+            {isSubmitting
+              ? mode === "signin"
+                ? "Signing in…"
+                : "Creating account…"
+              : mode === "signin"
+                ? "Sign in"
+                : "Create account"}
+          </button>
+
+          <p className="text-center text-xs text-muted-foreground">
+            {mode === "signin" ? (
+              <>
+                No account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signup");
+                    setFormError(null);
+                  }}
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Create one
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setFormError(null);
+                  }}
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Sign in
+                </button>
+              </>
+            )}
+          </p>
+        </form>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
