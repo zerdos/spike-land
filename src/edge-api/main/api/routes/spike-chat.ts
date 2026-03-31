@@ -56,6 +56,7 @@ import {
   getTrumpPersonaPrompt,
   getMuskPersonaPrompt,
   getGatesPersonaPrompt,
+  getJobsPersonaPrompt,
 } from "../../core-logic/public-figure-personas.js";
 import { compressMessage, type PrdCompressionConfig } from "../../core-logic/prd-compression.js";
 const spikeChat = new Hono<{ Bindings: Env; Variables: Variables }>();
@@ -754,6 +755,9 @@ spikeChat.post("/api/spike-chat", async (c) => {
   }
   if (persona === "gates") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getGatesPersonaPrompt()}`;
+  }
+  if (persona === "jobs") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getJobsPersonaPrompt()}`;
   }
 
   const intentSummary = classifyIntent(userMessage, body.pageContext);

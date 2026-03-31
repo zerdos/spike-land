@@ -53,17 +53,17 @@ const morePosts = latestPosts.slice(1, 7);
 
     <main id="main-content">
       <!-- ── Hero ─────────────────────────────────────────────────────── -->
-      <section class="hero-section">
-        <div class="rubik-container hero-inner">
+      <section class="hero-section gradient-mesh">
+        <div class="rubik-container hero-inner stagger-in">
           <div class="hero-eyebrow">
             <span class="rubik-chip chip-live">
-              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+              <span class="live-dot"></span>
               Open beta — free to start
             </span>
           </div>
 
           <h1 class="hero-title">
-            Who do you want to talk to?
+            Who do you want<br class="sm-break" /> to talk to?
           </h1>
 
           <p class="rubik-lede hero-lede">
@@ -74,8 +74,8 @@ const morePosts = latestPosts.slice(1, 7);
           <!-- GP's voice from Brighton -->
           <div class="gp-audio-wrap">
             <button id="gp-play" class="gp-play-btn" aria-label="Listen to Gian Pierre from Brighton">
-              <svg class="gp-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-              <svg class="gp-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              <svg class="gp-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              <svg class="gp-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
               <span class="gp-label">Gian Pierre from Brighton</span>
             </button>
             <audio id="gp-audio" src="/gp-brighton.opus" preload="auto"></audio>
@@ -110,7 +110,7 @@ const morePosts = latestPosts.slice(1, 7);
       </section>
 
       <!-- ── Blog (first render path — high engagement) ───────────── -->
-      <section class="blog-section">
+      <section class="blog-section scroll-reveal">
         <div class="rubik-container">
           <div class="section-header">
             <p class="rubik-eyebrow">Writing</p>
@@ -171,7 +171,7 @@ const morePosts = latestPosts.slice(1, 7);
       </section>
 
       <!-- ── Meet the personas ──────────────────────────────────────── -->
-      <section class="hook-section hook-personas">
+      <section class="hook-section hook-personas scroll-reveal">
         <div class="rubik-container">
           <div class="section-header">
             <p class="rubik-eyebrow">The Arena</p>
@@ -180,7 +180,7 @@ const morePosts = latestPosts.slice(1, 7);
           <p class="hook-sub" style="text-align:center; margin-bottom: 2rem;">
             Mathematicians, philosophers, engineers. Each with their own worldview. Stay curious.
           </p>
-          <div class="persona-grid">
+          <div class="persona-grid stagger-in">
             {personas.map(p => (
               <a href={`/${p.slug}`} class="persona-card rubik-panel" style={`--p-accent: ${p.accent}`}>
                 <div class="persona-avatar" style={`background: ${p.accent}`}>{p.initial}</div>
@@ -190,7 +190,7 @@ const morePosts = latestPosts.slice(1, 7);
               </a>
             ))}
           </div>
-          <div style="text-align: center; margin-top: 1.5rem;">
+          <div style="text-align: center; margin-top: 2rem;">
             <a href="/chat" class="cta-secondary">
               See all 26 personas
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -416,8 +416,9 @@ const morePosts = latestPosts.slice(1, 7);
 
   /* ── Hero ──────────────────────────────────────────────────────────── */
   .hero-section {
-    padding-block: clamp(3rem, 8vw, 6rem) clamp(2rem, 4vw, 3rem);
-    background: radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--primary-color) 12%, transparent), transparent);
+    padding-block: clamp(4rem, 10vw, 8rem) clamp(2.5rem, 5vw, 4rem);
+    position: relative;
+    overflow: hidden;
   }
 
   .hero-inner {
@@ -425,36 +426,62 @@ const morePosts = latestPosts.slice(1, 7);
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 1.5rem;
+    gap: 1.75rem;
   }
 
   .hero-eyebrow { display: flex; justify-content: center; }
 
-  .chip-live { color: var(--primary-color); border-color: color-mix(in srgb, var(--primary-color) 30%, transparent); }
-  .chip-live svg { color: #22c55e; }
+  .chip-live {
+    color: var(--primary-color);
+    border-color: oklch(from var(--primary-color) l c h / 0.3);
+  }
+  .live-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--color-status-live);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .sm-break { display: none; }
+  @media (min-width: 640px) { .sm-break { display: inline; } }
 
   .hero-title {
-    font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
-    letter-spacing: -0.04em; line-height: 1.1;
+    font-size: clamp(2.25rem, 6vw, 4rem); font-weight: 900;
+    letter-spacing: -0.045em; line-height: 1.05;
     max-width: 100%; overflow-wrap: break-word;
+    background: linear-gradient(160deg, var(--fg) 40%, var(--primary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .hero-lede { margin-inline: auto; max-width: 44ch; }
+  .hero-lede { margin-inline: auto; max-width: 48ch; }
 
   .hero-ctas {
-    display: flex; gap: 0.875rem; flex-wrap: wrap; justify-content: center; padding-top: 0.25rem;
+    display: flex; gap: 0.875rem; flex-wrap: wrap; justify-content: center; padding-top: 0.5rem;
   }
 
   /* ── CTAs ──────────────────────────────────────────────────────────── */
   .cta-primary {
     display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.75rem 1.5rem; background: var(--primary-color);
+    padding: 0.8125rem 1.625rem; background: var(--primary-color);
     color: var(--primary-fg); border-radius: var(--radius-lg);
     font-weight: 600; font-size: 0.9375rem; text-decoration: none;
     letter-spacing: -0.01em;
-    transition: opacity var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease);
-    box-shadow: var(--shadow-md);
+    transition: transform var(--duration-fast) var(--ease),
+                box-shadow var(--duration-fast) var(--ease),
+                filter var(--duration-fast) var(--ease);
+    box-shadow: var(--shadow-md), 0 0 0 0 oklch(from var(--primary-color) l c h / 0);
   }
-  .cta-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 4px 20px -4px oklch(from var(--primary-color) l c h / 0.35);
+    filter: brightness(1.08);
+  }
   .cta-primary:active { transform: translateY(0); }
 
   .cta-secondary {
@@ -463,31 +490,37 @@ const morePosts = latestPosts.slice(1, 7);
     color: var(--fg); border: 1px solid var(--border-color);
     border-radius: var(--radius-lg); font-weight: 500;
     font-size: 0.9375rem; text-decoration: none;
-    transition: background var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
+    transition: background var(--duration-fast) var(--ease),
+                border-color var(--duration-fast) var(--ease),
+                transform var(--duration-fast) var(--ease);
     box-shadow: var(--shadow-sm);
   }
   .cta-secondary:hover {
     background: var(--muted-bg);
-    border-color: color-mix(in srgb, var(--muted-fg) 40%, transparent);
+    border-color: oklch(from var(--muted-fg) l c h / 0.4);
+    transform: translateY(-1px);
   }
 
   /* ── Metrics strip ─────────────────────────────────────────────────── */
   .metrics-strip {
     border-block: 1px solid var(--border-color);
-    background: var(--card-bg); padding-block: 1.75rem;
+    background: var(--card-bg); padding-block: 2rem;
   }
   .metrics-inner {
-    display: flex; justify-content: center; gap: clamp(2rem, 6vw, 5rem); flex-wrap: wrap;
+    display: flex; justify-content: center; gap: clamp(2.5rem, 7vw, 6rem); flex-wrap: wrap;
   }
-  .metric-item { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+  .metric-item {
+    display: flex; flex-direction: column; align-items: center; gap: 0.375rem;
+    position: relative;
+  }
   .metric-value {
-    font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 900;
+    font-size: clamp(1.875rem, 3.5vw, 2.5rem); font-weight: 900;
     font-family: var(--font-display); letter-spacing: -0.04em;
     color: var(--fg); font-variation-settings: "wght" 900;
   }
   .metric-label {
-    font-size: 0.8125rem; color: var(--muted-fg); font-weight: 500;
-    text-transform: uppercase; letter-spacing: 0.06em;
+    font-size: 0.75rem; color: var(--muted-fg); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.08em;
   }
 
   /* ── Connect section ────────────────────────────────────────────── */
@@ -528,31 +561,38 @@ const morePosts = latestPosts.slice(1, 7);
 
   /* ── Blog section ──────────────────────────────────────────────────── */
   .blog-section {
-    padding-block: clamp(4rem, 8vw, 6rem);
+    padding-block: clamp(4rem, 8vw, 7rem);
     border-top: 1px solid var(--border-color);
-    background: color-mix(in srgb, var(--primary-color) 2%, var(--bg));
+    background: var(--primary-glow);
   }
 
   .featured-post {
     display: grid; grid-template-columns: 1fr 1fr;
     text-decoration: none; color: inherit; overflow: hidden; padding: 0;
-    margin-bottom: 1.5rem;
-    transition: box-shadow var(--duration-normal) var(--ease), transform var(--duration-fast) var(--ease);
+    margin-bottom: 2rem;
+    transition: box-shadow var(--duration-normal) var(--ease),
+                transform var(--duration-normal) var(--ease);
   }
-  .featured-post:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .featured-post:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+  }
 
   @media (max-width: 768px) { .featured-post { grid-template-columns: 1fr; } }
 
   .fp-image-wrap { overflow: hidden; aspect-ratio: 16/10; }
-  .fp-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); }
-  .featured-post:hover .fp-image { transform: scale(1.03); }
+  .fp-image {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s var(--ease);
+  }
+  .featured-post:hover .fp-image { transform: scale(1.04); }
 
-  .fp-content { padding: 2rem; display: flex; flex-direction: column; gap: 0.75rem; justify-content: center; }
+  .fp-content { padding: 2.25rem; display: flex; flex-direction: column; gap: 0.875rem; justify-content: center; }
   .fp-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
   .fp-meta time { font-size: 0.8125rem; color: var(--muted-fg); }
   .fp-title {
-    font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 800;
-    letter-spacing: -0.025em; line-height: 1.25; margin: 0; color: var(--fg);
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem); font-weight: 800;
+    letter-spacing: -0.025em; line-height: 1.2; margin: 0; color: var(--fg);
     transition: color var(--duration-fast) var(--ease);
   }
   .featured-post:hover .fp-title { color: var(--primary-color); }
@@ -561,8 +601,8 @@ const morePosts = latestPosts.slice(1, 7);
     color: var(--primary-color); margin: 0;
   }
   .fp-desc {
-    font-size: 0.9rem; color: var(--muted-fg); line-height: 1.6; margin: 0;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    font-size: 0.9rem; color: var(--muted-fg); line-height: 1.65; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
   .read-link {
     display: inline-flex; align-items: center; gap: 0.375rem;
@@ -573,7 +613,7 @@ const morePosts = latestPosts.slice(1, 7);
 
   .blog-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
   .blog-card {
@@ -581,17 +621,20 @@ const morePosts = latestPosts.slice(1, 7);
     color: inherit; overflow: hidden; padding: 0;
     transition: box-shadow var(--duration-normal) var(--ease),
                 border-color var(--duration-normal) var(--ease),
-                transform var(--duration-fast) var(--ease);
+                transform var(--duration-normal) var(--ease);
   }
   .blog-card:hover {
-    transform: translateY(-2px); box-shadow: var(--shadow-lg);
-    border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
+    transform: translateY(-3px); box-shadow: var(--shadow-lg);
+    border-color: oklch(from var(--primary-color) l c h / 0.3);
   }
 
   .bc-image-wrap { overflow: hidden; aspect-ratio: 16/9; }
-  .bc-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); }
-  .blog-card:hover .bc-image { transform: scale(1.04); }
-  .bc-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+  .bc-image {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s var(--ease);
+  }
+  .blog-card:hover .bc-image { transform: scale(1.05); }
+  .bc-content { padding: 1.375rem; display: flex; flex-direction: column; gap: 0.625rem; flex: 1; }
   .bc-title {
     font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3;
     margin: 0; color: var(--fg); transition: color var(--duration-fast) var(--ease);
@@ -599,21 +642,23 @@ const morePosts = latestPosts.slice(1, 7);
   .blog-card:hover .bc-title { color: var(--primary-color); }
   .bc-primer { font-size: 0.8125rem; font-style: italic; color: var(--muted-fg); margin: 0; }
 
-  .blog-cta { margin-top: 2rem; display: flex; justify-content: center; }
+  .blog-cta { margin-top: 2.5rem; display: flex; justify-content: center; }
 
   /* ── CTA band ──────────────────────────────────────────────────────── */
   .cta-band {
-    padding-block: clamp(3rem, 6vw, 5rem);
-    background: color-mix(in srgb, var(--primary-color) 6%, var(--bg));
-    border-block: 1px solid color-mix(in srgb, var(--primary-color) 15%, transparent);
+    padding-block: clamp(4rem, 8vw, 6rem);
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 50%, oklch(from var(--primary-color) l c h / 0.08), transparent),
+      var(--bg);
+    border-block: 1px solid oklch(from var(--primary-color) l c h / 0.15);
   }
   .cta-band-inner {
-    display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap;
   }
-  .cta-band-content { display: flex; flex-direction: column; gap: 0.5rem; }
-  .cta-band-title { font-size: clamp(1.5rem, 2.5vw, 2.25rem); }
+  .cta-band-content { display: flex; flex-direction: column; gap: 0.625rem; }
+  .cta-band-title { font-size: clamp(1.625rem, 3vw, 2.5rem); }
   .cta-band-lede { margin: 0; }
-  .cta-band-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .cta-band-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; }
 
   /* ── PWA Install Banner ─────────────────────────────────────────── */
   .pwa-banner {
@@ -715,7 +760,9 @@ const morePosts = latestPosts.slice(1, 7);
 
   /* Open source / developer hook accent */
   .hook-opensource {
-    background: color-mix(in srgb, var(--primary-color) 2%, var(--bg));
+    background:
+      radial-gradient(ellipse 50% 40% at 30% 80%, oklch(from var(--accent-teal) l c h / 0.05), transparent),
+      var(--primary-glow);
   }
 
   /* ── Persona grid ────────────────────────────────────────────────── */
@@ -726,35 +773,40 @@ const morePosts = latestPosts.slice(1, 7);
   }
   .persona-card {
     display: flex; flex-direction: column; align-items: center;
-    gap: 0.75rem; padding: 1.75rem 1.25rem;
+    gap: 0.875rem; padding: 2rem 1.25rem;
     text-decoration: none; color: inherit; text-align: center;
-    transition: transform var(--duration-fast) var(--ease),
+    transition: transform var(--duration-normal) var(--ease),
                 box-shadow var(--duration-normal) var(--ease),
                 border-color var(--duration-normal) var(--ease);
   }
   .persona-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), 0 8px 24px -8px oklch(from var(--p-accent, var(--primary-color)) l c h / 0.2);
     border-color: var(--p-accent, var(--primary-color));
   }
   .persona-avatar {
-    width: 3.5rem; height: 3.5rem; border-radius: 50%;
+    width: 3.75rem; height: 3.75rem; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem; font-weight: 800; color: white;
+    font-size: 1.375rem; font-weight: 800; color: white;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px -2px oklch(from var(--p-accent, var(--primary-color)) l c h / 0.3);
+    transition: transform var(--duration-normal) var(--ease-spring);
+  }
+  .persona-card:hover .persona-avatar {
+    transform: scale(1.08);
   }
   .persona-name {
     font-size: 1.125rem; font-weight: 700; margin: 0;
     letter-spacing: -0.02em;
   }
   .persona-role {
-    font-size: 0.8125rem; font-weight: 600; margin: 0;
-    text-transform: uppercase; letter-spacing: 0.06em;
+    font-size: 0.75rem; font-weight: 600; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--p-accent, var(--primary-color));
   }
   .persona-pitch {
-    font-size: 0.875rem; color: var(--muted-fg);
-    font-style: italic; margin: 0; line-height: 1.5;
+    font-size: 0.8125rem; color: var(--muted-fg);
+    font-style: italic; margin: 0; line-height: 1.55;
   }
 
   @media (max-width: 640px) {
