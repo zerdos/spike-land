@@ -46,8 +46,20 @@ check "Erdos persona"         "$BASE_URL/erdos"               "RadixChat"
 check "Store apps API"        "$BASE_URL/api/apps"
 check "LearnIt API"           "$BASE_URL/api/learnit"
 
-# Transpiler
-check "Transpiler health"     "https://esbuild.spikeland.workers.dev"
+# Transpiler (POST-only endpoint)
+check_transpiler() {
+  local status
+  status=$(curl -s -o /tmp/smoke-body -w "%{http_code}" --max-time 10 \
+    -X POST -H "Content-Type: text/plain" -d "const x = 1;" \
+    "https://esbuild.spikeland.workers.dev" 2>/dev/null || echo "000")
+  if [[ "$status" != "200" ]]; then
+    echo "FAIL: Transpiler — HTTP $status"
+    FAILED=$((FAILED + 1))
+    return
+  fi
+  echo "OK:   Transpiler"
+}
+check_transpiler
 
 # Status page (if exists)
 check "Status page"           "$BASE_URL/status" || true
