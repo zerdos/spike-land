@@ -1,10 +1,12 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect } from "react";
 import { useParams, Link } from "@tanstack/react-router";
 import { useApp, useApps, groupAppsByCategory } from "../../hooks/useApps";
 import { trackAnalyticsEvent } from "../../hooks/useAnalytics";
+import { useAuth } from "../../hooks/useAuth";
 import { MdxSurface } from "../../components/MdxSurface";
 import { StoreAppCard } from "../../components/storefront/StoreAppCard";
-import { ArrowLeft, Download, ExternalLink, Tag, Loader2, PackageOpen } from "lucide-react";
+import { InstallButton } from "../../components/store/InstallButton";
+import { ArrowLeft, ExternalLink, Tag, Loader2, PackageOpen } from "lucide-react";
 
 // ── App Detail Page ──────────────────────────────────────────────────────────
 
@@ -123,13 +125,7 @@ interface AppHeaderProps {
 }
 
 function AppHeader({ app }: AppHeaderProps) {
-  const [installed, setInstalled] = useState(false);
-
-  const handleInstall = useCallback(() => {
-    // Trigger install flow (no-op placeholder — backend install handled elsewhere)
-    setInstalled(true);
-    trackAnalyticsEvent("app_install_click", { appSlug: app.slug, appName: app.name });
-  }, [app.slug, app.name]);
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="border-b border-border bg-card px-4 py-5 sm:px-6">
@@ -209,20 +205,17 @@ function AppHeader({ app }: AppHeaderProps) {
 
         {/* CTA buttons */}
         <div className="flex flex-col sm:items-end gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleInstall}
-            disabled={installed}
-            className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all focus:outline-none focus:ring-4 focus:ring-primary/20 ${
-              installed
-                ? "bg-green-500/15 text-green-700 dark:text-green-400 cursor-default"
-                : "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md"
-            }`}
-            aria-label={installed ? `${app.name} installed` : `Install ${app.name}`}
-          >
-            <Download className="w-4 h-4" />
-            {installed ? "Installed" : "Install"}
-          </button>
+          {isAuthenticated ? (
+            <InstallButton slug={app.slug} appName={app.name} />
+          ) : (
+            <a
+              href={`/login?returnUrl=${encodeURIComponent(`/apps/${app.slug}`)}`}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary/20"
+              aria-label={`Sign in to install ${app.name}`}
+            >
+              Sign in to install
+            </a>
+          )}
 
           <a
             href={`https://mcp.spike.land/apps/${app.slug}`}

@@ -11,32 +11,48 @@ const plans = [
       name: "Free",
       price: "$0",
       period: "/forever",
-      description: "Everything. No limits. No credit card. No catch.",
+      description: "Get started with 50 credits/day and core MCP tools.",
       features: [
-        "All 80+ MCP tools",
-        "Spike Chat with all personas",
+        "50 AI credits/day",
+        "Core MCP tools",
+        "Spike Chat",
         "CodeSpace editor",
-        "QA Studio",
-        "Community support",
-        "Unlimited agent runs"
+        "Community support"
       ],
       cta: "Start Building",
-      highlighted: true,
+      highlighted: false,
     },
-{
+    {
       id: "pro",
       name: "Pro",
       price: "$29",
       period: "/month",
-      description: "For power users who want priority and scale.",
+      description: "For power users who build daily.",
       features: [
-        "Everything in Free",
+        "500 AI credits/day",
+        "All 80+ MCP tools",
         "Priority AI queue",
         "Extended context windows",
-        "Priority support (Slack)",
-        "Custom MCP server hosting"
+        "Email support",
+        "Analytics dashboard"
       ],
       cta: "Go Pro",
+      highlighted: true,
+    },
+    {
+      id: "business",
+      name: "Business",
+      price: "$99",
+      period: "/month",
+      description: "For teams shipping AI-powered products.",
+      features: [
+        "Unlimited AI credits",
+        "Everything in Pro",
+        "Team management & RBAC",
+        "90-day audit logs",
+        "Dedicated support"
+      ],
+      cta: "Go Business",
       highlighted: false,
     },
     {
@@ -46,7 +62,7 @@ const plans = [
       period: "",
       description: "For organizations with custom requirements.",
       features: [
-        "Everything in Pro",
+        "Everything in Business",
         "Dedicated success manager",
         "Custom integrations",
         "SLA & uptime guarantees",
@@ -60,11 +76,11 @@ const plans = [
 const faqs = [
   {
     q: "Wait — is it really free? What's the catch?",
-    a: "No catch. Every feature is free. We believe open access creates better AI tools. If you love what we're building, you can support us — 99% of supporter revenue goes directly to marketing so more people discover spike.land.",
+    a: "The Free tier gives you 50 credits per day and access to core tools — no credit card required. Pro and Business unlock more credits, all tools, and team features.",
   },
   {
-    q: "Why would I pay if it's free?",
-    a: "Pro is for power users who need priority and scale. Enterprise is for organizations with custom requirements. The free tier has everything you need to build.",
+    q: "Why would I pay?",
+    a: "Free users get 50 credits/day. Pro gives you 500 credits/day, all 80+ tools, and priority AI processing. Business adds unlimited credits and team management. Most builders upgrade within a week.",
   },
   {
     q: "What payment methods do you accept?",
@@ -91,8 +107,8 @@ const faqs = [
       <section class="pricing-header">
         <div class="rubik-container pricing-header-inner">
           <p class="rubik-eyebrow">Pricing</p>
-          <h1 class="pricing-title">Everything is free. Seriously.</h1>
-          <p class="rubik-lede">No gates. No trials. No "contact sales" wall. Pay only if you want to help us grow.</p>
+          <h1 class="pricing-title">Simple pricing. Start free, scale up.</h1>
+          <p class="rubik-lede">Try every tool free. Upgrade for more credits, priority AI, and team features.</p>
         </div>
       </section>
 
@@ -131,11 +147,20 @@ const faqs = [
                       {plan.cta}
                     </a>
                   )}
-{plan.id === 'pro' && (
+                  {plan.id === 'pro' && (
+                    <button
+                      class="plan-cta plan-cta--primary"
+                      type="button"
+                      data-checkout-tier="pro"
+                    >
+                      {plan.cta}
+                    </button>
+                  )}
+                  {plan.id === 'business' && (
                     <button
                       class="plan-cta plan-cta--secondary"
                       type="button"
-                      data-checkout-tier="pro"
+                      data-checkout-tier="business"
                     >
                       {plan.cta}
                     </button>
@@ -163,42 +188,49 @@ const faqs = [
                   <th class="comp-feature-col">Feature</th>
                   <th>Free</th>
                   <th>Pro</th>
+                  <th>Business</th>
                   <th>Enterprise</th>
                 </tr>
               </thead>
               <tbody>
                 <tr class="comp-row">
-                  <td class="comp-feature">All 80+ MCP Tools</td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                </tr>
-                <tr class="comp-row">
-                  <td class="comp-feature">Spike Chat + Personas</td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                </tr>
-                <tr class="comp-row">
-                  <td class="comp-feature">CodeSpace + QA Studio</td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                  <td><span class="comp-check">✓</span></td>
-                </tr>
-                <tr class="comp-row">
-                  <td class="comp-feature">Agent Runs/mo</td>
+                  <td class="comp-feature">AI Credits/day</td>
+                  <td>50</td>
+                  <td>500</td>
                   <td>Unlimited</td>
                   <td>Unlimited</td>
-                  <td>Unlimited</td>
+                </tr>
+                <tr class="comp-row">
+                  <td class="comp-feature">MCP Tools</td>
+                  <td>Core</td>
+                  <td>All 80+</td>
+                  <td>All 80+</td>
+                  <td>All 80+</td>
                 </tr>
                 <tr class="comp-row">
                   <td class="comp-feature">Priority AI Queue</td>
                   <td><span class="comp-dash">—</span></td>
                   <td><span class="comp-check">✓</span></td>
                   <td><span class="comp-check">✓</span></td>
+                  <td><span class="comp-check">✓</span></td>
+                </tr>
+                <tr class="comp-row">
+                  <td class="comp-feature">Team Management</td>
+                  <td><span class="comp-dash">—</span></td>
+                  <td><span class="comp-dash">—</span></td>
+                  <td><span class="comp-check">✓</span></td>
+                  <td><span class="comp-check">✓</span></td>
+                </tr>
+                <tr class="comp-row">
+                  <td class="comp-feature">Audit Logs</td>
+                  <td><span class="comp-dash">—</span></td>
+                  <td><span class="comp-dash">—</span></td>
+                  <td>90 days</td>
+                  <td>Custom</td>
                 </tr>
                 <tr class="comp-row comp-row-last">
                   <td class="comp-feature">SLA & Dedicated Support</td>
+                  <td><span class="comp-dash">—</span></td>
                   <td><span class="comp-dash">—</span></td>
                   <td><span class="comp-dash">—</span></td>
                   <td><span class="comp-check">✓</span></td>
