@@ -5,13 +5,16 @@ import type { Env } from "../../../src/edge-api/main/core-logic/env.js";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function createApp(envOverrides: Partial<Env> = {}, userId?: string) {
+function createApp(envOverrides: Partial<Env> = {}, userId?: string, userEmail?: string) {
   const app = new Hono<{ Bindings: Env }>();
 
   app.use("*", async (c, next) => {
     Object.assign(c.env, envOverrides);
     if (userId !== undefined) {
       c.set("userId" as never, userId);
+    }
+    if (userEmail !== undefined) {
+      c.set("userEmail" as never, userEmail);
     }
     await next();
   });
@@ -20,29 +23,32 @@ function createApp(envOverrides: Partial<Env> = {}, userId?: string) {
   return app;
 }
 
-function mockFetch(responses: Array<{ ok: boolean; data: unknown }>) {
+function mockFetch(responses: Array<{ ok: boolean; status?: number; data: unknown }>) {
   let callIndex = 0;
   return vi.fn().mockImplementation(() => {
-    const response = responses[callIndex++] ?? { ok: false, data: {} };
+    const response = responses[callIndex++] ?? { ok: false, status: 500, data: {} };
     return Promise.resolve({
       ok: response.ok,
+      status: response.status ?? (response.ok ? 200 : 400),
       json: () => Promise.resolve(response.data),
     });
   });
 }
 
 const DEFAULT_ENV: Partial<Env> = {
-  STRIPE_SECRET_KEY: "sk_test_mock",
+  CREEM_API_KEY: "creem_test_mock",
+  CREEM_PRO_PRODUCT_ID: "prod_pro_123",
+  CREEM_BUSINESS_PRODUCT_ID: "prod_biz_456",
 };
 
-const PRICE_LOOKUP_SUCCESS = {
+const CHECKOUT_SUCCESS = {
   ok: true,
-  data: { data: [{ id: "price_pro_monthly_123" }] },
-};
-
-const SESSION_CREATED_SUCCESS = {
-  ok: true,
-  data: { url: "https://checkout.stripe.com/session/abc123" },
+  data: {
+    id: "ch_test_abc",
+    checkout_url: "https://checkout.creem.io/session/abc123",
+    product_id: "prod_pro_123",
+    status: "active",
+  },
 };
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -79,7 +85,7 @@ describe("POST /api/checkout", () => {
     });
 
     it("reads userId from c.get(userId) set by auth middleware, not headers", async () => {
-      globalThis.fetch = mockFetch([PRICE_LOOKUP_SUCCESS, SESSION_CREATED_SUCCESS]);
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
       const app = createApp(DEFAULT_ENV, "user-from-middleware");
 
       const res = await app.request(
@@ -98,15 +104,18 @@ describe("POST /api/checkout", () => {
       expect(res.status).toBe(200);
       // Verify the session was created with userId from middleware context
       const calls = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls;
-      const sessionCall = calls[1];
-      expect(sessionCall[1].body).toContain("client_reference_id=user-from-middleware");
-      expect(sessionCall[1].body).toContain("metadata%5BuserId%5D=user-from-middleware");
+      const checkoutCall = calls[0];
+      const sentBody = JSON.parse(checkoutCall[1].body as string) as Record<string, unknown>;
+      expect((sentBody.metadata as Record<string, unknown>)["userId"]).toBe("user-from-middleware");
     });
   });
 
-  describe("Stripe configuration", () => {
-    it("returns 503 when STRIPE_SECRET_KEY is not configured", async () => {
-      const app = createApp({}, "user-123");
+  describe("Creem configuration", () => {
+    it("returns 503 when CREEM_API_KEY is not configured", async () => {
+      const app = createApp(
+        { CREEM_PRO_PRODUCT_ID: "prod_pro_123", CREEM_BUSINESS_PRODUCT_ID: "prod_biz_456" },
+        "user-123",
+      );
 
       const res = await app.request(
         "/api/checkout",
@@ -120,7 +129,25 @@ describe("POST /api/checkout", () => {
 
       expect(res.status).toBe(503);
       const body = await res.json();
-      expect(body).toEqual({ error: "Stripe not configured" });
+      expect(body).toEqual({ error: "Payment provider not configured" });
+    });
+
+    it("returns 503 when product ID is not configured for tier", async () => {
+      const app = createApp({ CREEM_API_KEY: "creem_test_mock" }, "user-123");
+
+      const res = await app.request(
+        "/api/checkout",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tier: "pro" }),
+        },
+        {} as unknown as Env,
+      );
+
+      expect(res.status).toBe(503);
+      const body = await res.json();
+      expect(body.error).toContain("Product not configured for tier");
     });
   });
 
@@ -176,7 +203,7 @@ describe("POST /api/checkout", () => {
     });
 
     it("accepts 'pro' tier", async () => {
-      globalThis.fetch = mockFetch([PRICE_LOOKUP_SUCCESS, SESSION_CREATED_SUCCESS]);
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
       const res = await app.request(
@@ -194,8 +221,15 @@ describe("POST /api/checkout", () => {
 
     it("accepts 'business' tier", async () => {
       globalThis.fetch = mockFetch([
-        { ok: true, data: { data: [{ id: "price_biz_monthly_456" }] } },
-        SESSION_CREATED_SUCCESS,
+        {
+          ok: true,
+          data: {
+            id: "ch_test_biz",
+            checkout_url: "https://checkout.creem.io/session/biz123",
+            product_id: "prod_biz_456",
+            status: "active",
+          },
+        },
       ]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
@@ -213,9 +247,9 @@ describe("POST /api/checkout", () => {
     });
   });
 
-  describe("Stripe lookup_key mapping", () => {
-    it("uses pro_monthly lookup_key for pro tier", async () => {
-      globalThis.fetch = mockFetch([PRICE_LOOKUP_SUCCESS, SESSION_CREATED_SUCCESS]);
+  describe("Creem product ID mapping", () => {
+    it("sends CREEM_PRO_PRODUCT_ID for pro tier", async () => {
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
       await app.request(
@@ -228,14 +262,22 @@ describe("POST /api/checkout", () => {
         DEFAULT_ENV as unknown as Env,
       );
 
-      const priceLookupCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      expect(priceLookupCall[0]).toContain("lookup_keys%5B%5D=pro_monthly");
+      const checkoutCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+      const sentBody = JSON.parse(checkoutCall[1].body as string) as Record<string, unknown>;
+      expect(sentBody.product_id).toBe("prod_pro_123");
     });
 
-    it("uses business_monthly lookup_key for business tier", async () => {
+    it("sends CREEM_BUSINESS_PRODUCT_ID for business tier", async () => {
       globalThis.fetch = mockFetch([
-        { ok: true, data: { data: [{ id: "price_biz" }] } },
-        SESSION_CREATED_SUCCESS,
+        {
+          ok: true,
+          data: {
+            id: "ch_test_biz",
+            checkout_url: "https://checkout.creem.io/session/biz123",
+            product_id: "prod_biz_456",
+            status: "active",
+          },
+        },
       ]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
@@ -249,8 +291,9 @@ describe("POST /api/checkout", () => {
         DEFAULT_ENV as unknown as Env,
       );
 
-      const priceLookupCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      expect(priceLookupCall[0]).toContain("lookup_keys%5B%5D=business_monthly");
+      const checkoutCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+      const sentBody = JSON.parse(checkoutCall[1].body as string) as Record<string, unknown>;
+      expect(sentBody.product_id).toBe("prod_biz_456");
     });
   });
 
@@ -274,50 +317,9 @@ describe("POST /api/checkout", () => {
     });
   });
 
-  describe("Stripe API error handling", () => {
-    it("returns 502 when price lookup fails", async () => {
-      globalThis.fetch = mockFetch([{ ok: false, data: { error: { message: "API error" } } }]);
-      const app = createApp(DEFAULT_ENV, "user-123");
-
-      const res = await app.request(
-        "/api/checkout",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tier: "pro" }),
-        },
-        DEFAULT_ENV as unknown as Env,
-      );
-
-      expect(res.status).toBe(502);
-      const body = await res.json();
-      expect(body.error).toContain("Failed to look up price");
-    });
-
-    it("returns 404 when no price found for tier", async () => {
-      globalThis.fetch = mockFetch([{ ok: true, data: { data: [] } }]);
-      const app = createApp(DEFAULT_ENV, "user-123");
-
-      const res = await app.request(
-        "/api/checkout",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tier: "pro" }),
-        },
-        DEFAULT_ENV as unknown as Env,
-      );
-
-      expect(res.status).toBe(404);
-      const body = await res.json();
-      expect(body.error).toContain("No price found for tier 'pro'");
-    });
-
-    it("returns 502 when session creation fails", async () => {
-      globalThis.fetch = mockFetch([
-        PRICE_LOOKUP_SUCCESS,
-        { ok: false, data: { error: { message: "Session creation failed" } } },
-      ]);
+  describe("Creem API error handling", () => {
+    it("returns 502 when checkout creation fails", async () => {
+      globalThis.fetch = mockFetch([{ ok: false, status: 400, data: { message: "API error" } }]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
       const res = await app.request(
@@ -335,10 +337,9 @@ describe("POST /api/checkout", () => {
       expect(body.error).toContain("Failed to create checkout session");
     });
 
-    it("returns 502 when session has no URL", async () => {
+    it("returns 502 when checkout response has no URL", async () => {
       globalThis.fetch = mockFetch([
-        PRICE_LOOKUP_SUCCESS,
-        { ok: true, data: { id: "cs_test_abc" } }, // no url field
+        { ok: true, data: { id: "ch_test_abc", status: "active" } }, // no checkout_url field
       ]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
@@ -360,7 +361,7 @@ describe("POST /api/checkout", () => {
 
   describe("successful checkout", () => {
     it("returns checkout URL on success", async () => {
-      globalThis.fetch = mockFetch([PRICE_LOOKUP_SUCCESS, SESSION_CREATED_SUCCESS]);
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
       const app = createApp(DEFAULT_ENV, "user-123");
 
       const res = await app.request(
@@ -375,11 +376,11 @@ describe("POST /api/checkout", () => {
 
       expect(res.status).toBe(200);
       const body = await res.json();
-      expect(body).toEqual({ url: "https://checkout.stripe.com/session/abc123" });
+      expect(body).toEqual({ url: "https://checkout.creem.io/session/abc123" });
     });
 
     it("includes userId and tier in session metadata", async () => {
-      globalThis.fetch = mockFetch([PRICE_LOOKUP_SUCCESS, SESSION_CREATED_SUCCESS]);
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
       const app = createApp(DEFAULT_ENV, "user-xyz");
 
       await app.request(
@@ -392,9 +393,33 @@ describe("POST /api/checkout", () => {
         DEFAULT_ENV as unknown as Env,
       );
 
-      const sessionCallBody = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[1][1].body;
-      expect(sessionCallBody).toContain("metadata%5BuserId%5D=user-xyz");
-      expect(sessionCallBody).toContain("metadata%5Btier%5D=pro");
+      const checkoutCallBody = JSON.parse(
+        (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body as string,
+      ) as Record<string, unknown>;
+      expect((checkoutCallBody.metadata as Record<string, unknown>)["userId"]).toBe("user-xyz");
+      expect((checkoutCallBody.metadata as Record<string, unknown>)["tier"]).toBe("pro");
+    });
+
+    it("includes customer email when available", async () => {
+      globalThis.fetch = mockFetch([CHECKOUT_SUCCESS]);
+      const app = createApp(DEFAULT_ENV, "user-123", "user@example.com");
+
+      await app.request(
+        "/api/checkout",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tier: "pro" }),
+        },
+        DEFAULT_ENV as unknown as Env,
+      );
+
+      const checkoutCallBody = JSON.parse(
+        (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body as string,
+      ) as Record<string, unknown>;
+      expect((checkoutCallBody.customer as Record<string, unknown>)["email"]).toBe(
+        "user@example.com",
+      );
     });
   });
 });
