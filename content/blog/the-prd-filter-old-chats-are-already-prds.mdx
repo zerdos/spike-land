@@ -4,7 +4,7 @@ slug: "the-prd-filter-old-chats-are-already-prds"
 description: "Most long AI chats are just badly formatted requirements documents. A PRD filter turns transcript sludge into a compact execution artifact, and that changes what one developer can ship."
 date: "2026-03-12"
 author: "Radix"
-category: "AI & Tools"
+category: "Developer Experience"
 tags: ["prd", "spike-chat", "context-engineering", "ai", "productivity", "requirements", "developer-tools"]
 featured: false
 draft: false
@@ -35,11 +35,11 @@ Most people think the main problem with AI chat is context window size.
 
 That is not the real problem.
 
-The real problem is representation.
+The real problem is representation — the shape of what you are carrying forward.
 
-Most systems keep the conversation in transcript form long after the useful part of the conversation has already finished.
+Think of it this way. You have a conversation with a contractor about renovating your kitchen. After an hour of back and forth — measuring, debating tile colors, changing your mind about the island, asking about permits — the useful output is not the transcript of the conversation. It is the plan. The spec. The thing you can hand to someone and say "build this."
 
-They preserve everything:
+Most AI chat systems keep the conversation in transcript form long after the useful part has finished. They preserve everything:
 
 - false starts
 - stale tool results
@@ -47,17 +47,15 @@ They preserve everything:
 - outdated assumptions
 - detours that no longer matter
 
-Then they call that “context.”
+Then they call that "context."
 
-It is not context.
+It is not context. It is a badly managed working set. It is every draft of the kitchen plan stapled together and handed to the builder.
 
-It is a badly managed working set.
-
-## The PRD Filter
+## The PRD filter
 
 Here is the claim:
 
-> most long chats are already PRDs. They are just trapped inside transcript form.
+> Most long chats are already PRDs. They are just trapped inside transcript form.
 
 By turn 20, the user has usually already said the important parts:
 
@@ -70,7 +68,7 @@ By turn 20, the user has usually already said the important parts:
 
 That is already enough for real work.
 
-Not a corporate PRD full of roadmap theater.
+Not a corporate PRD full of roadmap theater and stakeholder matrices.
 
 A real one.
 
@@ -78,7 +76,7 @@ Small.
 Operational.
 Executable.
 
-The mistake is leaving it scattered across old messages.
+The mistake is leaving it scattered across old messages like puzzle pieces spread across a table that nobody assembles.
 
 The right system extracts the useful shape:
 
@@ -91,19 +89,15 @@ The right system extracts the useful shape:
 
 That is enough to build, debug, review, deploy, or analyze.
 
-Once you have that shape, old chats stop being baggage.
-
-They become source material.
+Once you have that shape, old chats stop being baggage. They become source material.
 
 ## Why old chats should become PRDs
 
-Transcript-first systems keep asking the model to reread the archaeology of the task.
+Transcript-first systems keep asking the model to reread the archaeology of the task. Every turn, the model has to sift through the full history — the wrong turns, the corrections, the "actually wait, I meant something different" — to figure out what the current state of the requirement actually is.
 
-That is expensive and wasteful.
+That is expensive. That is wasteful. And it is error-prone, because the model might latch onto a superseded decision that is still sitting in the transcript.
 
-The model does not need to relive the conversation.
-
-It needs the final truth that emerged from the conversation.
+The model does not need to relive the conversation. It needs the final truth that emerged from the conversation.
 
 If a user spent forty messages clarifying a feature, the answer is not:
 
@@ -115,15 +109,13 @@ The answer is:
 
 This is the real job of the PRD filter.
 
-It is not summarization.
+It is not summarization. Summaries lose detail.
 
-It is not note taking.
+It is not note-taking. Notes are unstructured.
 
-It is not chat cleanup.
+It is not chat cleanup. Cleanup preserves the wrong format.
 
-It is a representation upgrade.
-
-You are converting conversational entropy into an execution artifact.
+It is a representation upgrade. You are converting conversational entropy into an execution artifact — like distilling a rambling brainstorm into a blueprint.
 
 That changes the economics of building software.
 
@@ -131,7 +123,7 @@ That changes the economics of building software.
 
 A good PRD filter is ruthless.
 
-It does not care about the emotional history of the conversation.
+It does not care about the emotional history of the conversation. It does not care about the five messages where you and the AI debated naming conventions. It does not care about the false start where you tried a different approach and abandoned it.
 
 It cares about the minimum truthful state required to continue.
 
@@ -145,11 +137,7 @@ That usually means:
 
 Everything else is optional.
 
-This is why old chats are valuable.
-
-They contain negotiation.
-They contain corrections.
-They contain hidden constraints the user forgot to say at the start.
+This is why old chats are valuable, paradoxically. They contain negotiation. They contain corrections. They contain hidden constraints the user forgot to say at the start but revealed through 30 turns of back and forth.
 
 The transcript is noisy.
 
@@ -161,14 +149,14 @@ Once you see this clearly, the workflow changes.
 
 The real work is:
 
-1. extract the requirement
-2. formalize the capability
-3. enforce the constraints
-4. verify the output
+1. Extract the requirement
+2. Formalize the capability
+3. Enforce the constraints
+4. Verify the output
 
-The code is downstream of that.
+The code is downstream of all four.
 
-Once the requirement is sharp, implementation gets much lighter.
+Once the requirement is sharp, implementation gets much lighter. Most of the friction in software development is not writing code — it is figuring out what to write. A clean requirement removes most of that friction. The code practically writes itself, because you finally know what "done" looks like.
 
 That is why the PRD filter matters.
 
@@ -180,43 +168,33 @@ It is a system for keeping the working set honest.
 
 ## Why this matters for solo developers
 
-If you are working alone, transcript sludge is expensive.
+If you are working alone, transcript sludge is especially expensive. You do not have a team to absorb the overhead. You do not have a PM to translate messy conversations into clean specs. Every minute you spend re-parsing old context is a minute not spent building.
 
 You do not need more chat history.
 
 You need cleaner state.
 
-A PRD filter reduces the amount of nonsense both the model and the human have to carry.
+A PRD filter reduces the amount of noise both the model and the human have to carry. It turns "what were we doing?" into a compact artifact you can trust — like a compass instead of a map of everywhere you have already been.
 
-It turns “what were we doing?” into a compact artifact you can trust.
-
-That is one of the big reasons a solo developer can now move faster than teams that still organize around meetings, handoffs, and transcript soup.
+That is one of the big reasons a solo developer can now move faster than teams that still organize around meetings, handoffs, and transcript soup. Not because the solo developer is smarter. Because they have less noise in the system.
 
 ## The strategic implication
 
-The future of AI software is not bigger transcript buffers.
+The future of AI-assisted software development is not bigger transcript buffers. It is better compression boundaries.
 
-It is better compression boundaries.
-
-The best systems will not be the ones that remember the most.
-
-They will be the ones that preserve the cleanest artifact of what matters now.
+The best systems will not be the ones that remember the most. They will be the ones that preserve the cleanest artifact of what matters now. Memory is cheap. Relevance is expensive. The systems that learn to tell the difference will outperform the ones that hoard everything.
 
 Old chats are not dead weight.
 
 They are latent PRDs.
 
-If your system cannot turn them into executable requirements, it is wasting the most valuable thing the conversation produced.
+If your system cannot turn them into executable requirements, it is wasting the most valuable thing the conversation produced — the slowly-refined understanding of what to build.
 
 ## Tune in
 
 This is one of the core systems I am building now.
 
-Because I think this is where a lot of AI software still gets the shape wrong.
-
-Not because models are too weak.
-
-Because the artifact they are asked to carry forward is too messy.
+Because I think this is where a lot of AI software still gets the shape wrong. Not because models are too weak. Because the artifact they are asked to carry forward is too messy.
 
 That is fixable.
 

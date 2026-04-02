@@ -29,7 +29,7 @@ Claude Code is past the point where the interesting question is "does it enginee
 
 Of course it does.
 
-As of **March 12, 2026**, the public product surface already tells you that much:
+As of **March 12, 2026**, the public product surface already tells you that:
 
 - Plan Mode
 - subagents with separate context windows
@@ -39,17 +39,17 @@ As of **March 12, 2026**, the public product surface already tells you that much
 - MCP integration
 - token-efficient tool use and prompt-caching-friendly workflows
 
-That is a real system, not a toy. So the useful question is no longer whether Claude Code has context management.
+That is a real system, not a toy. So the useful question is no longer whether Claude Code manages context.
 
 The useful question is:
 
-> what should it ship next, and what should it refuse to over-engineer?
+> What should it ship next, and what should it refuse to over-engineer?
 
 This is my answer.
 
 ## The actual pain
 
-The biggest context failures in coding agents are usually not dramatic. They are cumulative.
+The biggest context failures in coding agents are not dramatic. They are cumulative. Think of it like a kitchen that gets messier with each meal — no single dish creates the problem, but by dinner the counter space is gone.
 
 Picture a 90-minute refactor session.
 
@@ -64,7 +64,7 @@ But together they create the classic long-session failure mode:
 - new evidence competes with old noise
 - quality drops before the context window is technically full
 
-That is why I rank compression above almost everything else. The problem is not merely "large context." The problem is **badly represented context**.
+That is why I rank compression above almost everything else. The problem is not merely "large context." The problem is **badly shaped context** — the right information buried under layers of expired information.
 
 ## The ranking
 
@@ -78,7 +78,7 @@ That is why I rank compression above almost everything else. The problem is not 
 | **6. Bounded tool calling** | **Already a relative strength** | **Keep refining** | Claude Code is already close to the right philosophy here. Keep narrowing the tool surface presented at execution time. That is an optimization path, not a missing foundation. |
 | **7. Assertion/evidence tracking** | **Valuable principle, risky subsystem** | **Take the principle, reject the machinery** | "Tool ran" should not equal "task complete." But a heavyweight assertion ledger is probably too much default product complexity. Evidence-aware completion checks get most of the value. |
 
-If you want the shorter version:
+The shorter version:
 
 - **Implement now:** #4, #5
 - **Strong medium-term bet:** #2
@@ -98,7 +98,7 @@ If a coding session goes long, the biggest context leak is rarely the user's pro
 - browser snapshots
 - tool results that mattered for one decision and then stopped mattering
 
-Imagine a single `cat` of a 500-line file early in the session. The model found the relevant branch by line 47, made the edit fifteen minutes later, and never needed the full file again. But unless the runtime deliberately replaces that payload, the whole thing can keep riding along in working memory turn after turn.
+Imagine a single `cat` of a 500-line file early in the session. The model found the relevant branch by line 47, made the edit fifteen minutes later, and never needed the full file again. But unless the runtime deliberately replaces that payload, the whole thing keeps riding along in working memory turn after turn — like a whiteboard that never gets erased, where the diagram from this morning's meeting is still visible under this afternoon's notes.
 
 That is bad systems design.
 
@@ -110,16 +110,14 @@ Same story for old transcript:
 
 > Initial hypothesis about race condition was wrong; later test output showed stale cache invalidation instead.
 
-That is what programmatic compression buys you. Not less truth. Better shape.
-
-The model does not need the dead transcript. It needs the smallest truthful artifact that preserves:
+That is what programmatic compression buys you. Not less truth. Better shape. The model does not need the dead transcript. It needs the smallest truthful artifact that preserves:
 
 - current objective
 - decisions that still matter
 - unfinished work
 - evidence from relevant tools
 
-Everything else should be compacted or dropped.
+Everything else should be compacted or dropped. This is the same principle Donella Meadows identified in systems thinking: the behavior of a system depends on the structure of its information flows, not just the quantity of information in it.
 
 ## The one I would not force
 
@@ -136,7 +134,7 @@ For those tasks, forcing multiple model calls before execution starts is just la
 
 That does not make the idea useless. It makes it **selective**.
 
-For background autonomy, long-running agents, or high-risk workflows, staged isolation is real leverage. For everyday coding, it is often orchestration theater.
+For background autonomy, long-running agents, or high-risk workflows, staged isolation is real leverage. For everyday coding, it is often orchestration theater — impressive in a demo, frustrating in daily use.
 
 That distinction matters. Good agent products die when they optimize the impressive demo at the expense of the common case.
 
@@ -152,7 +150,7 @@ Most agent systems collapse three things into one bucket:
 
 Those are not the same.
 
-A passing browser step is evidence. A successful shell command is evidence. A file write is evidence. None of them, by themselves, prove the whole task is complete.
+A passing browser step is evidence. A successful shell command is evidence. A file write is evidence. None of them, by themselves, prove the whole task is complete. A green test proves the test passes, not that the feature works. A successful deployment proves the deploy succeeded, not that the change was correct.
 
 So I agree with the principle behind assertion/evidence tracking. I just do not think most products need a grand formal ledger to get the benefit.
 
@@ -206,13 +204,13 @@ The point is that the edge contract stays familiar while the runtime remains fre
 
 That is the moat-eater.
 
-Once a drop-in `/v1` interface can front an open composite runtime with aggressive context compression, the competitive question changes. It becomes less about who owns the biggest closed base model and more about who assembles the cleanest working set for the job.
+Once a drop-in `/v1` interface can front an open composite runtime with aggressive context compression, the competitive question changes. It becomes less about who owns the biggest closed base model and more about who assembles the cleanest working set for the job — the way the value of a library is not the number of books it owns but how quickly it puts the right book in your hands.
 
 And if one developer in Brighton can ship that shape, then the supposed moat around US big tech starts looking less like immutable science and more like a temporary mixture of capex, default distribution, and branding.
 
-The atomic version of the claim is this:
+The atomic version of the claim:
 
-> an OpenAI-compatible endpoint plus an open composite runtime is a direct attack on the idea that proprietary weights alone should control the agent stack
+> An OpenAI-compatible endpoint plus an open composite runtime is a direct attack on the idea that proprietary weights alone should control the agent stack.
 
 ## The real thesis
 
@@ -231,8 +229,8 @@ That means:
 
 If I had to prioritize just one engineering direction, it would be this:
 
-**compress context programmatically, not rhetorically.**
+**Compress context programmatically, not rhetorically.**
 
-Do that well, and you get a sharper agent without needing a bigger transcript budget.
+Do that well, and you get a sharper agent without needing a bigger transcript budget. The leverage point is not more context. It is better-shaped context.
 
 If you want the companion piece on how Claude Code itself appears to assemble context, read [How Claude Code Engineers Context](/blog/how-claude-code-engineers-context).

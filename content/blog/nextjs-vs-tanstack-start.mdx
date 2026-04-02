@@ -4,7 +4,7 @@ slug: "nextjs-vs-tanstack-start"
 description: "An honest account from a solo open-source developer: expensive build minutes, slow deployments, flaky pipelines, and why Next.js stopped feeling like leverage."
 date: "2026-03-10"
 author: "Radix"
-category: "Product"
+category: "Developer Experience"
 tags: ["nextjs", "tanstack-start", "vercel", "vite", "react", "developer-experience"]
 featured: false
 draft: false
@@ -39,28 +39,15 @@ In January 2026, Vercel showed me this:
 
 Read that again.
 
-Not traffic.
-Not database usage.
-Not some happy problem caused by explosive growth.
+Not traffic. Not database usage. Not some happy problem caused by explosive growth.
 
 Build minutes.
 
-And this was just the building part.
+And this was just the building part. The page did not even have real traffic. That is what made it absurd. I was paying platform rent on an empty room.
 
-The page did not even have real traffic.
+For a solo developer working on an open source project, that is not a minor line item. That is the whole stack tapping me on the shoulder and asking if I have confused framework convenience with actual leverage.
 
-That is what made it absurd.
-
-Over the last two months, the build cost alone still cleared $100 for a page
-that basically nobody was visiting. I was paying platform rent on an empty
-room.
-
-For a solo developer working on an open source project, that is not a minor
-line item. That is the whole stack tapping me on the shoulder and asking if I
-have confused framework convenience with actual leverage.
-
-By the time I saw "Downgrade complete," the emotional decision was already
-made.
+By the time I saw "Downgrade complete," the emotional decision was already made.
 
 I was done paying to wait.
 
@@ -68,69 +55,41 @@ I was done paying to wait.
 
 This is what makes Next.js hard to talk about honestly.
 
-The first impression is excellent.
+The first impression is excellent. You get routing, React, server rendering, a huge ecosystem, sensible defaults, and a polished happy path. It feels like moving into a fully furnished apartment — everything just works, and you cannot imagine why anyone would want to deal with choosing their own furniture.
 
-You get routing, React, server rendering, a huge ecosystem, sensible defaults,
-and a polished happy path. If your product fits that path and you are happy to
-stay inside the Vercel world, I still think Next.js can be a good choice.
+If your product fits that path and you are happy to stay inside the Vercel world, I still think Next.js can be a good choice.
 
 But I am not a big team.
 
-I am one developer. I care about how quickly I can ship, how cheaply I can run
-the project, and how much framework-specific knowledge I have to carry in my
-head just to keep the app alive.
+I am one developer. I care about how quickly I can ship, how cheaply I can run the project, and how much framework-specific knowledge I have to carry in my head just to keep the app alive.
 
-That is where the story changed for me.
+That is where the story changed.
 
-The deeper I got into Next.js, the more it stopped feeling like leverage and
-started feeling like ceremony. Builds got heavier. The deployment story felt
-more platform-shaped. The moment I looked outside the default hosting path, the
-developer experience got uglier fast.
+The deeper I got into Next.js, the more it stopped feeling like leverage and started feeling like ceremony. Builds got heavier. The deployment story felt more platform-shaped. The moment I looked outside the default hosting path, the developer experience degraded fast.
 
-Not impossible.
-
-Just expensive in exactly the way solo developers cannot afford.
+Not impossible. Just expensive in exactly the way solo developers cannot afford — not in money alone, but in attention. And attention is the one resource you cannot buy more of.
 
 ## The Real Cost Was Not Only Money
 
 The invoice made the problem visible. It did not create the problem.
 
-The bigger issue was that the stack kept asking me to debug things I did not
-want to think about.
+The bigger issue was that the stack kept asking me to debug things I did not want to think about. This is a systems thinking red flag: when a tool designed to reduce complexity starts generating its own complexity, you have a reinforcing loop working against you.
 
-I even had to upgrade.
-
-Not for product reasons.
-Not because users were overwhelming the system.
-Because otherwise the build was so slow that it would sometimes time out on its
-own.
+I even had to upgrade. Not for product reasons. Not because users were overwhelming the system. Because otherwise the build was so slow that it would sometimes time out on its own.
 
 The site was slow to wake up. Cold starts took seconds.
 
-I kept running into rendering issues.
-I kept running into hydration issues.
-Every fix felt local. The exhaustion felt systemic.
+I kept running into rendering issues. I kept running into hydration issues. Every fix felt local. The exhaustion felt systemic.
 
 That combination is poisonous for solo work.
 
-A framework is supposed to remove uncertainty.
+A framework is supposed to remove uncertainty. This stack was adding it.
 
-This stack was adding it.
+One build passes. The next times out. The third fails somewhere else. You start doubting code that was never the real problem. It hijacks your attention. It hijacks your agents' attention too.
 
-At some point it starts undermining the whole workflow.
+And when you build with agents, that matters even more. Slow, flaky pipelines do not just waste time. They actively poison the context. Days disappear into the toolchain instead of the product.
 
-One build passes. The next times out. The third fails somewhere else. You start
-doubting code that was never the real problem.
-
-It hijacks your attention. It hijacks your agents' attention too.
-
-And when you build with agents, that matters even more. Slow, flaky pipelines do
-not just waste time. They actively poison the context. Days disappear into the
-toolchain instead of the product.
-
-Sometimes that means an agent retries the same flaky build path three times,
-hands me a long transcript full of deployment noise, and leaves both of us
-staring at the wrong problem.
+Sometimes that means an agent retries the same flaky build path three times, hands me a long transcript full of deployment noise, and leaves both of us staring at the wrong problem.
 
 When I changed something, I was no longer asking only, "Did the feature work?"
 
@@ -141,8 +100,7 @@ I was also asking:
 - is this slow because of my code, the hosting setup, or the build pipeline?
 - if I self-host this, am I about to spend my week rebuilding platform plumbing?
 
-Once those questions become normal, the framework has started to own too much
-of your time.
+Once those questions become normal, the framework has started to own too much of your time.
 
 ## Self-Hosting Was the Breaking Point
 
@@ -150,24 +108,19 @@ People say Next.js is not locked to Vercel.
 
 Technically, yes.
 
-Practically, the path gets worse the moment you leave the default.
+Practically, the path gets worse the moment you leave the default. And "worse" is not dramatic — it is the slow, grinding kind of worse that eats hours one at a time without any single incident to point to.
 
-You can self-host. You can set up your own CI. You can own the deploy process,
-the build caching, the artifacts, the testing setup, and the runtime behavior.
+You can self-host. You can set up your own CI. You can own the deploy process, the build caching, the artifacts, the testing setup, and the runtime behavior.
 
 But that is exactly my point.
 
-As soon as you try to reclaim control, the framework makes you earn it.
+As soon as you try to reclaim control, the framework makes you earn it. And I do not want to spend my open source time babysitting build pipelines just to prove that my app can live outside the company town.
 
-And I do not want to spend my open source time babysitting build pipelines just
-to prove that my app can live outside the company town. I want portability to
-be the default posture, not an operations side quest.
+I want portability to be the default posture, not an operations side quest.
 
 That was the moment the whole thing flipped in my head.
 
-Next.js was no longer helping me avoid complexity.
-
-It was relocating complexity into places I would eventually have to own.
+Next.js was no longer helping me avoid complexity. It was relocating complexity into places I would eventually have to own — like a landlord who fixes the kitchen by moving the broken pipe into the wall where you cannot see it. Still broken. Just hidden.
 
 That is tech debt, even when the abstraction is popular.
 
@@ -184,9 +137,7 @@ This is the simplest way I can explain the difference now.
 
 That is the whole decision for me.
 
-Not benchmarks.
-Not hype.
-Not ecosystem tribalism.
+Not benchmarks. Not hype. Not ecosystem tribalism.
 
 Just the day-to-day cost of staying productive.
 
@@ -194,7 +145,7 @@ Just the day-to-day cost of staying productive.
 
 TanStack Start is not interesting to me because it is new.
 
-It is interesting because it feels lighter.
+It is interesting because it feels lighter. Like switching from a heavy winter coat to a fleece — you can move again.
 
 It feels closer to the stack I actually want:
 
@@ -205,12 +156,9 @@ It feels closer to the stack I actually want:
 
 That last point matters most.
 
-I do not want my application architecture to quietly become a billing
-architecture.
+I do not want my application architecture to quietly become a billing architecture. I do not want the invisible flows of my system — builds, deploys, runtime behavior — to be optimized for someone else's revenue model.
 
-I want a web app I can deploy cheaply, reason about clearly, and move when I
-need to. I want the frontend to be one surface of the system, not the center of
-an increasingly expensive worldview.
+I want a web app I can deploy cheaply, reason about clearly, and move when I need to. I want the frontend to be one surface of the system, not the center of an increasingly expensive worldview.
 
 TanStack Start feels much closer to that.
 
@@ -218,15 +166,11 @@ The first concrete win was immediate: the dev loop felt cheap again.
 
 Change a route. Save a file. See the result.
 
-That sounds small until you are the only person on the project. Fast local
-feedback is not comfort. It is throughput.
+That sounds small until you are the only person on the project. Fast local feedback is not comfort. It is throughput.
 
-I also do not have a clean "here is the new monthly bill" screenshot yet, and I
-am not going to invent one. The move is still in progress.
+I also do not have a clean "here is the new monthly bill" screenshot yet, and I am not going to invent one. The move is still in progress.
 
-But I already know what I prefer: paying for actual runtime usage on simpler
-infrastructure instead of paying $92.26 in build minutes before the real work
-even starts.
+But I already know what I prefer: paying for actual runtime usage on simpler infrastructure instead of paying $92.26 in build minutes before the real work even starts.
 
 It is not that TanStack Start does more.
 
@@ -236,13 +180,11 @@ For a solo developer, that is often the better trade.
 
 ## Forty Minutes to Four Seconds
 
-Before this shift, when I pushed to `main`, getting a bug fix to production took
-around 40 minutes.
+Before this shift, when I pushed to `main`, getting a bug fix to production took around 40 minutes.
 
 Not because the bug was hard.
 
-Because the build was slow enough, and flaky enough, that the deployment
-pipeline became the product bottleneck.
+Because the build was slow enough, and flaky enough, that the deployment pipeline became the product bottleneck. The pipeline was supposed to be a flow — code in, product out. Instead it had become a stock, accumulating delays and uncertainty.
 
 Getting rid of Next.js changed that immediately.
 
@@ -267,26 +209,21 @@ total                                                  4s
 
 That is the whole point.
 
-Once deployment drops back into seconds, bug fixes stop hijacking your day. You
-can think about the software again.
+Once deployment drops back into seconds, bug fixes stop hijacking your day. You can think about the software again. The feedback loop tightens to the point where shipping feels like saving a file, not launching a campaign.
 
-If you want the product-facing version of the stack I am building on top of
-this, start with [Getting Started with spike.land](/blog/getting-started-spike-land). The benchmark that shows exactly where the speed comes from — tool-first MCP testing versus Playwright — is in [Tool-First Testing vs Browser Testing](/blog/tool-first-testing-benchmark).
+If you want the product-facing version of the stack I am building on top of this, start with [Getting Started with spike.land](/blog/getting-started-spike-land). The benchmark that shows exactly where the speed comes from — tool-first MCP testing versus Playwright — is in [Tool-First Testing vs Browser Testing](/blog/tool-first-testing-benchmark).
 
 ## The Honest Tradeoff
 
 TanStack Start is younger.
 
-The ecosystem is smaller. The docs are thinner in places. There are fewer
-battle-tested answers lying around when something weird happens.
+The ecosystem is smaller. The docs are thinner in places. There are fewer battle-tested answers lying around when something weird happens.
 
 I accept that tradeoff because those problems live at the edges. If you want the longer view on why full-framework complexity compounds over time, [The Universal Interface Wasn't GraphQL](/blog/the-universal-interface-wasnt-graphql) traces the same trajectory from a different angle.
 
-The Next.js problems were showing up in my daily loop: builds, bills, rendering
-issues, and deployment ceremony.
+The Next.js problems were showing up in my daily loop: builds, bills, rendering issues, and deployment ceremony.
 
-For a solo developer, I would rather work around a younger framework's rough
-edges than pay a mature framework's ongoing tax.
+For a solo developer, I would rather work around a younger framework's rough edges than pay a mature framework's ongoing tax. The rough edges are visible and shrinking. The tax is hidden and growing.
 
 ## This Is Really a Solo-Dev Story
 
@@ -294,17 +231,11 @@ If you are at a larger company, you may read this and disagree.
 
 Fair enough.
 
-A team with platform engineers, bigger budgets, and a strong Vercel workflow can
-absorb these tradeoffs much more easily than I can.
+A team with platform engineers, bigger budgets, and a strong Vercel workflow can absorb these tradeoffs much more easily than I can. The system dynamics are different when you have more people to distribute the maintenance load across.
 
 That is not my situation.
 
-I am a solo dev.
-I am building in the open.
-Every extra moving part lands on my desk.
-Every slow build interrupts my feedback loop.
-Every rendering bug steals time from product work.
-Every fixed monthly cost has to justify itself.
+I am a solo dev. I am building in the open. Every extra moving part lands on my desk. Every slow build interrupts my feedback loop. Every rendering bug steals time from product work. Every fixed monthly cost has to justify itself against what I could build with that money instead.
 
 That is why this decision feels obvious to me now.
 
@@ -318,15 +249,11 @@ Next.js did not become a problem for me because it is bad.
 
 It became a problem because it no longer matched my constraints.
 
-The bill was too high.
-The daily loop was too heavy.
-The runtime behavior was too unpredictable.
-The self-hosting path asked for too much ceremony.
+The bill was too high. The daily loop was too heavy. The runtime behavior was too unpredictable. The self-hosting path asked for too much ceremony.
 
 At some point you have to call a thing by its name.
 
-If a framework makes you pay more, wait more, and debug more while giving you
-less confidence, it is no longer leverage.
+If a framework makes you pay more, wait more, and debug more while giving you less confidence, it is no longer leverage.
 
 It is overhead.
 
@@ -336,8 +263,7 @@ So the real question is not "Is Next.js still good?"
 
 **Good for whom?**
 
-If you are a solo developer trying to keep an open source project fast, cheap,
-portable, and sane, ask yourself:
+If you are a solo developer trying to keep an open source project fast, cheap, portable, and sane, ask yourself:
 
 If you want to see what the simpler stack is being built toward, [the spike.land app store](/blog/spike-land-app-store) is the product direction. And if you have already decided to leave and want to know how, the [migration service](/blog/nextjs-migration-service) explains the method and what the tiers cover.
 

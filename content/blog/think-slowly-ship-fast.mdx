@@ -29,11 +29,11 @@ AI teams ship bugs because they skip the spec. The Hourglass Model fixes this: h
 
 The data is in, and it is not flattering.
 
-CodeRabbit's [2025 code quality study](/learnit/coderabbit-ai-code-quality-defect-study-2025) found that AI-assisted pull requests carry **1.7× more defects** than human-written ones. Not because the AI writes worse syntax — it writes *more* code, faster, with less review. Volume without verification.
+CodeRabbit's [2025 code quality study](/learnit/coderabbit-ai-code-quality-defect-study-2025) found that AI-assisted pull requests carry **1.7x more defects** than human-written ones. Not because the AI writes worse syntax — it writes *more* code, faster, with less review. Volume without verification. Like a factory that doubled its output by turning off quality control.
 
 METR's [developer speed study](/learnit/metr-developer-speed-study-ai-coding-tools) measured experienced developers completing real-world tasks. With AI tools, they were **19% slower** — not faster. The developers themselves predicted a 24% speedup. They were wrong in both direction and magnitude. The overhead of reviewing, correcting, and re-prompting AI output ate every second it saved.
 
-The pattern repeats. GitClear's code churn analysis shows refactoring activity declining year over year as AI adoption rises. Teams are generating more code but maintaining less of it. The codebase grows. The understanding shrinks.
+The pattern repeats. GitClear's code churn analysis shows refactoring activity declining year over year as AI adoption rises. Teams are generating more code but maintaining less of it. The codebase grows. The understanding shrinks. It is the software equivalent of a city building roads faster than it can maintain them — eventually everything is potholed.
 
 Here is what these studies share: the problem is not the AI. The AI is fine. The problem is the process around it. Teams hand an AI a vague ticket and hope for the best. That is [vibe coding](/blog/the-vibe-coding-paradox) — and it has a measured failure rate.
 
@@ -43,7 +43,7 @@ A spec is a decision made before code is written. A spec is "the email update re
 
 When you give an AI agent a tight spec, three things happen. First, the agent writes less code — only what the spec demands. Second, the reviewer has a contract to review against — not "does this look right?" but "does this match the spec?" Third, the test writes itself — the spec *is* the test, expressed in a different format.
 
-Every minute spent on a spec saves ten minutes of debugging. Every hour of planning saves a day of rework. This is not a productivity hack. It is project management. You already know this. The question is whether you are willing to apply it to your AI workflow the same way you apply it to your human one.
+Every minute spent on a spec saves ten minutes of debugging. Every hour of planning saves a day of rework. This is not a productivity hack. It is project management — the old-fashioned kind that works. The question is whether you are willing to apply it to your AI workflow the same way you apply it to your human one.
 
 The rest of this article explains exactly how — at five levels of technical depth.
 
@@ -57,7 +57,7 @@ You have heard of the [testing pyramid](/blog/the-testing-pyramid-is-upside-down
 
 The pyramid was designed for humans writing code by hand. AI changes the economics.
 
-When an AI agent generates a React component, the UI code is cheap. Trivially cheap. You can regenerate it in seconds. The component itself is disposable — if it breaks, throw it away and regenerate. What is *not* disposable is the business logic underneath it: the validation rules, the API contracts, the state transitions. Those are the decisions that took your team hours to agree on.
+When an AI agent generates a React component, the UI code is cheap. Trivially cheap. You can regenerate it in seconds. The component itself is disposable — if it breaks, throw it away and regenerate. What is *not* disposable is the business logic underneath: the validation rules, the API contracts, the state transitions. Those are the decisions that took your team hours to agree on. They are the load-bearing walls of your application.
 
 The [Hourglass Model](/learnit/testing-pyramid-vs-hourglass-model-ai-development) flips the investment:
 
@@ -65,7 +65,7 @@ The [Hourglass Model](/learnit/testing-pyramid-vs-hourglass-model-ai-development
   <img src="/blog/think-slowly-ship-fast/hourglass-model.svg" alt="Animated comparison diagram showing the Testing Pyramid (heavy unit tests at bottom, generated for humans) versus the Hourglass Model (heavy E2E specs at top, disposable UI in middle, bulletproof business logic at bottom, designed for AI agents)" className="w-full rounded-xl border border-gray-800 bg-gray-900" />
 </div>
 
-The top of the hourglass is wide: E2E specs that describe what the user experiences. "Given a logged-in user, when they change their email and confirm, then the profile shows the new email." These are written by humans. They are the requirements.
+The top of the hourglass is wide: E2E specs that describe what the user experiences. "Given a logged-in user, when they change their email and confirm, then the profile shows the new email." These are written by humans. They are the requirements — the stock of accumulated decisions that define what the system should do.
 
 The middle is narrow: [disposable UI code](/learnit/disposable-ui-code-ai-native-development). React components, Tailwind classes, layout decisions. This is what the AI generates. If a component is wrong, you do not debug it — you regenerate it with a better spec. The middle is thin on purpose.
 
@@ -165,7 +165,7 @@ Then they see "Cancellation effective March 1, 2026"
 And the subscription status shows "Cancelling"
 ```
 
-You need far fewer of these than you think. If the MCP tool test proves that cancellation with reason "too_expensive" works, the E2E test only needs to verify that the button click reaches the tool with the right arguments.
+You need far fewer of these than you think. If the MCP tool test proves that cancellation with reason "too_expensive" works, the E2E test only needs to verify that the button click reaches the tool with the right arguments. The heavy lifting is already done.
 
 **Middle layer (10% of test effort): UI component tests.** What deserves a UI test? Only what is *unique to the UI*: accessibility, responsive layout, animation behavior, keyboard navigation. Not business logic. Not data transformation. Not state management. If the test asserts a business rule, it belongs in the MCP tool test. If it asserts a visual behavior, it belongs here.
 
@@ -179,7 +179,7 @@ The ratio — 70/20/10 — is not a rule. It is a signal. If you find yourself w
 
 The hourglass tells you *what* to test. [BMAD](/learnit/bmad-breakthrough-method-agile-ai-driven-development) — Breakthrough Method of Agile AI-Driven Development — tells you *how to plan it*.
 
-BMAD defines six agent personas, each responsible for a specific phase. The key insight is not the personas themselves — it is the [context isolation](/learnit/control-manifests-step-file-architecture-ai-agents) between them. Each persona gets a fresh context window with only the artifacts it needs. No accumulated junk. No 50K-token mega-prompts.
+BMAD defines six agent personas, each responsible for a specific phase. The key insight is not the personas themselves — it is the [context isolation](/learnit/control-manifests-step-file-architecture-ai-agents) between them. Each persona gets a fresh context window with only the artifacts it needs. No accumulated junk. No 50K-token mega-prompts. Each agent sees only what it needs to produce its artifact — like departments in a well-run organization where information flows through defined channels rather than everyone CC'd on every email.
 
 Here is how the personas map to the hourglass:
 
@@ -320,9 +320,9 @@ The key insight: `yarn vitest run --changed origin/main` runs only the tests aff
 
 The [coverage thresholds are tiered](/learnit/gitclear-code-churn-refactoring-decline-ai-2025) to match the hourglass. MCP tools demand 100% — these are your business contracts, and every branch matters. Utilities get 90% — high but not fanatical. Components get 70% — because the UI is disposable and over-testing it is waste. If a component is wrong, you regenerate it. If a business rule is wrong, you have a production incident.
 
-**Cost economics.** A monolithic E2E suite running 200 Playwright tests on every PR costs roughly 15-20 minutes of CI compute. With hourglass CI, the same PR runs 15 unit tests (5 seconds), one build (60 seconds), and 2-3 targeted E2E tests (30 seconds). Total: under 2 minutes. That is not incremental improvement. That is a category change in developer feedback speed.
+**Cost economics.** A monolithic E2E suite running 200 Playwright tests on every PR costs roughly 15-20 minutes of CI compute. With hourglass CI, the same PR runs 15 unit tests (5 seconds), one build (60 seconds), and 2-3 targeted E2E tests (30 seconds). Total: under 2 minutes. That is not incremental improvement — it is a category change in developer feedback speed.
 
-**Blast radius analysis.** When a PR modifies a business rule — say, changing the cancellation policy from "end of period" to "immediate" — the hourglass CI catches it in three places. The MCP tool test fails because the expected `effectiveDate` changed. The build might fail if the component references the old field. The E2E test fails if the confirmation message is wrong. Three independent signals, all within 2 minutes.
+**Blast radius analysis.** When a PR modifies a business rule — say, changing the cancellation policy from "end of period" to "immediate" — the hourglass CI catches it in three places. The MCP tool test fails because the expected `effectiveDate` changed. The build might fail if the component references the old field. The E2E test fails if the confirmation message is wrong. Three independent signals, all within 2 minutes. The system triangulates the breakage the way GPS triangulates position — multiple weak signals combining into a precise location.
 
 When a PR only modifies UI — say, moving a button from the sidebar to the header — only the E2E test runs, and only if the spec references that layout. The unit tests do not run because no business logic changed. The blast radius is proportional to the risk. UI changes are low risk, low test cost. Logic changes are high risk, high test cost. The hourglass allocates verification effort where it matters.
 
@@ -336,7 +336,7 @@ Five levels of detail. One underlying principle.
 
 Every technique in this article reduces to one discipline: **decide before you generate.**
 
-Decide the user flow before the AI writes the component. Decide the business rules before the AI writes the handler. Decide the acceptance criteria before the AI writes the test. The decisions are the hard part. The generation is the easy part.
+Decide the user flow before the AI writes the component. Decide the business rules before the AI writes the handler. Decide the acceptance criteria before the AI writes the test. The decisions are the hard part. The generation is the easy part. This is the inversion that AI makes visible: the bottleneck was never typing speed. It was always thinking speed.
 
 [You cannot automate chaos.](/blog/you-cannot-automate-chaos) An AI agent with no spec generates chaos faster. An AI agent with a tight spec generates working software faster. The difference is not the agent. It is the spec.
 

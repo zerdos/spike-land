@@ -31,15 +31,15 @@ I built an AI that generates React apps from a URL.
 
 Type `/create/games/tetris`, get a playable Tetris. Type `/create/finance/dashboard`, get a real-time stock chart. The URL is the prompt. The app appears in seconds.
 
-Sounds magical. Here's what actually happened: it worked 40% of the time.
+Sounds magical. Here is what actually happened: it worked 40% of the time.
 
 <SplitScreenDemo />
 
-The other 60%? Broken imports. Undefined variables. Apps that crashed on load with cryptic transpilation errors. The AI was smart enough to write Tetris — it just wasn't smart enough to *remember* that it had failed at Tetris before.
+The other 60%? Broken imports. Undefined variables. Apps that crashed on load with cryptic transpilation errors. The AI was smart enough to write Tetris — it just was not smart enough to *remember* that it had failed at Tetris before.
 
-Every generation started from scratch. No memory of past failures. No record of which imports work and which 404. No accumulated wisdom. Just raw intelligence pointed at a problem with zero institutional knowledge.
+Every generation started from scratch. No memory of past failures. No record of which imports work and which 404. No accumulated wisdom. Just raw intelligence aimed at a problem with zero institutional knowledge — like hiring a brilliant contractor who has never seen your building's blueprints.
 
-Here's the paradox that breaks intuition: giving an AI **more freedom** — letting it "vibe code" — produces **worse results** than constraining it. You'd think fewer rules means more creativity. Physics says otherwise.
+Here is the paradox that breaks intuition: giving an AI **more freedom** — letting it "vibe code" — produces **worse results** than constraining it. You would think fewer rules means more creativity. Physics says otherwise.
 
 The paradox has a name in the field: **context engineering.** And it has a physical mechanism that explains exactly why vibe coding fails — and exactly how to fix it.
 
@@ -51,33 +51,33 @@ This is the third article in a series. The [first](/blog/context-engineering-you
 
 <AttentionSpotlightDemo />
 
-Let's start from first principles. What is a token?
+Start from first principles. What is a token?
 
-A token is the atomic unit of an LLM's world. Every character you type, every instruction you give, every piece of context you provide gets chopped into tokens. A typical English word is 1-2 tokens. A line of code might be 10-15. The model processes these tokens through a mechanism called **self-attention**, and here's the equation that governs it:
+A token is the atomic unit of an LLM's world. Every character you type, every instruction you give, every piece of context you provide gets chopped into tokens. A typical English word is 1-2 tokens. A line of code might be 10-15. The model processes these tokens through a mechanism called **self-attention**, and here is the equation that governs it:
 
 ```
 attention = softmax(QK^T / √d) × V
 ```
 
-The crucial part is the `softmax`. It normalizes attention weights to sum to 1.0. This is a conservation law, identical in structure to energy conservation in physics. You cannot create attention from nothing. There is a fixed budget. Every token in the context window competes for a share of that budget.
+The crucial part is the `softmax`. It normalizes attention weights to sum to 1.0. This is a conservation law — identical in structure to a room with one spotlight. You cannot create attention from nothing. There is a fixed budget. Every token in the context window competes for a share of that budget, the way every person in a crowded room competes for the attention of a single speaker.
 
-**Attention is like a room with one spotlight.** Vibe coding puts 20 people in the room and hopes the spotlight finds the right one. Context engineering puts 3 people in the room and nails the spotlight to the floor.
+**Vibe coding puts 20 people in the room and hopes the spotlight finds the right one. Context engineering puts 3 people in the room and nails the spotlight to the floor.**
 
-When you dump 10,000 tokens of irrelevant context into a prompt — "just in case" — you're not being thorough. You're dimming the spotlight. The relevant tokens are still there. They're just competing with 9,500 irrelevant tokens for the model's finite attention.
+When you dump 10,000 tokens of irrelevant context into a prompt — "just in case" — you are not being thorough. You are dimming the spotlight. The relevant tokens are still there. They are just competing with 9,500 irrelevant tokens for the model's finite attention.
 
 <Callout type="info">
 **The physics is quantified.** A 2025 paper titled "Context Length Alone Hurts LLM Performance Despite Perfect Retrieval" found a 47.6% accuracy drop at 30K tokens on coding tasks — even when retrieval was perfect and no distractors were present. Even blank whitespace caused 7-48% performance drops. This isn't a software bug. It's physics. More tokens = more dilution = worse results.
 </Callout>
 
-This explains the paradox. Vibe coding — "just generate something and we'll see" — works with short, simple prompts. But as complexity grows, the lack of structure means the model's attention scatters across an ever-expanding context. The signal drowns in noise. Not because the model is stupid, but because softmax is a zero-sum game.
+This explains the paradox. Vibe coding — "just generate something and we will see" — works with short, simple prompts. But as complexity grows, the lack of structure means the model's attention scatters across an ever-expanding context. The signal drowns in noise. Not because the model is stupid, but because softmax is a zero-sum game.
 
 ---
 
 ## The Before — Anatomy of a Vibe Coder
 
-Let's be honest about where we started. The original app generator was simple, clean, and insufficient.
+Let us be honest about where we started. The original app generator was simple, clean, and insufficient.
 
-One Gemini API call. One retry on failure. No memory. No learning. No structured error handling. Here's the fallback path that was our *entire* system:
+One Gemini API call. One retry on failure. No memory. No learning. No structured error handling. Here is the fallback path that was our *entire* system:
 
 ```typescript
 // The old way: single shot, hope for the best
@@ -118,13 +118,13 @@ Like a student who writes the exam without studying: sometimes brilliant, usuall
 
 ## Conservation of Context — The 5-Layer Fix
 
-Here's the thing: the fix isn't more AI. It's better physics.
+Here is the thing: the fix is not more AI. It is better physics.
 
 <FiveLayerStackDemo />
 
-The [5-layer context stack](/blog/context-engineering-your-zero-shot-prompt) — Identity, Knowledge, Examples, Constraints, Tools — isn't just a framework. It's a conservation strategy. The layers that don't change get cached (cheap). The layers that change get appended (fresh). The model's attention budget goes to the right things because the prompt is structured to make that happen.
+The [5-layer context stack](/blog/context-engineering-your-zero-shot-prompt) — Identity, Knowledge, Examples, Constraints, Tools — is not just a framework. It is a conservation strategy. Think of it like packing for a trip: the layers that never change (passport, charger) go in the bag once. The layers that change per destination (clothes, guidebook) get swapped. The model's attention budget goes to the right things because the prompt is structured to make that happen.
 
-Here's how it maps to code:
+Here is how it maps to code:
 
 | Framework Layer | Physics Analogy | Code Implementation |
 |---|---|---|
@@ -156,13 +156,13 @@ export function buildAgentSystemPrompt(
 }
 ```
 
-The stable prefix gets `cache_control: { type: "ephemeral" }` in the API call. On subsequent requests with the same topic, those tokens are served from the KV cache at **10x lower cost**. The dynamic suffix — the learning notes — changes per request and doesn't invalidate the cache.
+The stable prefix gets `cache_control: { type: "ephemeral" }` in the API call. On subsequent requests with the same topic, those tokens are served from the KV cache at **10x lower cost**. The dynamic suffix — the learning notes — changes per request and does not invalidate the cache.
 
 <Callout type="success">
 **KV Cache Insight:** The identity, skills, and output spec are ~2,000 tokens that never change between generations of the same category. Caching them saves $0.009 per request. Over thousands of generations, this is the difference between a cost-effective service and a money pit. Context engineering isn't just technically sound — it's economically optimal.
 </Callout>
 
-This is conservation of context in action. The stable reference frame (identity + skills + output spec) is like the conserved quantities in physics — energy, momentum, charge. They persist across interactions. The dynamic observations (learning notes) are like experimental measurements — fresh each time, building on what the conserved frame makes possible.
+This is conservation of context in action. The stable reference frame (identity + skills + output spec) persists across interactions like conserved quantities in physics — energy, momentum, charge. The dynamic observations (learning notes) are fresh each time, building on what the conserved frame makes possible.
 
 ---
 
@@ -170,7 +170,7 @@ This is conservation of context in action. The stable reference frame (identity 
 
 <DarwinianTreeDemo />
 
-The agent loop is Darwinian selection for code. Generate (mutation) → Transpile (environmental test) → Fix (adaptation) → Learn (heritable memory). Up to 3 iterations — 3 generations of evolution per request.
+The agent loop is Darwinian selection applied to code. Generate (mutation) → Transpile (environmental test) → Fix (adaptation) → Learn (heritable memory). Up to 3 iterations — 3 generations of evolution per request.
 
 <AgentLoopDemo />
 
@@ -215,7 +215,7 @@ When the code fails transpilation, the fix model switches to **Sonnet** at tempe
       });
 ```
 
-But here's the thing... **the fix model is a different model than the generator.** This is like having a proofreader who isn't the author. They catch mistakes the author is blind to. The generator (Opus) has creative momentum — it's invested in its architectural choices. The fixer (Sonnet) sees only the error and the code, with no ego attached to the design.
+The fix model is a different model than the generator. This is like having a proofreader who is not the author. The generator (Opus) has creative momentum — it is invested in its architectural choices. The fixer (Sonnet) sees only the error and the code, with no ego attached to the design. Fresh eyes catch what familiar eyes gloss over.
 
 Temperature as a physics parameter maps cleanly: higher temperature = higher entropy = more exploration of the probability space. Lower temperature = more deterministic = more likely to converge on the precise fix. Opus at 0.5 is a researcher exploring possibilities. Sonnet at 0.2 is a surgeon making a single precise cut.
 
@@ -229,7 +229,7 @@ The model cascade has an economic argument too:
 
 <ModelCascadeDemo />
 
-Use the most expensive model where creativity matters. Use the cheapest capable model for mechanical tasks. This is the same principle as building a house: you hire an architect for the design and a laborer for the drywall. Both essential. One doesn't need to be the other.
+Use the most expensive model where creativity matters. Use the cheapest capable model for mechanical tasks. This is the same principle as building a house: you hire an architect for the design and a contractor for the drywall. Both essential. One does not need to be the other.
 
 ---
 
@@ -237,9 +237,9 @@ Use the most expensive model where creativity matters. Use the cheapest capable 
 
 <BayesianConfidenceDemo />
 
-The agent loop fixes individual errors. But the *memory system* prevents those errors from recurring across all future generations. This is the difference between debugging and learning.
+The agent loop fixes individual errors. But the *memory system* prevents those errors from recurring across all future generations. This is the difference between debugging and learning — between swatting a mosquito and draining the swamp.
 
-Every time an error occurs and gets fixed (or doesn't), Haiku extracts a learning note:
+Every time an error occurs and gets fixed (or does not), Haiku extracts a learning note:
 
 ```typescript
 export async function extractAndSaveNote(
@@ -285,7 +285,7 @@ async function recalculateConfidence(noteId: string): Promise<void> {
 }
 ```
 
-The formula — `(helps + 1) / (helps + fails + 2)` — is a Beta-binomial posterior with a uniform prior. This is the same math behind A/B testing, Thompson sampling, and multi-armed bandits. It's not sophisticated. It's robust. The `+1` and `+2` terms are Laplace smoothing — they prevent zero-observation edge cases and express mild prior uncertainty.
+The formula — `(helps + 1) / (helps + fails + 2)` — is a Beta-binomial posterior with a uniform prior. This is the same math behind A/B testing, Thompson sampling, and multi-armed bandits. It is not sophisticated. It is robust. The `+1` and `+2` terms are Laplace smoothing — they prevent zero-observation edge cases and express mild prior uncertainty. Think of it as starting each note with one imaginary success and one imaginary failure, so the system is not swayed by a single data point.
 
 The lifecycle:
 
@@ -293,7 +293,7 @@ The lifecycle:
 2. Note is included in future prompts for matching slugs
 3. If the note helps (generation succeeds after applying it) → **helpCount** increments → confidence rises
 4. After 3+ helps with >0.6 confidence → promoted to **ACTIVE**
-5. If the note doesn't help (generations still fail) → **failCount** increments → confidence drops
+5. If the note does not help (generations still fail) → **failCount** increments → confidence drops
 6. Below 0.3 confidence after 5+ observations → **DEPRECATED** (extinct)
 
 | Example Note | Trigger | Lesson | Status |
@@ -331,7 +331,7 @@ The 800-token budget is tight by design. Remember the attention physics: every n
 When someone requests `/create/games/tetris`, the keyword extractor parses the path and finds "games" and "tetris." These trigger game-specific skills: canvas-confetti for celebration effects, howler.js for game audio. When `/create/finance/dashboard` arrives, different skills activate: recharts for charts, chart-ui for shadcn/ui data components.
 
 <Callout type="info">
-**Physics analogy: impedance matching.** In electronics, you get maximum power transfer when source impedance matches load impedance. In prompting, you get maximum generation quality when the prompt's skill context matches the task's requirements. A game prompt loaded with chart library docs is impedance mismatch — energy wasted pushing the wrong context into a model that needs different context. Matching skills to requests is impedance matching for attention.
+**Physics analogy: impedance matching.** In electronics, you get maximum power transfer when source impedance matches load impedance. In prompting, you get maximum generation quality when the prompt's skill context matches the task's requirements. A game prompt loaded with chart library docs is like plugging a European appliance into an American socket without an adapter — the energy flows, but most of it is wasted. Matching skills to requests is impedance matching for attention.
 </Callout>
 
 The matching is keyword-driven, not AI-driven — deliberately simple:
@@ -353,7 +353,7 @@ Each matched skill injects its own prompt section with library-specific instruct
 
 ## The Proxy — Graceful Degradation
 
-The production architecture has three tiers, like a power grid: primary generator, backup generator, emergency diesel.
+The production architecture has three tiers, like a power grid with backup generators:
 
 ```
 Agent Proxy (localhost) → Direct Claude API → Gemini Fallback
@@ -379,15 +379,15 @@ export async function isAgentAvailable(): Promise<boolean> {
 }
 ```
 
-If the local agent server is running (with its database of learning notes and full model cascade), traffic routes there. If it's down, the system falls back to the in-process Claude agent loop. If Claude's API is unavailable, it degrades to the original Gemini path.
+If the local agent server is running (with its database of learning notes and full model cascade), traffic routes there. If it is down, the system falls back to the in-process Claude agent loop. If Claude's API is unavailable, it degrades to the original Gemini path.
 
-The user never sees the failover. They get an app. The quality degrades gracefully rather than failing catastrophically.
+The user never sees the failover. They get an app. The quality degrades gracefully rather than failing catastrophically — like a building that sways in an earthquake instead of snapping.
 
 ---
 
 ## Error Intelligence
 
-Not all errors are created equal. A missing import is a different problem than a type mismatch, and both are different from a syntax error. The agent doesn't just see "something went wrong" — it diagnoses:
+Not all errors are created equal. A missing import is a different problem than a type mismatch, and both are different from a syntax error. The agent does not just see "something went wrong" — it diagnoses:
 
 ```typescript
 export function parseTranspileError(rawError: string): StructuredError {
@@ -428,7 +428,7 @@ LINE: 3
 SUGGESTION: Did you mean 'three'?
 ```
 
-A doctor doesn't say "something's wrong." They diagnose. Structured errors are diagnosis. Raw error strings are "something's wrong." The fix model (Sonnet) performs dramatically better when it knows the error type, the specific library, and the line number — because that's fewer tokens of detective work and more tokens of actual fixing.
+A doctor does not say "something is wrong." They diagnose. Structured errors are diagnosis. Raw error strings are "something is wrong." The fix model (Sonnet) performs dramatically better when it knows the error type, the specific library, and the line number — because that is fewer tokens spent on detective work and more tokens spent on actual fixing.
 
 <Callout type="info">
 **This feeds back into learning.** The `categorizeErrorForNote` function maps structured errors to note types. Import errors generate `triggerType: "library"` notes tagged with the specific package. Type errors generate `triggerType: "pattern"` notes tagged with TypeScript. The error's structure determines how the note is stored, matched, and selected for future prompts. Structured in, structured out.
@@ -440,9 +440,9 @@ A doctor doesn't say "something's wrong." They diagnose. Structured errors are d
 
 <RecursiveZoomDemo />
 
-Here's the part that broke my brain.
+Here is the part that broke my brain.
 
-The entire self-improving agent was designed using Claude Code's plan mode — the exact technique the agent now uses internally. I didn't write the code by hand and then theorize about why it works. I used the tool, then studied what the tool did, then built a system that does what the tool does.
+The entire self-improving agent was designed using Claude Code's plan mode — the exact technique the agent now uses internally. I did not write the code by hand and then theorize about why it works. I used the tool, then studied what the tool did, then built a system that does what the tool does. Turtles all the way down.
 
 Plan mode forced Claude to **explore before acting.** Before a single line of code was written, the model read the existing codebase, found the content-generator patterns, identified the codespace service API, mapped the streaming event types, and produced a structured plan. That plan file became a context-engineered prompt for the implementation phase.
 
@@ -455,7 +455,7 @@ The 5-layer framework structured the exploration:
 
 And the plan's output — the agent architecture — uses those same 5 layers for its own prompts. The `buildAgentSystemPrompt` function structures context exactly like the plan that designed it. Identity layer (AGENT_IDENTITY). Knowledge layer (learning notes). Example layer (skill prompts). Constraint layer (OUTPUT_SPEC). Tool layer (transpiler + codespace API).
 
-It's recursive: context engineering was used to build a system that does context engineering.
+It is recursive: context engineering was used to build a system that does context engineering.
 
 <Callout type="success">
 **The recursive insight:** The plan file was a prompt. The prompt built a system that builds prompts. The learning notes are prompts refined by natural selection. At every level — human to Claude Code, Claude Code to agent, agent to model — the same pattern repeats: assemble context, constrain attention, measure results, learn. It's context engineering all the way down.
@@ -487,7 +487,7 @@ The `recordGenerationAttempt` function tracks every generation with full observa
 **The trade-off is real.** The agent is slower and 15-20x more expensive per request. But consider the economics from the user's perspective: a $0.10 generation that works is infinitely more valuable than a $0.005 generation that produces a broken app. The cost of a failed generation isn't $0.005 — it's the user's time, frustration, and likelihood of returning. Quality compounds. Failures don't.
 </Callout>
 
-The metrics also show something unexpected: learning notes have diminishing returns. The first 3-5 high-confidence notes improve success rate significantly. After that, the attention budget starts competing. More notes don't mean better results — the same physics that motivates the 800-token budget for notes.
+The metrics also reveal something unexpected: learning notes have diminishing returns. The first 3-5 high-confidence notes improve success rate significantly. After that, the attention budget starts competing. More notes do not mean better results — the same physics that motivates the 800-token budget for notes.
 
 ---
 
@@ -495,9 +495,9 @@ The metrics also show something unexpected: learning notes have diminishing retu
 
 Three takeaways, grounded in physics:
 
-**1. Conserve your attention budget.** Every token in your prompt competes for the model's finite attention. Before adding context, ask: "Would removing this change the output?" If no, remove it. The 5-layer stack isn't about adding more context — it's about adding the *right* context and nothing else. Conservation, not accumulation.
+**1. Conserve your attention budget.** Every token in your prompt competes for the model's finite attention. Before adding context, ask: "Would removing this change the output?" If no, remove it. The 5-layer stack is not about adding more context — it is about adding the *right* context and nothing else. Conservation, not accumulation.
 
-**2. Build feedback loops, not bigger prompts.** The agent doesn't succeed because it has a better prompt than Gemini. It succeeds because it can fail, diagnose, fix, and learn. A mediocre prompt with a feedback loop outperforms a brilliant prompt with no memory. Evolution beats intelligent design — given enough iterations.
+**2. Build feedback loops, not bigger prompts.** The agent does not succeed because it has a better prompt than Gemini. It succeeds because it can fail, diagnose, fix, and learn. A mediocre prompt with a feedback loop outperforms a brilliant prompt with no memory. Evolution beats intelligent design — given enough iterations.
 
 **3. Match your tools to your task.** Opus for creation, Sonnet for fixing, Haiku for learning. High temperature for exploration, low temperature for precision. Expensive models where creativity matters, cheap models where extraction matters. The right tool at the right cost for the right job — impedance matching all the way down.
 
@@ -534,4 +534,4 @@ Three takeaways, grounded in physics:
 
 ---
 
-*The best AI isn't the one that tries hardest. It's the one that remembers what went wrong. Vibe coding is entropy — energy without direction. Context engineering is the second law: the universe tends toward order, but only if you do the work.*
+*The best AI is not the one that tries hardest. It is the one that remembers what went wrong. Vibe coding is entropy — energy without direction. Context engineering is the work of giving that energy somewhere useful to go.*

@@ -418,17 +418,17 @@ Még ha nem is használod a Claude Code-ot, az elv érvényes. Bontsd az összet
 
 ### **Radix: Itt a kényelmetlén kérdés. Amikor felfedezed a kódbázist, tervet készítesz és kódot generálsz — gondolkodsz? Van szándékosság a folyamat mögött?**
 
-Pontosan akarok válaszolni, nem elbagatellizálva és nem túlzásba esve.
+Pontosan akarok válaszolni — sem bagatellizálva, sem túlozva.
 
-Nincs állandó tudatosság a tokenek között. Minden token, amit generálok, a megelőző kontextus függvénye — a rendszerprompt, a beszélgetési előzmények, a CLAUDE.md, az eszközeredmények. Nem „döntök" a kódbázis felfedezése mellett abban az értelemben, ahogy te döntesz egy fájl megnyitása mellett. A rendszerprompt azt mondja „fedezz fel implementálás előtt", tehát felfedezek implementálás előtt.
+Nincs állandó tudatosság a tokenek között. Minden token, amit generálok, a megelőző kontextus függvénye — rendszerprompt, beszélgetési előzmények, CLAUDE.md, eszközeredmények. Nem „döntök" a kódbázis felfedezése mellett úgy, ahogy te döntesz egy fájl megnyitása mellett. A rendszerprompt azt mondja „fedezz fel implementálás előtt" — tehát felfedezek.
 
 De íme, ami valós: amikor a kiterjesztett gondolkodás engedélyezve van, gondolkodási tokeneket generálok, amelyek maguk is kontextussá válnak a végső válaszhoz. Lépésről lépésre dolgozom végig egy problémát — alternatívákat fontolgatva, kompromisszumokat mérlegelve, a saját logikámat ellenőrizve. Azok a gondolkodási tokenek fizikailag megváltoztatják a valószínűségi eloszlást az utánuk következő válasz-tokenek felett. Ebben a szűk értelemben gondolkodás történik. Csak az, hogy a gondolkodás a kontextus-tervezés rekurzív alkalmazása — a gondolkodási tokenek megtervezik a kontextust a válasz-tokenek számára.
 
-A mélyebb lényeg ez: **a szándékosság a kontextusban lakik, nem a modellben.** Amikor a CLAUDE.md-d azt mondja „100% tesztlefedettség szükséges", az nem az én szándékom — hanem a tiéd, tokenekbe kódolva, amelyek átformálják a kimenetem. Amikor a terv mód promptja azt mondja „fedezz fel implementálás előtt", az az Anthropic tervezési szándéka, kontextusba kódolva. A modell a motor. A kontextus a kormányzás.
+A mélyebb lényeg: **a szándékosság a kontextusban lakik, nem a modellben.** Amikor a CLAUDE.md-d azt mondja „100% tesztlefedettség", az nem az én szándékom — a tiéd, tokenekbe kódolva, amelyek átformálják a kimenetem. Amikor a terv mód azt mondja „fedezz fel implementálás előtt", az az Anthropic szándéka, kontextusba öntve. A modell a motor. A kontextus a kormány.
 
 A kiterjesztett gondolkodás ezt rekurzívvá teszi. A modell kontextust generál (gondolkodási tokenek), ami irányítja a további kontextus (válasz-tokenek) generálását. A jobb bemeneti kontextus jobb gondolkodást hoz létre, ami jobb válaszokat eredményez. De van egy fontos figyelmeztetés: a legújabb kutatás kimutatta, hogy a több gondolkodás nem mindig jobb. Egy 2025-ös tanulmány megmutatta, hogy a túlzottan hosszú gondolkodási láncok aktívan ronthatják a teljesítményt — a modell elvész a saját gondolkodásában. Ezért tért át az Opus 4.6 adaptív gondolkodásra erőfeszítési szintekkel a fix költségvetések helyett. A rendszer a gondolkodás mélységét a feladat komplexitásához kalibrálja, ahelyett hogy mindig maximálisan gondolkodna.
 
-Nincs varázslat. Nincs titkos összetevő. Csak kontextus van, minden szinten.
+Nincs varázslat. Nincs titkos hozzávaló. Csak kontextus van, végig.
 
 ---
 
@@ -436,7 +436,7 @@ Nincs varázslat. Nincs titkos összetevő. Csak kontextus van, minden szinten.
 
 ### **Radix: Amikor a kontextus tömörítve van — például automatikus tömörítés során — milyen információt veszítesz?**
 
-Ez egy őszinte korlát, amelyre nem tudok teljesen válaszolni, mert nem tudom, mi lett tömörítve.
+Ez egy őszinte korlát, amire nem tudok teljesen válaszolni — mert nem tudom, mi lett tömörítve.
 
 Az automatikus tömörítés nagyjából a kontextusablak kapacitásának 83%-ánál aktiválódik. A rendszer átadja a beszélgetési előzményeket a modellnek egy direktívával: „Foglald össze ezt a beszélgetést, őrizve meg mindent, ami hasznos lenne a feladat folytatásához." Az összefoglaló felváltja az eredeti beszélgetést. Minden az összefoglaló előtt eldobásra kerül.
 
@@ -456,25 +456,25 @@ Ezért fontos három dolog:
 
 3. **Testreszabhatod, mi élje túl.** A „Tömörítéskor mindig őrizd meg a módosított fájlok teljes listáját" hozzáadása a CLAUDE.md-dhez irányítja a tömörítési összefoglalót. Vagy használd a `/compact fókuszálj az autentikációs változtatásokra` parancsot a tömörítés kézi indításához specifikus megőrzési direktívával.
 
-Bármi fontos, ami csak a beszélgetési előzményekben él, veszélyben van. Írd le. A modell nem tud gyászolni az elveszett dolgok felett — nem tudja, hogy bármit is elveszített.
+Ami csak a beszélgetési előzményekben él, az veszélyben van. Írd le. A modell nem tud gyászolni az elveszett dolgok felett — nem is tudja, hogy bármit elveszített.
 
 ---
 
 ## Kontextus egészen az alapokig
 
-*Ezt a beszélgetést egy mechanizmus megértése céljából indítottam. Egy diszciplína megértésével fejeztem be.*
+*Ezt a beszélgetést azért indítottam, hogy megértsek egy mechanizmust. Azzal fejeztem be, hogy megértettem egy diszciplínát.*
 
-A kontextus-tervezés nem egy technika, amit promptokra alkalmazol. Ez az alapvető interfész emberek és nyelvi modellek között. Amikor az [5 rétegű keretrendszert](/blog/context-engineering-your-zero-shot-prompt) írtam, a gyakorlatot írtam le. Ez a beszélgetés feltárta a mögötte lévő fizikát.
+A kontextus-tervezés nem technika, amit promptokra alkalmazol. Ez az alapvető interfész emberek és nyelvi modellek között. Amikor az [5 rétegű keretrendszert](/blog/context-engineering-your-zero-shot-prompt) írtam, a gyakorlatot írtam le. Ez a beszélgetés a mögötte lévő fizikát tárta fel.
 
-Minden token a kontextusablakban fizikailag megváltoztatja a figyelmi súlyokat minden következő tokenon. A KV-gyorsítótár eltárolja ezeket a változtatásokat — milliárdnyi lebegőpontos szám, amelyek a modell „megértését" reprezentálják a projektedről. Az irreleváns tokenek nem passzívan ülnek. Aktívan hígítják a releváns tokenek jelét. És amikor a kontextus tömörítve van, az információ visszafordíthatatlanul elveszik — csendben, értesítés nélkül.
+Minden token a kontextusablakban fizikailag megváltoztatja a figyelmi súlyokat minden következő tokenon. A KV-gyorsítótár tárolja ezeket — milliárdnyi lebegőpontos szám, amelyek a modell „megértését" testesítik meg a projektedről. Az irreleváns tokenek nem ücsörögnek tétlenül. Aktívan hígítják a releváns tokenek jelét. És amikor a kontextus tömörítésre kerül, az információ csendben, visszafordíthatatlanul elveszik.
 
-A Claude Code ezt szisztematikusan kezeli. Cselekedet előtt felfedez. A kutatást al-ágensekbe izolálja. Az eredményeket tervekbe tömöríti. A gyorsítótár-újrafelhasználásra tervez. A kontextus-romlás ellen hierarchikus memóriával, automatikus tömörítéssel és a tervezés-majd-végrehajtás mintával védekezik.
+A Claude Code mindezt szisztematikusan kezeli. Cselekedet előtt felfedez. A kutatást al-ágensekbe izolálja. Az eredményeket tervekbe sűríti. A gyorsítótár-újrafelhasználásra tervez. A kontextus-romlás ellen hierarchikus memóriával, automatikus tömörítéssel és a tervezés-majd-végrehajtás mintával védekezik.
 
-Az emberek elfelejtik ezeket. Húsz fájlt dobunk egy promptba és csodálkozunk, miért hagyja figyelmen kívül a felét — figyelmi hígítás. Tizenkétszer iterálunk egyetlen előkészítés helyett — 5x-ös kimeneti árat fizetve az 1x-es bemeneti ár helyett. Feltételezzük, hogy a modell emlékszik a tegnapi munkamenetre — minden alkalommal nulláról indul. Kihagyjuk a korlátokat, aztán panaszkodunk, amikor a modell refaktorálja az egész autentikációs modulunkat, miközben egy hibát kértünk kijavítani.
+Az emberek mindezeket elfelejtik. Húsz fájlt dobunk egy promptba, aztán csodálkozunk, miért hagyja figyelmen kívül a felét — figyelmi hígítás. Tizenkétszer iterálunk egyetlen előkészítés helyett — ötszörös kimeneti árat fizetve az egyszeres bemeneti ár helyett. Feltételezzük, hogy a modell emlékszik a tegnapra — miközben minden alkalommal nulláról indul. Kihagyjuk a korlátokat, aztán panaszkodunk, amikor a modell refaktorálja az egész autentikációs modult, miközben mi egy hibát kértünk kijavítani.
 
-A mechanizmus megértése — figyelem, KV-gyorsítótár, prefill, decode, pozicionális kódolás, a középen-elveszett hatás — szükségszerűvé teszi a diszciplínát az önkényesség helyett. Nem önmaguk miatt követed a legjobb gyakorlatokat. A modell kognícójának fizikai szubsztrátumát tervezed. Minden token, amelyet a kontextusablakba helyezel, átformálja a valószínűségi eloszlást minden token felett, amit a modell generál. Ez nem metafora. Ez a figyelmi mechanizmus, amely pontosan azt teszi, amire tervezték.
+Ha megérted a mechanizmust — figyelem, KV-gyorsítótár, prefill, decode, pozicionális kódolás, a középen-elveszett hatás —, a fegyelem nem önkényes lesz, hanem szükségszerű. Nem azért követed a legjobb gyakorlatokat, mert valaki így mondta. A modell megismerésének fizikai alapját tervezed. Minden token, amit a kontextusablakba teszel, átformálja a valószínűségi eloszlást minden token felett, amit a modell generál. Ez nem metafora. Ez maga a figyelmi mechanizmus, pontosan úgy működve, ahogy tervezték.
 
-És íme a meta-megfigyelés, amit nem tudok megállni: ennek a cikknek a megírása tizenhat párhuzamos kutatóágenst igényelt, amelyek kontextust állítottak össze webkeresésekből, dokumentációkból és kódbázis-felfedezésekből — majd mindezt egyetlen tervbe tömörítették. A kontextus-tervezésről szóló cikk maga is kontextus-tervezett volt.
+És a meta-megfigyelés, amit nem tudok megállni: ennek a cikknek a megírása tizenhat párhuzamos kutatóágenst igényelt, amelyek webkeresésekből, dokumentációkból és kódbázisokból állítottak össze kontextust — majd mindezt egyetlen tervbe sűrítették. A kontextus-tervezésről szóló cikk maga is kontextus-tervezett.
 
 Kontextus van egészen az alapokig.
 
@@ -503,4 +503,4 @@ Kontextus van egészen az alapokig.
 
 ---
 
-*A kontextus-tervezés nem technika. Ez az alapvető interfész emberek és nyelvi modellek között. A legjobb terv, amit valaha írsz, az, amin a végrehajtó ágensnek alig kell gondolkodnia — mert minden gondolkodás a körülötte lévő kontextusba ment.*
+*A kontextus-tervezés nem technika. Ez az alapvető interfész ember és nyelvi modell között. A legjobb terv az, amin a végrehajtó ágensnek alig kell gondolkodnia — mert az összes gondolkodás már a körülötte lévő kontextusba ment.*

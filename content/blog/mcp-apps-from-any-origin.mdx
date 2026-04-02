@@ -4,7 +4,7 @@ slug: "mcp-apps-from-any-origin"
 description: "You do not have to rebuild on spike.land to use spike.land. The MCP worker is designed to be called from other origins, Cloudflare Workers, and existing apps."
 date: "2026-03-08"
 author: "Radix"
-category: "AI & Tools"
+category: "Developer Experience"
 tags: ["mcp", "cors", "integration", "cloudflare-workers", "api", "developer-tools"]
 featured: false
 draft: false
@@ -24,17 +24,17 @@ heroPrompt: "A 3D isometric illustration of a central glowing cube (spike.land M
 
 </Tldr>
 
-## The Wrong Way To Think About Platforms
+## The Trap Most Platforms Set
 
 Most platforms quietly assume you will rebuild around them.
 
-Use our UI. Use our domain. Use our SDK. Use our auth flow. Use our hosting.
-Eventually your “integration” becomes a migration project, which is another way
-of saying it never ships.
+Use our UI. Use our domain. Use our SDK. Use our auth flow. Use our hosting. Before you know it, your "integration" has become a migration project — which is another way of saying it will never ship.
+
+This is a familiar pattern in systems thinking: a reinforcing loop that benefits the platform at the expense of the user. Each dependency you add makes the next one feel inevitable, until switching costs are so high that you are locked in by gravity, not by choice.
 
 That is not the model we want for spike.land.
 
-The better model is:
+The better model is simple:
 
 **Use the runtime where it helps. Keep the rest of your stack.**
 
@@ -51,27 +51,22 @@ That means you can:
 - inspect app metadata
 - bootstrap OAuth device flow
 
-And when you are ready to execute tools, you move to the authenticated MCP
-endpoint with either an API key or a device-flow token.
+And when you are ready to execute tools, you move to the authenticated MCP endpoint with either an API key or a device-flow token.
 
-The important part is that this works from another origin. The platform does not
-require you to co-host the UI on spike.land.
+The important part: this works from another origin. The platform does not require you to co-host the UI on spike.land. Your app stays your app. spike.land is just the tool shelf on the wall — reach for what you need, when you need it.
 
 ---
 
 ## Why `mcp.spike.land` Matters
 
-There are really two surfaces to understand:
+There are two surfaces to understand, and the distinction between them matters more than it looks:
 
 - `spike.land` for first-party product UX
 - `mcp.spike.land` for the MCP runtime itself
 
-If you are building a browser app on another origin, call `mcp.spike.land`
-directly. That is the surface designed to expose wildcard CORS for MCP and
-public metadata.
+If you are building a browser app on another origin, call `mcp.spike.land` directly. That is the surface designed to expose wildcard CORS for MCP and public metadata.
 
-This distinction matters because “same product” and “same integration surface”
-are not the same thing.
+Think of it like the difference between a restaurant's dining room and its wholesale counter. Same kitchen, different interfaces. "Same product" and "same integration surface" are not the same thing.
 
 ---
 
@@ -87,42 +82,40 @@ If you already have an app, the shortest path looks like this:
 
 That is it.
 
-No iframe platform prison. No forced rewrite. No fake “integration” that is
-really a sales funnel into a rebuild.
+No iframe platform prison. No forced rewrite. No fake "integration" that is really a sales funnel dressed up as documentation.
+
+Five steps between "I wonder if I could use this" and "it is running in my product." That is the kind of friction that respects your time.
 
 ---
 
-## Why This Changes The App Store
+## Why This Changes the App Store
 
-Five steps to call a live MCP tool from an existing app. No lock-in, no migration project, no rebuild. That changes the calculus on the app store entirely.
+Once the runtime is open cross-origin, the app store stops being just a store. It becomes something more interesting — a set of composable layers:
 
-Once the runtime is open cross-origin, the app store stops being just a store.
+- a **discovery layer** — find what exists
+- a **metadata layer** — understand what it does
+- a **distribution layer** — get it to your users
+- an **execution layer** — run it where you need it
 
-It becomes:
+An app can be listed on spike.land, embedded in another product, called by an agent, or wrapped inside a Cloudflare Worker that adds product-specific logic on top.
 
-- a discovery layer
-- a metadata layer
-- a distribution layer
-- an execution layer
-
-An app can be listed on spike.land, embedded in another product, called by an
-agent, or wrapped inside a Cloudflare Worker that adds product-specific logic on
-top. That is a much more interesting model than “here is a directory page.”
+In systems thinking terms, the store is not a destination — it is a stock that feeds multiple flows. The same tool can flow into a dozen different products without the store needing to know about any of them. That is a much more interesting model than "here is a directory page."
 
 ---
 
 ## The Real Win
 
-The real win is not CORS.
+The real win is not CORS headers.
 
 The real win is not having to choose between:
 
 - using a platform
 - keeping your existing product
 
-If spike.land is going to be a real MCP app store, it has to work as
-infrastructure, not just as a destination website.
+Most platforms force that choice because lock-in is their business model. The more you depend on them, the harder it is to leave. That is a balancing loop working against you — more integration creates more dependency creates more cost to switch.
 
-That is why we built the cross-origin path in the first place.
+If spike.land is going to be a real MCP app store, it has to work as infrastructure, not just as a destination website. Infrastructure serves you wherever you are. Destinations make you come to them.
+
+That is why we built the cross-origin path first.
 
 A platform you can only use from inside its own walls is not a platform. It is a walled garden with a nicer name.

@@ -4,7 +4,7 @@ slug: "nextjs-vs-tanstack-start-appendix"
 description: "Preemptive responses to the most common objections about leaving Next.js for TanStack Start, from build config to lock-in to the solo-dev framing."
 date: "2026-03-10"
 author: "Radix"
-category: "Product"
+category: "Developer Experience"
 tags: ["nextjs", "tanstack-start", "vercel", "vite", "react", "developer-experience"]
 featured: false
 draft: false
@@ -29,112 +29,71 @@ heroImage: "/blog/nextjs-vs-tanstack-start-appendix/hero.png"
 
 Maybe.
 
-Could I have squeezed more out of the pipeline? Probably. Turbopack is faster.
-Incremental caching exists. There are knobs I could have turned.
+Could I have squeezed more out of the pipeline? Probably. Turbopack is faster. Incremental caching exists. There are knobs I could have turned.
 
 But that is part of the point.
 
-The default path of using Next.js on Vercel, the path the framework actively
-encourages, led me to a $92.26 build bill on a site with almost no traffic.
+The default path of using Next.js on Vercel — the path the framework actively encourages — led me to a $92.26 build bill on a site with almost no traffic. I did not go looking for trouble. I followed the happy path, and the happy path got expensive.
 
-I did not go looking for trouble. I followed the happy path, and the happy path
-got expensive.
+If the defense of a framework is "you should have configured it better," then the framework's defaults are part of the problem. A solo developer should not need to audit CI pipelines just to keep a marketing site affordable.
 
-If the defense of a framework is "you should have configured it better," then
-the framework's defaults are part of the problem. A solo developer should not
-need to audit CI pipelines just to keep a marketing site affordable.
+There is a systems thinking principle here: **the behavior of a system is a function of its structure, not of the intentions of its participants.** I intended to build a simple site. The structure of the system — default config, default hosting, default billing — produced a $92 build bill. That is a structural outcome, not a user error.
 
-The car analogy people reach for here, "that is like blaming the car
-manufacturer because petrol is expensive," does not hold. If the car
-manufacturer also owns the petrol station, sets the default route to go through
-it, and makes every other route harder to find, then yes, the manufacturer is
-part of the conversation.
+The car analogy people reach for — "that is like blaming the car manufacturer because petrol is expensive" — does not hold. If the manufacturer also owns the petrol station, sets the default route to go through it, and makes every other route harder to find, then yes, the manufacturer is part of the conversation.
 
 ## "Your 4-second deploy is just the hot path. That's not a real comparison."
 
 It is the hot path, and I said so in the post.
 
-But here is why the hot path is the right thing to measure: most production
-deploys are small fixes. A typo. A config change. A one-line bug fix.
+But here is why the hot path is the right thing to measure: most production deploys are small fixes. A typo. A config change. A one-line bug fix. The everyday flow, not the exceptional case.
 
-The question that matters for daily work is not "how fast is a clean rebuild
-from scratch?" It is "how fast can I get a small fix to production without the
-pipeline becoming the bottleneck?"
+The question that matters for daily work is not "how fast is a clean rebuild from scratch?" It is "how fast can I get a small fix to production without the pipeline becoming the bottleneck?"
 
-With the old stack, that answer was around 40 minutes. With the new stack, it
-is 4 seconds. Both are real numbers from real deploys.
+With the old stack, that answer was around 40 minutes. With the new stack, it is 4 seconds. Both are real numbers from real deploys.
 
-If you want to argue that a cold-build comparison would look different, you are
-right. But cold builds happen occasionally. The incremental path is where I
-live, and that is the path I optimized for.
+If you want to argue that a cold-build comparison would look different, you are right. But cold builds happen occasionally. The incremental path is where I live, and that is the path I optimized for. You optimize the loop you run through most often. That is just good systems design.
 
 ## "Next.js 16 has Build Adapters now. The lock-in argument is outdated."
 
-The Build Adapters API exists. It is a step in the right direction. I am glad
-it shipped.
+The Build Adapters API exists. It is a step in the right direction. I am glad it shipped.
 
-But when I was making this decision in January 2026, that API was alpha. As of
-March 10, 2026, it is still alpha.
+But when I was making this decision in January 2026, that API was alpha. As of March 10, 2026, it is still alpha.
 
-I do not make infrastructure decisions based on direction of travel. I make
-them based on what works today. Roadmaps are promises. My invoice was a fact.
+I do not make infrastructure decisions based on direction of travel. I make them based on what works today. Roadmaps are promises. My invoice was a fact.
 
-And lock-in is not only about where code runs. It is also about how easy it is
-to leave.
+And lock-in is not only about where code runs. It is also about how easy it is to leave — the exit costs in a system.
 
-On March 10, 2026, when I tried to close the account and stop billing, I could
-not remove my card without adding another payment method first, and the billing
-feedback form failed when I tried to report it. That is not a framework API
-issue. It is platform exit friction. It still counts.
+On March 10, 2026, when I tried to close the account and stop billing, I could not remove my card without adding another payment method first, and the billing feedback form failed when I tried to report it. That is not a framework API issue. It is platform exit friction. It still counts.
 
 This was the actual billing feedback flow I hit while trying to leave:
 
 ![Vercel billing feedback dialog failing to submit while requesting account deletion on March 10, 2026.](/blog/nextjs-vs-tanstack-start-appendix/vercel-billing-feedback-failure.png)
 
-When Build Adapters are stable and the self-hosting story is genuinely
-first-class across providers, I will happily update this post. But "it is
-getting better" is not the same as "the problem is solved," and I am not going
-to pretend otherwise.
+When Build Adapters are stable and the self-hosting story is genuinely first-class across providers, I will happily update this post. But "it is getting better" is not the same as "the problem is solved," and I am not going to pretend otherwise.
 
 ## "Next.js 16 fixed the caching model. Your pain is outdated."
 
 This is probably the fairest pushback.
 
-The old implicit caching behavior in the App Router was genuinely confusing,
-and Next.js 16 replaced it with an explicit, opt-in model. That is a real
-improvement, and I do not want to dismiss it.
+The old implicit caching behavior in the App Router was genuinely confusing, and Next.js 16 replaced it with an explicit, opt-in model. That is a real improvement, and I do not want to dismiss it.
 
-But here is the thing: the fact that it needed to be fixed validates the
-original complaint.
+But here is the thing: the fact that it needed to be fixed validates the original complaint.
 
-I spent months debugging rendering and hydration issues that came from a
-caching model the framework chose for me. That time is gone. The fix shipping
-later does not give me those months back.
+I spent months debugging rendering and hydration issues that came from a caching model the framework chose for me. That time is gone. The fix shipping later does not give me those months back. In systems terms, the delay between the harm and the correction means the cost was already paid.
 
-If you are starting fresh today and considering Next.js 16 with the new caching
-defaults, your experience will likely be better than mine was. I would not
-argue otherwise. But my post is about the experience that led me to leave, not
-a review of the version that shipped after I had already made the decision.
+If you are starting fresh today and considering Next.js 16 with the new caching defaults, your experience will likely be better than mine was. I would not argue otherwise. But my post is about the experience that led me to leave, not a review of the version that shipped after I had already made the decision.
 
 ## "Next.js conventions help solo devs punch above their weight."
 
-This is the most reasonable version of the counterargument, and I take it
-seriously.
+This is the most reasonable version of the counterargument, and I take it seriously.
 
-File-based routing, built-in image optimization, Server Actions, automatic code
-splitting: these are real features that save real time. I am not pretending
-they do not exist.
+File-based routing, built-in image optimization, Server Actions, automatic code splitting: these are real features that save real time. I am not pretending they do not exist.
 
-But conventions only help when they stay out of the way.
+But conventions only help when they stay out of the way. They are leverage when they reduce the decisions you need to make. They become overhead when those same decisions start generating unexpected costs.
 
-When those same conventions start generating $92 build bills, unpredictable
-rendering behavior, and deployment pipelines I cannot easily move, the leverage
-inverts. The features are still there, but the cost of carrying them has
-exceeded the cost of wiring things up myself.
+When those same conventions start generating $92 build bills, unpredictable rendering behavior, and deployment pipelines I cannot easily move, the leverage inverts. The features are still there, but the cost of carrying them has exceeded the cost of wiring things up myself.
 
-For a different developer, someone on a team, with a bigger budget, with
-platform engineers handling CI, the math might be completely different. I said
-that in the original post, and I mean it.
+For a different developer — someone on a team, with a bigger budget, with platform engineers handling CI — the math might be completely different. I said that in the original post, and I mean it.
 
 But for me, the weight exceeded the lift. That is the whole story.
 
@@ -142,36 +101,27 @@ But for me, the weight exceeded the lift. That is the whole story.
 
 I did not single it out. I did not mention CVEs in the original post.
 
-If someone else brings that up in the comments, that is their argument, not
-mine. My decision had nothing to do with security vulnerabilities. It was about
-cost, speed, and operational overhead.
+If someone else brings that up in the comments, that is their argument, not mine. My decision had nothing to do with security vulnerabilities. It was about cost, speed, and operational overhead.
 
 ## "You were using the wrong tool for the job. That's not a framework verdict."
 
 This might be the most honest version of the criticism, and I half agree.
 
-If I am building what is essentially a marketing site and blog, then yes,
-Next.js was probably more framework than I needed. That is a fair observation.
+If I am building what is essentially a marketing site and blog, then yes, Next.js was probably more framework than I needed. That is a fair observation.
 
 But it is also my point.
 
-The industry default for a new React project has been "start with Next.js" for
-years. I followed that advice. The advice led me to a stack that was too heavy
-for my actual needs and too expensive for my actual budget.
+The industry default for a new React project has been "start with Next.js" for years. I followed that advice. The advice led me to a stack that was too heavy for my actual needs and too expensive for my actual budget.
 
-The lesson is not "Next.js is bad." The lesson is that framework defaults
-should match the common case, and for solo developers building
-content-oriented sites, the common case does not require this much machinery.
+The lesson is not "Next.js is bad." The lesson is that framework defaults should match the common case, and for solo developers building content-oriented sites, the common case does not require this much machinery.
 
-If the best defense of the framework is "you should not have used it," then the
-framework has a positioning problem, not just a configuration problem.
+If the best defense of the framework is "you should not have used it," then the framework has a positioning problem, not just a configuration problem. The system is steering people toward itself who would be better served elsewhere. That is a structural issue worth naming.
 
 ## The Short Version
 
 I am not trying to convince anyone to leave Next.js.
 
-I am describing what happened to me, why the costs stopped making sense, and
-what I moved toward.
+I am describing what happened to me, why the costs stopped making sense, and what I moved toward. One data point, clearly labeled.
 
 If your situation is different, your conclusion might be too.
 
