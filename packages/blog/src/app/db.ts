@@ -1,4 +1,4 @@
-import { requestInfo } from "rwsdk/worker";
+import { env } from "cloudflare:workers";
 
 export interface BlogPostRow {
   slug: string;
@@ -76,13 +76,17 @@ export function resolveContent(
   return { content: row.content, resolvedLang: "en" };
 }
 
-export async function getAllPosts(db: D1Database): Promise<BlogPostRow[]> {
-  const result = await db
+function getDb(): D1Database {
+  return (env as unknown as Env).DB;
+}
+
+export async function getAllPosts(): Promise<BlogPostRow[]> {
+  const result = await getDb()
     .prepare("SELECT * FROM blog_posts WHERE draft = 0 AND unlisted = 0 ORDER BY date DESC")
     .all<BlogPostRow>();
   return result.results ?? [];
 }
 
-export async function getPostBySlug(db: D1Database, slug: string): Promise<BlogPostRow | null> {
-  return db.prepare("SELECT * FROM blog_posts WHERE slug = ?").bind(slug).first<BlogPostRow>();
+export async function getPostBySlug(slug: string): Promise<BlogPostRow | null> {
+  return getDb().prepare("SELECT * FROM blog_posts WHERE slug = ?").bind(slug).first<BlogPostRow>();
 }

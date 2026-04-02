@@ -1,9 +1,8 @@
-import type { RequestInfo } from "rwsdk/worker";
-import { getAllPosts, parseTags } from "@/app/db";
+import { getAllPosts } from "@/app/db";
 import { PostCard } from "@/app/shared/post-card";
 
-export async function HomePage({ env }: RequestInfo) {
-  const posts = await getAllPosts(env.DB);
+export async function HomePage() {
+  const posts = await getAllPosts();
 
   const featured = posts.filter((p) => p.featured);
   const rest = posts.filter((p) => !p.featured);

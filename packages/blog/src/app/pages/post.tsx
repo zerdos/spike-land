@@ -1,12 +1,13 @@
-import type { RequestInfo } from "rwsdk/worker";
+import { requestInfo } from "rwsdk/worker";
 import { getPostBySlug, detectLang, resolveContent, parseTags } from "@/app/db";
 
-export async function PostPage({ params, env, request, ctx }: RequestInfo) {
+export async function PostPage() {
+  const { request, params, ctx } = requestInfo;
   const slug = params.slug as string;
   const url = new URL(request.url);
   const lang = detectLang(request, url.searchParams.get("lang"));
 
-  const post = await getPostBySlug(env.DB, slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return new Response("Post not found", { status: 404 });
@@ -125,24 +126,16 @@ function formatDate(dateStr: string): string {
   }
 }
 
-/**
- * Minimal server-side markdown-to-HTML for blog content.
- * Handles the most common patterns from the MDX posts.
- * No client JS required — pure server rendering.
- */
 function markdownToHtml(markdown: string): string {
   let html = markdown;
 
-  // Code blocks (fenced)
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_match, lang, code) => {
     const escaped = escapeHtml(code.trimEnd());
     return `<pre><code class="language-${lang || "text"}">${escaped}</code></pre>`;
   });
 
-  // Inline code
   html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
-  // Headers
   html = html.replace(/^#{6}\s+(.+)$/gm, "<h6>$1</h6>");
   html = html.replace(/^#{5}\s+(.+)$/gm, "<h5>$1</h5>");
   html = html.replace(/^#{4}\s+(.+)$/gm, "<h4>$1</h4>");
@@ -150,28 +143,19 @@ function markdownToHtml(markdown: string): string {
   html = html.replace(/^##\s+(.+)$/gm, "<h2>$1</h2>");
   html = html.replace(/^#\s+(.+)$/gm, "<h1>$1</h1>");
 
-  // Bold & italic
   html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
   html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
 
-  // Images
   html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />');
-
-  // Links
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
-  // Blockquotes
   html = html.replace(/^>\s+(.+)$/gm, "<blockquote>$1</blockquote>");
-
-  // Horizontal rules
   html = html.replace(/^---$/gm, "<hr />");
 
-  // Unordered lists
   html = html.replace(/^[-*]\s+(.+)$/gm, "<li>$1</li>");
   html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, "<ul>$1</ul>");
 
-  // Paragraphs — wrap remaining text blocks
   html = html
     .split("\n\n")
     .map((block) => {

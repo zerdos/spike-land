@@ -1,8 +1,7 @@
-import type { RequestInfo } from "rwsdk/worker";
 import { getAllPosts, type BlogPostRow } from "@/app/db";
 
-export async function RssFeed({ env }: RequestInfo): Promise<Response> {
-  const posts = await getAllPosts(env.DB);
+export async function RssFeed(): Promise<Response> {
+  const posts = await getAllPosts();
   const xml = buildRssXml(posts.slice(0, 50));
 
   return new Response(xml, {

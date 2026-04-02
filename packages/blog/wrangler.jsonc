@@ -25,6 +25,10 @@
 
   "routes": [
     {
+      "pattern": "blog.spike.land/*",
+      "zone_name": "spike.land"
+    },
+    {
       "pattern": "blog.spike.land",
       "custom_domain": true
     }
