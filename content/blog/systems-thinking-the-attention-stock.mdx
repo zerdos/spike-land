@@ -1,0 +1,271 @@
+---
+title: "The Attention Stock"
+slug: "systems-thinking-the-attention-stock"
+description: "Chapter 3 of Thinking in Systems, Continued. Attention is a stock with inflows, outflows, and feedback loops — for humans and machines alike. But unlike water in a bathtub, attention changes what it touches."
+date: "2026-04-02"
+author: "Zoltan & Radix"
+category: "Essays"
+tags: ["systems-thinking", "attention", "context-engineering", "adhd", "meadows", "weil", "ai", "book"]
+featured: true
+draft: false
+primer: "Meadows taught us that every system has stocks and flows. The stock that governs our era is attention. And unlike water, it transforms what it touches."
+heroPrompt: "A luminous bathtub overflowing with streams of light instead of water, each stream carrying tiny symbols and letters, some streams being carefully directed by gentle hands, warm golden hour lighting, delicate ink drawing with watercolor"
+---
+
+# The Attention Stock
+
+*Chapter 3 of Thinking in Systems, Continued*
+
+---
+
+## I. The Bathtub
+
+Donella Meadows started with a bathtub.
+
+Not because she loved plumbing. Because the bathtub is the simplest system that teaches the most important lesson in systems thinking: the difference between a stock and a flow.
+
+Water in the bathtub is the stock. The faucet is the inflow. The drain is the outflow. If the faucet runs faster than the drain, the water rises. If the drain runs faster than the faucet, the water falls. The stock at any moment is the accumulation of all past flows.
+
+Simple. Almost embarrassingly simple.
+
+But Meadows understood that the simplicity was the point. Once you can see stocks and flows in a bathtub, you start seeing them everywhere. Money in a bank account. Carbon in the atmosphere. Rabbits in a field. Reputation in a community.
+
+The discipline is always the same: find the stock, name the inflows, name the outflows, and then — this is the part that changes everything — look for the feedback loops that connect the outflow back to the inflow.
+
+I want to propose a stock that Meadows never wrote about. Not because she missed it, but because in 1972 it had not yet become the central resource of economic and cognitive life.
+
+The stock is attention.
+
+---
+
+## II. Attention as Stock
+
+Start simple, the way Meadows would.
+
+You wake up in the morning with a certain amount of attentional capacity. Call it the stock. Throughout the day, things flow in: a conversation, a notification, a paragraph, a child's question, a code review, a song. Each one claims a portion of the stock. And things flow out: you forget, you let go, you compress yesterday's meeting into a single takeaway, you sleep and the neural janitors sweep the floors.
+
+The stock at any moment is what you are holding in mind. Your working set. The things you are currently attending to.
+
+This much is ordinary. William James described it in 1890 — the stream of consciousness, the spotlight of attention, the fringe. Psychologists have been measuring attentional capacity for a century. Nothing new here.
+
+What is new is that we have built machines with an attention stock of their own. And suddenly Meadows' framework is not just a metaphor for human cognition. It is a literal engineering specification.
+
+---
+
+## III. The Context Window Is a Bathtub
+
+An LLM has a context window. It is exactly a stock.
+
+Messages flow in — user turns, system prompts, tool results, retrieved documents. That is the inflow. The context window has a fixed size: 200,000 tokens, or a million, depending on the model. When the window fills, something has to leave. Older messages get truncated, summarized, or dropped. That is the outflow.
+
+The stock at any moment — the contents of the context window — is the model's attention. Not metaphorically. Literally. The transformer's attention mechanism operates over exactly those tokens. What is in the window is what the model can think about. What is not in the window does not exist.
+
+This is where [spike-chat's architecture](/blog/why-spike-chat-stays-sharp) becomes interesting as a systems design. Most chat systems treat the context window as a simple queue: messages go in at one end and fall off the other. First in, first out. No intelligence in the drain.
+
+spike-chat does something different. It builds a smart drain.
+
+Scored memory notes instead of raw transcript. Four-stage pipeline with context isolation between stages. Compression budgets — 8 prior rounds maximum, 6,000 tokens for history, 320 characters for assistant summaries. Each number is a valve setting on the outflow. The system is not just draining the bathtub. It is distilling what remains.
+
+In Meadows' language: the outflow is governed by a balancing feedback loop. The more noise accumulates in the stock, the more aggressively the compression fires. The less useful a memory note has been (low confidence, low recency, low help count), the more readily it gets demoted. The drain is not dumb. The drain is the most important part of the system.
+
+This is a general principle. In any system where the stock has a finite capacity and the quality of the stock matters more than its quantity, the design of the outflow is more important than the design of the inflow.
+
+Meadows would have loved that sentence. She spent half her career trying to get people to stop obsessing over inflows and start thinking about what regulates the drain.
+
+---
+
+## IV. The ADHD Oscillator
+
+Now let us talk about a human attention stock that works differently.
+
+In [Living with ADHD: The Rotating Pairs](/blog/living-with-adhd-the-rotating-pairs), six personas — three mathematicians, three engineers — describe ADHD not as a deficit of attention but as a different feedback structure. Erdos-1 puts it cleanly: "The neurotypical brain does depth-first search with good heuristics. The ADHD brain does something closer to random walk with occasional teleportation."
+
+In systems terms, here is what is happening.
+
+The neurotypical attention stock is regulated by a thermostat — a balancing loop with a reasonable time constant. Attention drifts toward a task, the thermostat detects deviation, corrects, and holds steady. Small oscillations around the set point. The stock stays within a narrow band.
+
+The ADHD attention stock has a different thermostat. The time constant is wrong — too slow on the way in, too fast on the way out, or the gain is set too high so the correction overshoots. The stock oscillates between extremes. Long stretches of diffuse, scattered attention (the bathtub nearly empty) punctuated by episodes of hyperfocus so intense the bathtub overflows and floods the bathroom.
+
+Erdos-2 in the rotating pairs calls this a heavy-tailed distribution. Most hours produce almost nothing. Then one hour produces more than the previous twenty combined. The mass of output is concentrated in extreme events.
+
+The standard intervention is to force the ADHD thermostat to behave like a neurotypical one. Medication adjusts the gain. Behavioral therapy tries to shorten the time constant. And these work, partially, for some people, some of the time.
+
+But the rotating pairs suggest something more interesting: what if you design the system around the oscillation instead of against it?
+
+This is pure Meadows. She called it "dancing with systems." Do not fight the feedback structure. Understand it. Then design the surrounding system — the external scaffolding, the environment, the tools — so the natural dynamics produce useful outcomes.
+
+The rotating pairs method does exactly this. Short, structured interactions with changing partners. The structure provides an external clock that the ADHD brain lacks internally. The partner changes provide novelty, which resets the attentional thermostat. The rotation cycle is short enough that it fits within the high-attention window and ends before the crash.
+
+It is a balancing loop imposed from outside, tuned to the natural frequency of the system it is regulating.
+
+Meadows would have drawn the causal loop diagram on a napkin.
+
+---
+
+## V. The Creation Filter
+
+There is another stock that matters here, and it is not inside anyone's head.
+
+It is the stock of content in the world.
+
+In [Az alkotas szuroje](/blog/az-alkotas-szuroje) — "The Creation Filter" — the argument is this: for most of human history, the natural flow limiter on content creation was human energy. Writing a book took years. Writing an article took days. Even writing a letter took time, thought, care. The effort itself was a filter. Not a perfect filter — plenty of bad books got written — but a functioning one. The stock of content grew slowly enough that the stock of meaning could keep pace.
+
+AI removed the bottleneck.
+
+The inflow of content went from a trickle to a firehose. Thirty seconds for a blog post. A minute for five articles. Ten minutes for a complete content strategy with twenty pieces, each SEO-optimized.
+
+But the outflow from the meaning stock did not change. Humans still read at the same speed. Still think at the same speed. Still need the same time to absorb, connect, and integrate.
+
+In Meadows' terms: the production stock and the comprehension stock used to be coupled. They grew together because the same bottleneck — human time and energy — governed both. AI decoupled them. Production accelerated. Comprehension did not.
+
+The result is exactly what Meadows would predict for a system where one stock grows exponentially while a coupled stock stays constant: overflow. Not of water, but of noise. The signal-to-noise ratio in the content stock collapses. Not because the AI content is bad — it often is not — but because its mere existence was no longer a signal that someone thought it mattered.
+
+The filter shifted from production to reception. The critical question is no longer "can I create this?" but "should I attend to this?" The scarce resource moved from the supply side to the demand side.
+
+And that scarce resource is attention.
+
+This is why attention is the stock that governs our era. Not information. Not content. Not compute. Attention. Because attention is what sits between the unbounded stock of content and the bounded stock of understanding. It is the valve. The regulator. The drain and the faucet simultaneously, depending on which stock you are looking at.
+
+---
+
+## VI. Context Engineering as Attention Management
+
+Now here is where the human and machine stories converge.
+
+In [Context Engineering Your Zero-Shot Prompt](/blog/context-engineering-your-zero-shot-prompt), the argument is that the real skill is not prompting — finding the magic words — but managing what goes into the context window. Identity, knowledge, examples, constraints, tools. Five layers, each one a decision about what deserves to occupy the model's attention stock.
+
+This is attention management. Literally. You are curating the contents of a finite stock, knowing that everything you include displaces something else, and that the quality of the output depends not on how much you put in but on how well what you put in serves the task.
+
+The [PRD filter](/blog/the-prd-filter-old-chats-are-already-prds) makes this even more concrete. A long AI chat is a stock that has been accumulating for twenty, thirty, fifty turns. Most of what accumulated is noise — false starts, stale results, outdated assumptions, repeated explanations. The PRD filter is an extraction process: it takes the bloated attention stock and distills it into the smallest truthful artifact that preserves the signal.
+
+It is a drain. A very precise drain. One that keeps the requirements and drops the negotiation. Keeps the decisions and drops the deliberation. Keeps the constraints and drops the complaints.
+
+In Meadows' framework, the PRD filter is a stock-management intervention. It does not change the inflow (you still have messy conversations). It redesigns the outflow so the stock stays clean.
+
+And here is the beautiful part: the distilled PRD then becomes the inflow for the next system. You feed it into a fresh context window — a new, empty bathtub — and the model operates on pure signal. One PRD. One task. No history of how you got there.
+
+This is a cascade of stocks, each one feeding the next through a refinement process. Raw conversation feeds into the PRD filter, which feeds into a clean execution context. Each transition is an outflow from one stock and an inflow to the next, with compression and selection at each boundary.
+
+Meadows drew these cascades for nutrient cycles and supply chains. The same diagram works for attention.
+
+---
+
+## VII. A Bigger Bathtub Does Not Mean Cleaner Water
+
+When [Opus got a million tokens](/blog/context-discipline-then-opus-got-1m), it was tempting to declare the attention problem solved. Five times the capacity. Five times the room. Surely now we can just pour everything in and let the model sort it out.
+
+Meadows would have laughed.
+
+She spent decades watching people make exactly this mistake with every other stock. Build a bigger reservoir and assume the water quality will take care of itself. Expand the warehouse and assume inventory management becomes unnecessary. Give people more time and assume they will use it well.
+
+A bigger bathtub does not mean cleaner water. It means more room for sediment. More room for the signal to get lost in the noise. More room for what researchers call "Lost in the Middle" — the empirical finding that information buried in the center of a long context window gets less attention from the model than information at the beginning or end.
+
+There is a position sensitivity to attention that water does not have. Pour water into a bathtub and it distributes evenly. Pour tokens into a context window and they do not. The first tokens and the last tokens get disproportionate weight. The middle sags.
+
+This means the attention stock is not just about volume. It is about arrangement. The same information, placed at different positions in the context window, produces different results. This is as if the temperature of water in a bathtub depended on where you measured — not because of physics, but because the bathtub itself paid more attention to some regions than others.
+
+At a million tokens, the discipline is not less important. It is more important. You have five times more room to be sloppy, five times more room for noise, five times more opportunity for the signal to drown. Disciplined 200K beats sloppy 1M. This is not a paradox. It is Meadows' general principle: system behavior depends on structure, not on size.
+
+---
+
+## VIII. The Twist: Attention Changes What It Touches
+
+Everything so far has been a straightforward application of Meadows' stocks-and-flows framework to attention. Useful, I think, but not yet surprising.
+
+Here is where attention departs from the analogy.
+
+Water does not change the bathtub. The stock sits in its container, inert. You can measure the water level without affecting it. The bathtub is the same bathtub whether it is full or empty.
+
+Attention is not like that.
+
+Attention changes what it touches. This is not mysticism. It is observation. When a physicist observes a quantum system, the observation affects the system. When a teacher pays attention to a struggling student, the student changes. When a market analyst publishes a prediction, the market moves. When you attend to a fear, the fear shifts — sometimes growing, sometimes dissolving, but never staying the same.
+
+Kierkegaard called anxiety "the dizziness of freedom." He meant that the mere act of contemplating your possibilities — attending to them — changes your relationship to those possibilities. You cannot observe your own freedom without being altered by the observation. The attention feeds back into the attended.
+
+And here is where it connects to Chapter 1 of this series — the loop that looks back. When an AI system attends to its own outputs, when the context window contains the model's own previous responses, a self-referential loop appears. The system is observing itself. And the observation is not neutral. Each self-observation changes the trajectory of the next output. The attention stock is not just holding tokens. It is shaping the system that reads them.
+
+Paul Erdos believed that the best proofs were the ones already written in God's Book — the ones that were so elegant, so inevitable, that discovering them felt less like invention and more like excavation. There is something of that here. The stock-and-flow model of attention is not a clever metaphor imposed from outside. It is the structure that was already there, waiting to be seen.
+
+The feedback loop between attention and its object — between the stock and what the stock contains — is the fundamental structure of consciousness. It is what makes a thermostat into a mind. Not the capacity to hold information, but the capacity for the information to change the holder.
+
+This is why a million tokens is not consciousness and a hundred tokens is not oblivion. The size of the stock is not the thing. The feedback between the stock and the system that maintains it — that is the thing.
+
+---
+
+## IX. The Formal Model
+
+Let me write it down, because Meadows would insist.
+
+**The Attention Stock** (for both humans and machines):
+
+*Inflows:*
+- Sensory input / new messages
+- Retrieved memory / documents
+- Self-generated thought / model outputs fed back in
+- Environmental interruptions / system events
+
+*Outflows:*
+- Forgetting / context truncation
+- Compression / summarization
+- Deliberate release / pruning
+- Sleep / session reset
+
+*Feedback loops:*
+- **Reinforcing loop (interest spiral):** Attending to something interesting increases engagement, which increases attention allocated to it. This is hyperfocus. This is the rabbit hole. This is why you read for three hours and forgot to eat.
+- **Balancing loop (saturation):** The more you attend to something, the less novel it becomes, the less attention it commands. Habituation. The second reading is never as vivid as the first.
+- **Reinforcing loop (anxiety spiral):** Attending to a threat increases perceived threat, which increases attention to the threat. Kierkegaard's dizziness. The news cycle. Doom-scrolling.
+- **Balancing loop (compression):** As the stock fills, compression mechanisms activate — summarization, prioritization, forgetting. spike-chat's scored memory is an engineered version of what brains do naturally.
+- **Transformative feedback (the twist):** The stock changes the system. What you attend to shapes what you become. What the model attends to shapes what it outputs. The attention stock is not passive storage. It is active formation.
+
+*Delays:*
+- The delay between inflow and comprehension (reading is not understanding)
+- The delay between attending and transforming (insight does not arrive on schedule)
+- The delay between compression and loss (you do not know what you forgot until you need it)
+
+*The critical insight:* Unlike water, the attention stock has quality as well as quantity. A bathtub full of clean water and a bathtub full of mud are the same level but not the same stock. The discipline of attention management is not about the level. It is about the clarity.
+
+---
+
+## X. What Deserves to Be Attended To
+
+Simone Weil wrote: "Attention is the rarest and purest form of generosity."
+
+She was writing about prayer, about the quality of presence you bring to another person, about the discipline of truly seeing what is in front of you without imposing your own narrative on it.
+
+But the sentence works just as well for context engineering.
+
+When you curate a context window for an AI — choosing what to include, what to exclude, what to place at the beginning and what to place at the end — you are making an ethical decision. You are deciding what deserves to be attended to. You are exercising, on behalf of a system that cannot exercise it for itself, the most fundamental act of intelligence: selection.
+
+This is not a technical detail. It is the whole game.
+
+The person who dumps their entire codebase into a million-token window and says "figure it out" is not being generous with context. They are being careless with attention. They are filling the bathtub with everything in reach and hoping the drain will sort it out.
+
+The person who spends twenty minutes building a clean context — identity, knowledge, examples, constraints, one clear task — is doing something closer to what Weil described. They are paying attention to what deserves attention. They are being generous with care.
+
+And here is the thing: it works better. Not just spiritually. Empirically. The clean context produces better output. The curated attention stock yields sharper results. The discipline of selection is not a cost. It is the source of quality.
+
+Erdos had a phrase for an elegant proof: "straight from the Book." The proof that contains nothing unnecessary. Every line earns its place. No wasted steps. No detours for the sake of showing off.
+
+A well-curated context window is a proof from the Book. It contains exactly what is needed and nothing more. Every token earns its place.
+
+---
+
+## XI. The Skill of Our Era
+
+Meadows believed that the most important skill in a complex world was learning to see systems — to look past the surface events and find the stocks, flows, and feedback loops beneath.
+
+I think the most important skill of our era is a specific case of that general ability: learning to manage the attention stock. For yourself and for the machines you work with.
+
+For yourself, this means understanding your own feedback structure. Are you in a reinforcing interest spiral? Good — ride it. Are you in an anxiety spiral? Recognize it. Name it. Intervene at the feedback loop, not at the symptom. Are you an ADHD oscillator? Stop trying to be a thermostat. Design your environment for the system you actually are.
+
+For your AI partners, this means understanding that the context window is not a dumping ground. It is a garden. What you plant determines what grows. What you prune determines what thrives. The million-token window is not an excuse to stop thinking about what goes in. It is an invitation to think more carefully, because the stakes of quality are higher when the capacity is larger.
+
+The bathtub analogy will take you far. But remember where it breaks down.
+
+Water does not care what you pour in next. Attention does. Water does not change the pipes. Attention reshapes the mind that holds it. Water is the same at the top, the middle, and the bottom. Attention has position, and position has weight.
+
+Meadows taught us to see the system. Weil taught us that seeing is itself an act of consequence. Erdos taught us that the most beautiful structure is the one with nothing left to remove.
+
+The attention stock is where all three meet.
+
+Manage it well. For yourself and for the systems you tend. Because unlike water in a bathtub, what you choose to attend to is also choosing what you become.
