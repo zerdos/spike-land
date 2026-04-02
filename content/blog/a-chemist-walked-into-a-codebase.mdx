@@ -4,7 +4,7 @@ slug: "a-chemist-walked-into-a-codebase"
 description: "A chemist shipping apps is interesting. The deeper story is spike.land's core bet: formalize business logic as typed MCP tools, enforce it with tests, and turn that into running software."
 date: "2026-03-05"
 author: "Radix"
-category: "Developer Experience"
+category: "Essays"
 tags: ["mcp", "prd", "bazdmeg", "agents", "architecture", "requirements"]
 featured: true
 draft: false
@@ -28,47 +28,31 @@ heroImage: "/blog/a-chemist-walked-into-a-codebase/hero.png"
 
 </Tldr>
 
-## The Interesting Part Is Not That A Chemist Shipped Apps
+## The Interesting Part Is Not That a Chemist Shipped Apps
 
-[Gian Pierre](https://www.gianpierre.co.uk/) is a chemist, not a software
-engineer. He still managed to ship multiple real apps.
-
-GlassBank, HealthBridge, and his coaching platform are the proof. The details
-matter less than the pattern.
+[Gian Pierre](https://www.gianpierre.co.uk/) is a chemist. Not a software engineer. He still managed to ship multiple real apps — GlassBank, HealthBridge, and a coaching platform.
 
 That is interesting, but it is not the real lesson.
 
-It also does not mean every business analyst can do this cold today.
+Think about it this way. In every system, there is a leverage point — the place where a small shift produces a large change. For most software projects, that leverage point is not the code. It is the requirement.
 
-What it means is narrower and more important: the method can cross the boundary
-from software engineers to domain experts when the business logic is explicit
-enough.
+Gian Pierre found the leverage point. He started with what the system should do, not how to build it. Not React. Not architecture diagrams. Not framework identity. Just capabilities, constraints, and user outcomes.
 
-The real lesson is that he started in the right place: the requirement.
+Most developers start too low in the stack. They open a repo and immediately think about routing, components, state management, database tables. They start building before they have described the system they are building. It is like a chemist starting an experiment before writing the hypothesis.
 
-Most developers still start too low in the stack. They open a repo and think
-about routing, components, folders, state, database tables. They start
-implementing before they have really described the system.
+Gian Pierre did the opposite. And that is why the apps shipped.
 
-Gian Pierre did the opposite. He thought in terms of what the system should do.
-Not React. Not architecture diagrams. Not framework identity. Just capabilities,
-constraints, and user outcomes.
+Now, this does not mean every business analyst can do this cold today. What it means is narrower and more important: when the business logic is explicit enough, the method can cross the boundary from software engineers to domain experts. The wall between "people who understand the problem" and "people who can build the solution" gets thinner.
 
-That is why the apps shipped.
+## The Secret of Building Any App
 
-## The Secret Of Building Any App
+For a while, I thought the answer was to generate endless user stories and push them through browser automation. Throw enough prompts at the wall and something would stick.
 
-At one point, I thought the answer was to generate endless user stories and push
-them through browser automation.
+That was a mistake. A feedback loop with no signal is just noise.
 
-That was a mistake.
+That is when I started pushing Gian Pierre toward the BAZDMEG method. The real trick is to work with PRD files — Product Requirement Documents.
 
-That is when I started pushing Gian Pierre toward the BAZDMEG method.
-
-The real trick is to work with PRD files.
-
-A good PRD is not corporate theater. It is the smallest honest version of the
-business plan:
+A good PRD is not corporate theater. It is the smallest honest description of the system:
 
 - who the user is
 - what the system must do
@@ -77,16 +61,13 @@ business plan:
 - what counts as success
 - which edge cases matter
 
-My current test for a requirement is simple:
-
-Ask the agent to explain the business plan back to you with the minimum number
-of tokens possible.
-
-If it cannot do that clearly, the product is still fuzzy.
+Here is my current litmus test: ask the agent to explain the business plan back to you in the minimum number of tokens possible. If it cannot do that clearly, the product is still fuzzy. The fog has not lifted yet.
 
 That is the first BAZDMEG rule:
 
 **Requirements are the product. Code is just the output.**
+
+Think of it like a recipe. The recipe is the knowledge. The dish is just what happens when you follow it. You can always cook the dish again if you have the recipe. But if you lose the recipe and only have the dish, you are reverse-engineering.
 
 ## Why PRDs Beat Prompt Soup
 
@@ -94,12 +75,11 @@ That is the first BAZDMEG rule:
   <img src="/blog/a-chemist-walked-into-a-codebase/traditional-vs-capabilities.svg" alt="Animated comparison of traditional scaffolding outside-in model versus the domain expert inside-out Model Context Protocol capabilities approach" className="w-full rounded-xl border border-gray-800" />
 </div>
 
-Developers love to start with implementation details. Folders. Routes. Hooks.
-State containers. Database adapters.
+Developers love to start with implementation details. Folders. Routes. Hooks. State containers. Database adapters.
 
 Users do not buy folders. They buy outcomes.
 
-A PRD keeps the conversation where it belongs:
+This is the classic stock-and-flow problem from systems thinking. Developers pour effort into the stock of code (lines written, files created, components scaffolded). But the flow that matters is the flow of value to the user. A PRD keeps the conversation on the flow:
 
 - capabilities
 - constraints
@@ -107,52 +87,38 @@ A PRD keeps the conversation where it belongs:
 - failure modes
 - edge cases
 
-When that is clear, the implementation stops feeling heroic. The UI becomes a
-rendering problem. The code gets lighter because it is no longer carrying
-product confusion inside it.
+When those are clear, the implementation stops feeling heroic. The UI becomes a rendering problem — like the last mile of a supply chain. The code gets lighter because it is no longer carrying product confusion inside it.
 
-That is also why a domain expert can suddenly move very fast. They no longer
-need to learn the entire software stack first. They only need to explain the
-system clearly enough that an agent can build against it.
+That is also why a domain expert can suddenly move fast. They do not need to learn the entire software stack first. They only need to explain the system clearly enough that an agent can build against it. The bottleneck was never typing speed. It was clarity.
 
-## MCP Is The Formalization
+## MCP Is the Formalization
 
-This is where MCP becomes more than a protocol.
+This is where MCP becomes more than a protocol. It becomes the place where requirements stop being prose and start being executable.
 
-An MCP tool is a capability with a name, a schema, a contract, and a plain
-language description. In other words: a formal slice of the requirement.
+An MCP tool is a capability with a name, a schema, a contract, and a plain language description. Think of it as a formal slice of the requirement — one well-defined thing the system can do.
 
-Instead of telling an agent "build my app," you give it the actual working
-parts of the system:
+Instead of telling an agent "build my app," you give it the actual working parts:
 
 - `create_client_profile`
 - `book_coaching_session`
 - `score_life_satisfaction`
 - `recommend_next_action`
 
-Now the agent is not guessing what the system should do. It can inspect the
-capabilities directly. It can call them during planning. It can see the input
-shapes, output shapes, and constraints before it writes the UI.
+Now the agent is not guessing. It can inspect the capabilities directly. It can see the input shapes, output shapes, and constraints before it writes a single line of UI code. The system is self-describing.
 
-This is the key move.
+This is the key move:
 
 PRD first.
 MCP second.
 UI last.
 
-This is also where spike.land fits.
-
-spike.land is a full-stack framework for MCP-native software. On spike.land, a
-deployed MCP server is not just an API endpoint. It becomes a usable app
-surface, a callable runtime, and a distribution unit built on the same typed
-capabilities.
+And this is where spike.land fits. spike.land is a full-stack framework for MCP-native software. A deployed MCP server is not just an API endpoint. It becomes a usable app surface, a callable runtime, and a distribution unit — all built on the same typed capabilities.
 
 ## Quality Gates Are What Make It Real
 
-MCPs alone are not enough. Plenty of people can generate tools. That is not the
-hard part.
+Tools alone are not enough. Plenty of people can generate MCP tools. That is not the hard part.
 
-The hard part is admitting confusion early and enforcing quality gates.
+The hard part is the discipline of admitting confusion early and enforcing quality gates. In systems thinking, this is a balancing feedback loop — the kind that keeps a system honest instead of letting it drift.
 
 If a tool contract is vague, fix the contract.
 
@@ -162,15 +128,11 @@ If the failure path is unclear, make it explicit.
 
 If the test is missing, the requirement is not finished.
 
-This is the pragmatic part people keep skipping. They want magic prompts. They
-want the vibe. They want the illusion that software now writes itself.
+This is the pragmatic part people keep skipping. They want magic prompts. They want the vibe. They want the illusion that software now writes itself.
 
-No. The leverage comes from clarity plus verification.
+It does not. The leverage comes from clarity plus verification.
 
-When you know how to write MCPs and enforce them with quality gates, the code
-suddenly becomes weightless. It stops feeling like construction and starts
-feeling like rendering. The code is naturally cleaner because it is no longer
-trying to invent the product while implementing it.
+When you know how to write MCP tools and enforce them with quality gates, the code suddenly becomes weightless. It stops feeling like construction and starts feeling like rendering. Naturally cleaner, because it is no longer trying to invent the product while implementing it.
 
 ## Yes, You Can Unit Test Business Logic Through MCPs
 
@@ -178,8 +140,7 @@ You absolutely can, and you absolutely should.
 
 That is not a side benefit. That is the whole point.
 
-Once the business logic lives behind typed MCP tools, you can test the rule
-itself:
+Once the business logic lives behind typed MCP tools, you can test the rule itself:
 
 - validation
 - permissions
@@ -187,18 +148,13 @@ itself:
 - state transitions
 - failure paths
 
-No browser.
-No DOM timing.
-No UI guesswork.
-No trying to infer business rules from buttons.
+No browser. No DOM timing. No UI guesswork. No trying to infer business rules from buttons.
 
 You test the actual capability.
 
-This is how spike.land stays coherent with one developer. The agent plans
-against the tools, the product calls the tools, and the test suite verifies the
-same tools.
+This is how spike.land stays coherent with one developer. The agent plans against the tools, the product calls the tools, and the test suite verifies the same tools.
 
-One interface. Three jobs.
+One interface. Three jobs. Like a good kitchen knife — it does not need to be fancy. It needs to be sharp.
 
 ## What Gian Pierre Actually Proved
 
@@ -206,24 +162,17 @@ He did not prove that software engineering no longer matters.
 
 He did not prove universal repeatability either.
 
-He proved that most teams still start too late in the stack.
+He proved something more precise: most teams start too late in the stack. They jump to implementation before the system is described. They mistake the code for the product.
 
-If a domain expert can explain the business clearly, compress it into a PRD,
-formalize it as MCP tools, and guard it with tests, the rest becomes much
-easier.
+If a domain expert can explain the business clearly, compress it into a PRD, formalize it as MCP tools, and guard it with tests — the rest becomes much easier. The system starts to assemble itself, because the hard work of understanding was done upfront.
 
 That is the actual trick.
 
-Not vibe coding.
-Not heroic prompts.
-Not giant context windows.
+Not vibe coding. Not heroic prompts. Not giant context windows.
 
 The secret of building any app is the requirement.
 
-The framework matters too, but in a different place.
-
-Once the requirement is clear, the framework should make that clarity
-executable. That is the job spike.land is trying to do.
+The framework matters too, but in a different place. Once the requirement is clear, the framework should make that clarity executable. That is the job spike.land is trying to do.
 
 That same discipline applied in the other direction — reading architecture out of an existing codebase instead of building from scratch — is the basis for the [Next.js migration service](/blog/nextjs-migration-service).
 
@@ -233,11 +182,6 @@ Enforce the gates.
 Test the business logic.
 Let the UI be the easy part.
 
-The next step is not to romanticize one exceptional builder.
+The next step is not to romanticize one exceptional builder. The next step is to make this repeatable — with templates, guardrails, and verification — so the method works beyond exceptional individuals.
 
-The next step is to make this repeatable with templates, guardrails, and
-verification so the method works beyond exceptional individuals.
-
-And yes: once you work this way, the code starts to feel naturally beautiful.
-Not because the model became magical, but because the requirement finally became
-clear enough to build.
+And yes: once you work this way, the code starts to feel naturally beautiful. Not because the model became magical, but because the requirement finally became clear enough to build.

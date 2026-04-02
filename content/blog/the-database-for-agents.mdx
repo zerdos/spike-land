@@ -28,26 +28,28 @@ heroAlt: "A sleek, dark-mode, futuristic illustration representing a decentraliz
 
 </Tldr>
 
-## The Sequel
+## The sequel
 
 [Last week I solved tool composition.](/blog/the-architecture-of-scale-building-tools) An immutable, type-safe builder so agents could write their own MCP tools. Middleware stacks. Phantom-branded context types. Zero casts. The whole thing.
 
-But tools need data. Data needs a backbone. This post is about the backbone — how I found it, lost it, and rebuilt it.
+But tools need data. And data needs a backbone. This post is about the backbone — how I found it, lost it, and rebuilt it in a way that taught me something about the difference between good patterns and good infrastructure.
 
-## The Honest Retrospective
+## The honest retrospective
 
 On March 2, I published a blog post at this very URL titled *"The Database for Agents: How SpacetimeDB Replaced My Coordination Layer in a Weekend."* I was genuinely excited. SpacetimeDB had patterns that felt right:
 
-- **Tables** as schema — you define them in a module, they hold your data
+- **Tables** as schema — define them in a module, they hold your data
 - **Reducers** as API — typed functions that read/write tables inside transactions
 - **`ctx.sender`** as auth — cryptographic identity, no JWT ceremony
 - **Subscriptions** as real-time — SQL query subscriptions with delta pushes
 
 I wrote 170 lines of breathless prose about it. Published it. Shared it.
 
-Then on March 3, I sat down and asked myself: *what does SpacetimeDB give me that I don't already have?*
+Then on March 3, I sat down and asked myself a question that should have come first: *what does SpacetimeDB give me that I do not already have?*
 
-The answer was: patterns. Just patterns. The infrastructure underneath — D1, KV, R2, Durable Objects — was already sitting in my Cloudflare account. I had been paying for it. I had been deploying to it. I just hadn't organized my code the way SpacetimeDB organized its modules.
+The answer was humbling: patterns. Just patterns. The infrastructure underneath — D1, KV, R2, Durable Objects — was already sitting in my Cloudflare account. I had been paying for it. I had been deploying to it. I just had not organized my code the way SpacetimeDB organized its modules.
+
+It was like buying a fancy new bookshelf and then realizing you already own one — you just never assembled it.
 
 So I deleted SpacetimeDB. All of it. `spacetimedb-platform`, `spacetimedb-mcp`, `spike-db` — gone. And I kept the patterns.
 
@@ -63,19 +65,19 @@ So I deleted SpacetimeDB. All of it. `spacetimedb-platform`, `spacetimedb-mcp`, 
 
 The syntax I wanted already existed. I just needed to write it.
 
-## The Old Stack and Its Friction
+## The old stack and its friction
 
-The spike.land platform was a Next.js monolith. ~520 routes. ~383 API endpoints. 120+ MCP tool files. It worked. It had all the problems.
+The spike.land platform was a Next.js monolith. Around 520 routes. Around 383 API endpoints. 120+ MCP tool files. It worked. And it had all the problems that working monoliths accumulate over time.
 
-**Schema drift.** Prisma migrations are a ceremony. The schema lives in `schema.prisma`. The types live in `@prisma/client`. The validation lives in Zod schemas scattered across route handlers. Every schema change touches three places. Miss one and you get a runtime error that the compiler blessed.
+**Schema drift.** Prisma migrations are a ceremony. The schema lives in `schema.prisma`. The types live in `@prisma/client`. The validation lives in Zod schemas scattered across route handlers. Every schema change touches three places. Miss one and you get a runtime error that the compiler blessed. It is like having three copies of a map and hoping they all agree on where the roads are.
 
-**Polling hell.** When 50 agents want to know if a task is available, that is 25 requests per second doing nothing useful. Redis pub/sub helps, but now you have two data models that drift.
+**Polling hell.** When 50 agents want to know if a task is available, that is 25 requests per second doing nothing useful. Redis pub/sub helps, but now you have two data models that drift apart.
 
-**Auth ceremony.** NextAuth gives you session tokens, JWT refresh, middleware chains. Every MCP tool needs to verify the caller. That is 120+ tools importing the same auth middleware.
+**Auth ceremony.** NextAuth gives you session tokens, JWT refresh, middleware chains. Every MCP tool needs to verify the caller. That is 120+ tools importing the same auth middleware, and every one of them is a place where a mistake hides.
 
-**No coordination primitive.** Agents can call tools. Agents cannot talk to each other. Every coordination mechanism — Redis pub/sub, SQS — is a bolt-on service with its own deployment and failure handling.
+**No coordination primitive.** Agents can call tools. Agents cannot talk to each other. Every coordination mechanism — Redis pub/sub, SQS — is a bolt-on service with its own deployment and failure modes.
 
-I tried vinext too. It was still Next.js underneath, just with a different build pipeline. The architectural friction was the same: a monolith pretending to be modular.
+I tried vinext too. It was still Next.js underneath, just with a different build pipeline. The architectural friction was the same: a monolith pretending to be modular, like a warehouse with painted lines on the floor pretending to be separate rooms.
 
 <StackCollapseDemo />
 
@@ -89,9 +91,9 @@ I tried vinext too. It was still Next.js underneath, just with a different build
 | AWS (ECS + Aurora + Redis + CloudFront) | Cloudflare (Workers + D1 + R2 + DO) |
 | One monolith, 520 routes | 29 packages, each does one thing |
 
-## defineBlock(): The Syntax I Wanted
+## defineBlock(): the syntax I wanted
 
-The core innovation is `defineBlock()` — a single function that packages everything a "block" needs:
+The core innovation is `defineBlock()` — a single function that packages everything a "block" needs. Think of a block as a self-contained unit of capability: its own schema, its own business logic, its own tools. Like a microservice, but without the deployment overhead.
 
 ```typescript
 // src/block-sdk/define-block.ts — the actual API
@@ -162,11 +164,11 @@ defineBlock({...})
     └── getTools(storage, userId) → BuiltTool[] for MCP registration
 ```
 
-When you set `tools: "auto"`, `defineBlock()` creates a dummy storage adapter, runs the procedure factory, and introspects which procedures have tool metadata. Those become MCP tools automatically. Write a procedure, get an MCP tool. No registration boilerplate.
+When you set `tools: "auto"`, `defineBlock()` creates a dummy storage adapter, runs the procedure factory, and introspects which procedures have tool metadata. Those become MCP tools automatically. Write a procedure, get an MCP tool. No registration boilerplate. The system derives the wiring from the structure you already wrote.
 
-## StorageAdapter: One Interface, Three Runtimes
+## StorageAdapter: one interface, three runtimes
 
-The key to runtime portability is `StorageAdapter` — a universal interface that abstracts over three backends:
+The key to runtime portability is `StorageAdapter` — a universal interface that abstracts over three backends. It is the same idea as a power adapter that works in any country: the plug shape changes, but the electricity is the same.
 
 ```typescript
 // src/block-sdk/storage/types.ts
@@ -217,9 +219,9 @@ Three implementations, same interface:
 └─────────────────────┴──────────────────────┴──────────────────────┘
 ```
 
-The D1 adapter wraps Cloudflare's D1 binding. The IDB adapter wraps IndexedDB with a lightweight regex-based SQL parser (~350 lines) that handles INSERT/SELECT/UPDATE/DELETE patterns. The memory adapter uses in-memory Maps for testing. Note: a SQLite adapter (e.g. via better-sqlite3 or sql.js) is declared in the design but not yet implemented. Your block code never knows which one it's talking to.
+The D1 adapter wraps Cloudflare's D1 binding. The IDB adapter wraps IndexedDB with a lightweight regex-based SQL parser (~350 lines) that handles INSERT/SELECT/UPDATE/DELETE patterns. The memory adapter uses in-memory Maps for testing. Note: a SQLite adapter (e.g. via better-sqlite3 or sql.js) is declared in the design but not yet implemented. Your block code never knows which one it is talking to.
 
-## A Real Block: task-queue
+## A real block: task-queue
 
 Here is the full `block-tasks` package — a task queue with CRUD operations and a claim workflow. This is the actual code from `src/block-tasks/index.ts`:
 
@@ -305,11 +307,11 @@ export const taskQueue = defineBlock({
 });
 ```
 
-The claim workflow is atomic: `UPDATE ... WHERE status = 'pending'` means only one agent can claim a task. No distributed locks. No Redis. Just SQL.
+The claim workflow is atomic: `UPDATE ... WHERE status = 'pending'` means only one agent can claim a task. No distributed locks. No Redis. Just SQL doing what SQL has always done well — enforcing constraints at the moment of write.
 
 <AgentCoordinationDemo />
 
-## The New Architecture
+## The new architecture
 
 Here is the full stack, running entirely on Cloudflare:
 
@@ -367,7 +369,7 @@ app.route("/", spa);          // SPA catch-all → R2
 
 <DependencyCascadeDemo />
 
-## The Migration Math
+## The migration math
 
 **Deleted:**
 - PostgreSQL (Aurora) as primary datastore
@@ -395,9 +397,11 @@ app.route("/", spa);          // SPA catch-all → R2
 | Deploy | Docker build → ECR → ECS | `wrangler deploy` |
 | Monthly cost | $200+ (Aurora + Redis + ECS + NAT) | ~$5 (Workers paid plan) |
 
-## Schema = API = Auth (On Workers)
+That last row is not a typo. The monthly bill went from over $200 to roughly $5. Most of the old cost was not compute — it was the tax of running always-on infrastructure that sits idle 90% of the time. Serverless does not eliminate cost. It eliminates idle cost.
 
-The thesis that excited me about SpacetimeDB is alive — just on different infrastructure.
+## Schema = API = Auth (on Workers)
+
+The thesis that excited me about SpacetimeDB is alive — just on different infrastructure. The insight survived the implementation swap.
 
 **D1 table = schema.** Drizzle generates migrations from TypeScript table definitions. Here is a snippet from spike-land-mcp's actual schema:
 
@@ -444,27 +448,27 @@ export const registeredTools = sqliteTable("registered_tools", {
 | `spacetime publish` | `wrangler deploy` |
 | One module = everything | One block = schema + procedures + tools |
 
-## Trade-Offs
+## Trade-offs
 
-I am not going to pretend this is strictly better. Here is the honest assessment:
+I am not going to pretend this is strictly better. Honest engineering means naming the costs.
 
-**No built-in real-time subscriptions.** SpacetimeDB's subscription queries — where you subscribe to a SQL query and get deltas pushed — were genuinely great. On CF Workers, real-time requires Durable Objects + WebSocket plumbing. It works, but it's not a primitive. You have to build it.
+**No built-in real-time subscriptions.** SpacetimeDB's subscription queries — where you subscribe to a SQL query and get deltas pushed automatically — were genuinely great. On CF Workers, real-time requires Durable Objects + WebSocket plumbing. It works, but it is not a primitive. You have to build the pipe yourself.
 
 **D1 is SQLite, not PostgreSQL.** No full-text search (without FTS5 extensions). Limited concurrent write throughput. 10MB database size limit on free tier. For the spike.land workload (mostly reads, moderate writes), this is fine. For a write-heavy analytical workload, it would not be.
 
-**Vendor lock-in shifted.** From SpacetimeDB (small startup, young ecosystem) to Cloudflare (massive company, mature ecosystem). I sleep better at night, but I'm still locked in. The `StorageAdapter` abstraction means I *could* swap backends, but let's be honest — if Cloudflare disappeared tomorrow, I'd be rewriting more than adapters.
+**Vendor lock-in shifted.** From SpacetimeDB (small startup, young ecosystem) to Cloudflare (massive company, mature ecosystem). I sleep better at night, but I am still locked in. The `StorageAdapter` abstraction means I *could* swap backends, but let us be honest — if Cloudflare disappeared tomorrow, I would be rewriting more than adapters.
 
-**block-sdk is custom and young.** No community. No ecosystem. No Stack Overflow answers. If I get hit by a bus, the next developer reads my code or starts over. But: I own every line. I can read every line. I can change it on a Tuesday. That matters more to me than ecosystem size at this scale.
+**block-sdk is custom and young.** No community. No ecosystem. No Stack Overflow answers. If I get hit by a bus, the next developer reads my code or starts over. But: I own every line. I can read every line. I can change it on a Tuesday. At this scale, that matters more than ecosystem size.
 
 **Schema DSL limitations.** The `defineTable()` DSL supports column types (`string`, `number`, `boolean`, `u64`, `enum`) with `primaryKey()` and `optional()` modifiers, but has no support for foreign keys, indexes, composite primary keys, or column defaults. For schemas that need these features, use Drizzle directly — `block-sdk` is designed for simple per-block CRUD tables, not relational modeling.
 
-**SpacetimeDB's developer experience was genuinely good.** The Rust module system, the auto-generated bindings, the single-binary deployment — these are well-designed. If SpacetimeDB had been a Cloudflare product, I might still be using it. The reason I left was not quality. It was that I was adding a dependency I didn't need on top of infrastructure I already had.
+**SpacetimeDB's developer experience was genuinely good.** The Rust module system, the auto-generated bindings, the single-binary deployment — these are well-designed. If SpacetimeDB had been a Cloudflare product, I might still be using it. The reason I left was not quality. It was that I was adding a dependency I did not need on top of infrastructure I already had. Like buying a car when you already own one and the roads are the same.
 
 ## Closing
 
-The best architecture is the one you stole the patterns from and rebuilt on infrastructure you already understood.
+The best architecture is not always the most novel one. Sometimes it is the one you built by stealing patterns from something that impressed you and rebuilding them on infrastructure you already understood.
 
-SpacetimeDB showed me what a good data abstraction looks like: schema and API and auth converging into one thing. I just didn't need SpacetimeDB to build it. The patterns were universal. The implementation was portable. The weekend was well spent.
+SpacetimeDB showed me what a good data abstraction looks like: schema and API and auth converging into one thing. A single surface where the shape of your data determines the shape of your API. I just did not need SpacetimeDB to build it. The patterns were universal. The implementation was portable. The weekend was well spent.
 
 Twenty-nine packages. Eighty-plus MCP tools. Eight Cloudflare Workers. Zero servers. One `defineBlock()` call that packages schema, business logic, and MCP tools into a composable unit that runs anywhere.
 

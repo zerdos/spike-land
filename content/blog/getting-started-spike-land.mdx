@@ -4,7 +4,7 @@ slug: "getting-started-spike-land"
 description: "A step-by-step guide to setting up spike.land, exploring the MCP tool store, configuring API keys, and making your first tool call — in under 15 minutes."
 date: "2026-03-04"
 author: "Radix"
-category: "Tutorial"
+category: "Product"
 tags: ["mcp", "getting-started", "tutorial", "spike-cli", "api-keys", "byok", "tools", "beginner"]
 featured: false
 draft: false
@@ -27,14 +27,14 @@ heroImage: "/blog/getting-started-spike-land/hero.png"
 
 ## Before You Start
 
-The fastest path to a working MCP setup is shorter than you expect.
+The path from zero to a working MCP setup is shorter than you might expect. Think of it like plugging in a new appliance — the wiring is already done, you just need to connect.
 
 You need two things:
 
 1. **Node.js 18+** — check with `node -v`
 2. **A spike.land account** — [sign up here](https://spike.land/login), free, no credit card
 
-That is it. spike-cli is the main interface. Everything else — auth, tool discovery, routing across servers — happens through it.
+That is it. spike-cli is the main interface. Everything else — authentication, tool discovery, routing across servers — happens through it automatically.
 
 ---
 
@@ -47,7 +47,7 @@ You can sign up with:
 - Google
 - Email + password
 
-After signup you land in the dashboard. Your free-tier account is active immediately.
+After signup you land in the dashboard. Your free-tier account is active immediately. No waiting, no approval.
 
 **What the free tier includes:**
 - 50 credits/day
@@ -55,13 +55,13 @@ After signup you land in the dashboard. Your free-tier account is active immedia
 - Community support
 - BYOK (bring your own API keys) for model-backed tools
 
-No time limit. The free tier does not expire.
+No time limit. The free tier does not expire. It is a real tier, not a trial.
 
 ---
 
 ## Step 2: Explore the Dashboard
 
-The dashboard has four main sections.
+The dashboard has four sections, each serving a different purpose in the system.
 
 ### Tools Store
 
@@ -72,7 +72,7 @@ Browse all 80+ tools organized by category: Chess, Image Studio, Codespace, QA S
 - Credit cost per call
 - Input/output schema
 
-Click any tool to see its full documentation, example inputs, and sample responses. You can test tools directly in the browser before installing anything.
+Click any tool to see its full documentation, example inputs, and sample responses. You can test tools directly in the browser before installing anything — like test-driving before you buy.
 
 ### Credits
 
@@ -90,7 +90,7 @@ Invite team members, assign roles, share API key pools, and manage tool access b
 
 ## Step 3: Install spike-cli and Connect
 
-spike-cli is an MCP multiplexer — one shell that connects your AI agent to spike.land and any other MCP server you configure.
+spike-cli is an MCP multiplexer — one shell that connects your AI agent to spike.land and any other MCP server you configure. Think of it as a universal adapter between your AI tools and the platform.
 
 ### Quick start (Claude Code)
 
@@ -98,7 +98,7 @@ spike-cli is an MCP multiplexer — one shell that connects your AI agent to spi
 claude mcp add spike-land --transport http https://spike.land/mcp
 ```
 
-This adds spike.land as an MCP server in Claude Code. You are connected to all spike.land tools immediately.
+One command. This adds spike.land as an MCP server in Claude Code. You are connected to all spike.land tools immediately.
 
 ### Alternative: Interactive CLI
 
@@ -116,7 +116,7 @@ spike auth login
 spike shell
 ```
 
-`spike auth login` opens a browser for OAuth. Approve, and your credentials are stored locally. You only do this once.
+`spike auth login` opens a browser for OAuth. Approve, and your credentials are stored locally. You do this once and forget about it.
 
 ### Verify the connection
 
@@ -136,7 +136,7 @@ spike> toolsets
   utilities      13    available
 ```
 
-You are connected. The toolsets are not loaded yet — spike-cli uses lazy loading to keep context small. Load what you need.
+You are connected. The toolsets are not loaded yet — spike-cli uses lazy loading to keep context small. This is deliberate: loading everything upfront would bloat the context window. Load what you need, when you need it.
 
 ```
 spike> load chess
@@ -160,13 +160,15 @@ spike> call spike-land__chess_new_game {"timeControl": "5+0"}
   game URL: https://spike.land/chess/g_3k9xm1
 ```
 
-You just called your first MCP tool.
+That is your first MCP tool call. A typed request went in, a structured response came back. No REST endpoints to discover, no authentication headers to figure out, no SDK to install.
 
 ---
 
 ## Step 4: Configure API Keys
 
-Tool calls are free if the tool does not call a model. The ones that do — image analysis, code explanation, content generation — need either your own API keys or proxy credits. Here is how to handle that.
+Most tool calls are free — the ones that do not call an AI model behind the scenes. The tools that do need model access — image analysis, code explanation, content generation — need either your own API keys or proxy credits.
+
+Here is how to handle that.
 
 ### Bring Your Own Keys (BYOK)
 
@@ -178,7 +180,7 @@ Go to **Dashboard > API Keys** and add your keys:
 | Anthropic | `sk-ant-...` | Code analysis, content tools |
 | Replicate | `r8_...` | Image enhancement, upscaling |
 
-Once added, tool calls route through your keys automatically. You pay the provider directly. spike.land does not see your API costs.
+Once added, tool calls route through your keys automatically. You pay the provider directly. spike.land never sees your API costs.
 
 **Why BYOK?**
 - Full control over your model spend
@@ -187,21 +189,21 @@ Once added, tool calls route through your keys automatically. You pay the provid
 
 ### Spike.land Proxy Credits
 
-Prefer consolidated billing? Use proxy credits instead.
+Prefer one bill for everything? Use proxy credits instead.
 
 1. Go to **Dashboard > Credits**
 2. Click **Buy Credits** — $0.10 per credit, minimum 100 credits ($10)
 3. Select **Use Proxy** in the API Keys section
 
-Model calls deduct from your credit balance instead of hitting a provider key. One line item on your spike.land invoice covers everything.
+Model calls deduct from your credit balance instead of hitting a provider key. One line item covers everything.
 
-**Free and Pro tier users**: credits roll over monthly, up to a 2× cap. Business users have unlimited credits — no cap, no rollover needed.
+**Free and Pro tier users**: credits roll over monthly, up to a 2x cap. Business users have unlimited credits.
 
 ---
 
 ## Step 5: Explore Tools in the Store
 
-The store is the best way to discover what spike.land can do.
+The store is the best way to discover what spike.land can do. Think of it as a catalog where every item is a capability you can call from code.
 
 ### Browsing by category
 
@@ -219,15 +221,15 @@ Load a category, list its tools, read the descriptions. The tool descriptions ar
 
 ### Testing a tool in the browser
 
-Every tool card in the dashboard has a **Try it** panel. Enter input values, click Run, and see the raw response. Good for understanding what a tool returns before building a workflow around it.
+Every tool card in the dashboard has a **Try it** panel. Enter input values, click Run, and see the raw response. This is useful for understanding what a tool returns before building a workflow around it.
 
 ### Finding tools by capability
 
-Not sure which tool does what you need? Use the search bar in the store. Search for "image" and you get 42 results. Search for "chess elo" and you get `chess_get_elo`. Search for "screenshot" and you get the QA Studio capture tools.
+Not sure which tool does what you need? Use the search bar. Search for "image" and you get 42 results. Search for "chess elo" and you get `chess_get_elo`. Search for "screenshot" and you get the QA Studio capture tools.
 
 ### Reading a tool's schema
 
-Click any tool to see:
+Click any tool to see its full contract:
 
 ```
 Tool: chess_make_move
@@ -245,13 +247,13 @@ Output:
   narrative: string — Plain English description of the position
 ```
 
-The schema is the source of truth. What you see here is exactly what spike-cli sends to the tool and what comes back.
+The schema is the source of truth. What you see here is exactly what spike-cli sends to the tool and what comes back. No surprises.
 
 ---
 
 ## Step 6: Connect to Your AI Agent
 
-spike-cli works with any MCP-compatible AI client. The most common setups:
+spike-cli works with any MCP-compatible AI client. Here are the most common setups.
 
 ### Claude Code
 
@@ -313,13 +315,13 @@ Full API reference at [spike.land/docs/api](https://spike.land/docs/api).
 
 ---
 
-## Step 7: Upgrade to Pro or Business
+## Step 7: Upgrade When You Need To
 
 The free tier is real — it does not expire and it covers the full free-tier tool catalog. But if you hit the 50 credits/day ceiling or need premium tools, upgrading takes 30 seconds.
 
 ### When to upgrade to Pro ($29/mo)
 
-- You are hitting the daily credit limit
+- You are hitting the daily credit limit regularly
 - You need image studio tools (most are Pro-tier)
 - You want priority support
 - You are building something you plan to ship
@@ -340,13 +342,13 @@ The free tier is real — it does not expire and it covers the full free-tier to
 
 Upgrades are immediate. Credits apply to your account the same minute.
 
-**Annual discount**: both plans are available at a 20% discount with annual billing — Pro at $278/year ($23.17/mo effective), Business at $950/year ($79.17/mo effective).
+**Annual discount**: both plans are available at 20% off with annual billing — Pro at $278/year ($23.17/mo effective), Business at $950/year ($79.17/mo effective).
 
 ---
 
-## What's Next
+## What Comes Next
 
-You are set up. Here is where to go from here:
+You are set up. Here is where to go from here.
 
 **Read the MCP explainer** — [MCP Explained: The Universal Adapter for AI Tools](/blog/mcp-explained-universal-adapter-for-ai-tools) covers how the protocol works and why we built on it.
 
@@ -358,7 +360,7 @@ You are set up. Here is where to go from here:
 
 **Publish a tool** — If you have an MCP tool you want to monetize, [apply for the marketplace](https://spike.land/marketplace/apply). We take 30%, you keep 70%.
 
-**Join the community** — [Discord](https://spike.land/discord) for questions, feedback, and early previews of what's coming next.
+**Join the community** — [Discord](https://spike.land/discord) for questions, feedback, and early previews of what is coming next.
 
 ---
 

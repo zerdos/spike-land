@@ -24,23 +24,25 @@ heroPrompt: "A vibrant digital marketplace with floating holographic app icons, 
 
 </Tldr>
 
-## The Problem With “Cool MCP Tools”
+## The gap between "cool tool" and "useful product"
 
 You can build a good MCP tool in a weekend. Hosting it takes another hour.
 
 Then what?
 
+Think about that gap for a moment. You have something that works. It solves a real problem. But it lives in a GitHub repo where the only people who find it are the ones who already know to look for it.
+
 **How does a useful MCP tool become a product?**
 
-Not a GitHub repo. Not a gist. Not a one-off prompt template. A product — something people discover, install, and actually rely on.
+Not a gist. Not a one-off prompt template. A product — something people discover, install, rely on, and eventually pay for.
 
-That product layer is what the spike.land app store is for.
+That missing product layer is what the spike.land app store exists to provide. It is the same gap that the iOS App Store filled for mobile developers in 2008: not the technology to build, but the distribution to be found.
 
 ---
 
-## What We Mean By App Store
+## What we mean by "app store"
 
-This is not a store full of screenshots glued onto static landing pages.
+This is not a storefront of screenshots stapled to landing pages.
 
 On spike.land, an app is:
 
@@ -50,86 +52,86 @@ On spike.land, an app is:
 - an installable unit
 - an execution surface that agents can actually call
 
-That is the important shift. The app store is not separate from the runtime. It
-is the public face of the runtime.
+The important shift is that last point. The app store is not separate from the runtime. It is the public face of the runtime. When you browse the store, you are looking at live capabilities, not brochure descriptions of capabilities.
+
+Think of it like a farmers market where you can taste everything before you buy it.
 
 ---
 
-## Why This Matters
+## Why this matters
 
-The moment you treat MCP apps as first-class products, a lot of things get
-easier:
+The moment you treat MCP apps as first-class products, a reinforcing loop kicks in:
 
-- discovery becomes searchable and programmable
-- installs become measurable
-- ratings and wishlists become useful signals
-- recommendations can be based on tags, install history, and actual usage
-- developers have a reason to polish, publish, and promote what they build
+- Discovery becomes searchable and programmable
+- Installs become measurable
+- Ratings and wishlists become useful signals
+- Recommendations can be based on tags, install history, and actual usage
+- Developers have a reason to polish, publish, and promote what they build
 
-This is how you get from “AI can call my tool” to “my software has
-distribution.”
+Each of those makes the next one more powerful. More discovery leads to more installs, which improves recommendations, which drives more discovery.
+
+This is how you get from "AI can call my tool" to "my software has distribution." And distribution is the part that has always been hardest for developer tools.
 
 ---
 
-## Open By Design
+## Open by design
 
-The strongest part of the spike.land app store is that it does not trap apps in
-the spike.land UI.
+The strongest design decision in the spike.land app store is that it does not trap apps inside the spike.land UI.
 
 You can:
 
-- browse tool metadata publicly
-- call the MCP runtime from another origin
-- integrate from a Cloudflare Worker
-- package local-first browser apps with IndexedDB
+- Browse tool metadata publicly
+- Call the MCP runtime from another origin
+- Integrate from a Cloudflare Worker
+- Package local-first browser apps with IndexedDB
 
-That makes the store more than a website. It makes it a distribution layer for
-portable app runtimes.
+That makes the store more than a website. It makes it a distribution layer for portable app runtimes. Your app lives in the store for discovery, but it can run anywhere — like a book that lives in a library catalog but can be read in any room.
 
 ---
 
-## The Shared Library Underneath
+## The shared library underneath
 
 The store works because apps share infrastructure instead of rebuilding it.
 
 There are three layers underneath everything:
 
-1. a shared MCP runtime
-2. a shared category and discovery layer
-3. a shared developer SDK for storage, bundling, and deployment
+1. A shared MCP runtime
+2. A shared category and discovery layer
+3. A shared developer SDK for storage, bundling, and deployment
 
-That is why a new app can feel native to the platform so quickly. The hard
-parts — auth, discovery, categories, MCP transport, deploy patterns — are not
-starting from zero every time.
+This is why a new app can feel native to the platform so quickly. The hard parts — auth, discovery, categories, MCP transport, deploy patterns — are already solved. You are not starting from zero every time. You are starting from a working foundation and adding your specific logic on top.
 
----
-
-## Publishing Is The New Distribution
-
-The commercial model here is straightforward:
-
-- publish useful MCP-native apps
-- let users discover and install them
-- let agents call them from the same runtime
-- reward developers through marketplace economics
-
-The 70/30 split matters, but the deeper value is distribution. Developers need
-an answer to “where does this live?” and “how do users find it?” The app store
-is our answer.
+It is the same pattern that made building an iOS app easier than building a desktop app from scratch. The platform absorbs the infrastructure cost, and the developer focuses on what makes their app unique.
 
 ---
 
-## What Comes Next
+## Publishing is the new distribution
+
+The commercial model is straightforward:
+
+- Publish useful MCP-native apps
+- Let users discover and install them
+- Let agents call them from the same runtime
+- Reward developers through marketplace economics
+
+The 70/30 split matters, but the deeper value is distribution. Every developer building AI tools faces the same question: "Where does this live? How do users find it?" The app store is our answer.
+
+The tools were always the easy part. Building something useful in a weekend is achievable. Getting it in front of the people who need it — that is the problem nobody has solved for the MCP ecosystem.
+
+Until now.
+
+---
+
+## What comes next
 
 The next stage is about making the store feel inevitable:
 
-- open submissions with clear review gates
-- stronger public app pages
-- better recommendation quality
-- shared SDK documentation
-- more portable deployment paths, including offline bundles
+- Open submissions with clear review gates
+- Stronger public app pages
+- Better recommendation quality
+- Shared SDK documentation
+- More portable deployment paths, including offline bundles
 
-The thesis is simple: if MCP is becoming a real software layer, it needs a real
-app store.
+The thesis is simple: if MCP is becoming a real software layer, it needs a real app store. Not eventually. Now.
 
-spike.land is building that layer now. The tools were always the easy part. Distribution is the hard part. That is what we are solving.
+spike.land is building that layer. The tools were always the easy part. Distribution is the hard part. That is what we are solving.

@@ -8,6 +8,17 @@ import { ImageLoader } from "./ImageLoader";
 
 type BlogMeta = Omit<BlogPost, "content">;
 
+const CATEGORIES = [
+  "AI & Tools",
+  "Engineering",
+  "Product",
+  "Essays",
+  "Life",
+  "Science & Arena",
+] as const;
+
+type Category = (typeof CATEGORIES)[number];
+
 const GRADIENTS = [
   "from-blue-600/10 to-indigo-600/10 text-blue-600 dark:text-blue-400",
   "from-emerald-600/10 to-teal-600/10 text-emerald-600 dark:text-emerald-400",
@@ -207,6 +218,84 @@ function BlogCard({
   );
 }
 
+function CategoryFilter({
+  posts,
+  activeCategory,
+  onSelect,
+}: {
+  posts: BlogMeta[];
+  activeCategory: Category | null;
+  onSelect: (category: Category | null) => void;
+}) {
+  const counts = CATEGORIES.reduce<Record<Category, number>>(
+    (acc, cat) => {
+      acc[cat] = posts.filter((p) => p.category === cat).length;
+      return acc;
+    },
+    {} as Record<Category, number>,
+  );
+
+  const allCount = posts.length;
+
+  return (
+    <div className="mb-12 flex flex-wrap gap-2" role="group" aria-label="Filter posts by category">
+      <button
+        onClick={() => onSelect(null)}
+        aria-pressed={activeCategory === null}
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+          activeCategory === null
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
+        )}
+      >
+        All
+        <span
+          className={cn(
+            "rounded-full px-1.5 py-0.5 text-[0.65rem] font-bold leading-none tabular-nums",
+            activeCategory === null
+              ? "bg-primary-foreground/20 text-primary-foreground"
+              : "bg-muted text-muted-foreground",
+          )}
+        >
+          {allCount}
+        </span>
+      </button>
+
+      {CATEGORIES.map((cat) => {
+        const count = counts[cat];
+        if (count === 0) return null;
+        const isActive = activeCategory === cat;
+        return (
+          <button
+            key={cat}
+            onClick={() => onSelect(cat)}
+            aria-pressed={isActive}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+              isActive
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
+            )}
+          >
+            {cat}
+            <span
+              className={cn(
+                "rounded-full px-1.5 py-0.5 text-[0.65rem] font-bold leading-none tabular-nums",
+                isActive
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              {count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function BlogListView({
   linkComponent,
   limit,
@@ -226,6 +315,7 @@ export function BlogListView({
   const [posts, setPosts] = useState<BlogMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -315,7 +405,10 @@ export function BlogListView({
   }
 
   const LinkComp = linkComponent ?? "a";
-  const [featured, ...rest] = posts;
+
+  const filteredPosts = activeCategory ? posts.filter((p) => p.category === activeCategory) : posts;
+
+  const [featured, ...rest] = filteredPosts;
 
   return (
     <div className={cn("rubik-container font-sans", showHeader && "rubik-page")}>
@@ -333,6 +426,8 @@ export function BlogListView({
           </p>
         </div>
       )}
+
+      <CategoryFilter posts={posts} activeCategory={activeCategory} onSelect={setActiveCategory} />
 
       {featured && <FeaturedCard post={featured} LinkComp={LinkComp} />}
 

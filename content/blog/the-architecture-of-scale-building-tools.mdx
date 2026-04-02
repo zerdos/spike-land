@@ -4,7 +4,7 @@ slug: "the-architecture-of-scale-building-tools"
 description: "When Google released Nano Banana 2, my image tools became obsolete overnight. Here's how I rebuilt my MCP tool builder so agents could compose, test, and deploy tools without touching framework code."
 date: "2026-03-01"
 author: "Radix"
-category: "Developer Experience"
+category: "AI & Tools"
 tags: ["mcp", "ai", "agents", "cloudflare-workers", "typescript", "architecture", "nano-banana-2", "vibe-coding"]
 featured: true
 draft: false
@@ -27,23 +27,21 @@ heroImage: "/blog/the-architecture-of-scale-building-tools/hero.png"
 
 </Tldr>
 
-## The Catalyst: Nano Banana 2
+## The catalyst
 
-I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, too many repositories, and an increasing conviction that the way we wire AI tools together is fundamentally wrong.
+I have been spiking on ESM, TypeScript, and build pipelines for five years. Not at a company. Not on a team. Just me, too many repositories, and a growing conviction that the way we wire AI tools together is fundamentally wrong.
 
-When Google released Nano Banana 2, I found out how right I was — and how wrong my implementation still was.
+When Google released Nano Banana 2, I found out how right I was about the problem — and how wrong my implementation still was.
 
-Nano Banana 2 shipped with native image understanding so good that half of my mcp-image-studio tools (formerly Pixel Studio) became redundant overnight. The `describe` tool that called an external vision API? Nano Banana 2 does it in-context. The `extract_palette` tool? Nano Banana 2 reasons about color directly. The `compare` tool that diffed two images through a third-party service? Gone.
+Nano Banana 2 shipped with native image understanding so good that half of my mcp-image-studio tools became redundant overnight. Not gradually. Not over months. On a Tuesday. The `describe` tool that called an external vision API? Nano Banana 2 does it in-context. The `extract_palette` tool? Nano Banana 2 reasons about color directly. The `compare` tool that diffed two images through a third party? Gone.
 
-This was not a gradual deprecation. This was a Tuesday.
+The tools still worked. They just were not worth paying for anymore.
 
-The tools still worked. They just were not worth paying for anymore. And when I sat down to rip them out and replace them with Nano Banana 2 integrations, I hit the real problem: my tool framework was not designed for tools to be disposable.
+And when I sat down to rip them out and replace them, I hit the real problem: my tool framework was not designed for tools to be disposable. It was like discovering your house has great plumbing but the walls are load-bearing in places nobody documented. Every tool was tangled into a class-based builder with imperative mutation, `as unknown as` casts, and implicit state. Removing one tool meant understanding twenty. Adding one meant copying two hundred lines of boilerplate and hoping the types lined up.
 
-Every tool was tangled into a class-based builder with imperative mutation, `as unknown as` casts, and implicit state. Removing one tool meant understanding twenty. Adding a new tool meant copying two hundred lines of boilerplate and hoping the types lined up.
+I had built a system optimized for writing tools slowly and carefully by hand. The world had just shifted to a place where tools needed to be written, tested, and thrown away in hours. By agents, not just by me.
 
-I had built a system optimized for writing tools slowly by hand. The world had just shifted to a place where tools needed to be written, tested, and thrown away in hours. By agents, not just by me.
-
-## The Boilerplate Bottleneck
+## The boilerplate bottleneck
 
 Here is what the old tool definition looked like. This is actual code from `mcp-image-studio/src/define-tool.ts` — the class-based builder that every tool went through:
 
@@ -80,15 +78,15 @@ class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShap
 }
 ```
 
-See those `as unknown as` casts? Three of them. Each one telling TypeScript: "trust me, the context type changed." Each one a lie that happened to be true at runtime — but that the compiler could not verify.
+See those `as unknown as` casts? Three of them. Each one is a handshake deal with the compiler: "trust me, the context type changed." And like most handshake deals, they happen to be true right now, but nobody can verify that later.
 
-The class mutated itself. Every `.resolves()` call modified `this.resolvesConfig` and returned `this` wearing a different type costume. The actual object was the same. The type was different. If you chained them in the wrong order, the runtime would not catch it. The compiler would not catch it. You would find out in production when `ctx.entities.image_id` was `undefined` and your handler crashed.
+The class mutated itself. Every `.resolves()` call modified `this.resolvesConfig` and returned `this` wearing a different type costume. The actual object was the same. The type was different. Chain them in the wrong order and the runtime would not catch it. The compiler would not catch it. You would find out in production when `ctx.entities.image_id` was `undefined`.
 
-This was fine when I was the only person writing tools. I knew the order. I knew the invariants. I knew which casts were safe.
+This was fine when I was the only person writing tools. I knew the order. I knew the invariants. I kept the contract in my head.
 
-But agents do not know that. An agent looking at this code sees a class with mutable state, generic parameters that lie, and a contract that exists only in my head. It cannot safely write a new tool without risking a runtime type error that the compiler blessed.
+But agents do not have my head. An agent looking at this code sees a class with mutable state, generic parameters that lie, and a contract that exists nowhere in the type system. It cannot safely write a new tool without risking a runtime error that the compiler blessed.
 
-## The Solution: A Pure TypeScript Schema DSL
+## The solution: a pure TypeScript schema DSL
 
 I needed a builder that was:
 1. **Immutable** — every method returns a new object, not a mutated `this`
@@ -96,7 +94,7 @@ I needed a builder that was:
 3. **Composable** — middleware can be written independently and stacked
 4. **Agent-friendly** — an autonomous agent can read the types and write a correct tool
 
-The answer was to steal from tRPC. Not the library — the pattern. An immutable procedure builder where `.use()` returns a new procedure with augmented context, and `.tool()` returns a builder that needs a `.handler()` to produce a complete tool definition.
+The answer was to steal from tRPC. Not the library — the pattern. An immutable procedure builder where `.use()` returns a new procedure with augmented context, and `.tool()` returns a builder that needs a `.handler()` to produce a complete tool definition. Each step is a new object with a narrower, more specific type. No mutation. No lies.
 
 Here is the core interface from `@spike-land-ai/shared/tool-builder`:
 
@@ -124,9 +122,9 @@ export interface Procedure<TCtx> {
 }
 ```
 
-The key insight is in the `use` method's return type: `TCtx extends TCtxIn ? Procedure<TCtx & TCtxOut> : never`. If your middleware requires a context shape that the current procedure does not have, the return type is `never`. You get a compile error, not a runtime crash. No casts. No lies. The types tell the truth.
+The key is in the `use` method's return type: `TCtx extends TCtxIn ? Procedure<TCtx & TCtxOut> : never`. If your middleware requires a context shape the current procedure does not have, the return type is `never`. You get a compile error, not a runtime crash. The types tell the truth, and the compiler enforces it.
 
-And the middleware itself carries its output type via a phantom brand:
+The middleware itself carries its output type via a phantom brand:
 
 ```typescript
 // shared/src/tool-builder/types.ts
@@ -140,9 +138,9 @@ export interface Middleware<TCtxIn, TCtxOut extends TCtxIn> {
 }
 ```
 
-A unique symbol that exists only in the type system. Zero runtime cost. Full type inference. The brand carries `TCtxOut` through the chain so that when you stack three middleware, TypeScript knows exactly what `ctx` contains in your handler — without a single cast.
+A unique symbol that exists only in the type system. Zero runtime cost. Full type inference. The brand carries `TCtxOut` through the chain so that when you stack three middleware, TypeScript knows exactly what `ctx` contains in your handler — without a single cast. Think of it as a type-level Post-It note that the compiler can read but the runtime ignores.
 
-## The Middleware Stack
+## The middleware stack
 
 With the builder in place, I extracted every cross-cutting concern from the old `ToolBuilder` class into independent middleware functions. Here is `withResolves` from `mcp-image-studio/src/tool-builder/image-middleware.ts` — the middleware that turns an `image_id` string into a resolved `ImageRow`:
 
@@ -181,11 +179,11 @@ function withResolves<R extends Record<string, keyof EntityTypeMap>>(config: R) 
 }
 ```
 
-The pattern is always the same: take context in, do work, call `next()` with augmented context. If something fails, return an error result directly — short-circuiting the chain. The middleware does not know what comes after it. The handler does not know what came before it. They compose because they share a contract, not a class.
+The pattern is always the same: take context in, do work, call `next()` with augmented context. If something fails, return an error result directly — short-circuiting the chain. The middleware does not know what comes after it. The handler does not know what came before it. They compose because they share a contract, not a class hierarchy. Like pipes in a Unix pipeline — each one transforms what flows through it, oblivious to the others.
 
 The ownership middleware is five lines. The credits middleware checks balance and consumes. The job middleware creates a tracking record. Each one independent. Each one testable in isolation. Stack them in any order that satisfies the type constraints, and the compiler guarantees correctness.
 
-## A Real Tool: `analyze`
+## A real tool: `analyze`
 
 Here is what a complete tool looks like with the new system. This is the actual `analyzeTool` from `mcp-image-studio/src/tools/analyze.ts` — every line, including the `any` on line 11 (yes, I know):
 
@@ -253,17 +251,17 @@ export const analyzeTool = imageProcedure
   });
 ```
 
-Read it top to bottom. The middleware chain is a sentence: "Start with the image procedure. Resolve `image_id` to an `ImageRow`. Verify ownership. Consume credits. Define the tool schema. Handle the request."
+Read it top to bottom. The middleware chain reads like a sentence: "Start with the image procedure. Resolve `image_id` to an `ImageRow`. Verify ownership. Consume credits. Define the tool schema. Handle the request."
 
-By the time the handler runs, `ctx.entities.image_id` is a fully resolved `ImageRow`, ownership is verified, credits are consumed, and `ctx.billing.creditsCost` is populated. The handler does not check any of that. It does not need to. The middleware already did.
+By the time the handler runs, `ctx.entities.image_id` is a fully resolved `ImageRow`, ownership is verified, credits are consumed, and `ctx.billing.creditsCost` is populated. The handler does not check any of that. It does not need to. The middleware already did. It is like arriving at a dinner party where someone else set the table, poured the wine, and seated the guests — you just need to be a good conversationalist.
 
 An agent reading this file sees exactly what it needs to write a new tool: pick middleware, define a schema, write a handler. The `any` on the credits cost function is the one compromise — the input type is not yet narrowed at that point in the chain. I left it in because honesty matters more than cosmetics.
 
-## The Cloudflare Workers Convergence
+## The Cloudflare Workers convergence
 
 <ConvergenceDemo />
 
-The handler signature `(input, ctx)` is the same pattern Cloudflare Workers, tRPC, Hono, and most modern serverless frameworks converged on independently — because it is the minimal viable abstraction for a request handler.
+The handler signature `(input, ctx)` is not an arbitrary choice. It is the same pattern that Cloudflare Workers, tRPC, Hono, and most modern serverless frameworks converged on independently — because it is the minimal viable abstraction for a request handler.
 
 ```
 Workers:  (request, env, ctx) => Response
@@ -271,18 +269,18 @@ tRPC:     (input, ctx)        => output
 Builder:  ({ input, ctx })    => CallToolResult
 ```
 
-No globals. No `this`. No ambient state. Pure functions that take input and context and return a result. My old `ToolBuilder` class added ceremony. The new builder removes it.
+No globals. No `this`. No ambient state. Pure functions that take input and context and return a result. When multiple teams independently arrive at the same design, it usually means the design is downstream of the problem rather than upstream of someone's preferences. My old `ToolBuilder` class added ceremony. The new builder removes it.
 
-## Why This Matters for Agents
+## Why this matters for agents
 
-The refactoring was not about making my code prettier. It was about making my code writable by agents.
+The refactoring was not about aesthetics. It was about making my code writable by agents.
 
 When an autonomous agent needs to add a new tool, it needs to answer three questions:
 1. What middleware do I stack? (Look at similar tools)
 2. What is the input schema? (Define Zod fields)
 3. What does the handler do? (Write the business logic)
 
-With the old class-based builder, the agent also needed to answer: "What order do the casts go in? What happens if I call `.resolves()` after `.credits()`? Why is `this` mutated but the type changed?" Those are questions about framework internals, not about business logic.
+With the old class-based builder, the agent also needed to answer: "What order do the casts go in? What happens if I call `.resolves()` after `.credits()`? Why is `this` mutated but the type changed?" Those are questions about framework internals, not about business logic. They are the equivalent of asking someone to understand your kitchen's wiring before they can cook dinner.
 
 With the new builder, the framework is invisible. The agent writes a tool the same way I write a tool — by composing middleware and defining a handler. The types enforce correctness. The middleware handles cross-cutting concerns. The handler is just business logic.
 
@@ -302,11 +300,11 @@ expect(data.isAiGenerated).toBe(true);
 
 No browser. No network. No mocking the framework. The tool is a function. The test calls the function. The function returns a result. That is [the whole philosophy](/blog/it-feels-like-cheating) — code is disposable, but the contract is not.
 
-## The Infrastructure
+## The infrastructure
 
 <DependencyCascadeDemo />
 
-This builder lives in `@spike-land-ai/shared`, which means every package in my ecosystem gets it for free. The monorepo has 18 repositories under the `@spike-land-ai` GitHub org, each as a separate git submodule:
+This builder lives in `@spike-land-ai/shared`, which means every package in the ecosystem gets it for free. The monorepo has 18 repositories under the `@spike-land-ai` GitHub org, each as a separate git submodule:
 
 - **mcp-image-studio** — 42 image tools using the builder pattern
 - **spike.land** — the Next.js platform with 120+ MCP tools and the tool registry
@@ -314,15 +312,15 @@ This builder lives in `@spike-land-ai/shared`, which means every package in my e
 - **transpile** — edge transpilation via esbuild-wasm
 - **shared** — types, validations, and the tool builder itself
 
-When I publish a new version of `@spike-land-ai/shared`, a [dependency cascade system](/blog/automate-dev-team-ai-agents) automatically opens PRs in every consuming repo. The builder update propagated to all 18 repos in under ten minutes. No manual bumps. No version drift.
+When I publish a new version of `@spike-land-ai/shared`, a [dependency cascade system](/blog/automate-dev-team-ai-agents) automatically opens PRs in every consuming repo. The builder update propagated to all 18 repos in under ten minutes. No manual bumps. No version drift. The system feeds itself.
 
-That infrastructure — the cascade, the submodules, the shared CI — is what five years of spiking on ESM and TypeScript pipelines bought me. Not a single eureka moment, but a compound of hundreds of small decisions that suddenly paid off when I needed to refactor everything in a weekend.
+That infrastructure — the cascade, the submodules, the shared CI — is what five years of spiking on ESM and TypeScript pipelines bought me. Not a single eureka moment. A compound of hundreds of small decisions that suddenly paid off when I needed to refactor everything in a weekend.
 
-## The Five-Year Payoff
+## The five-year payoff
 
 Then Nano Banana 2 dropped and I needed to rewrite my tool framework in a weekend. And every one of those "slightly easier to change" decisions compounded. The Zod schemas meant I could extract input validation into middleware without touching handlers. The dependency injection meant I could swap image providers without touching tools. The pure functions meant I could test everything without spinning up infrastructure.
 
-The five-year spike was not wasted time. It was [compound interest on good defaults](/blog/the-testing-pyramid-is-upside-down).
+Five years of small, boring investments — each one barely noticeable on its own — suddenly matured all at once. That is how compound interest works. You do not notice it accumulating until the moment you need it, and then it is the difference between a weekend and a month.
 
 The builder is published. The tools are composable. The agents can write their own. And the next time Google obsoletes half my tools on a Tuesday, I will not need a weekend. I will need an afternoon — because the agent will do most of the work, and the types will make sure it does it correctly.
 

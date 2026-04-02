@@ -25,27 +25,27 @@ heroImage: "/blog/spike-land-launch/hero.png"
 
 </Tldr>
 
-## The Problem We Set Out to Solve
+## The problem nobody talks about honestly
 
-N times M. That is the integration problem nobody talks about honestly.
+N times M. That is the integration problem hiding in plain sight.
 
-N AI clients. M external services. Every combination needs auth, response parsing, error recovery, rate limiting, tool discovery. Written again from scratch, every time.
+N AI clients. M external services. Every combination needs auth, response parsing, error recovery, rate limiting, tool discovery. Written from scratch, every time.
 
-The integration surface grows quadratically. The maintenance burden follows.
+If you have 5 clients and 10 services, that is 50 integration paths. Add one more service and you need 5 more integrations. The surface grows quadratically. The maintenance burden follows.
 
-MCP (Model Context Protocol) cuts that to N+M. One protocol implemented once on each side. Any client talks to any server. That is the standard we built spike.land on.
+MCP (Model Context Protocol) cuts that N-times-M problem down to N-plus-M. One protocol, implemented once on each side. Any client talks to any server. It is the same insight that made USB succeed over a dozen proprietary cables — a shared contract beats bespoke wiring.
 
-Today, we are launching.
+That is the standard we built spike.land on. Today, we are launching.
 
 ---
 
-## What spike.land Is
+## What spike.land is
 
 spike.land is an **MCP-first AI platform** — a registry of AI-powered tools your agents can call through a single, standardized protocol. Instead of wiring up individual APIs, your AI client connects to spike.land and gets access to 80+ production-ready tools immediately.
 
 No custom integrations. No auth glue code. No pagination logic. Just tools, ready to call.
 
-### The 80+ Tools We Ship Today
+### The 80+ tools we ship today
 
 Our initial toolset spans five categories:
 
@@ -59,13 +59,13 @@ Our initial toolset spans five categories:
 
 **Utilities** — Web fetch, search, file operations, and a growing set of general-purpose tools that compose across categories.
 
-Every tool follows the same contract: typed Zod input schema, narrative-first response, structured JSON output. [Why narrative responses?](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data)
+Every tool follows the same contract: typed Zod input schema, narrative-first response, structured JSON output. [Why narrative responses?](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data) Because an AI agent does not just need data — it needs data it can reason about in context.
 
 ---
 
 ## Pricing
 
-We built spike.land to be accessible at every scale.
+We built spike.land to be accessible at every scale. Start free, grow into what you need.
 
 ### Free Tier
 
@@ -78,7 +78,7 @@ Start today, no credit card required.
 
 ### Pro — $29/month
 
-For individual developers who need more.
+For individual developers who need more room.
 
 - **500 credits/day**
 - All 80+ tools, including premium tiers
@@ -105,7 +105,7 @@ All plans include access to the MCP endpoint at `https://spike.land/api/mcp`. Co
 
 We are launching the spike.land marketplace alongside the platform.
 
-The idea is straightforward: if you build a useful MCP tool, you should get paid when others use it. We handle the infrastructure — auth, rate limiting, billing, discovery, protocol compliance. You handle the business logic.
+The idea is simple: if you build a useful MCP tool, you should get paid when others use it. We handle the infrastructure — auth, rate limiting, billing, discovery, protocol compliance. You handle the business logic. The plumbing is our problem, not yours.
 
 **Revenue share: 70/30. Tool authors keep 70%.**
 
@@ -116,7 +116,7 @@ To publish a tool, you need:
 2. A spike.land developer account
 3. A published npm package or a deployed Cloudflare Worker endpoint
 
-The [tool builder pattern](/blog/the-architecture-of-scale-building-tools) we use internally is the same one marketplace authors use. Consistent API surface. Consistent response format. Easy for agents to discover and compose.
+The [tool builder pattern](/blog/the-architecture-of-scale-building-tools) we use internally is the same one marketplace authors use. Same API surface. Same response format. Easy for agents to discover and compose.
 
 We are opening the marketplace to early partners today. If you have tools you want to publish, [apply for early access](https://spike.land/marketplace/apply).
 
@@ -124,15 +124,15 @@ We are opening the marketplace to early partners today. If you have tools you wa
 
 ## API Gateway: Credits and BYOK
 
-Many of our tools call AI models internally — image analysis, code explanation, content generation. We give you two ways to pay for those model calls.
+Many of our tools call AI models internally — image analysis, code explanation, content generation. We give you two ways to pay for those model calls, because flexibility matters when you are figuring out what works.
 
 **Bring Your Own Keys (BYOK)**
 
-Connect your OpenAI, Anthropic, or Replicate API keys in the dashboard. Tool calls that need a model will route through your keys. Your cost. Your rate limits. Full control.
+Connect your OpenAI, Anthropic, or Replicate API keys in the dashboard. Tool calls that need a model route through your keys. Your cost. Your rate limits. Full control.
 
 **Spike.land Proxy Credits**
 
-Prefer not to manage keys? Use spike.land proxy credits. One credit pool, consolidated billing, no per-service accounts.
+Prefer not to manage multiple API accounts? Use spike.land proxy credits. One credit pool, consolidated billing, no per-service accounts.
 
 - 1 credit = 1 standard model API call (approximate, varies by model and token count)
 - Credits roll over monthly on Pro and Business plans
@@ -142,9 +142,9 @@ The proxy is a passthrough — we add no markup on model costs beyond the credit
 
 ---
 
-## The Technical Stack
+## The technical stack
 
-spike.land runs entirely on Cloudflare Workers. No servers to provision. No regions to configure. Requests route to the nearest edge node automatically.
+spike.land runs entirely on Cloudflare Workers. No servers to provision. No regions to configure. Requests route to the nearest edge node automatically. The infrastructure gets out of the way so the tools can do the work.
 
 - **Edge API**: Hono framework on Cloudflare Workers
 - **MCP registry**: Cloudflare Workers + D1 (SQLite at the edge)
@@ -160,15 +160,15 @@ The [full architecture](/docs/architecture) is documented. We built in the open 
 
 We could have built a REST API. REST is familiar. Everyone knows how to curl an endpoint.
 
-But REST APIs are not designed for AI clients. They optimize for machines: compact JSON, status codes, pagination tokens. AI agents need a different contract — one that tells the model *what* a capability does in natural language, *how* to call it with typed parameters, and *what* the response means in context.
+But REST APIs were designed for human developers staring at documentation. They optimize for compact JSON, status codes, pagination tokens. AI agents need a different contract — one that tells the model *what* a capability does in natural language, *how* to call it with typed parameters, and *what* the response means in context.
 
-MCP is that contract. It defines discovery, typed schemas, and narrative responses as first-class primitives. When your AI agent connects to spike.land via MCP, it does not need documentation. It reads the tool descriptions, infers the right calls, and executes.
+MCP is that contract. It defines discovery, typed schemas, and narrative responses as first-class primitives. When your AI agent connects to spike.land via MCP, it does not need documentation pages. It reads the tool descriptions, infers the right calls, and executes. The protocol itself is the documentation.
 
 We wrote more about this in [MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools). The short version: MCP is a presentation layer, not just a transport. It shapes how the model thinks about your capabilities, not just how it calls them.
 
 ---
 
-## What's Next
+## What comes next
 
 80+ tools is a start, not a ceiling.
 
@@ -182,7 +182,7 @@ We wrote more about this in [MCP Explained](/blog/mcp-explained-universal-adapte
 
 ---
 
-## Get Started
+## Get started
 
 ```bash
 claude mcp add spike-land --transport http https://spike.land/mcp

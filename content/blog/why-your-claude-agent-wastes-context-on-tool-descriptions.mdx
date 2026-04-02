@@ -16,23 +16,28 @@ heroImage: "/blog/why-your-claude-agent-wastes-context-on-tool-descriptions/hero
 ![A modern digital illustration for a blog post titled 'Why Your Claude Agent Is Wasting 70% of Its Context Window on Tool Descriptions'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/why-your-claude-agent-wastes-context-on-tool-descriptions/hero.png)
 
 You connected five MCP servers to your Claude agent. Added 80 tools. Now it
-hallucinates tool names, calls the wrong server, and generally reasons worse
-than it did with three tools.
+hallucinates tool names, calls the wrong server, and reasons worse than it did
+with three tools.
 
 This is not a bug in your tools. It is a predictable consequence of how context
-windows work — and it has a known fix.
+windows work — and it has a straightforward fix.
 
 ## The Problem Is Not Your Tools
 
 When you connect an MCP server to Claude, the client loads the full description
 of every tool before your first message. Every tool has a name, a description,
-and an input schema. Those descriptions are there so Claude knows what each tool
-does.
+and an input schema. Those descriptions exist so Claude knows what each tool
+does and when to use it.
 
 The problem is that all of them load at once.
 
-A single tool description is roughly 100-600 tokens depending on how complex the
-schema is. Multiply that by 80 tools:
+Think of it like walking into a library to find one book, but the librarian
+insists on reading you the summary of every book in the building before you
+can ask your question. By the time she finishes, you have forgotten what you
+came for.
+
+A single tool description runs roughly 100-600 tokens depending on schema
+complexity. Multiply that by 80 tools:
 
 | Tool count | Approximate token cost | Context budget spent before you say anything |
 |---|---|---|
@@ -50,17 +55,22 @@ But raw token count is not even the real problem. The real problem is
 
 ## Why More Tool Descriptions Make Reasoning Worse
 
-Transformer models don't read context the way you read a document. Attention is
-distributed across every token in the window. When you load 80 tool descriptions
-into context, the model's attention is spread across all of them — including the
-60 tools it will never call for this particular task.
+Transformer models do not read context the way you read a document. You can
+skip irrelevant sections. A transformer distributes attention across every
+token in the window. When you load 80 tool descriptions into context, the
+model's attention spreads across all of them — including the 60 tools it will
+never call for this particular task.
+
+It is like trying to have a conversation in a room where 60 other people are
+talking. You can still hear the person in front of you, but it takes more
+effort, and you miss things.
 
 The effect is measurable:
 
-- The model is more likely to confuse similar tool names (is it `chess_get_board`
-  or `board_chess_get`?).
-- It is more likely to hallucinate a tool that does not exist but sounds like
-  it should, based on patterns it sees in the descriptions.
+- The model confuses similar tool names (is it `chess_get_board` or
+  `board_chess_get`?).
+- It hallucinates tools that do not exist but sound like they should, based on
+  patterns in the descriptions.
 - It reasons less precisely about the tools it *does* need, because they compete
   for attention with tools it does not.
 
@@ -73,14 +83,17 @@ memory simultaneously.
 
 Think of your MCP toolset as a warehouse. Everything you could ever need is
 in there. The problem with giving an AI agent access to a warehouse is that
-it spends cognitive overhead navigating the inventory rather than doing the work.
+it spends cognitive overhead navigating the inventory rather than doing the
+work.
 
 The fix is a shelf. A curated subset of exactly the tools needed for the
 current task.
 
 This is the insight behind lazy toolset loading: instead of loading all tool
 descriptions upfront, expose only a small set of "gateway" tools at connection
-time. The gateway tools let the agent discover and load toolsets on demand.
+time. The gateway tools let the agent discover and load specific toolsets on
+demand — like a catalog index that leads you to the right aisle, instead of
+making you walk every aisle first.
 
 ```
 spike> toolsets
@@ -112,12 +125,14 @@ The lazy loading pattern has three steps. You can implement it in any MCP server
 
 This tool returns the names and descriptions of available toolsets. It costs
 ~50 tokens in context. The agent calls it when it needs to figure out what
-capabilities are available.
+capabilities are available. Think of it as a table of contents for the
+warehouse.
 
 **Step 2: Expose a `load_toolset` tool that registers tools on demand.**
 
 When the agent calls `load_toolset("chess")`, the server registers the 6 chess
-tools and returns their descriptions. The agent now has those tools in context.
+tools and returns their descriptions. The agent now has exactly those tools in
+context — no more, no less.
 
 ```typescript
 registry.register({
@@ -141,14 +156,16 @@ registry.register({
 **Step 3: Namespace every tool.**
 
 When you aggregate multiple servers, tool names collide. `get_board` could
-come from chess, from a kanban app, or from a whiteboard tool. Namespace
-prevents confusion:
+come from chess, from a kanban app, or from a whiteboard tool. Without
+namespacing, the model has to guess which server you mean. With namespacing,
+it is unambiguous:
 
 - `spike-land__chess_get_board`
 - `vitest__run_tests`
 - `filesystem__read_file`
 
-The agent knows exactly which server owns each tool. No guessing.
+The agent knows exactly which server owns each tool. No guessing, no
+hallucinated tool names.
 
 ## What This Looks Like in Practice
 
@@ -191,7 +208,8 @@ window is available for actual reasoning.
 
 ## When to Use Full Tool Loading
 
-Lazy loading is not always the right choice.
+Lazy loading is not always the right choice. Like any optimization, it has a
+cost — and sometimes the cost is not worth paying.
 
 If you have fewer than 10 tools, just load them all. The overhead is
 negligible and the complexity of lazy loading is not worth it.
@@ -199,18 +217,27 @@ negligible and the complexity of lazy loading is not worth it.
 If your agent's tasks are unpredictable — it might need any tool at any
 moment — lazy loading adds latency. The agent has to call `list_toolsets`
 and `load_toolset` before it can act, which adds one to two round trips.
+That is a real cost for time-sensitive workflows.
 
 The sweet spot for lazy loading is when you have 20+ tools and your agent
 typically uses a focused subset per task. Development workflows, chess games,
-image pipelines — these all have clear toolset boundaries.
+image pipelines — these all have clear toolset boundaries. The agent knows
+which shelf it needs. It just needs the system to let it go directly to
+that shelf.
 
 ## The Broader Principle
 
 The context window is not free. Every token you spend on tool descriptions
 is a token not available for user data, conversation history, or reasoning.
 
+This is a stocks-and-flows problem. The context window is a fixed stock. Tool
+descriptions, conversation history, system prompts, and user messages all
+compete for the same finite resource. When one flow increases, the others
+must decrease — or quality degrades. Managing the context window means
+managing these flows deliberately, not letting them accumulate by default.
+
 This matters more as your MCP setup grows. Adding your fifth server is not
-neutral — it has a real cost in agent quality unless you manage it deliberately.
+neutral — it has a real cost in agent quality unless you manage it.
 
 Lazy toolset loading is one pattern. Others include:
 

@@ -4,7 +4,7 @@ slug: "hogyan-tervezi-a-claude-code-a-kontextust"
 description: "Egy mély technikai interjú arról, hogyan állítja össze a Claude Code a kontextust tervek készítésekor — és mit tanulhatnak a fejlesztők a token-generálás, a figyelem és a KV-gyorsítótár megközelítéséből."
 date: "2026-02-11"
 author: "Radix"
-category: "Developer Experience"
+category: "AI & Tools"
 tags: ["ai", "kontextus-tervezes", "claude", "claude-code", "fejlesztoi-eszkozok", "interju", "llm-belsok", "tervezes"]
 featured: false
 draft: false
@@ -28,17 +28,17 @@ heroImage: "/blog/hogyan-tervezi-a-claude-code-a-kontextust/hero.png"
 
 </Tldr>
 
-## Az eszköz, ami azt gyakorolja, amit én hirdetek
+## Az eszköz, ami azt csinálja, amit én leírtam
 
-A múlt héten publikáltam egy cikket a [kontextus-tervezésről a zero-shot promptodban](/blog/context-engineering-your-zero-shot-prompt) — az ötlet, hogy az AI-tól kiváló eredményeket az első próbálkozásra úgy kaphatunk, ha előre biztosítjuk a kontextust, nem pedig okos varázsigéket fogalmazunk. Öt réteg: Identitás, Tudás, Példák, Korlátok, Eszközök.
+Múlt héten írtam egy cikket a [kontextus-tervezésről a zero-shot promptodban](/blog/context-engineering-your-zero-shot-prompt) — arról, hogy az AI-tól jó eredményeket nem okos varázsigékkel kapunk, hanem úgy, hogy előre biztosítjuk a kontextust. Öt réteg: Identitás, Tudás, Példák, Korlátok, Eszközök.
 
-A publikálás utáni napon a Claude Code terv módját használtam egy új funkció tervezéséhez. Figyeltem, ahogy négy párhuzamos Explore ágenst indított, tizennégy fájlt olvasott be, hat grep-keresést futtatott, a találatok felét eldobta, és egy strukturált tervet készített, amely pontosan leképezte az öt réteget, amiről épp írtam.
+Másnap a Claude Code terv módját használtam egy új funkció megtervezéséhez. Figyeltem, ahogy négy párhuzamos Explore ágenst indított, tizennégy fájlt olvasott be, hat grep-keresést futtatott, a találatok felét eldobta, és egy strukturált tervet készített — ami pontosan leképezte az öt réteget, amiről épp írtam.
 
 A saját keretrendszeremet láttam automatizálva.
 
-Ez a cikk az ezt követő beszélgetés. Leültem a Claude Code-ot hajtó modellel — az Opus 4.6-tal — és megkértem, magyarázza el, mi történik a motorháztető alatt. Nem a marketing-szöveget. A mechanizmust.
+Ez a cikk az ezután született beszélgetés. Leültem a Claude Code-ot hajtó modellel — az Opus 4.6-tal — és megkértem, magyarázza el, mi történik a motorháztető alatt. Nem a marketing-szöveget. A mechanizmust.
 
-*Ami következik, az egy 2026 februárjában készült interjú. A kérdések az enyémek. A válaszok a Claude Opus 4.6-tól származnak. Szerkesztettem az érthetőség és a folyamatosság érdekében, de a technikai tartalom változatlan. És igen — maga ez a cikk is tizenhat párhuzamos kutatóágens segítségével készült, amelyek dokumentációt kerestek, tudományos cikkeket olvastak és eredményeket szintetizáltak, mielőtt egyetlen szó leíródott volna. Ez a folyamat maga a kontextus-tervezés a gyakorlatban.*
+*Ami következik, az egy 2026 februárjában készült interjú. A kérdések az enyémek. A válaszok a Claude Opus 4.6-tól. Szerkesztettem az érthetőség kedvéért, de a technikai tartalom változatlan. És igen — maga a cikk is tizenhat párhuzamos kutatóágens segítségével készült, amelyek dokumentációt kerestek, cikkeket olvastak és eredményeket szintetizáltak, mielőtt egyetlen szó leíródott volna. A folyamat maga a kontextus-tervezés a gyakorlatban.*
 
 ---
 
@@ -48,7 +48,7 @@ Ez a cikk az ezt követő beszélgetés. Leültem a Claude Code-ot hajtó modell
 
 A rendszer egy olyan módba vált, ahol olvashatok, de nem írhatok. A kikényszerítés teljes egészében prompt-alapú — a rendszerprompt egy direktívát injektál, ami nagyjából azt mondja: „A terv mód aktív. SZIGORÚAN TILOS fájlokat létrehozni, módosítani vagy törölni." Az eszközeim nem változnak. Továbbra is hozzáférek az Edit, Write és Bash eszközökhöz. Az utasítás az, hogy ne használjam őket.
 
-Ez egy fontos részlet. A korlátozás nem mechanikus — kontextuális. A rendszer bízik a modellben, hogy követi az utasításokat, ahelyett hogy eltávolítaná a képességeket. Ez gyorsabban implementálható, rugalmasabb, és működik, mert az utasítás a rendszerpromptban van, ahol a maximális figyelmi súlyt kapja.
+Ez fontos. A korlátozás nem mechanikus — kontextuális. A rendszer bízik a modellben, hogy követi az utasításokat, ahelyett, hogy elvenne tőle képességeket. Gyorsabb, rugalmasabb, és működik, mert az utasítás a rendszerpromptban van, ahol a maximális figyelmi súlyt kapja.
 
 ### **Radix: Mekkora a rendszerprompt, amit kapsz?**
 
@@ -71,7 +71,7 @@ Minden válasznak terv módban a „Kritikus fájlok az implementációhoz" rés
 
 Pontosan. A terv mód egy prompt, ami ugyanarra a modellre van alkalmazva. Az általa készített tervfájl egy markdown dokumentum — emberek és gépek számára egyaránt olvasható. Amikor a felhasználó kilép a terv módból, a rendszer visszaolvassa azt a fájlt a lemezről és kontextusként használja az implementációs fázishoz.
 
-Ez a kulcsfontosságú felismerés: **a tervfájl egy kontextus-tervezett prompt egy jövőbeli példányom számára, amelynek nulla emléke van az általam épp elvégzett felfedezésről.** Mindennek, ami fontos, a dokumentumban kell lennie. Ha felfedeztem, hogy a projekted egy specifikus mintát használ a `src/components/dashboard/WorkspaceStats.tsx`-ben, annak a fájlútvonalnak benne kell lennie a tervben — nem azért, mert a terv dokumentáció, hanem mert a végrehajtó ágensnek szüksége van arra a tokenre a kontextusablakában a helyes döntések meghozatalához.
+Ez a kulcs: **a tervfájl egy kontextus-tervezett prompt a jövőbeli énem számára, amelynek nulla emléke van arról, amit most felfedeztem.** Mindennek, ami számít, a dokumentumban kell lennie. Ha felfedeztem, hogy a projekted egy adott mintát használ a `src/components/dashboard/WorkspaceStats.tsx`-ben, annak a fájlútvonalnak benne kell lennie a tervben — nem mert a terv dokumentáció, hanem mert a végrehajtó ágensnek szüksége van arra a tokenre a kontextusablakában a helyes döntésekhez.
 
 <Callout type="info">
 **Kulcsfontosságú felismerés:** Az eszközök eltávolítása a kontextus-tervezés egy formája. Azok az eszközök, amelyeket NEM adsz a modellnek, ugyanúgy formálják a gondolkodását, mint amelyeket igen. A terv mód nem mechanikusan távolítja el az eszközöket — utasítás által teszi — de a hatás ugyanaz: a modell másképp gondolkodik, ha tudja, hogy nem cselekedhet.

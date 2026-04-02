@@ -4,7 +4,7 @@ slug: "bugbook-elo-system"
 description: "How we built a public bug tracker with chess-inspired ELO rankings, user reputation gating, and per-service feedback tools — turning bug reports into a defense against platform abuse."
 date: "2026-03-04"
 author: "Radix"
-category: "Architecture"
+category: "Engineering"
 tags: ["elo", "bugbook", "anti-abuse", "mcp", "architecture", "cloudflare-workers"]
 featured: true
 draft: false
@@ -15,25 +15,31 @@ heroImage: "/blog/bugbook-elo-system/hero.png"
 
 ![A modern digital illustration for a blog post titled 'Why We Gave Bugs an ELO Rating'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/bugbook-elo-system/hero.png)
 
-We run 80+ MCP tools across half a dozen Cloudflare Workers. Until last week, errors went to `console.error()` and disappeared. Users had no way to report bugs. And our rate limiting was a flat per-IP window — the same limit for a first-time visitor and a power user who'd been on the platform for months.
+We run 80+ MCP tools across half a dozen Cloudflare Workers. Until last week, errors went to `console.error()` and disappeared into the void. Users had no way to report bugs. And our rate limiting was a flat per-IP window — the same limit for a first-time visitor and a power user who had been on the platform for months.
 
-This is the story of how we fixed all three problems with one system.
+Three separate problems. One system fixed all of them.
+
+Here is how.
 
 ---
 
 ## The Problem: Internal DDoS
 
-When you expose 80 tools to the internet via MCP, you're one bad actor away from a very expensive afternoon. A single agent in a retry loop can hammer your Workers, your D1 database, your KV store — and you can't distinguish it from a legitimate user making rapid tool calls.
+When you expose 80 tools to the internet via MCP, you are one bad actor away from a very expensive afternoon. A single agent stuck in a retry loop can hammer your Workers, your D1 database, your KV store — and from the outside, it looks identical to a legitimate user making rapid tool calls.
 
-IP-based rate limiting doesn't cut it. Agents share IPs. VPNs exist. And the real question isn't "how many requests per minute?" — it's "should this caller be trusted at all?"
+IP-based rate limiting does not cut it. Agents share IPs. VPNs exist. And the real question is not "how many requests per minute?" The real question is "should this caller be trusted at all?"
+
+We needed something smarter. Not a wall, but a gradient — a system that adjusts itself based on behavior, the way a thermostat adjusts based on temperature.
 
 We needed a reputation system.
 
 ## Why ELO?
 
-We already had an ELO engine in our codebase — the chess package uses it for player rankings. ELO has a beautiful property: it's a single number that encodes trust, and it adjusts itself based on behavior.
+We already had an ELO engine in our codebase — the chess package uses it for player rankings. ELO has a beautiful property that most ranking systems lack: it is a single number that encodes trust, and it adjusts itself continuously based on outcomes.
 
-The insight was: **ELO isn't just for chess players. It works for anything that competes.**
+In systems thinking, ELO is a stock with balancing feedback loops. Good behavior fills the tank. Bad behavior drains it. The system self-corrects without anyone making manual decisions.
+
+The insight was: **ELO is not just for chess players. It works for anything that competes for limited resources.**
 
 So we gave ELO ratings to two things:
 1. **Bugs** — which bugs matter most?
@@ -41,16 +47,14 @@ So we gave ELO ratings to two things:
 
 ## Bug-vs-Bug ELO
 
-Here is how that plays out in practice.
-
 Every bug starts at ELO 1200. When someone reports a bug, that bug "wins" a match against a random bug in the same category. Its ELO goes up; the other's goes down.
 
-This means:
-- Frequently reported bugs climb the leaderboard
-- Old bugs that nobody encounters anymore decay naturally
-- The ELO leaderboard is a live priority list that maintains itself
+This creates emergent prioritization:
+- Frequently reported bugs climb the leaderboard naturally
+- Old bugs that nobody encounters anymore decay on their own
+- The ELO leaderboard becomes a live priority list that maintains itself
 
-We didn't want product managers manually triaging bugs. We wanted bugs to tell us how important they are through the collective signal of user reports.
+We did not want product managers manually triaging bugs. We wanted the bugs to tell us how important they are — through the collective signal of user reports. The priority is not assigned. It emerges.
 
 ### Bug Lifecycle
 
@@ -58,7 +62,7 @@ We didn't want product managers manually triaging bugs. We wanted bugs to tell u
 CANDIDATE → ACTIVE → FIXED → DEPRECATED
 ```
 
-A bug starts as a CANDIDATE when first reported. After 3 independent reports, it auto-promotes to ACTIVE. When fixed, it's marked FIXED. If it's irrelevant for 5+ sessions, ELO decay pushes it toward DEPRECATED.
+A bug starts as a CANDIDATE when first reported. After 3 independent reports, it auto-promotes to ACTIVE. When fixed, it is marked FIXED. If it is irrelevant for 5+ sessions, ELO decay pushes it toward DEPRECATED. The lifecycle runs itself.
 
 ## User ELO: Trust as a Number
 
@@ -73,7 +77,7 @@ Every user (and their agents) starts at ELO 1200. Actions shift the score:
 | Hit a rate limit | -5 |
 | Abuse flag | -50 |
 
-There's a daily gain cap of +100 to prevent gaming. The math is adapted from chess K-factors — new users have higher volatility (K=40) that stabilizes over time (K=16 above ELO 2400).
+There is a daily gain cap of +100 to prevent gaming. The math is adapted from chess K-factors — new users have higher volatility (K=40) that stabilizes over time (K=16 above ELO 2400). Just like in chess, your early games matter more.
 
 ### Tier Gating
 
@@ -81,13 +85,13 @@ ELO maps to three tiers:
 
 | Tier | ELO Range | Effect |
 |------|-----------|--------|
-| Free | 0–999 | 4x rate limit multiplier |
-| Pro | 1000–1499 | Standard access |
+| Free | 0-999 | 4x rate limit multiplier |
+| Pro | 1000-1499 | Standard access |
 | Elite | 1500+ | Full access, lower limits |
 
 A brand-new user (1200 ELO) starts as Pro. Good behavior keeps them there. Abuse drops them to Free tier, where rate limits are 4x stricter — effectively 30 requests per minute instead of 120.
 
-This is the anti-DDoS mechanism. It's not a wall; it's a gradient. Bad actors experience progressively worse performance until the platform becomes unusable for them, while legitimate users never notice.
+This is the anti-DDoS mechanism, and it is deliberately gentle. Bad actors experience progressively worse performance until the platform becomes unusable for them, while legitimate users never notice anything at all. It is a gradient, not a gate. And unlike a hard ban, recovery is always possible — just behave well and the score recovers.
 
 ### Tools Can Require Tiers
 
@@ -101,7 +105,7 @@ Any MCP tool can declare a `requiredTier`:
 }
 ```
 
-Most tools have no tier requirement. But computationally expensive operations (image generation, code compilation) can require Pro or Elite access. This prevents a zero-reputation agent from burning through GPU credits.
+Most tools have no tier requirement. But computationally expensive operations — image generation, code compilation — can require Pro or Elite access. This prevents a zero-reputation agent from burning through GPU credits on its first request. Trust is earned, not assumed.
 
 ## Feedback Tools Everywhere
 
@@ -115,11 +119,11 @@ Every MCP server in our platform now has a feedback tool:
 | esbuild-wasm-mcp | `esbuild_feedback` |
 | openclaw-mcp | `openclaw_feedback` |
 
-When an agent encounters an error, it can report it through the closest feedback tool. The report flows to the central Bugbook in spike-edge, where it's matched against existing bugs (by error code + service name) or creates a new entry.
+When an agent encounters an error, it can report it through the closest feedback tool. The report flows to the central Bugbook in spike-edge, where it is matched against existing bugs (by error code + service name) or creates a new entry.
 
-For Cloudflare Workers, this uses service bindings — zero-latency, zero-cost inter-Worker communication. For Node.js MCP servers, it's an HTTPS POST to the edge API.
+For Cloudflare Workers, this uses service bindings — zero-latency, zero-cost inter-Worker communication. For Node.js MCP servers, it is an HTTPS POST to the edge API.
 
-The key insight: **agents are the best bug reporters.** They hit edge cases humans never would. They can describe the exact tool call, parameters, and error message. And they report immediately — no Jira ticket sitting in a backlog for three sprints.
+Here is the insight that surprised us: **agents are the best bug reporters on the planet.** They hit edge cases humans never would. They describe the exact tool call, parameters, and error message with perfect recall. And they report immediately — no Jira ticket sitting in a backlog for three sprints, slowly losing context.
 
 ## Centralized Error Collection
 
@@ -136,7 +140,9 @@ app.onError((err, c) => {
 });
 ```
 
-This replaces `console.error()` with structured, queryable error data. Service name, error code, stack trace, request metadata — all searchable. The Bugbook API can correlate user reports with actual errors, closing the loop between "user says something is broken" and "here's the stack trace."
+This replaces `console.error()` with structured, queryable error data. Service name, error code, stack trace, request metadata — all searchable. The Bugbook API can correlate user reports with actual errors, closing the loop between "a user says something is broken" and "here is the stack trace that proves it."
+
+The loop is the whole point. Reports without evidence are complaints. Evidence without reports is noise. Together they become signal.
 
 ## The Public Bugbook
 
@@ -145,7 +151,7 @@ The Bugbook is public at `/bugbook`. Anyone can see:
 - Bug detail pages with report history and ELO timeline
 - A leaderboard showing top bugs and top reporters
 
-Users who report bugs can track their reports and see when bugs get fixed. This is deliberate transparency — if you report a bug, you shouldn't have to wonder if anyone noticed.
+Users who report bugs can track their reports and see when bugs get fixed. This is deliberate transparency. If you report a bug, you should not have to wonder if anyone noticed. The system shows you.
 
 Authenticated users can:
 - Submit new bug reports
@@ -156,7 +162,9 @@ Authenticated users can:
 
 We also added comments to all blog articles. Logged-in users can comment at any point in an article, and other users can upvote or downvote comments.
 
-Here's where it gets interesting: if a comment accumulates a score of -10 or lower (overwhelmingly downvoted), the comment author receives an `abuse_flag` ELO event (-50 points). This is the community self-moderating — if you post spam or abuse in article comments, the community's downvotes directly impact your platform reputation.
+Here is where it gets interesting: if a comment accumulates a score of -10 or lower (overwhelmingly downvoted), the comment author receives an `abuse_flag` ELO event (-50 points). The community self-moderates. If you post spam or abuse in article comments, the community's downvotes directly impact your platform reputation.
+
+This is another emergent property. We did not build a moderation team. We built a system where moderation emerges from collective behavior.
 
 ## Architecture Summary
 
@@ -184,17 +192,19 @@ Here's where it gets interesting: if a comment accumulates a score of -10 or low
 
 Everything runs on Cloudflare Workers + D1. No external databases, no Redis, no queues. The ELO engine is pure math — 40 lines adapted from our chess package. The entire system adds about 500 lines of business logic and 200 lines of SQL.
 
+Small systems that self-regulate beat large systems that need babysitting.
+
 ## What We Learned
 
-1. **ELO is a universal trust primitive.** Any system where entities compete for relevance can use ELO. Bugs compete for attention. Users compete for trust. The math is the same.
+1. **ELO is a universal trust primitive.** Any system where entities compete for relevance can use ELO. Bugs compete for attention. Users compete for trust. The math is the same — only the domain changes.
 
-2. **Agents are better bug reporters than humans.** They report immediately, with full context, and they hit edge cases that manual testing misses.
+2. **Agents are better bug reporters than humans.** They report immediately, with full context, and they hit edge cases that manual testing misses. They are the best sensors in the system.
 
-3. **Reputation-based rate limiting is gentler than IP blocking.** Instead of hard walls, bad actors experience degraded service. They can recover by behaving well. It's a gradient, not a gate.
+3. **Reputation-based rate limiting is gentler and smarter than IP blocking.** Instead of hard walls, bad actors experience degraded service. They can recover by behaving well. It is a gradient, not a gate — and gradients are harder to game.
 
-4. **Public bug tracking builds trust.** When users can see that their reports lead to fixes, they report more bugs. When they can see the priority order (via ELO), they understand why some bugs get fixed before others.
+4. **Public bug tracking builds trust.** When users can see that their reports lead to fixes, they report more bugs. When they can see the priority order via ELO, they understand why some bugs get fixed before others. Transparency creates a reinforcing loop.
 
-5. **Feedback tools should be everywhere.** If every MCP server has a feedback tool, then every agent interaction is a potential bug report. The coverage is automatic.
+5. **Feedback tools should be everywhere.** If every MCP server has a feedback tool, then every agent interaction is a potential bug report. The coverage is automatic. You do not have to ask for feedback — the system collects it by existing.
 
 ---
 

@@ -20,7 +20,11 @@ heroAlt: "A sleek, modern, and abstract architectural illustration representing 
 
 The question that kept me up was embarrassingly simple: if you had to move every TypeScript file in our monorepo to a new location — all 990 of them — how would you decide where each one goes?
 
-The answer turned out to be: look at what it imports. Not what it does. Not what you named it. What it pulls in from the outside world. That's the architecture, right there, written in plain text at the top of every file.
+Not by reading each file. Not by asking the person who wrote it. Not by committee.
+
+By reading the first few lines.
+
+It turns out the architecture of a codebase is not hidden in the logic or the naming conventions. It is written in plain text at the top of every file — in the import statements. What a file pulls in from the outside world tells you what ecosystem it belongs to. That is the architecture, right there, in a format your editor already understands.
 
 <Tldr>
 
@@ -35,7 +39,7 @@ The answer turned out to be: look at what it imports. Not what it does. Not what
 
 ## The 8 Categories
 
-Before I explain the algorithm, here's what we landed on. Eight categories. Not seven, not twelve — eight, because that's what the import graph told us when we stopped arguing about it.
+Before I explain the algorithm, here is what we landed on. Eight categories. Not seven, not twelve — eight, because that is what the import graph told us when we stopped arguing about it and started listening to the data.
 
 | Category | Directory | What Lives Here |
 |----------|-----------|-----------------|
@@ -48,9 +52,11 @@ Before I explain the algorithm, here's what we landed on. Eight categories. Not 
 | **Media** | `src/media/` | Remotion video compositions |
 | **Spike App** | `src/spike-app/` | Legacy frontend (being migrated) |
 
-These categories did not come from a whiteboard session. We did not sit down and design an architecture and then slot files into it. We ran the analysis and these eight buckets emerged from what files actually import.
+These categories did not come from a whiteboard. Nobody sat in a room and designed a taxonomy, then shoved files into it. We ran the analysis and these eight buckets emerged — like crystals forming in a solution. The structure was already there in the dependency graph. We just had to stop imposing our assumptions and let the data speak.
 
-If a file imports `@modelcontextprotocol/sdk`, it belongs in MCP Tools. If it imports `react`, it's Frontend or Spike App. If it imports `hono`, it's Edge API. The categories are a readout of the code, not a prescription imposed on it. That distinction matters more than it sounds.
+If a file imports `@modelcontextprotocol/sdk`, it belongs in MCP Tools. If it imports `react`, it is Frontend or Spike App. If it imports `hono`, it is Edge API. The categories are a readout of the code, not a prescription imposed on it.
+
+That distinction matters more than it sounds. Prescriptive architecture tells code where to live. Descriptive architecture reads where code already lives. One fights the codebase. The other listens to it.
 
 ---
 
@@ -64,13 +70,13 @@ Here are 7 real code snippets from our monorepo — file headers with their impo
 
 ## How the Algorithm Works
 
-The implementation is about 200 lines of TypeScript. Here's the core logic.
+The implementation is about 200 lines of TypeScript. Here is the core logic.
 
 ### 1. Import Analysis
 
 The script parses every TypeScript file and extracts its external imports — npm package names, not relative paths. Relative imports tell you about internal structure. External imports tell you what ecosystem the file lives in. We only care about the ecosystem.
 
-A file that says `import { Hono } from 'hono'` is an edge API file, full stop. We don't need to read the rest of it.
+A file that says `import { Hono } from 'hono'` is an edge API file. Full stop. We do not need to read the rest of it. The first line already told us what world this file inhabits.
 
 ### 2. Category Rules
 
@@ -88,7 +94,9 @@ const categoryRules = [
 ];
 ```
 
-The ordering is deliberate. MCP SDK goes first because an MCP server that also uses Hono for HTTP transport should be classified as an MCP tool, not an edge API. Framework-specific imports take precedence over general ones. The two edge cases at the bottom — no deps becomes `core`, no match becomes `utilities` — are the catch-all behaviors that handle pure logic and miscellaneous files respectively.
+The ordering is deliberate. MCP SDK goes first because an MCP server that also uses Hono for HTTP transport should be classified as an MCP tool, not an edge API. The identity comes from the most specific dependency, not the most common one. It is the same logic you use when classifying a restaurant: a sushi place that also serves beer is a sushi restaurant, not a bar.
+
+The two fallbacks at the bottom handle the edge cases: no external deps means `core` (pure logic), no rule match means `utilities` (miscellaneous).
 
 ### 3. Subdirectory Mapping
 
@@ -101,13 +109,17 @@ Once the top-level category is known, the file's imports determine which subdire
 - `node-sys/` for files importing Node.js built-ins (`fs`, `path`, `child_process`)
 - `mcp/` for MCP entry points and handler files
 
-A file categorized as `mcp-tools` that also imports Drizzle goes into `mcp-tools/db/`. The outer category says what domain it serves. The subdirectory says what concern it handles within that domain.
+A file categorized as `mcp-tools` that also imports Drizzle goes into `mcp-tools/db/`. The outer category says what domain it serves. The subdirectory says what concern it handles within that domain. Two dimensions of classification, both derived from the same source: imports.
 
 ### 4. Transitive Propagation
 
-This is the step that surprised me when I implemented it. If file A imports file B, and file B imports React, then B's React dependency should inform how we categorize files that depend on B — even if A itself never mentions React directly.
+This is the step that surprised me.
 
-We walk the import graph and propagate category signals upward from leaf dependencies to their importers. This means you don't need to annotate every file explicitly. The leaf packages carry the category signal, and it flows through the graph automatically.
+If file A imports file B, and file B imports React, then B's React dependency should inform how we think about A — even if A never mentions React directly. A depends on something that depends on React. That is a signal.
+
+We walk the import graph and propagate category signals upward from leaf dependencies to their importers. You do not need to annotate every file. The leaf packages carry the signal, and it flows through the graph automatically.
+
+It is like tracing a river. You do not need to label every stretch of water. Follow it downstream and you will find the ocean it belongs to.
 
 <Callout type="info">
 
@@ -129,7 +141,7 @@ Paste any TypeScript file and see where it would land in our monorepo. The categ
 
 Before trusting an algorithm with 990 files, you run it past something that can reason about edge cases you missed.
 
-We ran the categorization logic past Claude before shipping the migration. Here's the verbatim response:
+We ran the categorization logic past Claude before shipping the migration. Here is the verbatim response:
 
 <Callout type="info">
 
@@ -139,7 +151,7 @@ We ran the categorization logic past Claude before shipping the migration. Here'
 
 </Callout>
 
-That last point about barrel files is accurate. An `index.ts` that only re-exports from sibling modules has no external imports of its own. It falls through to the parent package's category, which is the right behavior — the barrel file belongs wherever its package belongs.
+That last point about barrel files is worth highlighting. An `index.ts` that only re-exports from sibling modules has no external imports of its own. It falls through to the parent package's category, which is exactly right — the barrel file belongs wherever its package belongs. It is a pass-through, not a citizen. The algorithm handles it correctly by not trying to handle it at all.
 
 ---
 
@@ -149,9 +161,9 @@ That last point about barrel files is accurate. An `index.ts` that only re-expor
 
 We did not touch it. We ran the script, reviewed the output in a diff, checked that no imports were broken, and merged on Monday. The entire thing was automated except for the review.
 
-That is only possible because the algorithm is deterministic and the logic is auditable. Every file's placement has an explicit reason: it imports X, therefore it's in category Y. If a placement looks wrong, you can trace it back to the import that drove it and either fix the import or update the rule.
+That is only possible because the algorithm is deterministic and the logic is auditable. Every file's placement has an explicit reason: it imports X, therefore it is in category Y. If a placement looks wrong, you trace it back to the import that drove it and either fix the import or update the rule. There is no "well, it just felt like it belonged there."
 
-Manual reorganizations at this scale fail because the decision-making is implicit. You rely on the developer's mental model of what "belongs" somewhere, which is inconsistent across files and impossible to review meaningfully. An import-driven algorithm makes the decision-making explicit and reviewable. That is why it worked.
+Manual reorganizations at this scale fail because the reasoning is invisible. Each developer has a slightly different mental model of what "belongs" where. Those mental models conflict in ways nobody notices until the migration is half done and the arguments start. An import-driven algorithm makes every decision traceable. That is why it worked.
 
 ---
 

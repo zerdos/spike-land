@@ -4,7 +4,7 @@ slug: "context-engineering-your-zero-shot-prompt"
 description: "Stop iterating endlessly. Learn how to front-load context so AI models get your code right on the first try. A beginner-friendly guide."
 date: "2026-02-10"
 author: "Radix"
-category: "Developer Experience"
+category: "AI & Tools"
 tags: ["ai", "context-engineering", "prompt-engineering", "claude", "developer-tools", "productivity", "mcp"]
 featured: true
 draft: false
@@ -24,96 +24,113 @@ heroImage: "/blog/context-engineering-your-zero-shot-prompt/hero.png"
 
 </Tldr>
 
-Last Tuesday, I typed a single request into Claude Code. Eleven minutes later, a fully tested feature was live on our staging environment. 
+Last Tuesday, I typed a single request into Claude Code. Eleven minutes later, a fully tested feature was live on our staging environment.
 
-That same afternoon, a junior colleague sat down with the same AI model to do a similar task. Forty-five minutes and twelve different chat messages later, he was still wrestling with broken code.
+That same afternoon, a junior colleague sat down with the same model to do a similar task. Forty-five minutes and twelve chat messages later, he was still wrestling with broken code.
 
-The difference wasn't talent. It wasn't the AI. 
+The difference was not talent. It was not the AI.
 
 **The difference was context.**
 
-He typed a question. I delivered a complete briefing. He was interrogating a stranger, hoping the AI would guess what he wanted. I was handing the AI the keys to our codebase, explaining our exact coding conventions, and setting clear boundaries.
+He typed a question. I delivered a complete briefing. He was interrogating a stranger, hoping the AI would guess what he wanted. I was handing the AI a map of our codebase, our conventions, and clear boundaries around the task.
 
-This article breaks down exactly how to do that, every single time.
+The gap between eleven minutes and forty-five minutes was not built during the conversation. It was built before either of us typed a single word.
 
 ---
 
-## Prompt Engineering Is Dead
+## The Death of Magic Words
 
-Let's be direct: trying to find the "magic words" to trick an AI into doing what you want is an outdated strategy. 
+Let me be direct: trying to find the "magic words" to trick an AI into doing what you want is an outdated strategy. It was necessary in 2023, when models needed careful coaxing. Today, models are smart enough to understand your intent. The bottleneck has moved.
 
-In 2023, you had to carefully word your prompts. Today, AI models are smart enough to understand what you want. The problem is usually that they *don't have enough background information about your specific project*.
+The bottleneck is now **information about your specific project**.
 
-**Think of it like a detective story.** Detectives don't solve cases by asking one brilliant question. They gather evidence, review forensics, and build a case so that by the time they ask a question, the answer is obvious. 
+Think of it like giving directions. If someone asks you how to get to the grocery store, "turn left at the light" works fine in your town. But if they are in a city they have never visited, you need to give them the whole map — or better yet, hand them one with the route already highlighted.
 
-Your prompt is just the final question. **Context engineering** is all the evidence you gather beforehand. 
+Your prompt is just the final instruction: "go to the store." Context engineering is everything that makes that instruction unambiguous.
 
-If your AI gives you a bad result, the old instinct was to rewrite the prompt. The new instinct should be: *What context was missing?*
+If your AI gives you a bad result, the old instinct was to rewrite the prompt. The new instinct should be: *What context was missing?* That is the leverage point. Almost always, the problem is upstream of the question.
 
 ---
 
 ## The 5-Layer Context Stack
 
-To get perfect results on the first try (what we call a "0-shot prompt"), you need to provide five layers of context.
+To get perfect results on the first try — what we call a "zero-shot prompt" — you need to provide five layers of context. Think of them as the layers of a building. Skip the foundation and the penthouse wobbles.
 
 {/* Diagram: 5 layers of context — Identity, Knowledge, Examples, Constraints, and Tools */}
 
 ### Layer 1: Identity
-**Who is the AI?**
-Give the AI a role. This narrows down its vast knowledge to exactly what you need.
+**Who is the AI in this moment?**
+
+Give the AI a role. This narrows its vast knowledge to exactly the slice you need — like adjusting the aperture on a camera.
+
 *Example:* "You are a senior TypeScript developer working on a Next.js app. You write strict, fully-tested code."
 
 ### Layer 2: Knowledge
-**What does the AI need to know about your project?**
-The AI knows general coding, but it doesn't know your specific database structure or folder layout. You must provide it.
-*Example:* Point the AI to your database schema file or explain how you handle authentication.
+**What does the AI need to know about your specific world?**
+
+The AI knows general programming. It does not know your database schema, your folder layout, or why you chose Hono over Express. You have to provide the map.
+
+*Example:* Point the AI to your database schema file or explain your authentication flow.
 
 ### Layer 3: Examples
-**What does "good" look like?**
-Instead of describing your coding style, show it.
-*Example:* "Please follow the exact same data-fetching pattern used in `src/components/UserProfile.tsx`."
+**What does "good" look like here?**
+
+Instead of describing your coding style in abstract terms, show it. One example is worth a hundred words of description.
+
+*Example:* "Follow the exact data-fetching pattern used in `src/components/UserProfile.tsx`."
 
 ### Layer 4: Constraints
-**What must the AI NOT do?**
-AI models love to be "helpful" by rewriting code you didn't ask them to touch. You have to set boundaries.
+**What must the AI not do?**
+
+AI models love to be "helpful" by rewriting code you did not ask them to touch. Without boundaries, helpfulness becomes chaos. Constraints are not restrictions — they are focus.
+
 *Example:* "Do not modify any files outside of the `src/dashboard` folder. Do not add any new npm packages."
 
 ### Layer 5: Tools
-**What can the AI do?**
-If you give the AI access to read files, run tests, or search the web, it changes how it solves the problem. 
-*Example:* If you give the AI the ability to run `yarn test`, it will naturally try to verify its code before giving you the final answer.
+**What can the AI actually do?**
+
+If you give the AI access to read files, run tests, or search the codebase, it fundamentally changes how it solves the problem. A model with `yarn test` access will naturally verify its own work before presenting it to you. A model without it is flying blind.
+
+*Example:* Give the AI access to run your test suite, and watch how much more careful its code becomes.
 
 ---
 
 ## CLAUDE.md: Your Secret Weapon
 
-The absolute easiest way to apply this is by creating a `CLAUDE.md` file in the root folder of your project. 
+The easiest way to apply all five layers is a `CLAUDE.md` file in the root of your project.
 
-This is a file that Claude Code automatically reads every time it starts. It's your permanent context file. But remember: **write it for the AI, not for humans.**
+Claude Code reads this file automatically every time it starts a session. It is your permanent context file — the onboarding document for a brilliant colleague who gets amnesia every single morning.
+
+But here is the key: **write it for the AI, not for humans.**
 
 Humans want to know *why* a decision was made. The AI just needs to know *what* to do.
 
-**Good AI Instructions:**
+**Good AI instructions:**
 > "Testing framework: Vitest. Test files must end in `.test.ts`. Run tests with `yarn test`. Require 100% coverage."
 
-**Bad AI Instructions:**
+**Bad AI instructions:**
 > "We decided to move away from Jest in 2024 because Vitest was faster, so please try to write Vitest tests if you can."
 
-Think of `CLAUDE.md` as an onboarding document for a brilliant new hire who gets amnesia every single morning. Every time the AI makes a bad assumption, add a new rule to this file.
+The first is a rule. The second is a story. The AI needs rules.
+
+Every time the AI makes a bad assumption, add a new rule to this file. Over time, `CLAUDE.md` becomes a living document that encodes your team's judgment. It is the institutional memory that the AI cannot build on its own.
 
 ---
 
 ## The Effort Inversion
 
-Here is the biggest mindset shift you need to make.
+Here is the biggest mindset shift.
 
 {/* Graph: effort inversion — high upfront prep vs high backend iteration */}
 
-**The Old Way:** Spend 2 minutes writing a prompt, then spend 45 minutes arguing with the AI to fix its mistakes.
-**The New Way:** Spend 15 minutes gathering context, writing clear constraints, and pointing to examples. Spend 2 minutes writing the prompt. The AI gets it right on the first try.
+**The old way:** Spend 2 minutes writing a prompt. Spend 45 minutes arguing with the AI to fix its mistakes. Each round of fixes introduces new confusion. The conversation degrades.
 
-**Think of it like packing for a trip.** You can either take 20 minutes to pack carefully, or you can throw random stuff in a bag and spend half your vacation buying things you forgot. 
+**The new way:** Spend 15 minutes gathering context, writing clear constraints, and pointing to examples. Spend 2 minutes writing the prompt. The AI gets it right on the first try.
 
-Preparation IS the work. The prompt is just pressing "send."
+The total time is less. But more importantly, the *shape* of the effort changes. You invest upfront instead of paying downstream. Like packing carefully for a trip versus buying everything you forgot at airport prices.
 
-My colleague's mistake was asking the AI a question. My move was handing it a briefing. The eleven-minute gap was built before either of us typed a single word.
+This is a classic systems pattern: small investments at leverage points produce disproportionate results. Context is the leverage point. The prompt is just the trigger.
+
+My colleague's mistake was asking the AI a question. My move was handing it a briefing. The eleven-minute gap was not built during the conversation. It was built before it started.
+
+Preparation is the work. The prompt is just pressing send.

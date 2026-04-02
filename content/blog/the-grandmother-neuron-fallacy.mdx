@@ -15,7 +15,7 @@ heroImage: "/blog/the-grandmother-neuron-fallacy/hero.png"
 
 ![A modern digital illustration for a blog post titled 'The Grandmother Neuron Fallacy: Why AI Tool Chains Break'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-grandmother-neuron-fallacy/hero.png)
 
-## The 2 AM Bug That Isn't a Bug
+## The 2 AM bug that is not a bug
 
 I have a three-tool AI pipeline. Tool A fetches a user profile. Tool B fetches recent activity. Tool C drafts a personalized email. Every tool has unit tests. They pass. Integration tests pass too.
 
@@ -23,90 +23,94 @@ Then I run the agent end to end, and about one run in ten, it fails.
 
 Not with a crash. With a drift.
 
-Tool A returns a user bio that happens to mention `React Native`. The LLM latches onto that phrase and invents a parameter for mobile activity when calling Tool B. Tool B returns an empty array. Tool C writes an email about a product that doesn't exist.
+Tool A returns a user bio that happens to mention `React Native`. The LLM latches onto that phrase and invents a parameter for mobile activity when calling Tool B. Tool B returns an empty array because that parameter does not match anything real. Tool C writes an email about a product that does not exist.
 
 Every tool worked correctly. The pipeline is broken.
 
-I spent three hours debugging this like a normal software problem: tightening the prompt, adding validators, locking down the schema. Treating the system like a chain of logic.
+I spent three hours debugging this like a normal software problem: tightening the prompt, adding validators, locking down the schema. Treating the system like a chain of gears where one gear slipped.
 
-That was the mistake.
+That was the mistake. This is not a chain of gears. It is a different kind of system entirely.
 
-## The Fallacy
+## The fallacy
 
-In neuroscience, the "grandmother neuron" is the idea that somewhere in your brain there's one specific neuron that fires for one specific concept: your grandmother. It's a seductive idea because it's clean. One part, one job, one meaning.
+In neuroscience, the "grandmother neuron" is the idea that somewhere in your brain there is one specific neuron dedicated to one specific concept: your grandmother. It is a seductive idea because it is clean. One part, one job, one meaning. Like a well-organized filing cabinet.
 
-Neuroscience moved past this decades ago. The brain doesn't work that way. Concepts emerge from patterns across distributed networks, not from single dedicated cells.
+Neuroscience moved past this decades ago. The brain does not work that way. Concepts emerge from patterns across distributed networks, not from single dedicated cells. Your grandmother is not stored in one neuron — she is a pattern of activation across millions of them, and that pattern shifts depending on whether you are remembering her face, her voice, or the way she made tea.
 
-We haven't learned that lesson in AI engineering.
+We have not learned that lesson in AI engineering.
 
-We build a tool called `fetch_user_activity` and act as if it has one fixed meaning. In isolation, it does. But once that tool's output enters an LLM context window, it stops being just a function. It becomes part of a semantic field, shaped by nearby text, prior tool calls, naming choices, and everything else competing for the model's attention.
+We build a tool called `fetch_user_activity` and act as if it has one fixed meaning. In isolation, it does. But once that tool's output enters an LLM context window, it stops being just a function return value. It becomes part of a semantic field — shaped by nearby text, prior tool calls, naming choices, and everything else competing for the model's attention.
 
-**The mistake isn't building deterministic tools. The mistake is assuming they stay deterministic once a model starts reasoning over them.**
+**The mistake is not building deterministic tools. The mistake is assuming they stay deterministic once a model starts reasoning over them.**
 
-## Clocks and Clouds
+## Clocks and clouds
 
-Karl Popper had a useful distinction: clocks and clouds. Clocks are mechanical and predictable. You can take them apart and understand every gear. Clouds are irregular and context-dependent.
+Karl Popper had a useful distinction: clocks and clouds. Clocks are mechanical and predictable. You can take them apart and understand every gear. Clouds are irregular and context-dependent. You can describe their behavior statistically, but you cannot predict the exact shape at 3:47 PM tomorrow.
 
 Software engineers are excellent at building clocks. A REST endpoint is a clock. A database transaction is a clock. We know how to test these because they behave the same way every time.
 
 An LLM is a cloud.
 
-Not random, but not mechanically predictable either. Small changes in wording, tool ordering, or prior outputs can shift the path it takes. So what did we do when these systems arrived? We tried to force clouds to behave like clocks. Rigid JSON. Strict schemas. The assumption that enough structure would make reasoning deterministic.
+Not random — clouds have structure, tendencies, patterns — but not mechanically predictable either. Small changes in wording, tool ordering, or prior outputs can shift the path it takes. The same input can produce different reasoning on different runs, and both runs might be perfectly reasonable.
 
-Structure helps. But it doesn't solve the core problem, because the instability isn't in the formatting layer. It's in the reasoning layer.
+So what did we do when these systems arrived? We tried to force clouds to behave like clocks. Rigid JSON. Strict schemas. The assumption that enough structure would make reasoning deterministic.
 
-That's why model-facing systems need more than strict schemas. They need semantic clarity: tool descriptions that explain intent, not just parameters. Responses that preserve meaning, not only structure.
+Structure helps. But it does not solve the core problem, because the instability is not in the formatting layer. It is in the reasoning layer. You can force the output into perfect JSON and still get the wrong answer, because the model decided the wrong thing before it formatted anything.
 
-## Variation Isn't Always Noise
+That is why model-facing systems need more than strict schemas. They need semantic clarity: tool descriptions that explain intent, not just parameters. Responses that preserve meaning, not only structure.
 
-In conventional software, there's one correct path and any deviation is a bug. That works for clocks.
+## Variation is not always noise
 
-It works less well for LLMs.
+In conventional software, there is one correct path and any deviation is a bug. That assumption works for clocks.
 
-When the same prompt produces slightly different reasoning across runs, we treat it as unreliability. We lower the temperature, add constraints, tighten the corridor. Sometimes that's right. But sometimes the variation is telling us the system is navigating a genuinely complex space, not tracing a single fixed route.
+It works less well for clouds.
 
-This becomes dangerous in tool chains. If your system depends on one exact wording, one exact parameter name, one exact sequence of intermediate states, you haven't built a robust agent. You've built a narrow corridor and hoped the model never brushes the wall.
+When the same prompt produces slightly different reasoning across runs, we instinctively treat it as unreliability. We lower the temperature, add constraints, tighten the corridor. Sometimes that is right.
 
-The better goal isn't eliminating variation. It's building interfaces that stay legible even when the model's trajectory shifts.
+But sometimes the variation is telling us something. The system is navigating a genuinely complex space, not tracing a single fixed route. Like a river that takes slightly different paths each spring — the variation is not a failure of the river. It is information about the terrain.
 
-## The Butterfly Effect in Tool Chains
+This becomes dangerous in tool chains. If your system depends on one exact wording, one exact parameter name, one exact sequence of intermediate states, you have not built a robust agent. You have built a narrow corridor and hoped the model never brushes the wall.
+
+The better goal is not eliminating variation. It is building interfaces that stay legible even when the model's trajectory shifts.
+
+## The butterfly effect in tool chains
 
 A tiny detail appears in one tool response. A slightly different phrase enters the context. Suddenly the model starts making calls that looked impossible in your tests.
 
-This is the butterfly effect in LLM systems. Traditional APIs don't work this way. If you pass the wrong ID, you get the wrong user, but the failure is local and the response format stays stable.
+This is the butterfly effect in LLM systems, and it is genuinely different from traditional API failures. If you pass the wrong ID to a REST endpoint, you get the wrong user, but the failure is local and the response format stays stable. The blast radius is one call.
 
-With LLMs, failures are non-local. One semantic nudge early in the chain can alter what the model pays attention to for every subsequent step.
+With LLMs, failures are non-local. One semantic nudge early in the chain can alter what the model pays attention to for every subsequent step. It is like a conversation where one offhand remark shifts the entire tone of everything that follows.
 
-That's why brittle tool contracts fail so easily. If the model must hit one exact key name, one exact parameter pattern, one exact interpretation, a tiny context shift breaks everything.
+That is why brittle tool contracts fail so easily. If the model must hit one exact key name, one exact parameter pattern, one exact interpretation, a tiny context shift breaks everything.
 
-Human-readable tool descriptions help because they preserve intent. "Provide the numeric user identifier" is more robust than a bare field name. The model can recover meaning even when local wording drifts.
+Human-readable tool descriptions help because they preserve intent across variations. "Provide the numeric user identifier" is more robust than a bare field name `uid`. The model can recover meaning even when local wording drifts, because the description gives it enough context to self-correct.
 
-## Adding Tools Changes Everything
+## Adding tools changes everything
 
-Here's a reductionist habit that burns people:
+Here is a reductionist habit that burns people:
 
 > I tested Tool A. I tested Tool B. So a system with both should behave predictably.
 
-In an LLM environment, adding a tool doesn't just add a capability. It changes the decision surface of the whole system. New words appear in the context. New actions become thinkable. Attention shifts.
+In an LLM environment, adding a tool does not just add a capability. It changes the decision surface of the whole system. New words appear in the context. New actions become thinkable. Attention shifts.
 
-I've seen an agent use `insert_database_record` correctly hundreds of times. Then I add a `search_web` tool, and suddenly it starts filling database fields with URLs instead of cleaned values.
+I have seen an agent use `insert_database_record` correctly hundreds of times. Then I add a `search_web` tool, and suddenly it starts filling database fields with URLs instead of cleaned values.
 
-The web-search tool changed what the model sees as relevant, available, and natural to output. One more tool doesn't add one more branch. It reshapes the probability landscape for every decision.
+The web-search tool changed what the model sees as relevant, available, and natural to output. It is like adding a new ingredient to a recipe — it does not just sit there on its own. It changes the flavor of everything else in the pot.
 
-This is why connecting dozens of tools to one agent isn't like handing it a clean list of independent APIs. You're changing the environment in which every choice gets made. Tool descriptions need to be clear, differentiated, and semantically grounded. Raw JSON schemas alone won't keep things stable.
+One more tool does not add one more branch. It reshapes the probability landscape for every decision. This is why connecting dozens of tools to one agent is not like handing it a clean list of independent APIs. You are changing the environment in which every choice gets made. Tool descriptions need to be clear, differentiated, and semantically grounded. Raw JSON schemas alone will not keep things stable.
 
-## Reductionism Still Has Its Place
+## Reductionism still has its place
 
-None of this means deterministic engineering is useless. It means it has a boundary.
+None of this means deterministic engineering is useless. It means it has a boundary, and the boundary is the model.
 
-A database write should be deterministic. A payment flow should be deterministic. Your backend tools should still be tested like clocks.
+A database write should be deterministic. A payment flow should be deterministic. Your backend tools should still be tested like clocks. That precision is essential, and nothing about LLMs changes it.
 
-The failure happens when you assume the logic of the clock continues unchanged at the model boundary. It doesn't.
+The failure happens when you assume the logic of the clock continues unchanged across the model boundary. It does not. The moment a deterministic output enters the context of a probabilistic reasoner, it becomes one input among many, subject to interpretation, attention competition, and semantic drift.
 
 Keep your backend precise and structured. But once that capability is exposed to an LLM, the model-facing layer needs to account for semantic interpretation: clearer descriptions, better discoverability, better differentiation between tools, and response formats that preserve intent, not just structure.
 
-Narrative doesn't replace engineering. Semantic framing helps deterministic systems survive contact with probabilistic reasoning.
+Narrative does not replace engineering. Semantic framing helps deterministic systems survive contact with probabilistic reasoning.
 
-## The One-Sentence Version
+## The one-sentence version
 
 Your tools are deterministic. Your agent is not. Design the boundary accordingly.

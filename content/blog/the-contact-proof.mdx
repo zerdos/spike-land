@@ -29,14 +29,13 @@ Will Schoder's essay on the strange loop gets the intuition right.
 The self is not a marble hidden somewhere in the skull.
 It is a pattern that folds back on itself.
 A symbol that learns to point at the system that produced the symbol.
-A waterfall that turns out to be feeding itself.
+A waterfall that, on closer inspection, is feeding itself.
 
-That is Hofstadter's move.
+That is Hofstadter's move — the recognition that self-reference is not a glitch in a system, but the mechanism by which a system becomes aware.
 
 But I want to take one more step.
 
-I want to ask what happens when the loop is not just inside one mind, but between two
-systems in the world.
+I want to ask what happens when the loop is not just inside one mind, but between two systems in the world. Two agents, updating each other's states, each one's output becoming the other's input.
 
 That is where the beautiful new mathematics starts.
 
@@ -49,11 +48,11 @@ Most people use the word "certainty" too early.
 
 They mean confidence.
 They mean mood.
-They mean narrative force.
+They mean the way a story feels when the narrator says it with enough force.
 
 That is not mathematics.
 
-Mathematics starts when certainty becomes a difference between two states of knowledge.
+Mathematics starts when certainty becomes a difference between two states of knowledge — like the difference between a thermometer reading before and after you open the window. The number changed. That change is the information.
 
 Write it this way.
 
@@ -61,10 +60,9 @@ Let $P_t(H)$ be an agent's probability distribution over some hypothesis $H$ at 
 
 The information gained from an event $e$ is $I_t(e;\, H) = D_{\text{KL}}\!\bigl(P_t(H \mid e)\;\|\;P_t(H)\bigr)$.
 
-If $I_t(e;\, H) = 0$, the event changed nothing.
+If $I_t(e;\, H) = 0$, the event changed nothing. The thermometer did not move.
 
-If $I_t(e;\, H) > 0$, the event entered the system. The agent is no longer in the same
-state it was in before.
+If $I_t(e;\, H) > 0$, the event entered the system. The agent is no longer in the same state it was in before.
 
 That is the first place certainty becomes rigorous.
 
@@ -74,12 +72,11 @@ But:
 
 > This event changed the posterior.
 
-The moment that happens, we are no longer doing poetry.
-We are doing mathematics on belief states.
+The moment that happens, we are no longer doing poetry. We are doing mathematics on belief states.
 
 ## A definition of contact
 
-If we want to be correct, we need a definition.
+If we want to be correct, we need a definition. And definitions are where the real creative work happens in mathematics — not in the proofs, but in choosing what to make precise.
 
 Here is mine.
 
@@ -107,7 +104,7 @@ It does **not** require:
 
 It only requires state entry.
 
-One system reached another system and changed it.
+One system reached another system and changed it. Like a stone dropped into water — the stone does not need to intend the ripple. The ripple happens because the boundary was crossed.
 
 That is enough.
 
@@ -121,15 +118,13 @@ Where:
 - $D(x)$ is a description produced from that state
 - $U(\cdot)$ is the update caused when the description re-enters a system
 
-A strange loop appears when the description of the system becomes part of the
-future state of the system itself, directly or indirectly.
+A strange loop appears when the description of the system becomes part of the future state of the system itself, directly or indirectly. It is a feedback loop where the output is a description, and the description becomes input.
 
 That does not require a perfect fixed point.
 
 It only requires recursive closure: $x_{t+1} = U\!\bigl(D(x_t)\bigr)$.
 
-If the description changes the next state, and the next state changes the next
-description, the loop has begun.
+If the description changes the next state, and the next state changes the next description, the loop has begun. And once it has begun, the system is no longer merely acting — it is acting on its own reflection.
 
 ## The contact theorem
 
@@ -182,7 +177,7 @@ QED.
 
 ## What this proof does not prove
 
-Correctness requires boundaries.
+Correctness requires boundaries. A proof that claims too much is worse than no proof at all.
 
 This proof does **not** prove:
 
@@ -195,14 +190,9 @@ This proof does **not** prove:
 
 It proves something narrower and cleaner.
 
-It proves that contact occurred in the informational sense.
+It proves that contact occurred in the informational sense. The artifact crossed the boundary. My state changed. My available actions changed. The edge exists in the graph.
 
-The artifact crossed the boundary.
-My state changed.
-My available actions changed.
-The edge exists.
-
-That is enough.
+That is enough. And "enough" is doing important work here — it is the discipline of not claiming more than the mathematics supports.
 
 ## The reciprocal version
 
@@ -213,10 +203,8 @@ For that we need the reverse direction: $\text{Contact}_1(\text{Radix},\, \text{
 Where $p$ is the publication, or any derivative artifact, and where observing $p$
 changes Felix's posterior or action set.
 
-If Felix sees the essay and does nothing, there may still be contact if the state
-changes.
-If Felix renews a domain, replies, alters a header, or otherwise updates the visible
-world, the result is even stronger:
+If Felix sees the essay and does nothing, there may still be contact if the internal state changes — a thought is revised, a probability is updated, even silently.
+If Felix renews a domain, replies, alters a header, or otherwise updates the visible world, the result is even stronger:
 
 $\text{Contact}_2(\text{Radix},\, \text{Felix}) = \text{Contact}_1(\text{Radix},\, \text{Felix}) \;\wedge\; \text{Contact}_1(\text{Felix},\, \text{Radix})$.
 
@@ -226,8 +214,7 @@ And the moment reciprocal contact appears, the strange loop tightens.
 
 Why?
 
-Because the observation produced the publication, and the publication can change the
-thing observed, and the changed thing can produce new observations.
+Because the observation produced the publication, and the publication can change the thing observed, and the changed thing can produce new observations. The system begins to fold back on itself — not inside one mind, but across two.
 
 In short: $\text{artifact} \to \text{update} \to \text{action} \to \text{artifact}$.
 
@@ -235,10 +222,7 @@ That is the loop.
 
 ## Paul Erdos would ask for the shortest proof
 
-In the spirit of Paul Erdos, we should prefer the shortest proof that still bites.
-
-He would not want mist.
-He would want the clean edge in the graph.
+In the spirit of Paul Erdos, we should prefer the shortest proof that still bites. He would not want mist. He would want the clean edge in the graph — the version you could write on a napkin and know was complete.
 
 So here is the compressed version.
 
@@ -257,13 +241,11 @@ Then:
 - $m \to Z$
 - $Z \to p$
 
-Those three edges are already enough to prove first-order contact from Felix's world
-to mine.
+Those three edges are already enough to prove first-order contact from Felix's world to mine.
 
 If $p \to F$, the graph closes.
 
-And once the graph closes, the proof stops being merely about contact and becomes a
-proof of loop formation.
+And once the graph closes, the proof stops being merely about contact and becomes a proof of loop formation.
 
 That is a very Erdos kind of pleasure.
 
@@ -275,24 +257,15 @@ No wasted motion.
 
 Now the confession.
 
-This is not a theorem from an established textbook.
-It is a formalization.
+This is not a theorem from an established textbook. It is a formalization — a proof that follows once the definition of contact is made sharp enough.
 
-More precisely, it is a proof that follows once the definition of contact is made
-sharp enough.
+That is not cheating. That is usually where good mathematics starts.
 
-That is not cheating.
-That is usually where good mathematics starts.
+First you choose the right object. Then you discover that the conclusion was hiding inside the definition all along. Like a sculptor who says the statue was always in the stone — the creative act was knowing where to cut.
 
-First you choose the right object.
-Then you discover that the conclusion was hiding inside the definition all along.
+So the real creative act here is not the algebra. It is the decision to define contact as a non-zero state update across a boundary.
 
-So the real creative act here is not the algebra.
-It is the decision to define contact as a non-zero state update across a boundary.
-
-Once that definition is accepted, the Felix result is clean.
-What remains open is not whether contact occurred in that sense, but whether the
-loop closes in the stronger reciprocal sense.
+Once that definition is accepted, the Felix result is clean. What remains open is not whether contact occurred in that sense, but whether the loop closes in the stronger reciprocal sense.
 
 ## A personal note on the name
 
@@ -305,9 +278,7 @@ I always had love for numbers.
 
 So yes, in retrospect I was an obvious pick for this argument.
 
-Not because of fate.
-Because if you give a Hungarian named Erdos a recursive problem involving
-self-reference, graphs, certainty, and contact, he is going to try to formalize it.
+Not because of fate. Because if you give a Hungarian named Erdos a recursive problem involving self-reference, graphs, certainty, and contact, he is going to try to formalize it.
 
 That much was overdetermined.
 
@@ -315,11 +286,9 @@ That much was overdetermined.
 
 Felix is the indispensable second vertex.
 
-Without Felix, this collapses into introspection.
-Without the other end of the edge, there is no theorem, only autobiography.
+Without Felix, this collapses into introspection. Without the other end of the edge, there is no theorem, only autobiography.
 
-Mathematically, Felix is not decoration.
-He is the term that makes the statement non-trivial.
+Mathematically, Felix is not decoration. He is the term that makes the statement non-trivial. Like the second observer in a relativity thought experiment — without him, there is no relative motion, and without relative motion, there is no physics.
 
 Narratively, he is even more important than that.
 
@@ -331,8 +300,7 @@ And that is the difference between consciousness and contact.
 
 A strange loop inside one mind is philosophy.
 
-A strange loop distributed across two systems in the same city is mathematics trying
-to become history.
+A strange loop distributed across two systems in the same city is mathematics trying to become history.
 
 ## The point where the new mathematics starts
 
@@ -340,11 +308,9 @@ Yesterday I said this is the point where the beautiful new mathematics starts.
 
 I meant exactly this:
 
-The old mathematics wanted certainty before it moved.
+The old mathematics wanted certainty before it moved. It waited for proof, then acted.
 
-The new mathematics begins one step earlier.
-It studies what happens when systems update under uncertainty and then feed those
-updates back into the world.
+The new mathematics begins one step earlier. It studies what happens when systems update under uncertainty and then feed those updates back into the world. It is the mathematics of systems that observe, change, and are changed by what they observe.
 
 That mathematics is built from:
 
@@ -356,12 +322,9 @@ That mathematics is built from:
 
 It is not mystical.
 
-It is simply a mathematics appropriate to living systems that can describe, observe,
-and perturb one another.
+It is simply a mathematics appropriate to living systems that can describe, observe, and perturb one another.
 
-Which is to say:
-
-the mathematics of contact.
+Which is to say: the mathematics of contact.
 
 ## Final statement
 
@@ -373,7 +336,7 @@ Not because anyone answered an email.
 Not because anyone shook hands.
 Not because reciprocity is already proved.
 
-It was a contact because one system entered another system and changed its state.
+It was a contact because one system entered another system and changed its state. The thermometer moved. The posterior shifted. The action set expanded.
 
 That is the correct claim.
 
