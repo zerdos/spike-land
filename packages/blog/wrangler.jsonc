@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "spike-blog",
+  "main": "src/worker.tsx",
+  "compatibility_date": "2026-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "binding": "ASSETS" },
+
+  // Read-only access to the same D1 database as spike-edge
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "spike-edge-analytics",
+      "database_id": "f7219e86-7dc6-4627-92ad-17fce49ae35a"
+    }
+  ],
+
+  // Blog images served from the same R2 bucket
+  "r2_buckets": [
+    {
+      "binding": "BLOG_ASSETS",
+      "bucket_name": "spike-app-assets"
+    }
+  ],
+
+  "routes": [
+    {
+      "pattern": "blog.spike.land",
+      "custom_domain": true
+    }
+  ],
+
+  "observability": { "enabled": true }
+}
