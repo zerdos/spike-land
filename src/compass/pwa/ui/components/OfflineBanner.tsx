@@ -19,8 +19,8 @@ interface OfflineBannerProps {
  */
 export function OfflineBanner({
   isOnline,
-  offlineMessage = "You're offline — guidance and your conversation history are still available.",
-  onlineMessage = "You're back online.",
+  offlineMessage = "Offline vagy — az útmutatás és a beszélgetési előzmények továbbra is elérhetők.",
+  onlineMessage = "Újra online vagy.",
 }: OfflineBannerProps): React.ReactElement | null {
   // Track previous online state to trigger "back online" flash
   const [justReconnected, setJustReconnected] = useState(false);

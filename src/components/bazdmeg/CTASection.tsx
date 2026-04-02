@@ -14,11 +14,12 @@ export function CTASection() {
           className="mx-auto max-w-2xl text-center"
         >
           <h2 className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
-            Adopt the BAZDMEG Method
+            Vedd fel a BAZDMEG Módszert
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-            Stop letting AI generate slop. Start using quality gates. Enforce the 8 principles on
-            every pull request, and watch your velocity and codebase health soar.
+            Hagyd abba, hogy az AI szemetet generáljon. Kezdj minőségi kapukat használni. Alkalmazd
+            a 8 alapelvet minden pull requestnél, és figyeld, ahogy a sebességed és a kódbázisod
+            egészsége az egekbe szökik.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <a
@@ -27,7 +28,7 @@ export function CTASection() {
               rel="noreferrer"
               className="rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              Get the Skill
+              Skill letöltése
             </a>
             <a
               href="https://github.com/spike-land-ai/spike-land"
@@ -35,7 +36,7 @@ export function CTASection() {
               rel="noreferrer"
               className="text-sm font-semibold leading-6 hover:text-primary transition-colors"
             >
-              View Documentation <span aria-hidden="true">→</span>
+              Dokumentáció megtekintése <span aria-hidden="true">→</span>
             </a>
           </div>
         </motion.div>

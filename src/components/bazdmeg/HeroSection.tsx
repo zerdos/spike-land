@@ -14,16 +14,16 @@ export function HeroSection() {
           className="mx-auto max-w-4xl"
         >
           <div className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-sm glassmorphism">
-            ✨ Quality Gates for AI-Assisted Development
+            ✨ Minőségi kapuk AI-támogatott fejlesztéshez
           </div>
 
           <h1 className="mb-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-7xl">
-            The BAZDMEG Method
+            A BAZDMEG Módszer
           </h1>
 
           <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-muted-foreground sm:text-2xl">
-            Eight principles for AI-assisted development. Born from pain. Tested in production. Stop
-            reviewing slop and start shipping quality.
+            Nyolc alapelv AI-támogatott fejlesztéshez. Fájdalomból született. Élesben tesztelve.
+            Hagyd abba a szemét reviewzását és kezdj minőséget szállítani.
           </p>
 
           <motion.div
@@ -36,7 +36,7 @@ export function HeroSection() {
               href="#principles"
               className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             >
-              Explore the 8 Principles
+              Fedezd fel a 8 alapelvet
             </a>
             <a
               href="https://github.com/spike-land-ai/spike-land"
@@ -44,7 +44,7 @@ export function HeroSection() {
               rel="noreferrer"
               className="inline-flex h-12 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             >
-              Read the Spec
+              Olvasd el a specifikációt
             </a>
           </motion.div>
         </motion.div>

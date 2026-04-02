@@ -81,7 +81,7 @@ export const ErrorReminder: React.FC<ErrorReminderProps> = ({
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="flex items-center text-lg font-semibold">
                 <AlertCircle className="h-5 w-5 mr-2 text-red-500" />
-                Code Issue Detected
+                Kódhiba észlelve
               </CardTitle>
               <Button
                 variant="ghost"
@@ -97,7 +97,7 @@ export const ErrorReminder: React.FC<ErrorReminderProps> = ({
                 <AlertTitle>{errorMessages[errorType]}</AlertTitle>
                 {errorLog && (
                   <AlertDescription>
-                    <h4 className="font-semibold text-sm">Error Log:</h4>
+                    <h4 className="font-semibold text-sm">Hibanapló:</h4>
                     <ScrollArea className="h-[100px]">
                       <pre className="text-xs font-mono whitespace-pre-wrap text-gray-700">
                         {errorLog.split("\n").map((log: string, index: number) => (

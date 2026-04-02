@@ -42,7 +42,7 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
             <Blocks className="w-5 h-5 relative z-10" />
           </span>
           <span className="text-sm font-semibold tracking-[0.2em] uppercase text-accent">
-            App Ecosystem
+            App ökoszisztéma
           </span>
         </motion.div>
 
@@ -57,9 +57,9 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-5xl md:text-7xl font-bold text-foreground mb-8 tracking-tight drop-shadow-lg"
         >
-          Built on{" "}
+          Spike Land-re{" "}
           <span className="text-gradient-primary drop-shadow-[0_0_40px_rgba(168,85,247,0.5)]">
-            Spike Land
+            építve
           </span>
         </motion.h2>
 
@@ -74,7 +74,8 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-xl md:text-2xl text-muted-foreground mb-20 max-w-3xl font-light leading-relaxed"
         >
-          Full-stack apps deployed from prompts. See what developers are shipping on the platform.
+          Full-stack appok promptból deployolva. Nézd meg, mit szállítanak a fejlesztők a
+          platformon.
         </motion.p>
 
         <div className="relative">
@@ -113,7 +114,7 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
 
                 {index < 3 && (
                   <div className="absolute -top-4 -right-4 z-30 bg-gradient-accent text-primary-foreground text-[10px] uppercase tracking-widest font-bold px-5 py-2 rounded-full shadow-glow-cyan border border-white/30 backdrop-blur-xl group-hover:scale-110 transition-transform duration-300">
-                    Featured
+                    Kiemelt
                   </div>
                 )}
 
@@ -141,7 +142,7 @@ export function AppShowcaseSection({ apps }: AppShowcaseSectionProps) {
             className="text-muted-foreground hover:text-foreground gap-2 transition-all duration-300 group rounded-full px-8 py-6 bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05]"
           >
             <Link href="/apps/store">
-              Browse the Store
+              Böngészd az áruházat
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>

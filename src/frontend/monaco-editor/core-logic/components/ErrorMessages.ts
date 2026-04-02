@@ -1,9 +1,9 @@
 // errorMessages.ts
 
 export const errorMessages = {
-  typescript: "There might be a TypeScript error in your code. Check the editor for more details.",
-  transpile: "Your code couldn't be transpiled. There might be a syntax or compilation error.",
-  render: "The code was transpiled, but no HTML output was generated. Check your render function.",
+  typescript: "Lehet, hogy TypeScript hiba van a kódodban. Nézd meg a szerkesztőt a részletekért.",
+  transpile: "A kódod nem fordítható le. Lehet, hogy szintaktikai vagy fordítási hiba van benne.",
+  render: "A kód lefordult, de nem generálódott HTML kimenet. Ellenőrizd a render függvényt.",
 };
 
 export type ErrorType = keyof typeof errorMessages | null;

@@ -102,7 +102,7 @@ const emptyStateStyle: React.CSSProperties = {
 
 function EmptyState({ rtl }: { rtl: boolean }): React.ReactElement {
   return (
-    <div style={emptyStateStyle} dir={rtl ? "rtl" : "ltr"} aria-label="Welcome to COMPASS">
+    <div style={emptyStateStyle} dir={rtl ? "rtl" : "ltr"} aria-label="Üdvözöl a COMPASS">
       {/* Compass rose icon */}
       <svg
         aria-hidden="true"
@@ -121,11 +121,11 @@ function EmptyState({ rtl }: { rtl: boolean }): React.ReactElement {
       </svg>
 
       <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", margin: 0 }}>
-        Welcome to COMPASS
+        Üdvözöl a COMPASS
       </h1>
       <p style={{ fontSize: "0.9375rem", maxWidth: "320px", lineHeight: "1.6", margin: 0 }}>
-        I'm here to help you navigate government systems, benefits, and official processes — one
-        step at a time. Ask me anything. Take your time.
+        Segítek eligazodni a kormányzati rendszerekben, juttatásokban és hivatalos folyamatokban —
+        lépésről lépésre. Kérdezz bármit. Nem kell sietned.
       </p>
     </div>
   );
@@ -213,7 +213,7 @@ export function App({ onSendMessage, progress }: AppProps): React.ReactElement {
       <main
         id="compass-messages"
         style={messagesAreaStyle}
-        aria-label="Conversation"
+        aria-label="Beszélgetés"
         aria-live="polite"
         aria-relevant="additions"
       >
@@ -227,7 +227,7 @@ export function App({ onSendMessage, progress }: AppProps): React.ReactElement {
         {isLoading && (
           <div
             aria-live="polite"
-            aria-label="COMPASS is typing"
+            aria-label="COMPASS gépel"
             style={{
               display: "flex",
               alignItems: "center",

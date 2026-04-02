@@ -37,12 +37,12 @@ function CopyButton() {
     <button
       onClick={handleCopy}
       className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200 border border-transparent hover:border-zinc-700"
-      aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
+      aria-label={copied ? "Vágólapra másolva" : "Másolás vágólapra"}
     >
       {copied ? (
         <>
           <Check className="w-3.5 h-3.5 text-aurora-green" />
-          <span className="text-aurora-green">Copied!</span>
+          <span className="text-aurora-green">Másolva!</span>
         </>
       ) : (
         <>
@@ -108,9 +108,9 @@ export function McpShowcaseSection() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight drop-shadow-xl"
         >
-          Load only{" "}
+          Csak azt töltsd be,{" "}
           <span className="text-gradient-primary drop-shadow-[0_0_30px_rgba(56,189,248,0.4)]">
-            what you need
+            amire szükséged van
           </span>
           <span className="animate-pulse text-accent ml-1 font-thin">|</span>
         </motion.h2>
@@ -126,8 +126,9 @@ export function McpShowcaseSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-xl text-muted-foreground mb-20 max-w-2xl font-light leading-relaxed"
         >
-          spike-cli provides MCP tool definitions on-demand. One config connects all your servers —
-          AI agents request only the tools they need, keeping context windows clean.
+          A spike-cli igény szerint biztosít MCP eszközdefiníciókat. Egy konfig köti össze az összes
+          szerveredet — az AI ügynökök csak a szükséges eszközöket kérik le, így a kontextusablak
+          tiszta marad.
         </motion.p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl relative">
@@ -278,7 +279,7 @@ export function McpShowcaseSection() {
             className="text-muted-foreground hover:text-foreground gap-2 transition-all duration-300 group rounded-full px-8 py-6 bg-secondary/30 border border-border/50 hover:bg-secondary/50"
           >
             <Link href="/mcp">
-              Explore All Tools
+              Minden eszköz felfedezése
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>

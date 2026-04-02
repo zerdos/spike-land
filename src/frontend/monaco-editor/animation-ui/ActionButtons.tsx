@@ -33,13 +33,13 @@ export const ActionButtons: FC<ActionButtonsProps> = ({ codeSpace, handleDownloa
                 variant="outline"
                 size="icon"
                 onClick={() => document.querySelector("#root")?.requestFullscreen()}
-                aria-label="Toggle Fullscreen"
+                aria-label="Teljes képernyő váltás"
               >
                 <FullscreenIcon />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Toggle Fullscreen</p>
+              <p>Teljes képernyő váltás</p>
             </TooltipContent>
           </Tooltip>
 
@@ -48,7 +48,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({ codeSpace, handleDownloa
               <QRButton url={`${location.origin}/live/${codeSpace}/`} />
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Show QR Code</p>
+              <p>QR kód megjelenítése</p>
             </TooltipContent>
           </Tooltip>
 
@@ -58,13 +58,13 @@ export const ActionButtons: FC<ActionButtonsProps> = ({ codeSpace, handleDownloa
                 variant="outline"
                 size="icon"
                 onClick={() => window.open(`/live/${codeSpace}/`)}
-                aria-label="Open in New Window"
+                aria-label="Megnyitás új ablakban"
               >
                 <Share />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Open in New Window</p>
+              <p>Megnyitás új ablakban</p>
             </TooltipContent>
           </Tooltip>
 
@@ -74,13 +74,13 @@ export const ActionButtons: FC<ActionButtonsProps> = ({ codeSpace, handleDownloa
                 variant="outline"
                 size="icon"
                 onClick={handleDownload}
-                aria-label="Download Project"
+                aria-label="Projekt letöltése"
               >
                 <FaDownload />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Download Project</p>
+              <p>Projekt letöltése</p>
             </TooltipContent>
           </Tooltip>
         </div>

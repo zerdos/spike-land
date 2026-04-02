@@ -23,7 +23,7 @@ export function LocaleSelector({
   locales,
   currentLocale,
   onChange,
-  label = "Language",
+  label = "Nyelv",
   compact = false,
 }: LocaleSelectorProps): React.ReactElement {
   const selectId = useId();

@@ -69,7 +69,7 @@ export function LandingHero() {
           <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/20 to-accent/0 pointer-events-none" />
           <Sparkles className="w-4 h-4 relative text-accent z-10" />
           <span className="font-bold tracking-[0.25em] uppercase text-xs sm:text-[11px] relative text-foreground z-10 drop-shadow-md">
-            Open AI App Ecosystem · Instant Deploys
+            Nyílt AI App Ökoszisztéma · Azonnali Deploy
           </span>
         </motion.div>
 
@@ -80,9 +80,9 @@ export function LandingHero() {
             transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
             className="relative text-6xl sm:text-8xl md:text-[10rem] text-foreground max-w-6xl mx-auto leading-[0.95] mb-10 tracking-tighter py-2 drop-shadow-2xl"
           >
-            <span className="font-light">Less context.</span> <br />
+            <span className="font-light">Kevesebb kontextus.</span> <br />
             <span className="text-gradient-primary font-black drop-shadow-[0_0_80px_rgba(168,85,247,0.8)] mix-blend-lighten">
-              Better AI.
+              Jobb AI.
               <div className="absolute -inset-4 bg-gradient-hero blur-2xl -z-10 mix-blend-screen" />
             </span>
           </motion.h1>
@@ -94,8 +94,8 @@ export function LandingHero() {
           transition={{ duration: 1.0, delay: 0.6, ease: "easeOut" }}
           className="text-xl sm:text-3xl text-muted-foreground max-w-4xl mx-auto mb-16 font-light leading-relaxed drop-shadow-md"
         >
-          Connect your AI agent to the tools it needs, on-demand. Only give your AI the context it
-          requires—saving tokens and getting better responses.
+          Csatlakoztasd az AI ügynöködet az igényelt eszközökhöz, menet közben. Csak azt a
+          kontextust add az AI-nak, amire szüksége van — tokent spórolsz, jobb válaszokat kapsz.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -117,7 +117,7 @@ export function LandingHero() {
 
               <div className="relative z-10 flex items-center gap-3">
                 <Rocket className="w-5 h-5 group-hover:animate-bounce" />
-                <span className="tracking-wide text-lg drop-shadow-md">Start Building</span>
+                <span className="tracking-wide text-lg drop-shadow-md">Kezdj el építeni</span>
               </div>
             </Link>
           </Button>
@@ -129,7 +129,7 @@ export function LandingHero() {
           >
             <Link href="/mcp">
               <Terminal className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:text-accent transition-colors" />
-              <span className="tracking-wide">Explore MCP Tools</span>
+              <span className="tracking-wide">Fedezd fel az MCP eszközöket</span>
             </Link>
           </Button>
         </motion.div>
@@ -143,22 +143,22 @@ export function LandingHero() {
         >
           <div className="flex items-center gap-2">
             <span className="text-foreground font-bold text-lg">{TOTAL_TOOL_COUNT}+</span>
-            <span>Tools</span>
+            <span>Eszközök</span>
           </div>
           <div className="w-px h-4 bg-border" />
           <div className="flex items-center gap-2">
-            <span className="text-foreground font-bold text-lg">Save Context</span>
-            <span>/ Token Efficient</span>
+            <span className="text-foreground font-bold text-lg">Kontextus megtakarítás</span>
+            <span>/ Token hatékony</span>
           </div>
           <div className="w-px h-4 bg-border" />
           <div className="flex items-center gap-2">
-            <span className="text-foreground font-bold text-lg">One Config</span>
-            <span>/ All Servers</span>
+            <span className="text-foreground font-bold text-lg">Egy konfig</span>
+            <span>/ Minden szerver</span>
           </div>
           <div className="w-px h-4 bg-border" />
           <div className="flex items-center gap-2">
-            <span className="text-foreground font-bold text-lg">Free</span>
-            <span>to start</span>
+            <span className="text-foreground font-bold text-lg">Ingyenesen</span>
+            <span>indulhatsz</span>
           </div>
         </motion.div>
       </motion.div>
@@ -179,7 +179,7 @@ export function LandingHero() {
         <div className="flex flex-col items-center gap-2">
           <ChevronDown className="w-6 h-6 opacity-60" />
           <span className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/50">
-            Scroll
+            Görgess
           </span>
         </div>
       </motion.div>

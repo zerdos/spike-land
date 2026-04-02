@@ -6,11 +6,11 @@ import { motion, useReducedMotion } from "framer-motion";
 
 const pillars = [
   {
-    title: "Deploy Anywhere",
+    title: "Deployolj bárhová",
     description:
-      "Vibe code a full-stack app and deploy it in seconds. Managed infrastructure, zero config.",
+      "Vibe kódolj egy full-stack appot és deployold másodpercek alatt. Menedzselt infrastruktúra, nulla konfig.",
     icon: Terminal,
-    cta: "Start Deploying",
+    cta: "Kezdj deployolni",
     href: "/create",
     gradient: "from-accent/10 to-transparent hover:from-accent/15",
     border: "border-white/[0.04] hover:border-accent/40",
@@ -21,11 +21,11 @@ const pillars = [
     pulseBg: "bg-accent",
   },
   {
-    title: "App Marketplace",
+    title: "App piactér",
     description:
-      "Hundreds of MCP tools, grouped into on-demand toolsets. Your AI sees only what it needs — your context window carries signal, not noise.",
+      "Több száz MCP eszköz, igény szerinti eszközkészletekbe csoportosítva. Az AI csak azt látja, amire szüksége van — a kontextusablakod értékes információt hordoz, nem zajt.",
     icon: Blocks,
-    cta: "Browse Toolsets",
+    cta: "Eszközkészletek böngészése",
     href: "/mcp",
     gradient: "from-primary/10 to-transparent hover:from-primary/15",
     border: "border-white/[0.04] hover:border-primary/40",
@@ -36,11 +36,11 @@ const pillars = [
     pulseBg: "bg-primary",
   },
   {
-    title: "Meet Spike",
+    title: "Ismerd meg Spike-ot",
     description:
-      "Your AI assistant that writes its own tools. Understands your codebase and ships production code.",
+      "Az AI asszisztensed, aki saját eszközöket ír. Érti a kódbazisodat és production kódot szállít.",
     icon: Sparkles,
-    cta: "Try Spike",
+    cta: "Próbáld ki Spike-ot",
     href: "/chat",
     gradient: "from-aurora-green/10 to-transparent hover:from-aurora-green/15",
     border: "border-white/[0.04] hover:border-aurora-green/40",
@@ -105,10 +105,10 @@ export function ThreePillarsSection() {
             <span>Platform</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground tracking-tight mb-4">
-            Everything you need to build
+            Minden, ami az építéshez kell
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Deploy apps, connect tools, and build with AI — all from one platform.
+            Appok deployolása, eszközök csatlakoztatása, és építés AI-val — egyetlen platformról.
           </p>
         </motion.div>
 

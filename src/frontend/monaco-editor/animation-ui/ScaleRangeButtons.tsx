@@ -41,7 +41,7 @@ export const ScaleRangeButtons: FC<ScaleRangeButtonsProps> = ({
                 setScaleRange(size);
               }
             }}
-            aria-label={`Set scale to ${size}%`}
+            aria-label={`Méretezés beállítása: ${size}%`}
           >
             {/* Removed the cn for text color, rely on Toggle's data-state styling */}
             {size}%

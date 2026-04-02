@@ -36,7 +36,7 @@ export const BreakpointButtons: FC<BreakpointButtonsProps> = ({
                 setWidth(size);
               }
             }}
-            aria-label={`Set width to ${size}px`}
+            aria-label={`Szélesség beállítása: ${size}px`}
           >
             {/* Removed the cn for text color, rely on Toggle's data-state styling */}
             {index === 0 ? <Phone /> : index === 1 ? <Tablet /> : <Tv />}

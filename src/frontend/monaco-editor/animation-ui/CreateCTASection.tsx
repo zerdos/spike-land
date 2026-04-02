@@ -6,9 +6,9 @@ import { ArrowRight, BookOpen, ExternalLink, Rocket } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const METRICS = [
-  { value: "30s", label: "Deploy time" },
-  { value: "Zero Config", label: "Infrastructure" },
-  { value: "100%", label: "AI-generated" },
+  { value: "30s", label: "Deploy idő" },
+  { value: "Nulla konfig", label: "Infrastruktúra" },
+  { value: "100%", label: "AI-generált" },
 ] as const;
 
 export function CreateCTASection() {
@@ -47,8 +47,8 @@ export function CreateCTASection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-6xl md:text-8xl lg:text-9xl font-bold text-foreground mb-10 tracking-tighter drop-shadow-2xl z-10 relative leading-[1.05]"
           >
-            Ready to ship <br />
-            <span className="text-gradient-primary">faster?</span>
+            Gyorsabban <br />
+            <span className="text-gradient-primary">szállítanál?</span>
           </motion.h2>
 
           <motion.p
@@ -62,9 +62,9 @@ export function CreateCTASection() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-2xl md:text-3xl text-muted-foreground mb-12 max-w-3xl mx-auto font-light leading-relaxed drop-shadow-md z-10 relative"
           >
-            Describe what you want. Spike builds it. Deploy in seconds.
+            Írd le, mit szeretnél. A Spike megépíti. Deploy másodpercek alatt.
             <span className="font-medium text-foreground block mt-2">
-              It really is that simple.
+              Tényleg ennyire egyszerű.
             </span>
           </motion.p>
 
@@ -118,7 +118,7 @@ export function CreateCTASection() {
 
                 <div className="relative z-10 flex items-center gap-4">
                   <Rocket className="w-5 h-5 group-hover:animate-bounce drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                  <span className="tracking-wide drop-shadow-md">Start Building</span>
+                  <span className="tracking-wide drop-shadow-md">Kezdj el építeni</span>
                 </div>
               </Link>
             </Button>
@@ -131,7 +131,7 @@ export function CreateCTASection() {
             >
               <Link href="/docs">
                 <BookOpen className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:text-accent transition-colors drop-shadow-sm" />
-                <span className="tracking-wide drop-shadow-sm">Read the Docs</span>
+                <span className="tracking-wide drop-shadow-sm">Dokumentáció</span>
                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-all duration-300 group-hover:translate-x-2" />
               </Link>
             </Button>
@@ -144,7 +144,7 @@ export function CreateCTASection() {
             >
               <Link href="/apps/store">
                 <ExternalLink className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:text-primary transition-colors" />
-                <span className="tracking-wide">View Examples</span>
+                <span className="tracking-wide">Példák megtekintése</span>
               </Link>
             </Button>
           </motion.div>

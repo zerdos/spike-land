@@ -7,30 +7,30 @@ import { ArrowRight, Calendar, Newspaper, Tag } from "lucide-react";
 
 const posts = [
   {
-    title: "How AI Agents Build Production Apps",
+    title: "Hogyan építenek AI ügynökök production appokat",
     description:
-      "A deep dive into how recursive AI agents generate, test, and deploy full-stack applications on the spike.land platform.",
-    category: "Engineering",
-    date: "Feb 10, 2026",
-    readTime: "6 min read",
+      "Mélyelemzés arról, hogyan generálnak, tesztelnek és deployolnak full-stack alkalmazásokat rekurzív AI ügynökök a spike.land platformon.",
+    category: "Mérnöki",
+    date: "2026. febr. 10.",
+    readTime: "6 perc olvasás",
     color: "from-cyan-500/20 to-blue-500/20",
   },
   {
-    title: "Getting Started with MCP on Spike Land",
+    title: "Első lépések az MCP-vel a Spike Landen",
     description:
-      "Connect Claude, Cursor, or any MCP client to spike.land and unlock database, AI, testing, and file system tools in minutes.",
-    category: "Tutorial",
-    date: "Feb 5, 2026",
-    readTime: "4 min read",
+      "Csatlakoztasd a Claude-ot, Cursort vagy bármely MCP klienst a spike.landhez, és percek alatt eléred az adatbázis-, AI-, tesztelési és fájlrendszer-eszközöket.",
+    category: "Útmutató",
+    date: "2026. febr. 5.",
+    readTime: "4 perc olvasás",
     color: "from-fuchsia-500/20 to-purple-500/20",
   },
   {
-    title: "From Prompt to Production in 30 Seconds",
+    title: "Prompttól production-ig 30 másodperc alatt",
     description:
-      "Watch an AI agent turn a single sentence into a deployed app with routing, state management, and live preview.",
-    category: "Guide",
-    date: "Jan 28, 2026",
-    readTime: "5 min read",
+      "Nézd meg, ahogy egy AI ügynök egyetlen mondatból deployolható appot épít routinggal, állapotkezeléssel és élő előnézettel.",
+    category: "Útmutató",
+    date: "2026. jan. 28.",
+    readTime: "5 perc olvasás",
     color: "from-emerald-500/20 to-green-500/20",
   },
 ];
@@ -78,21 +78,21 @@ export function BlogPreviewSection() {
                 <span className="p-2 rounded-lg bg-background/5 border border-border text-cyan-400">
                   <Newspaper className="w-5 h-5" />
                 </span>
-                <span className="text-sm font-medium text-cyan-400">Latest Updates</span>
+                <span className="text-sm font-medium text-cyan-400">Legfrissebb</span>
               </motion.div>
 
               <motion.h2
                 variants={itemVariants}
                 className="text-3xl md:text-5xl font-bold text-foreground mb-6"
               >
-                From the{" "}
+                A{" "}
                 <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  Engineering Blog
+                  mérnöki blogból
                 </span>
               </motion.h2>
 
               <motion.p variants={itemVariants} className="text-lg text-muted-foreground">
-                Engineering deep-dives, tutorials, and platform updates.
+                Mérnöki mélyelemzések, útmutatók és platform frissítések.
               </motion.p>
             </div>
 
@@ -103,7 +103,7 @@ export function BlogPreviewSection() {
                 className="rounded-full px-8 py-6 bg-secondary/30 border border-border/50 hover:bg-secondary/50 gap-2 group"
               >
                 <Link href="/blog">
-                  View all posts
+                  Összes bejegyzés
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
@@ -119,7 +119,7 @@ export function BlogPreviewSection() {
 
                 <Link
                   href="/blog"
-                  aria-label={`Read article: ${post.title}`}
+                  aria-label={`Cikk olvasása: ${post.title}`}
                   className="block h-full group/link relative z-10"
                 >
                   <div className="h-full flex flex-col bg-background/80 border border-border rounded-[32px] overflow-hidden hover:border-cyan-500/40 hover:bg-card/60 transition-all duration-500 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_60px_-15px_rgba(6,182,212,0.3)] hover:-translate-y-3 backdrop-blur-3xl group-hover:scale-[1.02]">
@@ -170,7 +170,7 @@ export function BlogPreviewSection() {
                       </p>
 
                       <div className="flex items-center text-sm font-bold tracking-wider text-cyan-500/80 uppercase group-hover:text-cyan-400 transition-colors">
-                        Read article{" "}
+                        Cikk olvasása{" "}
                         <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" />
                       </div>
                     </div>

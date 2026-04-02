@@ -27,7 +27,7 @@ export function QuickChoices({
   multiSelect = false,
   onSelect,
   disabled = false,
-  legend = "Choose an option",
+  legend = "Válassz egy opciót",
   rtl = false,
 }: QuickChoicesProps): React.ReactElement {
   function toggle(id: string): void {
@@ -110,7 +110,7 @@ export function QuickChoices({
               e.currentTarget.style.boxShadow = "none";
             }}
           >
-            Confirm ({selected.length} selected)
+            Megerősítés ({selected.length} kiválasztva)
           </button>
         </div>
       )}

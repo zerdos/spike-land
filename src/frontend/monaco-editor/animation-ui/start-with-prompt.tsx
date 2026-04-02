@@ -109,7 +109,7 @@ export const StartWithPrompt: React.FC = () => {
             : "text-gray-800"
         }`}
       >
-        Generate a new app or website
+        Generálj egy új appot vagy weboldalt
       </h1>
 
       <div className="relative w-full max-w-3xl space-y-4 mt-4 flex flex-col">
@@ -166,7 +166,7 @@ const PromptTextarea: React.FC<{
         ? "bg-gray-800 border border-gray-700 text-white placeholder-gray-400"
         : "bg-white border border-gray-300 text-gray-800 placeholder-gray-500 shadow-md"
     }`}
-    placeholder="Enter your prompt here or paste an image..."
+    placeholder="Írd be a promptodat vagy illessz be egy képet..."
   />
 );
 
@@ -187,7 +187,7 @@ const ActionButtons: React.FC<{
       disabled={disableUpload}
       aria-disabled={disableUpload ? "true" : "false"}
     >
-      Upload Image
+      Kép feltöltése
     </button>
     <button
       onClick={handleGenerate}
@@ -197,7 +197,7 @@ const ActionButtons: React.FC<{
           : "bg-purple-100 text-purple-800 hover:bg-purple-200 focus:ring-purple-300"
       }`}
     >
-      Generate
+      Generálás
     </button>
   </div>
 );
@@ -213,7 +213,7 @@ const ImageGallery: React.FC<{
       <div key={index} className="relative flex flex-col items-center">
         <motion.img
           src={img.src}
-          alt={`Uploaded ${index}`}
+          alt={`Feltöltve ${index}`}
           className="w-40 h-40 object-cover rounded-lg shadow-md cursor-pointer"
           onClick={() => handleImageClick(index)}
           layoutId={`image-${index}`}
@@ -229,7 +229,7 @@ const ImageGallery: React.FC<{
         <button
           onClick={() => removeImage(index)}
           className="absolute -top-2 right-[10%] bg-red-500 hover:bg-red-600 rounded-full w-6 h-6 flex items-center justify-center text-white shadow-md transition-colors duration-300"
-          aria-label="Remove image"
+          aria-label="Kép eltávolítása"
         >
           <CircleMinus className="w-6 h-6 text-white" />
         </button>
@@ -256,7 +256,7 @@ const EnlargedImageModal: React.FC<{
         <div className="flex flex-col items-center">
           <motion.img
             src={images[enlargedImage]?.src}
-            alt="Enlarged"
+            alt="Nagyítva"
             className="max-w-full max-h-[80vh] object-contain"
             layoutId={`image-${enlargedImage}`}
           />
@@ -286,7 +286,7 @@ const TemplateButton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => (
     >
       <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
     </svg>
-    Choose from templates
+    Válassz sablonból
   </button>
 );
 

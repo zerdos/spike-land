@@ -23,8 +23,8 @@ export default function NotFound() {
 
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1>404 - Page Not Found</h1>
-      <p>The page you are looking for does not exist or has been moved.</p>
+      <h1>404 – Az oldal nem található</h1>
+      <p>A keresett oldal nem létezik vagy áthelyezték.</p>
     </div>
   );
 }

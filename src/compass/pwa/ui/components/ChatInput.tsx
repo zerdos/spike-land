@@ -27,9 +27,9 @@ export function ChatInput({
   onSend,
   isLoading = false,
   disabled = false,
-  placeholder = "Take your time… type your question here",
-  sendLabel = "Send",
-  inputLabel = "Your message",
+  placeholder = "Nem kell sietned… írd ide a kérdésedet",
+  sendLabel = "Küldés",
+  inputLabel = "Üzeneted",
   rtl = false,
 }: ChatInputProps): React.ReactElement {
   const [value, setValue] = useState("");
@@ -116,7 +116,7 @@ export function ChatInput({
   };
 
   return (
-    <div style={containerStyle} role="region" aria-label="Message input">
+    <div style={containerStyle} role="region" aria-label="Üzenet bevitel">
       <label
         htmlFor="compass-chat-input"
         style={{
@@ -158,7 +158,7 @@ export function ChatInput({
         type="button"
         onClick={submit}
         disabled={!canSend}
-        aria-label={isLoading ? "Sending…" : sendLabel}
+        aria-label={isLoading ? "Küldés…" : sendLabel}
         aria-busy={isLoading}
         style={buttonStyle}
         onFocus={(e) => {
