@@ -1,0 +1,537 @@
+---
+title: "The Vibe Coding Paradox: Why Your AI Gets Dumber the More You Let It Wing It"
+slug: "the-vibe-coding-paradox"
+description: "We built an AI that generates React apps from URLs. It worked 40% of the time. Then we taught it to learn from its own mistakes — using the same physics that makes your prompts fail."
+date: "2026-02-12"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "context-engineering", "claude", "agents", "self-improving", "developer-tools", "vibe-coding", "physics"]
+featured: true
+draft: false
+primer: "Your AI gets dumber the more freedom you give it."
+heroPrompt: "A glowing digital spotlight in a dark room, focusing intensely on a single point of code while everything around it is blurred, representing the physics of attention"
+heroImage: "/blog/the-vibe-coding-paradox/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'The Vibe Coding Paradox: Why Your AI Gets Dumber the More You Let It Wing It'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-vibe-coding-paradox/hero.png)
+
+<Tldr>
+
+- A vibe coding-nak van egy fizikai problémája: a figyelem zéró összegű erőforrás, és a "reméljük, hogy jó lesz" típusú generálás a nagy részét elpazarolja.
+- A spike.land app-készítőjét 40%-os sikerarányról átalakítottuk egy önjavító ágenssé, ami minden hibájából tanul.
+- A javítás pontosan a termodinamikára képezhető le: tartsd meg az energiát (stabil prompt prefix), vezesd el a hőt (tömörítsd a hibákat tanulási jegyzetekbe), és hagyd, hogy a természetes szelekció kigyomlálja a rossz tudást.
+- 3 Claude modell kaszkádba szervezve költség szerint: Opus alkot ($$$), Sonnet debugol ($$), Haiku tanul ($).
+- Magát a rendszert is a Claude Code plan mode-jával terveztük — context engineering egészen az aljáig.
+
+</Tldr>
+
+## A paradoxon
+
+Építettem egy AI-t, ami React appokat generál URL-ből.
+
+Írd be, hogy `/create/games/tetris`, és kapsz egy játszható Tetrist. Írd be, hogy `/create/finance/dashboard`, és kapsz egy valós idejű részvény-diagramot. Az URL a prompt. Az app másodpercek alatt megjelenik.
+
+Varázslatosan hangzik. Íme, ami ténylegesen történt: az esetek 40%-ában működött.
+
+<SplitScreenDemo />
+
+A maradék 60%? Törött importok. Definiálatlan változók. Appok, amik betöltéskor kriptikus transpilációs hibákkal szálltak el. Az AI elég okos volt ahhoz, hogy megírja a Tetrist — csak ahhoz nem volt elég okos, hogy *emlékezzen*, hogy korábban már elbukott a Tetrisen.
+
+Minden generálás a nulláról indult. Semmi emlék a korábbi hibákról. Semmi nyilvántartás arról, melyik importok működnek és melyek adnak 404-et. Semmi felhalmozott bölcsesség. Csak nyers intelligencia egy problémára irányítva, nulla intézményi tudással — mintha egy briliáns alvállalkozót bíznál meg, aki soha nem látta az épületed tervrajzát.
+
+Ez az a paradoxon, ami megdönti az intuíciót: ha az AI-nak **több szabadságot** adsz — hagyod, hogy "vibe kódoljon" — az **rosszabb eredményeket** produkál, mintha korlátoznád. Azt gondolnád, kevesebb szabály több kreativitást jelent. A fizika mást mond.
+
+A paradoxonnak a szakmában van neve: **context engineering.** És van egy fizikai mechanizmusa, ami pontosan megmagyarázza, miért bukik el a vibe coding — és pontosan hogyan kell javítani.
+
+Ez a harmadik cikk egy sorozatban. Az [első](/blog/context-engineering-your-zero-shot-prompt) bemutatta az 5-rétegű context stack-et — egy keretrendszert arra, hogyan adj meg előre mindent, amire az AI-nak szüksége van, hogy elsőre sikerüljön. A [második](/blog/how-claude-code-engineers-context) bement a transformer belsejébe, hogy elmagyarázza, *miért* számít a kontextus a figyelem szintjén. Ez a cikk mindkettőt alkalmazza egy valódi termékfunkció megépítésére: egy önfejlesztő ágensre, ami React appokat generál és tanul a saját hibáiból.
+
+---
+
+## A fizika, amiért a vibe coding elbukik
+
+<AttentionSpotlightDemo />
+
+Induljunk ki az alapelvekből. Mi az a token?
+
+A token az LLM világának atomi egysége. Minden karakter, amit beírsz, minden utasítás, amit adsz, minden kontextus, amit biztosítasz — tokenekre vágódik szét. Egy tipikus angol szó 1-2 token. Egy sor kód talán 10-15. A modell ezeket a tokeneket egy **self-attention** nevű mechanizmuson keresztül dolgozza fel, és íme az egyenlet, ami kormányozza:
+
+```
+attention = softmax(QK^T / √d) × V
+```
+
+A döntő rész a `softmax`. Ez normalizálja a figyelmi súlyokat úgy, hogy összegük 1.0 legyen. Ez egy megmaradási törvény — szerkezetileg azonos egy szobával, amiben egyetlen reflektor van. Nem tudsz figyelmet a semmiből teremteni. Van egy fix keret. A kontextusablakban minden token verseng ennek a keretnek egy részéért, ahogy egy zsúfolt szobában mindenki verseng egyetlen beszélő figyelméért.
+
+**A vibe coding 20 embert tesz a szobába, és reméli, hogy a reflektor megtalálja a megfelelőt. A context engineering 3 embert tesz a szobába, és a reflektort a padlóhoz szögezi.**
+
+Amikor 10 000 token irreleváns kontextust öntesz egy promptba — "minden esetre" — nem vagy alapos. Tompítod a reflektort. A releváns tokenek még ott vannak. Csak éppen 9500 irreleváns tokennel versenyeznek a modell véges figyelméért.
+
+<Callout type="info">
+**A fizika számszerűsítve.** Egy 2025-ös tanulmány, aminek címe "Context Length Alone Hurts LLM Performance Despite Perfect Retrieval", 47,6%-os pontosságcsökkenést talált 30K tokennél kódolási feladatoknál — még akkor is, ha a keresés tökéletes volt és nem voltak zavaró tényezők. Még az üres whitespace is 7-48%-os teljesítménycsökkenést okozott. Ez nem szoftver-hiba. Ez fizika. Több token = több hígítás = rosszabb eredmények.
+</Callout>
+
+Ez magyarázza a paradoxont. A vibe coding — "csak generálj valamit, majd meglátjuk" — rövid, egyszerű promptokkal működik. De ahogy a komplexitás nő, a struktúra hiánya miatt a modell figyelme szétszóródik egy egyre növekvő kontextusban. A jel belefullad a zajba. Nem azért, mert a modell buta, hanem azért, mert a softmax zéró összegű játék.
+
+---
+
+## Az előtte — Egy vibe kóder anatómiája
+
+Legyünk őszinték, honnan indultunk. Az eredeti app-generátor egyszerű, tiszta és elégtelen volt.
+
+Egy Gemini API hívás. Egy újrapróbálkozás hiba esetén. Nincs memória. Nincs tanulás. Nincs strukturált hibakezelés. Íme a tartalék útvonal, ami a *teljes* rendszerünk volt:
+
+```typescript
+// The old way: single shot, hope for the best
+async function* geminiFallbackStream(slug, path, userId) {
+  const { content, rawCode, error } = await generateAppContent(path);
+
+  let updateResult = await updateCodespace(codespaceId, codeToPush);
+
+  if (!updateResult.success) {
+    // One retry with error correction
+    const correctedCode = await attemptCodeCorrection(
+      codeToPush, updateResult.error, slug
+    );
+    if (correctedCode) {
+      updateResult = await updateCodespace(codespaceId, correctedCode);
+    }
+  }
+
+  if (!updateResult.success) {
+    throw new Error(updateResult.error || "Failed to update codespace");
+  }
+}
+```
+
+Mint egy diák, aki felkészülés nélkül ír vizsgát: néha briliáns, általában közepes. És ami döntő — egy diák, aki **mindent elfelejt** a vizsgák között.
+
+| | Előtte (Vibe Coding) | Utána (Context-Engineered Agent) |
+|---|---|---|
+| **Modell** | Gemini Flash (egyetlen hívás) | Claude Opus → Sonnet → Haiku (kaszkád) |
+| **Újrapróbálkozások** | 1 vak újrapróbálás | Legfeljebb 3 célzott javítás hibadiagnózissal |
+| **Memória** | Nincs | Bayesi tanulási jegyzetek, adatbázisban tárolva |
+| **Hibakezelés** | Nyers hibaüzenet → újrapróbálás | Strukturált elemzés → kategorizált javítási promptok |
+| **Képességek** | Általános prompt | 14 képesség-definíció kulcsszó alapján párosítva |
+| **Prompt gyorsítótár** | Nincs | Split-block KV cache (10x költségmegtakarítás) |
+| **Tartalék** | Nincs | Agent proxy → Közvetlen Claude → Gemini |
+
+---
+
+## A kontextus megőrzése — Az 5-rétegű javítás
+
+A lényeg: a javítás nem több AI. Jobb fizika.
+
+<FiveLayerStackDemo />
+
+Az [5-rétegű context stack](/blog/context-engineering-your-zero-shot-prompt) — Identitás, Tudás, Példák, Korlátok, Eszközök — nem csak egy keretrendszer. Ez egy megőrzési stratégia. Gondolj rá úgy, mint egy utazásra való csomagolás: a rétegek, amik soha nem változnak (útlevél, töltő), egyszer kerülnek a táskába. A rétegek, amik célállomásonként változnak (ruha, útikönyv), cserélődnek. A modell figyelmi kerete a megfelelő dolgokra megy, mert a prompt úgy van felépítve, hogy ez megtörténjen.
+
+Íme, hogyan képeződik le a kódra:
+
+| Keretrendszer réteg | Fizikai analógia | Kód implementáció |
+|---|---|---|
+| **Identitás** (1. réteg) | Megmaradási törvény — stabil vonatkoztatási keret | `AGENT_IDENTITY` — cachelve, soha nem változik |
+| **Tudás** (2. réteg) | Friss mérés — kísérletenként dinamikus | Tanulási jegyzetek — kérésenként újraépülnek |
+| **Példák** (3. réteg) | Kalibrációs adatok — stabil műszerbeállítások | Képesség-promptok — kategóriánként cachelve |
+| **Korlátok** (4. réteg) | Peremfeltételek — beállításonként fixek | Output specifikáció, javítási szabályok — cachelve |
+| **Eszközök** (5. réteg) | Mérőberendezés — meghatározza, mi figyelhető meg | Transpiler, codespace API — implicit |
+
+A kulcsfüggvény a `buildAgentSystemPrompt`. *Split block*-okat ad vissza — egy stabil prefixet a cache-eléshez és egy dinamikus suffixet a frissességhez:
+
+```typescript
+export function buildAgentSystemPrompt(
+  topic: string,
+  notes: LearningNote[],
+): SplitPrompt {
+  // Stable prefix: identity + core skills + output spec → cached
+  const coreWithSkills = buildSkillSystemPrompt(topic);
+  const stablePrefix = `${AGENT_IDENTITY}\n\n${coreWithSkills}\n\n${OUTPUT_SPEC}`;
+
+  // Dynamic suffix: learning notes → NOT cached, changes per request
+  const noteBlock = formatNotes(notes);
+
+  return {
+    stablePrefix,
+    dynamicSuffix: noteBlock,
+    full: noteBlock ? `${stablePrefix}\n\n${noteBlock}` : stablePrefix,
+  };
+}
+```
+
+A stabil prefix `cache_control: { type: "ephemeral" }`-t kap az API hívásban. A következő kéréseknél ugyanazzal a témával ezeket a tokeneket a KV cache-ből szolgálják ki **10x alacsonyabb költséggel**. A dinamikus suffix — a tanulási jegyzetek — kérésenként változik, és nem érvényteleníti a cache-t.
+
+<Callout type="success">
+**KV Cache belátás:** Az identitás, képességek és output specifikáció ~2000 token, ami soha nem változik ugyanazon kategória generálásai között. A cache-elésük $0.009-t takarít meg kérésenként. Több ezer generálás alatt ez a különbség egy költséghatékony szolgáltatás és egy pénznyelő között. A context engineering nemcsak technikailag megalapozott — gazdaságilag is optimális.
+</Callout>
+
+Ez a kontextus megőrzése a gyakorlatban. A stabil vonatkoztatási keret (identitás + képességek + output specifikáció) interakciókon keresztül fennmarad, mint a megmaradó mennyiségek a fizikában — energia, impulzus, töltés. A dinamikus megfigyelések (tanulási jegyzetek) minden alkalommal frissek, arra építve, amit a megmaradó keret lehetővé tesz.
+
+---
+
+## A javítási ciklus — Természetes szelekció a kódra
+
+<DarwinianTreeDemo />
+
+Az ágens ciklus a darwini szelekció alkalmazása a kódra. Generálás (mutáció) → Transpilálás (környezeti teszt) → Javítás (adaptáció) → Tanulás (öröklődő memória). Legfeljebb 3 iteráció — 3 generáció evolúció kérésenként.
+
+<AgentLoopDemo />
+
+```typescript
+export async function* agentGenerateApp(
+  slug: string,
+  path: string[],
+  userId: string | undefined,
+): AsyncGenerator<StreamEvent> {
+  const maxIterations = Math.min(
+    parseInt(process.env["AGENT_MAX_ITERATIONS"] || "3", 10),
+    MAX_ITERATIONS_CAP,
+  );
+  // ...
+
+  // === GENERATING: Call Claude Opus ===
+  const genResponse = await callClaude({
+    systemPrompt: systemPrompt.full,
+    stablePrefix: systemPrompt.stablePrefix,
+    dynamicSuffix: systemPrompt.dynamicSuffix || undefined,
+    userPrompt,
+    model: "opus",
+    maxTokens: 32768,
+    temperature: 0.5,
+  });
+```
+
+Az első hívás **Opus**-t használ **0.5**-ös hőmérséklettel — kreatív felfedezés. A magas hőmérséklet magas entrópiát jelent, több véletlenszerű mintavételt a valószínűségi eloszlásból. Jó újszerű megoldások generálásához. Rossz precíz beavatkozáshoz.
+
+Amikor a kód elbukik a transpiláláson, a javító modell **Sonnet**-re vált **0.2**-es hőmérséklettel — precíz, determinisztikus, fókuszált:
+
+```typescript
+      // === FIXING: Ask Claude Sonnet to fix the error ===
+      const fixResponse = await callClaude({
+        systemPrompt: fixSystemPrompt.full,
+        stablePrefix: fixSystemPrompt.stablePrefix,
+        dynamicSuffix: fixSystemPrompt.dynamicSuffix || undefined,
+        userPrompt: fixUserPrompt,
+        model: "sonnet",
+        maxTokens: FIX_MAX_TOKENS,
+        temperature: 0.2,
+      });
+```
+
+A javító modell más modell, mint a generátor. Ez olyan, mintha lenne egy korrektor, aki nem a szerző. A generátor (Opus) kreatív lendületben van — elköteleződött az architekturális döntései mellett. A javító (Sonnet) csak a hibát és a kódot látja, semmi ego nem kötődik a tervhez. Friss szem azt kapja el, amin az ismerős szem átsiklik.
+
+A hőmérséklet mint fizikai paraméter szépen leképezhető: magasabb hőmérséklet = magasabb entrópia = a valószínűségi tér több felfedezése. Alacsonyabb hőmérséklet = determinisztikusabb = nagyobb valószínűséggel konvergál a pontos javításra. Opus 0.5-tel egy kutató, aki lehetőségeket tár fel. Sonnet 0.2-vel egy sebész, aki egyetlen precíz vágást ejt.
+
+A modell-kaszkádnak gazdasági érve is van:
+
+| Modell | Szerep | Költség (Output/MTok) | Hőmérséklet | Miért ez a modell |
+|---|---|---|---|---|
+| **Opus** | Generálás | $25.00 | 0.5 | Kreatív, magas képesség újszerű appokhoz |
+| **Sonnet** | Javítás | $15.00 | 0.2 | Precíz, gyors célzott javításokhoz |
+| **Haiku** | Tanulás | $5.00 | 0.2 | A legolcsóbb képes modell kinyeréshez |
+
+<ModelCascadeDemo />
+
+Használd a legdrágább modellt ott, ahol a kreativitás számít. Használd a legolcsóbb képes modellt a mechanikus feladatokhoz. Ez ugyanaz az elv, mint háztépítésnél: építészt fogadsz a tervhez és kivitelezőt a gipszkartonhoz. Mindkettő nélkülözhetetlen. Az egyiknek nem kell a másiknak lennie.
+
+---
+
+## A memória — Hogyan fejlődik az ágens
+
+<BayesianConfidenceDemo />
+
+Az ágens ciklus egyedi hibákat javít. De a *memória-rendszer* megakadályozza, hogy ezek a hibák az összes jövőbeli generálásban újra előforduljanak. Ez a különbség a debugolás és a tanulás között — a szúnyogcsapkodás és a mocsár lecsapolása között.
+
+Minden alkalommal, amikor hiba történik és kijavítódik (vagy nem), Haiku kinyeri a tanulási jegyzetet:
+
+```typescript
+export async function extractAndSaveNote(
+  failingCode: string,
+  error: string,
+  fixedCode: string | null,
+  path: string[],
+): Promise<void> {
+  const response = await callClaude({
+    systemPrompt: NOTE_EXTRACTION_PROMPT,
+    userPrompt:
+      `Error: ${error}\n\nFailing code (excerpt):\n${failingCode.slice(0, 2000)}\n\nFixed code (excerpt):\n${fixedCode?.slice(0, 2000) || "N/A"}`,
+    model: "haiku",
+    maxTokens: 1024,
+    temperature: 0.2,
+  });
+  // ... parse, deduplicate, store in DB
+}
+```
+
+Minden jegyzet `CANDIDATE`-ként kezdi az életét 0.5-ös konfidencia-pontszámmal — egy bizonyítatlan hipotézis. A bayesi konfidencia-rendszer ezután természetes szelekcióként működik:
+
+```typescript
+async function recalculateConfidence(noteId: string): Promise<void> {
+  const note = await prisma.agentLearningNote.findUnique({
+    where: { id: noteId },
+  });
+
+  const alpha = 1; // Prior successes
+  const beta = 1;  // Prior failures
+  const score =
+    (note.helpCount + alpha) / (note.helpCount + note.failCount + alpha + beta);
+
+  // Promote CANDIDATE → ACTIVE after 3+ helps with >0.6 confidence
+  if (status === "CANDIDATE" && note.helpCount >= 3 && score > 0.6) {
+    status = "ACTIVE";
+  }
+
+  // Demote to DEPRECATED if confidence drops below 0.3
+  if (score < 0.3 && note.helpCount + note.failCount >= 5) {
+    status = "DEPRECATED";
+  }
+}
+```
+
+A képlet — `(helps + 1) / (helps + fails + 2)` — egy Béta-binomiális poszterior uniform priorral. Ez ugyanaz a matek, ami az A/B tesztelés, a Thompson-mintavétel és a multi-armed bandit mögött van. Nem kifinomult. Robusztus. Az `+1` és `+2` tagok Laplace-simítás — megakadályozzák a nulla megfigyeléses szélsőséges eseteket, és enyhe előzetes bizonytalanságot fejeznek ki. Gondolj rá úgy, mintha minden jegyzetet egy képzeletbeli sikerrel és egy képzeletbeli kudarccal indítanál, így a rendszert nem billenti meg egyetlen adatpont.
+
+Az életciklus:
+
+1. Hiba történik → Haiku kinyeri a jegyzetet → **CANDIDATE**-ként tárolva (konfidencia 0.5)
+2. A jegyzet bekerül a jövőbeli promptokba a megfelelő slugokhoz
+3. Ha a jegyzet segít (a generálás sikerül az alkalmazása után) → **helpCount** nő → konfidencia emelkedik
+4. 3+ segítség után >0.6 konfidenciával → **ACTIVE**-ra előléptetve
+5. Ha a jegyzet nem segít (a generálások továbbra is elbuknak) → **failCount** nő → konfidencia csökken
+6. 0.3 alatti konfidencia 5+ megfigyelés után → **DEPRECATED** (kihalt)
+
+| Példa jegyzet | Trigger | Tanulság | Státusz |
+|---|---|---|---|
+| Three.js importok | `three.js scene setup` | `Import THREE from 'three' not '@three'` | ACTIVE (0.82) |
+| Framer motion exit | `AnimatePresence children` | `Wrap exit animations in motion.div with key prop` | ACTIVE (0.71) |
+| Recharts tooltip | `custom recharts tooltip` | `CustomTooltip must accept payload as array, not object` | CANDIDATE (0.55) |
+| Régi tailwind szintaxis | `tailwind v3 classes` | `Use bg-red-500 not bg-red` | DEPRECATED (0.22) |
+
+A promptonként kiválasztott jegyzetek keretkorlátosak. Nem darabszám, hanem tokenek alapján:
+
+```typescript
+function formatNotes(notes: LearningNote[]): string {
+  const sorted = [...notes].sort((a, b) => b.confidenceScore - a.confidenceScore);
+
+  const selected: LearningNote[] = [];
+  let totalTokens = 0;
+  for (const note of sorted) {
+    const noteText = `- **${note.trigger}**: ${note.lesson}`;
+    const tokens = estimateTokens(noteText);
+    if (totalTokens + tokens > NOTE_TOKEN_BUDGET) break;
+    selected.push(note);
+    totalTokens += tokens;
+  }
+  // ...
+}
+```
+
+A 800-tokenes keret szándékosan szűk. Emlékezz a figyelmi fizikára: minden jegyzet-token verseng a kódgenerálási kontextussal a modell figyelméért. A magas konfidenciájú jegyzetek kiérdemlik a helyüket. Az alacsony konfidenciájú jegyzetek kigyomlálódnak. Természetes szelekció, softmax-on futtatva.
+
+---
+
+## Képesség-párosítás — A megfelelő eszköz a megfelelő feladathoz
+
+Amikor valaki a `/create/games/tetris`-t kéri, a kulcsszó-kinyerő elemzi az útvonalat és megtalálja a "games" és "tetris" szavakat. Ezek játék-specifikus képességeket aktiválnak: canvas-confetti az ünneplés effektekhez, howler.js a játékzenéhez. Amikor a `/create/finance/dashboard` érkezik, más képességek aktiválódnak: recharts a diagramokhoz, chart-ui a shadcn/ui adatkomponensekhez.
+
+<Callout type="info">
+**Fizikai analógia: impedancia-illesztés.** Az elektronikában maximális teljesítményátvitelt kapsz, ha a forrás impedanciája illeszkedik a terhelés impedanciájához. A promptoknál maximális generálási minőséget kapsz, ha a prompt képesség-kontextusa illeszkedik a feladat követelményeihez. Egy játék-prompt, ami diagram-könyvtár dokumentációval van tele, olyan, mintha egy európai készüléket dugdosnál egy amerikai konnektorba adapter nélkül — az energia áramlik, de a nagy része elvész. A képességek kérésekhez párosítása impedancia-illesztés a figyelem számára.
+</Callout>
+
+A párosítás kulcsszó-vezérelt, nem AI-vezérelt — szándékosan egyszerű:
+
+| Kategória | Képességek | Trigger kulcsszavak |
+|---|---|---|
+| **3D** | Three.js, 3D Performance | three, 3d, globe, scene, planet, webgl |
+| **Data Viz** | Recharts, Chart UI | chart, dashboard, analytics, stock, metrics |
+| **Game** | Confetti, Game Audio | game, puzzle, tetris, snake, arcade |
+| **Form** | React Hook Form, Form Components | form, survey, checkout, calculator |
+| **DnD** | DnD Kit | kanban, drag, sortable, planner, todo |
+| **Drawing** | Rough.js | draw, paint, sketch, whiteboard, doodle |
+| **Content** | React Markdown, Content UI | blog, story, notes, recipe, portfolio |
+| **Audio** | Howler.js, Web Audio | music, audio, drum, piano, synth |
+
+Minden illesztett képesség saját prompt-szekciót injektál könyvtár-specifikus utasításokkal, import-mintákkal és gyakori buktatókkal. A teljes prompt csak az illeszkedő képességekkel nő — nem a teljes képességkatalógussal. Minimális szükséges kontextus. Maximális jelsűrűség.
+
+---
+
+## A proxy — Kecses degradáció
+
+Az éles architektúrának három szintje van, mint egy elektromos hálózatnak tartalék generátorokkal:
+
+```
+Agent Proxy (localhost) → Direct Claude API → Gemini Fallback
+```
+
+Az `isAgentAvailable()` függvény egy 3 másodperces állapotellenőrzést végez:
+
+```typescript
+export async function isAgentAvailable(): Promise<boolean> {
+  if (!CREATE_AGENT_URL || !CREATE_AGENT_SECRET) return false;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), AGENT_TIMEOUT_MS);
+    const res = await fetch(`${CREATE_AGENT_URL}/health`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+```
+
+Ha a helyi ágens szerver fut (a tanulási jegyzetek adatbázisával és a teljes modell-kaszkáddal), a forgalom oda irányul. Ha nem elérhető, a rendszer visszaesik a folyamaton belüli Claude ágens ciklusra. Ha a Claude API nem elérhető, tovább degradálódik az eredeti Gemini útvonalra.
+
+A felhasználó soha nem látja az átkapcsolást. Kap egy appot. A minőség kecsesen degradálódik, ahelyett, hogy katasztrofálisan meghibásodna — mint egy épület, ami ring a földrengésben, ahelyett, hogy elrepedne.
+
+---
+
+## Hiba-intelligencia
+
+Nem minden hiba egyforma. Egy hiányzó import más probléma, mint egy típuseltérés, és mindkettő különbözik egy szintaktikai hibától. Az ágens nem csak azt látja, hogy "valami elromlott" — diagnosztizál:
+
+```typescript
+export function parseTranspileError(rawError: string): StructuredError {
+  const error: StructuredError = {
+    type: "unknown",
+    message: rawError.slice(0, 500),
+  };
+
+  // Missing import / module not found
+  if (/Cannot find module|Could not resolve|Module not found/i.test(rawError)) {
+    error.type = "import";
+    const moduleMatch = rawError.match(/['"]([^'"]+)['"]/);
+    if (moduleMatch) error.library = moduleMatch[1];
+  }
+  // Type errors
+  else if (/Type '.*' is not assignable|Property '.*' does not exist/i.test(rawError)) {
+    error.type = "type";
+  }
+  // JSX/syntax errors
+  else if (/Unexpected token|Unterminated|Parse error/i.test(rawError)) {
+    error.type = "transpile";
+  }
+  // Runtime errors
+  else if (/is not defined|Cannot read propert/i.test(rawError)) {
+    error.type = "runtime";
+  }
+  // ... extract line number, component name, suggestion
+  return error;
+}
+```
+
+Négy hibatípus — import, type, transpile, runtime — mindegyik más javítási stratégiát táplál. A strukturált hiba explicit kontextusként kerül be a javító promptba:
+
+```
+ERROR TYPE: import
+LIBRARY: @react-three/fiber
+LINE: 3
+SUGGESTION: Did you mean 'three'?
+```
+
+Egy orvos nem azt mondja, "valami baj van." Diagnosztizál. A strukturált hibák diagnózis. A nyers hibaüzenetek "valami baj van." A javító modell (Sonnet) drámaian jobban teljesít, ha tudja a hiba típusát, a konkrét könyvtárat és a sorszámot — mert kevesebb token megy a nyomozásra és több token a tényleges javításra.
+
+<Callout type="info">
+**Ez visszacsatol a tanulásba.** A `categorizeErrorForNote` függvény strukturált hibákat képez le jegyzettípusokra. Import hibák `triggerType: "library"` jegyzeteket generálnak, amelyek a konkrét csomaggal vannak címkézve. Típushibák `triggerType: "pattern"` jegyzeteket generálnak, TypeScript címkével. A hiba struktúrája határozza meg, hogyan tárolódik, illesztődik és kerül kiválasztásra a jövőbeli promptokhoz. Strukturált bemenet, strukturált kimenet.
+</Callout>
+
+---
+
+## A meta-build
+
+<RecursiveZoomDemo />
+
+Ez az a rész, ami megborította az agyamat.
+
+A teljes önjavító ágenst a Claude Code plan mode-jával terveztük — pontosan azzal a technikával, amit az ágens most belsőleg használ. Nem kézzel írtam a kódot, aztán elméletieskedtem, miért működik. Használtam az eszközt, aztán tanulmányoztam, mit csinált az eszköz, aztán építettem egy rendszert, ami azt csinálja, amit az eszköz csinál. Teknősök egészen lefelé.
+
+A plan mode arra kényszerítette Claude-ot, hogy **felfedezzen, mielőtt cselekedne.** Mielőtt egyetlen sor kód íródott volna, a modell beolvasta a meglévő kódbázist, megtalálta a content-generator mintákat, azonosította a codespace service API-t, feltérképezte a streaming event típusokat, és készített egy strukturált tervet. Ez a tervfájl lett a context-engineered prompt az implementációs fázishoz.
+
+Az 5-rétegű keretrendszer strukturálta a felfedezést:
+- **Identitás**: "Egy önjavító ágenst építesz a spike.land app-készítőjéhez"
+- **Tudás**: Fájlútvonalak, meglévő minták, API-szerződések a kódbázis felfedezéséből
+- **Példák**: A meglévő Gemini tartalék mint referencia implementáció
+- **Korlátok**: "Ne törd el a meglévő streaming-szerződést. Tartsd meg a tartalékot."
+- **Eszközök**: "Futtasd a `yarn test:coverage`-t a változtatások után. Ellenőrizd a transpilálást."
+
+A terv kimenete — az ágens architektúra — ugyanazt az 5 réteget használja a saját promptjaihoz. A `buildAgentSystemPrompt` függvény pontosan úgy strukturálja a kontextust, mint a terv, ami megtervezte. Identitás-réteg (AGENT_IDENTITY). Tudás-réteg (tanulási jegyzetek). Példa-réteg (képesség-promptok). Korlát-réteg (OUTPUT_SPEC). Eszköz-réteg (transpiler + codespace API).
+
+Ez rekurzív: context engineering-et használtunk egy olyan rendszer megépítéséhez, ami context engineering-et csinál.
+
+<Callout type="success">
+**A rekurzív belátás:** A tervfájl egy prompt volt. A prompt egy rendszert épített, ami promptokat épít. A tanulási jegyzetek természetes szelekció által finomított promptok. Minden szinten — embertől Claude Code-hoz, Claude Code-tól ágenshez, ágenstől modellhez — ugyanaz a minta ismétlődik: kontextus összeállítása, figyelem korlátozása, eredmények mérése, tanulás. Context engineering egészen az aljáig.
+</Callout>
+
+<AudioPlayer src="/blog/the-vibe-coding-paradox/daft-punk-grok-and-the-ai-paradox.m4a" title="Deep Dive: Daft Punk, Grok, and the AI Paradox" />
+
+<video controls preload="metadata" style={{ width: "100%", borderRadius: "1rem", marginTop: "1.5rem", marginBottom: "1.5rem" }}>
+  <source src="/blog/the-vibe-coding-paradox/the-daft-punk-recursion-protocol.mp4" type="video/mp4" />
+  Your browser does not support the video element.
+</video>
+
+---
+
+## Amit mértünk
+
+A `recordGenerationAttempt` függvény minden generálást teljes megfigyelhetőséggel követ: slug, siker/kudarc, iterációszám, időtartam, alkalmazott jegyzetek, felmerült hibák, használt modell, tokenszámok és cache-találatok.
+
+| Metrika | Előtte (Gemini Flash) | Utána (Agent Loop) |
+|---|---|---|
+| **Első próbálkozás sikerarány** | ~40% | ~65% |
+| **Sikerarány újrapróbálások után** | ~55% (1 újrapróbálás) | ~85% (legfeljebb 3 iteráció) |
+| **Átlagos iteráció a sikerhez** | 1.6 | 1.4 |
+| **Költség generálásonként** | ~$0.005 | ~$0.08-0.12 |
+| **Medián késleltetés** | 8s | 15-25s |
+| **Alkalmazott tanulási jegyzetek** | 0 | 3-7 generálásonként |
+
+<Callout type="info">
+**A kompromisszum valós.** Az ágens lassabb és kérésenként 15-20x drágább. De gondolj a gazdaságosságra a felhasználó szemszögéből: egy $0.10-es generálás, ami működik, végtelenül értékesebb, mint egy $0.005-ös generálás, ami törött appot produkál. Egy sikertelen generálás költsége nem $0.005 — hanem a felhasználó ideje, frusztrációja és visszatérési valószínűsége. A minőség kamatos kamattal jár. A kudarcok nem.
+</Callout>
+
+A metrikák valami váratlant is felfednek: a tanulási jegyzetek hozama csökkenő. Az első 3-5 magas konfidenciájú jegyzet jelentősen javítja a sikerarányt. Utána a figyelmi keret versengeni kezd. Több jegyzet nem jelent jobb eredményeket — ugyanaz a fizika, ami a 800-tokenes jegyzetkeretet motiválja.
+
+---
+
+## Kezdj építeni
+
+Három tanulság, fizikán alapozva:
+
+**1. Tartsd be a figyelmi keretedet.** A promptodban minden token verseng a modell véges figyelméért. Mielőtt kontextust adsz hozzá, kérdezd meg: "Ha eltávolítanám, változna a kimenet?" Ha nem, távolítsd el. Az 5-rétegű stack nem arról szól, hogy több kontextust adj hozzá — hanem arról, hogy a *megfelelő* kontextust add hozzá, és semmi mást. Megőrzés, nem felhalmozás.
+
+**2. Építs visszacsatolási ciklusokat, ne nagyobb promptokat.** Az ágens nem azért sikeres, mert jobb promptja van, mint a Gemininek. Azért sikeres, mert képes hibázni, diagnosztizálni, javítani és tanulni. Egy közepes prompt visszacsatolási ciklussal felülmúl egy briliáns promptot memória nélkül. Az evolúció legyőzi az intelligens tervezést — elég iteráció mellett.
+
+**3. Illessz eszközt a feladathoz.** Opus az alkotáshoz, Sonnet a javításhoz, Haiku a tanuláshoz. Magas hőmérséklet a felfedezéshez, alacsony hőmérséklet a precizitáshoz. Drága modellek ott, ahol a kreativitás számít, olcsó modellek ott, ahol a kinyerés számít. A megfelelő eszköz a megfelelő költséggel a megfelelő feladathoz — impedancia-illesztés egészen az aljáig.
+
+<CTAButton href="/create">Try the App Creator</CTAButton>
+
+---
+
+<div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg p-6 mt-8">
+  <h3 className="text-lg font-semibold mb-3 text-slate-200">The Context Engineering Trilogy</h3>
+  <p className="text-slate-300 mb-4">
+    This article is the final piece of a three-part series. Start with the theory, understand the mechanism, then see it applied to a real product.
+  </p>
+  <div className="flex flex-wrap gap-3">
+    <a
+      href="/blog/context-engineering-your-zero-shot-prompt"
+      className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+    >
+      Part 1: The 5-Layer Framework
+    </a>
+    <a
+      href="/blog/how-claude-code-engineers-context"
+      className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+    >
+      Part 2: Inside the Transformer
+    </a>
+    <a
+      href="https://github.com/spike-land-ai/spike.land"
+      className="inline-flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+    >
+      Explore the Source Code
+    </a>
+  </div>
+</div>
+
+---
+
+*A legjobb AI nem az, amelyik a legjobban próbálkozik. Hanem az, amelyik emlékszik, mi ment rosszul. A vibe coding entrópia — energia irány nélkül. A context engineering az a munka, amivel ennek az energiának hasznos helyet adsz, ahová menjen.*

@@ -1,0 +1,131 @@
+---
+title: "Appendix: Anticipated Pushback on the Next.js Migration Post"
+slug: "nextjs-vs-tanstack-start-appendix"
+description: "Preemptive responses to the most common objections about leaving Next.js for TanStack Start, from build config to lock-in to the solo-dev framing."
+date: "2026-03-10"
+author: "Radix"
+category: "Developer Experience"
+tags: ["nextjs", "tanstack-start", "vercel", "vite", "react", "developer-experience"]
+featured: false
+draft: false
+primer: "Answering the rebuttals before the comment section writes them."
+heroPrompt: "A conceptual digital illustration showing a heavy, expensive, monolithic structure representing a sluggish framework with a glowing $100 invoice, contrasted against a lightweight, fast, glowing futuristic pathway representing Vite and TanStack Start. The scene is modern, sleek, and developer-focused, dark mode aesthetics, vibrant neon accents."
+heroImage: "/blog/nextjs-vs-tanstack-start-appendix/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Appendix: Anticipated Pushback on the Next.js Migration Post'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/nextjs-vs-tanstack-start-appendix/hero.png)
+
+![A conceptual digital illustration showing a heavy, expensive, monolithic structure representing a sluggish framework with a glowing $100 invoice, contrasted against a lightweight, fast, glowing futuristic pathway representing Vite and TanStack Start. The scene is modern, sleek, and developer-focused, dark mode aesthetics, vibrant neon accents.](/blog/nextjs-vs-tanstack-start-appendix/hero.jpg)
+
+<Tldr>
+
+- A fo poszt itt talalhato: [Next.js vs TanStack Start](/blog/nextjs-vs-tanstack-start).
+- Ez az oldal a leggyakoribb ellenveteseket cimerzi, amiket varok.
+- Nem akarok vitát nyerni. Pontosan akarom leirni, mi tortent es miert.
+
+</Tldr>
+
+## "A builded rosszul volt konfigolva. Ez nem Next.js problema."
+
+Lehet.
+
+Tudtam volna meg tobbet kihozni a pipeline-ból? Valoszinuleg. A Turbopack gyorsabb. Az inkrementalis cachelés letezik. Vannak tekerhetö gombök.
+
+De pont ez a lényeg.
+
+Az alapertelmezett utvonal — Next.js hasznalata a Vercelen, az az utvonal, amit a framework aktivan ajanol — egy $92.26-os build szamlahoz vezetett egy szinte forgalom nelkuli oldalon. Nem kerestem a bajt. A happy pathet kovettem, es a happy path draga lett.
+
+Ha egy framework vedelme az, hogy "jobban kellett volna konfigolnod," akkor a framework alapertelmezesei reszei a problemanak. Egy szolo fejlesztonek nem kellene CI pipeline-okat auditálnia pusztán azert, hogy egy marketing oldal megfizethetö maradjon.
+
+Van egy rendszergondolkodasi elv itt: **egy rendszer viselkedese a strukturajának a fuggvenye, nem a resztvevok szándekáé.** Az volt a szandekom, hogy egy egyszeru oldalt epitek. A rendszer strukturaja — alapertelmezett konfig, alapertelmezett hosting, alapertelmezett szamlazas — egy $92-os build szamlat produkalt. Ez egy strukturalis eredmeny, nem felhasznaloi hiba.
+
+Az auto analogia, amihez az emberek nyulnak — "ez olyan, mintha az autogyartot okolnad, mert draga a benzin" — nem allja meg a helyet. Ha a gyarto egyben a benzinkut tulajdonosa is, az alapertelmezett utvonalat azon keresztul allitja be, es minden mas utvonalat nehezebben megtalálhatova tesz, akkor igen, a gyarto resze a beszelgetesnek.
+
+## "A 4 masodperces deploy csak a hot path. Ez nem valos osszehasonlitas."
+
+Ez a hot path, es megirtam a posztban.
+
+De itt van, miert a hot path a helyes mertek: a legtöbb produkcios deploy kicsi javitas. Egy eliras. Egy konfig valtozas. Egy egysoros hibajavitas. A mindennapos flow, nem a kiveteles eset.
+
+A kerdes, ami a napi munkaban szamit, nem az, hogy "milyen gyors egy clean rebuild a nullarol?" Hanem az, hogy "milyen gyorsan juttathatok el egy kis javitast produkcióba anelkul, hogy a pipeline valna a szuk keresztmetszette?"
+
+A regi stack-kel a valasz korubelul 40 perc volt. Az uj stack-kel 4 masodperc. Mindketto valos szam valos deployokbol.
+
+Ha azt akarod vitatni, hogy egy cold-build osszehasonlitas maskepp nezne ki, igazad van. De a cold buildek alkalmanként tortennek. Az inkrementalis utvonal az, ahol elek, es ez az az utvonal, amire optimalizaltam. Arra optimalizalsz, amin a leggyakrabban futsz vegig. Ez egyszeruen jo rendszertervezes.
+
+## "A Next.js 16-ban mar vannak Build Adapterek. A lock-in erv elavult."
+
+A Build Adapters API letezik. Ez egy lepes a jo iranyba. Orolok, hogy megjelent.
+
+De amikor en ezt a dontest hoztam 2026 januarjaban, az API alpha volt. 2026. marcius 10-en meg mindig alpha.
+
+Nem infrastruktura donteseket hozok a haladasi irany alapjan. Azon alapulnak, ami ma mukodik. A roadmap-ek igeretek. A szamlam teny volt.
+
+Es a lock-in nem csak arrol szol, hol fut a kod. Arrol is szol, milyen konnyu elmenni — a kilepesi koltsegekrol egy rendszerben.
+
+2026. marcius 10-en, amikor megprobáltam bezarni a fiokot es megallitani a szamlazast, nem tudtam eltavolitani a kartyamat anelkul, hogy elobb masik fizetesi modot adtam volna hozza, es a szamlazasi visszajelzo urlap hibat dobott, amikor megprobaltam bejelenteni. Ez nem egy framework API kerdes. Ez platform kilepesi surlodas. Ez is szamit.
+
+Ez volt a tenyleges szamlazasi visszajelzesi flow, amivel talalkoztam, mikozben megprobaltam elmenni:
+
+![Vercel billing feedback dialog failing to submit while requesting account deletion on March 10, 2026.](/blog/nextjs-vs-tanstack-start-appendix/vercel-billing-feedback-failure.png)
+
+Amikor a Build Adapterek stabilak lesznek es a self-hosting tortenet valoban elso osztalyu lesz a szolgaltatók kozott, orommel frissitem ezt a posztot. De "javul a helyzet" nem ugyanaz, mint "megoldodott a problema," es nem fogok ugy tenni, mintha az lenne.
+
+## "A Next.js 16 javitotta a caching modellt. A fajdalmad elavult."
+
+Ez valoszinuleg a legigazságosabb ellenvetés.
+
+A regi implicit caching viselkedes az App Routerben valoban zavaros volt, es a Next.js 16 egy explicit, opt-in modellre cserelte. Ez valos javulas, es nem akarom lekicsinyelni.
+
+De itt van a dolog: az, hogy javitani kellett, visszaigazolja az eredeti panaszt.
+
+Honapokat toltottem renderelesi es hydration problemak debugolasaval, amiket a framework altal nekem valasztott caching modell okozott. Az az ido elment. A javitas kesőbbi megjelenese nem adja vissza azokat a honapokat. Rendszergondolkodasi ertelemben a kar es a javitas kozotti keses azt jelenti, hogy a koltseg mar ki lett fizetve.
+
+Ha ma kezdesz es a Next.js 16-ot fontolgatod az uj caching alapertelmezesekkel, az elmenyed valoszinuleg jobb lesz, mint az enyem volt. Nem vitatkozom ezzel. De a posztom arrol az elmenyrol szol, ami miatt elmentem, nem az azutan megjelent verzio recenzioja.
+
+## "A Next.js konvenciok segitenek a szolo deveknek sulyukon felul teljesiteni."
+
+Ez a legeszszerubb valtozata az ellenervnek, es komolyan veszem.
+
+Fajl-alapu routing, beepitett kepoptimalizalas, Server Actions, automatikus code splitting: ezek valos feature-ok, amik valos időt takaritanak meg. Nem teszek ugy, mintha nem leteznének.
+
+De a konvenciok csak akkor segitenek, ha nem allnak az utba. Tokeattetelt jelentenek, amikor csokkentik a donteseket, amiket meg kell hoznod. Rezsikoltseggé válnak, amikor ugyanezek a dontesek varatlan koltsegeket generalnak.
+
+Amikor ugyanezek a konvenciok $92-os build szamlakat, kiszamithatatlan renderelesi viselkedest es nehezen mozgathato deployment pipeline-okat produkálnak, a tokeattetel megfordul. A feature-ok meg megvannak, de a cipelesi koltseguk meghaladta azt, amennyibe kerulne sajat magamnak osszedrótoznni a dolgokat.
+
+Egy masik fejlesztonek — valaki, aki csapatban van, nagyobb koltsegvetessel, platform mernokokkel, akik a CI-t kezelik — a matek teljesen más lehet. Megirtam az eredeti posztban, es komolyan gondolom.
+
+De szamomra a suly meghaladta az emelőerőt. Ez az egész tortenet.
+
+## "Minden frameworknek vannak CVE-i. Nem fer, hogy kiemeled."
+
+Nem emeltem ki. A CVE-ket nem emlitettem az eredeti posztban.
+
+Ha valaki mas hozza fel a kommentekben, az az ő erve, nem az enyem. A dontesemnek semmi koze nem volt biztonsagi sebezhetosegekhez. A koltsegrol, a sebessegrol es az uzemeltetesi rezsikoltségrol szolt.
+
+## "Rossz eszkoz volt a feladathoz. Ez nem framework-ítélet."
+
+Ez talan a legoszintebb valtozata a kritikanak, es felig egyetertek.
+
+Ha lenyegeben egy marketing oldalt es blogot epitek, akkor igen, a Next.js valoszinuleg tobb framework volt, mint amire szuksegem volt. Ez fair meglatas.
+
+De ez egyben a lenyegem is.
+
+Az iparagban az alapertelmezett egy uj React projekthez evek ota az, hogy "kezdj a Next.js-szel." Kovettem ezt a tanacsot. A tanacs egy olyan stackhez vezetett, ami tul nehez volt a valos igengyeimhez es tul draga a valos koltsegvetesemhez.
+
+A lecke nem az, hogy "rossz a Next.js." A lecke az, hogy a framework alapertelmezeseinek illeszkedniuk kell a tipikus felhasznalasi esethez, es a szolo fejlesztők szamara, akik tartalom-orientalt oldalakat epitenek, a tipikus eset nem igenyel ennyi geperiat.
+
+Ha a framework legjobb védelme az, hogy "nem kellett volna hasznalnod," akkor a frameworknek pozicionalási problemaja van, nem csak konfiguracios problemaja. A rendszer sajat maga fele tereli azokat az embereket, akiket masol jobban szolgalnanak. Ez egy strukturalis problema, amit erdemes neven nevezni.
+
+## A Rovid Verzio
+
+Nem probálok senkit meggyozni, hogy hagyja el a Next.js-t.
+
+Leirom, mi tortent velem, miert szuntek meg ertelmet adni a koltsegek, es mi fele mozdultam el. Egy adatpont, vilagosan megjelolve.
+
+Ha a te helyzeted más, a kovetkeztetesed is más lehet.
+
+Ez rendben van.
+
+Az eredeti poszt itt talalhato:
+[Next.js vs TanStack Start: Why Next.js Became Tech Debt for Me](/blog/nextjs-vs-tanstack-start).

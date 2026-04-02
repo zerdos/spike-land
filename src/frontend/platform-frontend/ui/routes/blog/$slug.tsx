@@ -1,4 +1,4 @@
-import { useParams, Link } from "@tanstack/react-router";
+import { useParams, useSearch, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { BlogPostView } from "@spike-land-ai/block-website/ui";
 import type { BlogPost } from "@spike-land-ai/block-website/core";
@@ -266,6 +266,8 @@ function PostNavigation({ siblings }: { siblings: SiblingPosts }) {
 
 export function BlogPostPage() {
   const { slug } = useParams({ strict: false });
+  const search = useSearch({ strict: false }) as { lang?: string };
+  const lang = search.lang;
   const normalizedSlug = (slug ?? "").replace(/\.mdx$/i, "");
   const [postTitle, setPostTitle] = useState<string | null>(null);
   const [localPost, setLocalPost] = useState<BlogPost | null>(null);
@@ -317,13 +319,16 @@ export function BlogPostPage() {
 
     if (!localLookupDone) return;
 
-    fetch(apiUrl(`/blog/${normalizedSlug}`))
+    const titleUrl = lang
+      ? apiUrl(`/blog/${normalizedSlug}?lang=${lang}`)
+      : apiUrl(`/blog/${normalizedSlug}`);
+    fetch(titleUrl)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: { title?: string } | null) => {
         setPostTitle(data?.title ?? null);
       })
       .catch(() => {});
-  }, [localLookupDone, localPost, normalizedSlug]);
+  }, [localLookupDone, localPost, normalizedSlug, lang]);
 
   // Track blog post view once we have a resolved title (or fall back to slug)
   useEffect(() => {
@@ -364,6 +369,7 @@ export function BlogPostPage() {
       <main>
         <BlogPostView
           slug={normalizedSlug}
+          lang={lang}
           linkComponent={Link}
           postOverride={localPost}
           skipFetch={import.meta.env.DEV && (!localLookupDone || Boolean(localPost))}

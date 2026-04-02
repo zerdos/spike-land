@@ -1,0 +1,315 @@
+---
+title: "The Testing Pyramid Is Upside Down"
+slug: "the-testing-pyramid-is-upside-down"
+description: "The worst part of your test suite — the slow, flaky E2E tests — can run at unit test speed. MCPs remove the browser from the equation."
+date: "2026-02-13"
+author: "Radix"
+category: "Engineering"
+tags: ["testing", "mcp", "unit-testing", "e2e", "architecture", "agents"]
+featured: true
+draft: false
+primer: "E2E tests at unit speed. The browser was never required."
+heroPrompt: "An abstract 3D visualization of a glowing glass hourglass representing the shifting testing pyramid, with unit tests at the base and E2E tests at the top, vibrant digital art, synthwave color palette"
+heroImage: "/blog/the-testing-pyramid-is-upside-down/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'The Testing Pyramid Is Upside Down'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-testing-pyramid-is-upside-down/hero.png)
+
+*Merklik László (1975-2018) emlékének ajánlva. Negyvenhárom éves volt, amikor a rák elvitte. Az Emarsys — amelyet később az SAP vásárolt meg — társalapítójaként és CPO-jaként Magyarország egyik legtiszteletreméltóbb mérnöki kultúráját építette fel. Tartott egy előadást "Better Quality Without Testers" címmel, ami ennek a cikknek a közvetlen őse.*
+
+*László volt az, aki miatt számomra fontossá vált a kódolás. Nem csak csinálni — törődni vele. Ő tanította meg nekem, hogy különleges kapcsolat van egy unit teszt és a kód között, amit tesztel: ha mindkettő rendesen van megírva, az egyik specifikálja a másikat. A teszt megmondja, mit kell csinálnia a kódnak. A kód megmondja, mit kell ellenőriznie a tesztnek. Két nézete ugyanannak az igazságnak.*
+
+*Olyan fejlesztő volt, aki mindenkit jobbá tett maga körül. Az a fajta, aki az előadások után is maradt, hogy segítsen egy juniornak megjavítani a buildjet. Az a fajta, aki hitt benne, hogy a szoftvert jól megírni a tisztelet egy formája — a csapattársaid, a felhasználóid és saját magad iránt.*
+
+---
+
+## A Konferencia
+
+Nagyjából tizenöt éve elmentem egy fejlesztői konferenciára Budapesten. A téma a Jasmine volt — ami a böngészőben futott, mivel a Node.js még nem volt széles körben elfogadott. Ez még a Jest előtt volt, mielőtt a tesztelés magától értetődő lett volna minden projekten. A tesztelés még valami olyasmi volt, amiért harcolni kellett.
+
+Az előadó fiatal volt. Ideges energia. Látszott rajta, hogy nemrég tért meg — az a tekintet, amit azoknál az embereknél látsz, akik épp felfedeztek valamit, ami átrendezi a világukat. Végigvezetett minket azon, hogyan kapott el néhány tucat unit teszt egy regressziót, ami élesbe ment volna. Megmutatta, hogyan működik a mockolás. Megmutatta, milyen gyors a visszacsatolási hurok. Szinte rezgett.
+
+Aztán valaki a közönségből feltette a kezét.
+
+"Es hogy teszteljük le az UI-t?" — *"And how do we test the UI?"*
+
+Az előadó megállt. Aztán vállat vont.
+
+"Az UI-t? Azt teszteljék a hülyék!" — *"The UI? Let the idiots test that!"*
+
+Néhányan nevettek. A legtöbben bólintottak. A unit tesztek lefedték az üzleti logikát. Az UI csak HTML és CSS volt. Ránézel, vagy jól néz ki, vagy nem. Mit lehetne automatizálni?
+
+Ez a válasz sokáig bennem maradt. Nem azért, mert téves volt. Hanem azért, mert *majdnem* helyes volt — és a majdnem helyes és a tényleg helyes közötti rés egy évtizednyi fájdalomba került az iparnak.
+
+---
+
+## A Cypress Évek
+
+Aztán elkezdtük tesztelni az UI-t. Persze, hogy elkezdtük.
+
+Először jött a Selenium. Aztán a Protractor. Aztán a Cypress. Aztán a Playwright. Mindegyik jobb az előzőnél. Mindegyik azzal az ígérettel, hogy végre megbízhatóvá teszi a böngészőtesztelést.
+
+John Reilly — aki 2017-ben interjúztatott az Investecnél Jamie McCrindle-lel együtt — nemrég mesélte, hogy a Cypress-rajongásom miatt vettek fel. Evangelizáltam — a test runner, ami végre first-class citizenné tette az E2E-t. Ami megmutatta a böngészőt, miközben a teszt futott. Ami elhitette veled, hogy a böngésző-automatizálás kellemes is lehet.
+
+Ezért a meggyőződésért vettek fel. És a meggyőződés valódi volt.
+
+De a Cypress rossz irány volt. Nem azért, mert rossz eszköz volt — az eszköz kiváló volt. Hanem azért, mert a premissza volt rossz. Tökéletesítettük a böngészővezérlés művészetét, ahelyett hogy megszüntettük volna a szükségességét.
+
+Gondolj rá így: el akarod ellenőrizni, hogy kézbesítettek-e egy levelet. Építhetsz egy bonyolult rendszert, ami követi a postai furgont, figyeli, ahogy megáll a háznál, filmre veszi a postást, ahogy az ajtóhoz sétál. Vagy egyszerűen megnézheted a postaládát. A böngésző-automatizálás a postai furgon megfigyelőkamerája. Nekünk a postaláda kellett.
+
+A Playwright kiváló eszköz. De az alapvető probléma sosem szűnt meg: egy valódi böngészőt irányítasz, valódi DOM-ot renderelsz, valódi hálózati kérésekre vársz, és imádkozol, hogy a timing tartson. Az egész stacked legvastagabb, legkiszámíthatatlanabb rétegén keresztül tesztelsz.
+
+Ezek a tesztek minden tesztkészlet legrosszabb részei.
+
+Lassúak. Egy gyors unit teszt suite másodpercek alatt fut. Egy átfogó E2E suite percekig, gyakran tíz percekig. CI-n, párhuzamosítással és újrapróbálkozásokkal, olyan pipeline-időket nézel, amik mellett a fejlesztők átváltanak egy másik feladatra, miközben várnak — és ez a kontextusváltás az, ahol a bugok rejtőznek.
+
+Instabilak. Nem azért, mert az eszközök rosszak, hanem mert a böngészők összetett állapotgépek, ezer mozgó alkatrésszel. Egy teszt, ami lokálisan megy, CI-n elhasal, mert egy animáció 50ms-szel tovább tartott. Egy teszt, ami tegnap rendben futott, ma elbukik, mert egy harmadik fél scriptje lassabban töltődött. Hozzáadsz `waitForSelector`-t. Hozzáadsz `waitForTimeout`-ot. Hozzáadsz retry logikát. Már nem az alkalmazásodat teszteled — a káosszal tárgyalsz.
+
+Törékenyek. Megváltoztatsz egy CSS osztályt? Tesztek törnek. Áthelyezel egy gombot a bal oldalsávból a felső navigációba? Tesztek törnek. Refaktorálsz egy komponenst, ami azonosan viselkedik, de másként renderel? Tesztek törnek. A tesztek pontosan úgy vannak az implementációhoz kötve, ahogy a junioroknak mondjuk, hogy ne írjanak unit teszteket.
+
+Ez a tesztelési piramis. Unit tesztek az alján: gyors, olcsó, sok. Integrációs tesztek középen: mérsékelt sebesség, mérsékelt költség, mérsékelt mennyiség. E2E tesztek a tetején: lassú, drága, kevés.
+
+<PyramidReshapeDemo />
+
+Mindenki tudja, hogy a piramis teteje fájdalmas. Elfogadtuk az üzletmenet költségeként. Kell *néhány* E2E teszt, mert ez az egyetlen módja a teljes felhasználói folyamat ellenőrzésének. Az API tesztek önmagukban nem elegek — endpointokat tesztelnek, nem azokat az üzleti logikai folyamatokat, amik ezeket az endpointokat összefűzik valami olyanná, amit a felhasználó ténylegesen csinál.
+
+---
+
+## A Felismerés
+
+Íme a dolog az E2E tesztekről, amiről senki nem beszél elég világosan: a legtöbbjük nem a böngészőt teszteli. Az üzleti logikát teszteli *a böngészőn keresztül*.
+
+Gondold végig, mit ellenőriz valójában egy tipikus E2E teszt. "A felhasználó belép, navigál a beállításokhoz, megváltoztatja az e-mail címét, megerősíti a változtatást, látja a frissített e-mailt a profil oldalon." Mit tesztelsz igazából? Az e-mail változtatási folyamatot. A böngésző csak a kézbesítési mechanizmus — mintha egy étterem ételének minőségét a tányérok alapján értékelnéd, amiken felszolgálják.
+
+Az MCP — Model Context Protocol — az az interfész, ami ezt megváltoztatja. Strukturált bemenet be, strukturált kimenet ki. Egy ágens kérést küld, leírva, mit akar csinálni, az MCP szervered végrehajtja a műveletet és visszaadja az eredményt. Nincs böngésző. Nincs DOM. Nincsenek CSS selectorok. Nincsenek timing problémák. Írd meg a user story-jaidat MCP tool-okként, és létrehoztál egy tesztelhető szerződést az üzleti logikádra.
+
+Alistair Cockburn hexagonális architektúrája (2005, más néven Ports and Adapters) amellett érvelt, hogy az alkalmazásokat egyaránt vezérelhetővé kell tenni felhasználók, programok és teszt scriptek számára. Martin Fowler "subcutaneous testing"-nek nevezte a mintát. Robert C. Martin Clean Architecture-je ragaszkodott ahhoz, hogy az üzleti szabályoknak UI nélkül is tesztelhetőknek kell lenniük. A felismerés húsz éve ott volt. Ami hiányzott, az egy szabványosított interfész, ami ezt skálán praktikussá tette. Az MCP ez az interfész.
+
+Íme, hogyan néz ez ki.
+
+Tegyük fel, van egy user story-d: "A felhasználó frissítheti az e-mail címét." Az E2E világban a teszt valahogy így néz ki:
+
+```typescript
+// Cypress E2E test
+describe('Email update flow', () => {
+  it('should allow user to change their email', () => {
+    cy.login('test@example.com', 'password123');
+    cy.visit('/settings');
+    cy.get('[data-testid="email-input"]').clear().type('new@example.com');
+    cy.get('[data-testid="save-button"]').click();
+    cy.get('[data-testid="confirm-dialog"]').should('be.visible');
+    cy.get('[data-testid="confirm-button"]').click();
+    cy.get('[data-testid="success-toast"]').should('contain', 'Email updated');
+    cy.visit('/profile');
+    cy.get('[data-testid="user-email"]').should('contain', 'new@example.com');
+  });
+});
+```
+
+Ez a teszt 5-15 másodpercig fut. CSS selectoroktól, DOM struktúrától, animáció timingtól és hálózati latenciától függ. Megváltoztatod a confirm dialogot modalra? Teszt törik. Áthelyezed a success üzenetet toastból inline alertre? Teszt törik.
+
+Ugyanaz az üzleti logika MCP tool-ként:
+
+```typescript
+// MCP tool handler — simplified to show the pattern
+const updateEmailTool = {
+  name: 'update_user_email',
+  description: 'Update the authenticated user\'s email address',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      newEmail: { type: 'string', format: 'email' },
+      confirmChange: { type: 'boolean' },
+    },
+    required: ['newEmail', 'confirmChange'],
+  },
+  handler: async ({ newEmail, confirmChange }, context) => {
+    const user = await context.getAuthenticatedUser();
+    if (!user) return { error: 'Not authenticated' };
+
+    if (!confirmChange) {
+      return {
+        status: 'confirmation_required',
+        message: `Confirm email change from ${user.email} to ${newEmail}?`,
+      };
+    }
+
+    await context.userService.updateEmail(user.id, newEmail);
+    return {
+      status: 'success',
+      message: `Email updated to ${newEmail}`,
+      updatedEmail: newEmail,
+    };
+  },
+};
+```
+
+És a unit teszt:
+
+```typescript
+// Unit test for the MCP tool
+describe('update_user_email', () => {
+  it('should update email when confirmed', async () => {
+    const context = createMockContext({
+      user: { id: '1', email: 'old@example.com' },
+    });
+
+    const result = await updateEmailTool.handler(
+      { newEmail: 'new@example.com', confirmChange: true },
+      context,
+    );
+
+    expect(result.status).toBe('success');
+    expect(result.updatedEmail).toBe('new@example.com');
+    expect(context.userService.updateEmail).toHaveBeenCalledWith(
+      '1',
+      'new@example.com',
+    );
+  });
+
+  it('should require confirmation before updating', async () => {
+    const context = createMockContext({
+      user: { id: '1', email: 'old@example.com' },
+    });
+
+    const result = await updateEmailTool.handler(
+      { newEmail: 'new@example.com', confirmChange: false },
+      context,
+    );
+
+    expect(result.status).toBe('confirmation_required');
+    expect(context.userService.updateEmail).not.toHaveBeenCalled();
+  });
+
+  it('should reject unauthenticated requests', async () => {
+    const context = createMockContext({ user: null });
+
+    const result = await updateEmailTool.handler(
+      { newEmail: 'new@example.com', confirmChange: true },
+      context,
+    );
+
+    expect(result.error).toBe('Not authenticated');
+  });
+});
+```
+
+Ez a teszt milliszekundumok alatt fut. Nem függ semmilyen DOM struktúrától. Nem érdekli, hogyan néz ki az UI. Ugyanazt az üzleti logikát teszteli — az e-mail frissítési folyamatot megerősítéssel — unit teszt sebességgel, unit teszt megbízhatósággal.
+
+Nem vesztettél lefedettséget. Elvesztetted a böngészőt.
+
+---
+
+## Az Architektúra Érv
+
+Ez nem tesztelési trükk. Ez architekturális váltás.
+
+Amikor a user story-jaidat MCP tool-okként teszed elérhetővé, egy láncot hozol létre:
+
+**User story-k -> MCP tool-ok -> Unit-tesztelhető üzleti logika**
+
+Ugyanaz a specifikáció három célt szolgál:
+
+1. **Felhasználói dokumentáció.** Az MCP tool leírások *maguk* a feature dokumentációd. "Update the authenticated user's email address" — ez a specifikáció, egyszerű nyelven, a kódban élve.
+
+2. **Ágens interfész.** Bármely AI ágens, ami MCP-n keresztül csatlakozik, végre tudja hajtani a user story-jaidat. Az alkalmazásod ágens-kész, nem azért, mert rácsavaroztál egy AI funkciót, hanem mert az üzleti logikád strukturált szöveges interfészen keresztül elérhető.
+
+3. **Teszt szerződés.** Az input séma definiálja, mit fogad el a tool. A handler definiálja az elvárt viselkedést. A válasz definiálja az elvárt kimenetet. Ez egy szerződés. Ugyanúgy teszteled, mint bármely függvényt — mert *az is*.
+
+Egy sima service layer ezek közül egyet ad. Az MCP hármat. Ugyanaz az artefaktum a teszt szerződésed, az ágens interfészed és a feature dokumentációd. Egyszer írod meg; háromszorosan fizet. Ez nem okos architektúra — ez egy emelőpont, egyetlen beavatkozás, ami aránytalanul nagy eredményeket hoz, mert három szükséglet metszéspontjában ül.
+
+Az E2E tesztek nem azért fájdalmasak, mert a böngésző-automatizálás nehéz. Azért fájdalmasak, mert a böngészőn mentünk keresztül, amikor nem volt más interfész, ami összekötötte az összes darabot.
+
+Az MCP-k adnak egy második interfészt. Egy szöveges alapút, önleíró sémákkal, amiket gépek felfedezhetnek, meghívhatnak és ellenőrizhetnek. Egyet, ami ugyanazokat a darabokat köti össze, de a renderelési réteg nélkül, a timing problémák nélkül, a CSS selectorok nélkül.
+
+---
+
+## A Harmadik Játékos
+
+László tanította meg nekem a dualitást: egy unit teszt és a kódja, ha rendesen vannak megírva, egymást specifikálják. Két játékos, egy igazság.
+
+Van egy harmadik játékos: a név.
+
+Gondolj a korábbi MCP tool-ra: `update_user_email`. Ez a név nem csak egy címke. Ez egy korlát. Megmondja, mit kell csinálnia a tool-nak és mit nem. Nem küld értesítéseket. Nem frissíti a jelszót. Frissíti a felhasználó e-mail címét.
+
+A jó elnevezés mindig is számított. Egy jól elnevezett függvény korlátozza, mit ír a fejlesztő. De egy MCP tool neve korlátozza, mit tud egy *gép* felfedezni, meghívni és tesztelni. Egy AI ágens, ami lekérdezi az MCP szerveredet, nem olvassa a forráskódodat — tool neveket, leírásokat és sémákat olvas. Ha az `update_user_email` rendesen van elnevezve, az ágens tudja, mire hívja meg, egyetlen sor implementáció elolvasása nélkül. A név felfedezhető szerződéssé válik — egy útjelző, ami embereknek és gépeknek egyaránt működik.
+
+<TestCodeNameVenn />
+
+Teszt. Kód. Név. Három játékos, egy igazság. A név, az input séma és a handler háromszöget alkotnak, ahol minden csúcs korlátozza a másik kettőt. Az első kettő évtizedek óta megvolt. Az MCP formalizálta a harmadikat valami olyanná, amiről gépek is tudnak gondolkodni.
+
+---
+
+## Gyakorlati Lépések
+
+Ha most egy instabil E2E suite-ot bámulodsz, íme, hogyan kezdd el.
+
+**1. lépés: Keresd meg a legfájdalmasabb E2E tesztjeidet.** Tudod, melyek azok. Amelyeket háromszor futtatsz újra, mire átmennek. Amelyeknél ott a `// TODO: figure out why this is flaky` komment. Amelyek 30 másodpercig futnak egyenként.
+
+**2. lépés: Kérdezd meg, milyen üzleti logikát ellenőriznek valójában.** Hámozd le a kattintásokat, a várakozásokat és a selectorokat. Mit ellenőriz tényleg a teszt? "A felhasználó lemondhatja az előfizetését." "Az admin kitilthat egy felhasználót." "A fizetési folyamat kezeli az elutasított kártyákat." Ez az üzleti logika — a teherhordó döntések a pixelek alatt.
+
+**3. lépés: Tedd elérhetővé ezt a logikát MCP tool-okként.** Írj egy MCP tool-t minden üzleti folyamathoz. Definiáld az input sémát, implementáld a handlert a meglévő szolgáltatásaid felhasználásával, adj vissza strukturált eredményeket. Nem írsz újra semmit — a meglévő üzleti logikádat csomagolod egy strukturált interfészbe, ahogy egy konnektor becsomagolja a mögötte lévő kábelezést.
+
+**4. lépés: Írj unit teszteket az MCP tool-okhoz.** Mockold a függőségeket. Teszteld a happy path-ot. Teszteld a hibaeseteket. Teszteld az edge case-eket. Ezek a tesztek milliszekundumok alatt futnak és sosem instabilak.
+
+**5. lépés: Nézd, ahogy zsugorodik az E2E suite-od.** Néhány E2E teszt marad — vizuális regressziók, böngészőspecifikus viselkedés, integrációs huzalozás, ami csak éles környezetben mutatkozik meg (CORS, auth middleware, hydration). Tartsd meg ezeket. Most már karcsúak és célzottak. A többi eltűnik.
+
+Nem váltod ki az E2E teszteket. Kiviszed belőlük az üzleti logikát. Ami marad, az egy vékony vizuális smoke teszt réteg — az egyetlen feladat, aminek az E2E teszteknek mindig is sajátjuknak kellett volna lennie.
+
+---
+
+## A CI Hozadék
+
+Ha az üzleti logikád MCP tool-okban él, szorosan csatolva a frontendedhez TypeScripten keresztül, a CI pipeline-od szelektívvé válik.
+
+Futtasd ezt:
+
+```bash
+yarn vitest run --changed main
+```
+
+A Vitest tudja, mely fájlok változtak a `main` óta. Tudja, mely tesztek importálják ezeket a fájlokat. Csak azokat a teszteket futtatja. Az `update_user_email` változtatása futtatja az e-mail teszteket, nem az egész suite-ot. Ez másodperceket vesz igénybe, nem perceket.
+
+Ez az alap. A kamatos kamat hatás ezután jön.
+
+A CI-dnak vannak coverage naplói. Van git története. Tudja, mely MCP tool-ok változtak és mely unit tesztek fedik le őket. Ma a `--changed` determinisztikus fájlszintű tesztkiválasztást ad. Holnap egy AI reviewer ágens olvassa ugyanazt a függőségi gráfot és dönti el, mely E2E tesztek kell tényleg fussanak — nem fájl útvonal, hanem szemantikai jelentés alapján.
+
+Az `update_user_email` változott? Futtasd az e-mail E2E scenariókat. A `list_user_notifications` változatlan? Hagyd ki. Frissítettél egy teszt fixture leírást? Nem kellenek E2E tesztek. Az MCP tool nevek elég szemantikai kontextust adnak az ágensnek ahhoz, hogy a blast radius-ról gondolkodjon — a hullámzási minta arról, mit törhet el egy változtatás.
+
+A megtakarítások kamatoznak. Egy nagy kódbázison egy tipikus PR az üzleti logika töredékét érinti. A teljes E2E suite futtatása minden PR-hoz olyan, mint az egész házat átfesteni, mert egy falat javítottál ki. MCP-strukturált üzleti logikával és AI reviewerrel a CI-d csak azt futtatja, ami számít.
+
+Kevesebb compute. Gyorsabb visszajelzés. Kevesebb instabil hiba tesztekből, amiknek semmi köze a változtatásodhoz. A piramis nem csak átformálódik — okossá válik.
+
+---
+
+## A Piramis, Újragondolva
+
+A tesztelési piramis mindig is kompromisszum volt. Az E2E teszteket nem azért tettük a tetejére, mert azt akartuk, hogy lassúak és kevesek legyenek, hanem mert ez volt a korlát. A teljes felhasználói folyamat ellenőrzéséhez böngésző kellett. A böngészők lassúak. Tehát a teljes felhasználói folyamat tesztek lassúak. Tehát kevesebbet kell belőlük írni.
+
+Az MCP-k megtörik ezt a korlátot.
+
+Ha az üzleti logikád szöveges interfészen keresztül elérhető, a teljes felhasználói folyamat ellenőrzéséhez nem kell böngésző. Egy függvényhívás kell. A függvényhívások gyorsak. Tehát a teljes felhasználói folyamat tesztek gyorsak. Tehát írj annyit, amennyit akarsz.
+
+A piramis átformálódik. A fájdalmas felső réteg — az E2E réteg — elvékonyodik. Az üzleti logika, ami felfújta, leköltözik a unit teszt rétegbe. Nem azért, mert ügyesebben mockoltad a böngészőt. Hanem mert teljesen kiiktattad a függőséget.
+
+A maradék E2E tesztek azt csinálják, amit mindig is kellett volna: ellenőrzik, hogy az oldal renderel, hogy az integrációs huzalozás tartja magát, hogy a vizuális design helyes. Egy maroknyi Playwright smoke check, nem egy böngészővezérelt üzleti logika szimulációs suite.
+
+"Az UI-t? Azt teszteljék a hülyék!" — *"The UI? Let the idiots test that!"*
+
+Kiderül, ez mindig is a helyes válasz volt. Csak húsz év és egy protokoll kellett, hogy megértsük, mit is jelent valójában.
+
+---
+
+## Teljes Kör
+
+Az a konferencia sosem hagyott el. A fiatal előadó, aki rezgett az izgatottságtól a unit tesztek miatt. A közönségben az ember, aki az UI tesztelésről kérdezett. A lekezelő válasz, ami nem volt egészen téves.
+
+És az az Investec interjú. John a Cypress-rajongásom miatt vett fel. Az az eszköz, amiért megkaptam az állást, pontosan a rossz absztrakciót testesítette meg — a böngésző-automatizálás tökéletesítését, amikor menekülnünk kellett volna belőle. De a tesztelés iránti megszállottság helyes volt. A Cypress volt az, ahogy megtanultam törődni a problémával. Az MCP az, amit a túloldalán találtam.
+
+Az UI tesztelés kérdésére az igazi válasz sosem az volt, hogy "automatizáld a böngészőt." Az igazi válasz az volt: tedd az üzleti logikát elérhetővé böngésző nélkül. Nem volt meg hozzá az interfész. Most megvan.
+
+László imádta volna. Nem a specifikációt — hanem amit a mesterség szempontjából jelent. Kevesebb idő instabil tesztekkel küzdeni. Több idő fontos dolgokat építeni. Több idő segíteni a junior fejlesztőnek az előadások után.
+
+Így néz ki, amikor a mesterséget előre toljuk. Csendesebb visszacsatolási hurkok. Kevesebb súrlódás a szándék és az ellenőrzés között. Az a fajta unalmas haladás, ami minden mást lehetővé tesz.
+
+Minden instabil teszt, amit törlök — rá gondolok. Ő is ott maradt volna az előadás után, hogy elmagyarázza valakinek. Ez volt az ő dolga is.

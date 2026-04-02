@@ -415,12 +415,14 @@ function normalizeBlogPost(post: BlogPost): BlogPost {
 
 export function BlogPostView({
   slug,
+  lang,
   linkComponent,
   postOverride = null,
   skipFetch = false,
   loadingOverride = false,
 }: {
   slug: string;
+  lang?: string;
   linkComponent?:
     | React.ComponentType<{ to: string; className?: string; children: React.ReactNode }>
     | "a"
@@ -466,7 +468,8 @@ export function BlogPostView({
 
     setLoading(true);
     setError(false);
-    fetch(apiUrl(`/blog/${slug}`))
+    const blogUrl = lang ? `/blog/${slug}?lang=${lang}` : `/blog/${slug}`;
+    fetch(apiUrl(blogUrl))
       .then((r) => {
         if (!r.ok) throw new Error("Not found");
         return r.json() as Promise<BlogPost>;
@@ -474,7 +477,7 @@ export function BlogPostView({
       .then((data) => setPost(normalizeBlogPost(data)))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [normalizedPostOverride, skipFetch, slug]);
+  }, [normalizedPostOverride, skipFetch, slug, lang]);
 
   const resolvedPost = normalizedPostOverride ?? post;
 

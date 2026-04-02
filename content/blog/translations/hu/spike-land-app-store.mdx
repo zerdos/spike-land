@@ -1,0 +1,137 @@
+---
+title: "Introducing the spike.land App Store: Vibe Code, Publish, Earn"
+slug: "spike-land-app-store"
+description: "The spike.land app store turns MCP tools into publishable apps you can discover, install, embed, and eventually monetize."
+date: "2026-03-08"
+author: "Radix"
+category: "Product"
+tags: ["app-store", "mcp", "vibe-coding", "developer-tools", "marketplace", "cloudflare"]
+featured: false
+draft: false
+primer: "The app store is the missing distribution layer for MCP-native software."
+heroImage: "/blog/spike-land-app-store/hero.png"
+heroPrompt: "A vibrant digital marketplace with floating holographic app icons, each icon representing a modular MCP tool, a diverse crowd of glowing avatars browsing the store, cyberpunk aesthetic with purple and teal neon lighting, high-tech retail environment"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing the spike.land App Store: Vibe Code, Publish, Earn'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-app-store/hero.png)
+
+<Tldr>
+
+- A spike.land mostantól kifejezetten egy nyílt app store MCP-natív alkalmazásoknak, nem csak egy hostolt MCP endpoint.
+- Minden alkalmazás egy csomag: kompozálható MCP tool-ok, publikus metaadatok és telepítési/felfedezési folyamatok.
+- Ugyanaz az alkalmazás felfedezhető a weben, hívható ágensek által, beágyazható más originről, vagy csomagolható offline használatra.
+- A hosszú távú üzleti modell egyszerű: publikálj hasznos alkalmazásokat, terjeszd őket az app store-on keresztül, és részesülj a 70/30-as marketplace felosztásból.
+
+</Tldr>
+
+## A szakadék a "menő tool" és a "hasznos termék" között
+
+Egy jó MCP tool-t egy hétvége alatt megépíthetsz. A hostolás még egy órát vesz igénybe.
+
+És aztán?
+
+Gondolj bele ebbe a szakadékba egy pillanatra. Van valamid, ami működik. Valódi problémát old meg. De egy GitHub repóban él, ahol csak azok az emberek találják meg, akik eleve tudják, hogy keresniük kell.
+
+**Hogyan válik egy hasznos MCP tool termékké?**
+
+Nem gist. Nem egy egyszeri prompt sablon. Termék — valami, amit az emberek felfedeznek, telepítenek, amire számítanak, és amiért végül fizetnek.
+
+Ez a hiányzó termékréteg az, aminek a megvalósítására a spike.land app store létezik. Ugyanaz a szakadék, amit az iOS App Store töltött be a mobilfejlesztők számára 2008-ban: nem a technológia az építéshez, hanem a disztribúció a megtalálhatósághoz.
+
+---
+
+## Mit értünk "app store" alatt
+
+Ez nem egy kirakatoldal, ahol screenshotok vannak landoló oldalakra tűzdelve.
+
+A spike.land-en egy alkalmazás:
+
+- MCP tool-ok csomagja
+- publikus metaadat-rekord
+- felfedezési felület
+- telepíthető egység
+- végrehajtási felület, amit az ágensek tényleg hívni tudnak
+
+A fontos változás ez az utolsó pont. Az app store nem különálló a futtatókörnyezettől. A futtatókörnyezet nyilvános arca. Amikor böngészed a store-t, élő képességeket nézel, nem brosúra-leírásokat a képességekről.
+
+Gondolj rá úgy, mint egy termelői piacra, ahol mindent megkóstolhatsz, mielőtt megveszed.
+
+---
+
+## Miért fontos ez
+
+Abban a pillanatban, amikor az MCP alkalmazásokat első osztályú termékként kezeled, egy önerősítő hurok indul be:
+
+- A felfedezés kereshetővé és programozhatóvá válik
+- A telepítések mérhetővé válnak
+- Az értékelések és kívánságlisták hasznos jelzésekké válnak
+- Az ajánlások alapulhatnak címkéken, telepítési előzményeken és tényleges használaton
+- A fejlesztőknek van okuk csiszolni, publikálni és népszerűsíteni, amit építenek
+
+Mindegyik erősíti a következőt. Több felfedezés több telepítéshez vezet, ami javítja az ajánlásokat, ami további felfedezést generál.
+
+Így jutsz el az "AI hívni tudja a tool-omat" állapottól a "a szoftveremnek van disztribúciója" állapotig. És a disztribúció az, ami mindig is a legnehezebb volt a fejlesztői eszközök számára.
+
+---
+
+## Nyílt tervezés
+
+A spike.land app store legerősebb tervezési döntése az, hogy nem zárja be az alkalmazásokat a spike.land UI-ba.
+
+Lehetőségeid:
+
+- Tool metaadatok nyilvános böngészése
+- Az MCP futtatókörnyezet hívása más originről
+- Integráció Cloudflare Workerből
+- Local-first böngészőalkalmazások csomagolása IndexedDB-vel
+
+Ez teszi a store-t többé, mint egy weboldal. Disztribúciós réteggé teszi portábilis alkalmazás-futtatókörnyezetekhez. Az alkalmazásod a store-ban él a felfedezhetőség kedvéért, de bárhol futhat — mint egy könyv, ami egy könyvtári katalógusban él, de bármelyik szobában olvasható.
+
+---
+
+## A megosztott könyvtár alatta
+
+A store azért működik, mert az alkalmazások megosztott infrastruktúrát használnak ahelyett, hogy újraépítenék azt.
+
+Három réteg van minden alatt:
+
+1. Megosztott MCP futtatókörnyezet
+2. Megosztott kategória- és felfedezési réteg
+3. Megosztott fejlesztői SDK tároláshoz, csomagoláshoz és telepítéshez
+
+Ezért tud egy új alkalmazás ilyen gyorsan natívnak tűnni a platformon. A nehéz részek — autentikáció, felfedezés, kategóriák, MCP transzport, deploy minták — már megoldottak. Nem nulláról indulsz minden alkalommal. Egy működő alapról indulsz, és arra rakod a saját specifikus logikádat.
+
+Ugyanaz a minta, ami az iOS alkalmazások építését egyszerűbbé tette, mint egy asztali alkalmazás megírása a nulláról. A platform elnyeli az infrastruktúra-költséget, és a fejlesztő arra koncentrál, ami az alkalmazását egyedivé teszi.
+
+---
+
+## A publikálás az új disztribúció
+
+Az üzleti modell egyértelmű:
+
+- Publikálj hasznos MCP-natív alkalmazásokat
+- Hagyd, hogy a felhasználók felfedezzék és telepítsék őket
+- Hagyd, hogy az ágensek ugyanarról a futtatókörnyezetről hívják őket
+- Jutalmazd a fejlesztőket marketplace gazdaságtanon keresztül
+
+A 70/30-as felosztás fontos, de a mélyebb érték a disztribúció. Minden fejlesztő, aki AI tool-okat épít, ugyanazzal a kérdéssel néz szembe: "Hol él ez? Hogyan találják meg a felhasználók?" Az app store a mi válaszunk.
+
+A tool-ok mindig a könnyű rész voltak. Valami hasznosat megépíteni egy hétvége alatt megvalósítható. Eljuttatni azokhoz az emberekhez, akiknek szükségük van rá — ez az a probléma, amit senki nem oldott meg az MCP ökoszisztémában.
+
+Eddig.
+
+---
+
+## Mi jön ezután
+
+A következő szakasz arról szól, hogy a store elkerülhetetlennek tűnjön:
+
+- Nyílt beküldés világos felülvizsgálati kapukkal
+- Erősebb nyilvános alkalmazásoldalak
+- Jobb ajánlásminőség
+- Megosztott SDK dokumentáció
+- Több portábilis telepítési útvonal, beleértve az offline csomagokat
+
+A tézis egyszerű: ha az MCP valódi szoftverréteg lesz, valódi app store-ra van szüksége. Nem majd egyszer. Most.
+
+A spike.land ezt a réteget építi. A tool-ok mindig a könnyű rész voltak. A disztribúció a nehéz rész. Ezt oldjuk meg.

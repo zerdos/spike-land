@@ -11,11 +11,18 @@ import { join, resolve, extname } from "node:path";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
-import { type BlogPost, parseMdxContent, sortByDateDesc, generateSQL } from "./seed-blog-lib.js";
+import {
+  type BlogPost,
+  parseMdxContent,
+  sortByDateDesc,
+  generateSQL,
+  generateTranslationSQL,
+} from "./seed-blog-lib.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const BLOG_DIR = resolve(ROOT, "content/blog");
+const HU_DIR = resolve(ROOT, "content/blog/translations/hu");
 const SPIKE_EDGE_DIR = resolve(ROOT, "packages/spike-edge");
 const IMAGE_DIR = resolve(ROOT, "content/blog-images");
 const DB_NAME = "spike-edge-analytics";
@@ -38,24 +45,71 @@ async function parseMdxFiles(): Promise<BlogPost[]> {
     if (post) posts.push(post);
   }
 
+  // Load translations for all supported languages
+  const LANGS: { code: string; field: keyof BlogPost }[] = [
+    { code: "hu", field: "contentHu" },
+    { code: "de", field: "contentDe" },
+    { code: "ru", field: "contentRu" },
+    { code: "it", field: "contentIt" },
+    { code: "es", field: "contentEs" },
+    { code: "zh", field: "contentZh" },
+    { code: "fr", field: "contentFr" },
+    { code: "ja", field: "contentJa" },
+  ];
+
+  for (const lang of LANGS) {
+    const langDir = resolve(ROOT, `content/blog/translations/${lang.code}`);
+    try {
+      const langEntries = await readdir(langDir, { withFileTypes: true });
+      let count = 0;
+      for (const entry of langEntries) {
+        if (!entry.isFile() || !entry.name.endsWith(".mdx")) continue;
+        const langPath = join(langDir, entry.name);
+        const langContent = await readFile(langPath, "utf-8");
+        const langPost = parseMdxContent(langContent, entry.name);
+        if (!langPost) continue;
+        const match = posts.find((p) => p.slug === langPost.slug);
+        if (match) {
+          (match as Record<string, unknown>)[lang.field] = langPost.content;
+          count++;
+        }
+      }
+      if (count > 0) console.log(`Loaded ${count} ${lang.code.toUpperCase()} translations.`);
+    } catch {
+      // Translation directory doesn't exist yet — skip silently
+    }
+  }
+
   return sortByDateDesc(posts);
 }
 
-async function seedD1(posts: BlogPost[]): Promise<void> {
-  const sql = generateSQL(posts);
+async function executeSQL(sql: string, label: string): Promise<void> {
   const tmpFile = resolve(SPIKE_EDGE_DIR, ".seed-blog-tmp.sql");
-
   try {
     await writeFile(tmpFile, sql, "utf-8");
     const remoteFlag = isRemote ? "--remote" : "--local";
     const cmd = `npx wrangler d1 execute ${DB_NAME} --file="${tmpFile}" ${remoteFlag}`;
-    console.log(`Executing: ${cmd}`);
     const { stdout, stderr } = await execAsync(cmd, { cwd: SPIKE_EDGE_DIR });
     if (stdout) console.log(stdout);
     if (stderr) console.error(stderr);
-    console.log(`Seeded ${posts.length} blog posts to D1 (${isRemote ? "remote" : "local"}).`);
+    console.log(label);
   } finally {
     await unlink(tmpFile).catch(() => {});
+  }
+}
+
+async function seedD1(posts: BlogPost[]): Promise<void> {
+  // Step 1: Base content (no translations)
+  const sql = generateSQL(posts);
+  await executeSQL(
+    sql,
+    `Seeded ${posts.length} blog posts to D1 (${isRemote ? "remote" : "local"}).`,
+  );
+
+  // Step 2: Translations (one batch per language to stay under size limits)
+  const translationMap = generateTranslationSQL(posts);
+  for (const [lang, langSql] of translationMap) {
+    await executeSQL(langSql, `  → Updated ${lang.toUpperCase()} translations.`);
   }
 }
 

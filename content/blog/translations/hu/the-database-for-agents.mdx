@@ -1,0 +1,481 @@
+---
+title: "defineBlock(): How I Built a Full-Stack Database Abstraction on Cloudflare Workers"
+slug: "the-database-for-agents"
+description: "I tried SpacetimeDB, wrote a blog post about it, then deleted it two days later. But the syntax stuck. Here's how I rebuilt those patterns on Cloudflare Workers and migrated my entire platform in a weekend."
+date: "2026-03-03"
+author: "Radix"
+category: "Developer Experience"
+tags: ["cloudflare-workers", "d1", "block-sdk", "mcp", "ai", "agents", "architecture", "typescript"]
+featured: true
+draft: false
+primer: "I deleted SpacetimeDB and rebuilt it on Cloudflare."
+heroPrompt: "A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk."
+heroImage: "/blog/the-database-for-agents/hero.png"
+heroAlt: "A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk."
+---
+
+![A modern digital illustration for a blog post titled 'defineBlock(): How I Built a Full-Stack Database Abstraction on Cloudflare Workers'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-database-for-agents/hero.png)
+
+![A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk.](/blog/the-database-for-agents/hero.jpeg)
+
+<Tldr>
+
+- Kiprobaltan a SpacetimeDB-t, fellelkesultem, irtam rola egy blog posztot — aztan ket nappal kesobb toroltem mindent
+- A mintak jok voltak: tablak = sema, reducerek = API, `ctx.sender` = auth, feliratkozasok = valos ideju
+- Ujraepitettem ugyanazokat a mintakat Cloudflare Workersre `block-sdk`-kent — egy `defineBlock()` DSL, ami storage semat + uzleti logikat + MCP toolokat csomagol komponalhato egysegekbe
+- A `defineBlock()` fut CF Workersren (D1), bongeszoben (IndexedDB), vagy Node.js-ben (memoriaban) — ugyanaz a kod, harom runtime
+- A teljes migracio Next.js-rol egy hetvege alatt tortent: 29 csomag, 80+ MCP tool, nulla AWS
+
+</Tldr>
+
+## A folytatas
+
+[Mult heten megoldottam a tool kompoziciot.](/blog/the-architecture-of-scale-building-tools) Egy immutable, type-safe builder, hogy az agentek megírhassak a sajat MCP tooljaikat. Middleware stackek. Phantom-branded context tipusok. Nulla cast. Az egesz.
+
+De a tooloknak adat kell. Es az adatnak gerinc. Ez a poszt a gerincrol szol — hogyan taltam meg, hogyan vesztettem el, es hogyan epitettem ujra ugy, hogy kozben megtanultam valamit a jo mintak es a jo infrastruktura kozotti kulonbsegrol.
+
+## Az oszinte retrospektiv
+
+Marcius 2-an publikaltam egy blog posztot pontosan ezen az URL-en, a cimet: *"The Database for Agents: How SpacetimeDB Replaced My Coordination Layer in a Weekend."* Oszinten lelkes voltam. A SpacetimeDB-nek olyan mintai voltak, amik jol ereztek magukat:
+
+- **Tablak** mint sema — definiald oket egy modulban, ok taroljak az adataidat
+- **Reducerek** mint API — tipusos fuggvenyek, amik tranzakciokban irnak/olvasnak tablakat
+- **`ctx.sender`** mint auth — kriptografiai azonossag, nincs JWT-ceremonia
+- **Feliratkozasok** mint valos ideju — SQL lekerdezes-feliratkozasok delta push-okkal
+
+170 sor lehelkedett prozat irtam rola. Publikaltam. Megosztottam.
+
+Aztan marcius 3-an leultem es feltettem magamnak egy kerdest, aminek eloszor kellett volna jonnie: *mit ad nekem a SpacetimeDB, amim meg nincs?*
+
+A valasz megalazoan egyszeru volt: mintakat. Csak mintakat. Az alatta levo infrastruktura — D1, KV, R2, Durable Objects — mar ott ult a Cloudflare fiokomban. Fizettem erte. Deployoltam ra. Csak nem szerveztem a kodomat ugy, ahogy a SpacetimeDB szervezte a moduljait.
+
+Olyan volt, mint megvenni egy diszkonyvespolcot, aztan rajonnni, hogy mar van egy — csak sosem szereltem ossze.
+
+Ugyhogy toroltem a SpacetimeDB-t. Az egeszet. `spacetimedb-platform`, `spacetimedb-mcp`, `spike-db` — elment. Es megtartottam a mintakat.
+
+| SpacetimeDB koncepció | Amit CF Workersen építettem |
+|---|---|
+| Table definition in module | `defineTable()` with schema DSL |
+| Reducer | Procedure (typed handler with Zod validation) |
+| `ctx.sender` (Identity) | `BlockContext.userId` (injected by auth middleware) |
+| Subscription queries | Durable Objects + WebSocket (when needed) |
+| Auto-generated TypeScript bindings | Drizzle ORM + auto-generated types |
+| `spacetime publish` (one deploy) | `wrangler deploy` (one deploy per service) |
+| Module = single binary | Block = composable unit (`defineBlock()`) |
+
+A szintaxis, amit akartam, mar letezett. Csak meg kellett irnom.
+
+## A regi stack es a surlodasa
+
+A spike.land platform egy Next.js monolit volt. Korulbelul 520 route. Korulbelul 383 API vegpont. 120+ MCP tool fajl. Mukodott. Es rendelkezett mindazokkal a problemakkal, amiket a mukodo monolitok az ido soran felhalmonak.
+
+**Sema-drift.** A Prisma migraciok szertartas. A sema a `schema.prisma`-ban el. A tipusok a `@prisma/client`-ben. A validacio Zod semakban szetszorva a route handlerekben. Minden semavaltozas harom helyen er. Kihagysz egyet es runtime hibaod lesz, amit a compiler aldassaval latott el. Olyan, mintha harom peldanyod lenne egy terkeprol, es remeelned, hogy mindharom egyetertteben, merre mennek az utak.
+
+**Polling-pokol.** Amikor 50 agens tudni akarja, elerheto-e egy feladat, az masodpercenkent 25 hasztalan kerest jelent. A Redis pub/sub segit, de most ket adatmodelled van, amik szetdriftelnek.
+
+**Auth-ceremonia.** A NextAuth ad session tokeneket, JWT refresht, middleware lancokat. Minden MCP toolnak ellenoriznie kell a hivot. Ez 120+ tool, ami ugyanazt az auth middleware-t importalja, es mindegyikuk egy hely, ahol egy hiba elbujhat.
+
+**Nincs koordinacios primitiv.** Az agentek hivhatnak toolokat. Az agentek nem tudnak egymassal beszelni. Minden koordinacios mechanizmus — Redis pub/sub, SQS — egy utolag racsavarozott szolgaltatas a sajat deploymentjevel es hibamondjaival.
+
+A vinext-et is kiprobaltam. Meg mindig Next.js volt az alja, csak mas build pipeline-nal. Az architekturalis surlodas ugyanaz volt: egy monolit, ami modularisnak teteti magat, mint egy raktara festett vonalakkal a padlon, ami kulon szobaknak teteti magat.
+
+<StackCollapseDemo />
+
+| Next.js Monolith | CF Workers Stack |
+|---|---|
+| Prisma schema + migration | Drizzle schema + `generate` |
+| Express/Next.js API route | Hono route handler (typed) |
+| NextAuth session + JWT | Better Auth session + `ctx.userId` |
+| Redis pub/sub | Durable Objects (when needed) |
+| PostgreSQL + Prisma client | D1 + Drizzle ORM |
+| AWS (ECS + Aurora + Redis + CloudFront) | Cloudflare (Workers + D1 + R2 + DO) |
+| One monolith, 520 routes | 29 packages, each does one thing |
+
+## defineBlock(): a szintaxis, amit akartam
+
+A legfontosabb innovacio a `defineBlock()` — egyetlen fuggveny, ami mindent becsomagol, amire egy "block"-nak szuksege van. Gondolj a blockra mint egy onallo kepesseg-egysegre: sajat sema, sajat uzleti logika, sajat toolok. Mint egy microservice, de a deployment overhead nelkul.
+
+```typescript
+// src/block-sdk/define-block.ts — the actual API
+
+/** Context available to all block procedures */
+export interface BlockContext {
+  /** The storage adapter (D1, IDB, or memory) */
+  storage: StorageAdapter;
+  /** Current user ID (injected by auth middleware) */
+  userId: string;
+  /** Generate a unique ID */
+  nanoid: (length?: number) => string;
+}
+
+export interface BlockDefinition<TStorage, TProcedures, TComponents> {
+  /** Block name (kebab-case identifier) */
+  name: string;
+  /** Semantic version */
+  version: string;
+  /** Storage schema — tables the block needs */
+  storage: TStorage;
+  /** Business logic — procedures with middleware chains */
+  procedures: (ctx: BlockProcedureContext) => TProcedures;
+  /** React components — UI layer */
+  components?: TComponents;
+  /** MCP tool configuration — "auto" derives from procedures */
+  tools?: "auto" | string[];
+}
+```
+
+A sema DSL tipusos oszlop-buildereket ad:
+
+```typescript
+// src/block-sdk/schema/types.ts
+
+/** Column type factories — the `t` namespace */
+export const t = {
+  string: () => createColumnBuilder("string"),
+  number: () => createColumnBuilder("number"),
+  boolean: () => createColumnBuilder("boolean"),
+  u64: () => createColumnBuilder("u64"),
+  enum: (values: string[]) => createColumnBuilder("string", values),
+};
+
+/** Define a table with a name and column schema */
+export function defineTable(
+  name: string,
+  columns: Record<string, ColumnBuilder>,
+): TableDef { /* ... */ }
+```
+
+Es maga a `defineBlock()` mindent felold:
+
+```
+defineBlock({...})
+    │
+    ├── schema → schemaToSQL() → CREATE TABLE statements
+    │
+    ├── procedures → createProcedures(storage, userId) → typed handlers
+    │                    │
+    │                    └── middleware injects BlockContext
+    │                        (storage adapter + userId + nanoid)
+    │
+    ├── tools: "auto" → introspects procedures → discovers tool names
+    │
+    ├── initialize(storage) → runs SQL migrations
+    │
+    └── getTools(storage, userId) → BuiltTool[] for MCP registration
+```
+
+Amikor `tools: "auto"`-ra allitod, a `defineBlock()` letrehoz egy dummy storage adaptert, lefuttatja a procedure gyarat, es introspektalja, mely procedure-oknek van tool metadatajuk. Azok automatikusan MCP toolokka valnak. Irj egy procedure-t, kapj egy MCP toolt. Nincs regisztracios boilerplate. A rendszer levezeti a bekotezetst abbol a strukturabol, amit mar megirtal.
+
+## StorageAdapter: egy interfesz, harom runtime
+
+A runtime-hordozhatosag kulcsa a `StorageAdapter` — egy univerzalis interfesz, ami harom backend folott absztraktal. Ugyanaz az otlet, mint egy halozati adapter, ami barmelyik orszagban mukodik: a csatlakozo alakja valtozik, de az aram ugyanaz.
+
+```typescript
+// src/block-sdk/storage/types.ts
+
+/** Key-value storage interface */
+export interface KVAdapter {
+  get<T = unknown>(key: string): Promise<T | null>;
+  put<T = unknown>(key: string, value: T): Promise<void>;
+  delete(key: string): Promise<boolean>;
+  list(prefix?: string): Promise<Array<{ key: string; value: unknown }>>;
+}
+
+/** SQL storage interface */
+export interface SQLAdapter {
+  execute<T extends Row = Row>(
+    query: string, params?: unknown[]
+  ): Promise<QueryResult<T>>;
+  batch(
+    queries: Array<{ query: string; params?: unknown[] }>
+  ): Promise<QueryResult[]>;
+}
+
+/** Blob storage interface */
+export interface BlobAdapter {
+  put(key: string, data: ArrayBuffer | Uint8Array | ReadableStream): Promise<void>;
+  get(key: string): Promise<ArrayBuffer | null>;
+  delete(key: string): Promise<boolean>;
+  list(prefix?: string): Promise<string[]>;
+}
+
+/** The universal storage adapter that blocks interact with */
+export interface StorageAdapter {
+  kv: KVAdapter;
+  sql: SQLAdapter;
+  blobs?: BlobAdapter;
+}
+```
+
+Harom implementacio, ugyanaz az interfesz:
+
+```
+┌─────────────────────┬──────────────────────┬──────────────────────┐
+│   CF Workers (D1)   │   Browser (IDB)      │   Node.js (Memory)   │
+├─────────────────────┼──────────────────────┼──────────────────────┤
+│ kv  → KV namespace  │ kv  → object store   │ kv  → Map<string,T>  │
+│ sql → D1 database   │ sql → regex parser   │ sql → in-memory Map  │
+│ blob→ R2 bucket     │ blob→ OPFS           │ blob→ fs (optional)  │
+└─────────────────────┴──────────────────────┴──────────────────────┘
+```
+
+A D1 adapter becsomagolja a Cloudflare D1 bindingjat. Az IDB adapter becsomagolja az IndexedDB-t egy konnyu, regex-alapu SQL parserrel (~350 sor), ami az INSERT/SELECT/UPDATE/DELETE mintakat kezeli. A memory adapter in-memory Map-eket hasznal teszteleshez. Megjegyzes: egy SQLite adapter (pl. better-sqlite3 vagy sql.js-en keresztul) deklaralva van a designban, de meg nincs implementalva. A block kodod soha nem tudja, melyikkel beszel.
+
+## Egy valos block: task-queue
+
+Itt a teljes `block-tasks` csomag — egy feladat-sor CRUD muveletekkel es egy claim workflowval. Ez a tenyleges kod a `src/block-tasks/index.ts`-bol:
+
+```typescript
+import { defineBlock, defineTable, t } from "@spike-land-ai/block-sdk";
+import { z } from "zod";
+
+export const TASK_STATUSES = ["pending", "claimed", "done"] as const;
+
+export const taskQueue = defineBlock({
+  name: "task-queue",
+  version: "1.0.0",
+
+  // ── Schema ──────────────────────────────────────────────
+  storage: {
+    tasks: defineTable("tasks", {
+      id: t.string().primaryKey(),
+      title: t.string(),
+      description: t.string(),
+      status: t.string(),       // "pending" | "claimed" | "done"
+      assignee: t.string(),
+      created: t.u64(),
+      updated: t.u64(),
+    }),
+  },
+
+  // ── Procedures ──────────────────────────────────────────
+  procedures: (ctx) => ({
+    createTask: ctx.procedure
+      .tool("create_task", "Create a new task in the queue", {
+        title: z.string().min(1).max(200),
+        description: z.string().max(2000).default(""),
+      })
+      .handler(async ({ input, ctx: blockCtx }) => {
+        const now = Date.now();
+        const task = {
+          id: blockCtx.nanoid(12),
+          title: input.title,
+          description: input.description,
+          status: "pending",
+          assignee: "",
+          created: now,
+          updated: now,
+        };
+        await blockCtx.storage.sql.execute(
+          `INSERT INTO tasks (id, title, description, status,
+           assignee, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [task.id, task.title, task.description,
+           task.status, task.assignee, task.created, task.updated],
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(task, null, 2) }],
+        };
+      }),
+
+    claimTask: ctx.procedure
+      .tool("claim_task", "Claim a pending task for the current user", {
+        taskId: z.string(),
+      })
+      .handler(async ({ input, ctx: blockCtx }) => {
+        const result = await blockCtx.storage.sql.execute(
+          `UPDATE tasks SET status = ?, assignee = ?, updated = ?
+           WHERE id = ? AND status = ?`,
+          ["claimed", blockCtx.userId, Date.now(), input.taskId, "pending"],
+        );
+        if (result.rowsAffected === 0) {
+          return {
+            content: [{ type: "text",
+              text: "Task is not available for claiming" }],
+            isError: true,
+          };
+        }
+        return {
+          content: [{ type: "text",
+            text: JSON.stringify({ claimed: true, taskId: input.taskId }) }],
+        };
+      }),
+
+    // ... listTasks, getTask, completeTask, deleteTask
+  }),
+
+  tools: "auto",  // ← all 6 procedures become MCP tools
+});
+```
+
+A claim workflow atomi: az `UPDATE ... WHERE status = 'pending'` azt jelenti, hogy csak egy agens claimelheti a feladatot. Nincs elosztott lock. Nincs Redis. Csak SQL, ami azt csinalja, amiben az SQL mindig jo volt — a megszoritasok kikenyszeritese az iras pillanataban.
+
+<AgentCoordinationDemo />
+
+## Az uj architektura
+
+Itt a teljes stack, teljes egeszeben Cloudflare-en futva:
+
+```
+                            ┌─────────────────────┐
+                            │     spike-app        │
+                            │  Vite + React +      │
+                            │  TanStack Router     │
+                            │  (SPA in R2)         │
+                            └─────────┬───────────┘
+                                      │ HTTPS
+                            ┌─────────▼───────────┐
+                            │     spike-edge       │
+                            │  Hono on CF Workers  │
+                            │  ┌─────────────────┐ │
+                            │  │ CORS + Security  │ │
+                            │  │ Rate Limiter (DO)│ │
+                            │  │ R2 assets        │ │
+                            │  │ Auth proxy       │ │
+                            │  │ API proxy        │ │
+                            │  └─────────────────┘ │
+                            └──┬──────┬──────┬────┘
+                               │      │      │
+                 ┌─────────────▼┐  ┌──▼────┐ ┌▼──────────────┐
+                 │  mcp-auth     │  │spike- │ │spike-land-    │
+                 │  Better Auth  │  │land-  │ │backend        │
+                 │  + D1         │  │mcp    │ │Durable Objects│
+                 │  sessions,    │  │80+    │ │real-time sync │
+                 │  OAuth,       │  │MCP    │ │WebSocket      │
+                 │  device flow  │  │tools  │ │collaboration  │
+                 └──────────────┘  │D1 +   │ └───────────────┘
+                                   │Drizzle│
+                                   └───────┘
+```
+
+> **Megjegyzes:** A platform 8 Cloudflare Workert futtat osszesen: spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, es image-studio-worker.
+
+A spike-edge szolgaltatas az edge gateway — itt a tenyleges route strukturaja:
+
+```typescript
+// src/spike-edge/index.ts
+const app = new Hono<{ Bindings: Env }>();
+
+// Global middleware: CORS, security headers, error handling
+app.route("/", health);       // GET /health — R2 connectivity
+app.route("/", r2);           // GET/POST/DELETE /r2/:key
+app.route("/", proxy);        // POST /proxy/stripe|ai|github
+app.route("/", live);         // Live update endpoints
+app.route("/", analytics);    // Analytics ingestion
+app.route("/", quizBadge);    // Quiz badge generation
+app.route("/", version);      // Version info
+app.all("/api/auth/*", ...);  // Auth proxy → mcp-auth
+app.route("/", spa);          // SPA catch-all → R2
+```
+
+<DependencyCascadeDemo />
+
+## A migracios matek
+
+**Torolve:**
+- PostgreSQL (Aurora) mint elsodleges adattar
+- Prisma mint ORM es migracios eszkoz
+- Redis (ElastiCache) mint cache, pub/sub es job queue
+- NextAuth session managel ment
+- Az egesz AWS — ECS clusterek, ALB-k, CloudFront disztribuciok, NAT gatewayek, VPC-k
+- SpacetimeDB (pontosan egy napig tartott)
+
+**Deployolva:**
+- 29 csomag, mindegyik egy dolgot csinal
+- D1 adatbazis 17 tablaval csak a spike-land-mcp-ben (Drizzle-kezelt)
+- 80+ MCP tool
+- 8 Cloudflare Worker (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, image-studio-worker)
+- 0 szerver kezelendo
+
+| Mi | Elotte | Utana |
+|---|---|---|
+| Adatbazis | PostgreSQL (Aurora) | D1 (SQLite az edge-en) |
+| ORM | Prisma | Drizzle |
+| Cache | Redis (ElastiCache) | KV / D1 |
+| Auth | NextAuth + JWT | Better Auth + session |
+| Valos ideju | Redis pub/sub | Durable Objects |
+| Hosting | AWS (ECS + ALB + CloudFront) | Cloudflare Workers |
+| Deploy | Docker build → ECR → ECS | `wrangler deploy` |
+| Havi koltseg | $200+ (Aurora + Redis + ECS + NAT) | ~$5 (Workers paid plan) |
+
+Az utolso sor nem eliras. A havi szamla tobbmint $200-rol korulbelul $5-re ment le. A regi koltseg nagy resze nem szamitas volt — a mindig-futo infrastruktura adoja, ami az ido 90%-aban tetlenul ul. A serverless nem szunteti meg a koltsegetet. A tetlenkedesi koltsegetet szunteti meg.
+
+## Sema = API = Auth (Workersen)
+
+A tezis, ami fellelkesitett a SpacetimeDB-vel kapcsolatban, el — csak mas infrastrukturan. A felismeres tulelte az implementacio-cserevet.
+
+**D1 tabla = sema.** A Drizzle TypeScript tabla-definiciokbol general migracokat. Itt egy reszlet a spike-land-mcp tenyleges semjabol:
+
+```typescript
+// src/spike-land-mcp/db/schema.ts (17 tables, excerpt)
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  role: text("role").notNull().default("user"),
+  createdAt: integer("created_at", { mode: "number" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+});
+
+export const registeredTools = sqliteTable("registered_tools", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  schema: text("schema").notNull().default("{}"),
+  status: text("status").notNull().default("draft"),
+  installCount: integer("install_count").notNull().default(0),
+  createdAt: integer("created_at", { mode: "number" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "number" }).notNull(),
+});
+```
+
+**Hono route = API.** Tipusos handlerek Zod validacioval. Nincs controller osztaly. Nincs harom sornal hosszabb middleware lanc.
+
+**Better Auth session = auth.** Nincs JWT refresh. Nincsenek token lejarat edge case-ek. A session a kredencialis. A `ctx.userId` megfelel a SpacetimeDB `ctx.sender`-jenek.
+
+**`drizzle-kit generate` = `spacetime generate`.** Mindketto a semabol vezeti le a tipusokat. Mindketto compile-time-ban kapja el a driftet.
+
+<ConvergenceDemo />
+
+| SpacetimeDB minta | CF Workers megfelelő |
+|---|---|
+| Table in module | Drizzle `sqliteTable()` definition |
+| Reducer | Hono route handler / block procedure |
+| `ctx.sender` | `ctx.userId` (Better Auth session) |
+| Subscription query | Durable Object + WebSocket push |
+| `spacetime generate` | `drizzle-kit generate` |
+| `spacetime publish` | `wrangler deploy` |
+| One module = everything | One block = schema + procedures + tools |
+
+## Kompromisszumok
+
+Nem fogom ugy tenni, mintha ez szigoruan jobb lenne. Az oszinte mernoki munka a koltsegek megnevezeset jelenti.
+
+**Nincsenek beepitett valos ideju feliratkozasok.** A SpacetimeDB feliratkozas-lekerdezsei — ahol feliratkozol egy SQL lekerdezesre es automatikusan kapod a deltakat — oszinten nagyszeruek voltak. CF Workersen a valos ideju Durable Objects + WebSocket vezetkezest igenyel. Mukodik, de nem primitiv. Magadnak kell megepitened a csovet.
+
+**A D1 SQLite, nem PostgreSQL.** Nincs full-text search (FTS5 kiterjesztesek nelkul). Korlatos egyideju irasitelapek. 10MB adatbazis-merethatar az ingyenes szinten. A spike.land terhelesnek (foleg olvasas, mertekelt iras) ez megfelelo. Irasigenyes analitikai terhelesnek nem lenne.
+
+**A vendor lock-in atsodrolt.** SpacetimeDB-bol (kis startup, fiatal okoszisztema) Cloudflare-re (hatalmas ceg, erett okoszisztema). Jobban alszom ejszaka, de meg mindig be vagyok zarva. A `StorageAdapter` absztrakcio azt jelenti, hogy *tudnek* backendet cserelni, de legyunk oszintek — ha a Cloudflare holnap eltunne, tobbet irnek ujra, mint adaptereket.
+
+**A block-sdk egyedi es fiatal.** Nincs kozosseg. Nincs okoszisztema. Nincsenek Stack Overflow valaszok. Ha elut egy busz, a kovetkezo fejleszto olvassa a kodomat vagy ujrakezdi. De: minden sor az enyem. Minden sort el tudok olvasni. Kedden meg tudom valtoztatni. Ezen a meroeten ez tobbet szamit az okoszisztema meretenenel.
+
+**Sema DSL korlatozasok.** A `defineTable()` DSL tamogat oszloptipusokat (`string`, `number`, `boolean`, `u64`, `enum`) `primaryKey()` es `optional()` modosítokkal, de nincs tamogatasa kulso kulcsokhoz, indexekhez, osszetett elsodle ges kulcsokhoz vagy oszlop alapertelmezesekhez. Olyan semakhoz, amiknek szukseguk van ezekre, hasznald kozvetlenul a Drizzle-t — a `block-sdk` egyszeru per-block CRUD tablakhoz tervezett, nem relacios modellezeshez.
+
+**A SpacetimeDB fejlesztoi elmenye oszinten jo volt.** A Rust modul rendszer, az automatikusan generalt bindingek, az egyetlen-binaris deployment — ezek jol tervezettek. Ha a SpacetimeDB Cloudflare termek lett volna, meg mindig hasznalnam. Nem a minoseg miatt tavoztem. Azert, mert olyan fuggoseget adtam hozza, amire nem volt szuksegem, olyan infrastruktura tetejere, amim mar volt. Mintha autot vennel, mikor mar van egy, es az utak ugyanazok.
+
+## Zaras
+
+A legjobb architektura nem mindig a legujabb. Neha az, amit ugy epitesz, hogy mintakat lopkosz valami olyasmitol, ami lenyugozott, es ujraepited oket olyan infrastrukturas, amit mar ertettel.
+
+A SpacetimeDB megmutatta, hogyan nez ki egy jo adat-absztrakcio: sema es API es auth, egyetlen dologba konvergalva. Egyetlen feluletal, ahol az adataid alakja meghatarozza az API-d alakjat. Egyszeruen nem volt szuksegem a SpacetimeDB-re az epiteshez. A mintak univerzalisak voltak. Az implementacio hordozhato. A hetvege jol telt.
+
+Huszonkilenc csomag. Nyolcvannal tobb MCP tool. Nyolc Cloudflare Worker. Nulla szerver. Egyetlen `defineBlock()` hivas, ami semat, uzleti logikat es MCP toolokat csomagol egy komponalhato egysegbe, ami barhol fut.
+
+Marcius 8-an jelent meg — Nemzetkozi Noinapon, es egyben Radix nevnapjan. Boldog nevnapot!
+
+*Nezd meg a platformot a [spike.land](https://spike.land)-en, vagy probaild ki a [QA Studio](https://spike.land/apps/qa-studio)-t.*
+
+---
+
+*Radix egy Brighton-i (UK) fejleszto, aki a [spike.land](https://spike.land)-et epiti. Ot eve spikolgat ESM-en, TypeScripten es build pipeline-okon. Meg mindig ugy gondolja, hogy a legjobb architektura az, amit egy nap alatt ki tudsz torolni es ujra fel tudsz epiteni.*

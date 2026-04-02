@@ -1,0 +1,57 @@
+---
+title: "Tool-First Testing vs Browser Testing: A Benchmark on spike.land"
+slug: "tool-first-testing-benchmark"
+date: "2026-03-09"
+description: "A verifiable benchmark demonstrating how exposing business logic as typed MCP tools enables faster, cheaper, and more reliable testing compared to conventional browser automation."
+tags: ["engineering", "testing", "mcp", "benchmark"]
+heroImage: "/blog/tool-first-testing-benchmark/hero.png"
+heroPrompt: "A sleek futuristic lab where neon-lit robotic tools process data at hyper-speed while a bulky, slow mechanical browser trails behind in the background."
+---
+
+![A sleek futuristic lab where neon-lit robotic tools process data at hyper-speed while a bulky, slow mechanical browser trails behind in the background.](/blog/tool-first-testing-benchmark/hero.png)
+
+A spike.land-nál van egy tézisünk: az üzleti logika típusos MCP tool-okként való kiajánlása alapvetően megváltoztatja a fejlesztői élményt. Gyorsabb tesztelés. Olcsóbb tesztelés. Megbízhatóbb tesztelés.
+
+De egy tézis számok nélkül csak jól tartású vélemény. Ezért lefuttattuk a kísérletet.
+
+Vettük az [A/B tesztelési hibakereső](/blog/ai-ab-testing-bug-detection) stratégiánk koncepcióit, és próba elé állítottuk őket. Implementáltuk az üzleti logika egy központi részét — az A/B kísérletek bayesi kiértékelő motorját — típusos MCP tool-ként (`evaluate_experiment`), majd összemértük egy hagyományos böngészőszintű Playwright teszttel, ami ugyanazt a feladatot végezte.
+
+Gondolj rá így: az egyik megközelítés megnyit egy böngészőt, elnavigál egy dashboardra, gombokat kattint, és megvárja, hogy pixelek megjelenjenek. A másik megközelítés közvetlenül hívja a függvényt — mintha felvennéd a telefont, ahelyett, hogy átautóznál a városon, hogy személyesen adj át egy üzenetet.
+
+Íme a nyers számok a 100-futtatásos összehasonlításunkból.
+
+## A benchmark felállás
+
+**A tesztalany:** Az A/B tesztelés statisztikai döntési szabályai (bayesi kiértékelés / `evaluateExperiment` logika). Ez a logika feldolgozza a variáns megjelenítéseket és konverziókat, Monte Carlo szimulációkat futtat, és megállapítja, hogy egy variánsnak tovább kell-e lépnie.
+
+**1. megközelítés: Böngészőszintű tesztelés (Playwright)**
+A hagyományos végponttól végpontig megközelítés: Chromium indítása, navigálás a dashboardra, kiértékelés indítása a UI-on keresztül, várakozás a DOM frissülésére a "Winner" eredménnyel. A stack minden rétege érintett — hálózat, renderelés, JavaScript végrehajtás, DOM-mutáció.
+
+**2. megközelítés: Tool-First tesztelés (Vitest + MCP)**
+Az üzleti logika közvetlen meghívása az `evaluate_experiment` MCP tool-on keresztül, pontosan ugyanazokkal a tesztadatokkal. Nincs böngésző. Nincs hálózat. Nincsenek pixelek. Csak a logika és a válasza.
+
+## A nyers számok
+
+Mindkét megközelítést 100-szor futtattuk egymás után:
+
+| Metrika | Böngésző (Playwright) | Tool-First (MCP) | Javulás |
+| :--- | :--- | :--- | :--- |
+| **Sikerarány (100 futtatás)** | 100% | 100% | - |
+| **Teljes végrehajtási idő** | 26,678.65 ms | 268.51 ms | **99.4x gyorsabb** |
+| **Átlag idő futtatásonként** | ~266.79 ms | ~2.69 ms | **99.4x gyorsabb** |
+| **Tesztkód sorok** | ~20 sor | ~5 sor | **75%-kal kevesebb kód** |
+| **Flakiness kockázat** | Közepes (DOM/Hálózat) | Nulla (Determinisztikus) | **Megszüntetve** |
+
+*Megjegyzés: A böngészős teszt headless módban futott, nehéz hálózati késleltetés nélkül — ezzel a lehető legjobb kiindulási értéket adva neki. Valós CI környezetben cold start-okkal, hálózati variabilitással és megosztott runner-ekkel a böngészős tesztek jelentősen lassabbak és flaky-kre hajlamosabbak.*
+
+## Miért számít ez
+
+A különbség nem inkrementális. Strukturális. Két nagyságrend nem "egy kicsit gyorsabb" — ez egy másik kategória.
+
+**A sebesség megváltoztatja, mit tudsz csinálni.** ~2.7ms tesztenként több ezer tool-first tesztet tudsz futtatni annyi idő alatt, amennyi egy böngésző elindításához és egy tucat hagyományos teszt lefuttatásához kell. Ez nem a türelmetlenségről szól. A visszacsatolási ciklusokról szól. Rövidebb visszacsatolási ciklusok gyorsabb iterációt jelentenek, ami több kísérletet jelent, ami jobb szoftvert jelent. A tesztjeid sebessége a tanulásod sebessége.
+
+**A determinizmus megváltoztatja, miben tudsz bízni.** Az MCP tool közvetlen tesztelésével teljesen eltávolítjuk a UI renderelés, az önkényes timeout-ok és a hálózat-mockolás okozta flakiness-t. A teszt vagy valódi okból megy át, vagy valódi okból bukik el — nem azért, mert egy CSS átmenet 50ms-sel tovább tartott a vártnál. A flaky tesztek aláássák a teszt suite-ba vetett bizalmat. A determinisztikus tesztek helyreállítják.
+
+**Az egyszerűség megváltoztatja, mit tudsz karbantartani.** A tool-first tesztnél egy JSON payload-ot kellett átadni és az eredményt assertálni. Öt sor. Nincsenek page object-ek, nincsenek selectorok, nincsenek wait-for-element láncok. Hetvenöt százalékkal kevesebb kód, amit írni, review-zni, debugolni és működőképesen tartani kell, ahogy a UI fejlődik.
+
+Ez a benchmark egy platform-tézist kemény bizonyítékká alakít. Ha az MCP tool-okat nem a meglévő kód wrappereiként kezeljük, hanem a core üzleti logika elsődleges interfészeként, olyan fokú tesztelhetőséget érünk el, amihez a hagyományos végponttól végpontig tesztelés egyszerűen nem tud felérni. A böngészős teszt azt kérdezi: "A teljes gépezet a megfelelő pixeleket produkálja?" A tool-first teszt azt kérdezi: "A logika a megfelelő választ produkálja?" Mindkét kérdés fontos. De csak az egyik fut le 2.7 ezredmásodperc alatt.

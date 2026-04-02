@@ -1,0 +1,187 @@
+---
+title: "A Chemist Walked Into a Codebase"
+slug: "a-chemist-walked-into-a-codebase"
+description: "A chemist shipping apps is interesting. The deeper story is spike.land's core bet: formalize business logic as typed MCP tools, enforce it with tests, and turn that into running software."
+date: "2026-03-05"
+author: "Radix"
+category: "Essays"
+tags: ["mcp", "prd", "bazdmeg", "agents", "architecture", "requirements"]
+featured: true
+draft: false
+primer: "The secret of building any app is the requirement."
+heroPrompt: "A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration"
+heroImage: "/blog/a-chemist-walked-into-a-codebase/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'A Chemist Walked Into a Codebase'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/a-chemist-walked-into-a-codebase/hero.png)
+
+![A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration](/blog/a-chemist-walked-into-a-codebase/hero-v2.png)
+
+<Tldr>
+
+- Bármilyen app elkészítésének titka nem az, hogy valami divatos framework-öt választasz. Hanem az, hogy formalizálod a követelményt.
+- Egy kompakt PRD felülmúl egy halom homályos user story-t és a böngészőből hajtott prompt-masszát.
+- A spike.land egy full-stack framework MCP-natív alkalmazásokhoz: a deployolt MCP szerver egyszerre használható app felület és hívható futtatókörnyezet.
+- Az MCP formalizálja a követelményt típusos, tesztelhető képességekké.
+- A quality gate-ek és az MCP tesztek tartják számon az üzleti logikát.
+- Gian Pierre annak a bizonyítéka, hogy a módszer átlépheti a fejlesztői határt. Önmagában nem bizonyítja az univerzális skálázhatóságot.
+
+</Tldr>
+
+## Nem az az érdekes, hogy egy vegyész appokat szállított
+
+[Gian Pierre](https://www.gianpierre.co.uk/) vegyész. Nem szoftvermérnök. Mégis képes volt több valódi alkalmazást leszállítani -- GlassBank, HealthBridge, és egy coaching platform.
+
+Ez érdekes, de nem ez az igazi tanulság.
+
+Gondolj bele így. Minden rendszerben van egy leverage point -- az a pont, ahol egy kis változás nagy hatást eredményez. A legtöbb szoftverprojetknél ez a leverage point nem a kód. Hanem a követelmény.
+
+Gian Pierre megtalálta a leverage point-ot. Azzal kezdte, hogy mit kell a rendszernek csinálnia, nem azzal, hogyan kell megépíteni. Nem React. Nem architektúra diagramok. Nem framework-identitás. Csak képességek, korlátok és felhasználói eredmények.
+
+A legtöbb fejlesztő túl mélyen kezdi a stack-ben. Megnyitnak egy repót és azonnal routing-ban, komponensekben, állapotkezelésben, adatbázis táblákban gondolkodnak. Elkezdik építeni, mielőtt leírták volna, mit építenek. Ez olyan, mintha egy vegyész kísérletet kezdene anélkül, hogy leírná a hipotézist.
+
+Gian Pierre pont az ellenkezőjét csinálta. És ezért készültek el az appok.
+
+Na most, ez nem azt jelenti, hogy bármelyik üzleti elemző képes lenne erre hidegről holnaptól. Ami ebből következik, az szűkebb és fontosabb: ha az üzleti logika elég explicit, a módszer átlépheti a határt a szoftvermérnökök és a szakterületi szakértők között. A fal a "megértik a problémát" és a "meg tudják építeni a megoldást" emberek között egyre vékonyabb lesz.
+
+## Bármilyen app elkészítésének titka
+
+Egy ideig azt hittem, a megoldás az, ha végtelen user story-kat generálok és böngésző-automatizáción áttolom őket. Elég promptot dobok a falra, és valami majd megragad.
+
+Ez tévedés volt. Egy feedback loop jel nélkül csak zaj.
+
+Ekkor kezdtem Gian Pierre-t a BAZDMEG módszer felé terelni. Az igazi trükk az, hogy PRD fájlokkal dolgozol -- Product Requirement Document-ekkel.
+
+Egy jó PRD nem céges színjáték. A rendszer legkisebb őszinte leírása:
+
+- ki a felhasználó
+- mit kell a rendszernek csinálnia
+- milyen állapotok léteznek
+- mi nem történhet meg soha
+- mi számít sikernek
+- mely szélsőséges esetek számítanak
+
+Jelenleg ez a lakmusz-tesztem: kérd meg az ágenst, hogy magyarázza vissza az üzleti tervet a lehető legkevesebb tokenben. Ha nem tudja érthetően megtenni, a termék még homályos. A köd még nem szállt fel.
+
+Ez az első BAZDMEG szabály:
+
+**A követelmény maga a termék. A kód csak a kimenet.**
+
+Gondolj rá úgy, mint egy receptre. A recept a tudás. Az étel csak az, ami történik, ha követed. Mindig újra meg tudod főzni, ha megvan a recept. De ha elveszíted a receptet és csak az étel van meg, visszafejtéssel kell próbálkoznod.
+
+## Miért ver a PRD minden prompt-masszát
+
+<div className="my-8">
+  <img src="/blog/a-chemist-walked-into-a-codebase/traditional-vs-capabilities.svg" alt="Animated comparison of traditional scaffolding outside-in model versus the domain expert inside-out Model Context Protocol capabilities approach" className="w-full rounded-xl border border-gray-800" />
+</div>
+
+A fejlesztők imádnak implementációs részletekkel kezdeni. Mappák. Route-ok. Hook-ok. State container-ek. Adatbázis adapterek.
+
+A felhasználók nem mappákat vesznek. Eredményeket vesznek.
+
+Ez a klasszikus stock-and-flow probléma a rendszergondolkodásból. A fejlesztők a kód készletébe (stock) öntik az energiát -- megírt sorok, létrehozott fájlok, összerakott komponensek. De az áramlás (flow), ami számít, az a felhasználó felé haladó érték. A PRD a beszélgetést az áramláson tartja:
+
+- képességek
+- korlátok
+- invariánsok
+- hibaesetek
+- szélsőséges esetek
+
+Ha ezek világosak, az implementáció megszűnik hősiesnek tűnni. A UI renderelési problémává válik -- mint egy ellátási lánc utolsó mérföldje. A kód könnyebb lesz, mert már nem a termék bizonytalanságát cipeli magában.
+
+Ez az oka annak is, hogy egy szakterületi szakértő hirtelen gyorsan tud haladni. Nem kell megtanulnia az egész szoftverstack-et. Csak elég világosan kell elmagyaráznia a rendszert ahhoz, hogy egy ágens építeni tudjon rá. A szűk keresztmetszet soha nem a gépelési sebesség volt. Hanem az érthetőség.
+
+## Az MCP a formalizálás
+
+Itt válik az MCP többé, mint protokoll. Ez az a hely, ahol a követelmények megszűnnek prózának lenni és végrehajthatóvá válnak.
+
+Egy MCP tool egy képesség névvel, sémával, szerződéssel és természetes nyelvi leírással. Gondolj rá úgy, mint a követelmény egy formális szeletére -- egy jól definiált dolog, amit a rendszer tud csinálni.
+
+Ahelyett, hogy azt mondanád egy ágensnek "építsd meg az appomat", odaadod a tényleges működő alkatrészeket:
+
+- `create_client_profile`
+- `book_coaching_session`
+- `score_life_satisfaction`
+- `recommend_next_action`
+
+Most az ágens nem találgat. Közvetlenül meg tudja vizsgálni a képességeket. Látja az input alakokat, output alakokat és korlátokat, mielőtt egyetlen sor UI kódot írna. A rendszer önleíró.
+
+Ez a kulcslépés:
+
+PRD először.
+MCP másodszor.
+UI utoljára.
+
+És itt jön a spike.land. A spike.land egy full-stack framework MCP-natív szoftverekhez. Egy deployolt MCP szerver nem csak egy API végpont. Használható app felületté, hívható futtatókörnyezetté és terjesztési egységgé válik -- mindezt ugyanazokra a típusos képességekre építve.
+
+## A quality gate-ek teszik valóssá
+
+A tool-ok önmagukban nem elégek. Rengetegen tudnak MCP tool-okat generálni. Ez nem a nehéz rész.
+
+A nehéz rész az a fegyelem, hogy korán beismered a zavart és érvényesíted a quality gate-eket. A rendszergondolkodásban ez egy kiegyensúlyozó feedback loop -- az a fajta, ami őszintén tartja a rendszert ahelyett, hogy hagyná elsodródni.
+
+Ha egy tool szerződés homályos, javítsd a szerződést.
+
+Ha egy állapotátmenet kétértelmű, javítsd a PRD-t.
+
+Ha a hibaút nem egyértelmű, tedd explicitté.
+
+Ha a teszt hiányzik, a követelmény nincs kész.
+
+Ez az a pragmatikus rész, amit mindenki átugrál. Varázs-promptokat akarnak. A hangulatot akarják. Azt az illúziót, hogy a szoftver mostantól magát írja.
+
+Nem. A leverage az érthetőségből plusz az ellenőrzésből jön.
+
+Ha tudod, hogyan kell MCP tool-okat írni és quality gate-ekkel érvényesíteni, a kód hirtelen súlytalanná válik. Megszűnik építkezésnek tűnni és elkezd renderelésnek tűnni. Természetesen tisztább, mert már nem próbálja egyszerre kitalálni a terméket és megvalósítani.
+
+## Igen, unit tesztelheted az üzleti logikát MCP-ken keresztül
+
+Abszolút megteheted, és abszolút meg is kell tenned.
+
+Ez nem mellékhatás. Ez a lényeg.
+
+Ha az üzleti logika típusos MCP tool-ok mögött él, tesztelheted magát a szabályt:
+
+- validáció
+- jogosultságok
+- számítások
+- állapotátmenetek
+- hibautak
+
+Nincs böngésző. Nincs DOM időzítés. Nincs UI találgatás. Nincs az, hogy gombokból próbálsz üzleti szabályokra következtetni.
+
+A tényleges képességet teszteled.
+
+Így marad koherens a spike.land egyetlen fejlesztővel. Az ágens a tool-ok ellen tervez, a termék a tool-okat hívja, és a tesztcsomag ugyanazokat a tool-okat ellenőrzi.
+
+Egy interfész. Három feladat. Mint egy jó konyhakés -- nem kell feltűnőnek lennie. Élesnek kell lennie.
+
+## Mit bizonyított valójában Gian Pierre
+
+Nem azt bizonyította, hogy a szoftvermérnökség többé nem számít.
+
+Nem bizonyította az univerzális megismételhetőséget sem.
+
+Valami pontosabbat bizonyított: a legtöbb csapat túl mélyen kezdi a stack-ben. Azonnal implementációba ugranak, mielőtt leírnák a rendszert. Összetévesztik a kódot a termékkel.
+
+Ha egy szakterületi szakértő képes érthetően elmagyarázni az üzletet, PRD-be tömöríteni, MCP tool-okká formalizálni és tesztekkel őrizni -- a többi sokkal könnyebbé válik. A rendszer elkezdi összerakni magát, mert a megértés nehéz munkáját előre elvégezték.
+
+Ez a valódi trükk.
+
+Nem vibe coding. Nem hősies promptok. Nem gigantikus context window-ok.
+
+Bármilyen app elkészítésének titka a követelmény.
+
+A framework is számít, de máshol. Ha a követelmény világos, a framework-nek azt kell tennie, hogy ez az érthetőség végrehajthatóvá váljon. Ez az a feladat, amit a spike.land próbál elvégezni.
+
+Ugyanez a fegyelem, fordított irányba alkalmazva -- architektúra kiolvasása egy meglévő kódbázisból ahelyett, hogy nulláról építenénk -- ez az alapja a [Next.js migrációs szolgáltatásnak](/blog/nextjs-migration-service).
+
+Írd meg a PRD-t.
+Alakítsd MCP-kké.
+Érvényesítsd a gate-eket.
+Teszteld az üzleti logikát.
+Hagyd, hogy a UI legyen a könnyű rész.
+
+A következő lépés nem az, hogy romantizálunk egy kivételes alkotót. A következő lépés az, hogy megismételhetővé tesszük -- sablonokkal, korlátokkal és ellenőrzéssel -- hogy a módszer a kivételes egyéneken túl is működjön.
+
+És igen: ha így dolgozol, a kód természetesen szépnek kezd tűnni. Nem azért, mert a modell varázslatos lett, hanem mert a követelmény végre elég világos lett ahhoz, hogy építs rá.

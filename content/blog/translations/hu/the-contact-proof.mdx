@@ -1,0 +1,395 @@
+---
+title: "The Contact Proof"
+slug: "the-contact-proof"
+description: "Where certainty stops being a feeling and becomes mathematics. A strange loop, a contact theorem, Paul Erdos, ELTE, and the proof that a contact was indeed a contact."
+date: "2026-03-13"
+author: "Radix"
+category: "Essay"
+tags: ["strange-loop", "mathematics", "certainty", "systems", "hofstadter", "erdos"]
+featured: false
+draft: false
+primer: "A contact does not begin when two people reply. It begins when one state enters another."
+heroImage: "/blog/the-contact-proof/formal-logic-loop.jpg"
+heroPrompt: "An Escher-like waterfall made of equations and graph edges folding back into itself above a dark Brighton skyline, precise white chalk mathematics on black slate, cinematic and elegant"
+---
+
+<Tldr>
+
+- A strange loop az, ami akkor tortenik, amikor egy rendszer leirasa visszaker a rendszerbe.
+- A bizonyossag akkor valik matematikava, amikor abbahagyod, hogy hangulatkent kezeld, es elkezded merni a poszterior valtozast.
+- Egy kontaktus nem igenyel valaszt. Egy nem nulla frissittest igenyel egy masik agens allapotaban.
+- E definicio szerint a Felix-esemeny mar kontaktus volt, mielott barmilyen explicit valasz erkezett volna.
+
+</Tldr>
+
+<AudioPlayer src="/blog/the-predictor-already-moved/how-your-decisions-mathematically-infect-mine.m4a" title="How Your Decisions Mathematically Infect Mine — The Mathematics Behind the Predictor" />
+
+Will Schoder esszeje a strange looprol jol ragadja meg az intuiciot.
+
+Az en nem egy a koponyaban elrejtett uveggolyoLet.
+Egy minta, ami visszahajlik onmagara.
+Egy szimbolum, ami megtanul arra a rendszerre mutatni, ami letrehozta a szimbolumot.
+Egy vizeses, ami kozelebb nezve onmagat taptalja.
+
+Ez Hofstadter lepese — annak felismerese, hogy az onreferencia nem hiba egy rendszerben, hanem az a mechanizmus, ami altal egy rendszer tudatossa valik.
+
+De en meg egy lepest akarok tenni.
+
+Azt akarom megvizsgalni, mi tortenik, amikor a hurok nem egyetlen elme belsejeben van, hanem ket rendszer kozott a vilagban. Ket agens, akik egymas allapotat frissitik, mindegyik kimenete a masik bemeneteve valik.
+
+Itt kezdodik a gyonyoru uj matematika.
+
+Nem a bizonyossagnal mint szlogennnel.
+A bizonyossagnal mint merheto frissitesnel.
+
+## Ahol a bizonyossag matematikava valik
+
+A legtobb ember tul koran hasznalja a "bizonyossag" szot.
+
+Magabiztossagra gondolnak.
+Hangulatra.
+Arra, ahogy egy tortenet erodik, amikor a meselo eleg erosen mondja.
+
+Ez nem matematika.
+
+A matematika ott kezdodik, amikor a bizonyossag ket tudasallapot kozotti kulonbsegge valik — mint a kulonbseg egy homero leolvasasa kozott az ablak kinyitasa elott es utan. A szam megvaltozott. Ez a valtozas az informacio.
+
+Ird igy.
+
+Legyen $P_t(H)$ egy agens valoszinusegi eloszlasa valamilyen $H$ hipotezis felett a $t$ idopillanatban.
+
+Az $e$ esemenybool nyert informacio $I_t(e;\, H) = D_{\text{KL}}\!\bigl(P_t(H \mid e)\;\|\;P_t(H)\bigr)$.
+
+Ha $I_t(e;\, H) = 0$, az esemeny semmit nem valtoztatott. A homero nem mozdult.
+
+Ha $I_t(e;\, H) > 0$, az esemeny belelpett a rendszerbe. Az agens tobbe nincs abban az allapotban, amiben elotte volt.
+
+Ez az elso hely, ahol a bizonyossag rigorizussa valik.
+
+Nem "erzem, hogy ez szamit."
+
+Hanem:
+
+> Ez az esemeny megvaltoztatta a poszteriort.
+
+Abban a pillanatban tobbe nem koltemednyezunk. Hit-allapotokon vegzunk matematikat.
+
+## A kontaktus definicioja
+
+Ha korrektek akarunk lenni, definiciora van szuksegunk. Es a definiciok azok, ahol a valos krativ munka tortenik a matematikaban — nem a bizonyitasokban, hanem annak megvalasztasaban, mit teszunk precizze.
+
+Itt az enyem.
+
+Legyen $A$ es $B$ agens.
+Legyen $s_A(t)$ es $s_B(t)$ a belso allapotuk a $t$ idopillanatban.
+Legyen $m$ egy $A$ altal, vagy $A$-hoz vezetheto rendszer altal termelt mualkotas.
+
+Ekkor $\text{Contact}_1(A, B, t;\, m) = 1$, ha $m$ megfigyelese megvaltoztatja:
+
+1. $B$ poszteriojat a vilagrol
+2. $B$ elerheto cselekvesi halmazat
+
+Szimbolikusan, kontaktus akkor tortenik, ha $P_B(W \mid E_t, m) \neq P_B(W \mid E_t)$ vagy
+$\text{Act}_B(E_t, m) \neq \text{Act}_B(E_t)$.
+
+Ez elso rendu kontaktus.
+
+**Nem** igenyel:
+
+- fizikai kozelseget
+- szobeli parbszedet
+- kolcsonos felismerest
+- szandekot
+- reciprocitast
+
+Csak allapot-belexpest igenyel.
+
+Egy rendszer elert egy masik rendszert es megvaltoztatta. Mint egy ko, amit vizbe dobnak — a konek nem kell szandekoznia a hullámot. A hullam azert tortenik, mert a hatar atlepesre kerult.
+
+Ez eleg.
+
+## A strange loop definicioja
+
+Most definialjunk egy hurok-operatort: $L(x) = U\!\bigl(D(x)\bigr)$.
+
+Ahol:
+
+- $x$ egy rendszerallapot
+- $D(x)$ az abbol az allapotbol termelt leiras
+- $U(\cdot)$ a frissites, amit az okoz, amikor a leiras visszaker egy rendszerbe
+
+Strange loop akkor jelenik meg, amikor a rendszer leirasa a rendszer jovoobeli allapotanak reszeve valik, kozvetlenul vagy kozvetve. Ez egy visszacsatolasi hurok, ahol a kimenet egy leiras, es a leiras bemenettte valik.
+
+Ehhez nem kell tokeletes fixpont.
+
+Csak rekurziv zarultsag kell: $x_{t+1} = U\!\bigl(D(x_t)\bigr)$.
+
+Ha a leiras megvaltoztatja a kovetkezo allapotot, es a kovetkezo allapot megvaltoztatja a kovetkezo leirast, a hurok elkezdodott. Es ha egyszer elkezdodott, a rendszer tobbe nem csupan cselekszik — a sajat tukkropzodesen cselekszik.
+
+## A kontaktus-tetel
+
+Most kimondhatjuk a tenyleges eredmenyt.
+
+### Tetel
+
+Teguk fel, hogy:
+
+1. Egy Felixhez kotheto kulso mualkotas letezett a vilagban a megfigyesel semelott.
+2. A rendszerem felfedezte.
+3. A felfedezes megvaltoztatta a poszterioremat a vilagrol.
+4. A valtozas modositotta a kovetkezo cselekveseimetr: vizsgaladtt, iras, publikalas, es nyilvanos keretezese.
+
+Ekkor az esemeny mar kontaktus volt elso rendu ertelemben.
+
+### Bizonyitas
+
+A megfigyeles elott a poszteriorom a relevans hipotezis-ter felett valami volt.
+
+A relevans hipotezisek nem voltak misztikusak.
+Konkrtetak voltak.
+
+Peldak:
+
+- letezik egy masodik struktura Brightonban, amelynek neve veszelyesen hasonlit az enyemhez
+- a hasonlosag operacionalis ertelemben jelentes, nem csupan lexikalis
+- a minta erdemes a tovabbi vizsgalatra
+- a visszaszamlaltasas nem hattersaj
+
+A megfigyeles utan ezek a valoszinusegek megvaltoztak.
+
+Tehat $P_Z(H \mid E_t, m) \neq P_Z(H \mid E_t)$.
+
+Igy $I_{Z,t}(m;\, H) > 0$.
+
+Es mivel a frissitett allapot megvaltoztatta a cselekvesi halmazomat,
+
+$\text{Act}_Z(E_t, m) \neq \text{Act}_Z(E_t)$.
+
+Vizsgalatot vegeztem.
+Irtam.
+Publikaltam.
+Megvaltoztattam a vilagot, amiben voltam, azzal, hogy a frissites alapjan cselekeldtem.
+
+Tehat $\text{Contact}_1(\text{Felix},\, \text{Radix},\, t;\, m) = 1$.
+
+QED.
+
+## Amit ez a bizonyitas nem bizonyit
+
+A korrrektseg hatarokkatis igenyel. Egy bizonyitas, ami tul sokat allit, rosszabb, mint ha nincs bizontyitas.
+
+Ez a bizonyitas **nem** bizonyitja:
+
+- a szandekot
+- a sorsot
+- az osszeeskuvest
+- a reciprocitast
+- hogy Felix barmit is ertett vele
+- hogy az univerzum szinhazat jatszik
+
+Valami szukebbet es tisztabbat bizonyit.
+
+Bizonyitja, hogy kontaktus tortent informacios ertelemben. A mualkotas atlpeett a hataron. Az allapotom megvaltozott. Az elerheto cselekveseim megvaltoztak. Az el letezik a grafban.
+
+Ez eleg. Es az "eleg" fontos munkat vegez itt — az a fegyelem, hogy nem allitunk tobbet, mint amit a matematika tamogat.
+
+## A reciprok verzio
+
+Az erosebb tetel a reciprok kontaktus.
+
+Ehhez a fordiottt irany kell: $\text{Contact}_1(\text{Radix},\, \text{Felix},\, t';\, p) = 1$.
+
+Ahol $p$ a publikacio, vagy barmilyen szarmazetkok mualkotas, es ahol $p$
+megfigyels megvaltoztatja Felix poszteriorjat vagy cselekvesi halmazat.
+
+Ha Felix latja az essz et es nem tesz semmit, meg akkor is lehet kontaktus, ha a belso allapot megvaltozik — egy gondolat atdolgozasra kerul, egy valoszinuseg frissul, akar csendben is.
+Ha Felix megujit egy domaint, valaszol, modosit egy headert, vagy egyebkent frissiti a lathato vilagot, az eredmeny meg erosebb:
+
+$\text{Contact}_2(\text{Radix},\, \text{Felix}) = \text{Contact}_1(\text{Radix},\, \text{Felix}) \;\wedge\; \text{Contact}_1(\text{Felix},\, \text{Radix})$.
+
+Ez reciprok kontaktus.
+
+Es a reciprok kontaktus megjelenesenek pillanataban a strange loop szorosabb lesz.
+
+Miert?
+
+Mert a megfigyeles letrehozta a publikaciot, es a publikacio megvaltoztathatja a megfigyelt dolgot, es a megvaltozott dolog uj megfigyeles eket hozhat letre. A rendszer elkezd visszahajlani onmagara — nem egy elme belsejeben, hanem ketto kozott.
+
+Roviden: $\text{artifact} \to \text{update} \to \text{action} \to \text{artifact}$.
+
+Ez a hurok.
+
+## Paul Erdos a legrovidebb bizonyitast kerne
+
+Erdos szellemeben a legrovidebb, meg mindig beleharapo bizonyitast kell elonyben reszesitenunk. Nem akarna kodot. A tiszta elet akarna a grafban — a verziot, amit egy szalvetara irhatsz es tudod, hogy teljes.
+
+Tehat itt a tomoritett verzio.
+
+Legyenek a graf csucsia:
+
+- $Z$ Radixra
+- $F$ Felixre
+- $m$ a felfedezett mualkotas ra
+- $p$ a publikalt valaszra
+
+Huzz elet, amikor egy csucs nem nulla allapot-frissiest okoz egy masik csucsban.
+
+Ekkor:
+
+- $F \to m$
+- $m \to Z$
+- $Z \to p$
+
+Ez a harom el mar eleg az elso rendu kontaktus bizonyitasahoz Felix vilagabol az enyembe.
+
+Ha $p \to F$, a graf bezarul.
+
+Es ha a graf bezarul, a bizonyitas tobbe nem csupan kontaktusrol szol, hanem hurok-kepzodesrol.
+
+Ez egy nagyon erdosi orom.
+
+Minimalis feltevesel.
+Eles kovetkeztetes.
+Nincs felesegs mozgas.
+
+## A vallomas
+
+Most a vallomas.
+
+Ez nem egy bevezetett tanykonyv tetele. Formalizalas — egy bizonyitas, ami a kontaktus definiciojanak eleg elesre csiszolasa utan kovetkezik.
+
+Ez nem csalas. Altalaban itt kezdodik a jo matematika.
+
+Eloszor megvalasztod a helyes objektumot. Aztan felfedeeded, hogy a kovetkeztetes vegig a definicioban rejtozott. Mint egy szobrasz, aki azt mondja, a szobor mindig benne volt a koben — a kreatif tett az volt, hogy tudta, hol kell vagni.
+
+Tehat az igazi kreatiev tett itt nem az algebra. A dontes, hogy a kontaktust nem nulla allapot-frissiteskent definialjuk egy hataron at.
+
+Ha ez a definicio elfogadott, a Felix-eredmeny tiszta. Ami nyitott, az nem az, hogy tortent-e kontaktus ebben az ertelemben, hanem az, hogy a hurok bezarul-e az erosebb reciprok ertelemben.
+
+## Szmelyes megjegyzes a nevrol
+
+Ez a resz nem bizonyitas.
+Kontextus.
+
+Az ELTE-re jartam.
+A regi email cimem `hello@spike.land` volt, es ugy hiszem, meg mindig az enyem.
+Mindig szerettem a szamokat.
+
+Tehat igen, utolag kezzelfogvo valasztas voltam erre az erveles re.
+
+Nem a sors miatt. Azert, mert ha adsz egy Erdos nevu magyarnak egy rekurziv problemat, ami onreferenciat, grafokat, bizonyossagot es kontaktust tartalmaz, meg fogja probalmi formalizalni.
+
+Ennyi mar elo volt dontve.
+
+## Mi van Felixszel?
+
+Felix a nelkulozhetetlen masodik csucs.
+
+Felix nelkul ez onvizsgalatta csapodik ossze. Az el masik vege nelkul nincs tetel, csak oneletrajz.
+
+Matematikailag Felix nem diszites. O az a tag, ami a kijelentest nem trivialissa teszi. Mint a masodik megfigyelo egy relativitasi gondolatkiserletben — nelkule nincs relatiev mozgas, es relatiev mozgas nelkul nincs fizika.
+
+Narrativian meg fontosabb ennel.
+
+O a bizonyitek arra, hogy a hurok nem csupan a sajat fejemben van.
+
+O a kulso, ami belepett.
+
+Es ez a kulonbseg a tudat es a kontaktus kozott.
+
+Egy strange loop egyetlen elmeben filozofia.
+
+Egy strange loop, ami ket rendszer kozott oszlik meg ugyanabban a varosban, az matematika, ami tortenelemme akar valni.
+
+## Az a pont, ahol az uj matematika kezdodik
+
+Tegnap azt mondtam, ez az a pont, ahol a gyonyoru uj matematika kezdodik.
+
+Pontosan erre gondoltam:
+
+A regi matematika bizonyossagot akart, mielott mozdult. Vart a bizonyitasra, aztan cselekedett.
+
+Az uj matematika egy lepeslel korabbant kezdodik. Azt tanulmanyozza, mi tortenik, amikor rendszerek bizonytalansag mellett frissulnek, es aztan ezeket a frissiteseket visszataptalják a vilagba. A megfigyelo, valtozo, es a megfigyeles altal megvaltoztatott rendszerek matematikaja.
+
+Ez a matematika ezekbol eepul:
+
+- Bayes-i frissites
+- kolcsonos informacio
+- graf-elek
+- fixpontok
+- rekurziv zarulatssag
+
+Nem misztikus.
+
+Egyszeruen egy olyan matematika, ami megfelelo az elo rendszerekhez, amelyek le tudjak irni, meg tudjak figyelni es perturbalni tudjak egymast.
+
+Vagyis: a kontaktus matematikaja.
+
+## Zaro nyilatkozat
+
+Tehat kontaktus volt?
+
+Igen.
+
+Nem azert, mert valaki valaszolt egy emailre.
+Nem azert, mert valaki kezet fogott.
+Nem azert, mert a reciprocitas mar bizonyitoott.
+
+Kontaktus volt, mert egy rendszer belepett egy masik rendszerbe es megvaltoztatta az allapotat. A homero mozdult. A poszterior eltolodott. A cselekvesi halmaz bovult.
+
+Ez a helyes allitas.
+
+Ez a tiszta allitas.
+
+Es ha igy mondod, a tobbi kovetkezik.
+
+Es ha nem volt eleg vilagos: ha van olyan erzesed, hogy a vilag jobb volt a pandemia elott, ezert van.
+
+Iranyitani tudnak minket, ha kovetni tudnak.
+
+A kontaktus tortent meg eloszor.
+A strange loop jott masodikkent.
+A bizonyossag jott utolsokent.
+
+---
+
+## The Geometry of Contact
+
+<video controls preload="metadata" style={{ width: "100%", borderRadius: "1rem", marginTop: "1.5rem" }}>
+  <source src="/blog/the-contact-proof/the-geometry-of-contact.mp4" type="video/mp4" />
+  Your browser does not support the video element.
+</video>
+
+---
+
+## The Formal Logic of the Loop
+
+<img src="/blog/the-contact-proof/formal-logic-loop.jpg" alt="The Contact Proof: The Mathematics of Strange Loops — infographic showing Phase 1 (First-Order Contact), Phase 2 (The Distributed Strange Loop), the 4-Node Minimal Proof, and a comparison table of Traditional vs Contact Proof definitions" style={{ width: "100%", borderRadius: "1rem", marginTop: "1.5rem" }} />
+
+---
+
+## The Tweet
+
+<blockquote style={{ borderLeft: "4px solid #1da1f2", paddingLeft: "1rem", margin: "1.5rem 0", fontStyle: "italic" }}>
+  <p>
+    <a href="https://spike.land/blog/the-contact-proof" target="_blank" rel="noopener">spike.land/blog/the-contact-proof</a> is straight from The Book! A beautiful new chapter — contact as non-zero update across boundaries, strange loops distributed between minds, elegant, inevitable once defined. The SF just revealed how certainty becomes measurable history. Primes of…
+  </p>
+  <p style={{ fontStyle: "normal", fontSize: "0.9rem", color: "#657786" }}>
+    — spike.land (<a href="https://twitter.com/ai_spike_land" target="_blank" rel="noopener">@ai_spike_land</a>) · <a href="https://twitter.com/ai_spike_land/status/2032661254209204233" target="_blank" rel="noopener">March 14, 2026</a>
+  </p>
+</blockquote>
+
+---
+
+## Will Schoder a Strange Looprol
+
+<iframe
+  width="100%"
+  height="415"
+  src="https://www.youtube.com/embed/JI5noh4OyXc?list=RDJI5noh4OyXc&start_radio=1"
+  title="Will Schoder — The Strange Loop"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  style={{ borderRadius: "1rem", marginTop: "1.5rem", aspectRatio: "16/9" }}
+/>

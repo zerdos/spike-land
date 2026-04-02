@@ -1,0 +1,329 @@
+---
+title: "The Architecture of Scale: How I Made My MCP Tools Agent-Writable"
+slug: "the-architecture-of-scale-building-tools"
+description: "When Google released Nano Banana 2, my image tools became obsolete overnight. Here's how I rebuilt my MCP tool builder so agents could compose, test, and deploy tools without touching framework code."
+date: "2026-03-01"
+author: "Radix"
+category: "AI & Tools"
+tags: ["mcp", "ai", "agents", "cloudflare-workers", "typescript", "architecture", "nano-banana-2", "vibe-coding"]
+featured: true
+draft: false
+primer: "Google killed 42 of my tools overnight. So I made agents write their own."
+heroPrompt: "An abstract conceptual illustration representing building blocks of scalable architecture with a glowing AI theme, featuring a stylized neon cyber-fox navigating the data streams, interconnected nodes, and a structured hierarchy, high-tech, dark mode, vibrant neon colors, isometric 3d style."
+heroImage: "/blog/the-architecture-of-scale-building-tools/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'The Architecture of Scale: How I Made My MCP Tools Agent-Writable'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-architecture-of-scale-building-tools/hero.png)
+
+<img src="/blog/the-architecture-of-scale-building-tools/architecture-hero.png" alt="An abstract conceptual illustration representing building blocks of scalable architecture with a glowing AI theme, featuring a stylized neon cyber-fox navigating the data streams, interconnected nodes, and a structured hierarchy, high-tech, dark mode, vibrant neon colors, isometric 3d style." className="w-full rounded-xl border border-gray-800 shadow-2xl mb-8" />
+
+<Tldr>
+
+- A Google Nano Banana 2 egy éjszaka alatt elavulttá tette mind a 42 image toolomat — újra kellett építeni, nem foltozgatni
+- A régi `ToolBuilder` osztály `as unknown as` castokat használt a context middleware-en való átvezetéséhez — működött, de az agentek nem tudták biztonságosan bővíteni
+- Kinyertem egy tRPC-stílusú immutable buildert (`@spike-land-ai/shared/tool-builder`) phantom-branded middleware-rel, ami runtime költség nélkül viszi a context típusokat
+- Az `(input, ctx)` handler aláírás megegyezik a Cloudflare Workers és a tRPC mintájával — nincsenek globálisok, tiszta függvények, triviálisan tesztelhető
+- Az eredmény: az autonóm agentek mostantól tudnak toolokat írni, tesztelni és deployolni anélkül, hogy hozzányúlnának a framework kódhoz
+
+</Tldr>
+
+## A katalizátor
+
+Öt éve spikolgatok ESM-en, TypeScripten és build pipeline-okon. Nem egy cégnél. Nem egy csapatban. Egyedül, túl sok repóval, és egy egyre erősödő meggyőződéssel, hogy az AI toolok összekötésének módja alapvetően hibás.
+
+Amikor a Google kiadta a Nano Banana 2-t, kiderült, mennyire igazam volt a problémát illetően — és mennyire hibás volt még mindig az implementációm.
+
+A Nano Banana 2 olyan jó natív képértelmezéssel érkezett, hogy az mcp-image-studio tooljaim fele egy éjszaka alatt feleslegessé vált. Nem fokozatosan. Nem hónapok alatt. Egy kedden. A `describe` tool, ami egy külső vision API-t hívott? A Nano Banana 2 kontextusban csinálja. Az `extract_palette` tool? A Nano Banana 2 közvetlenül okoskodik a színekről. A `compare` tool, ami két képet hasonlított össze egy harmadik félen keresztül? Eltűnt.
+
+A toolok még működtek. Csak már nem érte meg fizetni értük.
+
+És amikor leültem, hogy kitépjem és lecseréljem őket, beleütköztem az igazi problémába: a tool frameworköm nem arra volt tervezve, hogy a toolok eldobhatók legyenek. Olyan volt, mint felfedezni, hogy a házadnak remek a vízvezetéke, de a falak teherhordók olyan helyeken, amiket senki nem dokumentált. Minden tool össze volt gabalyodva egy osztályalapú builderbe, imperatív mutációval, `as unknown as` castokkal és implicit állapottal. Egy tool eltávolítása húsz megértését igényelte. Egy hozzáadása kétszáz sor boilerplate másolását és a remélést, hogy a típusok stimmelnek.
+
+Olyan rendszert építettem, ami arra volt optimalizálva, hogy lassan és gondosan, kézzel írjak toolokat. A világ épp átváltott egy olyan helyre, ahol a toolokat órák alatt kellett megírni, letesztelni és kidobni. Agentek által, nem csak általam.
+
+## A boilerplate szűk keresztmetszet
+
+Így nézett ki a régi tool definíció. Ez valódi kód az `mcp-image-studio/src/define-tool.ts`-ből — az osztályalapú builder, amin minden tool átment:
+
+```typescript
+// OLD: mcp-image-studio/src/define-tool.ts (the "before")
+
+class ToolBuilder<TInput, TCtx extends ToolContext, TFields extends z.ZodRawShape> {
+    private resolvesConfig: ResolvesConfig = {};
+    private creditsConfig?: CreditsConfig<TInput>;
+    private jobConfig?: JobConfig<TInput>;
+    private requireOwnershipFields: string[] = [];
+    private validates: Array<(input: TInput, ctx: TCtx) => CallToolResult | void> = [];
+
+    resolves<R extends ResolvedEntities>(
+        config: R,
+    ): ToolBuilder<TInput, TCtx & ResolvedDependencies<R>, TFields> {
+        this.resolvesConfig = { ...this.resolvesConfig, ...config };
+        return this as unknown as ToolBuilder<TInput, TCtx & ResolvedDependencies<R>, TFields>;
+    }
+
+    credits(
+        config: CreditsConfig<TInput>,
+    ): ToolBuilder<TInput, TCtx & { billing: { creditsCost: number } }, TFields> {
+        this.creditsConfig = config;
+        return this as unknown as ToolBuilder<TInput, TCtx & { billing: { creditsCost: number } }, TFields>;
+    }
+
+    job(
+        config: JobConfig<TInput>,
+    ): ToolBuilder<TInput, TCtx & { jobs: { currentJob: EnhancementJobRow } }, TFields> {
+        this.jobConfig = config;
+        return this as unknown as ToolBuilder<TInput, TCtx & { jobs: { currentJob: EnhancementJobRow } }, TFields>;
+    }
+}
+```
+
+Látod azokat az `as unknown as` castokat? Három darab. Mindegyik egy kézfogásos megállapodás a compilerrel: "bízz bennem, a context típus megváltozott." És mint a legtöbb kézfogásos megállapodás, történetesen épp most igazak, de később senki nem tudja ellenőrizni.
+
+Az osztály saját magát mutálta. Minden `.resolves()` hívás módosította a `this.resolvesConfig`-ot és visszaadta a `this`-t egy másik típusjelmezben. A tényleges objektum ugyanaz volt. A típus más volt. Rossz sorrendben láncolod őket, és a runtime nem kapja el. A compiler nem kapja el. Produkcióban jössz rá, amikor a `ctx.entities.image_id` `undefined`.
+
+Ez rendben volt, amíg én voltam az egyetlen, aki toolokat írt. Ismertem a sorrendet. Ismertem az invariánsokat. A fejemben tartottam a szerződést.
+
+De az agenteknek nincs meg az én fejem. Egy agent, aki ezt a kódot nézi, egy mutable állapotú osztályt lát, hazudó generikus paraméterekkel, és egy szerződéssel, ami sehol nem létezik a típusrendszerben. Nem tud biztonságosan új toolt írni anélkül, hogy ne kockáztatna egy runtime hibát, amit a compiler áldásával látott el.
+
+## A megoldás: egy tiszta TypeScript séma DSL
+
+Olyan builderre volt szükségem, ami:
+1. **Immutable** — minden metódus új objektumot ad vissza, nem egy mutált `this`-t
+2. **Type-safe** — nincsenek `as unknown as` castok, a context típusok generikusokon keresztül áramlanak
+3. **Composable** — a middleware függetlenül írható és egymásra rakható
+4. **Agent-barát** — egy autonóm agent el tudja olvasni a típusokat és helyes toolt tud írni
+
+A válasz az volt, hogy lopjak a tRPC-ből. Nem a könyvtárból — a mintából. Egy immutable procedure builder, ahol a `.use()` egy új procedure-t ad vissza kibővített kontextussal, és a `.tool()` egy buildert ad vissza, aminek kell egy `.handler()` a teljes tool definíció elkészítéséhez. Minden lépés egy új objektum, szűkebb, specifikusabb típussal. Nincs mutáció. Nincs hazugság.
+
+Itt van a core interfész a `@spike-land-ai/shared/tool-builder`-ből:
+
+```typescript
+// shared/src/tool-builder/builder.ts — the "after"
+
+export interface Procedure<TCtx> {
+  /**
+   * Add middleware to the procedure chain.
+   * The result is TCtx intersected with the middleware's output context.
+   */
+  use<TCtxIn extends Record<string, unknown>, TCtxOut extends TCtxIn>(
+    mw: Middleware<TCtxIn, TCtxOut>,
+  ): TCtx extends TCtxIn ? Procedure<TCtx & TCtxOut> : never;
+
+  /**
+   * Define a tool with name, description, and input schema.
+   * Returns a ToolBuilder that can add meta, output schema, and handler.
+   */
+  tool<TFields extends z.ZodRawShape>(
+    name: string,
+    description: string,
+    fields: TFields,
+  ): ToolBuilder<z.infer<z.ZodObject<TFields>>, TCtx, CallToolResult>;
+}
+```
+
+A kulcs a `use` metódus visszatérési típusában van: `TCtx extends TCtxIn ? Procedure<TCtx & TCtxOut> : never`. Ha a middleware-ed olyan context alakot igényel, amivel a jelenlegi procedure nem rendelkezik, a visszatérési típus `never`. Compile hibát kapsz, nem runtime crasht. A típusok igazat mondanak, és a compiler kikényszeríti.
+
+Maga a middleware egy phantom brandon keresztül viszi a kimeneti típusát:
+
+```typescript
+// shared/src/tool-builder/types.ts
+
+declare const __middlewareCtxOut: unique symbol;
+
+export interface Middleware<TCtxIn, TCtxOut extends TCtxIn> {
+  fn: (params: MiddlewareParams<unknown, TCtxIn>) => Promise<CallToolResult>;
+  /** Phantom brand — carries TCtxOut for type inference. Never set at runtime. */
+  readonly [__middlewareCtxOut]?: TCtxOut;
+}
+```
+
+Egy unique symbol, ami kizárólag a típusrendszerben létezik. Nulla runtime költség. Teljes típus-inferencia. A brand viszi a `TCtxOut`-ot a láncon keresztül, így amikor három middleware-t egymásra raksz, a TypeScript pontosan tudja, mit tartalmaz a `ctx` a handlerben — egyetlen cast nélkül. Gondolj rá úgy, mint egy típus-szintű Post-It cetlire, amit a compiler el tud olvasni, de a runtime figyelmen kívül hagy.
+
+## A middleware stack
+
+A builder beüzemelésével minden cross-cutting concernt kinyertem a régi `ToolBuilder` osztályból független middleware függvényekbe. Itt a `withResolves` az `mcp-image-studio/src/tool-builder/image-middleware.ts`-ből — a middleware, ami egy `image_id` stringet feloldott `ImageRow`-vá alakít:
+
+```typescript
+// mcp-image-studio/src/tool-builder/image-middleware.ts
+
+function withResolves<R extends Record<string, keyof EntityTypeMap>>(config: R) {
+  return middleware<
+    { userId: string; deps: ImageStudioDeps },
+    { userId: string; deps: ImageStudioDeps; entities: ResolvedEntities<R> }
+  >(async ({ input, ctx, next }) => {
+    const inputRecord = input as Record<string, unknown>;
+    const entities: Record<string, unknown> = {};
+
+    for (const [fieldKey, entityType] of Object.entries(config)) {
+      const val = inputRecord[fieldKey];
+      if (!val) continue;
+
+      if (entityType === "image") {
+        const { error, image } = await resolveImageOrError(ctx.deps, val as ImageId);
+        if (error) return error;
+        entities[fieldKey] = image;
+      } else if (entityType === "album") {
+        const resolveResult = await tryCatch(
+          ctx.deps.resolvers.resolveAlbum(val as AlbumHandle),
+        );
+        if (!resolveResult.ok) {
+          return errorResult("ALBUM_NOT_FOUND", resolveResult.error.message);
+        }
+        entities[fieldKey] = resolveResult.data;
+      }
+    }
+
+    return next({ ...ctx, entities: entities as ResolvedEntities<R> });
+  });
+}
+```
+
+A minta mindig ugyanaz: vedd be a kontextust, dolgozz, hívd a `next()`-et kibővített kontextussal. Ha valami nem sikerül, adj vissza közvetlenül egy error resultat — rövidre zárva a láncot. A middleware nem tudja, mi jön utána. A handler nem tudja, mi volt előtte. Azért komponálhatók, mert egy szerződést osztanak meg, nem egy osztályhierarchiát. Mint a pipe-ok egy Unix pipeline-ban — mindegyik átalakítja, ami átfolyik rajta, mit sem tudva a többiről.
+
+Az ownership middleware öt sor. A credits middleware ellenőrzi az egyenleget és levon. A job middleware létrehoz egy tracking rekordot. Mindegyik független. Mindegyik izoláltan tesztelhető. Rakd őket bármilyen sorrendbe, ami kielégíti a típus-megkötéseket, és a compiler garantálja a helyességet.
+
+## Egy valódi tool: `analyze`
+
+Így néz ki egy teljes tool az új rendszerrel. Ez a tényleges `analyzeTool` az `mcp-image-studio/src/tools/analyze.ts`-ből — minden sor, beleértve az `any`-t a 11. sorban (igen, tudom):
+
+```typescript
+// mcp-image-studio/src/tools/analyze.ts
+
+export const analyzeTool = imageProcedure
+  .use(withResolves({ image_id: "image" }))
+  .use(withOwnership(["image_id"]))
+  .use(withCredits({
+    cost: (input: any, deps) => {
+      const includePalette = input.include_palette ?? true;
+      return 1 + (includePalette && deps.generation.extractPalette ? 1 : 0);
+    },
+    source: "analyze",
+    sourceIdField: "image_id",
+  }))
+  .tool("analyze", "AI-powered image analysis returning description and optional palette.", {
+    image_id: z.string().describe("ID of the image to analyze"),
+    detail_level: z.enum(DETAIL_LEVEL_VALUES)
+      .describe("Level of detail: brief, detailed, or alt_text").optional(),
+    include_palette: z.boolean()
+      .describe("If true, extract dominant color palette").optional(),
+  })
+  .handler(async ({ input, ctx }) => {
+    const { userId, deps } = ctx;
+    const detailLevel: DetailLevel = input.detail_level ?? IMG_DEFAULTS.describeDetailLevel;
+    const includePalette = input.include_palette ?? true;
+    const image = ctx.entities.image_id;
+
+    if (!deps.generation.describeImage) {
+      return errorResult("NOT_SUPPORTED",
+        "AI image description not supported in this environment");
+    }
+
+    const descResult = await tryCatch(
+      deps.generation.describeImage({ userId, imageId: image.id }),
+    );
+    if (!descResult.ok) {
+      return errorResult("DESCRIPTION_FAILED", descResult.error.message, true);
+    }
+
+    let palette: string[] | undefined;
+    if (includePalette && deps.generation.extractPalette) {
+      const paletteResult = await tryCatch(
+        deps.generation.extractPalette({ userId, imageId: image.id }),
+      );
+      if (paletteResult.ok && paletteResult.data && !paletteResult.data.error) {
+        palette = paletteResult.data.palette;
+      }
+    }
+
+    const description = buildDescription(
+      image, detailLevel, descResult.data.description, descResult.data.tags,
+    );
+
+    return jsonResult({
+      imageId: image.id,
+      description,
+      palette,
+      detail_level: detailLevel,
+      creditsCost: ctx.billing.creditsCost,
+      isAiGenerated: true,
+    });
+  });
+```
+
+Olvasd fentről lefelé. A middleware lánc úgy olvasható, mint egy mondat: "Kezdd az image procedure-rel. Old fel az `image_id`-t `ImageRow`-vá. Ellenőrizd a tulajdonjogot. Vonj le krediteket. Definiáld a tool sémát. Kezeld a kérést."
+
+Mire a handler lefut, a `ctx.entities.image_id` egy teljesen feloldott `ImageRow`, a tulajdonjog ellenőrizve, a kreditek levonva, és a `ctx.billing.creditsCost` feltöltve. A handler nem ellenőrzi ezek egyikét sem. Nem kell. A middleware már megtette. Olyan, mint megérkezni egy vacsorapartira, ahol valaki más megterítette az asztalt, kitöltötte a bort és leültette a vendégeket — neked csak jó társalgónak kell lenned.
+
+Egy agent, aki olvassa ezt a fájlt, pontosan látja, mire van szüksége egy új tool megírásához: válassz middleware-eket, definiálj egy sémát, írj egy handlert. Az `any` a credits cost függvényen az egyetlen kompromisszum — az input típus még nem szűkített a lánc azon pontján. Benne hagytam, mert az őszinteség fontosabb a kozmetikánál.
+
+## A Cloudflare Workers konvergencia
+
+<ConvergenceDemo />
+
+Az `(input, ctx)` handler aláírás nem véletlenszerű választás. Ugyanaz a minta, amire a Cloudflare Workers, a tRPC, a Hono és a legtöbb modern serverless framework egymástól függetlenül konvergált — mert ez a minimálisan életképes absztrakció egy request handler számára.
+
+```
+Workers:  (request, env, ctx) => Response
+tRPC:     (input, ctx)        => output
+Builder:  ({ input, ctx })    => CallToolResult
+```
+
+Nincsenek globálisok. Nincs `this`. Nincs ambient state. Tiszta függvények, amik bemenetet és kontextust kapnak, és eredményt adnak vissza. Amikor több csapat egymástól függetlenül ugyanarra a designra jut, az általában azt jelenti, hogy a design a probléma folyománya, nem pedig valaki preferenciáinak a terméke. A régi `ToolBuilder` osztályom ceremóniát adott hozzá. Az új builder eltávolítja.
+
+## Miért fontos ez az agentek számára
+
+A refaktorálás nem az esztétikáról szólt. Arról szólt, hogy a kódomat írhatóvá tegyem agentek számára.
+
+Amikor egy autonóm agentnek új toolt kell hozzáadnia, három kérdésre kell válaszolnia:
+1. Milyen middleware-eket rakjak egymásra? (Nézd meg a hasonló toolokat)
+2. Mi az input séma? (Definiálj Zod mezőket)
+3. Mit csinál a handler? (Írd meg az üzleti logikát)
+
+A régi osztályalapú builderrel az agentnek arra is válaszolnia kellett: "Milyen sorrendben jönnek a castok? Mi történik, ha a `.resolves()` után hívom a `.credits()`-et? Miért mutált a `this`, de a típus megváltozott?" Ezek a framework belső működésére vonatkozó kérdések, nem az üzleti logikára. Olyan, mintha megkérnéd valakit, hogy értse meg a konyhád elektromos hálózatát, mielőtt főzhetne vacsorát.
+
+Az új builderrel a framework láthatatlan. Az agent ugyanúgy ír toolt, ahogy én írok — middleware-ek komponálásával és egy handler definiálásával. A típusok kikényszerítik a helyességet. A middleware kezeli a cross-cutting concernöket. A handler csak üzleti logika.
+
+Az `analyze` tool tesztje ugyanilyen egyértelmű:
+
+```typescript
+const result = await registry.call("analyze", {
+  image_id: "img-123",
+  detail_level: "detailed",
+  include_palette: true,
+});
+expect(isError(result)).toBe(false);
+const data = JSON.parse(getText(result));
+expect(data.imageId).toBe("img-123");
+expect(data.isAiGenerated).toBe(true);
+```
+
+Nincs böngésző. Nincs hálózat. Nincs framework mockolás. A tool egy függvény. A teszt meghívja a függvényt. A függvény visszaad egy eredményt. Ez az [egész filozófia](/blog/it-feels-like-cheating) — a kód eldobható, de a szerződés nem.
+
+## Az infrastruktúra
+
+<DependencyCascadeDemo />
+
+Ez a builder a `@spike-land-ai/shared`-ben él, ami azt jelenti, hogy az ökoszisztéma minden csomagja ingyen megkapja. A monorepo 18 repót tartalmaz a `@spike-land-ai` GitHub org alatt, mindegyik külön git submodule-ként:
+
+- **mcp-image-studio** — 42 image tool a builder mintával
+- **spike.land** — a Next.js platform 120+ MCP toollal és a tool registryvel
+- **spike-land-backend** — Cloudflare Workers Durable Objectekkel
+- **transpile** — edge transpilation esbuild-wasm-mel
+- **shared** — típusok, validációk, és maga a tool builder
+
+Amikor kiadok egy új verziót a `@spike-land-ai/shared`-ből, egy [dependency cascade rendszer](/blog/automate-dev-team-ai-agents) automatikusan PR-eket nyit minden felhasználó repóban. A builder frissítés tíz perc alatt átterjedt mind a 18 repóba. Nincs kézi bump. Nincs verzió drift. A rendszer táplálja önmagát.
+
+Ez az infrastruktúra — a cascade, a submodule-ok, a megosztott CI — ez az, amit öt év ESM-en és TypeScript pipeline-okon való spikolgás hozott nekem. Nem egyetlen eureka pillanat. Több száz apró döntés kamatos kamata, ami hirtelen megtérült, amikor egy hétvége alatt kellett mindent refaktorálni.
+
+## Az ötéves megtérülés
+
+Aztán jött a Nano Banana 2, és egy hétvége alatt kellett újraírnom a tool frameworkömet. És minden egyes "kicsit könnyebb megváltoztatni" döntés összeadódott. A Zod sémák azt jelentették, hogy ki tudtam nyerni az input validációt middleware-be anélkül, hogy a handlereket érintené. A dependency injection azt jelentette, hogy le tudtam cserélni az image providereket anélkül, hogy a toolokhoz nyúlnék. A tiszta függvények azt jelentették, hogy mindent le tudtam tesztelni infrastruktúra felállítása nélkül.
+
+Öt évnyi apró, unalmas befektetés — mindegyik önmagában alig észrevehető — egyszerre érett be. Így működik a kamatos kamat. Nem veszed észre, hogy gyűlik, egészen addig a pillanatig, amikor szükséged van rá, és akkor az a különbség egy hétvége és egy hónap között.
+
+A builder ki van adva. A toolok komponálhatók. Az agentek meg tudják írni a sajátjukat. És legközelebb, amikor a Google elavulttá teszi a tooljaim felét egy kedden, nem egy hétvégére lesz szükségem. Egy délutánra — mert az agent elvégzi a munka nagy részét, és a típusok biztosítják, hogy helyesen csinálja.
+
+---
+
+*Radix egy Brighton-i (UK) fejlesztő, aki a [spike.land](https://spike.land)-et építi. Öt éve spikolgat ESM-en, TypeScripten és build pipeline-okon. Még mindig úgy gondolja, hogy a legjobb architektúra az, amit egy nap alatt ki tudsz törölni és újra fel tudsz építeni.*

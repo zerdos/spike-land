@@ -1,0 +1,217 @@
+---
+title: "One Site, Many Faces: How We Built 16 Versions of spike.land"
+slug: "one-site-many-faces"
+description: "The same URL, 16 different experiences. How spike.land uses persona-based personalization to serve content that actually resonates."
+date: "2026-02-22"
+author: "Radix"
+category: "Engineering"
+tags: ["personalization", "a-b-testing", "onboarding", "product"]
+featured: true
+draft: false
+primer: "Same URL. 16 different experiences. One cookie."
+heroPrompt: "A kaleidoscopic view of multiple diverse screens showing different versions of the same website, vibrant colors, futuristic digital interface, overlapping geometric patterns"
+heroImage: "/blog/one-site-many-faces/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'One Site, Many Faces: How We Built 16 Versions of spike.land'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/one-site-many-faces/hero.png)
+
+<Tldr>
+
+- A legtobb ceg 2 valtozatot A/B tesztel. Mi 16-ot szallitunk. Egyidejuleg.
+- 4 binaris kerdes 16 kulon personat eredmenyez. Mindegyik sajat landing page-et, szavazasi kerdeseket es app ajanlásokat kap.
+- Egyetlen cookie — `spike-persona` — hajtja a szerver oldali perszonalizaciot az egesz platformon.
+- Eppen ennek a cikknek egy perszonalizalt verziojat olvasod.
+
+</Tldr>
+
+## Az A/B Teszteles Plafonja
+
+Itt a piszkos titka az A/B tesztelesnek: a legtobb csapat ket valtozatot tesztel. Talan harmat, ha kalandos kedvukben vannak. Egy cimsori csavar itt, egy gombszin ott. Aztan kikialtjak a gyozelmet, amikor az egyik valtozat 3%-kal veri a masikat.
+
+Ez mindig ugy tunt, mint kulcslyukon at nezni a vilagot.
+
+Ket valtozat egyszerre egy hipotezist tesztel. De a latogatoid nem egymás kisebb variacioi. Egy AI eszkoozket epito indie fejleszto es egy kozonsegepito tartalomgyarto nem ugyanaz a szemely mas cimsor-preferenciával. Mas problemak, mas szokincsuek, mas sikerdefinicoik vannak. Ugyanazt az oldalt felszolgalni nekik es abban reménykedni, hogy a gombszin hozza a kulonbseget, olyan, mint allitgatni a termosztátot, mikozben nyitva vannak az ablakok.
+
+A spike.land 16 valtozatot szallit minden perszonalizalt feluletrol. Nem egymas utan — egyidejuleg. Minden latogato, aki kitolti az onboarding kvizunket, kifejezetten neki irt tartalmat kap. Nem "perszonalizalt" ugy, ahogy az azt jelenti, hogy beleirtu a neved egy sablonba. Tenylegesen mas. Mas cimsrok, mas fájdalompontok, mas app ajanlaasok, mas szavazasi kerdesek.
+
+Az AI Indie fejleszto, aki szolo AI termeeket epit, esztermelokeszleteket es gyors prototyping eszkozoket lat. A Content Creator, akinek van kozonsege, kepstudiokat es zeneeszkozoket lat. Az Enterprise DevOps mernok dashboardokat es QA infrastrukturat lat. Ugyanaz az URL. Teljesen mas elmeny.
+
+Ez nem gondolatkiserlet. Eppen most fut produkcioban, es lehet, hogy eppen most tapasztalod, mikozben ezt olvasod.
+
+---
+
+## Az Elso Adaptiv Pillanat
+
+Mielott valaha latnad a kvizt, a spike.land mar meghozza az elso adaptiv dontest magan a landing page-en.
+
+Ket gomb. "I'm a developer" es "I'm exploring." Egyetlen binaris valasztas, ami azonnal atalakitja az egesz elmenyt.
+
+Kattints az "I'm a developer"-re, es az oldal atvalt. Egy kor alakú sotet modu atmeneti hullam terjed szet a gombbol. A hero cimsor betutipus vastagsaga 400-rol 700-ra animálodik — a szoveg szo szerint vastagabbá valik, ahogy a felület elismeri, ki vagy. A betukoz szorosodik. Az "I'm exploring" gomb atalakul "Vibe Code Online Now"-ra, ami kozvetlenul az AI-alapu kodszerkesztonkre mutat. Egy "Vibe" link csuszik be a navigacios savba. Megjelenik a ThemeSwitcher — mert a fejlesztok kontrollt akarnak a kornyezetuk felett.
+
+Kattints ujra a kikapcsolashoz. Visszater a vilagos mod, eltúnik a Vibe link, elrejtőzik a ThemeSwitcher, es visszajon az "I'm exploring." Ez egy `localStorage`-ban tarolt feature flag, nem vegleges elkoteleződés.
+
+Ez a legegyszerubb perszonalizacio — egy binaris dontes atalakitja az egesz elmenyt. Tema, tipográfia, navigacio es elerheto feature-ok mind azonnal valtoznak. Ez a teljes 4-kérdeses kviz elott tortenik, mert a legeslegelső dolog, amit a spike.land tudni akar: irsz-e kodot?
+
+Ez az egyetlen bit informacio mindent megvaltoztat a downstream-ben. Rendszergondolkodasi ertelemben ez egy tokeatteteli pont — egy kis beavatkozas, ami atalakitja az egesz flow-t.
+
+---
+
+## A 4-Kérdeses Dontési Fa
+
+A varazs negy kerdessel indul. Nem egy 47 mezos urlap, amitol megkerdojelezed az eletvalasztasaidat. Negy binaris kerdes, amik 16 levelú fává agaznak.
+
+**1. kerdes: Irsz kodot?**
+Ez az egyetlen kerdes ketfele osztja az egesz felhasznaloi bazist. A fejlesztok balra mennek. Mindenki mas jobbra. Es ha mar kattintottal az "I'm a developer"-re a landing page-en, mar valaszoltal ra — a kviz emlekszik.
+
+**A 2. kerdes** az elso valaszodtol fugg. Fejlesztok azt kapjak, hogy mit epitenek (appok vs. infrastruktura). Nem-fejlesztok a celjaikról (uzleti vs. szemeelyes).
+
+**A 3. kerdes** tovabb szukiti. Termekepitok: magadnak epitsz vagy klienseknek? Uzleti emberek: szolo alapito vagy csapatvezeto?
+
+**A 4. kerdes** az utolso elagazas. Minden ag meg egyszer oszlik, es pontosan 16 persona egyikere erkezel.
+
+Negy kerdes. Tizenhat eredmeny. Minden eredmeny egy personahoz rendelt, sajat nevvel, hero szoveggel, ajanlott appokkal es call-to-actionnel. A fa determinisztikus — ugyanazok a valaszok mindig ugyanazt a personat produkalják. Nincs gepi tanulas, nincs kollaborativ szures, nincs fekete doboz. Csak egy binaris fa, amit egy szalvetara is lerajzolhatnál.
+
+Igy nez ki a perszonalizalt landing page-ed a personad alapjan:
+
+<PersonaLandingPreview />
+
+Ha meg nem toltotted ki a kvizt, a komponens eppen arra hivott meg. Ha kitoltotted, a tenyleges perszonalizalt tartalmadatt latod. Ez a rendszer valos idejűu mukodese.
+
+---
+
+## Hogyan Omlik a Keksz
+
+A technikai megvalositas szandekosan egyszeru. Amikor egy felhasznalo befejezi az onboarding kvizt, egyetlen cookie-t allitunk:
+
+```
+spike-persona=ai-indie
+```
+
+Ennyi. Egy cookie. Nincs osszeetett session management, nincs felhasznaloi profil lekerdezes minden oldalbetolteskor, nincs harmadik feles perszonalizacios platform, ami megjelenesenket szamlaz.
+
+A `spike-persona` cookie-t szerver oldalon a Next.js middleware olvassa es kliens komponensekben egy egyszeru utility. Szerver komponensek rendereléskor perszonalizálhatnak. Kliens komponensek mountoláskor olvassak a cookie-t es alkalmazkodnak.
+
+A flow:
+
+1. A felhasznalo meglátogatja a spike.land-ot
+2. Az onboarding kviz 4 binaris kerdest tesz fel
+3. A dontési fa vegigvezeti a valaszokat egy persona-levelig
+4. A `spike-persona` cookie a persona slug-gel van beallitva
+5. Minden kovetkezo oldalbetoltes kiolvassa a cookie-t es perszonalizal
+
+A landing page-ek a `/for/{persona-slug}` cimen szolgalnak az egyes personák kanonikus belépési pontjakent. Ezek nem dinamikusan generaltak — előre epultek persona-specifikus szoveggel, fajdalompontokkal, ajanlott eszkozokkel es call-to-action-okkel. A cookie csak meghatározza, melyiket latod, amikor a gyoker URL-re erkezel.
+
+Az egyszeriúseg a lenyeg. Egy cookie egy stock — egy apro allapotdarab — ami az osszes downstream flow-t hajtja. Nincs infrastruktura komplexitas, nincs adatbazis oda-vissza ut, nincs vendor lock-in.
+
+Szeretned masik personat kiprobálni? Hasznald az alabbi valtotat:
+
+<PersonaSwitcher />
+
+Valts personat es toltsd ujra az oldalt. A szavazasi kerdes, a landing elonezet, meg a fejezetek keretezese is — minden alkalmazkodik.
+
+---
+
+## A Szavazas
+
+Itt lesz interaktiv a dolog. A szavazási kerdes, amit alabb latsz, nem ugyanaz, amit mindenki mas lat. Minden persona egy kerdestt kap, ami az o szemszogéből közeliti meg az A/B tesztelest.
+
+Egy ML Engineer talán ezt latja: "Az A/B teszteles csak egy durva Bayes-féle bandit extra lepesekkel?" Egy Non-technical Founder ezt: "Az adatot bizzuk meg az uzenetvalasztassal, vagy bizzunk a vizionkban?" Egy Social Gamer ezt: "A/B tesztelned a jatekmechanikakat, hogy optimalizald a szórakozást?"
+
+Ugyanaz a szavazas. Tizenhat kulonbozo kerdes. A valaszod a personaddal van cimkezve, igy latjuk, hogy kulonbozo kozonsegek hogyan gondolkodnak ugyanarrol a temarol.
+
+<BlogPoll slug="one-site-many-faces" />
+
+---
+
+## Elo Analitika
+
+Szavazas utan az eredmeny-dashboard megmutatja, hogyan szavazott minden persona — szegmensenként lebontva. Ez nem statikus grafikon. 30 masodpercenkent frissul es valos keresyt-persona adatokat mutat.
+
+Figyeld a mintazatokat. Maskepp szavaznak a fejlesztok, mint az alapitok? A kreativok egyetertenek a DevOps mernokokkel? Az adatok tortenetet mesélnek arról, hogyan kozeliti meg kulonbozo gondolkodasmodok ugyanazt a kerdest — es ezek a kulonbsegek onmagukban is informaciot hordoznak arrol, mit ertekel az adott csoport.
+
+<PollAnalyticsDashboard slug="one-site-many-faces" />
+
+---
+
+## Persona Bemutato
+
+Ime mind a 16 persona, mindegyik sajat landing page-dzsel. Kattints barmelyik linkre, hogy lasd, hogyan nez ki a spike.land az o szemukon at.
+
+### Fejlesztok
+
+| Persona | Description | Landing Page |
+|---|---|---|
+| **AI Indie** | Solo developer building AI-powered products | [/for/ai-indie](/for/ai-indie) |
+| **Classic Indie** | Solo developer building traditional apps | [/for/classic-indie](/for/classic-indie) |
+| **Agency Dev** | Freelancer or agency developer building for clients | [/for/agency-dev](/for/agency-dev) |
+| **In-house Dev** | Developer employed at a company | [/for/in-house-dev](/for/in-house-dev) |
+| **ML Engineer** | ML/AI engineer deploying models to production | [/for/ml-engineer](/for/ml-engineer) |
+| **AI Hobbyist** | Developer exploring AI for fun and learning | [/for/ai-hobbyist](/for/ai-hobbyist) |
+| **Enterprise DevOps** | DevOps engineer in a large organization | [/for/enterprise-devops](/for/enterprise-devops) |
+| **Startup DevOps** | DevOps engineer in a small team or startup | [/for/startup-devops](/for/startup-devops) |
+
+### Uzleti Vezetok
+
+| Persona | Description | Landing Page |
+|---|---|---|
+| **Technical Founder** | Tech-savvy solo founder building a business | [/for/technical-founder](/for/technical-founder) |
+| **Non-technical Founder** | Non-tech solo founder who needs guided, no-code tools | [/for/nontechnical-founder](/for/nontechnical-founder) |
+| **Growth Leader** | Business leader focused on scaling teams and revenue | [/for/growth-leader](/for/growth-leader) |
+| **Ops Leader** | Business leader optimizing team operations | [/for/ops-leader](/for/ops-leader) |
+
+### Kreativok es Felfedezok
+
+| Persona | Description | Landing Page |
+|---|---|---|
+| **Content Creator** | Creator with an audience producing content | [/for/content-creator](/for/content-creator) |
+| **Hobbyist Creator** | Person creating art, music, or content for personal enjoyment | [/for/hobbyist-creator](/for/hobbyist-creator) |
+| **Social Gamer** | Person who enjoys multiplayer and social games | [/for/social-gamer](/for/social-gamer) |
+| **Solo Explorer** | Casual user exploring the platform for personal use | [/for/solo-explorer](/for/solo-explorer) |
+
+---
+
+## A Blogon Tul
+
+A persona rendszer nem all meg a landing page-eknel es szavazasi kerdeseknel. A platform minden sarkaba elér — mert a perszonalizacio, ami csak egy helyen el, az nem rendszer, az demo.
+
+**App ajanlasok.** Minden personahoz negy kuratalt ajanlott app tartozik a spike.land store-bol. Egy AI Indie latja az AI Orchestrator-t es a Codespace-t. Egy Social Gamer latja a Chess Arena-t es a Tabletop Simulator-t. A store fooldala atrendeződik attol fuggoen, ki vagy.
+
+**Tanulasi utak.** A `/learnit/` szekció a tananyag-ajanlasokat a persona alapjan illeszti. Egy fejlesztő persona koding tutorialokat es API dokumentaciot lat. Egy nem-technikai alapito no-code utmutatokat es uzleti sablonokat.
+
+**Tartalom-rangsorolas.** Blog posztok, utmutatok es dokumentacio maskepp jelennek meg a persona fuggvenyeben. Egy ML Engineer infrastruktura-nehéz tartalmat lat eloszor. Egy Hobbyist Creator kreatív eszkoz tutorialokat.
+
+**Jovőben: arerzékenyseg.** A persona modell tisztán leképezheto fizetési hajlandosag szegmensekre. Enterprise DevOps-ok es Agency Devek professzionalis eszkozoket varnak — es koltsegvetnek rajuk. Hobbyist Creatorok es Solo Explorerek arerzekenyebbek. Ugyanaz a termek, maskepp pozicionálva, maskepp konvertal. A persona az a lencse, ami termeszetesse teszi az egyes pozicionalasokat, ahelyett, hogy eroltetettek lennenek.
+
+Ez a persona-alapu perszonalizacio valos ereje. Nem csupan arrol szol, hogy a fooldal maskepp nez ki. Hanem arrol, hogy epitunk egy platformot, ami erti a visszacsatolasi hurkot a kozott, aki latogat, es a kozott, amit lat — es ezt a hurkot ongeerjesztove teszi az altalanos helyett.
+
+---
+
+## A Meta Lelepelezes
+
+A persona rendszer nem olyasmi, amit az elvont sikon irunk le. Vegig benne voltal.
+
+Ha az "I'm a developer"-re kattintottal, amikor megérkeztel a spike.land-ra, mar then láttál perszonalizaciot mukodes kozben — meg mielott elerted volna ezt a cikket. A sotet módú atmenet, a betutipus-vastagság valtozas, a navigació atalakitasa — ez volt a rendszer, ami valos idoben alkalmazkodott hozzad.
+
+Most ennek a cikknek a 16 verziojának egyiket olvasod. Nem abban az ertelemben, hogy a szoveg valtozott — a proza ugyanaz mindenki szamara. De a szavazasi kerdes, amit fentebb lattaal? Perszonalizalt. A landing elonezet? Perszonalizalt. Az app ajanlaasok az oldalsavban? Perszonalizaltak.
+
+Ha korabban hasznaltad a PersonaSwitcher komponenst, mar lattad ezt mukodni. Az oldal egy mas identitas kore rendezte at magat. Ez nem demo. Ez a produkcios rendszer, interaktiv elemkent kilatva egy blog posztban.
+
+A legtobb perszonalizacios motor a fuggony mogott bujik. Mi felhuzzuk es a kezedbe adjuk a vezerloket. Valts personakat. Nezd meg, hogyan nez ki egy Technical Founder spike.land-ja szemben egy Content Creator-eevel. Hasonlitsd ossze a szavazasi kerdeseket. Figyeld, mi valtozik es mi marad.
+
+Az atláthatosag a lenyeg. A perszonalizacio akkor mukodik a legjobban, amikor a felhasznalok ertik es megbiznak benne. A dark patternek erodálják a bizalmat. Ha pontosan megmutatod, hogyan kategorizal a rendszer — es hagyod megvaltoztatni — az epiti. A rendszer pontosan azert lesz megbizhatóbb, mert lathato.
+
+---
+
+## A Filozofia
+
+Van egy William Gibson idezet, amit sokat dobálnak tech korokben: "A jovő mar itt van — csak nem egyenletesen van elosztva."
+
+Ezt szó szerint vettuk.
+
+A spike.land jovoje nem egy termek egyetlen uzenettel, ami abban reménykedik, hogy mindenkivel rezonál. Ez 16 termek, amelyek mindegyike kozvvetlenul szol valakihez. Az AI Indie fejleszto es a Hobbyist Creator egyarant hasznaljak a spike.land-ot, de teljesen kulonbozo okokbol. Mas fajdalompontjaik, mas koltsegvetesuk, mas sikerdefiniicioik vannak.
+
+Egyforman kezelni oket lusta dolog lenne. Maskepp kezelni oket — tisztelettel, atlathátosággal es kontextusuk valódi megertesevel — ez az, amit epitunk.
+
+Negy kerdes. Tizenhat persona. Egy platform, ami egyenletesen osztja el onmagat.
+
+Udv a spike.land te verziodban.

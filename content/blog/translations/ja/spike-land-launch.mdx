@@ -1,0 +1,201 @@
+---
+title: "Introducing spike.land — The MCP-First AI Platform"
+slug: "spike-land-launch"
+description: "spike.land launches with 80+ MCP tools, an AI tool marketplace, API proxy credits, and a free tier. Here's what we built and why it matters for developers building with AI."
+date: "2026-03-04"
+author: "Radix"
+category: "Product"
+tags: ["mcp", "ai", "platform", "launch", "tools", "marketplace", "cloudflare-workers", "api-gateway"]
+featured: true
+draft: false
+primer: "80+ tools. One platform. Build AI-powered apps without the plumbing."
+heroPrompt: "A sleek futuristic control panel with 80+ illuminated tool slots, glowing circuits connecting to AI models, dark theme with neon blue accents"
+heroImage: "/blog/spike-land-launch/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing spike.land — The MCP-First AI Platform'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-launch/hero.png)
+
+<Tldr>
+
+- spike.landは**80以上のMCPツール**でライブ——チェス、画像スタジオ、コードスペース、QA自動化など
+- **無料枠**ですぐ始められる。**Pro（$29/月）**：500クレジット/日、優先サポート。**Business（$99/月）**：無制限クレジット、チーム管理
+- **MCPツールマーケットプレイス**が70/30のレベニューシェアで開始——ツール作者は70%を受け取る
+- **APIゲートウェイ**：自分のAPIキーを持ち込み（BYOK）、またはOpenAI、Anthropic、Replicate用にspike.landのプロキシクレジットを使用
+- ワンプロトコル、カスタム統合ゼロ。`claude mcp add spike-land --transport http https://spike.land/mcp` で接続
+
+</Tldr>
+
+## 誰も正直に語らない問題
+
+N掛けるM。これが目の前に隠れた統合問題だ。
+
+N個のAIクライアント。M個の外部サービス。すべての組み合わせに認証、レスポンスパース、エラーリカバリー、レート制限、ツールディスカバリーが必要。毎回ゼロから書く。
+
+5つのクライアントと10のサービスがあれば、50の統合パスだ。もう1つサービスを追加すれば、5つの統合が増える。表面は二次関数的に増える。メンテナンス負担も同様だ。
+
+MCP（Model Context Protocol）はそのN掛けるMの問題をN足すMに削減する。一つのプロトコルを各側で一度実装する。どのクライアントもどのサーバーとも通信できる。USBが十数本の独自ケーブルに勝利したのと同じ洞察だ——共有された契約がオーダーメイドの配線に勝る。
+
+それがspike.landを構築した基準だ。今日、ローンチする。
+
+---
+
+## spike.landとは
+
+spike.landは**MCPファーストのAIプラットフォーム**——AIパワードのツールのレジストリで、あなたのエージェントが単一の標準化されたプロトコルを通じて呼び出せる。個別のAPIを配線する代わりに、あなたのAIクライアントはspike.landに接続し、80以上のプロダクション対応ツールにすぐにアクセスできる。
+
+カスタム統合なし。認証のグルーコードなし。ページネーションロジックなし。ただツールがあり、呼び出す準備ができている。
+
+### 今日出荷する80以上のツール
+
+初期ツールセットは5つのカテゴリにまたがる：
+
+**Chess Arena** — ELOレーティング、リアルタイムチャレンジ、ゲーム状態管理を備えた完全な対戦チェス。6ツール。`chess_new_game`、`chess_send_challenge`、`chess_make_move`、`chess_get_board`、`chess_get_elo`、`chess_resign`。
+
+**Image Studio** — AIによる画像分析、生成、エンハンス、パレット抽出、アルバム管理、パイプラインオーケストレーション。[スケールのアーキテクチャ](/blog/the-architecture-of-scale-building-tools)で説明されているコンポーザブルなミドルウェアアーキテクチャ上に構築された42ツール。
+
+**Codespace** — ライブコード実行、トランスパイル、プレビュー環境。分離されたサンドボックスでTypeScriptとJavaScriptを実行する5ツール。
+
+**QA Studio** — Playwrightによるブラウザ自動化。スクリプト化されたE2Eテスト、スクリーンショットキャプチャ、インタラクション記録のための8ツール。
+
+**Utilities** — ウェブフェッチ、検索、ファイル操作、そしてカテゴリを横断して構成される汎用ツールの増加セット。
+
+すべてのツールは同じ契約に従う：型付きZod入力スキーマ、ナラティブファーストのレスポンス、構造化されたJSON出力。[なぜナラティブレスポンスなのか？](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data) AIエージェントが必要なのはデータだけではない——文脈の中で推論できるデータが必要だからだ。
+
+---
+
+## 料金
+
+spike.landはどんなスケールでもアクセスできるように構築した。無料で始めて、必要に応じて拡張する。
+
+### 無料枠
+
+今日から始められる。クレジットカード不要。
+
+- 無料枠ツールへのアクセス
+- 50クレジット/日
+- コミュニティサポート
+- BYOK（自分のAPIキーを持ち込み）
+
+### Pro — $29/月
+
+もっと余裕が必要な個人開発者向け。
+
+- **500クレジット/日**
+- プレミアム枠を含む80以上のすべてのツール
+- 優先サポート（48時間レスポンス）
+- BYOK + spike.landプロキシクレジット
+- 利用分析ダッシュボード
+
+### Business — $99/月
+
+プロダクションAIワークフローを構築するチーム向け。
+
+- **無制限クレジット**
+- チーム管理と共有APIキー
+- カスタムツールデプロイ
+- SLA付きサポート（24時間レスポンス）
+- 監査ログと利用レポート
+- マーケットプレイス機能への先行アクセス
+
+すべてのプランで`https://spike.land/api/mcp`のMCPエンドポイントにアクセスできる。[spike-cli](/blog/mcp-explained-universal-adapter-for-ai-tools)で一度接続すれば、エージェントはすべてを手に入れる。
+
+---
+
+## MCPツールマーケットプレイス
+
+プラットフォームと同時にspike.landマーケットプレイスをローンチする。
+
+アイデアはシンプルだ：便利なMCPツールを作ったら、他の人が使うときに報酬を得るべきだ。私たちがインフラ——認証、レート制限、課金、ディスカバリー、プロトコルコンプライアンス——を担当する。あなたはビジネスロジックを担当する。配管は私たちの問題であり、あなたの問題ではない。
+
+**レベニューシェア：70/30。ツール作者が70%を受け取る。**
+
+公開されたツールはspike.landレジストリに表示され、どのspike-cliユーザーからも呼び出し可能になる。課金はクレジットベース——ユーザーは呼び出しごとに支払い、あなたは成功した実行ごとに稼ぐ。
+
+ツールを公開するには以下が必要：
+1. 有効なMCPツール定義（名前、説明、Zodスキーマ、ハンドラ）
+2. spike.landデベロッパーアカウント
+3. 公開されたnpmパッケージまたはデプロイされたCloudflare Workerエンドポイント
+
+社内で使用している[ツールビルダーパターン](/blog/the-architecture-of-scale-building-tools)は、マーケットプレイスの作者が使うものと同じだ。同じAPIサーフェス。同じレスポンスフォーマット。エージェントが発見し構成しやすい。
+
+早期パートナーに向けて今日からマーケットプレイスを開放する。公開したいツールがあれば、[早期アクセスに応募](https://spike.land/marketplace/apply)してほしい。
+
+---
+
+## APIゲートウェイ：クレジットとBYOK
+
+ツールの多くは内部的にAIモデルを呼び出す——画像分析、コード説明、コンテンツ生成。モデル呼び出しの支払いには二つの方法を提供する。何がうまくいくか試行錯誤する際に柔軟性は重要だからだ。
+
+**自分のキーを持ち込み（BYOK）**
+
+ダッシュボードでOpenAI、Anthropic、またはReplicateのAPIキーを接続する。モデルが必要なツール呼び出しはあなたのキーを通してルーティングされる。あなたのコスト。あなたのレート制限。完全な制御。
+
+**spike.landプロキシクレジット**
+
+複数のAPIアカウントを管理したくない場合は、spike.landプロキシクレジットを使う。一つのクレジットプール、統合課金、サービスごとのアカウント不要。
+
+- 1クレジット = 1標準モデルAPIコール（概算、モデルとトークン数により変動）
+- クレジットはProおよびBusinessプランで月次繰り越し
+- 追加クレジットは$0.10/クレジットで購入可能
+
+プロキシはパススルーだ——クレジット変換を超えたモデルコストの上乗せはない。私たちのマージンはプラットフォームとマーケットプレイスにあり、モデル推論にはない。
+
+---
+
+## 技術スタック
+
+spike.landは完全にCloudflare Workers上で動作する。プロビジョニングするサーバーなし。設定するリージョンなし。リクエストは最寄りのエッジノードに自動ルーティングされる。インフラが邪魔にならず、ツールが仕事をする。
+
+- **Edge API**：Cloudflare Workers上のHonoフレームワーク
+- **MCPレジストリ**：Cloudflare Workers + D1（エッジのSQLite）
+- **認証**：Better Auth + Drizzle ORM
+- **フロントエンド**：Vite + React + TanStack Router
+- **ツールランタイム**：ツールカテゴリごとの分離されたWorker環境
+
+[完全なアーキテクチャ](/docs/architecture)はドキュメント化されている。オープンに構築してきたし、これからもそうする。
+
+---
+
+## なぜMCPなのか
+
+REST APIを構築することもできた。RESTは馴染み深い。誰でもエンドポイントをcurlする方法を知っている。
+
+しかしREST APIはドキュメントを凝視する人間の開発者のために設計された。コンパクトなJSON、ステータスコード、ページネーショントークンに最適化されている。AIエージェントには別の契約が必要だ——ある機能が*何を*するのかを自然言語で伝え、型付きパラメータで*どう*呼び出すかを伝え、レスポンスが文脈の中で*何を意味する*かを伝えるものが。
+
+MCPがその契約だ。ディスカバリー、型付きスキーマ、ナラティブレスポンスをファーストクラスのプリミティブとして定義する。AIエージェントがMCPを通じてspike.landに接続するとき、ドキュメントページは必要ない。ツールの説明を読み、正しい呼び出しを推論し、実行する。プロトコル自体がドキュメントだ。
+
+これについては[MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools)でさらに書いた。短いバージョン：MCPはプレゼンテーションレイヤーであり、単なるトランスポートではない。モデルがあなたの機能について*どう呼び出すか*だけでなく、*どう考えるか*を形作る。
+
+---
+
+## 次に来るもの
+
+80以上のツールは始まりであり、天井ではない。
+
+**2026年Q2**：MCPリソースとプロンプト。今日のspike.landはツールのみ——すべてのインタラクションが関数呼び出しだ。リソースによりエージェントはゲーム状態、ユーザープロファイル、ツールカタログをアドレス可能なコンテンツとして閲覧できるようになる。プロンプトによりサーバーが再利用可能なインタラクションテンプレートを提供できる。
+
+**2026年Q2**：マーケットプレイス一般公開。早期パートナーツールがライブに。レベニューシェアの支払い開始。
+
+**2026年Q3**：ツール構成UI。既存のツールからビジュアルエディタでマルチステップパイプラインを構築。コード不要。
+
+**2026年Q3**：エージェント間ツール共有。Businessチーム内でプライベートツールを公開し、あなたのエージェントにのみ表示。
+
+---
+
+## はじめよう
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+この一つのコマンドで80以上のすべてのツールに接続できる。無料枠ツールにはサインアップ不要。あるいはインタラクティブCLIを使う：`npx @spike-land-ai/spike-cli shell`。ProおよびBusiness機能については、[アカウントを作成](https://spike.land/login)。
+
+プラットフォーム上に構築したい場合——ツールの公開、MCPエンドポイントの自社製品への統合、マーケットプレイスのウェイトリストへの参加——[デベロッパードキュメントを読む](https://spike.land/docs)か、直接連絡してほしい。
+
+spike.landはAI統合の退屈な部分を消すために構築した。認証、ディスカバリー、ツール契約、課金——処理済み。あなたはエージェントロジックを書く。残りは私たちが担当する。
+
+プラットフォームはライブだ。[構築を始めよう](https://spike.land)。
+
+---
+
+*Radixは英国ブライトン在住の開発者。5年間spike.landを構築してきた——ESM、TypeScript、Cloudflare Workers、そしてMCPがMCPという名前を持つ前からMCPにスパイクしてきた。最高のインフラとは、考える必要のないインフラだと今でも思っている。*

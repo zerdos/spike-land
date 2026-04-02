@@ -1,0 +1,270 @@
+---
+title: "Next.js vs TanStack Start: Why Next.js Became Tech Debt for Me"
+slug: "nextjs-vs-tanstack-start"
+description: "An honest account from a solo open-source developer: expensive build minutes, slow deployments, flaky pipelines, and why Next.js stopped feeling like leverage."
+date: "2026-03-10"
+author: "Radix"
+category: "Developer Experience"
+tags: ["nextjs", "tanstack-start", "vercel", "vite", "react", "developer-experience"]
+featured: false
+draft: false
+primer: "The framework stopped feeling like leverage and started feeling like rent."
+heroImage: "/blog/nextjs-vs-tanstack-start/hero.jpg"
+heroPrompt: "A conceptual digital illustration showing a heavy, expensive, monolithic structure representing a sluggish framework with a glowing $100 invoice, contrasted against a lightweight, fast, glowing futuristic pathway representing Vite and TanStack Start. The scene is modern, sleek, and developer-focused, dark mode aesthetics, vibrant neon accents."
+---
+
+![A modern digital illustration for a blog post titled 'Next.js vs TanStack Start: Why Next.js Became Tech Debt for Me'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/nextjs-vs-tanstack-start/hero.jpg)
+
+<Tldr>
+
+- Egyedul fejlesztek egy nyilt forrasu projektet, tehat a gyors visszajelzesre, alacsony koltsegekre es minimalisan ceremoniara optimalizalok.
+- 2026 januarjaban a Vercel szamlam elerte a $105.40-t, ebbol $92.26 csak build percekre ment.
+- A szamla csak a problema latható resze volt. Az oldal lassan ebredt, es tul gyakran produkalt renderelesi hibakat.
+- A Next.js meg mindig jo valasztas, ha a Vercel-formatumu utvonalat akarod.
+- Elkezdtem atallni TanStack Start-ra, mert a Vite es egy egyszerubb hosting tortenet sokkal jobban illik a keretfeltételeimhez.
+
+</Tldr>
+
+## A Szamla, Ami Lezarta a Vitat
+
+Egy szamla miatt mentem el.
+
+Nem egy X-es hot take miatt. Nem mert a doksi rossz volt. Nem mert egy benchmark azt mondta.
+
+2026 januarjaban a Vercel ezt mutatta:
+
+- osszesen fizetendo: $105.40
+- build percek: 12h 46m
+- build percek koltsege: $92.26
+
+Olvasd el megegyszer.
+
+Nem forgalom. Nem adatbazis hasznalat. Nem valamifele boldog problema, amit robbanasos novekedes okoz.
+
+Build percek.
+
+Es ez csak az epitesi resz volt. Az oldalnak meg erdemben nem is volt forgalma. Ez tette abszurdda. Platform berlet dijat fizettem egy ures szobara.
+
+Egy szolo fejlesztonek, aki egy nyilt forrasu projekten dolgozik, ez nem egy mellekes tetel. Ez az egesz stack, ami megtapsol a vallamon es megkerdezi, hogy nem keverted-e ossze a framework kenyelmet a tenyleges tokeattetellel.
+
+Mire megláttam a "Downgrade complete" uzenettet, az erzelmi dontes mar megszuletett.
+
+Elegem volt abbol, hogy azert fizessek, hogy varjak.
+
+## A Next.js Simán Indul Es Nehezen Vegzodik
+
+Ezert nehez oszinten beszelni a Next.js-rol.
+
+Az elso benyomas kituno. Kapsz routingot, Reactet, szerver renderelest, egy hatalmas okoszisztemat, esszeru alapbeallitasokat es egy csiszolt happy pathet. Olyan, mint bekoltozni egy teljesen berendezett lakasba — minden mukodik, es el sem tudod kepzelni, miert akarna barki is sajat maga valogatni a butorokat.
+
+Ha a termeked illik erre az utvonaira es orommel maradsz a Vercel vilagban, meg mindig ugy gondolom, a Next.js jo valasztas lehet.
+
+De en nem vagyok egy nagy csapat.
+
+En egyetlen fejleszto vagyok. Erdekel, milyen gyorsan tudok szallitani, milyen olcson tudom futtatni a projektet, es mennyi framework-specifikus tudaszt kell a fejemben tartanom pusztan ahhoz, hogy az app eletben maradjon.
+
+Es itt valtozott a tortenet.
+
+Minel melyebbre jutottam a Next.js-ben, annal inkabb szunt meg tokeattetelnek tunni, es annal inkabb lett ceremonia erzete. A buildek nehezebbe valtak. A deployment tortenet egyre inkabb platformformaju lett. Abban a pillanatban, ahogy az alapertelmezett hosting utvonalon kivulre neztem, a fejlesztoi elmeny gyorsan romlott.
+
+Nem lehetetlen. Csak draga, pont ugy, ahogy a szolo fejlesztok nem engedhetik meg maguknak — nem csak penzben, hanem figyelemben. Es a figyelem az egyetlen eroforras, amibol nem tudsz tobbet venni.
+
+## A Valodi Koltseg Nem Csak Penz Volt
+
+A szamla lathátova tette a problemat. Nem a szamla okozta.
+
+A nagyobb problema az volt, hogy a stack folyamatosan arra kert, hogy olyan dolgokat debugoljak, amikkel nem akartam foglalkozni. Ez egy rendszergondolkodasi piros zaszlo: amikor egy eszkoz, amit a komplexitas csokkentesere terveztek, elkezdi a sajat komplexitasat generalni, egy ongerjesíto hurok mukodik ellened.
+
+Meg upgrade-olnom is kellett. Nem termek okok miatt. Nem mert a felhasznalok tulterheltek a rendszert. Hanem mert kulonben a build olyan lassu volt, hogy neha magától timeoutolt.
+
+Az oldal lassan ebredt. A cold startok masodpercekig tartottak.
+
+Folyamatosan renderelési problemakba futottam. Folyamatosan hydration problemakba futottam. Minden javitas lokalisnak tunt. A kimerultseg rendszerszerunek.
+
+Ez a kombinacio mereg a szolo munkanak.
+
+Egy frameworknek bizonytalansagot kellene eltávolitania. Ez a stack hozzáadta.
+
+Egy build atmegy. A kovetkezo timeout-ol. A harmadik masol bukik el. Elkezdel ketelkedni olyan kodban, ami soha nem volt az igazi problema. Elrabolja a figyelmedet. Az agenseid figyelmet is elrabolja.
+
+Es amikor agensekkel epitesz, ez meg fontosabb. A lassu, megbizhatatlan pipeline-ok nem csak idot pazarolnak. Aktivan mergezvíg a kontextust. Napok tunnek el az eszkozlancba a termek helyett.
+
+Neha ez azt jelenti, hogy egy agens haromszor probalkozik ujra ugyanazzal a flaky build utvonairal, átad nekem egy hosszu transkriptet tele deployment zajjal, es mindketten a rossz problemat bamulljuk.
+
+Amikor valtoztatam valamit, mar nem csak azt kérdeztem: "Mukodott a feature?"
+
+Azt is kerdeztem:
+
+- ugyanugy fog renderelodni lokalisan es produkcioban?
+- megint eltorik a hydration?
+- ez azert lassu, mert a kodom, a hosting beallitas, vagy a build pipeline miatt?
+- ha self-hostolom, vajon a hetem az infrastruktura ujraepitesere fog menni?
+
+Amint ezek a kerdesek normálissa válnak, a framework elkezdte tul sokba vinni az idodet.
+
+## A Self-Hosting Volt a Torospont
+
+Az emberek azt mondjak, a Next.js nincs a Vercelhez kotve.
+
+Technikailag igen.
+
+Gyakorlatilag az utvonal abban a pillanatban rosszabb lesz, ahogy elhagyod az alapertelmezettet. Es a "rosszabb" nem dramatikus — ez a lassu, ororlő fajta rosszabb, ami oránkent eszi az idődet anelkul, hogy lenne egyetlen konkret incidens, amire ramutathatnal.
+
+Tudsz self-hostolni. Be tudod allitani a sajat CI-det. Kezelni tudod a deploy folyamatot, a build cachelest, az artifactokat, a tesztelesi beallitast es a futasideju viselkedest.
+
+De pont ez a lenyeg.
+
+Amint megprobálod visszavenni az iranyitast, a framework ratermeszti, hogy kierdmeld. Es nem akarom a nyilt forrasu idemet build pipeline-ok babasitasaval tolteni, csak azert, hogy bebizonyítsam, az appom tud elni a company townon kivul.
+
+Azt akarom, hogy a hordozhatosag legyen az alapertelmezett helyzet, ne egy operaciot meldekuldes.
+
+Ez volt az a pillanat, amikor az egesz dolog megfordult a fejemben.
+
+A Next.js tobbe nem segitett elkerulni a komplexitast. Athelyezte a komplexitast olyan helyekre, amiket vegul nekem kell kezelnem — mint egy berleto, aki ugy javitja meg a konyhát, hogy a torott csovet a falba topi, ahol nem latod. Meg mindig torott. Csak rejtett.
+
+Ez tech debt, meg akkor is, ha az absztrakció népszeru.
+
+## Next.js vs TanStack Start Egyszeru Nyelven
+
+Ez a legegyszerubb mod, ahogy most el tudom magyarazni a kulonbseget.
+
+| Amire szuksegem van | Milyen volt a Next.js | Milyen a TanStack Start |
+| --- | --- | --- |
+| Gyors visszajelzesi hurkok | Nehez buildek es draga build percek | Vite-elso, gyorsabb iteracio |
+| Hordozhato hosting | A legjobb elmeny az aldott platformon | Konnyebb a hostingot kulon donteskent kezelni |
+| Kiszamithato rendereles | Tul sok renderelesi es hydration meglepetes | Egyszerubb mentalis modell |
+| Szolo-dev uzemeltetés | Tobb CI es deploy ceremonia, mint amennyit akarok | Kevesebb framework felulet, amit cipelni kell |
+
+Ez az egesz dontes szamomra.
+
+Nem benchmarkok. Nem hype. Nem okoszisztema torzsiseg.
+
+Csak a napi koltsege annak, hogy produktiv maradjak.
+
+## Miert Erződik Megkonnyebulesnek a TanStack Start
+
+A TanStack Start nem azert erdekes szamomra, mert uj.
+
+Azert erdekes, mert konnyebbnek erződik. Mint amikor lecsereled a nehez teli kabatot egy polarra — ujra tudsz mozogni.
+
+Kozelebb erződik ahhoz a stackhez, amit tenyleg akarok:
+
+- Vite a gyorsabb es oszintebb dev loophoz
+- TanStack Router a navigaciohoz, anelkul, hogy az architektura tobbi resze framework ceremoniava valna
+- egy full-stack modell, ami nem probálja az egesz rendszer minden reszet birtokolni
+- tisztabb utvonal ahhoz, hogy ott hostoljam az appot, ahol akarom
+
+Ez az utolso pont szamit a legtobbet.
+
+Nem akarom, hogy az alkalmazas-architektuám csendben szamlazasi architekturava valjon. Nem akarom, hogy a rendszerem lathatatlan flow-jai — buildek, deployk, futasideju viselkedes — valaki mas bevételi modelljere legyenek optimalizalva.
+
+Egy olyan webalkalmazast akarok, amit olcson tudok deployolni, vilagosan at tudok latni, es szukseg eseten at tudok koltoztetni. Azt akarom, hogy a frontend a rendszer egy felulete legyen, ne egy egyre dragabb vilagkep kozeppontja.
+
+A TanStack Start sokkal kozelebb all ehhez.
+
+Az elso konkret nyeremeny azonnali volt: a dev loop ujra olcsonak tunt.
+
+Valtoztatsz egy route-ot. Mented a fajlt. Latod az eredmenyt.
+
+Ez kicsinek hangzik, amig te vagy az egyetlen ember a projekten. A gyors helyi visszajelzes nem kenyelm. Hanem atbocsátokepesseg.
+
+Nincs meg tiszta "itt az uj havi szamla" screenshot-om, es nem fogok kitalalni egyet. A koltozes meg folyamatban van.
+
+De mar tudom, mit preferalok: tényleges futasideju hasznalátert fizetni egyszerubb infrastrukturan, ahelyett, hogy $92.26-ot fizetek build percekert, mielott a valos munka egyaltalan megkezdodne.
+
+Nem az a lenyeg, hogy a TanStack Start tobbet csinal.
+
+Hanem hogy kevesebbet feltelez.
+
+Egy szolo fejlesztonek ez gyakran a jobb alkú.
+
+## Negyven Percrol Negy Masodpercre
+
+A valtas elott, amikor a `main`-re pusholttam, egy hibajavitas produkcióba juttatása korubelul 40 percet vett igenybe.
+
+Nem azert, mert a hiba nehez volt.
+
+Hanem mert a build eleg lassu es eleg megbizhatatlan volt ahhoz, hogy a deployment pipeline valt a termek szuk keresztmetszetteve. A pipeline-nak egy flow-nak kellett volna lennie — kod be, termek ki. Ehelyett stockka valt, ami keseseket es bizonytalansagot halmozott fel.
+
+A Next.js-tol valo megszabadulas azonnal megvaltoztatta ezt.
+
+Negy masodperc. Nem perc.
+
+"Ne legy nevetseg, Radix, ez nem lehetseges."
+
+Dehogynem.
+
+```text
+commit lands on main
+yarn zero-install (deps already in repo)              0s
+incremental check (TypeScript + ESLint, unchanged)    0s
+incremental unit tests (yarn vitest run --changed main) 1s
+incremental coverage tests (unchanged)                0s
+incremental build (unchanged)                         0s
+deploy changed assets to R2                            2s
+deploy metadata JSON to R2                             1s
+----------------------------------------------------------
+total                                                  4s
+```
+
+Ez az egesz lenyeg.
+
+Amint a deployment visszaesik masodpercekbe, a hibajavitasok megszunnek elrabolni a napodat. Ujra a szoftverrel tudsz foglalkozni. A visszajelzesi hurok annyira szoros lesz, hogy a szallitas ugy erződik, mint egy fajl mentese, nem mint egy kampany inditasa.
+
+Ha latni akarod a stack termekoldali verziojat, amire epitek, kezdd a [Getting Started with spike.land](/blog/getting-started-spike-land)-dal. A benchmark, ami pontosan megmutatja, honnan jon a sebesseg — tool-first MCP teszteles vs Playwright — a [Tool-First Testing vs Browser Testing](/blog/tool-first-testing-benchmark)-ben talalhato.
+
+## Az Oszinte Kompromisszum
+
+A TanStack Start fiatalabb.
+
+Az okoszisztema kisebb. A doksi helyenkent vekonyabb. Kevesebb harcedzett valasz hever korulotte, amikor valami furcsa tortenik.
+
+Elfogadom ezt a kompromisszumot, mert ezek a problemak a széleken élnek. Ha erdekel a hosszabb tabu nezopont arrol, hogy a full-framework komplexitas hogyan kamatozodik ido multan, a [The Universal Interface Wasn't GraphQL](/blog/the-universal-interface-wasnt-graphql) ugyanezt a palyat rajzolja fel mas szogbol.
+
+A Next.js problemak a napi ciklusomban jelentkeztek: buildek, szamlak, renderelési problemak es deployment ceremonia.
+
+Egy szolo fejlesztonek inkabb dolgozom egy fiatalabb framework erdes szelei korul, mint hogy egy erett framework folyamatos adojat fizetem. Az erdes szelek lathatoak es zsugorodnak. Az ado rejtett es no.
+
+## Ez Tenyleg Egy Szolo-Dev Tortenet
+
+Ha egy nagyobb cegnel vagy, lehet, hogy olvasod ezt es nem ertesz egyet.
+
+Rendben van.
+
+Egy csapat, amelynek vannak platform mernokei, nagyobb koltsegvetese es egy eros Vercel workflow-ja, sokkal konnyebben el tudja nyelni ezeket a kompromisszumokat, mint en. A rendszerdinamika mas, amikor tobb ember kozott oszthato el a karbantartasi teher.
+
+Ez nem az en helyzetem.
+
+Szolo dev vagyok. Nyiltan epitek. Minden extra mozgo alkatresz az en asztalomra kerul. Minden lassu build megszakitja a visszajelzesi hurkomat. Minden renderelesi hiba idot lop a termekbe fektetett munkatol. Minden fix havi koltsegnek igazolnia kell magat azzal szemben, amit ehelyett az osszegert epithetnek.
+
+Ezert tunt szamomra nyilvanvalónak ez a dontes.
+
+Nincs szuksegem a legeroteljesebb framework tortenetre.
+
+A legkevesbe pazarlo kell nekem.
+
+## Az Itelet
+
+A Next.js nem azert valt problemava szamomra, mert rossz.
+
+Azert valt problemava, mert tobbe nem illett a keretfeltételeimhez.
+
+A szamla tul magas volt. A napi ciklus tul nehez. A futasideju viselkedes tul kiszamithatatlan. A self-hosting utvonal tul sok ceremoniát igenyelt.
+
+Egy ponton neven kell nevezni a dolgokat.
+
+Ha egy framework tobbet fizettett veled, tobbet varakoztat es tobbet debugoltat, mikozben kevesebb magabiztossagot ad, az tobbe nem tokeattetel.
+
+Az rezsikoltség.
+
+Szamomra a Next.js atlepte ezt a vonalat.
+
+Tehat az igazi kerdes nem az, hogy "Meg mindig jó a Next.js?"
+
+**Jó kinek?**
+
+Ha szolo fejleszto vagy, aki egy nyilt forrasu projektet probal gyorsan, olcson, hordozhatoan es eszszeruen futtatni, kerdeztd meg magadtol:
+
+Ha latni akarod, mire epul az egyszerubb stack, a [spike.land app store](/blog/spike-land-app-store) a termek irany. Es ha mar dontottel, hogy elmesz, es tudni akarod hogyan, a [migration service](/blog/nextjs-migration-service) leirja a modszert es a szinteket.
+
+**A Next.js neked is tech debtté valt?**

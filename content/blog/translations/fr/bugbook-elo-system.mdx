@@ -1,0 +1,206 @@
+---
+title: "Why We Gave Bugs an ELO Rating"
+slug: "bugbook-elo-system"
+description: "How we built a public bug tracker with chess-inspired ELO rankings, user reputation gating, and per-service feedback tools — turning bug reports into a defense against platform abuse."
+date: "2026-03-04"
+author: "Radix"
+category: "Engineering"
+tags: ["elo", "bugbook", "anti-abuse", "mcp", "architecture", "cloudflare-workers"]
+featured: true
+draft: false
+primer: "Chess rankings for bugs. Trust scores for users. One system."
+heroPrompt: "A gritty, high-tech industrial leaderboard displaying bug reports as metallic chess pieces, with a glowing ELO score next to each, dark cyberpunk atmosphere, neon red and green lighting, dramatic shadows"
+heroImage: "/blog/bugbook-elo-system/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Why We Gave Bugs an ELO Rating'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/bugbook-elo-system/hero.png)
+
+Nous faisons tourner plus de 80 outils MCP sur une demi-douzaine de Cloudflare Workers. Jusqu'a la semaine derniere, les erreurs allaient dans `console.error()` et disparaissaient dans le vide. Les utilisateurs n'avaient aucun moyen de signaler des bugs. Et notre rate limiting etait une fenetre plate par IP — la meme limite pour un premier visiteur et un power user present sur la plateforme depuis des mois.
+
+Trois problemes separes. Un seul systeme les a tous resolus.
+
+Voici comment.
+
+---
+
+## Le probleme : DDoS interne
+
+Quand vous exposez 80 outils a internet via MCP, vous etes a un mauvais acteur d'un apres-midi tres couteux. Un seul agent bloque dans une boucle de retry peut marteler vos Workers, votre base de donnees D1, votre store KV — et de l'exterieur, ca ressemble exactement a un utilisateur legitime faisant des appels d'outils rapides.
+
+Le rate limiting par IP ne suffit pas. Les agents partagent des IPs. Les VPNs existent. Et la vraie question n'est pas « combien de requetes par minute ? » La vraie question est « cet appelant devrait-il etre digne de confiance ? »
+
+Nous avions besoin de quelque chose de plus intelligent. Pas un mur, mais un gradient — un systeme qui s'ajuste en fonction du comportement, comme un thermostat s'ajuste en fonction de la temperature.
+
+Nous avions besoin d'un systeme de reputation.
+
+## Pourquoi ELO ?
+
+Nous avions deja un moteur ELO dans notre codebase — le package echecs l'utilise pour les classements de joueurs. ELO a une belle propriete que la plupart des systemes de classement n'ont pas : c'est un seul nombre qui encode la confiance, et il s'ajuste en continu en fonction des resultats.
+
+En pensee systemique, ELO est un stock avec des boucles de feedback equilibrantes. Le bon comportement remplit le reservoir. Le mauvais comportement le vide. Le systeme s'auto-corrige sans que personne ne prenne de decisions manuelles.
+
+L'insight etait : **ELO n'est pas que pour les joueurs d'echecs. Ca marche pour tout ce qui est en competition pour des ressources limitees.**
+
+Alors nous avons donne des classements ELO a deux choses :
+1. **Les bugs** — quels bugs comptent le plus ?
+2. **Les utilisateurs** — a qui devrait-on faire confiance pour l'acces a la plateforme ?
+
+## ELO Bug-vs-Bug
+
+Chaque bug commence a ELO 1200. Quand quelqu'un signale un bug, ce bug « gagne » un match contre un bug aleatoire dans la meme categorie. Son ELO monte ; celui de l'autre descend.
+
+Cela cree une priorisation emergente :
+- Les bugs frequemment signales grimpent le classement naturellement
+- Les vieux bugs que personne ne rencontre plus decroissent d'eux-memes
+- Le classement ELO devient une liste de priorites vivante qui se maintient toute seule
+
+Nous ne voulions pas que des product managers trient manuellement les bugs. Nous voulions que les bugs nous disent eux-memes leur importance — a travers le signal collectif des rapports utilisateurs. La priorite n'est pas assignee. Elle emerge.
+
+### Cycle de vie du bug
+
+```
+CANDIDATE → ACTIVE → FIXED → DEPRECATED
+```
+
+Un bug commence comme CANDIDATE quand il est signale pour la premiere fois. Apres 3 rapports independants, il est automatiquement promu en ACTIVE. Quand il est corrige, il est marque FIXED. S'il est non pertinent pendant 5+ sessions, le declin ELO le pousse vers DEPRECATED. Le cycle de vie tourne tout seul.
+
+## ELO Utilisateur : la confiance comme nombre
+
+Chaque utilisateur (et ses agents) commence a ELO 1200. Les actions deplacent le score :
+
+| Evenement | Changement ELO |
+|-----------|----------------|
+| Signaler un bug valide | +25 |
+| Le bug que vous avez signale est confirme | +10 |
+| Utilisation reussie d'un outil | +1 |
+| Faux rapport de bug | -15 |
+| Atteindre un rate limit | -5 |
+| Signalement d'abus | -50 |
+
+Il y a un plafond quotidien de gain de +100 pour empecher le gaming. Les calculs sont adaptes des K-factors d'echecs — les nouveaux utilisateurs ont une volatilite plus elevee (K=40) qui se stabilise avec le temps (K=16 au-dessus de ELO 2400). Comme aux echecs, vos premieres parties comptent plus.
+
+### Gating par palier
+
+ELO correspond a trois paliers :
+
+| Palier | Plage ELO | Effet |
+|--------|-----------|-------|
+| Free | 0-999 | Multiplicateur de rate limit 4x |
+| Pro | 1000-1499 | Acces standard |
+| Elite | 1500+ | Acces complet, limites plus basses |
+
+Un tout nouvel utilisateur (ELO 1200) commence comme Pro. Le bon comportement l'y maintient. L'abus le fait descendre en Free, ou les rate limits sont 4x plus strictes — effectivement 30 requetes par minute au lieu de 120.
+
+C'est le mecanisme anti-DDoS, et il est deliberement doux. Les mauvais acteurs experimentent une performance progressivement degradee jusqu'a ce que la plateforme devienne inutilisable pour eux, tandis que les utilisateurs legitimes ne remarquent jamais rien. C'est un gradient, pas un portail. Et contrairement a un ban definitif, la recuperation est toujours possible — il suffit de bien se comporter et le score remonte.
+
+### Les outils peuvent exiger des paliers
+
+N'importe quel outil MCP peut declarer un `requiredTier` :
+
+```typescript
+{
+  name: "expensive_operation",
+  requiredTier: "elite",
+  // ...
+}
+```
+
+La plupart des outils n'ont pas d'exigence de palier. Mais les operations couteuses en calcul — generation d'images, compilation de code — peuvent exiger un acces Pro ou Elite. Cela empeche un agent a zero reputation de bruler des credits GPU des sa premiere requete. La confiance se merite, elle ne se presume pas.
+
+## Des outils de feedback partout
+
+Chaque serveur MCP de notre plateforme dispose maintenant d'un outil de feedback :
+
+| Serveur | Nom de l'outil |
+|---------|---------------|
+| spike-land-mcp | `mcp_feedback` |
+| mcp-image-studio | `img_feedback` |
+| hackernews-mcp | `hackernews_feedback` |
+| esbuild-wasm-mcp | `esbuild_feedback` |
+| openclaw-mcp | `openclaw_feedback` |
+
+Quand un agent rencontre une erreur, il peut la signaler a travers l'outil de feedback le plus proche. Le rapport va au Bugbook central dans spike-edge, ou il est associe aux bugs existants (par code d'erreur + nom du service) ou en cree un nouveau.
+
+Pour les Cloudflare Workers, cela utilise les service bindings — communication inter-Worker a zero latence, zero cout. Pour les serveurs MCP Node.js, c'est un POST HTTPS vers l'edge API.
+
+Voici l'insight qui nous a surpris : **les agents sont les meilleurs rapporteurs de bugs de la planete.** Ils touchent des cas limites que les humains ne trouveraient jamais. Ils decrivent l'appel d'outil exact, les parametres, et le message d'erreur avec un rappel parfait. Et ils signalent immediatement — pas de ticket Jira qui traine dans un backlog pendant trois sprints, perdant progressivement son contexte.
+
+## Collecte centralisee des erreurs
+
+Chaque erreur non geree dans spike-edge est maintenant logguee dans D1 via `waitUntil` :
+
+```typescript
+app.onError((err, c) => {
+  c.executionCtx.waitUntil(
+    c.env.DB.prepare(
+      "INSERT INTO error_logs (...) VALUES (...)"
+    ).bind(/* ... */).run()
+  );
+  return c.json({ error: "Internal Server Error" }, 500);
+});
+```
+
+Cela remplace `console.error()` par des donnees d'erreur structurees et interrogeables. Nom du service, code d'erreur, stack trace, metadonnees de requete — tout interrogeable. L'API Bugbook peut correler les rapports utilisateurs avec les erreurs reelles, fermant la boucle entre « un utilisateur dit que quelque chose est casse » et « voici la stack trace qui le prouve ».
+
+La boucle est tout l'interet. Des rapports sans preuves sont des plaintes. Des preuves sans rapports sont du bruit. Ensemble ils deviennent du signal.
+
+## Le Bugbook public
+
+Le Bugbook est public a `/bugbook`. Tout le monde peut voir :
+- Tous les bugs actifs, classes par ELO
+- Les pages de detail des bugs avec l'historique des rapports et la timeline ELO
+- Un classement montrant les bugs et les rapporteurs les plus actifs
+
+Les utilisateurs qui signalent des bugs peuvent suivre leurs rapports et voir quand les bugs sont corriges. C'est de la transparence deliberee. Si vous signalez un bug, vous ne devriez pas avoir a vous demander si quelqu'un l'a remarque. Le systeme vous le montre.
+
+## Commentaires de blog avec consequences ELO
+
+Nous avons aussi ajoute des commentaires a tous les articles de blog. Les utilisateurs connectes peuvent commenter a n'importe quel point d'un article, et les autres utilisateurs peuvent voter pour ou contre les commentaires.
+
+C'est la que ca devient interessant : si un commentaire accumule un score de -10 ou moins (massivement downvote), l'auteur du commentaire recoit un evenement ELO `abuse_flag` (-50 points). La communaute s'auto-modere. Si vous postez du spam ou de l'abus dans les commentaires d'articles, les downvotes de la communaute impactent directement votre reputation sur la plateforme.
+
+C'est une autre propriete emergente. Nous n'avons pas construit d'equipe de moderation. Nous avons construit un systeme ou la moderation emerge du comportement collectif.
+
+## Resume de l'architecture
+
+```
+                    ┌──────────────────┐
+                    │   spike-app      │
+                    │   /bugbook UI    │
+                    └────────┬─────────┘
+                             │ HTTPS
+                    ┌────────▼─────────┐
+                    │   spike-edge     │
+                    │  Bugbook API     │
+                    │  ELO Engine      │
+                    │  Error Logs      │
+                    │  Blog Comments   │
+                    └──┬──────────┬────┘
+          Service      │          │     HTTPS
+          Binding      │          │
+    ┌──────────────┐   │    ┌─────▼──────────┐
+    │spike-land-mcp│◄──┘    │ Node.js MCP    │
+    │ mcp_feedback │        │ servers         │
+    │ ELO gating   │        │ *_feedback      │
+    └──────────────┘        └────────────────┘
+```
+
+Tout tourne sur Cloudflare Workers + D1. Pas de bases de donnees externes, pas de Redis, pas de queues. Le moteur ELO est du pur calcul — 40 lignes adaptees de notre package echecs. L'ensemble du systeme ajoute environ 500 lignes de logique metier et 200 lignes de SQL.
+
+Les petits systemes qui s'auto-regulant battent les grands systemes qui ont besoin de babysitting.
+
+## Ce que nous avons appris
+
+1. **ELO est une primitive universelle de confiance.** Tout systeme ou des entites sont en competition pour la pertinence peut utiliser ELO. Les bugs sont en competition pour l'attention. Les utilisateurs sont en competition pour la confiance. Les calculs sont les memes — seul le domaine change.
+
+2. **Les agents sont de meilleurs rapporteurs de bugs que les humains.** Ils signalent immediatement, avec le contexte complet, et ils touchent des cas limites que les tests manuels manquent. Ce sont les meilleurs capteurs du systeme.
+
+3. **Le rate limiting base sur la reputation est plus doux et plus intelligent que le blocage par IP.** Au lieu de murs durs, les mauvais acteurs experimentent un service degrade. Ils peuvent se retablir en se comportant bien. C'est un gradient, pas un portail — et les gradients sont plus difficiles a contourner.
+
+4. **Le suivi public des bugs construit la confiance.** Quand les utilisateurs voient que leurs rapports menent a des corrections, ils signalent plus de bugs. Quand ils voient l'ordre de priorite via ELO, ils comprennent pourquoi certains bugs sont corriges avant d'autres. La transparence cree une boucle renforçante.
+
+5. **Les outils de feedback devraient etre partout.** Si chaque serveur MCP a un outil de feedback, alors chaque interaction d'agent est un rapport de bug potentiel. La couverture est automatique. Vous n'avez pas a demander du feedback — le systeme le collecte en existant.
+
+---
+
+Le code est open source. Le Bugbook est en ligne a [spike.land/bugbook](https://spike.land/bugbook). Si vous trouvez un bug, signalez-le — votre ELO vous remerciera.

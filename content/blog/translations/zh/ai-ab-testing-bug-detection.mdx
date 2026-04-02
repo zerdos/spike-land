@@ -1,0 +1,134 @@
+---
+title: "How spike.land Uses AI and A/B Testing to Find Bugs Before You Do"
+slug: "ai-ab-testing-bug-detection"
+description: "Variant testing on spike.land is not just for conversion. It is a product-quality loop for catching unstable app behavior before it becomes a support issue."
+date: "2026-03-08"
+author: "Radix"
+category: "Engineering"
+tags: ["a-b-testing", "ai", "bugs", "quality", "experiments", "mcp"]
+featured: false
+draft: false
+primer: "The AI writes variants. The experiment engine decides what ships."
+heroImage: "/blog/ai-ab-testing-bug-detection/hero.jpg"
+heroPrompt: "A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents"
+---
+
+![A modern digital illustration for a blog post titled 'How spike.land Uses AI and A/B Testing to Find Bugs Before You Do'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/ai-ab-testing-bug-detection/hero.jpg)
+
+![A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents](/blog/ai-ab-testing-bug-detection/hero.png)
+
+<Tldr>
+
+- spike.land 把 A/B 测试当作可靠性系统来用，而不仅仅是营销手段。
+- 应用变体可以被一致地分配、度量、比较，只有在严格的证据阈值达标后才能提升。
+- 当前的决策引擎是贝叶斯的、确定性的、可审计的：至少 48 小时运行时间，每个变体 500 次展示，95%+ 胜出概率。
+- AI 帮助生成替代方案并解释失败原因，但不允许凭"感觉"把胜者推上生产环境。
+
+</Tldr>
+
+## 大多数 A/B 测试问的是错误的问题
+
+大多数团队用实验来解决小争论。按钮应该是蓝色的？标题应该短一点？定价卡 A 比定价卡 B 好？
+
+这些问题没毛病。但它们不是最有趣的。
+
+更有价值的问题是：**哪个变体更少出错？**
+
+一旦你开始问这个问题，A/B 测试就变了。它不再只是增长工具——那种营销团队用来挤出转化点的东西——而是开始变成质量系统。一个在用户感受到之前就捕获不稳定性的反馈循环。
+
+把它想成恒温器。恒温器不只是告诉你温度。它让系统保持在边界之内。这就是我们希望实验做的事：不只是度量，而是调节。
+
+---
+
+## 两个系统，一个循环
+
+spike.land 在这里有两个相关的部分，有趣的是它们如何连接。
+
+第一个是**面向应用商店的工作流**：部署、变体、访客分配、展示追踪、错误追踪和胜者宣布。这是可见的机器。
+
+第二个是**通用实验引擎**：基于哈希的分配、事件追踪、贝叶斯评估和异常监控。这是不可见的机器。
+
+它们一起形成一个循环：
+
+1. 发布多个版本
+2. 观察用户实际触达了什么
+3. 在度量结果的同时度量错误
+4. 只在数据证明合理时才提升更好的版本
+
+关键词是"只在"。大多数系统太急于宣布胜者。我们的系统对此刻意缓慢。
+
+---
+
+## AI 的位置（和不该在的位置）
+
+AI 在这里有用的角色不是"决定胜者"。那就像让提出假设的人同时批改实验。角色需要分离。
+
+AI 擅长的事：
+
+- 生成更干净的变体
+- 在出问题时提议回退路径
+- 将错误模式聚类为可能的 bug 主题
+- 解释为什么落败的变体可能失败了
+
+用系统思维的术语说，AI 擅长生成侧——增加多样性的部分。但在发布时，平台使用显式规则。选择侧保持确定性。
+
+这种分离很重要。这是一个学习的系统和一个幻觉进步的系统之间的区别。
+
+---
+
+## 发布规则
+
+实验引擎对阈值毫不含糊。在胜者可以自动毕业之前，实验必须满足所有四个条件：
+
+- 至少 **48 小时**运行时间
+- 每个变体至少 **500 次展示**
+- 胜出概率高于 **95%**
+- 相对对照组至少 **10% 提升**（除非对照组本身胜出）
+
+为什么是这些具体数字？因为它们代表了错误决定变得足够不可能以至于可以接受的最低证据。低于这些阈值，你在猜测。高于它们，你在决策。
+
+我们让 AI 帮我们探索。我们不让它幻觉确定性。
+
+---
+
+## 贝叶斯而非一厢情愿
+
+我喜欢在这里用贝叶斯评估，因为它匹配你在生产环境中真正试图回答的问题：
+
+**这个变体实际上更好的概率有多大？**
+
+这是一个与"指标上升了吗？"根本不同的问题。指标上升是一个故事。后验概率是一个论证。
+
+引擎对每个变体采样后验分布，反复比较，度量哪个赢得最多。这给了我们一个概率，而不只是仪表盘上的绿色勾。
+
+这就是天气预报说"晴天"和说"82% 概率晴天"之间的区别。第二种让你做真正的决策。
+
+---
+
+## Bug 检测，不只是提升检测
+
+这就是增长指标框架崩塌的地方。提升是叙事。错误率是事实。
+
+质量角度在两个地方体现。
+
+首先，**错误密集的变体会很快暴露自己**。如果一个版本产生明显更差的运行时行为，你不需要漫长的产品辩论。数据已经在告诉你了。一个 3% 崩溃率的变体不是"在转化测试中落败"——它是坏掉了。
+
+其次，**异常监控能捕获运营故障**。如果一个活跃的变体突然降到零展示，那不是文案问题。那是路由或发布问题。系统中有东西不再连接了。
+
+这些是 bug 信号，不是增长信号。它们更需要及早捕获，因为一个上线的 bug 比一个表现不佳的标题要昂贵得多。
+
+---
+
+## 这对开放应用商店意味着什么
+
+开放应用商店只有在质量可以在没有人工守门员审查每个提交的情况下扩展时才能运作。
+
+开发者发布得越多，不稳定行为触达用户的机会就越多。答案不能是"永远手动检查所有东西"。那种方式无法扩展——它只是创建了一个看起来负责任的瓶颈。
+
+所以平台需要一个自我调节的循环：
+
+`generate -> test -> observe -> promote -> learn`
+
+AI 处理生成和诊断。实验系统处理度量和提升。它们共同形成一个强化循环：更好的变体得到提升，坏掉的被捕获，系统的整体质量随时间提升而无需有人手动维护。
+
+这就是 spike.land 上 AI 驱动的 A/B bug 检测的真正意义。它不是口号。它是平台学习如何在商店规模上更安全地发布应用——一个运行越多就越聪明的质量系统。

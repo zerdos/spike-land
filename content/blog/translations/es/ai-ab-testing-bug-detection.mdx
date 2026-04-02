@@ -1,0 +1,134 @@
+---
+title: "How spike.land Uses AI and A/B Testing to Find Bugs Before You Do"
+slug: "ai-ab-testing-bug-detection"
+description: "Variant testing on spike.land is not just for conversion. It is a product-quality loop for catching unstable app behavior before it becomes a support issue."
+date: "2026-03-08"
+author: "Radix"
+category: "Engineering"
+tags: ["a-b-testing", "ai", "bugs", "quality", "experiments", "mcp"]
+featured: false
+draft: false
+primer: "The AI writes variants. The experiment engine decides what ships."
+heroImage: "/blog/ai-ab-testing-bug-detection/hero.jpg"
+heroPrompt: "A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents"
+---
+
+![A modern digital illustration for a blog post titled 'How spike.land Uses AI and A/B Testing to Find Bugs Before You Do'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/ai-ab-testing-bug-detection/hero.jpg)
+
+![A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents](/blog/ai-ab-testing-bug-detection/hero.png)
+
+<Tldr>
+
+- spike.land trata el A/B testing como un sistema de fiabilidad, no solo como una táctica de marketing.
+- Las variantes de apps pueden asignarse consistentemente, medirse, compararse y promoverse solo después de cumplir umbrales estrictos de evidencia.
+- El motor de decisión actual es bayesiano, determinístico y auditable: mínimo 48h de ejecución, 500 impresiones por variante, 95%+ de probabilidad de ganador.
+- La IA ayuda a generar alternativas y explicar fallas, pero no puede "vibear" un ganador hacia producción.
+
+</Tldr>
+
+## La mayoría del A/B testing hace la pregunta equivocada
+
+La mayoría de los equipos usan experimentos para resolver pequeñas discusiones. ¿El botón debería ser azul? ¿El titular debería ser más corto? ¿La tarjeta de precios A le gana a la tarjeta de precios B?
+
+Son preguntas válidas. Pero no son las más interesantes.
+
+La pregunta más valiosa es: **¿Cuál variante está menos rota?**
+
+Una vez que empezás a hacer esa pregunta, el A/B testing se transforma. Deja de ser una herramienta exclusiva de crecimiento — del tipo que los equipos de marketing usan para exprimir puntos de conversión — y empieza a convertirse en un sistema de calidad. Un feedback loop que atrapa inestabilidad antes de que los usuarios la sientan.
+
+Pensalo como un termostato. Un termostato no solo te dice la temperatura. Mantiene el sistema dentro de los límites. Eso es lo que queremos que hagan los experimentos: no solo medir, sino regular.
+
+---
+
+## Dos sistemas, un loop
+
+spike.land tiene dos piezas relacionadas acá, y la parte interesante es cómo se conectan.
+
+La primera es el **flujo orientado al app store**: deployments, variantes, asignación de visitantes, tracking de impresiones, tracking de errores y declaración de ganador. Esta es la maquinaria visible.
+
+La segunda es el **motor general de experimentos**: asignación basada en hash, tracking de eventos, evaluación bayesiana y monitoreo de anomalías. Esta es la maquinaria invisible.
+
+Juntas forman un solo loop:
+
+1. Lanzar múltiples versiones de algo
+2. Observar qué encuentran los usuarios realmente
+3. Medir errores junto con resultados
+4. Promover la mejor versión solo cuando los datos lo justifican
+
+La palabra clave es "solo". La mayoría de los sistemas son demasiado ansiosos para declarar ganadores. El nuestro es deliberadamente lento al respecto.
+
+---
+
+## Dónde encaja la IA (y dónde no)
+
+El rol útil de la IA acá no es "decidir el ganador". Eso sería como dejar que la persona que generó la hipótesis también califique el experimento. Los roles necesitan separación.
+
+La IA es fuerte en:
+
+- generar una variante más limpia
+- proponer un camino de fallback cuando algo se rompe
+- agrupar patrones de error en temas probables de bugs
+- explicar por qué probablemente falló una variante perdedora
+
+En términos de pensamiento sistémico, la IA es buena en el lado generativo — la parte que aumenta la variedad. Pero cuando se trata de lanzar, la plataforma usa reglas explícitas. El lado de selección se mantiene determinístico.
+
+Esta separación importa. Es la diferencia entre un sistema que aprende y un sistema que alucina progreso.
+
+---
+
+## Las reglas de lanzamiento
+
+El motor de experimentos no es sutil con sus umbrales. Antes de que un ganador pueda graduarse automáticamente, el experimento debe satisfacer las cuatro condiciones:
+
+- Al menos **48 horas** de ejecución
+- Al menos **500 impresiones** por variante
+- Una probabilidad de ganador superior al **95%**
+- Al menos **10% de mejora** sobre el control (a menos que el control mismo gane)
+
+¿Por qué estos números específicos? Porque representan la evidencia mínima donde una decisión equivocada se vuelve lo suficientemente improbable como para aceptarla. Por debajo de estos umbrales, estás adivinando. Por encima, estás decidiendo.
+
+Dejamos que la IA nos ayude a explorar. No la dejamos alucinar certeza.
+
+---
+
+## Bayesiano en lugar de ilusorio
+
+Me gusta la evaluación bayesiana acá porque coincide con la pregunta real que intentás responder en producción:
+
+**¿Qué tan probable es que esta variante sea realmente mejor?**
+
+Esa es una pregunta fundamentalmente diferente de "¿subió la métrica?" Una métrica que sube es una historia. Una probabilidad posterior es un argumento.
+
+El motor muestrea la posterior para cada variante, las compara repetidamente, y mide cuál gana más seguido. Eso nos da una probabilidad, no solo una marca verde en un dashboard.
+
+Es la diferencia entre un pronóstico del tiempo que dice "soleado" y uno que dice "82% de probabilidad de sol". El segundo te permite tomar una decisión real.
+
+---
+
+## Detección de bugs, no solo detección de mejora
+
+Aquí es donde el enfoque de métrica de crecimiento se queda corto. La mejora es una narrativa. La tasa de error es un hecho.
+
+El ángulo de calidad aparece en dos lugares.
+
+Primero, **las variantes con muchos errores se revelan rápidamente**. Si una versión produce un comportamiento de ejecución significativamente peor, no necesitás un largo debate de producto. Los datos ya te están diciendo algo. Una variante que crashea el 3% del tiempo no está "perdiendo el test de conversión" — está rota.
+
+Segundo, **el monitoreo de anomalías atrapa fallas operativas**. Si una variante activa cae repentinamente a cero impresiones, eso no es un problema de copywriting. Es un problema de routing o rollout. Algo en el sistema ya no está conectado.
+
+Estas son señales de bugs, no señales de crecimiento. Y son las más importantes de atrapar temprano, porque un bug que se lanza es mucho más caro que un titular que rinde menos.
+
+---
+
+## Qué significa esto para un app store abierto
+
+Un app store abierto solo funciona si la calidad puede escalar sin gatekeepers humanos revisando cada envío.
+
+Cuantos más desarrolladores publican, más chances hay de que comportamiento inestable llegue a los usuarios. La respuesta no puede ser "inspeccionar todo manualmente para siempre". Ese enfoque no escala — solo crea un cuello de botella que parece responsable.
+
+Entonces la plataforma necesita un loop autorregulador:
+
+`generar -> testear -> observar -> promover -> aprender`
+
+La IA se encarga de la generación y el diagnóstico. El sistema de experimentación se encarga de la medición y la promoción. Juntos forman un loop de refuerzo: las mejores variantes se promueven, las rotas se atrapan, y la calidad general del sistema mejora con el tiempo sin que alguien lo atienda manualmente.
+
+Ese es el verdadero punto de la detección de bugs con IA y A/B testing en spike.land. No es un eslogan. Es la plataforma aprendiendo a lanzar apps más seguras a escala de store — un sistema de calidad que se vuelve más inteligente cuanto más funciona.

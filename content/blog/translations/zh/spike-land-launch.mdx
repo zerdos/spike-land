@@ -1,0 +1,201 @@
+---
+title: "Introducing spike.land — The MCP-First AI Platform"
+slug: "spike-land-launch"
+description: "spike.land launches with 80+ MCP tools, an AI tool marketplace, API proxy credits, and a free tier. Here's what we built and why it matters for developers building with AI."
+date: "2026-03-04"
+author: "Radix"
+category: "Product"
+tags: ["mcp", "ai", "platform", "launch", "tools", "marketplace", "cloudflare-workers", "api-gateway"]
+featured: true
+draft: false
+primer: "80+ tools. One platform. Build AI-powered apps without the plumbing."
+heroPrompt: "A sleek futuristic control panel with 80+ illuminated tool slots, glowing circuits connecting to AI models, dark theme with neon blue accents"
+heroImage: "/blog/spike-land-launch/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing spike.land — The MCP-First AI Platform'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-launch/hero.png)
+
+<Tldr>
+
+- spike.land 上线了，提供 **80+ MCP 工具**，涵盖国际象棋、图像工作室、代码空间、QA 自动化等
+- **免费层** 即可开始。**Pro ($29/月)**：500 积分/天，优先支持。**Business ($99/月)**：无限积分，团队管理
+- **MCP 工具市场** 启动，70/30 收入分成——工具作者拿 70%
+- **API 网关**：自带 API 密钥 (BYOK) 或使用 spike.land 代理积分，支持 OpenAI、Anthropic 和 Replicate
+- 一个协议，零定制集成。通过 `claude mcp add spike-land --transport http https://spike.land/mcp` 连接
+
+</Tldr>
+
+## 没人坦诚谈论的问题
+
+N 乘 M。这是隐藏在眼前的集成问题。
+
+N 个 AI 客户端。M 个外部服务。每种组合都需要认证、响应解析、错误恢复、速率限制、工具发现。每次都从头写起。
+
+如果你有 5 个客户端和 10 个服务，那就是 50 条集成路径。再加一个服务就需要 5 条新集成。面积按乘积增长，维护负担随之而来。
+
+MCP (Model Context Protocol) 把这个 N 乘 M 的问题降到了 N 加 M。一个协议，每一端实现一次。任何客户端都能和任何服务器通信。这和 USB 胜过十几种专有线缆的道理一样——共享契约胜过定制接线。
+
+这就是我们构建 spike.land 所基于的标准。今天，我们正式上线。
+
+---
+
+## spike.land 是什么
+
+spike.land 是一个 **MCP 优先的 AI 平台**——一个 AI 驱动工具的注册中心，你的 agent 可以通过单一标准化协议来调用。不用逐个对接 API，你的 AI 客户端连接到 spike.land 就能立即访问 80+ 生产就绪的工具。
+
+无需定制集成。无需认证胶水代码。无需分页逻辑。工具就在那里，随时调用。
+
+### 我们今天发布的 80+ 工具
+
+我们的初始工具集涵盖五大类别：
+
+**国际象棋竞技场** — 完整的竞技象棋，包含 ELO 评分、实时挑战和棋局状态管理。六个工具。`chess_new_game`、`chess_send_challenge`、`chess_make_move`、`chess_get_board`、`chess_get_elo`、`chess_resign`。
+
+**图像工作室** — AI 驱动的图像分析、生成、增强、色彩提取、相册管理和流水线编排。42 个工具，基于可组合中间件架构构建，详见 [The Architecture of Scale](/blog/the-architecture-of-scale-building-tools)。
+
+**代码空间** — 实时代码执行、转译和预览环境。五个工具，用于在隔离沙箱中运行 TypeScript 和 JavaScript。
+
+**QA 工作室** — 基于 Playwright 的浏览器自动化。八个工具，用于脚本化端到端测试、截图捕获和交互录制。
+
+**通用工具** — 网页获取、搜索、文件操作，以及一组不断增长的跨类别通用工具。
+
+每个工具遵循相同的契约：Zod 类型化输入模式、叙事优先的响应、结构化 JSON 输出。[为什么要叙事式响应？](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data) 因为 AI agent 不只需要数据——它需要能在上下文中推理的数据。
+
+---
+
+## 定价
+
+我们构建 spike.land 是为了在每个规模上都可用。免费开始，按需增长。
+
+### 免费层
+
+今天就可以开始，无需信用卡。
+
+- 访问免费层工具
+- 50 积分/天
+- 社区支持
+- BYOK（自带 API 密钥）
+
+### Pro — $29/月
+
+适合需要更多空间的个人开发者。
+
+- **500 积分/天**
+- 所有 80+ 工具，包括高级层
+- 优先支持（48 小时响应）
+- BYOK + spike.land 代理积分
+- 使用分析仪表盘
+
+### Business — $99/月
+
+适合构建生产 AI 工作流的团队。
+
+- **无限积分**
+- 团队管理和共享 API 密钥
+- 自定义工具部署
+- SLA 支持（24 小时响应）
+- 审计日志和使用报告
+- 优先访问市场功能
+
+所有计划都包含对 `https://spike.land/api/mcp` 的 MCP 端点访问。通过 [spike-cli](/blog/mcp-explained-universal-adapter-for-ai-tools) 连接一次，你的 agent 就拥有了一切。
+
+---
+
+## MCP 工具市场
+
+我们与平台同时推出 spike.land 市场。
+
+想法很简单：如果你构建了一个有用的 MCP 工具，当别人使用时你应该获得报酬。我们负责基础设施——认证、速率限制、计费、发现、协议合规。你负责业务逻辑。管道是我们的事，不是你的。
+
+**收入分成：70/30。工具作者拿 70%。**
+
+发布的工具出现在 spike.land 注册中心，可被任何 spike-cli 用户调用。计费基于积分——用户按调用付费，你按成功执行获利。
+
+要发布工具，你需要：
+1. 有效的 MCP 工具定义（名称、描述、Zod 模式、处理器）
+2. spike.land 开发者账户
+3. 已发布的 npm 包或已部署的 Cloudflare Worker 端点
+
+我们内部使用的[工具构建器模式](/blog/the-architecture-of-scale-building-tools)和市场作者使用的完全一样。同样的 API 表面。同样的响应格式。agent 可以轻松发现和组合。
+
+今天我们向早期合作伙伴开放市场。如果你有想发布的工具，[申请早期访问](https://spike.land/marketplace/apply)。
+
+---
+
+## API 网关：积分和 BYOK
+
+我们的许多工具内部调用 AI 模型——图像分析、代码解释、内容生成。我们给你两种方式来支付这些模型调用，因为在你探索什么有效的时候，灵活性很重要。
+
+**自带密钥 (BYOK)**
+
+在仪表盘中连接你的 OpenAI、Anthropic 或 Replicate API 密钥。需要模型的工具调用通过你的密钥路由。你的成本。你的速率限制。完全控制。
+
+**Spike.land 代理积分**
+
+不想管理多个 API 账户？使用 spike.land 代理积分。一个积分池，统一计费，无需按服务开户。
+
+- 1 积分 = 1 次标准模型 API 调用（近似值，因模型和 token 数量而异）
+- Pro 和 Business 计划的积分按月滚动
+- 额外积分 $0.10/积分
+
+代理是透传的——我们在积分转换之外不加价。我们的利润来自平台和市场，不是模型推理。
+
+---
+
+## 技术栈
+
+spike.land 完全运行在 Cloudflare Workers 上。无需配置服务器。无需选择区域。请求自动路由到最近的边缘节点。基础设施让开路，让工具来完成工作。
+
+- **边缘 API**：Cloudflare Workers 上的 Hono 框架
+- **MCP 注册中心**：Cloudflare Workers + D1（边缘 SQLite）
+- **认证**：Better Auth + Drizzle ORM
+- **前端**：Vite + React + TanStack Router
+- **工具运行时**：按工具类别隔离的 Worker 环境
+
+[完整架构](/docs/architecture)已文档化。我们公开构建，也将继续如此。
+
+---
+
+## 为什么选 MCP？
+
+我们本可以构建 REST API。REST 大家都熟悉。人人都知道如何 curl 一个端点。
+
+但 REST API 是为盯着文档的人类开发者设计的。它们优化的是紧凑 JSON、状态码、分页 token。AI agent 需要不同的契约——一种用自然语言告诉模型一个能力*做什么*、用类型化参数告诉它*怎么调用*、以及告诉它响应在上下文中*意味着什么*的契约。
+
+MCP 就是这个契约。它把发现、类型化模式和叙事式响应定义为一等原语。当你的 AI agent 通过 MCP 连接到 spike.land 时，它不需要文档页面。它读取工具描述，推断正确的调用，然后执行。协议本身就是文档。
+
+我们在 [MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools) 中写了更多。简短版本：MCP 是一个表示层，不仅仅是传输层。它塑造的是模型如何*思考*你的能力，而不仅仅是如何*调用*它们。
+
+---
+
+## 接下来
+
+80+ 工具是一个起点，不是天花板。
+
+**2026 Q2**：MCP 资源和 Prompts。今天 spike.land 只有工具——每次交互都是一个函数调用。资源让 agent 可以浏览游戏状态、用户资料和工具目录作为可寻址内容。Prompts 让服务器提供可复用的交互模板。
+
+**2026 Q2**：市场公开上线。早期合作伙伴工具上线。收入分成开始支付。
+
+**2026 Q3**：工具组合 UI。在可视化编辑器中从现有工具构建多步流水线。无需代码。
+
+**2026 Q3**：Agent 间工具共享。在 Business 团队内发布私有工具，仅对你的 agent 可见。
+
+---
+
+## 开始使用
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+一条命令连接你到所有 80+ 工具。免费层工具无需注册。或者使用交互式 CLI：`npx @spike-land-ai/spike-cli shell`。对于 Pro 和 Business 功能，[创建账户](https://spike.land/login)。
+
+如果你想在平台上构建——发布工具、将 MCP 端点集成到你自己的产品中、或加入市场候补名单——[阅读开发者文档](https://spike.land/docs) 或直接联系我们。
+
+我们构建 spike.land 是为了让 AI 集成中无聊的部分消失。认证、发现、工具契约、计费——搞定了。你写 agent 逻辑。我们处理其余的。
+
+平台已上线。[开始构建](https://spike.land)。
+
+---
+
+*Radix 是一位居住在英国布莱顿的开发者。他花了五年时间构建 spike.land——在 ESM、TypeScript、Cloudflare Workers 和 MCP 还没有名字之前就在探索它们。他仍然认为最好的基础设施是你永远不用去想的那种。*

@@ -1,0 +1,134 @@
+---
+title: "How to Automate Your Dev Team: AI Agents That Ship Production Code"
+slug: "automate-dev-team-ai-agents"
+description: "A beginner-friendly guide to replacing manual bottlenecks with autonomous AI workflows. Learn how to use Claude Code, Jules, and CI/CD to ship features without writing code."
+date: "2026-02-04"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "developer-tools", "claude", "jules", "automation", "ci-cd", "agents", "productivity"]
+featured: false
+draft: false
+listed: false
+primer: "Claude plans. Jules codes. Your pipeline ships."
+heroPrompt: "A futuristic assembly line where AI robots are building code blocks, bright neon colors, cybernetic factory"
+heroImage: "/blog/automate-dev-team-ai-agents/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'How to Automate Your Dev Team: AI Agents That Ship Production Code'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/automate-dev-team-ai-agents/hero.png)
+
+<Tldr>
+
+- AI agent 可以自主交付生产代码——如果你的基础设施准备好了的话。
+- 前提条件：快速的自动化测试、零随机失败的测试、完整的测试覆盖率。
+- 工作流：Claude 规划 → Jules 写代码 → 你的流水线测试 → Claude 审查。
+- 你的工作从写代码变成定义代码应该做什么。
+
+</Tldr>
+
+{/* Audio Version - Generated with NotebookLM */}
+<AudioPlayer
+  src="/blog/automate-dev-team-ai-agents/Stop_Coding_And_Start_Context_Engineering.m4a"
+  title="Listen to this article (Generated with NotebookLM)"
+/>
+
+上周我做了一个实验，改变了我对软件开发的看法。
+
+我让 Claude Code 规划一个金融科技应用。不是写任何代码——只是规划。我告诉它同时使用 16 个不同的 sub-agent 来研究所有方面。
+
+这 16 个 agent 做了什么：
+- **4 个 agent** 梳理了认证模式和 API 设计
+- **3 个 agent** 设计了数据库 schema 并研究了法律合规
+- **4 个 agent** 为现代毛玻璃效果界面选择了 UI 组件
+- **3 个 agent** 搞清楚了如何将应用翻译成四种语言
+- **2 个 agent** 记录了边界情况和错误消息
+
+他们产出了 47 个详细规划文档。这种工作通常需要一个产品经理和高级工程师团队几天的时间。
+
+然后我拿了那份计划，交给一个完全不同的 AI 模型——Gemini Flash——说：**"构建它。"**
+
+**70 分钟后**，应用上线了。身份验证、流畅的动画、PIN 创建、精致的设计。全部。
+
+领悟不是"AI 很快"。领悟是：**如果计划足够好，即使是基础模型也能完美执行。**
+
+这是一个系统洞察。输出的质量不取决于构建者的智力，而取决于流入系统的指令质量。一个平庸的建筑师拿着出色的蓝图会胜过一个出色的建筑师拿着餐巾纸草图。
+
+{/* Diagram: days of manual planning versus 70 minutes of AI-powered delivery */}
+
+这不只是我的经验。Google 和 Microsoft 都报告说他们 25-30% 的代码现在由 AI 辅助或生成。
+
+---
+
+## 工作的新形态
+
+对初级开发者来说，这可能听起来像威胁。如果 AI 写代码，你还剩下什么？
+
+秘密在这里：AI 不管项目。你管。转变是从"写代码"到"编排 agent"。就像从演奏管弦乐团中的每种乐器变为指挥管弦乐团。
+
+现代开发实际上是这样运作的：
+
+| 阶段 | 谁来做 | 为什么 |
+|-------|------------|-----|
+| **规划** | Claude Code | 在写任何东西之前探索代码库和边界情况。 |
+| **实现** | Jules (AI Agent) | 严格按计划行事并添加自动化测试。 |
+| **CI/CD** | 你的流水线 | 运行测试确保 AI 没有破坏任何东西。 |
+| **代码审查** | Claude Code | 严格审查代码的安全性和质量。 |
+| **修复** | Jules | 持续修复代码直到测试和审查通过。 |
+
+你的新工作？**定义你想构建什么，并验证它能运作。**
+
+注意反馈循环。规划流入实现，实现流入测试，测试回流到修复，修复回流到审查。系统自我纠正。你的角色是设定初始方向并观察偏差。
+
+{/* Diagram: Planning → Implementation → Automated Tests → Code Review → Merge */}
+
+---
+
+## 安全网：为什么 CI/CD 不可商量
+
+你可能在想："但 AI 会产生幻觉。万一它搞坏了应用怎么办？"
+
+合理的担忧。如果你让 AI 盲目推送代码，它会搞坏东西。这就是为什么你需要一个 **CI/CD 流水线**——持续集成/持续部署。
+
+把 CI/CD 想成山路上的护栏。路更快是因为护栏在那里，而不是更慢。没有护栏，你就得爬行。
+
+每次 AI 写代码，流水线都会运行：
+1. **Lint** — 检查拼写和风格错误
+2. **类型检查** — 确保数据类型匹配
+3. **自动化测试** — 运行单元测试看逻辑是否有效
+4. **构建** — 尝试编译整个应用
+
+AI 不能合并代码，除非每个检查都通过。这就是自主 agent 安全的原因：不是信任，而是验证。流水线是平衡循环，在错误累积之前捕获它们。
+
+---
+
+## 让项目 "Agent-Ready"
+
+你不能把 AI agent 扔进一个混乱的代码库然后期望奇迹。系统有前提条件，就像工厂需要干净的输入才能让流水线运转。
+
+如果你的测试需要 45 分钟，AI 会卡在等待上。如果你的测试随机失败，AI 会兜圈子追幻影 bug——一个浪费努力的强化循环。
+
+要解锁这种速度，你的项目需要：
+
+1. **快速反馈循环。** 测试应该在 10 分钟内跑完。10 秒以内是真正的魔法发生的地方。
+2. **严格的 TypeScript。** 类型系统就像高速公路上的车道标记。AI 保持在车道内是因为类型告诉它边界在哪里。
+3. **可靠的测试。** 解释代码应该做什么的单元测试。像真实用户一样操作的端到端测试。它们共同构成规格说明。
+4. **零不稳定测试。** 如果一个测试随机失败，删除它或修复它。不稳定的测试比没有测试更糟——它教会 AI 失败是正常的。
+
+如果你能完全信任你的自动化测试，你就能信任 AI 写代码。信任是传递的。
+
+---
+
+## 新的开发者技能集
+
+CI/CD 处理代码正确性。但它不能告诉 AI 下一步构建什么。那是新工作。
+
+技能不再是"prompt 工程"——找魔法词来欺骗 AI。它是**上下文工程**——给 AI 正确的背景信息，让它深入理解你的具体项目，从而做出好的决策。
+
+你需要擅长的事：
+
+- **定义成功。** 写清晰的验收标准，让 AI 知道什么时候算完成。如果你不能定义"完成"，agent 也不能。
+- **设置护栏。** 告诉 AI 它可以动哪些文件，不该动哪些。边界不是限制——它们是聚焦。
+- **调试 agent。** 出问题时，你不只是读代码。你读 AI 的推理过程来理解它为什么做了错误的决定，然后改进你的指令。你调试的是过程，不是产品。
+
+你不再是砌砖工。你是建筑师。你在 AI 卡在需要判断力的业务决策时介入，而不是在它需要另一个 for 循环时。
+
+掌握这些的开发者不是快了 10%。他们快了几个数量级。而那些不适应的不会被 AI 取代。他们会被使用 AI 的开发者取代——就像我们曾经学会使用编译器一样——作为一种如此根本的力量倍增器，以至于不使用它变得不可想象。

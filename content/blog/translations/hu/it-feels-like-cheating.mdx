@@ -1,0 +1,242 @@
+---
+title: "It Feels Like Cheating (Because It Is)"
+slug: "it-feels-like-cheating"
+description: "How I deleted my E2E tests, rebuilt my API in two days, and stopped pretending code is precious. The BAZDMEG Method's radical conclusion: code is disposable."
+date: "2026-02-15"
+author: "Radix"
+category: "AI & Tools"
+tags: ["testing", "mcp", "bazdmeg", "architecture", "agents", "ci-cd", "philosophy"]
+featured: true
+draft: false
+primer: "When automation feels wrong, you cut the wrong thing."
+heroPrompt: "A person sitting in a comfortable chair drinking coffee while a robot army efficiently builds a complex digital city in the background, cinematic lighting, conceptual art"
+heroImage: "/blog/it-feels-like-cheating/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'It Feels Like Cheating (Because It Is)'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/it-feels-like-cheating/hero.png)
+
+## A vallomás
+
+El kell mondjak valamit.
+
+Minden reggel leülök a kávémmal. Megnyitom a Claude Code-ot. Megadom neki egy feature követelményeit. Húsz perc múlva a feature létezik. A tesztek zöldek. A CI zöld. Kiszállítom.
+
+Aztán becsukom a laptopot és elviszem a kutyámat sétálni, és az egész idő alatt ugyanazt gondolom: csaltam. Ez nem volt igazi munka. Kihagytam valamit. Valaki rá fog jönni.
+
+Hónapok óta érzem ezt. A bűntudat minden alkalommal felüti a fejét, amikor valami elsőre működik. Minden alkalommal, amikor ebéd előtt szállítok. Minden alkalommal, amikor ránézek a commit történetemre és tizenkét feature-t látok egy nap alatt, és arra gondolok, ez nem lehet legális.
+
+Rosszabb lett. Elkezdtem bagatellizálni. "Jaj, ez a feature egyszerű volt." Nem volt egyszerű. Auth flow-k voltak benne, adatbázis migrációk, edge case kezelés és egy teljes tesztcsomag. De mivel nem szenvedtem az építése közben, nem tudtam elfogadni, hogy valódi volt.
+
+Azt hittem, elmúlik az érzés. Nem múlt el. Szóval elkezdtem figyelni rá helyette.
+
+Íme, amit találtam.
+
+Az érzésnek van neve. Ez egy paradigmaváltás hangja, ami hamarabb érkezik, mint amennyire a kultúra készen áll rá. Amikor valami túl könnyűnek tűnik, nem azért van, mert csalsz. Azért van, mert kiiktattál egy egész munkakategóriát, ami régen nehéz volt. A bűntudat a régi identitásod tiltakozása. Az agyad összehasonlítja az outputodat azzal a szenvedés-mennyiséggel, amit elvár, és a számok nem stimmelnek.
+
+Mint valaki, aki kézzel mosott ruhát egész életében, és megkapja az első mosógépét. A ruhák tiszták. A folyamat tíz percig tartott. És mégis, valami bennük úgy érzi, nem számít.
+
+Elmondom, mit csináltam két nap alatt, ami az érzést véglegessé tette.
+
+## A kétnapos törlés
+
+Ránéztem az E2E tesztcsomagomra. Playwright tesztek. Tucatnyi. Szelektorok, amelyek csak arra várnak, hogy eltörjenek. Böngészőpéldányok, amelyek felállnak és leállnak. Tesztek, amelyek négy percig futottak és keddenként flake-eltek, okát senki sem tudta megmagyarázni.
+
+Volt egy tesztem, ami rákattintott egy gombra, megvárta a modált, kitöltött három mezőt, rákattintott a submit-re, megvárta a toast értesítést, és utána ellenőrzött egy adatbázis értéket. A teszt hatvan sor hosszú volt. Ötvenöt sor a böngészőről szólt. Öt az üzleti logikáról.
+
+Ez az arány megállított.
+
+Ötvenöt sor ceremónia. Öt sor lényeg. A keretet teszteltem a festmény helyett.
+
+Megkérdeztem magamtól: mi lenne, ha csak az öt sort tesztelném?
+
+Szóval áthelyeztem az összes üzleti logikát MCP eszközökbe. Minden darab egy típusos függvény lett Zod sémával, handlerrel és strukturált válasszal. A bemenet validálva. A kimenet típusozva. A szerződés kikényszerítve.
+
+Aztán töröltem az E2E teszteket.
+
+Az összeset.
+
+Lecseréltem őket MCP eszköztesztekre, amelyek milliszekundumok alatt futnak. Nem másodpercek. Milliszekundumok. Nincs böngésző. Nincs DOM. Nincs hálózat. Nincs animáció-időzítés. Nincsenek szelektorok, amelyek eltörnek, ha valaki megváltoztat egy CSS osztályt.
+
+Száz százalék lefedettség az üzleti logikán. Kevesebb mint negyvennyolc óra alatt.
+
+Íme a kulcsfontosságú felismerés, amitől minden összeállt. Ugyanaz az MCP handler, amit a React komponenseim hívnak produkcióban, ugyanaz a handler, amit a tesztjeim validálnak. Nem mock. Nem másolat. Nem közelítés. Pontosan ugyanaz a függvény. Pontosan ugyanaz a Zod séma. Pontosan ugyanaz a szerződés.
+
+Egyetlen igazságforrás. Két fogyasztó. A produkció és a tesztek ugyanazt az interfészt osztják.
+
+Ott ültem és bámultam a képernyőt. Heteket töltöttem Playwright tesztek írásával, amelyek a böngésző képességét tesztelték gombokra kattintani. A tényleges üzleti logikát — azt a részt, ami számított — mellékhatásként teszteltem. Utólagos gondolatként.
+
+Amikor ezt felfogtam, mondtam egy szót magyarul, amit nem fogok lefordítani.
+
+## A homokóra
+
+A tesztelési piramis mindig rossz alakzat volt erre a korszakra.
+
+A piramis azt mondja: sok unit teszt alul, néhány integrációs teszt középen, pár E2E teszt felül. Ennek volt értelme, amikor emberek írtak minden sort és a kód előállítása drága volt.
+
+Az AI megváltoztatta a gazdaságtant. Amikor a kód olcsón generálható, annak is változnia kell, mit és hogyan tesztelsz.
+
+A helyes alakzat egy homokóra.
+
+```
+         +---------------------+
+         |   E2E Specs (heavy)  |  <-- Humans write these
+         |   User flows as       |
+         |   Given/When/Then     |
+         +----------+-----------+
+                    |
+            +-------v-------+
+            |  UI Code       |  <-- AI generates this
+            |  (thin,        |    Disposable.
+            |   disposable)  |    Regenerate, don't fix.
+            +-------+-------+
+                    |
+    +---------------v---------------+
+    |  Business Logic Tests (heavy)  |  <-- MCP tools + unit tests
+    |  Validation, contracts, state   |    Bulletproof.
+    |  transitions, edge cases        |    Never skip.
+    +-------------------------------+
+```
+
+<HourglassModelDemo />
+
+Nehéz felül. Nehéz alul. Vékony és eldobható középen.
+
+A felső réteg emberek által írt E2E specifikáció. Ha a felhasználó be van jelentkezve, amikor rákattint a pénztárra, akkor a rendelés leadódik. Ezek leírják, *minek kellene történnie*. Végrehajtható formába öntött követelmények.
+
+Az alsó réteg MCP eszköztesztek. Üzleti logika. Validációs szabályok. Állapotátmenetek. Jogosultságkezelés. Szerződés kikényszerítés. Ezek bizonyítják, hogy a rendszer *ténylegesen működik*. Milliszekundumok alatt futnak. Sosem flake-elnek.
+
+A közép az UI kód. Az AI generálja. Eldobható. Ha egy komponens eltörik, nem debugolod. Újragenerálod. Törlés. Újranyomtatás.
+
+Hetven százalék MCP eszközteszt. Húsz százalék E2E specifikáció. Tíz százalék UI komponens teszt. Ez az arány.
+
+A közép azért eldobható, mert egy egyszerű rendszerelv: ha tudod, *miért* létezik a kód (felül), és *be tudod bizonyítani*, hogy működik (alul), maga a kód csak egy renderelés. Egy artefaktum. Egy nyomat. Az érték a követelményekben és a tesztekben él. A kód csak az, ami történik, amikor futtatod őket.
+
+## A hármas szolgálat
+
+Az MCP eszközök nem csak két urat szolgálnak. Hármat.
+
+**Produkciós API.** A React komponensek hívják őket. A UI hívja a `file_guard`-ot a változások ellenőrzéséhez. Az auth eszközöket a munkamenetek ellenőrzéséhez. Az üzleti logika eszközöket a felhasználói akciók feldolgozásához. Ezek a produkciós végpontok.
+
+**Tesztháló.** A Vitest validálja őket. Minden eszköznek típusos bemenete és kimenete van. Minden séma kikényszerített. Minden edge case lefedett. A tesztek pontosan ugyanazon a kódúton futnak, amit a produkció használ. Nem mock. Nem stub. A valódi dolog.
+
+**Agent fejlesztői eszközök.** A Claude Code használja őket fejlesztés közben. Az agent meghívhatja a `file_guard`-ot, hogy előre ellenőrizzen egy fájlváltozást commitolás előtt. Lefuttathatja a pontosan azt az MCP eszközt, amit épp megépített, hogy ellenőrizze, a kimenet megfelel-e a sémának. Felfedezheti az adatbázis állapotát, ellenőrizheti az auth flow-kat, validálhatja az üzleti szabályokat — mindezt ugyanazon az interfészen, amit a produkciós app használ.
+
+Ezért megy a Claude Code három-ötször gyorsabban ezen a kódbázison.
+
+Az agent nem vakon ír kódot abban a reményben, hogy a CI húsz perc múlva elkapja a hibákat. Precíziós műszerei vannak. Valós időben tesztelheti a saját munkáját. Ellenőrizhet egy üzleti szabályt, mielőtt megírná a komponenst, ami hívja.
+
+Olyan, mintha egy sebésznek MRI-gépet adnál a műtőben, ahelyett hogy megváratnád az eredményekre jövő keddig.
+
+Amikor az eszközök egyszerre három célt szolgálnak, nem három kódbázist kell karbantartanod. Egyet. És ez az egy kódbázis a rendszer legegyszerűbb verziója, mert minden eszköz csak egy függvény típusos sémával és handlerrel.
+
+## A végtelenül gyors CI szerver
+
+Valaki egyszer azt mondta nekem: "Kapsz egy végtelenül gyors CI szervert." Akkor nem értettem, mire gondol.
+
+Most már igen.
+
+Gondolj bele, mi történik, amikor a CI lassú. Amikor a tesztcsomag harminc percig tart, a hibád már összetételeződött. Mire megtudod, már három újabb feature-t építettél törött alapokra. Most régészkedsz. Melyik commit törte el ezek közül a negyvenhétből? Ez volt? Nem. Ez? Talán. Á — tulajdonképpen két commit interakciója volt, amit senki sem jósolt.
+
+Amikor a CI tíz másodperc, a szög megérinti az abroncsot és azonnal hallod. Nincs összetételeződés. Nincs régészkedés. Nincs "melyik commit törte el." Pontosan tudod, mit változtattál az imént. Javítod és mész tovább.
+
+A tízmasodperces szabály mindent megváltoztat.
+
+Ha a CI pipeline-od tíz másodperc alatt fut, teljesen kihagyhatod a branch-eket. Közvetlenül main-re commitolsz. Trunk-based development. Ugyanaz a minta, amit a Google és a Meta használ, csak ezer mérnök helyett egy gyors tesztcsomag teszi működőképessé.
+
+A matek egyszerű. Ötven commit naponta, öt másodperc darabja, az négy perc várakozás. Branching overhead változásonként öt perc, az kétszázötven perc ceremónia. Négy perc kontra négy óra. Ez nem optimalizáció. Ez egy más játék.
+
+És íme a rész, ami visszakapcsol a homokórához. Az MCP eszköztesztek azok, amelyek lehetővé teszik a tízmasodperces CI-t. Nem érhetsz el tízmasodperces CI-t, ha a tesztek böngészőt indítanak. Nem érhetsz el tízmasodperces CI-t, ha a tesztek hálózati hívásokat végeznek. Elérheted a tízmasodperces CI-t, ha a tesztjeid meghívnak egy függvényt, validálják a kimenetet és továbbmennek.
+
+A homokóra teszi lehetővé a sebességet. A sebesség teszi lehetővé a trunk-based developmentet. A trunk-based development teszi lehetővé a gyors iterációt. A gyors iteráció teszi lehetővé az AI fejlesztést.
+
+Ez egy önerősítő kör. Húzz ki egy elemet és az egész lelassul. Rakd össze mindet és kapsz valamit, ami úgy érzik, mintha csalnál.
+
+## Miért érzik csalásnak
+
+A programozás történetében minden paradigmaváltás csalásnak tűnt, amikor megérkezett.
+
+<ParadigmGuiltTimeline />
+
+Garbage collection. "Azt akarod mondani, nem kell többé memóriát kezelnem? Ez nem igazi programozás." Milliónyi fejlesztő érzett bűntudatot, hogy nem hívja a `free()`-t. Aztán gyorsabban szállítottak és a bűntudat elmúlt.
+
+ORM-ek. "Azt akarod mondani, nem kell többé SQL-t írnom? Ez veszélyes." A fejlesztők bűntudatot éreztek, hogy egy keretrendszer írja a lekérdezéseiket. Aztán gyorsabban szállítottak és a bűntudat elmúlt.
+
+CI/CD. "Azt akarod mondani, nem kell többé kézzel deployolnom? Mi van, ha valami elromlik?" A fejlesztők bűntudatot éreztek az automatizált deploymentek miatt. Aztán gyorsabban szállítottak és a bűntudat elmúlt.
+
+Most magán a kódon a sor. "Azt akarod mondani, nem kell többé magam írnom a kódot?"
+
+Igen. Ezt akarom mondani.
+
+És igen, az érzés ugyanaz. Pontosan ugyanaz a bűntudat és eufória koktél. Pontosan ugyanaz a hang, ami azt mondja, ez nem lehet jó, ez túl könnyű, biztosan kihagytam valamit.
+
+Nem hagytál ki semmit. Nyertél valamit. Visszakapod az összes időt, amit olyan munkára költöttél, ami sosem volt a lényeg.
+
+A bűntudat a jel. Amikor valami túl könnyűnek érzik, az azért van, mert kiiktattál egy munkakategóriát, ami sosem volt a valódi érték. A memóriakezelés sosem volt a lényeg. Az SQL sosem volt a lényeg. A deployment sosem volt a lényeg.
+
+A kód sosem volt a lényeg.
+
+A követelmények a termék. A kód csak a követelmények aktuális renderelése. Egy nyomat. Egy artefaktum. Ha húsz perc alatt újragenerálhatod tiszta követelményekből és bizonyított tesztekből, pontosan mit védtél?
+
+A válasz: az egódat. Azt az elképzelést, hogy az értéked a kódból származik, amit írsz. Hogy a gépelés aktusa az alkotás aktusa. Hogy az artefaktum a művészet.
+
+Nem az. A művészet az, hogy tudd, mit kell építeni. A művészet az, hogy annyira mélyen értsd a problémát, hogy elég pontosan le tudd írni ahhoz, hogy egy gép elsőre helyesen megépítse. Ez nehezebb, mint kódolni. Sokkal nehezebb.
+
+Próbáld ki. Ülj le és írj le egy feature-t olyan pontosan, hogy egy AI elsőre tökéletesen megépíti. Nulla kétértelműség. Nulla feltételezés. Minden edge case dokumentálva. Minden hibamód megadva. Minden interakció definiálva.
+
+Rá fogsz jönni, hogy ezen a szinten követelményeket írni a legnehezebb dolog, amit fejlesztőként valaha csináltál. Nehezebb, mint bármelyik algoritmus. Nehezebb, mint bármelyik architekturális döntés. Mert megköveteli, hogy ténylegesen teljesen értsd a problémát — nem csak annyira, amennyire a gépelés elkezdéséhez kell.
+
+## A név
+
+Bazdmeg, az magyarul van. Nem fogom lefordítani.
+
+Ha tudod, tudod. Ha nem tudod, kérdezz meg egy magyar barátot. Figyeld az arcát. Ez a megfelelő reakció arra a felismerésre, hogy a kód, amit húsz évig tanultál írni, a legkevésbé fontos része annak, amit építesz.
+
+Azért neveztem el a módszertant egy káromkodásról, mert a tiszteletlenség a lényeg. Ha a módszertanodnak udvarias neve van, még mindig úgy teszel, mintha. Még mindig úgy kezeled a kódot, mint valami szentet. Nem szent. Eldobható.
+
+Minden komoly szoftverfejlesztési módszertannak komoly neve van. Agile. Scrum. Extreme Programming. Lean. Mind úgy hangzanak, mintha egy tanácsadói prezentációba tartoznának. Arra vannak tervezve, hogy a menedzserek jól érezzék magukat.
+
+A BAZDMEG Módszer nem arra van tervezve, hogy bárki jól érezze magát. Arra van tervezve, hogy szembe nézz azzal, amivel nem akarsz szembenézni: a kódod nem számít. A tesztjeid számítanak. A követelményeid számítanak. A probléma megértése számít. A kód melléktermék.
+
+Hét alapelv. Fájdalomból születtek. Produkcióban tesztelve.
+
+1. A követelmények a termék.
+2. Fegyelem az automatizáció előtt.
+3. A kontextus az architektúra.
+4. Teszteld a hazugságokat.
+5. Vezényelj, ne operálj.
+6. A bizalmat PR-okban szerzed meg.
+7. Ami kiszállítod, az a tiéd.
+
+Ez az egész módszer egy levegővel. Mindegyiket a nehéz úton tanultuk. Mindegyik egy konkrét hiba válasza, amelyet megtapasztaltunk, dokumentáltunk, és megesküdtünk, hogy soha többé nem ismételjük meg.
+
+A részletek dokumentálva vannak. A checklisták léteznek. A workflow megismételhető. De a szellemiség a névben van. Mondd ki hangosan. Ha kényelmetlenül érzed magad, jó. Ez a kényelmetlenség egy szent tehén halálának hangja.
+
+## A kényelmetlen kérdés
+
+Ha törölhetem a kódbázisomat és újraépíthetem húsz perc alatt, pontosan mit védtem azokban az években?
+
+Nem a kódot. Az eldobható. Most bizonyítottam.
+
+Nem a teszteket. Azok még léteznek és erősebbek, mint valaha. Milliszekundumok percek helyett. Száz százalék lefedettség ahelyett, amit csak sikerült összehozni.
+
+Nem a követelményeket. Azok dokumentálva vannak. Tiszta elfogadási kritériumok. Típusos sémák. Végrehajtható specifikációk.
+
+Az egómat védtem.
+
+Azt az elképzelést, hogy az értékem a kódból származik, amit írok. Hogy a debugolással töltött órák kitüntetés. Hogy a komplexitás, amit a fejemben tudok tartani, különlegessé tesz. Hogy a szenvedés a komolyság bizonyítéka.
+
+Semmi ebből nem igaz.
+
+Ami értékessé tesz, az a problémák megértése. A megoldások pontos leírása. Olyan rendszerek építése, ahol az AI végzi a nehéz munkát, miközben én gondolkodom. Tudni, mit kell építeni, miért kell építeni, és hogyan bizonyítani, hogy működik.
+
+A kód? A kód egy nyomat. Generáld újra. Töröld. Nyomtasd ki megint. Nem érdekli. Nincsenek érzései. Nem emlékszik, milyen nehéz volt megírni. Vagy fut, vagy nem.
+
+Engedd el ezt, és nem fog többé csalásnak érezni.
+
+Tisztánlátásnak fog érezni.
+
+És a tisztánlátás, mint kiderült, a legproduktívabb állapot, amiben valaha dolgoztam.
+
+---
+
+*Radix egy brighton-i fejlesztő, aki a [spike.land](https://spike.land)-et építi. Azért nevezte el a módszertanát egy magyar káromkodásról, mert hisz az őszinteségben.*

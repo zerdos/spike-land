@@ -1,0 +1,201 @@
+---
+title: "Introducing spike.land — The MCP-First AI Platform"
+slug: "spike-land-launch"
+description: "spike.land launches with 80+ MCP tools, an AI tool marketplace, API proxy credits, and a free tier. Here's what we built and why it matters for developers building with AI."
+date: "2026-03-04"
+author: "Radix"
+category: "Product"
+tags: ["mcp", "ai", "platform", "launch", "tools", "marketplace", "cloudflare-workers", "api-gateway"]
+featured: true
+draft: false
+primer: "80+ tools. One platform. Build AI-powered apps without the plumbing."
+heroPrompt: "A sleek futuristic control panel with 80+ illuminated tool slots, glowing circuits connecting to AI models, dark theme with neon blue accents"
+heroImage: "/blog/spike-land-launch/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing spike.land — The MCP-First AI Platform'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-launch/hero.png)
+
+<Tldr>
+
+- A spike.land él, **80+ MCP tool-lal** a sakk, képstúdió, kódtér, QA automatizálás és egyéb területeken
+- **Ingyenes szint** az induláshoz. **Pro ($29/hó)**: 500 kredit/nap, prioritásos támogatás. **Business ($99/hó)**: korlátlan kredit, csapatkezelés
+- **MCP Tool Marketplace** indul 70/30-as bevételmegosztással — a tool szerzők tartják a 70%-ot
+- **API Gateway**: hozd a saját API kulcsaidat (BYOK), vagy használj spike.land proxy krediteket OpenAI, Anthropic és Replicate szolgáltatásokhoz
+- Egy protokoll, nulla egyedi integráció. Csatlakozz: `claude mcp add spike-land --transport http https://spike.land/mcp`
+
+</Tldr>
+
+## A probléma, amiről senki nem beszél őszintén
+
+N-szer M. Ez az integrációs probléma, ami mindenki szeme láttára rejtőzik.
+
+N AI kliens. M külső szolgáltatás. Minden kombinációhoz kell autentikáció, válaszfeldolgozás, hibakezelés, sebességkorlátozás, tool-felfedezés. Nulláról írva, minden alkalommal.
+
+Ha van 5 kliensed és 10 szolgáltatásod, az 50 integrációs útvonal. Adj hozzá még egy szolgáltatást, és 5 újabb integráció kell. A felület kvadratikusan nő. A karbantartási teher követi.
+
+Az MCP (Model Context Protocol) lecsökkenti az N-szer-M problémát N-plusz-M-re. Egy protokoll, mindkét oldalon egyszer implementálva. Bármelyik kliens beszél bármelyik szerverrel. Ugyanaz a felismerés, ami a USB-t sikeressé tette a tucat szabadalmazott kábellel szemben — egy közös szerződés veri az egyedi huzalozást.
+
+Erre a szabványra építettük a spike.land-et. Ma indulunk.
+
+---
+
+## Mi a spike.land
+
+A spike.land egy **MCP-first AI platform** — AI-alapú tool-ok regisztere, amiket az ágenseid egyetlen szabványos protokollon keresztül hívhatnak. Ahelyett, hogy egyedi API-kat kötnél be, az AI kliensed csatlakozik a spike.land-hez, és azonnal hozzáfér 80+ production-ready tool-hoz.
+
+Nincs egyedi integráció. Nincs autentikációs ragasztókód. Nincs lapozási logika. Csak tool-ok, hívásra készen.
+
+### A 80+ tool, amivel ma indulunk
+
+A kezdeti toolkészletünk öt kategóriát fog át:
+
+**Chess Arena** — Teljes kompetitív sakk ELO értékelésekkel, valós idejű kihívásokkal és játékállapot-kezeléssel. Hat tool. `chess_new_game`, `chess_send_challenge`, `chess_make_move`, `chess_get_board`, `chess_get_elo`, `chess_resign`.
+
+**Image Studio** — AI-alapú képelemzés, generálás, javítás, paletta kinyerés, album-kezelés és pipeline-orchestráció. 42 tool, kompozálható middleware architektúrára építve, amit a [The Architecture of Scale](/blog/the-architecture-of-scale-building-tools) cikkben írtunk le.
+
+**Codespace** — Élő kódfuttatás, transzpiláció és előnézeti környezetek. Öt tool TypeScript és JavaScript izolált sandbox-ban való futtatásához.
+
+**QA Studio** — Böngésző-automatizálás Playwrighttel. Nyolc tool szkriptelt end-to-end teszteléshez, képernyőkép-készítéshez és interakció-rögzítéshez.
+
+**Utilities** — Web fetch, keresés, fájlműveletek, és egy növekvő készlet általános célú tool-okból, amik kategóriákon átívelően kompozálhatók.
+
+Minden tool ugyanazt a kontraktust követi: típusos Zod bemeneti séma, narratíva-első válasz, strukturált JSON kimenet. [Miért narratív válaszok?](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data) Mert egy AI ágensnek nem csak adatra van szüksége — olyan adatra van szüksége, amiről kontextusban tud gondolkodni.
+
+---
+
+## Árazás
+
+A spike.land-et úgy építettük, hogy minden skálán elérhető legyen. Indulj ingyenesen, nőj bele abba, amire szükséged van.
+
+### Ingyenes szint
+
+Indulj ma, bankkártya nélkül.
+
+- Hozzáférés az ingyenes szintű tool-okhoz
+- 50 kredit/nap
+- Közösségi támogatás
+- BYOK (hozd a saját API kulcsaidat)
+
+### Pro — $29/hónap
+
+Egyéni fejlesztőknek, akiknek több tér kell.
+
+- **500 kredit/nap**
+- Mind a 80+ tool, beleértve a prémium szinteket
+- Prioritásos támogatás (48 órás válaszidő)
+- BYOK + spike.land proxy kredit
+- Használati elemzési dashboard
+
+### Business — $99/hónap
+
+Csapatoknak, akik production AI workflow-kat építenek.
+
+- **Korlátlan kredit**
+- Csapatkezelés és megosztott API kulcsok
+- Egyedi tool-telepítés
+- SLA-garantált támogatás (24 órás válaszidő)
+- Audit naplók és használati jelentések
+- Korai hozzáférés a marketplace funkciókhoz
+
+Minden csomag tartalmazza a hozzáférést az MCP végponthoz: `https://spike.land/api/mcp`. Csatlakozz egyszer a [spike-cli](/blog/mcp-explained-universal-adapter-for-ai-tools)-n keresztül, és az ágensednek mindene megvan.
+
+---
+
+## Az MCP Tool Marketplace
+
+A spike.land marketplace-t a platformmal együtt indítjuk.
+
+Az ötlet egyszerű: ha építesz egy hasznos MCP tool-t, kapnod kell fizetést, amikor mások használják. Mi kezeljük az infrastruktúrát — autentikáció, sebességkorlátozás, számlázás, felfedezés, protokoll-megfelelőség. Te kezeled az üzleti logikát. A csővezeték a mi problémánk, nem a tiéd.
+
+**Bevételmegosztás: 70/30. A tool szerzők tartják a 70%-ot.**
+
+A publikált tool-ok megjelennek a spike.land regiszterben, és bármely spike-cli felhasználó számára hívhatóvá válnak. A számlázás kredit-alapú — a felhasználók hívásonként fizetnek, te sikeres végrehajtásonként keresel.
+
+Tool publikálásához szükséged van:
+1. Érvényes MCP tool definícióra (név, leírás, Zod séma, handler)
+2. spike.land fejlesztői fiókra
+3. Publikált npm csomagra vagy telepített Cloudflare Worker végpontra
+
+A [tool builder pattern](/blog/the-architecture-of-scale-building-tools), amit belsőleg használunk, ugyanaz, amit a marketplace szerzők is használnak. Ugyanaz az API felület. Ugyanaz a válaszformátum. Könnyű az ágenseknek felfedezni és kompozálni.
+
+Ma nyitjuk meg a marketplace-t a korai partnerek számára. Ha van tool-od, amit publikálni szeretnél, [jelentkezz a korai hozzáférésre](https://spike.land/marketplace/apply).
+
+---
+
+## API Gateway: Kreditek és BYOK
+
+Sok tool-unk belsőleg hív AI modelleket — képelemzés, kódmagyarázat, tartalomgenerálás. Kétféle módot adunk a modellhívások kifizetésére, mert a rugalmasság fontos, amikor még kitalálod, mi működik.
+
+**Hozd a Saját Kulcsaidat (BYOK)**
+
+Kösd be az OpenAI, Anthropic vagy Replicate API kulcsaidat a dashboardon. A modellt igénylő tool-hívások a te kulcsaidon mennek keresztül. A te költséged. A te sebességkorlátaid. Teljes kontroll.
+
+**spike.land Proxy Kredit**
+
+Nem szeretnél több API fiókot kezelni? Használj spike.land proxy krediteket. Egy kredit pool, összesített számlázás, nincsenek szolgáltatásonkénti fiókok.
+
+- 1 kredit = 1 standard modell API hívás (hozzávetőleges, modelltől és token-számtól függően változik)
+- A kreditek hónapról hónapra görgetődnek Pro és Business csomagoknál
+- Vásárolj további krediteket $0,10/kredit áron
+
+A proxy átmenő — nem számolunk fel felárat a modellköltségekre a kredit-konverzión túl. A mi margónk a platformon és a marketplace-en van, nem a modell-inferenciáin.
+
+---
+
+## A technikai stack
+
+A spike.land teljes egészében Cloudflare Workersen fut. Nincsenek szerverzek kiépíteni. Nincsenek régiók konfigurálni. A kérések automatikusan a legközelebbi edge csomóponthoz kerülnek. Az infrastruktúra eltűnik az útból, hogy a tool-ok végezhessék a dolgukat.
+
+- **Edge API**: Hono framework Cloudflare Workersen
+- **MCP registry**: Cloudflare Workers + D1 (SQLite az edge-en)
+- **Auth**: Better Auth Drizzle ORM-mel
+- **Frontend**: Vite + React + TanStack Router
+- **Tool runtime**: Izolált Worker környezetek tool-kategóriánként
+
+A [teljes architektúra](/docs/architecture) dokumentálva van. Nyíltan építkeztünk, és folytatni fogjuk.
+
+---
+
+## Miért MCP?
+
+Építhettünk volna REST API-t. A REST ismerős. Mindenki tudja, hogyan kell curl-lel meghívni egy végpontot.
+
+De a REST API-kat emberi fejlesztőknek tervezték, akik dokumentációt bámulnak. Kompakt JSON-ra, státuszkódokra, lapozási tokenekre optimalizálnak. Az AI ágenseknek más kontraktus kell — olyan, ami természetes nyelven mondja el a modellnek, *mit* csinál egy képesség, *hogyan* hívja meg típusos paraméterekkel, és *mit jelent* a válasz kontextusban.
+
+Az MCP ez a kontraktus. Definiálja a felfedezést, a típusos sémákat és a narratív válaszokat mint első osztályú primitíveket. Amikor az AI ágensed MCP-n csatlakozik a spike.land-hez, nincs szüksége dokumentációs oldalakra. Elolvassa a tool-leírásokat, kikövetkezteti a helyes hívásokat és végrehajtja. Maga a protokoll a dokumentáció.
+
+Erről bővebben írtunk az [MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools) cikkben. A rövid verzió: az MCP egy prezentációs réteg, nem csak egy transzport. Formálja, hogyan gondolkodik a modell a képességeidről, nem csak azt, hogyan hívja őket.
+
+---
+
+## Mi jön ezután
+
+A 80+ tool egy kezdet, nem egy plafon.
+
+**Q2 2026**: MCP Resources és Prompts. Ma a spike.land csak tool-okból áll — minden interakció egy függvényhívás. A Resources lehetővé teszi, hogy az ágensek böngésszék a játékállapotokat, felhasználói profilokat és tool-katalógusokat címezhető tartalomként. A Prompts lehetővé teszi, hogy a szerverek újrafelhasználható interakciós sablonokat nyújtsanak.
+
+**Q2 2026**: Marketplace nyilvános indulás. A korai partneri tool-ok élőbe mennek. Elkezdődik a bevételmegosztás kifizetése.
+
+**Q3 2026**: Tool kompozíciós UI. Építs többlépéses pipeline-okat meglévő tool-okból vizuális szerkesztőben. Kód nem szükséges.
+
+**Q3 2026**: Ágens-ágens tool megosztás. Publikálj privát tool-okat egy Business csapaton belül, csak az ágenseid számára láthatóan.
+
+---
+
+## Kezdj hozzá
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+Ez az egyetlen parancs csatlakoztat mind a 80+ tool-hoz. Nincs szükség regisztrációra az ingyenes szintű tool-okhoz. Alternatívaként használd az interaktív CLI-t: `npx @spike-land-ai/spike-cli shell`. Pro és Business funkciókhoz [hozz létre fiókot](https://spike.land/login).
+
+Ha a platformra szeretnél építeni — tool-okat publikálni, az MCP végpontot integrálni a saját termékedbe, vagy csatlakozni a marketplace várólistához — [olvasd el a fejlesztői doksit](https://spike.land/docs), vagy keress minket közvetlenül.
+
+A spike.land-et azért építettük, hogy az AI-integráció unalmas részei eltűnjenek. Autentikáció, felfedezés, tool-kontraktusok, számlázás — megoldva. Te írod az ágens logikát. Mi intézzük a többit.
+
+A platform él. [Kezdj építeni](https://spike.land).
+
+---
+
+*Radix egy Brighton, UK-beli fejlesztő. Öt éve építi a spike.land-et — ESM-mel, TypeScripttel, Cloudflare Workerssel és MCP-vel kísérletezett, mielőtt az MCP-nek neve lett volna. Még mindig hiszi, hogy a legjobb infrastruktúra az, amire soha nem kell gondolnod.*

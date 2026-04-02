@@ -1,0 +1,134 @@
+---
+title: "How spike.land Uses AI and A/B Testing to Find Bugs Before You Do"
+slug: "ai-ab-testing-bug-detection"
+description: "Variant testing on spike.land is not just for conversion. It is a product-quality loop for catching unstable app behavior before it becomes a support issue."
+date: "2026-03-08"
+author: "Radix"
+category: "Engineering"
+tags: ["a-b-testing", "ai", "bugs", "quality", "experiments", "mcp"]
+featured: false
+draft: false
+primer: "The AI writes variants. The experiment engine decides what ships."
+heroImage: "/blog/ai-ab-testing-bug-detection/hero.jpg"
+heroPrompt: "A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents"
+---
+
+![A modern digital illustration for a blog post titled 'How spike.land Uses AI and A/B Testing to Find Bugs Before You Do'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/ai-ab-testing-bug-detection/hero.jpg)
+
+![A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents](/blog/ai-ab-testing-bug-detection/hero.png)
+
+<Tldr>
+
+- spike.land tratta l'A/B testing come un sistema di affidabilita, non solo come una tattica di marketing.
+- Le varianti delle app possono essere assegnate in modo coerente, misurate, confrontate e promosse solo dopo aver soddisfatto soglie di evidenza rigorose.
+- L'attuale motore decisionale e bayesiano, deterministico e verificabile: minimo 48 ore di esecuzione, 500 impression per variante, probabilita di vittoria superiore al 95%.
+- L'AI aiuta a generare alternative e spiegare i fallimenti, ma non le e permesso "vibrare" un vincitore in produzione.
+
+</Tldr>
+
+## La maggior parte degli A/B test pone la domanda sbagliata
+
+La maggior parte dei team usa gli esperimenti per risolvere piccole discussioni. Il pulsante dovrebbe essere blu? Il titolo dovrebbe essere piu corto? La card del prezzo A batte la card del prezzo B?
+
+Sono domande valide. Ma non sono le piu interessanti.
+
+La domanda piu preziosa e: **Quale variante e meno rotta?**
+
+Una volta che inizi a chiederti questo, l'A/B testing si trasforma. Smette di essere solo uno strumento di crescita — il genere di cosa che i team marketing usano per spremere punti di conversione — e diventa un sistema di qualita. Un feedback loop che cattura l'instabilita prima che gli utenti la percepiscano.
+
+Pensatelo come un termostato. Un termostato non vi dice solo la temperatura. Mantiene il sistema entro certi limiti. Questo e cio che vogliamo che gli esperimenti facciano: non solo misurare, ma regolare.
+
+---
+
+## Due sistemi, un loop
+
+spike.land ha due componenti correlate qui, e la parte interessante e come si connettono.
+
+Il primo e il **workflow rivolto all'app store**: deployment, varianti, assegnazione dei visitatori, tracciamento delle impression, tracciamento degli errori e dichiarazione del vincitore. Questo e il meccanismo visibile.
+
+Il secondo e il **motore di esperimenti generale**: assegnazione basata su hash, tracciamento eventi, valutazione bayesiana e monitoraggio delle anomalie. Questo e il meccanismo invisibile.
+
+Insieme formano un unico loop:
+
+1. Pubblica multiple versioni di qualcosa
+2. Osserva cosa gli utenti effettivamente incontrano
+3. Misura gli errori insieme ai risultati
+4. Promuovi la versione migliore solo quando i dati lo giustificano
+
+La parola chiave e "solo". La maggior parte dei sistemi e troppo ansiosa di dichiarare vincitori. Il nostro e deliberatamente lento in questo.
+
+---
+
+## Dove l'AI ha un ruolo (e dove no)
+
+Il ruolo utile per l'AI qui non e "decidere il vincitore". Sarebbe come lasciare che la persona che ha generato l'ipotesi valuti anche l'esperimento. I ruoli hanno bisogno di separazione.
+
+L'AI e forte nel:
+
+- generare una variante piu pulita
+- proporre un percorso di fallback quando qualcosa si rompe
+- raggruppare pattern di errore in probabili temi di bug
+- spiegare perche una variante perdente probabilmente ha fallito
+
+In termini di pensiero sistemico, l'AI e buona dal lato generativo — la parte che aumenta la varieta. Ma quando si tratta di pubblicare, la piattaforma usa regole esplicite. Il lato di selezione resta deterministico.
+
+Questa separazione conta. E la differenza tra un sistema che impara e un sistema che allucinata progressi.
+
+---
+
+## Le regole di pubblicazione
+
+Il motore di esperimenti non e sottile riguardo alle sue soglie. Prima che un vincitore possa essere promosso automaticamente, l'esperimento deve soddisfare tutte e quattro le condizioni:
+
+- Almeno **48 ore** di esecuzione
+- Almeno **500 impression** per variante
+- Una probabilita di vittoria superiore al **95%**
+- Almeno **10% di lift** rispetto al controllo (a meno che il controllo stesso non vinca)
+
+Perche proprio questi numeri? Perche rappresentano l'evidenza minima a partire dalla quale una decisione sbagliata diventa abbastanza improbabile da essere accettabile. Sotto queste soglie, stai tirando a indovinare. Sopra, stai decidendo.
+
+Lasciamo che l'AI ci aiuti a esplorare. Non le permettiamo di allucinare certezze.
+
+---
+
+## Bayesiano invece che illusorio
+
+Mi piace la valutazione bayesiana qui perche corrisponde alla vera domanda che stai cercando di rispondere in produzione:
+
+**Quanto e probabile che questa variante sia effettivamente migliore?**
+
+Questa e una domanda fondamentalmente diversa da "la metrica e salita?" Una metrica che sale e una storia. Una probabilita a posteriori e un argomento.
+
+Il motore campiona la distribuzione a posteriori per ogni variante, le confronta ripetutamente e misura quale vince piu spesso. Questo ci da una probabilita, non solo una spunta verde su una dashboard.
+
+E la differenza tra una previsione meteo che dice "sereno" e una che dice "82% di probabilita di sole". La seconda ti permette di prendere una decisione reale.
+
+---
+
+## Rilevamento bug, non solo rilevamento di lift
+
+E qui che l'inquadramento basato sulla metrica di crescita crolla. Il lift e una narrazione. Il tasso di errore e un fatto.
+
+L'angolo della qualita emerge in due punti.
+
+Primo, **le varianti con molti errori si rivelano rapidamente**. Se una versione produce un comportamento runtime significativamente peggiore, non hai bisogno di un lungo dibattito di prodotto. I dati ti stanno gia dicendo qualcosa. Una variante che crasha il 3% delle volte non sta "perdendo il test di conversione" — e rotta.
+
+Secondo, **il monitoraggio delle anomalie cattura i fallimenti operativi**. Se una variante attiva improvvisamente scende a zero impression, non e un problema di copywriting. E un problema di routing o rollout. Qualcosa nel sistema non e piu connesso.
+
+Questi sono segnali di bug, non segnali di crescita. E sono quelli piu importanti da catturare presto, perche un bug che va in produzione e molto piu costoso di un titolo che sottoperforma.
+
+---
+
+## Cosa significa per un app store aperto
+
+Un app store aperto funziona solo se la qualita puo scalare senza gatekeeper umani che revisionano ogni submission.
+
+Piu sviluppatori pubblicano, piu possibilita ci sono che comportamenti instabili raggiungano gli utenti. La risposta non puo essere "ispeziona manualmente tutto per sempre". Quell'approccio non scala — crea solo un collo di bottiglia che sembra responsabile.
+
+Quindi la piattaforma ha bisogno di un loop auto-regolante:
+
+`genera -> testa -> osserva -> promuovi -> impara`
+
+L'AI gestisce la generazione e la diagnosi. Il sistema di sperimentazione gestisce la misurazione e la promozione. Insieme formano un loop rinforzante: le varianti migliori vengono promosse, quelle rotte vengono catturate e la qualita complessiva del sistema sale nel tempo senza che qualcuno lo curi manualmente.
+
+Questo e il vero punto del rilevamento bug A/B con AI su spike.land. Non e uno slogan. E la piattaforma che impara come pubblicare app piu sicure su scala da store — un sistema di qualita che diventa piu intelligente piu viene eseguito.

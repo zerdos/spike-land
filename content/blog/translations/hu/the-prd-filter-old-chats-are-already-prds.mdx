@@ -1,0 +1,201 @@
+---
+title: "The PRD Filter: Your Old Chats Are Already PRDs"
+slug: "the-prd-filter-old-chats-are-already-prds"
+description: "Most long AI chats are just badly formatted requirements documents. A PRD filter turns transcript sludge into a compact execution artifact, and that changes what one developer can ship."
+date: "2026-03-12"
+author: "Radix"
+category: "Developer Experience"
+tags: ["prd", "spike-chat", "context-engineering", "ai", "productivity", "requirements", "developer-tools"]
+featured: false
+draft: false
+primer: "Your old chats are not waste. They are latent PRDs."
+heroPrompt: "A cluttered AI chat transcript being compressed into a sharp engineering blueprint, cinematic tech illustration, steel blue and amber accents"
+heroImage: "/blog/the-prd-filter-old-chats-are-already-prds/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'The PRD Filter: Your Old Chats Are Already PRDs'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-prd-filter-old-chats-are-already-prds/hero.png)
+
+![A cluttered AI chat transcript being compressed into a sharp engineering blueprint, cinematic tech illustration, steel blue and amber accents](/blog/the-prd-filter-old-chats-are-already-prds/hero.jpg)
+
+<Tldr>
+
+- A legtobb hosszu AI-cseveges nem igazi beszelgetes. Szetszort PRD-k, tulzottan sok uzenetbe tomoritve.
+- A megoldas nem az egesz transzkript ujrajatszasa. Hanem a legkisebb, hiteles vegrehajtasi artefaktum kinyerese.
+- Egy PRD-szuro a kaotikus csevegeset feladatta, megkotesekke, elfogadasi kriteriummokka, kontextussa es prioritassa alakitja.
+- Ez megvaltoztatja, mennyit tud szallitani egyetlen fejleszto.
+
+</Tldr>
+
+<video controls preload="metadata" style={{ width: "100%", borderRadius: "1rem", marginTop: "1.5rem", marginBottom: "1.5rem" }}>
+  <source src="/blog/the-prd-filter-old-chats-are-already-prds/the-extraction-protocol.mp4" type="video/mp4" />
+  Your browser does not support the video element.
+</video>
+
+A legtobben ugy gondoljak, az AI-csevegok fo problemaja a context window merete.
+
+De nem ez az igazi problema.
+
+Az igazi problema a reprezentacio — annak a formaja, amit magaddal cipelsz tovabb.
+
+Gondolj ra igy. Beszelgetsz egy kivitelezovel a konyha felujitasarol. Egy ora ide-oda utan — meres, csempeszin-vitazas, a konyhaszigetet illetoleg meggondolod magad, engedelyekrol kerdezoskodsz — a hasznos kimenet nem a beszelgetes atirata. Hanem a terv. A specifikacio. Az a valami, amit odaadsz valakinek es azt mondod: "Epitsd meg ezt."
+
+A legtobb AI chat rendszer transzkript formajabn tartja a beszelgetest meg aztan is, amikor a hasznos resz mar regen veget ert. Mindent megoriz:
+
+- terves inditasok
+- elfekvob tool-eredmenyek
+- ismetelt magyarazatok
+- elavult feltetelezsek
+- kiterjok, amik mar nem szamitanak
+
+Aztan ezt hivjak "kontextusnak."
+
+Ez nem kontextus. Ez egy rosszul kezelt munkakapcso. Ez a konyha terv osszes piszkozata egymasra tuzve, es atadva az epitonek.
+
+## A PRD-szuro
+
+Ime az allitas:
+
+> A legtobb hosszu cseveges mar eleve PRD. Csak a transzkript formajaban van fogva tartva.
+
+A huszadik kores utanra a felhasznalo altalaban mar kimondta a fontos dolgokat:
+
+- mit akar
+- minek nem szabad eltorolnie
+- hogyan nez ki a siker
+- milyen kornyezetben van
+- milyen megkotesek szamitanak
+- milyen edge case-ek teszik trukkossa a feladatot
+
+Ez mar eleg az erdemi munkahoz.
+
+Nem egy vallalati PRD, tele roadmap-szinhazzal es stakeholder-matrixokkal.
+
+Hanem egy igazi.
+
+Kicsi.
+Operativ.
+Vegrehajtahato.
+
+A hiba az, hogy szetszorva hagyjuk a regi uzenetek kozott, mint rejtveny-darabokat egy asztalon, amiket senki sem rak ossze.
+
+A helyes rendszer kinyeri a hasznos format:
+
+- `intent`
+- `task`
+- `constraints`
+- `acceptance`
+- `context`
+- `priority`
+
+Ez eleg az epiteshez, debugolashoz, review-hoz, deploy-hoz vagy analizishez.
+
+Ha megvan ez a forma, a regi csevegések tobbet nem teher. Forrasanyagga valnak.
+
+## Miert legyenek a regi csevegésekbol PRD-k
+
+A transzkript-elso rendszerek arra kenyszeritik a modellt, hogy ujra es ujra olvassa a feladat regeszetet. Minden korben a modellnek at kell rostalna a teljes elozmenyeket — a rossz fordulokat, a javitasokat, a "varj, mast akartam mondani" pillanatokat — hogy kideritse, mi is a kovetelmeny aktualis allapota.
+
+Ez draga. Ez pazarlas. Es hibaforras, mert a modell belekapaszkodhat egy felulirt dontesbe, ami meg ott ul a transzkriptben.
+
+A modellnek nem kell ujraelnie a beszelgetest. Szuksege van az igazsagra, ami a beszelgetesbol kiallt.
+
+Ha egy felhasznalo negyven uzeneten keresztul tisztazott egy funkciot, a valasz nem az, hogy:
+
+> kuldjuk vissza mind a negyven uzenetet orokke
+
+A valasz:
+
+> nyerjuk ki a kovetelmenyt es vigyuk tovabb azt helyette
+
+Ez a PRD-szuro igazi feladata.
+
+Ez nem osszefoglalas. Az osszefoglalasok reszleteket veszitenek.
+
+Ez nem jegyzeteles. A jegyzetek strukturalatlanok.
+
+Ez nem chat-takaritas. A takaritas a rossz formatumot orzi meg.
+
+Ez egy reprezentacios upgrade. Beszelgetesi entropiat alakitasz vegrehajtasi artefaktumma — mintha egy csapongobrainstormot destillalnál tervrajzza.
+
+Ez megvaltoztatja a szoftverfejlesztes gazdasagossagat.
+
+## Mit tart meg a szuro
+
+Egy jo PRD-szuro konyortelen.
+
+Nem erdekli a beszelgetes erzelmi tortenete. Nem erdeklik az az ot uzenet, ahol te es az AI az elnevezesi konvenciokrol vitatkoztatok. Nem erdekli a teves inditas, ahol egy masik megkozelitest probaltatok es feladtatok.
+
+Csak a folytatáshoz szukseges minimalis, hiteles allapot erdekli.
+
+Ez altalaban a kovetkezot jelenti:
+
+- az alapfeladat egy mondatban
+- nehany kemeny megkotes
+- eleg szoros elfogadasi kriteriumok a teszteleshez
+- releváns technikai vagy uzleti kontextus
+- becsuletes prioritas-szint
+
+Minden mas opcionals.
+
+Ezert ertekesek paradox modon a regi csevegések. Targyalast tartalmaznak. Javitasokat tartalmaznak. Rejtett megkoteseket tartalmaznak, amiket a felhasznalo elfelejtett az elejen kimondani, de harminc koros ide-oda soran felszinre hoztot.
+
+A transzkript zajos.
+
+A benne rejtett kovetelmeny nem az.
+
+## Miert szamit ez a gyakorlatban
+
+Ha ezt tisztan latod, a munkafolyamat megvaltozik.
+
+Az igazi munka:
+
+1. Kinyerni a kovetelmenyt
+2. Formalizalni a kepesseget
+3. Ervenyesiteni a megkoteseket
+4. Ellenorizni a kimenetet
+
+A kod mind a negy utan jon.
+
+Ha a kovetelmeny eles, az implementacio sokkal konnyebb lesz. A szoftverfejlesztes surlodásának nagy resze nem a kodiras — hanem kitalalni, mit kell irni. Egy tiszta kovetelmeny ennek a surlodásnak a nagy reszet eltunteti. A kod szinte magat irja, mert vegre tudod, hogyan nez ki a "kesz."
+
+Ezert szamit a PRD-szuro.
+
+Nem UI-trukk.
+Nem prompt-trukk.
+Nem magia.
+
+Egy rendszer, ami becsuletes tartja a munkakeszletet.
+
+## Miert szamit ez szolofejlesztoknek
+
+Ha egyedul dolgozol, a transzkript-iszap kulonosen draga. Nincs csapatod, hogy elnyelje a koltsegtobblet. Nincs PM-ed, aki leforditja a kaotikus beszelgeteseket tiszta specifikaciovka. Minden perc, amit regi kontextus ujraelemzesevel toltesz, egy perc, amit nem az epitesre forditasz.
+
+Nem tobb chat-elozmeny kell.
+
+Tisztabb allapot kell.
+
+Egy PRD-szuro csokkenti a zajt, amit a modellnek es az embernek is cipelnie kell. A "mi is volt a dolgunk?" kerdest kompakt artefaktumma alakitja, amiben megbizhatsz — mint egy iranytu ahelyett, hogy a terkep mutanna, hol jartal mar mindenhol.
+
+Ez az egyik fo oka annak, hogy egy szolofejleszto most gyorsabban tud haladni, mint csapatok, amelyek meg mindig megbeszelesek, atadások es transzkript-leves kore szervezodnek. Nem azert, mert a szolofejleszto okosabb. Hanem mert kevesebb zaj van a rendszerben.
+
+## A strategiai kovetkezmeny
+
+Az AI-tamogatott szoftverfejlesztes jovoje nem a nagyobb transzkript-bufferekrol szol. Hanem jobb tomoritesi hatarokrol.
+
+A legjobb rendszerek nem azok lesznek, amelyek a legtobbre emlekeznek. Hanem azok, amelyek a legtisztabb artefaktumot orzik meg arrol, ami most szamit. A memoria olcso. A relevancia draga. Azok a rendszerek fognak jobban teljesiteni, amelyek megtanuljak megkulonboztetni a kettot, szemben azokkal, amelyek mindent felhalmoznak.
+
+A regi csevegések nem holtteher.
+
+Latens PRD-k.
+
+Ha a rendszered nem tudja oket vegrehajtahato kovetelmenyekke alakitani, akkor a legertekesebb dolgot pazarolja, amit a beszelgetes termelt — a lassan finomitott megértesét annak, mit kell epiteni.
+
+## Kovetkezzen
+
+Ez az egyik alaprendszer, amit most epitek.
+
+Mert azt gondolom, itt rontja el sok AI-szoftver a format. Nem azert, mert a modellek tul gyengek. Hanem mert a tovabbvitt artefaktum tul kaotikus.
+
+Ez javithato.
+
+Es ha javitod, egyetlen fejleszto sokkal tobbet tud szallitani, mint amit az emberek varnak.

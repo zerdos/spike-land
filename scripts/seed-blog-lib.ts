@@ -19,6 +19,14 @@ export interface BlogPost {
   heroImage: string | null;
   heroPrompt: string | null;
   content: string;
+  contentHu: string | null;
+  contentDe: string | null;
+  contentRu: string | null;
+  contentIt: string | null;
+  contentEs: string | null;
+  contentZh: string | null;
+  contentFr: string | null;
+  contentJa: string | null;
 }
 
 /**
@@ -60,6 +68,14 @@ export function parseMdxContent(rawContent: string, filename: string): BlogPost 
     heroImage,
     heroPrompt,
     content: body,
+    contentHu: null,
+    contentDe: null,
+    contentRu: null,
+    contentIt: null,
+    contentEs: null,
+    contentZh: null,
+    contentFr: null,
+    contentJa: null,
   };
 }
 
@@ -76,6 +92,7 @@ export function sortByDateDesc(posts: BlogPost[]): BlogPost[] {
 export function generateSQL(posts: BlogPost[]): string {
   const statements: string[] = [];
 
+  // Base INSERT without translations (to stay under SQLITE_TOOBIG limit)
   for (const post of posts) {
     statements.push(
       `INSERT OR REPLACE INTO blog_posts (slug, title, description, primer, date, author, category, tags, featured, draft, unlisted, hero_image, hero_prompt, content, updated_at)
@@ -84,4 +101,40 @@ VALUES ('${escapeSQL(post.slug)}', '${escapeSQL(post.title)}', '${escapeSQL(post
   }
 
   return statements.join("\n\n");
+}
+
+/**
+ * Generate separate UPDATE statements for each translation language.
+ * Returns a map of lang code → SQL string (each small enough for D1).
+ */
+export function generateTranslationSQL(posts: BlogPost[]): Map<string, string> {
+  const langFields: { code: string; field: keyof BlogPost; column: string }[] = [
+    { code: "hu", field: "contentHu", column: "content_hu" },
+    { code: "de", field: "contentDe", column: "content_de" },
+    { code: "ru", field: "contentRu", column: "content_ru" },
+    { code: "it", field: "contentIt", column: "content_it" },
+    { code: "es", field: "contentEs", column: "content_es" },
+    { code: "zh", field: "contentZh", column: "content_zh" },
+    { code: "fr", field: "contentFr", column: "content_fr" },
+    { code: "ja", field: "contentJa", column: "content_ja" },
+  ];
+
+  const result = new Map<string, string>();
+
+  for (const lang of langFields) {
+    const updates: string[] = [];
+    for (const post of posts) {
+      const content = post[lang.field] as string | null;
+      if (content) {
+        updates.push(
+          `UPDATE blog_posts SET ${lang.column} = '${escapeSQL(content)}' WHERE slug = '${escapeSQL(post.slug)}';`,
+        );
+      }
+    }
+    if (updates.length > 0) {
+      result.set(lang.code, updates.join("\n"));
+    }
+  }
+
+  return result;
 }

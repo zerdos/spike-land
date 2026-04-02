@@ -1,0 +1,134 @@
+---
+title: "How spike.land Uses AI and A/B Testing to Find Bugs Before You Do"
+slug: "ai-ab-testing-bug-detection"
+description: "Variant testing on spike.land is not just for conversion. It is a product-quality loop for catching unstable app behavior before it becomes a support issue."
+date: "2026-03-08"
+author: "Radix"
+category: "Engineering"
+tags: ["a-b-testing", "ai", "bugs", "quality", "experiments", "mcp"]
+featured: false
+draft: false
+primer: "The AI writes variants. The experiment engine decides what ships."
+heroImage: "/blog/ai-ab-testing-bug-detection/hero.jpg"
+heroPrompt: "A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents"
+---
+
+![A modern digital illustration for a blog post titled 'How spike.land Uses AI and A/B Testing to Find Bugs Before You Do'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/ai-ab-testing-bug-detection/hero.jpg)
+
+![A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents](/blog/ai-ab-testing-bug-detection/hero.png)
+
+<Tldr>
+
+- A spike.land az A/B tesztelést megbízhatósági rendszerként kezeli, nem csupán marketing taktikaként.
+- Az app-variánsokat konzisztensen lehet hozzárendelni, mérni, összehasonlítani, és csak szigorú bizonyítási küszöbök teljesülése után lehet promótálni.
+- A jelenlegi döntési motor bayesiánus, determinisztikus és auditálható: minimum 48 óra futásidő, 500 megjelenés variansonként, 95%+ győztes valószínűség.
+- Az AI segít alternatívákat generálni és hibákat magyarázni, de nem "vibe-olhat" be egy győztest a produkciósba.
+
+</Tldr>
+
+## A legtöbb A/B teszt rossz kérdést tesz fel
+
+A legtöbb csapat kísérletekkel intéz el apró vitákat. Legyen kék a gomb? Legyen rövidebb a címsor? Az A árazási kártya veri-e a B-t?
+
+Ezek rendben vannak. De nem a legérdekesebb kérdések.
+
+Az értékesebb kérdés ez: **Melyik variáns kevésbé törött?**
+
+Ha ezt kezded el kérdezni, az A/B tesztelés átalakul. Megszűnik kizárólag növekedési eszköznek lenni -- amiből a marketing csapatok konverziós pontokat préselnek ki -- és minőségbiztosítási rendszerré válik. Egy feedback loop, ami elkapja az instabilitást, mielőtt a felhasználók megérzenék.
+
+Gondolj rá úgy, mint egy termosztátra. A termosztát nem csak megmondja a hőmérsékletet. A rendszert határok között tartja. Ezt akarjuk a kísérletekkel elérni: nem csak mérni, hanem szabályozni.
+
+---
+
+## Két rendszer, egy kör
+
+A spike.land-nek két kapcsolódó eleme van, és az érdekes az, ahogyan összekapcsolódnak.
+
+Az első az **app-store-felőli munkafolyamat**: deploymentek, variánsok, látogató-hozzárendelés, megjelenés-követés, hiba-követés és győztes-nyilvánítás. Ez a látható gépezet.
+
+A második az **általános kísérleti motor**: hash-alapú hozzárendelés, eseménykövetés, bayesiánus kiértékelés és anomália-figyelés. Ez a láthatatlan gépezet.
+
+Együtt egyetlen kört alkotnak:
+
+1. Szállíts több verziót valamiből
+2. Figyeld, mit csinálnak a felhasználók valójában
+3. Mérd a hibákat az eredmények mellett
+4. Promótáld a jobb verziót csak akkor, ha az adatok ezt indokolják
+
+A kulcsszó az "csak". A legtöbb rendszer túl buzgón nyilvánít győztest. A miénk szándékosan lassú ebben.
+
+---
+
+## Hol van az AI helye (és hol nincs)
+
+Az AI hasznos szerepe itt nem az, hogy "döntse el a győztest". Az olyan lenne, mintha a hipotézist generáló személy osztályozná a kísérletet is. A szerepeknek el kell válniuk.
+
+Az AI erős a következőkben:
+
+- tisztább variáns generálása
+- tartalék útvonal javaslata, ha valami eltörik
+- hibaminták klaszterezése valószínű bug-témákba
+- annak magyarázata, miért bukott el valószínűleg a vesztes variáns
+
+Rendszergondolkodási szempontból az AI a generatív oldalon erős -- abban a részben, ami növeli a változatosságot. De ami a szállítást illeti, a platform explicit szabályokat használ. A szelekciós oldal determinisztikus marad.
+
+Ez a szétválasztás fontos. Ez a különbség egy tanuló rendszer és egy olyan rendszer között, ami hallucinálja a haladást.
+
+---
+
+## A szállítási szabályok
+
+A kísérleti motor nem finomkodik a küszöbértékekkel. Mielőtt egy győztes automatikusan átmehetne, a kísérletnek mind a négy feltételt teljesítenie kell:
+
+- Legalább **48 óra** futásidő
+- Legalább **500 megjelenés** variansonként
+- **95%** feletti győztes valószínűség
+- Legalább **10%-os lift** a kontrollhoz képest (hacsak nem maga a kontroll nyer)
+
+Miért pont ezek a számok? Mert ezek képviselik azt a minimális bizonyítékot, ahol egy rossz döntés már elég valószínűtlen ahhoz, hogy elfogadjuk. Ezen küszöbök alatt találgatsz. Felettük döntesz.
+
+Hagyjuk, hogy az AI segítsen felfedezni. De nem hagyjuk, hogy bizonyosságot hallucináljon.
+
+---
+
+## Bayesiánus a kívánságos helyett
+
+A bayesiánus kiértékelés azért tetszik itt, mert egybeesik azzal a kérdéssel, amire produkcióban valóban választ keresel:
+
+**Mekkora a valószínűsége, hogy ez a variáns tényleg jobb?**
+
+Ez alapvetően más kérdés, mint a "felment-e a metrika?" Egy metrika emelkedése egy történet. Egy poszterior valószínűség egy érv.
+
+A motor mintákat vesz az egyes variánsok poszterioriából, ismételten összehasonlítja őket, és méri, melyik nyer leggyakrabban. Ez egy valószínűséget ad, nem csak egy zöld pipát a dashboardon.
+
+Ez a különbség egy "napos" időjárás-előrejelzés és egy "82% eséllyel napos" között. A második lehetővé teszi, hogy valódi döntést hozz.
+
+---
+
+## Bug-detektálás, nem csak lift-detektálás
+
+Itt omlik össze a növekedési metrika keretezés. A lift egy narratíva. A hibaráta egy tény.
+
+A minőségi szempont két helyen jelenik meg.
+
+Először is, **a hibákkal teli variánsok gyorsan leleplezik magukat**. Ha az egyik verzió érezhetően rosszabb futásidejű viselkedést produkál, nem kell hosszú termékvita. Az adatok már beszélnek. Egy variáns, ami az esetek 3%-ában összeomlik, nem "veszíti a konverziós tesztet" -- hanem törött.
+
+Másodszor, **az anomália-figyelés elkapja az üzemeltetési hibákat**. Ha egy aktív variáns hirtelen nullára esik a megjelenésekben, az nem copywriting probléma. Az routing vagy rollout probléma. Valami a rendszerben már nincs összekapcsolva.
+
+Ezek bug-jelek, nem növekedési jelek. És fontosabb korán elkapni őket, mert egy kiszállított bug sokkal drágább, mint egy alulteljesítő címsor.
+
+---
+
+## Mit jelent ez egy nyílt app store számára
+
+Egy nyílt app store csak akkor működik, ha a minőség skálázható emberi kapuőrök nélkül, akik minden beküldést átnéznek.
+
+Minél több fejlesztő publikál, annál több esély van instabil viselkedésre a felhasználóknál. A válasz nem lehet "manuálisan ellenőrzünk mindent örökké". Ez a megközelítés nem skálázódik -- csak egy szűk keresztmetszetet hoz létre, ami felelősségteljesnek tűnik.
+
+Szóval a platformnak egy önszabályozó körre van szüksége:
+
+`generálás -> tesztelés -> megfigyelés -> promótálás -> tanulás`
+
+Az AI a generálást és a diagnózist végzi. A kísérleti rendszer a mérést és a promótálást. Együtt egy megerősítő kört alkotnak: a jobb variánsok promótálva lesznek, a törötteket elkapják, és a rendszer összminősége idővel emelkedik anélkül, hogy valaki kézzel gondozná.
+
+Ez az AI-alapú A/B bug-detektálás valódi lényege a spike.land-en. Nem szlogen. Arról szól, hogy a platform megtanul biztonságosabban szállítani appokat store-méretben -- egy minőségi rendszer, ami annál okosabb lesz, minél többet fut.

@@ -1,0 +1,134 @@
+---
+title: "How to Automate Your Dev Team: AI Agents That Ship Production Code"
+slug: "automate-dev-team-ai-agents"
+description: "A beginner-friendly guide to replacing manual bottlenecks with autonomous AI workflows. Learn how to use Claude Code, Jules, and CI/CD to ship features without writing code."
+date: "2026-02-04"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "developer-tools", "claude", "jules", "automation", "ci-cd", "agents", "productivity"]
+featured: false
+draft: false
+listed: false
+primer: "Claude plans. Jules codes. Your pipeline ships."
+heroPrompt: "A futuristic assembly line where AI robots are building code blocks, bright neon colors, cybernetic factory"
+heroImage: "/blog/automate-dev-team-ai-agents/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'How to Automate Your Dev Team: AI Agents That Ship Production Code'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/automate-dev-team-ai-agents/hero.png)
+
+<Tldr>
+
+- Los agentes de IA pueden lanzar código de producción de forma autónoma — si tu setup está listo.
+- Prerrequisitos: tests automatizados rápidos, cero tests inestables, y cobertura completa de tests.
+- Flujo de trabajo: Claude planifica → Jules escribe el código → Tu pipeline lo testea → Claude lo revisa.
+- Tu trabajo cambia de escribir código a definir qué debería hacer el código.
+
+</Tldr>
+
+{/* Audio Version - Generated with NotebookLM */}
+<AudioPlayer
+  src="/blog/automate-dev-team-ai-agents/Stop_Coding_And_Start_Context_Engineering.m4a"
+  title="Listen to this article (Generated with NotebookLM)"
+/>
+
+La semana pasada hice un experimento que cambió cómo pienso sobre el desarrollo de software.
+
+Le pedí a Claude Code que planificara una aplicación fintech. No que escribiera código — solo que planificara. Y le dije que usara 16 sub-agentes diferentes simultáneamente para investigar todo.
+
+Esto es lo que hicieron esos 16 agentes:
+- **4 agentes** mapearon patrones de autenticación y diseño de API
+- **3 agentes** diseñaron el schema de base de datos e investigaron cumplimiento legal
+- **4 agentes** seleccionaron componentes de UI para una interfaz glassmórfica moderna
+- **3 agentes** averiguaron cómo traducir la app a cuatro idiomas
+- **2 agentes** documentaron edge cases y mensajes de error
+
+Produjeron 47 archivos de documentación de planificación detallada. El tipo de trabajo que normalmente le toma a un equipo de product managers e ingenieros senior varios días.
+
+Luego tomé ese plan y se lo di a un modelo de IA completamente diferente — Gemini Flash — y dije: **"Construí esto."**
+
+**70 minutos después**, la app estaba en vivo. Verificación de identidad, animaciones fluidas, creación de PIN, diseño pulido. Todo.
+
+La revelación no fue "la IA es rápida". La revelación fue esta: **si el plan es lo suficientemente bueno, hasta un modelo básico puede ejecutarlo impecablemente.**
+
+Esa es una observación de sistemas. La calidad del output no está determinada por la inteligencia del constructor. Está determinada por la calidad de las instrucciones que fluyen hacia el sistema. Un arquitecto mediocre con un plano brillante va a superar a un arquitecto brillante con un boceto en una servilleta.
+
+{/* Diagram: days of manual planning versus 70 minutes of AI-powered delivery */}
+
+Esto no es solo mi experiencia. Google y Microsoft han reportado que 25-30% de su código ahora es asistido o generado por IA.
+
+---
+
+## La nueva forma del trabajo
+
+Para un desarrollador junior, esto podría sonar como una amenaza. Si la IA escribe el código, ¿qué queda para vos?
+
+Acá está el secreto: la IA no maneja el proyecto. Vos lo manejás. El cambio es de "escribir código" a "orquestar agentes". Como la diferencia entre tocar todos los instrumentos de una orquesta y dirigirla.
+
+Así funciona realmente el desarrollo moderno:
+
+| Fase | Quién lo hace | Por qué |
+|------|--------------|---------|
+| **Planificación** | Claude Code | Explora el codebase y los edge cases antes de escribir nada. |
+| **Implementación** | Jules (Agente IA) | Sigue el plan exactamente y agrega tests automatizados. |
+| **CI/CD** | Tu Pipeline | Corre los tests para asegurarse de que la IA no rompió nada. |
+| **Code Review** | Claude Code | Revisa estrictamente el código por seguridad y calidad. |
+| **Fixes** | Jules | Sigue arreglando el código hasta que los tests y reviews pasen. |
+
+¿Tu nuevo trabajo? **Definir qué querés que se construya y verificar que funciona.**
+
+Notá el feedback loop. La planificación fluye hacia la implementación, la implementación fluye hacia el testing, el testing fluye de vuelta hacia los fixes, y los fixes fluyen de vuelta hacia la review. El sistema se corrige a sí mismo. Tu rol es establecer la dirección inicial y vigilar la desviación.
+
+{/* Diagram: Planning → Implementation → Automated Tests → Code Review → Merge */}
+
+---
+
+## La red de seguridad: por qué CI/CD no es negociable
+
+Podrías estar pensando: "Pero la IA alucina. ¿Qué pasa si rompe la app?"
+
+Miedo válido. Si dejás que la IA pushee código a ciegas, va a romper cosas. Por eso necesitás un **pipeline de CI/CD** — Integración Continua / Despliegue Continuo.
+
+Pensá en CI/CD como las barandas en una ruta de montaña. La ruta es más rápida porque las barandas están ahí, no más lenta. Sin ellas, tendrías que ir arrastrándote.
+
+Cada vez que la IA escribe código, el pipeline corre:
+1. **Linting** — verificar errores de tipeo y estilo
+2. **Type checking** — asegurarse de que los tipos de datos coincidan
+3. **Tests automatizados** — correr unit tests para ver si la lógica funciona
+4. **Build** — intentar compilar toda la app
+
+La IA no puede mergear su código a menos que todos los checks pasen. Esto es lo que hace seguros a los agentes autónomos: no confianza, sino verificación. El pipeline es el loop de balance que atrapa errores antes de que se acumulen.
+
+---
+
+## Preparando tu proyecto para agentes
+
+No podés soltar un agente de IA en un codebase desordenado y esperar magia. El sistema tiene prerrequisitos, igual que una fábrica necesita inputs limpios antes de que la línea de ensamblaje pueda funcionar.
+
+Si tus tests tardan 45 minutos, la IA se va a quedar trabada esperando. Si tus tests fallan aleatoriamente, la IA va a perseguir bugs fantasma en círculos — un loop de refuerzo de esfuerzo desperdiciado.
+
+Para desbloquear este tipo de velocidad, tu proyecto necesita:
+
+1. **Feedback loops rápidos.** Los tests deberían correr en menos de 10 minutos. Por debajo de 10 segundos es donde pasa la verdadera magia.
+2. **TypeScript estricto.** Los sistemas de tipos son como marcas de carril en una autopista. La IA se mantiene en su carril porque los tipos le dicen dónde están los bordes.
+3. **Tests sólidos.** Unit tests que expliquen qué debería hacer el código. Tests end-to-end que actúen como usuarios reales. Juntos forman la especificación.
+4. **Cero tests inestables.** Si un test falla aleatoriamente, borralo o arreglalo. Un test inestable es peor que ningún test — le enseña a la IA que la falla es normal.
+
+Si podés confiar completamente en tus tests automatizados, podés confiar en que la IA escriba el código. La confianza es transitiva.
+
+---
+
+## El nuevo conjunto de habilidades del desarrollador
+
+CI/CD se encarga de la corrección del código. Pero no puede decirle a la IA qué construir después. Ese es el nuevo trabajo.
+
+La habilidad ya no es "prompt engineering" — encontrar palabras mágicas para engañar a la IA. Es **context engineering** — darle a la IA la información de fondo correcta para que entienda tu proyecto específico con suficiente profundidad para tomar buenas decisiones.
+
+Necesitás ser bueno en:
+
+- **Definir el éxito.** Escribir criterios de aceptación claros para que la IA sepa cuándo terminó. Si no podés definir "listo", el agente tampoco puede.
+- **Establecer barandas.** Decirle a la IA exactamente qué archivos puede tocar y cuáles no. Los límites no son restricciones — son foco.
+- **Debuggear agentes.** Cuando las cosas salen mal, no solo leés el código. Leés el razonamiento de la IA para ver por qué tomó una mala decisión, y luego mejorás tus instrucciones. Estás debuggeando el proceso, no el producto.
+
+Ya no sos el albañil. Sos el arquitecto. Intervenís cuando la IA se traba en una decisión de negocio que requiere criterio, no cuando necesita otro for-loop.
+
+Los desarrolladores que dominan esto no trabajan un 10% más rápido. Trabajan órdenes de magnitud más rápido. Pero los que no se adaptan no van a ser reemplazados por la IA. Van a ser reemplazados por desarrolladores que usan IA de la misma manera en que alguna vez aprendimos a usar compiladores — como un multiplicador de fuerza tan fundamental que no usarlo se vuelve impensable.

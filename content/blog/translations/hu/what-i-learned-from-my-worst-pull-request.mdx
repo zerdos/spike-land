@@ -1,0 +1,162 @@
+---
+title: "What I Learned From My Worst Pull Request"
+slug: "what-i-learned-from-my-worst-pull-request"
+description: "A developer's honest story about misusing AI tools on a new project, and the framework that fixed everything."
+date: "2026-01-13"
+author: "Radix"
+category: "Engineering"
+tags: ["ai", "developer-tools", "claude", "lessons-learned", "code-quality", "pull-requests"]
+featured: true
+draft: false
+primer: "My PRs were pure AI slop. Here's the framework that fixed it."
+heroPrompt: "A frustrated developer sitting at a desk late at night, glowing screen reflecting on their face, surrounded by floating red 'ERROR' and 'REJECTED' holographic symbols, cinematic lighting, dramatic atmosphere"
+heroImage: "/blog/what-i-learned-from-my-worst-pull-request/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'What I Learned From My Worst Pull Request'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/what-i-learned-from-my-worst-pull-request/hero.png)
+
+El kell mondanom valamit, amire nem vagyok büszke.
+
+2025-ben egy rövid időszakban, amikor egy új projekten kezdtem, a pull requestjeim tiszta AI-moslék voltak. Annak ellenére is, hogy a legjobb tudásom szerint próbáltam elkerülni.
+
+Pontosan ez történt.
+
+---
+
+## Az új projekt
+
+Csatlakoztam egy csapathoz, ami két összekapcsolt alkalmazáson dolgozott. Egy Next.js app, ami az ügyféllemondásokat kezelte. Egy Angular app, ami a fő e-commerce áruházat futtatta. A tech stack érdekesnek tűnt. Az emberek okosnak tűntek. Készen álltam, hogy bizonyítsak.
+
+A kódbázis pragmatikus volt. Lehetett érezni, hogy a korábbi fejlesztők gondot fordítottak rá. Igen, volt tech debt — melyik kódbázisban nincs? De az architektúra szándékos volt. Olyan érzése volt, mint egy háznak, ahol minden fal teherhordó okkal, még ha az ok nem is volt azonnal nyilvánvaló egy újoncnak.
+
+Még soha nem építettem e-commerce oldalt. Ez később fontos lesz.
+
+Volt egy titkos fegyverem. Legalábbis azt hittem.
+
+Az AI kódolási eszközök 2025-re hihetetlenül erőssé váltak. Claude Code. Ezek már nem egyszerű autocomplete eszközök voltak. Képesek voltak komplex kódbázisokat megérteni. Képesek voltak teljes funkciókat megírni. Képesek voltak nagy mennyiségű kódot refaktorálni.
+
+Folyamatosan használtam őket. És gyorsak voltak. Nagyon gyorsak.
+
+Az első PR-jeim fantasztikusan néztek ki. Tiszta kód. Jó struktúra. Megfelelő hibakezelés. A tesztek átmentek. A linter boldog volt. Hősnek éreztem magam.
+
+Nem voltam hős. Homokra építettem.
+
+---
+
+## A Basket API incidens
+
+Az egyik első jegyem volt a projekten.
+
+A feladat egyszerűnek tűnt: analytics követés, amikor egy felhasználó elfogad egy megtartási ajánlatot. A folyamat így nézett ki — egy ügyfél lemondja a fiókját a Next.js appban, lát egy megtartási ajánlatot egy ID-vel az URL-ben, rákattint, átirányítódik az Angular appba azzal az ID-vel, és fizet. Nekem ezt a fizetési eseményt kellett követnem.
+
+Itt ölte meg a tapasztalatlanságom.
+
+Még soha nem építettem e-commerce oldalt. A mentális modellemben a frontend tartja a kosarat a memóriában a fizetésig. A felhasználó hozzáad dolgokat a kosarához, a frontend tárolja, aztán mindent elküld a szervernek, amikor rákattint a "Vásárlás"-ra. Ez logikusnak tűnt — ahogy az is logikusnak tűnik, hogy egy étterem konyha úgy működik, mint az otthoni konyhád, amíg valaki meg nem mutatja neked az ipari mosogatógépet.
+
+Szóval megkértem Claude-ot, hogy segítsen implementálni a követést. Claude kódot generált. Gyönyörű kódot. Hívta a Basket API-t, hogy lekérje a kosáradatokat, hogy követhessük a fizetést.
+
+Tökéletesnek nézett ki. Átmentek a tesztek. A linter boldog volt.
+
+Beadtam a PR-t.
+
+---
+
+## A tökéletes vihar
+
+Van valami, amit akkoriban nem tudtam. Claude-nak [dokumentált technikai problémái](https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues) voltak ebben az időszakban. Kontextusablak-routing hibák a Claude Code felhasználók 30%-át érintették. A modell jónak tűnő, de valójában degradált válaszokat produkált.
+
+Az eszköz, amiben megbíztam, jól kinéző, de alacsony minőségű kimenetet produkált. És nem volt módszerem megtudni.
+
+Amikor az AI magabiztosan hallucinál, téged is hallucináltat. Claude kimenete jónak tűnt. Jónak érezte magát. Ezért magabiztos voltam. Olyan munkát adtam be, amit nem értettem teljesen, mert az AI úgy tűnt, érti — ahogy bólogatsz egy idegenvezetővel, aki meggyőzően hangzik, még akkor is, amikor kitalálja a dolgokat.
+
+---
+
+## A kód review
+
+Egy kolléga folyton kérdéseket tett fel. Kérdéseket, amikre nem tudtam válaszolni.
+
+"Miért hívod itt a Basket API-t?"
+
+Nem tudtam. Azt hittem, szükséges a kosáradatok lekéréséhez a követéshez.
+
+"A kosár már a szerveren van. Az URL-ben lévő ID csak ellenőrzésre szolgál."
+
+Nem értettem.
+
+Aztán egy szeniorabb fejlesztő review-zta a PR-t. Egyenes volt. A PR lényegében szemét. Csak apró részek voltak használhatóak.
+
+A kosár szerver-oldali volt. Ez volt az architektúra. A backend volt az egyetlen igazságforrás. A lemondási appból származó ID csak a szerveren már tárolt adatok kettős ellenőrzésére szolgált. Semmi szükség nem volt a Basket API hívására.
+
+<div className="my-10">
+  <img src="/blog/what-i-learned-from-my-worst-pull-request/pr-rejection-frustration.svg" alt="Animated illustration of a code screen being overwhelmed by flashing red REJECTED flags" className="w-full rounded-xl border border-gray-800 shadow-2xl" />
+</div>
+
+Ott ültem, a képernyőmet bámulva. Nem volt válaszom arra, miért írtam ezt a kódot. Mert nem én írtam. Claude írta. És jóváhagytam megértés nélkül — ahogy egy menedzser aláír egy jelentést, amit nem olvasott el, bízva abban, aki készítette.
+
+---
+
+## A gyökérok
+
+Nem az AI a probléma. Én voltam a probléma.
+
+Nem tudtam, mit nem tudok. A jegy követelményei nem voltak tiszták, de nem tudtam eleget ahhoz, hogy a megfelelő kérdéseket tegyem fel. Soha nem építettem e-commerce-t. Nem értettem az architektúrát. Ezért nem tudtam ellenőrizni, mit feltételezett az AI.
+
+Ez rendszer-probléma, nem jellemhiba. Az AI a kódot egy mentális modell alapján generálta, hogy hogyan működik az e-commerce. Az én mentális modellem megegyezett az AI modelljével. Mindkettő hibás volt. És nem volt visszacsatolási ciklus — nem volt mechanizmus, ami elkapta volna az eltérést, mielőtt elért a kód review-hoz.
+
+A kódbázis jól volt megtervezve. A korábbi fejlesztők végiggondolták, hogyan működik a kosár-rendszer. Jó okai voltak a háromrétegű architektúrának. De nem szántam időt arra, hogy megértsem ezeket az okokat, mielőtt megkértem Claude-ot, hogy generáljon kódot.
+
+Az AI-t rövidítésként használtam, nem eszközként. Nagy különbség van.
+
+A rövidítés helyettesíti a megértésedet. Az eszköz felerősíti. Az AI-t rövidítésként kezeltem — kihagytam a tanulást és egyenesen a kimenetre mentem. Eszközként kellett volna kezelnem — arra használva, hogy tovább jussak, ha már megértettem, merre tartok.
+
+---
+
+## Mi változott
+
+Az incidens után minden megváltozott.
+
+**Először átfogó dokumentációt készítettem.** Összegyűjtöttem mindent — Confluence dokumentumokat, kód kommenteket, API dokumentációt, más csapatok kódbázisait. A NotebookLM-et használtam tanulási tutoriálok, rendszerdiagramok, kártyák, kvízek generálásához. Egy hétvége alatt elsajátítottam a domain tudást, ami hiányzott. Felépítettem a mentális modellt, aminek léteznie kellett volna, mielőtt egyetlen sort írtam volna.
+
+**Másodszor, projekmintákat kódoltam Claude utasításaiba.** Egyedi képességek. Csapat konvenciók. Kódolási szabványok. Hogyan működik valójában a kosár architektúra. Most az AI automatikusan követi a mintáinkat találgatás helyett — mert megadtam neki a szükséges kontextust.
+
+**Harmadszor — és ez a legfontosabb változás — az ágens most interjút készít velem a tervezés során.** Mielőtt bármilyen kód íródna, az ágens kérdéseket tesz fel nekem. Addig kérdez, amíg teljes képem nem lesz. Ha nem tudok válaszolni egy kérdésre, visszamegyek a dokumentációhoz. Vagy futtatak egy másik ágenst, hogy kiderítsem. Ez biztosítja, hogy megértsem, mit építek, mielőtt elkezdem építeni.
+
+Ha az ágens interjút készített volna velem a kosár PR előtt, megkérdezte volna: "Milyen adatok léteznek már a szerveren?" És nem lett volna válaszom. Ez a megválaszolatlan kérdés megakadályozott volna a hiba elkövetésében. A visszacsatolási ciklus elkapta volna az eltérést, mielőtt kóddá vált.
+
+**Negyedszer, másképp tesztelek most.** Az ágens elindít egy böngészőt. Bejelentkezik teszt hitelesítő adatokkal. Megpróbálja átvinni a funkciót, ahogy egy emberi tesztelő tenné. Képernyőképeket készít. Összehasonlítja a Figma tervekkel. Elkap hibákat, amiket a manuális tesztelés is elkapna — de gépi sebességgel.
+
+Az erőfeszítés-megoszlásom teljesen más most. 30% tervezés. 50% tesztelés. 20% minőségjavítás. A tényleges kódolás szinte semmibe sem kerül a megértéshez és ellenőrzéshez képest.
+
+---
+
+## Az utóélet
+
+Abbahagytam a moslék gyártását. A PR-jeim újra magas minőségűek lettek.
+
+De a kár már meg volt téve. A bizalom, ha egyszer megtörik, a sajat javítási ütemtervével rendelkezik — és a vállalati világban ez az ütemterv ritkán garantált. Nem sokkal az incidens után kirúgtak a VMO2-tól.
+
+Ez a rossz PR-ek rejtett költsége. Nem csak rossz kód. Megtört bizalom. Amikor az AI-t rövidítésként használod eszköz helyett, nem csak egy éles bugot kockáztatsz — a hírneved és a megélhetésed kockáztatod. A kódot vissza lehet állítani. A bizalmat nem.
+
+Ha látni akarod, mi történik, amikor valaki jól csinálja — valaki, akinek abszolút nulla kódolási tapasztalata van, de tökéletesen érti a problémateret — olvasd el, hogyan [épített egy vegyész három éles alkalmazást néhány este alatt](/blog/a-chemist-walked-into-a-codebase). Ő nem rövidítésként használta az AI-t; arra használta, hogy megkerülje a felesleges ceremóniát, amit a szoftvermérnökség köré építettünk, miközben megőrizte a megértést, amit a ceremóniának védenie kellett volna.
+
+Annak ellenére, hogy elvesztettem az állásom, pozitív maradok. A rendszer, amit végül kifejlesztettem, működik. A minőség megvan. Minden jó PR, amit most írok — még ha a saját projektjeimhez is — bizonyítja ezt.
+
+---
+
+## A tanácsom neked
+
+Ha új vagy egy projekten és AI eszközöket használsz, kérlek, hallgass meg.
+
+Az AI produktívnak fog éreztetni. Gyorsan fogsz kódot szállítani. A PR-jeid tisztán fognak kinézni. De lehet, hogy olyan feltételezésekre építesz, amiket nem tudsz ellenőrizni — és a hibás feltételezésekben az a veszélyes, hogy pontosan úgy néznek ki, mint a helyes feltételezések, amíg valaki, aki jobban ért hozzá, közelebbről meg nem nézi.
+
+Lassíts. Kérdezz. Értsd meg az architektúrát. Beszélj a csapattársaiddal. Készíts dokumentációt. Kérd meg az AI-t, hogy interjúzzon téged a problémáról, mielőtt bármilyen kódot ír.
+
+A kódbázis, amin dolgozol, valószínűleg jó okokkal olyan, amilyen. A korábbi fejlesztők átgondolt döntéseket hoztak. Szánj időt ezek megértésére, mielőtt hagyod, hogy az AI olyan kódot generáljon, ami figyelmen kívül hagyja őket.
+
+Az AI kódolási eszközök hihetetlenek. Örökre megváltoztatták, ahogy dolgozom. De nem helyettesítik a megértést. Szorzók. És ha nulla megértést megszorzol egy erős AI-val, még mindig nulla lesz az eredmény.
+
+Még mindig minden nap használom az AI-t. Többet, mint valaha. De most partnerként használom, ami megkérdőjelez, nem rövidítésként, ami engedi kihagyni a megértést.
+
+A PR-jeim már nem moslék. Az én munkám, AI-val felerősítve.
+
+Ez a különbség. És számít.

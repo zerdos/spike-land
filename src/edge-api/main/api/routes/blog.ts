@@ -17,6 +17,32 @@ const blog = new Hono<{ Bindings: Env }>();
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/spike-land-ai/spike-land-ai/main";
 const BLOG_SLUG_RE = /^[a-z0-9-]+$/i;
 
+const SUPPORTED_LANGS = ["hu", "de", "ru", "it", "es", "zh", "fr", "ja"] as const;
+type SupportedLang = (typeof SUPPORTED_LANGS)[number];
+const LANG_CONTENT_FIELDS: Record<SupportedLang, keyof BlogPostRow> = {
+  hu: "content_hu",
+  de: "content_de",
+  ru: "content_ru",
+  it: "content_it",
+  es: "content_es",
+  zh: "content_zh",
+  fr: "content_fr",
+  ja: "content_ja",
+};
+
+/** Detect preferred language from ?lang= query param or Accept-Language header. */
+function detectLang(req: Request, queryLang?: string | null): SupportedLang | null {
+  if (queryLang && SUPPORTED_LANGS.includes(queryLang as SupportedLang)) {
+    return queryLang as SupportedLang;
+  }
+  const acceptLang = req.headers.get("Accept-Language") || "";
+  const primary = acceptLang.split(",")[0]?.trim().split("-")[0]?.toLowerCase();
+  if (primary && SUPPORTED_LANGS.includes(primary as SupportedLang)) {
+    return primary as SupportedLang;
+  }
+  return null;
+}
+
 interface BlogPostRow {
   slug: string;
   title: string;
@@ -32,6 +58,14 @@ interface BlogPostRow {
   hero_image: string | null;
   hero_prompt?: string | null;
   content: string;
+  content_hu?: string | null;
+  content_de?: string | null;
+  content_ru?: string | null;
+  content_it?: string | null;
+  content_es?: string | null;
+  content_zh?: string | null;
+  content_fr?: string | null;
+  content_ja?: string | null;
   created_at: number;
   updated_at: number;
 }
@@ -110,7 +144,7 @@ async function fetchBlogPostSource(slug: string): Promise<BlogPostRow | null> {
   }
 }
 
-function rowToPost(row: BlogPostRow, includeContent = false) {
+function rowToPost(row: BlogPostRow, includeContent = false, lang: SupportedLang | null = null) {
   let tags: unknown = [];
   try {
     tags = JSON.parse(row.tags);
@@ -139,7 +173,18 @@ function rowToPost(row: BlogPostRow, includeContent = false) {
     heroPrompt,
   };
   if (includeContent) {
-    post["content"] = row.content;
+    let resolvedLang = "en";
+    let resolvedContent = row.content;
+    if (lang) {
+      const field = LANG_CONTENT_FIELDS[lang];
+      const translated = row[field] as string | null | undefined;
+      if (translated) {
+        resolvedContent = translated;
+        resolvedLang = lang;
+      }
+    }
+    post["content"] = resolvedContent;
+    post["lang"] = resolvedLang;
   }
   return post;
 }
@@ -305,6 +350,7 @@ blog.get("/api/blog/:slug", async (c) => {
   }
 
   const showDrafts = isLocalDev(c);
+  const lang = detectLang(c.req.raw, c.req.query("lang"));
 
   let cached: Response | null = null;
   try {
@@ -316,8 +362,8 @@ blog.get("/api/blog/:slug", async (c) => {
 
         if (!row) return null;
 
-        return new Response(JSON.stringify(rowToPost(row, true)), {
-          headers: { "Content-Type": "application/json" },
+        return new Response(JSON.stringify(rowToPost(row, true, lang)), {
+          headers: { "Content-Type": "application/json", Vary: "Accept-Language" },
         });
       },
       { ttl: showDrafts ? 0 : 300, swr: showDrafts ? 0 : 300 },
@@ -327,8 +373,8 @@ blog.get("/api/blog/:slug", async (c) => {
     const row = await getBlogPostRow(c.env.DB, slug);
 
     if (row) {
-      cached = new Response(JSON.stringify(rowToPost(row, true)), {
-        headers: { "Content-Type": "application/json" },
+      cached = new Response(JSON.stringify(rowToPost(row, true, lang)), {
+        headers: { "Content-Type": "application/json", Vary: "Accept-Language" },
       });
     }
   }

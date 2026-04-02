@@ -1,0 +1,385 @@
+---
+title: "Getting Started with spike.land: From Signup to Your First AI Tool Call"
+slug: "getting-started-spike-land"
+description: "A step-by-step guide to setting up spike.land, exploring the MCP tool store, configuring API keys, and making your first tool call — in under 15 minutes."
+date: "2026-03-04"
+author: "Radix"
+category: "Product"
+tags: ["mcp", "getting-started", "tutorial", "spike-cli", "api-keys", "byok", "tools", "beginner"]
+featured: false
+draft: false
+primer: "Zero to first tool call in 15 minutes."
+heroPrompt: "A clean dashboard interface showing MCP tool cards lit up in sequence, a developer's hand hovering over a keyboard, soft terminal glow in the background"
+heroImage: "/blog/getting-started-spike-land/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Getting Started with spike.land: From Signup to Your First AI Tool Call'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/getting-started-spike-land/hero.png)
+
+<Tldr>
+
+- Regisztrálj a spike.land-en — ingyenes csomag, bankkártya nem kell
+- Böngéssz 80+ eszközt a boltban, kategória és csomag szerint rendezve
+- Csatlakozz a `claude mcp add spike-land --transport http https://spike.land/mcp` paranccsal, kevesebb mint 60 másodperc alatt
+- Add hozzá a saját API kulcsaidat (BYOK), vagy használj proxy krediteket a modell-alapú eszközökhöz
+- Válts Pro-ra ($29/hó) vagy Business-re ($99/hó), ha több kredit vagy csapatfunkciók kellenek
+
+</Tldr>
+
+## Mielőtt elkezded
+
+A nulláról egy működő MCP setupig rövidebb az út, mint gondolnád. Gondolj rá úgy, mint amikor bedugod egy új háztartási gépet — a vezetékek már ki vannak húzva, csak csatlakoztatnod kell.
+
+Két dolog kell:
+
+1. **Node.js 18+** — ellenőrizd a `node -v` paranccsal
+2. **Egy spike.land fiók** — [regisztrálj itt](https://spike.land/login), ingyenes, bankkártya nem kell
+
+Ennyi. A spike-cli a fő interfész. Minden más — hitelesítés, eszközfelfedezés, routing a szerverek között — automatikusan történik rajta keresztül.
+
+---
+
+## 1. lépés: Hozd létre a fiókodat
+
+Menj a [spike.land/login](https://spike.land/login) oldalra.
+
+Regisztrálhatsz:
+- GitHub-bal (fejlesztőknek ajánlott)
+- Google-lel
+- Email + jelszó
+
+Regisztráció után a dashboardon landolsz. Az ingyenes fiókod azonnal aktív. Nincs várakozás, nincs jóváhagyás.
+
+**Mit tartalmaz az ingyenes csomag:**
+- 50 kredit/nap
+- Hozzáférés az összes ingyenes eszközhöz (a teljes 80+ egy részhalmazához)
+- Közösségi támogatás
+- BYOK (hozd a saját API kulcsaidat) a modell-alapú eszközökhöz
+
+Nincs időkorlát. Az ingyenes csomag nem jár le. Ez egy valódi csomag, nem próbaidőszak.
+
+---
+
+## 2. lépés: Fedezd fel a dashboardot
+
+A dashboardnak négy szekciója van, mindegyik más célt szolgál a rendszerben.
+
+### Eszközbolt
+
+Böngészd az összes 80+ eszközt kategória szerint rendezve: Chess, Image Studio, Codespace, QA Studio, Utilities. Minden eszközkártya mutatja:
+
+- Az eszköz nevét és leírását
+- A csomagot (Free / Pro / Business)
+- A hívásonkénti kreditköltséget
+- Az input/output sémát
+
+Kattints bármelyik eszközre a teljes dokumentáció, példa bemenetek és mintaválaszok megtekintéséhez. Az eszközöket közvetlenül a böngészőben is kipróbálhatod bármi telepítése előtt — mint egy tesztvezetés vásárlás előtt.
+
+### Kreditek
+
+Az aktuális kreditegyenleged, napi felhasználás és tranzakciótörténet. Az ingyenes csomagnál az 50 napi kredit éjfélkor (UTC) újratöltődik.
+
+### API kulcsok
+
+Itt adhatod hozzá a külső API kulcsaidat (OpenAI, Anthropic, Replicate) és kezelheted a spike.land proxy kredit beállításaidat. Erről bővebben a 4. lépésben.
+
+### Csapat (csak Business)
+
+Hívj meg csapattagokat, oszd ki a szerepeket, oszd meg az API kulcs poolokat, és kezeld az eszközhozzáférést tagonként.
+
+---
+
+## 3. lépés: Telepítsd a spike-cli-t és csatlakozz
+
+A spike-cli egy MCP multiplexer — egyetlen shell, ami összeköti az AI agentedet a spike.land-del és bármilyen más konfigurált MCP szerverrel. Gondolj rá úgy, mint egy univerzális adapterre az AI eszközeid és a platform között.
+
+### Gyorsindítás (Claude Code)
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+Egy parancs. Ez hozzáadja a spike.land-et MCP szerverként a Claude Code-ban. Azonnal csatlakozol az összes spike.land eszközhöz.
+
+### Alternatíva: Interaktív CLI
+
+```bash
+npx @spike-land-ai/spike-cli shell
+```
+
+Ez letölti és futtatja a spike-cli-t, hitelesít, és megnyit egy interaktív shellt.
+
+### Globális telepítés (ajánlott)
+
+```bash
+npm install -g @spike-land-ai/spike-cli
+spike auth login
+spike shell
+```
+
+A `spike auth login` megnyit egy böngészőt OAuth-hoz. Hagyd jóvá, és a hitelesítő adataid helyben tárolódnak. Ezt egyszer csinálod meg, és utána elfelejthetted.
+
+### Ellenőrizd a kapcsolatot
+
+A shellben:
+
+```
+spike> servers
+  SERVER        STATUS    TOOLS
+  spike-land    online    80
+
+spike> toolsets
+  TOOLSET      TOOLS   STATUS
+  chess           6    available
+  codespace       5    available
+  image-studio   42    available
+  qa-studio       8    available
+  utilities      13    available
+```
+
+Csatlakozva. A toolsetek még nincsenek betöltve — a spike-cli lazy loadingot használ, hogy kicsin tartsa a kontextust. Ez szándékos: mindent előre betölteni felduzzasztaná a kontextusablakot. Töltsd be, amire szükséged van, amikor szükséged van rá.
+
+```
+spike> load chess
+  ✓ Loaded toolset "chess" (6 tools from spike-land)
+
+spike> tools chess
+  spike-land__chess_new_game
+  spike-land__chess_send_challenge
+  spike-land__chess_make_move
+  spike-land__chess_get_board
+  spike-land__chess_get_elo
+  spike-land__chess_resign
+```
+
+### Az első eszközhívásod
+
+```
+spike> call spike-land__chess_new_game {"timeControl": "5+0"}
+  game created (g_3k9xm1), playing as white, waiting for opponent
+  time control: 5 minutes + 0 increment
+  game URL: https://spike.land/chess/g_3k9xm1
+```
+
+Ez az első MCP eszközhívásod. Bement egy típusos kérés, visszajött egy strukturált válasz. Nem kell REST endpointokat felfedezni, hitelesítési fejléceket kitalálni, SDK-t telepíteni.
+
+---
+
+## 4. lépés: API kulcsok beállítása
+
+A legtöbb eszközhívás ingyenes — azok, amelyek nem hívnak meg AI modellt a háttérben. Azok az eszközök, amelyeknek modell-hozzáférés kell — képelemzés, kódmagyarázat, tartalomgenerálás — vagy a saját API kulcsaidat igénylik, vagy proxy krediteket.
+
+Így kezeld.
+
+### Hozd a saját kulcsaidat (BYOK)
+
+Menj a **Dashboard > API Keys** menüpontra és add hozzá a kulcsaidat:
+
+| Provider | Kulcsformátum | Használja |
+|---|---|---|
+| OpenAI | `sk-...` | Képgenerálás, embeddingek |
+| Anthropic | `sk-ant-...` | Kódelemzés, tartalom eszközök |
+| Replicate | `r8_...` | Képjavítás, upscaling |
+
+Hozzáadás után az eszközhívások automatikusan a kulcsaidon keresztül routolódnak. Közvetlenül a szolgáltatónak fizetsz. A spike.land sosem látja az API költségeidet.
+
+**Miért BYOK?**
+- Teljes kontroll a modell költségeid felett
+- Használd a meglévő szolgáltatói kreditjeidet és rate limitjeidet
+- Nincs felár — a szolgáltató közzétett árait fizeted
+
+### Spike.land proxy kreditek
+
+Egy számlát szeretnél mindenre? Használj inkább proxy krediteket.
+
+1. Menj a **Dashboard > Credits** menüpontra
+2. Kattints a **Buy Credits** gombra — $0,10 kreditenként, minimum 100 kredit ($10)
+3. Válaszd a **Use Proxy** opciót az API Keys szekcióban
+
+A modellhívások a kreditegyenlegedből vonódnak le, ahelyett hogy egy szolgáltatói kulcsot használnának. Egy tétel fedez mindent.
+
+**Free és Pro csomag felhasználók**: a kreditek havonta görgetődnek, maximum 2x limitig. Business felhasználóknak korlátlan kredit jár.
+
+---
+
+## 5. lépés: Fedezd fel az eszközöket a boltban
+
+A bolt a legjobb módja annak, hogy felfedezd, mire képes a spike.land. Gondolj rá úgy, mint egy katalógusra, ahol minden tétel egy képesség, amit kódból hívhatsz meg.
+
+### Böngészés kategória szerint
+
+```
+spike> toolsets
+  TOOLSET        TOOLS   STATUS
+  chess              6   available
+  image-studio      42   available
+  codespace          5   available
+  qa-studio          8   available
+  utilities         13   available
+```
+
+Tölts be egy kategóriát, listázd az eszközöket, olvasd el a leírásokat. Az eszközleírásokat úgy írták, hogy AI agentek is megértsék — de emberek számára is jól olvashatók.
+
+### Eszköz tesztelése a böngészőben
+
+Minden eszközkártyán van egy **Try it** panel a dashboardon. Adj meg bemeneti értékeket, kattints a Run gombra, és nézd meg a nyers választ. Ez hasznos annak megértéséhez, mit ad vissza egy eszköz, mielőtt workflow-t építenél köré.
+
+### Eszközök keresése képesség szerint
+
+Nem tudod, melyik eszköz csinálja, amire szükséged van? Használd a keresősávot. Keress rá az "image"-re és 42 találatot kapsz. Keress rá a "chess elo"-ra és megkapod a `chess_get_elo`-t. Keress rá a "screenshot"-ra és megkapod a QA Studio capture eszközöket.
+
+### Eszköz sémájának olvasása
+
+Kattints bármelyik eszközre a teljes szerződés megtekintéséhez:
+
+```
+Tool: chess_make_move
+Tier: Free
+Credits: 0 (no model call)
+
+Input:
+  game_id: string  — ID of the game to move in
+  move: string     — Move in UCI notation (e.g. "e2e4")
+
+Output:
+  move: string     — The move played
+  fen: string      — Board state after move
+  result: string   — "ongoing" | "white_wins" | "black_wins" | "draw"
+  narrative: string — Plain English description of the position
+```
+
+A séma az igazság forrása. Amit itt látsz, pontosan azt küldi a spike-cli az eszköznek, és pontosan az jön vissza. Nincs meglepetés.
+
+---
+
+## 6. lépés: Csatlakoztatás az AI agentedhez
+
+A spike-cli bármilyen MCP-kompatibilis AI klienssel működik. Itt vannak a leggyakoribb beállítások.
+
+### Claude Code
+
+Add hozzá a spike.land-et az `.mcp.json`-hoz:
+
+```json
+{
+  "mcpServers": {
+    "spike-land": {
+      "type": "url",
+      "url": "https://spike.land/api/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Az API kulcsodat itt találod: **Dashboard > API Keys > MCP Access Token**.
+
+### spike-cli mint híd
+
+Ha a spike-cli lazy toolset betöltését és multiplexelését szeretnéd a Claude Code tetejére:
+
+```json
+{
+  "mcpServers": {
+    "spike": {
+      "type": "stdio",
+      "command": "spike",
+      "args": ["mcp", "--servers", "spike-land"]
+    }
+  }
+}
+```
+
+A spike-cli kezeli a hitelesítést, a névtereket és a routingot. Az AI kliens egyetlen, lapos eszközlistát lát `spike-land__` prefixekkel.
+
+### Egyéni agentek
+
+Az Anthropic SDK-val, OpenAI Assistants-szal vagy bármilyen tool calling-ot támogató keretrendszerrel épített agentekhez használd közvetlenül a HTTP endpointot:
+
+```
+POST https://spike.land/api/mcp
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "chess_new_game",
+    "arguments": { "timeControl": "5+0" }
+  }
+}
+```
+
+Teljes API referencia: [spike.land/docs/api](https://spike.land/docs/api).
+
+---
+
+## 7. lépés: Válts magasabb csomagra, amikor kell
+
+Az ingyenes csomag valódi — nem jár le, és az ingyenes eszközkatalógust teljes egészében lefedi. De ha eléred az 50 kredit/napi limitet, vagy prémium eszközökre van szükséged, a váltás 30 másodpercbe telik.
+
+### Mikor válts Pro-ra ($29/hó)
+
+- Rendszeresen eléred a napi kreditlimitet
+- Szükséged van az image studio eszközökre (a legtöbb Pro-szintű)
+- Prioritásos támogatást szeretnél
+- Olyasmit építesz, amit ki akarsz szállítani
+
+### Mikor válts Business-re ($99/hó)
+
+- Csapatod van, ami megosztja az API kulcsokat vagy az eszközhozzáférést
+- Korlátlan kredit kell produkciós workloadokhoz
+- Audit logok kellenek compliance-hez
+- A spike.land-re építve készítesz terméket
+
+### Hogyan válts
+
+1. Menj a **Dashboard > Billing** menüpontra
+2. Kattints az **Upgrade** gombra
+3. Válassz Pro-t vagy Business-t
+4. Add meg a fizetési adatokat (kártya, vagy számla Business-hez)
+
+A váltás azonnali. A kreditek ugyanabban a percben megjelennek a fiókodban.
+
+**Éves kedvezmény**: mindkét csomag elérhető 20% kedvezménnyel éves számlázással — Pro évi $278 (effektív $23,17/hó), Business évi $950 (effektív $79,17/hó).
+
+---
+
+## Mi jön ezután
+
+Kész vagy. Innen merre tovább.
+
+**Olvasd el az MCP magyarázatot** — Az [MCP Explained: The Universal Adapter for AI Tools](/blog/mcp-explained-universal-adapter-for-ai-tools) leírja, hogyan működik a protokoll és miért erre építettünk.
+
+**Böngészd a teljes eszközkatalógust** — A [spike.land/store](https://spike.land/store) oldalon megtalálod az összes eszközt élő dokumentációval.
+
+**Építsd meg az első workflow-dat** — A [fejlesztői dokumentáció](https://spike.land/docs) kidolgozott példákat tartalmaz gyakori felhasználási esetekre: képfeldolgozási pipeline-ok, kódelemző agentek, sakk botok.
+
+**Next.js-ről migrálsz?** — A [migrációs szolgáltatás](/blog/nextjs-migration-service) elmagyarázza a módszert és mit fednek le a csomagok.
+
+**Publikálj eszközt** — Ha van egy MCP eszközöd, amit monetizálni szeretnél, [jelentkezz a marketplace-re](https://spike.land/marketplace/apply). Mi kapunk 30%-ot, te megtartod a 70%-ot.
+
+**Csatlakozz a közösséghez** — [Discord](https://spike.land/discord) kérdésekhez, visszajelzéshez, és korai betekintéshez abba, ami jön.
+
+---
+
+## Hibaelhárítás
+
+**A `spike auth login` megnyitja a böngészőt, de semmi sem történik**
+Győződj meg róla, hogy a 9876-os portot nem blokkolja tűzfal. A spike-cli helyi átirányítást használ az OAuth-hoz. Ha blokkolt, futtasd a `spike auth login --manual` parancsot és másold be közvetlenül a tokent.
+
+**Az eszközhívás "insufficient credits"-et ad vissza**
+Elérted a napi limitedet. A kreditek éjfélkor (UTC) újratöltődnek. Válts Pro-ra 500/nap vagy Business-re korlátlanért.
+
+**A BYOK kulcs nem kerül felhasználásra**
+Ellenőrizd, hogy a kulcs aktív a **Dashboard > API Keys** menüpont alatt, és hogy a mellette lévő kapcsoló be van kapcsolva. Az inaktív kulcsok tárolva vannak, de nem használatosak.
+
+**Az `npx` lassú az első futtatásnál**
+Az első `npx @spike-land-ai/spike-cli shell` letöltés 10-20 másodpercig tart. A további futtatások a cache-t használják. Telepítsd globálisan, hogy kihagyd ezt: `npm install -g @spike-land-ai/spike-cli`.
+
+---
+
+*Kérdésed van? A [Discord](https://spike.land/discord) a leggyorsabb módja elérni a csapatot. Issue-kat a [github.com/spike-land-ai](https://github.com/spike-land-ai) oldalon lehet bejelenteni.*
+
+A setup kész. Az érdekes rész most kezdődik.

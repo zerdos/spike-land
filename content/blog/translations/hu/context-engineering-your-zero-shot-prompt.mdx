@@ -1,0 +1,136 @@
+---
+title: "Context Engineering Your Zero-Shot Prompt"
+slug: "context-engineering-your-zero-shot-prompt"
+description: "Stop iterating endlessly. Learn how to front-load context so AI models get your code right on the first try. A beginner-friendly guide."
+date: "2026-02-10"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "context-engineering", "prompt-engineering", "claude", "developer-tools", "productivity", "mcp"]
+featured: true
+draft: false
+primer: "Front-load context so the AI nails it on the first try."
+heroPrompt: "A glowing blueprint schematic of a complex system, digital art, high tech"
+heroImage: "/blog/context-engineering-your-zero-shot-prompt/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Context Engineering Your Zero-Shot Prompt'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/context-engineering-your-zero-shot-prompt/hero.png)
+
+<Tldr>
+
+- A prompt engineering elavult. A context engineering az új standard.
+- Ahhoz, hogy az AI az első próbálkozásra tökéletesen csinálja meg ("0-shot"), előre be kell tölteni a kontextust.
+- A képlet: Identitás + Tudás + Példák + Korlátok + Eszközök.
+- Egy egyszerű `CLAUDE.md` fájl a projektedben a titkos fegyver az AI konzisztenciájához.
+
+</Tldr>
+
+Múlt kedden beírtam egyetlen kérést Claude Code-ba. Tizenegy perccel később egy teljesen tesztelt feature élt a staging környezetünkön.
+
+Aznap délután egy junior kollégám leült ugyanazzal a modellel egy hasonló feladathoz. Negyvenöt perc és tizenkét üzenet után még mindig törött kóddal birkózott.
+
+A különbség nem tehetség volt. Nem az AI volt.
+
+**A különbség a kontextus volt.**
+
+Ő egy kérdést írt be. Én egy teljes eligazítást adtam át. Ő egy idegent vallatott, remélve, hogy az AI kitalálja, mit akar. Én átadtam az AI-nak a kódbázisunk térképét, a konvencióinkat és a feladat világos határait.
+
+A tizenegy perc és a negyvenöt perc közötti rés nem a beszélgetés közben épült. A rés még azelőtt épült, hogy bármelyikünk egyetlen szót beírt volna.
+
+---
+
+## A varázsszavak halála
+
+Hadd legyek direkt: az a próbálkozás, hogy "varázsszavakat" keress, amikkel ráveszed az AI-t, hogy azt csinálja, amit akarsz, elavult stratégia. 2023-ban szükséges volt, amikor a modellek gondos bírálgatást igényeltek. Ma a modellek elég okosak ahhoz, hogy megértsék a szándékodat. A szűk keresztmetszet elmozdult.
+
+A szűk keresztmetszet most a **te konkrét projektedről szóló információ**.
+
+Gondolj rá úgy, mint útbaigazításra. Ha valaki megkérdezi, hogyan jusson el az élelmiszerboltba, a "fordulj balra a lámpánál" működik a te városodban. De ha egy olyan városban vannak, ahol soha nem jártak, a teljes térképet kell adnod -- vagy még jobb, ha adsz egyet, amin a útvonal már ki van jelölve.
+
+A prompted csak az utolsó utasítás: "menj a boltba." A context engineering minden, ami ezt az utasítást egyértelművé teszi.
+
+Ha az AI rossz eredményt ad, a régi ösztön az volt, hogy átírod a promptot. Az új ösztönnek ennek kell lennie: *Milyen kontextus hiányzott?* Ez a leverage point. Szinte mindig a probléma a kérdés előtt van.
+
+---
+
+## Az 5 rétegű kontextus-verem
+
+Ahhoz, hogy az első próbálkozásra tökéletes eredményt kapj -- amit "zero-shot prompt"-nak hívunk -- öt réteg kontextust kell biztosítanod. Gondolj rájuk úgy, mint egy épület rétegeire. Ha kihagyod az alapot, a tetőtér inogni fog.
+
+{/* Diagram: 5 layers of context — Identity, Knowledge, Examples, Constraints, and Tools */}
+
+### 1. réteg: Identitás
+**Ki az AI ebben a pillanatban?**
+
+Adj az AI-nak egy szerepet. Ez leszűkíti a hatalmas tudását pontosan arra a szeletre, amire szükséged van -- mint a rekesz állítása egy fényképezőgépen.
+
+*Példa:* "Te egy senior TypeScript fejlesztő vagy, aki egy Next.js alkalmazáson dolgozik. Szigorú, teljesen tesztelt kódot írsz."
+
+### 2. réteg: Tudás
+**Mit kell az AI-nak tudnia a te konkrét világodról?**
+
+Az AI általános programozást tud. Nem ismeri az adatbázis sémádat, a mappastruktúrádat, vagy azt, miért választottad a Hono-t az Express helyett. Neked kell megadnod a térképet.
+
+*Példa:* Mutasd meg az AI-nak az adatbázis séma fájlodat, vagy magyarázd el az autentikációs folyamatod.
+
+### 3. réteg: Példák
+**Hogyan néz ki itt a "jó"?**
+
+Ahelyett, hogy absztrakt módon írnád le a kódolási stílusodat, mutasd meg. Egy példa többet ér száz szó leírásnál.
+
+*Példa:* "Kövesd pontosan az `src/components/UserProfile.tsx`-ben használt adatlekérdezési mintát."
+
+### 4. réteg: Korlátok
+**Mit ne csináljon az AI?**
+
+Az AI modellek imádnak "segítőkészek" lenni azzal, hogy átírnak kódot, amit nem kértél. Korlátok nélkül a segítőkészség káosszá válik. A korlátok nem korlátozások -- fókuszt adnak.
+
+*Példa:* "Ne módosíts semmilyen fájlt az `src/dashboard` mappán kívül. Ne adj hozzá új npm csomagokat."
+
+### 5. réteg: Eszközök
+**Mit tud az AI ténylegesen csinálni?**
+
+Ha hozzáférést adsz az AI-nak fájlok olvasásához, tesztek futtatásához vagy a kódbázis kereséséhez, az alapvetően megváltoztatja, hogyan oldja meg a problémát. Egy modell `yarn test` hozzáféréssel természetesen ellenőrzi a saját munkáját, mielőtt bemutatná neked. Hozzáférés nélkül vakon repül.
+
+*Példa:* Adj az AI-nak hozzáférést a tesztcsomag futtatásához, és figyeld meg, mennyivel gondosabb lesz a kódja.
+
+---
+
+## CLAUDE.md: a titkos fegyvered
+
+A legegyszerűbb módja mind az öt réteg alkalmazásának egy `CLAUDE.md` fájl a projekted gyökerében.
+
+A Claude Code automatikusan olvassa ezt a fájlt minden session indításakor. Ez a permanens kontextus fájlod -- az eligazító dokumentum egy briliáns kolléga számára, akinek minden reggel amnéziája van.
+
+De itt a lényeg: **az AI-nak írd, ne embereknek.**
+
+Az emberek tudni akarják, *miért* hoztak egy döntést. Az AI-nak csak azt kell tudnia, *mit* csináljon.
+
+**Jó AI utasítások:**
+> "Testing framework: Vitest. A tesztfájlok `.test.ts`-re végződjenek. Teszteket `yarn test`-tel futtasd. 100%-os lefedettség szükséges."
+
+**Rossz AI utasítások:**
+> "2024-ben úgy döntöttünk, hogy elhagyjuk a Jest-et, mert a Vitest gyorsabb volt, szóval kérlek próbálj Vitest teszteket írni, ha tudsz."
+
+Az első egy szabály. A második egy történet. Az AI-nak szabályok kellenek.
+
+Minden alkalommal, amikor az AI rossz feltételezést tesz, adj hozzá egy új szabályt ehhez a fájlhoz. Idővel a `CLAUDE.md` élő dokumentummá válik, ami kódolja a csapatod döntéseit. Ez az intézményi emlékezet, amit az AI nem tud önmagától felépíteni.
+
+---
+
+## Az erőfeszítés megfordulása
+
+Itt van a legnagyobb szemléletváltás.
+
+{/* Graph: effort inversion — high upfront prep vs high backend iteration */}
+
+**A régi mód:** 2 percet töltesz egy prompt írásával. 45 percet töltesz azzal, hogy vitatkozol az AI-val a hibái kijavításáról. Minden javítási kör új zavart hoz be. A beszélgetés degradálódik.
+
+**Az új mód:** 15 percet töltesz kontextus összegyűjtésével, tiszta korlátok írásával és példákra mutatással. 2 percet töltesz a prompt írásával. Az AI az első próbálkozásra eltalálja.
+
+A teljes idő kevesebb. De ami fontosabb, az erőfeszítés *formája* változik. Előre fektetsz be ahelyett, hogy utólag fizetnél. Mint gondosan csomagolni egy útra, szemben azzal, hogy mindent a repülőtéren veszel meg a feláras üzletben.
+
+Ez egy klasszikus rendszerminta: kis befektetések leverage pontokon aránytalanul nagy eredményeket hoznak. A kontextus a leverage point. A prompt csak a kioldó.
+
+A kollégám hibája az volt, hogy kérdést tett fel az AI-nak. Az én lépésem az volt, hogy eligazítást adtam neki. A tizenegy perces rés nem a beszélgetés közben épült. A rés még azelőtt épült, hogy elkezdődött volna.
+
+A felkészülés a munka. A prompt csak a küldés gomb megnyomása.

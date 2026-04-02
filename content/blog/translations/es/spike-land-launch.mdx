@@ -1,0 +1,201 @@
+---
+title: "Introducing spike.land — The MCP-First AI Platform"
+slug: "spike-land-launch"
+description: "spike.land launches with 80+ MCP tools, an AI tool marketplace, API proxy credits, and a free tier. Here's what we built and why it matters for developers building with AI."
+date: "2026-03-04"
+author: "Radix"
+category: "Product"
+tags: ["mcp", "ai", "platform", "launch", "tools", "marketplace", "cloudflare-workers", "api-gateway"]
+featured: true
+draft: false
+primer: "80+ tools. One platform. Build AI-powered apps without the plumbing."
+heroPrompt: "A sleek futuristic control panel with 80+ illuminated tool slots, glowing circuits connecting to AI models, dark theme with neon blue accents"
+heroImage: "/blog/spike-land-launch/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing spike.land — The MCP-First AI Platform'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-launch/hero.png)
+
+<Tldr>
+
+- spike.land está en vivo con **más de 80 herramientas MCP** en ajedrez, estudio de imágenes, codespace, automatización QA, y más
+- **Nivel gratuito** para empezar. **Pro ($29/mes)**: 500 créditos/día, soporte prioritario. **Business ($99/mes)**: créditos ilimitados, gestión de equipos
+- **Marketplace de herramientas MCP** lanzándose con un reparto de ingresos 70/30 — los autores de herramientas se quedan con el 70%
+- **API Gateway**: trae tus propias claves API (BYOK) o usa créditos proxy de spike.land para OpenAI, Anthropic y Replicate
+- Un protocolo, cero integraciones personalizadas. Conéctate vía `claude mcp add spike-land --transport http https://spike.land/mcp`
+
+</Tldr>
+
+## El problema del que nadie habla honestamente
+
+N por M. Ese es el problema de integración escondido a plena vista.
+
+N clientes de IA. M servicios externos. Cada combinación necesita autenticación, parseo de respuestas, recuperación de errores, limitación de tasa, descubrimiento de herramientas. Escrito desde cero, cada vez.
+
+Si tienes 5 clientes y 10 servicios, son 50 rutas de integración. Añade un servicio más y necesitas 5 integraciones más. La superficie crece cuadráticamente. La carga de mantenimiento le sigue.
+
+MCP (Model Context Protocol) reduce ese problema de N-por-M a N-más-M. Un protocolo, implementado una vez en cada lado. Cualquier cliente habla con cualquier servidor. Es la misma idea que hizo que USB triunfara sobre una docena de cables propietarios — un contrato compartido supera al cableado a medida.
+
+Ese es el estándar sobre el que construimos spike.land. Hoy, estamos lanzando.
+
+---
+
+## Qué es spike.land
+
+spike.land es una **plataforma de IA MCP-first** — un registro de herramientas potenciadas por IA que tus agentes pueden llamar a través de un único protocolo estandarizado. En lugar de conectar APIs individuales, tu cliente de IA se conecta a spike.land y obtiene acceso a más de 80 herramientas listas para producción inmediatamente.
+
+Sin integraciones personalizadas. Sin código pegamento de autenticación. Sin lógica de paginación. Solo herramientas, listas para llamar.
+
+### Las más de 80 herramientas que lanzamos hoy
+
+Nuestro conjunto inicial de herramientas abarca cinco categorías:
+
+**Chess Arena** — Ajedrez competitivo completo con ratings ELO, desafíos en tiempo real y gestión de estado de juego. Seis herramientas. `chess_new_game`, `chess_send_challenge`, `chess_make_move`, `chess_get_board`, `chess_get_elo`, `chess_resign`.
+
+**Image Studio** — Análisis de imágenes potenciado por IA, generación, mejora, extracción de paleta, gestión de álbumes y orquestación de pipelines. 42 herramientas construidas sobre una arquitectura de middleware componible descrita en [The Architecture of Scale](/blog/the-architecture-of-scale-building-tools).
+
+**Codespace** — Ejecución de código en vivo, transpilación y entornos de previsualización. Cinco herramientas para ejecutar TypeScript y JavaScript en sandboxes aislados.
+
+**QA Studio** — Automatización de navegador vía Playwright. Ocho herramientas para pruebas end-to-end guionizadas, captura de pantallas e interacción grabada.
+
+**Utilities** — Web fetch, búsqueda, operaciones de archivos y un conjunto creciente de herramientas de propósito general que se componen entre categorías.
+
+Cada herramienta sigue el mismo contrato: esquema de entrada tipado con Zod, respuesta narrativa primero, salida JSON estructurada. [¿Por qué respuestas narrativas?](/blog/mcp-explained-universal-adapter-for-ai-tools#narrative-responses-tell-stories-not-dump-data) Porque un agente de IA no solo necesita datos — necesita datos sobre los que pueda razonar en contexto.
+
+---
+
+## Precios
+
+Construimos spike.land para ser accesible a cualquier escala. Empieza gratis, crece hacia lo que necesites.
+
+### Nivel Gratuito
+
+Empieza hoy, sin tarjeta de crédito requerida.
+
+- Acceso a herramientas del nivel gratuito
+- 50 créditos/día
+- Soporte comunitario
+- BYOK (trae tus propias claves API)
+
+### Pro — $29/mes
+
+Para desarrolladores individuales que necesitan más espacio.
+
+- **500 créditos/día**
+- Todas las más de 80 herramientas, incluyendo niveles premium
+- Soporte prioritario (respuesta en 48 horas)
+- BYOK + créditos proxy de spike.land
+- Panel de analíticas de uso
+
+### Business — $99/mes
+
+Para equipos construyendo flujos de trabajo de IA en producción.
+
+- **Créditos ilimitados**
+- Gestión de equipos y claves API compartidas
+- Despliegue de herramientas personalizadas
+- Soporte respaldado por SLA (respuesta en 24 horas)
+- Registros de auditoría y reportes de uso
+- Acceso anticipado a funciones del marketplace
+
+Todos los planes incluyen acceso al endpoint MCP en `https://spike.land/api/mcp`. Conéctate una vez vía [spike-cli](/blog/mcp-explained-universal-adapter-for-ai-tools) y tu agente tiene todo.
+
+---
+
+## El Marketplace de Herramientas MCP
+
+Estamos lanzando el marketplace de spike.land junto con la plataforma.
+
+La idea es simple: si construyes una herramienta MCP útil, deberías cobrar cuando otros la usen. Nosotros manejamos la infraestructura — autenticación, limitación de tasa, facturación, descubrimiento, cumplimiento del protocolo. Tú manejas la lógica de negocio. La fontanería es nuestro problema, no el tuyo.
+
+**Reparto de ingresos: 70/30. Los autores de herramientas se quedan con el 70%.**
+
+Las herramientas publicadas aparecen en el registro de spike.land y se vuelven invocables por cualquier usuario de spike-cli. La facturación es basada en créditos — los usuarios pagan por llamada, tú ganas por ejecución exitosa.
+
+Para publicar una herramienta, necesitas:
+1. Una definición válida de herramienta MCP (nombre, descripción, esquema Zod, handler)
+2. Una cuenta de desarrollador en spike.land
+3. Un paquete npm publicado o un endpoint desplegado en Cloudflare Worker
+
+El [patrón de constructor de herramientas](/blog/the-architecture-of-scale-building-tools) que usamos internamente es el mismo que usan los autores del marketplace. Misma superficie de API. Mismo formato de respuesta. Fácil para que los agentes descubran y compongan.
+
+Estamos abriendo el marketplace a socios tempranos hoy. Si tienes herramientas que quieres publicar, [solicita acceso anticipado](https://spike.land/marketplace/apply).
+
+---
+
+## API Gateway: Créditos y BYOK
+
+Muchas de nuestras herramientas llaman a modelos de IA internamente — análisis de imágenes, explicación de código, generación de contenido. Te damos dos formas de pagar por esas llamadas a modelos, porque la flexibilidad importa cuando estás averiguando qué funciona.
+
+**Trae Tus Propias Claves (BYOK)**
+
+Conecta tus claves API de OpenAI, Anthropic o Replicate en el panel. Las llamadas a herramientas que necesitan un modelo se enrutan a través de tus claves. Tu costo. Tus límites de tasa. Control total.
+
+**Créditos Proxy de Spike.land**
+
+¿Prefieres no gestionar múltiples cuentas de API? Usa créditos proxy de spike.land. Un pool de créditos, facturación consolidada, sin cuentas por servicio.
+
+- 1 crédito = 1 llamada estándar a API de modelo (aproximado, varía por modelo y conteo de tokens)
+- Los créditos se acumulan mensualmente en los planes Pro y Business
+- Compra créditos adicionales a $0.10/crédito
+
+El proxy es un passthrough — no añadimos margen sobre los costos del modelo más allá de la conversión de créditos. Nuestro margen está en la plataforma y el marketplace, no en la inferencia del modelo.
+
+---
+
+## El stack técnico
+
+spike.land corre completamente en Cloudflare Workers. Sin servidores que aprovisionar. Sin regiones que configurar. Las peticiones se enrutan al nodo edge más cercano automáticamente. La infraestructura se quita del camino para que las herramientas hagan el trabajo.
+
+- **Edge API**: Framework Hono en Cloudflare Workers
+- **Registro MCP**: Cloudflare Workers + D1 (SQLite en el edge)
+- **Auth**: Better Auth con Drizzle ORM
+- **Frontend**: Vite + React + TanStack Router
+- **Runtime de herramientas**: Entornos Worker aislados por categoría de herramienta
+
+La [arquitectura completa](/docs/architecture) está documentada. Construimos en abierto y continuaremos haciéndolo.
+
+---
+
+## ¿Por qué MCP?
+
+Podríamos haber construido una API REST. REST es familiar. Todos saben cómo hacer curl a un endpoint.
+
+Pero las APIs REST fueron diseñadas para desarrolladores humanos mirando documentación. Optimizan para JSON compacto, códigos de estado, tokens de paginación. Los agentes de IA necesitan un contrato diferente — uno que le diga al modelo *qué* hace una capacidad en lenguaje natural, *cómo* llamarla con parámetros tipados, y *qué* significa la respuesta en contexto.
+
+MCP es ese contrato. Define descubrimiento, esquemas tipados y respuestas narrativas como primitivas de primera clase. Cuando tu agente de IA se conecta a spike.land vía MCP, no necesita páginas de documentación. Lee las descripciones de herramientas, infiere las llamadas correctas y ejecuta. El protocolo en sí es la documentación.
+
+Escribimos más sobre esto en [MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools). La versión corta: MCP es una capa de presentación, no solo un transporte. Da forma a cómo el modelo piensa sobre tus capacidades, no solo cómo las llama.
+
+---
+
+## Lo que viene después
+
+Más de 80 herramientas es un comienzo, no un techo.
+
+**Q2 2026**: MCP Resources y Prompts. Hoy spike.land es solo herramientas — cada interacción es una llamada a función. Resources permite a los agentes navegar estados de juego, perfiles de usuario y catálogos de herramientas como contenido direccionable. Prompts permite a los servidores proporcionar plantillas de interacción reutilizables.
+
+**Q2 2026**: Lanzamiento público del marketplace. Las herramientas de socios tempranos se publican. Los pagos de reparto de ingresos comienzan.
+
+**Q3 2026**: UI de composición de herramientas. Construye pipelines multi-paso desde herramientas existentes en un editor visual. Sin código requerido.
+
+**Q3 2026**: Compartición de herramientas entre agentes. Publica herramientas privadas dentro de un equipo Business, visibles solo para tus agentes.
+
+---
+
+## Empieza
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+Ese único comando te conecta a todas las más de 80 herramientas. No se requiere registro para herramientas del nivel gratuito. Alternativamente, usa el CLI interactivo: `npx @spike-land-ai/spike-cli shell`. Para funciones Pro y Business, [crea una cuenta](https://spike.land/login).
+
+Si quieres construir sobre la plataforma — publicar herramientas, integrar el endpoint MCP en tu propio producto o unirte a la lista de espera del marketplace — [lee la documentación para desarrolladores](https://spike.land/docs) o contacta directamente.
+
+Construimos spike.land para hacer desaparecer las partes aburridas de la integración de IA. Autenticación, descubrimiento, contratos de herramientas, facturación — resuelto. Tú escribes la lógica del agente. Nosotros manejamos el resto.
+
+La plataforma está en vivo. [Empieza a construir](https://spike.land).
+
+---
+
+*Radix es un desarrollador con base en Brighton, Reino Unido. Ha estado construyendo spike.land durante cinco años — experimentando con ESM, TypeScript, Cloudflare Workers y MCP antes de que MCP tuviera nombre. Todavía piensa que la mejor infraestructura es la que nunca tienes que pensar en ella.*

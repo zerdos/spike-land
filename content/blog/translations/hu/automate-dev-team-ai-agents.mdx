@@ -1,0 +1,134 @@
+---
+title: "How to Automate Your Dev Team: AI Agents That Ship Production Code"
+slug: "automate-dev-team-ai-agents"
+description: "A beginner-friendly guide to replacing manual bottlenecks with autonomous AI workflows. Learn how to use Claude Code, Jules, and CI/CD to ship features without writing code."
+date: "2026-02-04"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "developer-tools", "claude", "jules", "automation", "ci-cd", "agents", "productivity"]
+featured: false
+draft: false
+listed: false
+primer: "Claude plans. Jules codes. Your pipeline ships."
+heroPrompt: "A futuristic assembly line where AI robots are building code blocks, bright neon colors, cybernetic factory"
+heroImage: "/blog/automate-dev-team-ai-agents/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'How to Automate Your Dev Team: AI Agents That Ship Production Code'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/automate-dev-team-ai-agents/hero.png)
+
+<Tldr>
+
+- Az AI ágensek képesek önállóan produkciós kódot szállítani -- ha a rendszered kész rá.
+- Előfeltételek: gyors automatizált tesztek, nulla véletlenszerűen elbukó teszt, és teljes tesztlefedettség.
+- A munkafolyamat: Claude tervez -> Jules írja a kódot -> A pipeline teszteli -> Claude felülvizsgálja.
+- A munkád átalakul: kódírás helyett azt definiálod, mit csináljon a kód.
+
+</Tldr>
+
+{/* Audio Version - Generated with NotebookLM */}
+<AudioPlayer
+  src="/blog/automate-dev-team-ai-agents/Stop_Coding_And_Start_Context_Engineering.m4a"
+  title="Listen to this article (Generated with NotebookLM)"
+/>
+
+A múlt héten lefuttattam egy kísérletet, ami megváltoztatta, hogyan gondolkodom a szoftverfejlesztésről.
+
+Megkértem Claude Code-ot, hogy tervezzen meg egy fintech alkalmazást. Nem kódot írni -- csak tervezni. És megmondtam, hogy használjon 16 különböző al-ágenst párhuzamosan a kutatáshoz.
+
+A 16 ágens a következőket csinálta:
+- **4 ágens** autentikációs mintákat és API dizájnt térképezett fel
+- **3 ágens** adatbázis sémát tervezett és jogi megfelelőséget kutatott
+- **4 ágens** UI komponenseket válogatott egy modern glassmorphic felülethez
+- **3 ágens** kitalálta, hogyan fordítsák le az appot négy nyelvre
+- **2 ágens** szélsőséges eseteket és hibaüzeneteket dokumentált
+
+47 fájlnyi részletes tervdokumentációt hoztak létre. Olyasmit, amihez egy termékmenedzser és senior mérnök csapatnak általában több nap kell.
+
+Aztán fogtam a tervet és átadtam egy teljesen másik AI modellnek -- Gemini Flash -- és azt mondtam: **"Építsd meg."**
+
+**70 perccel később** az app élt. Személyazonosság-ellenőrzés, sima animációk, PIN létrehozás, csiszolt dizájn. Az egész.
+
+A felismerés nem az volt, hogy "az AI gyors". A felismerés ez volt: **ha a terv elég jó, még egy alapmodell is hibátlanul végrehajtja.**
+
+Ez egy rendszergondolkodási felismerés. A kimenet minőségét nem az építő intelligenciája határozza meg. Hanem a rendszerbe áramló utasítások minősége. Egy közepes építész briliáns tervrajzzal felülmúl egy briliáns építészt szalvétavázlattal.
+
+{/* Diagram: days of manual planning versus 70 minutes of AI-powered delivery */}
+
+Ez nem csak az én tapasztalatom. A Google és a Microsoft is arról számolt be, hogy kódjuk 25-30%-a már AI-asszisztált vagy generált.
+
+---
+
+## A munka új formája
+
+Egy junior fejlesztő számára ez fenyegetésnek tűnhet. Ha az AI írja a kódot, mi marad neked?
+
+A titok ez: az AI nem vezeti a projektet. Te vezeted. A váltás a "kódírás"-ról az "ágensek irányítása" felé mozdul. Mint a különbség aközött, hogy minden hangszeren játszol egy zenekarban, vagy hogy vezényled azt.
+
+Így működik ma a modern fejlesztés:
+
+| Fázis | Ki csinálja | Miért |
+|-------|------------|-----|
+| **Tervezés** | Claude Code | Felderíti a kódbázist és a szélsőséges eseteket, mielőtt bármit írna. |
+| **Implementáció** | Jules (AI ágens) | Pontosan követi a tervet és automatizált teszteket ad hozzá. |
+| **CI/CD** | A Pipeline-od | Futtatja a teszteket, hogy megbizonyosodjon, az AI nem tört el semmit. |
+| **Kód felülvizsgálat** | Claude Code | Szigorúan felülvizsgálja a kódot biztonság és minőség szempontjából. |
+| **Javítások** | Jules | Addig javítja a kódot, amíg a tesztek és a felülvizsgálatok át nem mennek. |
+
+Az új munkád? **Definiáld, mit akarasz megépíteni, és ellenőrizd, hogy működik.**
+
+Figyelj a feedback loop-ra. A tervezés az implementációba folyik, az implementáció a tesztelésbe, a tesztelés visszafolyik a javításokba, és a javítások visszafolynak a felülvizsgálatba. A rendszer korrigálja magát. A te szereped a kezdeti irány megadása és az eltérések figyelése.
+
+{/* Diagram: Planning → Implementation → Automated Tests → Code Review → Merge */}
+
+---
+
+## A háló: miért nélkülözhetetlen a CI/CD
+
+Talán arra gondolsz: "De az AI hallucinál. Mi van, ha eltöri az appot?"
+
+Jogos félelem. Ha hagyod az AI-t vakon kódot pusholni, el fog törni dolgokat. Ezért kell egy **CI/CD pipeline** -- Continuous Integration / Continuous Deployment.
+
+Gondolj a CI/CD-re úgy, mint a szalagkorlátokra egy hegyi úton. Az út nem azért lassabb, mert vannak korlátok -- azért gyorsabb. Nélkülük kúszni kellene.
+
+Minden alkalommal, amikor az AI kódot ír, a pipeline lefut:
+1. **Linting** -- elírások és stílushibák ellenőrzése
+2. **Típusellenőrzés** -- az adattípusok egyezésének biztosítása
+3. **Automatizált tesztek** -- unit tesztek futtatása a logika ellenőrzésére
+4. **Build** -- az egész app fordítási kísérlete
+
+Az AI nem tud merge-elni, hacsak nem megy át minden ellenőrzésen. Ez teszi biztonságossá az autonóm ágenseket: nem bizalom, hanem ellenőrzés. A pipeline az a kiegyensúlyozó kör, ami elkapja a hibákat, mielőtt halmozódnának.
+
+---
+
+## A projekted "ágens-készre" állítása
+
+Nem dobhatsz egy AI ágenst egy rendetlen kódbázisba és várhatsz varázslatot. A rendszernek előfeltételei vannak, ugyanúgy, mint ahogy egy gyárnak tiszta inputokra van szüksége, mielőtt a futószalag elindulhat.
+
+Ha a tesztjeid 45 percig futnak, az AI elakad a várakozásban. Ha a tesztjeid véletlenszerűen buknak, az AI fantomhibákat kerget körbe-körbe -- a pazarolt erőfeszítés megerősítő köre.
+
+Ehhez a sebességhez a projektednek szüksége van:
+
+1. **Gyors feedback loop-okra.** A teszteknek 10 percen belül le kell futniuk. 10 másodperc alatt történik az igazi varázslat.
+2. **Szigorú TypeScript.** A típusrendszerek olyanok, mint a sávjelzések egy autópályán. Az AI a sávjában marad, mert a típusok megmondják, hol vannak a szélei.
+3. **Stabil tesztek.** Unit tesztek, amik elmagyarázzák, mit kell a kódnak csinálnia. End-to-end tesztek, amik valódi felhasználóként viselkednek. Együtt alkotják a specifikációt.
+4. **Nulla flaky teszt.** Ha egy teszt véletlenszerűen bukik, töröld vagy javítsd. Egy flaky teszt rosszabb, mint a semmi -- megtanítja az AI-nak, hogy a bukás normális.
+
+Ha teljesen megbízol az automatizált tesztjeidben, megbízhatsz az AI-ban, hogy megírja a kódot. A bizalom tranzitív.
+
+---
+
+## Az új fejlesztői képességkészlet
+
+A CI/CD kezeli a kód korrektségét. De nem tudja megmondani az AI-nak, mit építsen legközelebb. Ez az új munka.
+
+A képesség már nem "prompt engineering" -- varázs szavak keresése az AI becsapására. Hanem **context engineering** -- a megfelelő háttérinformáció átadása az AI-nak, hogy elég mélyen megértse a te konkrét projektedet ahhoz, hogy jó döntéseket hozzon.
+
+Meg kell tanulnod:
+
+- **Siker definiálása.** Tiszta elfogadási kritériumok írása, hogy az AI tudja, mikor végzett. Ha te nem tudod definiálni a "kész"-t, az ágens sem fogja tudni.
+- **Korlátok állítása.** Pontosan megmondani az AI-nak, mely fájlokat érintheti és melyeket nem. A korlátok nem korlátozások -- fókuszt adnak.
+- **Ágensek debugolása.** Ha valami elromlik, nem csak a kódot olvasod. Olvasod az AI gondolkodási folyamatát, hogy megértsd, miért hozott rossz döntést, aztán javítod az utasításaidat. A folyamatot debugolod, nem a terméket.
+
+Nem te vagy többé a kőműves. Te vagy az építész. Akkor lépsz be, amikor az AI elakad egy üzleti döntésen, ami ítélőképességet igényel, nem amikor egy újabb for-loop-ra van szüksége.
+
+Azok a fejlesztők, akik ezt megtanulják, nem 10%-kal dolgoznak gyorsabban. Nagyságrendekkel gyorsabban. De akik nem alkalmazkodnak, azokat nem az AI fogja leváltani. Azokat a fejlesztők fogják leváltani, akik úgy használják az AI-t, ahogy mi egykor megtanultuk használni a fordítóprogramokat -- mint egy olyan erősítőt, ami annyira alapvető, hogy nem használni elképzelhetetlenné válik.

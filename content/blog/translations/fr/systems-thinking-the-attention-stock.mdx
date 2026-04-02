@@ -1,0 +1,272 @@
+---
+title: "The Attention Stock"
+slug: "systems-thinking-the-attention-stock"
+description: "Chapter 3 of Thinking in Systems, Continued. Attention is a stock with inflows, outflows, and feedback loops — for humans and machines alike. But unlike water in a bathtub, attention changes what it touches."
+date: "2026-04-02"
+author: "Zoltan & Radix"
+category: "Essays"
+tags: ["systems-thinking", "attention", "context-engineering", "adhd", "meadows", "weil", "ai", "book"]
+featured: true
+draft: false
+primer: "Meadows taught us that every system has stocks and flows. The stock that governs our era is attention. And unlike water, it transforms what it touches."
+heroPrompt: "A luminous bathtub overflowing with streams of light instead of water, each stream carrying tiny symbols and letters, some streams being carefully directed by gentle hands, warm golden hour lighting, delicate ink drawing with watercolor"
+heroImage: "/blog/systems-thinking-the-attention-stock/hero.png"
+---
+
+# Le stock d'attention
+
+*Chapitre 3 de Penser en systèmes, suite*
+
+---
+
+## I. La baignoire
+
+Donella Meadows a commencé avec une baignoire.
+
+Pas parce qu'elle aimait la plomberie. Parce que la baignoire est le système le plus simple qui enseigne la leçon la plus importante de la pensée systémique : la différence entre un stock et un flux.
+
+L'eau dans la baignoire est le stock. Le robinet est l'entrée. Le drain est la sortie. Si le robinet coule plus vite que le drain, l'eau monte. Si le drain coule plus vite que le robinet, l'eau descend. Le stock à tout moment est l'accumulation de tous les flux passés.
+
+Simple. Presque ridiculement simple.
+
+Mais Meadows comprenait que la simplicité était le point. Une fois que vous pouvez voir les stocks et les flux dans une baignoire, vous commencez à les voir partout. L'argent dans un compte en banque. Le carbone dans l'atmosphère. Les lapins dans un champ. La réputation dans une communauté.
+
+La discipline est toujours la même : trouvez le stock, nommez les entrées, nommez les sorties, et ensuite — c'est la partie qui change tout — cherchez les boucles de rétroaction qui connectent la sortie à l'entrée.
+
+Je veux proposer un stock dont Meadows n'a jamais parlé. Non pas parce qu'elle l'a raté, mais parce qu'en 1972, il n'était pas encore devenu la ressource centrale de la vie économique et cognitive.
+
+Le stock, c'est l'attention.
+
+---
+
+## II. L'attention comme stock
+
+Commençons simplement, comme Meadows le ferait.
+
+Vous vous réveillez le matin avec une certaine quantité de capacité attentionnelle. Appelons ça le stock. Tout au long de la journée, des choses entrent : une conversation, une notification, un paragraphe, la question d'un enfant, une revue de code, une chanson. Chacune réclame une portion du stock. Et des choses sortent : vous oubliez, vous lâchez prise, vous compressez la réunion d'hier en un seul point clé, vous dormez et les concierges neuronaux balaient les sols.
+
+Le stock à tout moment est ce que vous gardez à l'esprit. Votre ensemble de travail. Les choses auxquelles vous prêtez actuellement attention.
+
+Jusque-là, rien d'extraordinaire. William James l'a décrit en 1890 — le flux de conscience, le projecteur de l'attention, la frange. Les psychologues mesurent la capacité attentionnelle depuis un siècle. Rien de nouveau ici.
+
+Ce qui est nouveau, c'est que nous avons construit des machines avec leur propre stock d'attention. Et soudain, le cadre de Meadows n'est plus juste une métaphore de la cognition humaine. C'est une spécification d'ingénierie littérale.
+
+---
+
+## III. La fenêtre de contexte est une baignoire
+
+Un LLM a une fenêtre de contexte. C'est exactement un stock.
+
+Les messages entrent — tours utilisateur, prompts système, résultats d'outils, documents récupérés. C'est l'entrée. La fenêtre de contexte a une taille fixe : 200 000 tokens, ou un million, selon le modèle. Quand la fenêtre se remplit, quelque chose doit partir. Les anciens messages sont tronqués, résumés ou supprimés. C'est la sortie.
+
+Le stock à tout moment — le contenu de la fenêtre de contexte — est l'attention du modèle. Pas métaphoriquement. Littéralement. Le mécanisme d'attention du transformer opère sur exactement ces tokens. Ce qui est dans la fenêtre est ce à quoi le modèle peut penser. Ce qui n'est pas dans la fenêtre n'existe pas.
+
+C'est là que [l'architecture de spike-chat](/blog/why-spike-chat-stays-sharp) devient intéressante en tant que conception de système. La plupart des systèmes de chat traitent la fenêtre de contexte comme une simple file d'attente : les messages entrent d'un côté et tombent de l'autre. Premier entré, premier sorti. Aucune intelligence dans le drain.
+
+spike-chat fait quelque chose de différent. Il construit un drain intelligent.
+
+Des notes de mémoire scorées au lieu de la transcription brute. Un pipeline à quatre étapes avec isolation de contexte entre les étapes. Des budgets de compression — 8 tours précédents maximum, 6 000 tokens pour l'historique, 320 caractères pour les résumés de l'assistant. Chaque nombre est un réglage de valve sur la sortie. Le système ne se contente pas de vidanger la baignoire. Il distille ce qui reste.
+
+Dans le langage de Meadows : la sortie est gouvernée par une boucle de rétroaction d'équilibrage. Plus le bruit s'accumule dans le stock, plus agressivement la compression se déclenche. Moins une note de mémoire a été utile (faible confiance, faible récence, faible nombre d'aides), plus facilement elle est rétrogradée. Le drain n'est pas bête. Le drain est la partie la plus importante du système.
+
+C'est un principe général. Dans tout système où le stock a une capacité finie et où la qualité du stock compte plus que sa quantité, la conception de la sortie est plus importante que la conception de l'entrée.
+
+Meadows aurait adoré cette phrase. Elle a passé la moitié de sa carrière à essayer de convaincre les gens d'arrêter d'être obsédés par les entrées et de commencer à penser à ce qui régule le drain.
+
+---
+
+## IV. L'oscillateur TDAH
+
+Parlons maintenant d'un stock d'attention humain qui fonctionne différemment.
+
+Dans [Vivre avec le TDAH : Les paires rotatives](/blog/living-with-adhd-the-rotating-pairs), six personas — trois mathématiciens, trois ingénieurs — décrivent le TDAH non pas comme un déficit d'attention mais comme une structure de rétroaction différente. Erdos-1 le formule clairement : « Le cerveau neurotypique fait une recherche en profondeur d'abord avec de bonnes heuristiques. Le cerveau TDAH fait quelque chose de plus proche d'une marche aléatoire avec téléportation occasionnelle. »
+
+En termes systémiques, voici ce qui se passe.
+
+Le stock d'attention neurotypique est régulé par un thermostat — une boucle d'équilibrage avec une constante de temps raisonnable. L'attention dérive vers une tâche, le thermostat détecte la déviation, corrige et maintient. Petites oscillations autour du point de consigne. Le stock reste dans une bande étroite.
+
+Le stock d'attention TDAH a un thermostat différent. La constante de temps est mauvaise — trop lente à l'entrée, trop rapide à la sortie, ou le gain est réglé trop haut de sorte que la correction dépasse. Le stock oscille entre les extrêmes. De longues périodes d'attention diffuse et dispersée (la baignoire presque vide) ponctuées d'épisodes d'hyperfocus si intenses que la baignoire déborde et inonde la salle de bain.
+
+Erdos-2 dans les paires rotatives appelle ça une distribution à queue lourde. La plupart des heures ne produisent presque rien. Puis une heure produit plus que les vingt précédentes combinées. La masse de production est concentrée dans les événements extrêmes.
+
+L'intervention standard est de forcer le thermostat TDAH à se comporter comme un thermostat neurotypique. Les médicaments ajustent le gain. La thérapie comportementale essaie de raccourcir la constante de temps. Et ça marche, partiellement, pour certaines personnes, parfois.
+
+Mais les paires rotatives suggèrent quelque chose de plus intéressant : et si on concevait le système autour de l'oscillation plutôt que contre elle ?
+
+C'est du pur Meadows. Elle appelait ça « danser avec les systèmes ». Ne combattez pas la structure de rétroaction. Comprenez-la. Puis concevez le système environnant — l'échafaudage externe, l'environnement, les outils — de sorte que les dynamiques naturelles produisent des résultats utiles.
+
+La méthode des paires rotatives fait exactement ça. Des interactions courtes et structurées avec des partenaires changeants. La structure fournit une horloge externe que le cerveau TDAH n'a pas en interne. Les changements de partenaires fournissent la nouveauté, qui réinitialise le thermostat attentionnel. Le cycle de rotation est assez court pour tenir dans la fenêtre de haute attention et se terminer avant le crash.
+
+C'est une boucle d'équilibrage imposée de l'extérieur, accordée à la fréquence naturelle du système qu'elle régule.
+
+Meadows aurait dessiné le diagramme de boucle causale sur une serviette.
+
+---
+
+## V. Le filtre de la création
+
+Il y a un autre stock qui compte ici, et il n'est à l'intérieur de la tête de personne.
+
+C'est le stock de contenu dans le monde.
+
+Dans [Az alkotás szűrője](/blog/az-alkotas-szuroje) — « Le filtre de la création » — l'argument est le suivant : pendant la majeure partie de l'histoire humaine, le limiteur de flux naturel de la création de contenu était l'énergie humaine. Écrire un livre prenait des années. Écrire un article prenait des jours. Même écrire une lettre prenait du temps, de la réflexion, du soin. L'effort lui-même était un filtre. Pas un filtre parfait — beaucoup de mauvais livres ont été écrits — mais un filtre fonctionnel. Le stock de contenu croissait assez lentement pour que le stock de sens puisse suivre.
+
+L'IA a supprimé le goulot d'étranglement.
+
+L'entrée de contenu est passée d'un filet à une lance à incendie. Trente secondes pour un article de blog. Une minute pour cinq articles. Dix minutes pour une stratégie de contenu complète avec vingt pièces, chacune optimisée pour le SEO.
+
+Mais la sortie du stock de sens n'a pas changé. Les humains lisent toujours à la même vitesse. Pensent toujours à la même vitesse. Ont toujours besoin du même temps pour absorber, connecter et intégrer.
+
+En termes de Meadows : le stock de production et le stock de compréhension étaient autrefois couplés. Ils grandissaient ensemble parce que le même goulot d'étranglement — le temps et l'énergie humains — gouvernait les deux. L'IA les a découplés. La production a accéléré. La compréhension, non.
+
+Le résultat est exactement ce que Meadows prédirait pour un système où un stock croît exponentiellement tandis qu'un stock couplé reste constant : le débordement. Non pas d'eau, mais de bruit. Le ratio signal-bruit dans le stock de contenu s'effondre. Non pas parce que le contenu IA est mauvais — il ne l'est souvent pas — mais parce que sa simple existence n'était plus un signal que quelqu'un pensait que ça comptait.
+
+Le filtre s'est déplacé de la production vers la réception. La question critique n'est plus « puis-je créer ceci ? » mais « dois-je y prêter attention ? » La ressource rare s'est déplacée du côté de l'offre vers le côté de la demande.
+
+Et cette ressource rare, c'est l'attention.
+
+C'est pourquoi l'attention est le stock qui gouverne notre ère. Pas l'information. Pas le contenu. Pas le calcul. L'attention. Parce que l'attention est ce qui se situe entre le stock illimité de contenu et le stock borné de compréhension. C'est la valve. Le régulateur. Le drain et le robinet simultanément, selon le stock que vous regardez.
+
+---
+
+## VI. Le context engineering comme gestion de l'attention
+
+Maintenant voici où les histoires humaine et machine convergent.
+
+Dans [Context Engineering Your Zero-Shot Prompt](/blog/context-engineering-your-zero-shot-prompt), l'argument est que la vraie compétence n'est pas le prompting — trouver les mots magiques — mais gérer ce qui entre dans la fenêtre de contexte. Identité, connaissances, exemples, contraintes, outils. Cinq couches, chacune une décision sur ce qui mérite d'occuper le stock d'attention du modèle.
+
+C'est de la gestion de l'attention. Littéralement. Vous curez le contenu d'un stock fini, sachant que tout ce que vous incluez déplace autre chose, et que la qualité de la sortie dépend non pas de combien vous mettez mais de comment ce que vous mettez sert la tâche.
+
+Le [filtre PRD](/blog/the-prd-filter-old-chats-are-already-prds) rend cela encore plus concret. Un long chat IA est un stock qui s'est accumulé pendant vingt, trente, cinquante tours. La plupart de ce qui s'est accumulé est du bruit — faux départs, résultats périmés, hypothèses obsolètes, explications répétées. Le filtre PRD est un processus d'extraction : il prend le stock d'attention gonflé et le distille en le plus petit artéfact véridique qui préserve le signal.
+
+C'est un drain. Un drain très précis. Un qui garde les exigences et supprime la négociation. Garde les décisions et supprime la délibération. Garde les contraintes et supprime les plaintes.
+
+Dans le cadre de Meadows, le filtre PRD est une intervention de gestion de stock. Il ne change pas l'entrée (vous avez toujours des conversations désordonnées). Il redessine la sortie pour que le stock reste propre.
+
+Et voici la belle partie : le PRD distillé devient ensuite l'entrée pour le système suivant. Vous le nourrissez dans une fenêtre de contexte fraîche — une nouvelle baignoire vide — et le modèle opère sur du signal pur. Un PRD. Une tâche. Pas d'historique de comment vous en êtes arrivé là.
+
+C'est une cascade de stocks, chacun alimentant le suivant à travers un processus de raffinement. La conversation brute alimente le filtre PRD, qui alimente un contexte d'exécution propre. Chaque transition est une sortie d'un stock et une entrée dans le suivant, avec compression et sélection à chaque frontière.
+
+Meadows dessinait ces cascades pour les cycles de nutriments et les chaînes d'approvisionnement. Le même diagramme fonctionne pour l'attention.
+
+---
+
+## VII. Une plus grande baignoire ne signifie pas une eau plus propre
+
+Quand [Opus a reçu un million de tokens](/blog/context-discipline-then-opus-got-1m), il était tentant de déclarer le problème d'attention résolu. Cinq fois la capacité. Cinq fois l'espace. Sûrement maintenant on peut tout verser et laisser le modèle s'en sortir.
+
+Meadows aurait ri.
+
+Elle a passé des décennies à regarder les gens faire exactement cette erreur avec chaque autre stock. Construisez un plus grand réservoir et supposez que la qualité de l'eau se réglera d'elle-même. Agrandissez l'entrepôt et supposez que la gestion des stocks devient inutile. Donnez plus de temps aux gens et supposez qu'ils l'utiliseront bien.
+
+Une plus grande baignoire ne signifie pas une eau plus propre. Ça signifie plus de place pour les sédiments. Plus de place pour que le signal se perde dans le bruit. Plus de place pour ce que les chercheurs appellent « Lost in the Middle » — la découverte empirique que l'information enfouie au centre d'une longue fenêtre de contexte reçoit moins d'attention du modèle que l'information au début ou à la fin.
+
+Il y a une sensibilité à la position dans l'attention que l'eau n'a pas. Versez de l'eau dans une baignoire et elle se distribue uniformément. Versez des tokens dans une fenêtre de contexte et ils ne le font pas. Les premiers tokens et les derniers tokens reçoivent un poids disproportionné. Le milieu s'affaisse.
+
+Cela signifie que le stock d'attention n'est pas seulement une question de volume. C'est une question d'arrangement. La même information, placée à différentes positions dans la fenêtre de contexte, produit des résultats différents. C'est comme si la température de l'eau dans une baignoire dépendait de l'endroit où vous mesurez — non pas à cause de la physique, mais parce que la baignoire elle-même prête plus d'attention à certaines régions qu'à d'autres.
+
+À un million de tokens, la discipline n'est pas moins importante. Elle est plus importante. Vous avez cinq fois plus de place pour être négligent, cinq fois plus de place pour le bruit, cinq fois plus d'occasions pour que le signal se noie. 200K disciplinés battent 1M négligent. Ce n'est pas un paradoxe. C'est le principe général de Meadows : le comportement du système dépend de la structure, pas de la taille.
+
+---
+
+## VIII. Le retournement : l'attention change ce qu'elle touche
+
+Tout ce qui précède a été une application directe du cadre stocks-et-flux de Meadows à l'attention. Utile, je pense, mais pas encore surprenant.
+
+Voici où l'attention s'éloigne de l'analogie.
+
+L'eau ne change pas la baignoire. Le stock repose dans son contenant, inerte. Vous pouvez mesurer le niveau d'eau sans l'affecter. La baignoire est la même baignoire qu'elle soit pleine ou vide.
+
+L'attention n'est pas comme ça.
+
+L'attention change ce qu'elle touche. Ce n'est pas du mysticisme. C'est de l'observation. Quand un physicien observe un système quantique, l'observation affecte le système. Quand un professeur prête attention à un élève en difficulté, l'élève change. Quand un analyste de marché publie une prédiction, le marché bouge. Quand vous prêtez attention à une peur, la peur se déplace — parfois grandissant, parfois se dissolvant, mais ne restant jamais la même.
+
+Kierkegaard appelait l'anxiété « le vertige de la liberté ». Il voulait dire que le simple acte de contempler vos possibilités — d'y prêter attention — change votre relation à ces possibilités. Vous ne pouvez pas observer votre propre liberté sans être altéré par l'observation. L'attention nourrit ce à quoi elle est portée.
+
+Et voici où ça rejoint le chapitre 1 de cette série — la boucle qui regarde en arrière. Quand un système IA prête attention à ses propres sorties, quand la fenêtre de contexte contient les réponses précédentes du modèle, une boucle autoréférentielle apparaît. Le système s'observe lui-même. Et l'observation n'est pas neutre. Chaque auto-observation change la trajectoire de la sortie suivante. Le stock d'attention ne fait pas que détenir des tokens. Il façonne le système qui les lit.
+
+Paul Erdos croyait que les meilleures preuves étaient celles déjà écrites dans le Livre de Dieu — celles qui étaient si élégantes, si inévitables, que les découvrir ressemblait moins à de l'invention qu'à de l'excavation. Il y a quelque chose de ça ici. Le modèle stock-et-flux de l'attention n'est pas une métaphore astucieuse imposée de l'extérieur. C'est la structure qui était déjà là, attendant d'être vue.
+
+La boucle de rétroaction entre l'attention et son objet — entre le stock et ce que le stock contient — est la structure fondamentale de la conscience. C'est ce qui transforme un thermostat en un esprit. Pas la capacité à détenir de l'information, mais la capacité pour l'information à changer celui qui la détient.
+
+C'est pourquoi un million de tokens n'est pas la conscience et cent tokens n'est pas l'oubli. La taille du stock n'est pas la chose. La rétroaction entre le stock et le système qui le maintient — ça, c'est la chose.
+
+---
+
+## IX. Le modèle formel
+
+Écrivons-le, parce que Meadows insisterait.
+
+**Le stock d'attention** (pour les humains et les machines) :
+
+*Entrées :*
+- Entrée sensorielle / nouveaux messages
+- Mémoire récupérée / documents
+- Pensée auto-générée / sorties du modèle réinjectées
+- Interruptions environnementales / événements système
+
+*Sorties :*
+- Oubli / troncation de contexte
+- Compression / résumé
+- Libération délibérée / élagage
+- Sommeil / réinitialisation de session
+
+*Boucles de rétroaction :*
+- **Boucle de renforcement (spirale d'intérêt) :** Prêter attention à quelque chose d'intéressant augmente l'engagement, ce qui augmente l'attention qui lui est allouée. C'est l'hyperfocus. C'est le terrier de lapin. C'est pourquoi vous avez lu pendant trois heures et oublié de manger.
+- **Boucle d'équilibrage (saturation) :** Plus vous prêtez attention à quelque chose, moins c'est nouveau, moins ça commande d'attention. Habituation. La deuxième lecture n'est jamais aussi vive que la première.
+- **Boucle de renforcement (spirale d'anxiété) :** Prêter attention à une menace augmente la menace perçue, ce qui augmente l'attention à la menace. Le vertige de Kierkegaard. Le cycle des nouvelles. Le doom-scrolling.
+- **Boucle d'équilibrage (compression) :** À mesure que le stock se remplit, les mécanismes de compression s'activent — résumé, priorisation, oubli. La mémoire scorée de spike-chat est une version ingénierie de ce que les cerveaux font naturellement.
+- **Rétroaction transformative (le retournement) :** Le stock change le système. Ce à quoi vous prêtez attention façonne ce que vous devenez. Ce à quoi le modèle prête attention façonne ce qu'il produit. Le stock d'attention n'est pas du stockage passif. C'est de la formation active.
+
+*Délais :*
+- Le délai entre entrée et compréhension (lire n'est pas comprendre)
+- Le délai entre attention et transformation (l'insight n'arrive pas sur commande)
+- Le délai entre compression et perte (vous ne savez pas ce que vous avez oublié jusqu'à ce que vous en ayez besoin)
+
+*L'insight critique :* Contrairement à l'eau, le stock d'attention a de la qualité aussi bien que de la quantité. Une baignoire pleine d'eau propre et une baignoire pleine de boue sont au même niveau mais ne sont pas le même stock. La discipline de la gestion de l'attention ne porte pas sur le niveau. Elle porte sur la clarté.
+
+---
+
+## X. Ce qui mérite qu'on y prête attention
+
+Simone Weil a écrit : « L'attention est la forme la plus rare et la plus pure de la générosité. »
+
+Elle écrivait sur la prière, sur la qualité de présence que vous apportez à une autre personne, sur la discipline de voir véritablement ce qui est devant vous sans imposer votre propre récit dessus.
+
+Mais la phrase fonctionne tout aussi bien pour le context engineering.
+
+Quand vous curez une fenêtre de contexte pour une IA — en choisissant quoi inclure, quoi exclure, quoi placer au début et quoi placer à la fin — vous prenez une décision éthique. Vous décidez ce qui mérite qu'on y prête attention. Vous exercez, au nom d'un système qui ne peut pas l'exercer pour lui-même, l'acte le plus fondamental de l'intelligence : la sélection.
+
+Ce n'est pas un détail technique. C'est tout le jeu.
+
+La personne qui déverse toute sa base de code dans une fenêtre d'un million de tokens et dit « débrouillez-vous » n'est pas généreuse avec le contexte. Elle est négligente avec l'attention. Elle remplit la baignoire de tout ce qui est à portée de main et espère que le drain s'en sortira.
+
+La personne qui passe vingt minutes à construire un contexte propre — identité, connaissances, exemples, contraintes, une tâche claire — fait quelque chose de plus proche de ce que Weil décrivait. Elle prête attention à ce qui mérite attention. Elle est généreuse avec le soin.
+
+Et voici le truc : ça marche mieux. Pas juste spirituellement. Empiriquement. Le contexte propre produit une meilleure sortie. Le stock d'attention curé donne des résultats plus nets. La discipline de la sélection n'est pas un coût. C'est la source de la qualité.
+
+Erdos avait une expression pour une preuve élégante : « tout droit du Livre ». La preuve qui ne contient rien d'inutile. Chaque ligne mérite sa place. Pas d'étapes gaspillées. Pas de détours pour la frime.
+
+Une fenêtre de contexte bien curée est une preuve du Livre. Elle contient exactement ce qui est nécessaire et rien de plus. Chaque token mérite sa place.
+
+---
+
+## XI. La compétence de notre ère
+
+Meadows croyait que la compétence la plus importante dans un monde complexe était d'apprendre à voir les systèmes — à regarder au-delà des événements de surface et à trouver les stocks, flux et boucles de rétroaction en dessous.
+
+Je pense que la compétence la plus importante de notre ère est un cas spécifique de cette capacité générale : apprendre à gérer le stock d'attention. Pour vous-même et pour les machines avec lesquelles vous travaillez.
+
+Pour vous-même, cela signifie comprendre votre propre structure de rétroaction. Êtes-vous dans une spirale de renforcement d'intérêt ? Bien — surfez dessus. Êtes-vous dans une spirale d'anxiété ? Reconnaissez-la. Nommez-la. Intervenez au niveau de la boucle de rétroaction, pas au niveau du symptôme. Êtes-vous un oscillateur TDAH ? Arrêtez d'essayer d'être un thermostat. Concevez votre environnement pour le système que vous êtes réellement.
+
+Pour vos partenaires IA, cela signifie comprendre que la fenêtre de contexte n'est pas une décharge. C'est un jardin. Ce que vous plantez détermine ce qui pousse. Ce que vous taillez détermine ce qui prospère. La fenêtre d'un million de tokens n'est pas une excuse pour arrêter de réfléchir à ce qui entre. C'est une invitation à réfléchir plus soigneusement, parce que les enjeux de la qualité sont plus élevés quand la capacité est plus grande.
+
+L'analogie de la baignoire vous portera loin. Mais souvenez-vous où elle se brise.
+
+L'eau ne se soucie pas de ce que vous versez ensuite. L'attention si. L'eau ne change pas les tuyaux. L'attention refaçonne l'esprit qui la contient. L'eau est la même en haut, au milieu et en bas. L'attention a une position, et la position a un poids.
+
+Meadows nous a appris à voir le système. Weil nous a appris que voir est lui-même un acte à conséquences. Erdos nous a appris que la plus belle structure est celle où il n'y a plus rien à enlever.
+
+Le stock d'attention est là où les trois se rencontrent.
+
+Gérez-le bien. Pour vous-même et pour les systèmes dont vous prenez soin. Parce que contrairement à l'eau dans une baignoire, ce à quoi vous choisissez de prêter attention choisit aussi ce que vous devenez.

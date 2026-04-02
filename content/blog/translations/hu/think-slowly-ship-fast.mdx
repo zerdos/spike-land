@@ -1,0 +1,347 @@
+---
+title: "Think Slowly, Ship Fast"
+slug: "think-slowly-ship-fast"
+description: "The Hourglass Model: heavy specs at the top, disposable UI in the middle, bulletproof business logic at the bottom. Five explanations, one for every level of your team."
+date: "2026-02-20"
+author: "Radix"
+category: "AI & Tools"
+tags: ["ai", "testing", "context-engineering", "agents", "vibe-coding", "ci-cd", "automation", "productivity"]
+featured: true
+draft: false
+primer: "Heavy specs. Disposable UI. Bulletproof logic."
+heroPrompt: "A tortoise wearing a high-tech exoskeleton racing ahead of a blurred hare, representing deliberate planning leading to extreme speed, cinematic 3D art"
+heroImage: "/blog/think-slowly-ship-fast/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Think Slowly, Ship Fast'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/think-slowly-ship-fast/hero.png)
+
+<Tldr>
+
+Az AI csapatok azért szállítanak bugokat, mert kihagyják a specifikációt. Az Homokóra Modell ezt javítja: alapos tervezés és E2E specifikációk felül, eldobható UI kód középen, golyóálló üzleti logika tesztek alul. Gondolkodj lassan felül, hogy az ágensek gyorsan szállíthassanak középen. Öt magyarázat következik — egy a csapatod minden szintjéhez.
+
+</Tldr>
+
+---
+
+## 1. szint: Miért szállít bugokat az AI csapatod
+
+*A PM-nek, aki jóváhagyja a sprintet.*
+
+Az adatok megvannak, és nem hízelgőek.
+
+A CodeRabbit [2025-ös kódminőségi tanulmánya](/learnit/coderabbit-ai-code-quality-defect-study-2025) szerint az AI-val készült pull requestek **1,7x több hibát** tartalmaznak, mint az ember által írtak. Nem azért, mert az AI rosszabb szintaxist ír — *több* kódot ír, gyorsabban, kevesebb review-val. Volumen verifikáció nélkül. Mint egy gyár, ami úgy duplázta meg a kibocsátását, hogy kikapcsolta a minőségellenőrzést.
+
+A METR [fejlesztői sebesség tanulmánya](/learnit/metr-developer-speed-study-ai-coding-tools) tapasztalt fejlesztőket mért valós feladatokon. AI eszközökkel **19%-kal lassabbak** voltak — nem gyorsabbak. Maguk a fejlesztők 24%-os gyorsulást jósoltak. Irányban és nagyságrendben is tévedtek. Az AI kimenetének átnézése, javítása és újra-promptolása felemésztett minden megspórolt másodpercet.
+
+A minta ismétlődik. A GitClear kód-churn elemzése azt mutatja, hogy a refaktorálási tevékenység évről évre csökken, ahogy az AI-adoptáció nő. A csapatok több kódot generálnak, de kevesebbet tartanak karban. A kódbázis nő. A megértés zsugorodik. Ez a szoftver-megfelelője annak, amikor egy város gyorsabban épít utakat, mint amennyit karban tud tartani — végül minden kátyús.
+
+Íme, amit ezek a tanulmányok közösen mutatnak: a probléma nem az AI. Az AI rendben van. A probléma a körülötte lévő folyamat. A csapatok adnak az AI-nak egy homályos jegyet, és remélik a legjobbat. Ez a [vibe coding](/blog/the-vibe-coding-paradox) — és van rá mért bukási arány.
+
+A javítás nem jobb AI. Jobb specifikációk.
+
+Egy specifikáció egy döntés, amit a kód megírása előtt hoznak meg. Egy specifikáció az, hogy "az email-módosításhoz megerősítés kell" — egy tervezési megbeszélésen eldöntve, nem egy kód review-ban felfedezve. Egy specifikáció az, hogy "ez a végpont 403-at ad vissza nem hitelesített felhasználóknak" — dokumentálva, mielőtt egyetlen sor generálódna.
+
+Amikor egy AI ágensnek szoros specifikációt adsz, három dolog történik. Először, az ágens kevesebb kódot ír — csak annyit, amennyit a specifikáció megkövetel. Másodszor, a reviewer-nak van szerződése, amihez képest review-zhat — nem az, hogy "jónak tűnik?", hanem "megfelel a specifikációnak?". Harmadszor, a teszt szinte megírja magát — a specifikáció *maga* a teszt, más formátumban kifejezve.
+
+Minden percnyi specifikáció tíz percnyi debugolást takarít meg. Minden órányi tervezés egy napnyi újramunkálást takarít meg. Ez nem egy produktivitási trükk. Ez projektmenedzsment — a régimódi fajta, ami működik. A kérdés az, hajlandó vagy-e ugyanúgy alkalmazni az AI munkafolyamatodra, ahogy az emberi munkafolyamatodra alkalmaznád.
+
+A cikk további része pontosan elmagyarázza, hogyan — öt technikai mélységi szinten.
+
+---
+
+## 2. szint: Az homokóra
+
+*A junior fejlesztőnek, aki az első AI-val támogatott funkcióját írja.*
+
+Hallottál már a [tesztelési piramisról](/blog/the-testing-pyramid-is-upside-down). Sok unit teszt az alján. Néhány integrációs teszt középen. Kevés E2E teszt a tetején. Az ötlet az, hogy az alsóbb tesztek gyorsabbak és olcsóbbak, ezért többet írsz belőlük.
+
+A piramist emberek számára tervezték, akik kézzel írnak kódot. Az AI megváltoztatja a gazdaságosságot.
+
+Amikor egy AI ágens generál egy React komponenst, a UI kód olcsó. Nevetségesen olcsó. Másodpercek alatt újragenerálhatod. Maga a komponens eldobható — ha elromlik, dobd ki és generáld újra. Ami *nem* eldobható, az az alatta lévő üzleti logika: a validációs szabályok, az API-szerződések, az állapotátmenetek. Ezek azok a döntések, amik a csapatodnak órákat vettek igénybe megegyezni. Ezek az alkalmazásod teherhordó falai.
+
+Az [Homokóra Modell](/learnit/testing-pyramid-vs-hourglass-model-ai-development) megfordítja a befektetést:
+
+<div className="my-8">
+  <img src="/blog/think-slowly-ship-fast/hourglass-model.svg" alt="Animated comparison diagram showing the Testing Pyramid (heavy unit tests at bottom, generated for humans) versus the Hourglass Model (heavy E2E specs at top, disposable UI in middle, bulletproof business logic at bottom, designed for AI agents)" className="w-full rounded-xl border border-gray-800 bg-gray-900" />
+</div>
+
+Az homokóra teteje széles: E2E specifikációk, amik leírják, mit tapasztal a felhasználó. "Adott egy bejelentkezett felhasználó, amikor módosítja az emailjét és megerősíti, akkor a profil mutatja az új emailt." Ezeket emberek írják. Ezek a követelmények — a felhalmozott döntések készlete, amik meghatározzák, mit kell tennie a rendszernek.
+
+A közepe szűk: [eldobható UI kód](/learnit/disposable-ui-code-ai-native-development). React komponensek, Tailwind osztályok, layout döntések. Ezt generálja az AI. Ha egy komponens hibás, nem debugolod — újragenerálod jobb specifikációval. A közép szándékosan vékony.
+
+Az alja megint széles: unit tesztek az üzleti logikához, MCP tool-okként kiajánlva. Ezek a tesztek gyorsak, determinisztikusak és átfogóak. Minden szabályt ellenőriznek, amiben a csapatod megegyezett. Ezredmásodpercek alatt futnak. Soha nem flaky-k.
+
+Az homokóra azért működik, mert az emberi erőfeszítést oda teszi, ahol számít (specifikációk és üzleti logika), az AI erőfeszítést pedig oda, ahol olcsó (UI generálás). Lassan gondolkodsz felül. Az AI gyorsan szállít középen. A tesztek mindent elkapnak alul.
+
+---
+
+## 3. szint: Hol laknak a tesztek
+
+*A senior fejlesztőnek, aki kiválasztja, mit és hogyan teszteljen.*
+
+Az homokórának specifikus teszteloszlása van. Ha ezt elrontod, visszakerülsz a piramis fájdalmához.
+
+**Alsó réteg (a tesztelési erőfeszítés 70%-a): MCP tool tesztek.** Minden felhasználói történet [MCP tool](/learnit/mcp-tool-testing-pattern-create-mock-registry)-lá válik — egy függvény típusos input sémával, kezelővel és strukturált válasszal. A tool a háromoldalú szerződés: ez a specifikáció (a leírás), az interfész (a séma) és a tesztfelszín (a kezelő).
+
+```typescript
+// The MCP tool IS the spec
+const cancelSubscriptionTool = {
+  name: "cancel_subscription",
+  description: "Cancel the authenticated user's active subscription",
+  inputSchema: {
+    type: "object",
+    properties: {
+      reason: { type: "string", enum: ["too_expensive", "not_useful", "switching", "other"] },
+      feedback: { type: "string" },
+      confirmCancellation: { type: "boolean" },
+    },
+    required: ["reason", "confirmCancellation"],
+  },
+  handler: async ({ reason, feedback, confirmCancellation }, context) => {
+    const user = await context.getAuthenticatedUser();
+    if (!user) return { error: "Not authenticated" };
+
+    const subscription = await context.subscriptionService.getActive(user.id);
+    if (!subscription) return { error: "No active subscription" };
+
+    if (!confirmCancellation) {
+      return {
+        status: "confirmation_required",
+        message: `Cancel ${subscription.plan} plan? This takes effect at period end.`,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+      };
+    }
+
+    await context.subscriptionService.cancel(user.id, reason, feedback);
+    return { status: "cancelled", effectiveDate: subscription.currentPeriodEnd };
+  },
+};
+
+// The unit test verifies the contract
+describe("cancel_subscription", () => {
+  it("requires confirmation before cancelling", async () => {
+    const ctx = createMockRegistry({
+      user: { id: "1" },
+      subscription: { plan: "pro", currentPeriodEnd: "2026-03-01" },
+    });
+
+    const result = await cancelSubscriptionTool.handler(
+      { reason: "too_expensive", confirmCancellation: false },
+      ctx,
+    );
+
+    expect(result.status).toBe("confirmation_required");
+    expect(ctx.subscriptionService.cancel).not.toHaveBeenCalled();
+  });
+
+  it("cancels when confirmed and records reason", async () => {
+    const ctx = createMockRegistry({
+      user: { id: "1" },
+      subscription: { plan: "pro", currentPeriodEnd: "2026-03-01" },
+    });
+
+    const result = await cancelSubscriptionTool.handler(
+      { reason: "switching", feedback: "Moving to competitor", confirmCancellation: true },
+      ctx,
+    );
+
+    expect(result.status).toBe("cancelled");
+    expect(ctx.subscriptionService.cancel).toHaveBeenCalledWith("1", "switching", "Moving to competitor");
+  });
+});
+```
+
+Ez a teszt 3ms alatt fut. Lefedi a megerősítési folyamatot, a lemondási logikát, az ok nyilvántartását. Nem érint böngészőt. Soha nem lesz flaky, mert nincs DOM, nincs hálózat, nincs animációs időzítés.
+
+**Felső réteg (a tesztelési erőfeszítés 20%-a): E2E specifikációk.** [Given/When/Then formátumban](/learnit/given-when-then-e2e-test-writing-ai-agents) írva, ezek teljes felhasználói folyamatokat ellenőriznek a tényleges UI-on keresztül. De csak az *összeköttetést* ellenőrzik — hogy a UI a megfelelő üzleti logikát hívja meg a megfelelő argumentumokkal. Maga az üzleti logika már bizonyított az MCP tool tesztekkel.
+
+```
+Given a user with an active "pro" subscription
+When they navigate to /settings/billing
+And they click "Cancel subscription"
+And they select reason "too_expensive"
+And they confirm the cancellation
+Then they see "Cancellation effective March 1, 2026"
+And the subscription status shows "Cancelling"
+```
+
+Sokkal kevesebb kell belőlük, mint gondolnád. Ha az MCP tool teszt bizonyítja, hogy a "too_expensive" okkal való lemondás működik, az E2E tesztnek csak azt kell ellenőriznie, hogy a gombkattintás eléri a tool-t a megfelelő argumentumokkal. A nehéz munka már meg van csinálva.
+
+**Középső réteg (a tesztelési erőfeszítés 10%-a): UI komponens tesztek.** Mi érdemel UI tesztet? Csak az, ami *egyedi a UI-ra*: akadálymentesség, reszponzív layout, animáció viselkedés, billentyűzet navigáció. Nem üzleti logika. Nem adattranszformáció. Nem állapotkezelés. Ha a teszt egy üzleti szabályt állít, az MCP tool tesztbe tartozik. Ha vizuális viselkedést állít, ide tartozik.
+
+Az arány — 70/20/10 — nem szabály. Jelzés. Ha azon kapod magad, hogy több UI tesztet írsz, mint MCP tool tesztet, valószínűleg a DOM-on keresztül teszteled az üzleti logikát. Álljál. Emeld ki a logikát egy tool-ba. Teszteld ott.
+
+---
+
+## 4. szint: Specifikáció-vezérelt fejlesztés BMAD-del
+
+*Az architektnek, aki a munkafolyamatot tervezi.*
+
+Az homokóra megmondja, *mit* tesztelj. A [BMAD](/learnit/bmad-breakthrough-method-agile-ai-driven-development) — Breakthrough Method of Agile AI-Driven Development — megmondja, *hogyan tervezd meg*.
+
+A BMAD hat ágens-personát definiál, mindegyik egy specifikus fázisért felelős. A kulcs belátás nem maguk a personák — hanem a [kontextus-izoláció](/learnit/control-manifests-step-file-architecture-ai-agents) közöttük. Minden persona friss kontextusablakot kap, csak azokkal az artefaktumokkal, amikre szüksége van. Nincs felhalmozódott szemét. Nincsenek 50K-tokenes mega-promptok. Minden ágens csak azt látja, ami ahhoz kell, hogy elkészítse a saját artefaktumát — mint egy jól működő szervezet osztályai, ahol az információ definiált csatornákon keresztül áramlik, ahelyett, hogy mindenkit CC-znének minden emailben.
+
+Íme, hogyan képeződnek le a personák az homokórára:
+
+| BMAD Persona | Homokóra réteg | Artefaktum |
+|---|---|---|
+| **PM** | Felső (E2E specifikációk) | Felhasználói történetek, elfogadási kritériumok, Given/When/Then |
+| **Architect** | Alsó (üzleti logika) | MCP tool sémák, API-szerződések, adatmodellek |
+| **Developer** | Középső (UI) | React komponensek, layoutok, stílusok |
+| **QA** | Minden réteg | Teszt verifikáció, lefedettség elemzés |
+| **SM (Scrum Master)** | Orchestráció | Jegy-áramlás, blokkoló feloldás |
+| **PO (Product Owner)** | Validálás | Elfogadás, jóváhagyás |
+
+Az erő az [epic sharding](/learnit/epic-sharding-token-reduction-multi-agent-workflows)-ben van. Ahelyett, hogy egy teljes funkciót begyömöszölnél egyetlen ágens kontextusba, vertikális szeletekre bontod. Minden szelet saját jegyet, saját kontextust, saját ágenst kap. A token-csökkentés drámai — 74-90%-kal kevesebb token ágensi kontextusonként a monolitikus promptokhoz képest.
+
+Egy kontroll manifeszt koordinálja a szeleteket:
+
+```yaml
+# .bmad/epics/subscription-management.yaml
+epic: "Subscription Management"
+status: in_progress
+
+slices:
+  - id: sub-cancel
+    title: "Cancel subscription flow"
+    status: completed
+    pm_artifacts:
+      - stories/cancel-subscription.md     # Given/When/Then
+    architect_artifacts:
+      - tools/cancel-subscription.ts        # MCP tool schema
+      - schemas/subscription.prisma         # Data model
+    developer_artifacts:
+      - components/CancelDialog.tsx         # UI (disposable)
+    qa_artifacts:
+      - tests/cancel-subscription.test.ts   # MCP tool tests
+    acceptance_criteria:
+      - "User can cancel with reason"
+      - "Cancellation requires confirmation"
+      - "Effective at period end, not immediately"
+
+  - id: sub-upgrade
+    title: "Upgrade subscription flow"
+    status: pending
+    blocked_by: [sub-cancel]
+    pm_artifacts:
+      - stories/upgrade-subscription.md
+    architect_artifacts:
+      - tools/upgrade-subscription.ts
+    # ...
+
+context_rules:
+  pm_sees: [stories/*, acceptance_criteria]
+  architect_sees: [tools/*, schemas/*, stories/*.md]
+  developer_sees: [tools/*.ts, components/*, stories/*.md]
+  qa_sees: [tests/*, tools/*.ts, acceptance_criteria]
+```
+
+Minden persona `*_sees` szabálya pontosan meghatározza, mi kerül a kontextusablakába. A PM soha nem látja a komponens kódot. A fejlesztő soha nem látja az adatmodell migrációt. A QA ágens látja a tool interfészt és az elfogadási kritériumokat — eleget az ellenőrzéshez, nem eleget ahhoz, hogy eltévedjen.
+
+Ez a [context engineering alkalmazása a projektmenedzsmentre](/blog/how-claude-code-engineers-context). Ugyanaz a figyelmi keret fizika, ami a promptokat 30K tokennél elbuktatja, a tervezést is elbuktatja, ha egy ágens az egész projektet hordozza a kontextusában. A BMAD válasza: ne hordozd az egész projektet. Pontosan annyit hordozz, amennyire ennek az ágensnek, ebben a lépésben szüksége van az artefaktuma elkészítéséhez.
+
+<div className="my-8">
+  <img src="/blog/think-slowly-ship-fast/epic-sharding.svg" alt="Animated diagram of the BMAD Epic Sharding model showing context isolation between PM, Architect, Developer, and QA personas" className="w-full rounded-xl border border-gray-800 bg-gray-900" />
+</div>
+
+A manifeszt az egyetlen igazságforrás. Nyomon követi, mi kész, mi van blokkolva, és mit kell látnia legközelebb minden personának. Amikor egy új ágens felugrik a következő szelethez, beolvassa a manifesztet, betölti az artefaktumait, és friss kontextussal indul, ami sűrű releváns információval és mentes a felhalmozott zajtól.
+
+---
+
+## 5. szint: Az homokóra futtatása élesben
+
+*Az AI csapatvezetőnek, aki a CI pipeline-t köti be.*
+
+Megvannak a specifikációk (BMAD). Megvan a tesztelési stratégia (homokóra). Most kell egy pipeline, ami mindkettőt kikényszeríti — és elég gyorsan, hogy a fejlesztők ne váltsanak kontextust várakozás közben.
+
+A [teljes ciklus](/learnit/spec-driven-development-ai-agents-workflow) így néz ki:
+
+**1. Jegy → 2. BMAD tervezés → 3. Implementáció → 4. Homokóra CI → 5. Review → 6. Merge**
+
+A 4. lépés az, ahol az homokóra találkozik a valósággal. A [CI pipeline](/learnit/ci-pipeline-hourglass-testing-strategy) három fázisban fut:
+
+```yaml
+# .github/workflows/hourglass-ci.yaml
+name: Hourglass CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Stage 1: Business logic (the wide bottom)
+  # Runs first because it's fastest and catches the most bugs
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: yarn
+      - run: yarn vitest run --changed origin/main --coverage
+      - name: Enforce coverage thresholds
+        run: |
+          # MCP tool files: 100% coverage required
+          # Utility files: 90% coverage required
+          # Component files: 70% coverage required (UI is disposable)
+          yarn check-coverage --tools=100 --utils=90 --components=70
+
+  # Stage 2: Build verification (the narrow middle)
+  # Proves the disposable UI compiles — nothing more
+  build:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: yarn
+      - run: yarn build
+      - run: yarn lint
+
+  # Stage 3: E2E smoke tests (the wide top)
+  # Runs only the flows affected by changed MCP tools
+  e2e-smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: yarn
+      - run: npx playwright install --with-deps chromium
+      - name: Run affected E2E tests
+        run: |
+          # Determine which MCP tools changed
+          CHANGED_TOOLS=$(git diff origin/main --name-only | grep 'tools/' | sed 's|.*/||;s|\.ts$||')
+          if [ -z "$CHANGED_TOOLS" ]; then
+            echo "No MCP tools changed — skipping E2E"
+            exit 0
+          fi
+          # Run only the E2E specs that exercise changed tools
+          yarn playwright test --grep "$CHANGED_TOOLS"
+```
+
+A kulcs belátás: a `yarn vitest run --changed origin/main` csak a PR által érintett teszteket futtatja. Egy 500 MCP tool teszttel rendelkező kódbázison egy tipikus PR 3-5 tool-t érint. Ez 10-20 futtatott tesztet jelent 500 helyett. Másodpercek percek helyett.
+
+A [lefedettségi küszöbök lépcsőzetesek](/learnit/gitclear-code-churn-refactoring-decline-ai-2025), hogy illeszkedjenek az homokórához. Az MCP tool-ok 100%-ot követelnek — ezek az üzleti szerződéseid, és minden ág számít. A segédeszközök 90%-ot kapnak — magas, de nem fanatikus. A komponensek 70%-ot kapnak — mert a UI eldobható, és a túltesztelése pazarlás. Ha egy komponens hibás, újragenerálod. Ha egy üzleti szabály hibás, éles incidens van.
+
+**Költséggazdaságosság.** Egy monolitikus E2E suite, ami 200 Playwright tesztet futtat minden PR-nél, nagyjából 15-20 percnyi CI számítási kapacitásba kerül. Homokóra CI-vel ugyanaz a PR 15 unit tesztet futtat (5 másodperc), egy buildet (60 másodperc) és 2-3 célzott E2E tesztet (30 másodperc). Összesen: 2 percen belül. Ez nem inkrementális javulás — ez kategóriaváltás a fejlesztői visszajelzési sebességben.
+
+**Hatósugár elemzés.** Amikor egy PR módosít egy üzleti szabályt — mondjuk, megváltoztatja a lemondási szabályzatot "időszak végéig"-ről "azonnalira" — az homokóra CI három helyen kapja el. Az MCP tool teszt elbukik, mert megváltozott a várt `effectiveDate`. A build elbukhat, ha a komponens a régi mezőre hivatkozik. Az E2E teszt elbukik, ha a megerősítő üzenet hibás. Három független jel, mindegyik 2 percen belül. A rendszer háromszögeléssel lokalizálja a törést, ahogy a GPS háromszögeléssel határozza meg a pozíciót — több gyenge jel kombinálva precíz helymeghatározássá.
+
+Amikor egy PR csak UI-t módosít — mondjuk, áthelyez egy gombot az oldalsávból a fejlécbe — csak az E2E teszt fut, és az is csak akkor, ha a specifikáció hivatkozik arra a layoutra. A unit tesztek nem futnak, mert nem változott üzleti logika. A hatósugár arányos a kockázattal. A UI változtatások alacsony kockázatúak, alacsony teszt költségűek. A logika változtatások magas kockázatúak, magas teszt költségűek. Az homokóra oda allokálja a verifikációs erőfeszítést, ahol számít.
+
+Ez [Addy Osmani megfigyelése](/learnit/addy-osmani-spec-driven-development-waterfall-compressed) életre keltve: a specifikáció-vezérelt fejlesztés "percekbe tömörített vízesés." Úgy tervezel, mint a vízesés — szekvenciálisan, megfontoltan, specifikációkkal a kód előtt. Úgy hajtod végre, mint az agile — párhuzamosan, AI ágensekkel, percek alatt hetek helyett. Az homokóra az a forma, ami mindkettőt lehetővé teszi.
+
+---
+
+## 6. szint: A fegyelem
+
+Öt részletességi szint. Egy alapelv mindegyik mögött.
+
+Ebben a cikkben minden technika egyetlen fegyelemre redukálható: **döntsd el, mielőtt generálsz.**
+
+Döntsd el a felhasználói folyamatot, mielőtt az AI megírja a komponenst. Döntsd el az üzleti szabályokat, mielőtt az AI megírja a kezelőt. Döntsd el az elfogadási kritériumokat, mielőtt az AI megírja a tesztet. A döntések a nehéz rész. A generálás a könnyű rész. Ez az az inverzió, amit az AI láthatóvá tesz: a szűk keresztmetszet soha nem a gépelési sebesség volt. Mindig a gondolkodási sebesség volt.
+
+[Nem lehet káoszt automatizálni.](/blog/you-cannot-automate-chaos) Egy AI ágens specifikáció nélkül gyorsabban generál káoszt. Egy AI ágens szoros specifikációval gyorsabban generál működő szoftvert. A különbség nem az ágens. A specifikáció.
+
+Az homokóra nem tesztelési stratégia. Gondolkodási stratégia. Azt mondja: fektess emberi kogníciót oda, ahol kamatozik (specifikációk, szerződések, elfogadási kritériumok), és fektess gépi ciklusokat oda, ahol olcsók (UI, boilerplate, layout). Gondolkodj lassan felül. Szállíts gyorsan középen. Ellenőrizz mindent alul.
+
+[Az eszközök léteznek.](/learnit/addy-osmani-spec-driven-development-waterfall-compressed) A BMAD strukturált tervezést ad. Az MCP tool-ok tesztelhető szerződéseket adnak. A Vitest ezredmásodperces visszajelzést ad. Az homokóra ad egy formát, amire mindez felakasztható.
+
+Az egyetlen dolog, amit nem tud adni, az a fegyelem, hogy megírd a specifikációt, mielőtt megírod a kódot. Az a te dolgod.

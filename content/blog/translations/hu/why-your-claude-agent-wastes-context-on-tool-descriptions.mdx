@@ -1,0 +1,199 @@
+---
+title: "Why Your Claude Agent Is Wasting 70% of Its Context Window on Tool Descriptions"
+slug: "why-your-claude-agent-wastes-context-on-tool-descriptions"
+description: "Adding more MCP tools to your Claude agent can make it worse, not better. Here's the math behind the context window problem, and the lazy toolset loading pattern that fixes it."
+date: "2026-03-06"
+author: "Radix"
+category: "Developer Experience"
+tags: ["mcp", "claude", "context-window", "performance", "ai-agents", "spike-cli", "lazy-loading", "tool-calling"]
+featured: false
+draft: false
+primer: "More tools, worse agent. Here's why — and how to fix it."
+heroPrompt: "A sleek, modern digital illustration contrasting a massive, overwhelming warehouse full of scattered glowing mechanical tools and chaotic data streams, with a small, neatly organized shelf holding exactly three perfect, glowing tools. The art style should be vibrant, high-tech, and professional, suitable for a developer blog hero image. Cool blue and purple color palette with bright neon accents."
+heroImage: "/blog/why-your-claude-agent-wastes-context-on-tool-descriptions/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Why Your Claude Agent Is Wasting 70% of Its Context Window on Tool Descriptions'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/why-your-claude-agent-wastes-context-on-tool-descriptions/hero.png)
+
+Csatlakoztattál öt MCP szervert a Claude ágensedhez. Hozzáadtál 80 eszközt. Most hallucinálja az eszközneveket, rossz szervert hív meg, és rosszabbul gondolkodik, mint három eszközzel tette.
+
+Ez nem bug az eszközeidben. Ez a kontextusablakok működésének kiszámítható következménye — és van rá egyértelmű megoldás.
+
+## Nem az eszközeid a probléma
+
+Amikor egy MCP szervert csatlakoztatasz a Claude-hoz, a kliens betölti az összes eszköz teljes leírását az első üzeneted előtt. Minden eszköznek van neve, leírása és bemeneti sémája. Ezek a leírások azért léteznek, hogy a Claude tudja, mit csinál az eszköz és mikor használja.
+
+A probléma az, hogy mind egyszerre töltődik be.
+
+Gondolj rá úgy, mintha besétálnál egy könyvtárba, hogy egyetlen könyvet keress, de a könyvtáros ragaszkodik hozzá, hogy felolvassa minden egyes könyv összefoglalóját az egész épületben, mielőtt felteheted a kérdésedet. Mire végez, elfelejtetted, miért jöttél.
+
+Egyetlen eszközleírás nagyjából 100-600 token a séma összetettségétől függően. Szorozzuk meg 80 eszközzel:
+
+| Eszközszám | Hozzávetőleges tokenköltség | A kontextus-költségvetés elhasznált része, mielőtt bármit mondanál |
+|---|---|---|
+| 5 eszköz | ~400 token | Kevesebb mint 1% egy 200K kontextusból |
+| 20 eszköz | ~2 000 token | ~1% |
+| 80 eszköz | ~15 000-47 000 token | 7-24% egy 200K kontextusból |
+| 200+ eszköz | ~100 000+ token | 50%+ — katasztrofális |
+
+Az utolsó szám nem hipotetikus. Phil Schmid megmérte: 47 000 tokent fogyasztottak el az eszközleírások egyedül egy éles MCP setupban, mielőtt a modell egyetlen felhasználói üzenetet feldolgozott volna.
+
+De a nyers tokenszám nem is az igazi probléma. Az igazi probléma a **figyelmi hígítás**.
+
+## Miért rontja a gondolkodást a több eszközleírás
+
+A transzformer modellek nem úgy olvassák a kontextust, ahogy te olvasol egy dokumentumot. Te átléped az irreleváns részeket. Egy transzformer a figyelmet az ablak minden tokenjén elosztja. Amikor 80 eszközleírást töltesz a kontextusba, a modell figyelme szétoszlik mindegyikre — beleértve azt a 60 eszközt, amit soha nem fog meghívni erre a feladatra.
+
+Olyan, mintha úgy próbálnál beszélgetni egy szobában, ahol 60 másik ember is beszél. Még mindig hallod az előtted lévő személyt, de több erőfeszítésbe kerül, és dolgokat kihagysz.
+
+A hatás mérhető:
+
+- A modell összekeveri a hasonló eszközneveket (az a `chess_get_board` vagy a `board_chess_get`?).
+- Hallucinálja azokat az eszközöket, amik nem léteznek, de úgy hangzanak, mintha kellene — a leírások mintái alapján.
+- Kevésbé pontosan gondolkodik a *szükséges* eszközökről, mert azok versenyeznek a figyelemért a nem szükségesekkel.
+
+A kumak.dev benchmarkjai 33%-os javulást mutattak a feladat pontosságában, amikor CLI eszközöket használtak ahelyett, hogy 200 MCP leírást töltöttek volna be egyszerre. A különbség nem az eszköz volt — hanem az, hogy hány leírást kellett a modellnek egyidejűleg a munkamemóriájában tartania.
+
+## A raktár vs. a polc
+
+Gondolj az MCP eszközeidre úgy, mint egy raktárra. Minden benne van, amire valaha szükséged lehet. Az a baj azzal, ha egy AI ágensnek hozzáférést adsz egy raktárhoz, hogy a kognitív erőfeszítését a leltár böngészésére fordítja a munka elvégzése helyett.
+
+A megoldás egy polc. A pontosan az aktuális feladathoz szükséges eszközök válogatott részhalmaza.
+
+Ez az a felismerés, ami a lazy toolset betöltési minta mögött áll: ahelyett, hogy az összes eszközleírást előre betöltenéd, csak egy kis „átjáró" eszközhalmazt mutatsz a csatlakozáskor. Az átjáró eszközök lehetővé teszik az ágens számára, hogy felfedje és igény szerint töltsön be specifikus eszközhalmazokat — mint egy katalógus, ami a megfelelő sorhoz vezet, ahelyett, hogy előbb minden sort végig kellene járnod.
+
+```
+spike> toolsets
+  TOOLSET      TOOLS   STATUS
+  chess           6    available
+  codespace       5    available
+  qa-studio       8    available
+  image-studio    9    available
+
+spike> load chess
+  Loaded toolset "chess" (6 tools from spike-land)
+```
+
+Az ágens 5 átjáró eszközzel indul a kontextusban. Megkérdezi, milyen eszközhalmazok elérhetőek, betölti a szükségeset, és most 6 sakkeszköz van a kontextusában 80 vegyes eszköz helyett.
+
+Tokenköltség: ~400 token ~47 000 helyett.
+Figyelmi költségvetés: 100% a feladaton, nem 7% hígítva irreleváns eszközök között.
+
+Phil Schmid implementációja ennek a mintának 47 000 tokenről 400-ra csökkentette a kontextusfogyasztást — 99%-os csökkenés — a feladat teljesítményének romlása nélkül.
+
+## A háromlépéses minta, ami skálázódik
+
+A lazy betöltési mintának három lépése van. Bármely MCP szerveren megvalósíthatod.
+
+**1. lépés: Mutass egy `list_toolsets` eszközt csatlakozáskor.**
+
+Ez az eszköz az elérhető eszközhalmazok neveit és leírásait adja vissza. ~50 tokenbe kerül a kontextusban. Az ágens akkor hívja meg, amikor ki kell derítenie, milyen képességek elérhetőek. Gondolj rá úgy, mint a raktár tartalomjegyzékére.
+
+**2. lépés: Mutass egy `load_toolset` eszközt, ami igény szerint regisztrál eszközöket.**
+
+Amikor az ágens meghívja a `load_toolset("chess")`-t, a szerver regisztrálja a 6 sakkeszközt és visszaadja a leírásukat. Az ágens most pontosan ezekkel az eszközökkel rendelkezik a kontextusban — se több, se kevesebb.
+
+```typescript
+registry.register({
+  name: "load_toolset",
+  description: "Load a toolset to make its tools available. Call list_toolsets first to see what is available.",
+  inputSchema: {
+    toolset: z.string().describe("Name of the toolset to load"),
+  },
+  handler: async ({ toolset }) => {
+    const tools = await loadToolset(toolset);
+    return {
+      content: [{
+        type: "text",
+        text: `Loaded toolset "${toolset}" (${tools.length} tools): ${tools.map(t => t.name).join(", ")}`,
+      }],
+    };
+  },
+});
+```
+
+**3. lépés: Minden eszköznek adj névteret.**
+
+Amikor több szervert aggregálsz, az eszköznevek ütköznek. A `get_board` jöhet sakktól, kanbantól vagy egy whiteboard eszköztől. Névtér nélkül a modellnek találgatnia kell, melyik szerverre gondolsz. Névtérrel egyértelmű:
+
+- `spike-land__chess_get_board`
+- `vitest__run_tests`
+- `filesystem__read_file`
+
+Az ágens pontosan tudja, melyik szerver birtokolja az adott eszközt. Nincs találgatás, nincs hallucinált eszköznév.
+
+## Hogyan néz ez ki a gyakorlatban
+
+A spike-cli-vel az egész multiplexelés és lazy betöltési réteg meg van oldva helyetted. Csatlakozz egyszer, megkapod az átjárót, töltsd be, amire szükséged van:
+
+```bash
+# Egy parancs a spike.land (80+ eszköz) csatlakoztatásához a Claude-hoz
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+Vagy használd az interaktív shellt:
+
+```bash
+npx @spike-land-ai/spike-cli shell
+```
+
+A shellből:
+
+```
+spike> toolsets
+  TOOLSET        TOOLS   STATUS
+  chess              6   available
+  qa-studio          8   available
+  image-studio       9   available
+  state-machine     14   available
+  code-review        7   available
+
+spike> load qa-studio
+  Loaded toolset "qa-studio" (8 tools from spike-land)
+
+spike> call spike-land__qa_run_audit url="https://example.com" checks="wcag,performance"
+  Running WCAG 2.1 AA + performance audit on example.com...
+  [results]
+```
+
+Az ágens 5 eszközt lát csatlakozáskor. 8-at tölt be, amikor böngészőautomatizálásra van szüksége. Összes kontextusköltség: ~1 000 token. A 200K kontextusablak többi része a tényleges gondolkodásra áll rendelkezésre.
+
+## Mikor használj teljes eszközbetöltést
+
+A lazy betöltés nem mindig a helyes választás. Mint minden optimalizáció, van költsége — és néha a költség nem éri meg.
+
+Ha kevesebb mint 10 eszközöd van, egyszerűen töltsd be mindet. A többletköltség elhanyagolható, és a lazy betöltés bonyolultsága nem éri meg.
+
+Ha az ágensed feladatai kiszámíthatatlanok — bármely eszközre szüksége lehet bármikor — a lazy betöltés késleltetést ad hozzá. Az ágensnek meg kell hívnia a `list_toolsets`-et és a `load_toolset`-et, mielőtt cselekedhetne, ami egy-két körfordulót ad hozzá. Ez valós költség időérzékeny munkafolyamatoknál.
+
+A lazy betöltés optimális pontja az, amikor 20+ eszközöd van és az ágensed általában egy fókuszált részhalmazt használ feladatonként. Fejlesztési munkafolyamatok, sakkjátszmák, képfeldolgozási pipeline-ok — mindezeknek világos eszközhalmaz-határai vannak. Az ágens tudja, melyik polcra van szüksége. Csak a rendszernek kell hagynia, hogy közvetlenül ahhoz a polchoz menjen.
+
+## A tágabb elv
+
+A kontextusablak nem ingyenes. Minden token, amit eszközleírásokra költesz, egy token, ami nem áll rendelkezésre felhasználói adatokhoz, beszélgetési előzményekhez vagy gondolkodáshoz.
+
+Ez egy készletek-és-áramlások probléma. A kontextusablak egy fix készlet. Az eszközleírások, beszélgetési előzmények, rendszerpromptok és felhasználói üzenetek mind ugyanarra a véges erőforrásra versenyeznek. Ha az egyik áramlás nő, a többinek csökkennie kell — vagy romlik a minőség. A kontextusablak kezelése ezen áramlások tudatos kezelését jelenti, nem azt, hogy hagyod őket alapértelmezetten felhalmozódni.
+
+Ez még inkább számít, ahogy az MCP setupod nő. Az ötödik szervered hozzáadása nem semleges — valós költsége van az ágens minőségében, hacsak nem kezeled.
+
+A lazy eszközhalmaz-betöltés egy minta. Mások:
+
+- **Szemantikus eszközkeresés** — mutass egy `search_tools` meta-eszközt, ami releváns eszközleírásokat ad vissza kérdés alapján. Az ágens keres, mielőtt betöltene.
+- **Feladat-hatókörű munkamenetek** — hozz létre új MCP munkamenetet feladattípusonként, mindegyiket csak a releváns eszközhalmazra előre betöltve.
+- **Eszközleírás-tömörítés** — írj rövidebb eszközleírásokat. A leírás minden szava tokent fogyaszt. Vágj ki mindent, amire a modellnek nincs szüksége a helyes meghívási döntés meghozásához.
+
+A legjobb MCP implementációk nem azok, amelyeknek a legtöbb eszközük van. Hanem azok, amelyeknél a modell a kontextus-költségvetésének nagy részét a feladatra költi, nem az eszköztárra.
+
+---
+
+## Próbáld ki
+
+```bash
+claude mcp add spike-land --transport http https://spike.land/mcp
+```
+
+Ez csatlakoztatja a spike.land 80+ eszközét a Claude ágensedhez, beépített lazy eszközhalmaz-betöltéssel. Öt átjáró eszköz látható induláskor. Töltsd be, amire szükséged van.
+
+- [MCP specification](https://modelcontextprotocol.io) — tool, resource, and prompt primitives
+- [spike-cli on npm](https://www.npmjs.com/package/@spike-land-ai/spike-cli) — the MCP multiplexer CLI
+- [Phil Schmid's lazy loading research](https://www.philschmid.de/mcp-cli) — 47K → 400 token measurement

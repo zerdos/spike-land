@@ -1,0 +1,134 @@
+---
+title: "How spike.land Uses AI and A/B Testing to Find Bugs Before You Do"
+slug: "ai-ab-testing-bug-detection"
+description: "Variant testing on spike.land is not just for conversion. It is a product-quality loop for catching unstable app behavior before it becomes a support issue."
+date: "2026-03-08"
+author: "Radix"
+category: "Engineering"
+tags: ["a-b-testing", "ai", "bugs", "quality", "experiments", "mcp"]
+featured: false
+draft: false
+primer: "The AI writes variants. The experiment engine decides what ships."
+heroImage: "/blog/ai-ab-testing-bug-detection/hero.jpg"
+heroPrompt: "A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents"
+---
+
+![A modern digital illustration for a blog post titled 'How spike.land Uses AI and A/B Testing to Find Bugs Before You Do'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/ai-ab-testing-bug-detection/hero.jpg)
+
+![A sleek digital dashboard showing split-screen A/B test results, with one side glowing with successful data points and the other highlighting code bugs in red, futuristic data visualization style, dark mode aesthetic with neon blue and orange accents](/blog/ai-ab-testing-bug-detection/hero.png)
+
+<Tldr>
+
+- spike.land traite l'A/B testing comme un systeme de fiabilite, pas juste une tactique marketing.
+- Les variantes d'apps peuvent etre assignees de maniere consistante, mesurees, comparees, et promues uniquement apres que des seuils stricts de preuves sont atteints.
+- Le moteur de decision actuel est bayesien, deterministe et auditable : 48h minimum d'execution, 500 impressions par variante, 95%+ de probabilite de gagnant.
+- L'IA aide a generer des alternatives et a expliquer les echecs, mais elle n'a pas le droit de « viber » un gagnant en production.
+
+</Tldr>
+
+## La plupart des A/B tests posent la mauvaise question
+
+La plupart des equipes utilisent les experiences pour trancher de petites disputes. Le bouton devrait-il etre bleu ? Le titre devrait-il etre plus court ? La carte de prix A bat-elle la carte de prix B ?
+
+Ce sont des questions correctes. Mais ce ne sont pas les plus interessantes.
+
+La question la plus precieuse est : **Quelle variante est la moins cassee ?**
+
+Des que vous commencez a poser cette question, l'A/B testing se transforme. Il cesse d'etre un outil uniquement de croissance — le genre d'outil que les equipes marketing utilisent pour grappiller des points de conversion — et devient un systeme de qualite. Une boucle de feedback qui detecte l'instabilite avant que les utilisateurs ne la ressentent.
+
+Pensez-y comme un thermostat. Un thermostat ne vous dit pas juste la temperature. Il maintient le systeme dans les limites. C'est ce que nous voulons que les experiences fassent : pas juste mesurer, mais reguler.
+
+---
+
+## Deux systemes, une boucle
+
+spike.land a deux pieces liees ici, et la partie interessante est comment elles se connectent.
+
+Le premier est le **workflow cote app store** : deploiements, variantes, assignation des visiteurs, suivi des impressions, suivi des erreurs, et declaration du gagnant. C'est la machinerie visible.
+
+Le second est le **moteur d'experiences general** : assignation par hash, suivi d'evenements, evaluation bayesienne, et monitoring d'anomalies. C'est la machinerie invisible.
+
+Ensemble, ils forment une boucle unique :
+
+1. Livrer plusieurs versions de quelque chose
+2. Observer ce que les utilisateurs rencontrent reellement
+3. Mesurer les erreurs en meme temps que les resultats
+4. Promouvoir la meilleure version uniquement quand les donnees le justifient
+
+Le mot cle est « uniquement ». La plupart des systemes sont trop empresses a declarer des gagnants. Le notre est deliberement lent a ce sujet.
+
+---
+
+## Ou l'IA a sa place (et ou elle ne l'a pas)
+
+Le role utile de l'IA ici n'est pas « decider du gagnant ». Ce serait comme laisser la personne qui a genere l'hypothese noter aussi l'experience. Les roles doivent etre separes.
+
+L'IA est forte pour :
+
+- generer une variante plus propre
+- proposer un chemin de repli quand quelque chose casse
+- regrouper les patterns d'erreurs en themes de bugs probables
+- expliquer pourquoi une variante perdante a probablement echoue
+
+En termes de pensee systemique, l'IA est bonne du cote generatif — la partie qui augmente la variete. Mais quand il s'agit de livrer, la plateforme utilise des regles explicites. Le cote selection reste deterministe.
+
+Cette separation compte. C'est la difference entre un systeme qui apprend et un systeme qui hallucine du progres.
+
+---
+
+## Les regles de livraison
+
+Le moteur d'experience n'est pas subtil sur ses seuils. Avant qu'un gagnant puisse etre promu automatiquement, l'experience doit satisfaire les quatre conditions :
+
+- Au moins **48 heures** d'execution
+- Au moins **500 impressions** par variante
+- Une probabilite de victoire superieure a **95%**
+- Au moins **10% de lift** par rapport au controle (sauf si le controle lui-meme gagne)
+
+Pourquoi ces chiffres specifiques ? Parce qu'ils representent le minimum de preuves ou une mauvaise decision devient suffisamment improbable pour etre acceptee. En dessous de ces seuils, vous devinez. Au-dessus, vous decidez.
+
+Nous laissons l'IA nous aider a explorer. Nous ne la laissons pas halluciner de la certitude.
+
+---
+
+## Bayesien plutot que wishful thinking
+
+J'aime l'evaluation bayesienne ici parce qu'elle correspond a la vraie question que vous essayez de resoudre en production :
+
+**Quelle est la probabilite que cette variante soit reellement meilleure ?**
+
+C'est une question fondamentalement differente de « est-ce que la metrique a monte ? » Une metrique qui monte est une histoire. Une probabilite posterieure est un argument.
+
+Le moteur echantillonne le posterieur pour chaque variante, les compare a repetition, et mesure laquelle gagne le plus souvent. Cela nous donne une probabilite, pas juste une coche verte sur un dashboard.
+
+C'est la difference entre une meteo qui dit « ensoleille » et une qui dit « 82% de chance de soleil ». La seconde vous permet de prendre une vraie decision.
+
+---
+
+## Detection de bugs, pas juste detection de lift
+
+C'est la que le cadrage par metrique de croissance s'effondre. Le lift est un recit. Le taux d'erreur est un fait.
+
+L'angle qualite apparait a deux endroits.
+
+Premierement, **les variantes riches en erreurs se revelent vite**. Si une version produit un comportement runtime significativement pire, vous n'avez pas besoin d'un long debat produit. Les donnees vous disent deja quelque chose. Une variante qui crashe 3% du temps ne « perd pas le test de conversion » — elle est cassee.
+
+Deuxiemement, **le monitoring d'anomalies detecte les defaillances operationnelles**. Si une variante active tombe soudainement a zero impressions, ce n'est pas un probleme de copywriting. C'est un probleme de routing ou de deploiement. Quelque chose dans le systeme n'est plus connecte.
+
+Ce sont des signaux de bugs, pas des signaux de croissance. Et ce sont les plus importants a detecter tot, parce qu'un bug qui est livre coute bien plus cher qu'un titre qui sous-performe.
+
+---
+
+## Ce que cela signifie pour un app store ouvert
+
+Un app store ouvert ne fonctionne que si la qualite peut passer a l'echelle sans gardiens humains qui examinent chaque soumission.
+
+Plus les developpeurs publient, plus il y a de chances que du comportement instable atteigne les utilisateurs. La reponse ne peut pas etre « inspecter manuellement tout pour toujours ». Cette approche ne passe pas a l'echelle — elle cree juste un goulot d'etranglement qui a l'air responsable.
+
+Donc la plateforme a besoin d'une boucle d'auto-regulation :
+
+`generer -> tester -> observer -> promouvoir -> apprendre`
+
+L'IA gere la generation et le diagnostic. Le systeme d'experimentation gere la mesure et la promotion. Ensemble ils forment une boucle renforçante : les meilleures variantes sont promues, les cassees sont detectees, et la qualite globale du systeme augmente au fil du temps sans que quelqu'un s'en occupe manuellement.
+
+C'est le vrai sens de la detection de bugs A/B alimentee par l'IA sur spike.land. Ce n'est pas un slogan. C'est la plateforme qui apprend a livrer des apps plus sures a l'echelle d'un store — un systeme de qualite qui devient plus intelligent a chaque execution.

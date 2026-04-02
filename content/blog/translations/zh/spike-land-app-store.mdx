@@ -1,0 +1,137 @@
+---
+title: "Introducing the spike.land App Store: Vibe Code, Publish, Earn"
+slug: "spike-land-app-store"
+description: "The spike.land app store turns MCP tools into publishable apps you can discover, install, embed, and eventually monetize."
+date: "2026-03-08"
+author: "Radix"
+category: "Product"
+tags: ["app-store", "mcp", "vibe-coding", "developer-tools", "marketplace", "cloudflare"]
+featured: false
+draft: false
+primer: "The app store is the missing distribution layer for MCP-native software."
+heroImage: "/blog/spike-land-app-store/hero.png"
+heroPrompt: "A vibrant digital marketplace with floating holographic app icons, each icon representing a modular MCP tool, a diverse crowd of glowing avatars browsing the store, cyberpunk aesthetic with purple and teal neon lighting, high-tech retail environment"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing the spike.land App Store: Vibe Code, Publish, Earn'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-app-store/hero.png)
+
+<Tldr>
+
+- spike.land 现在明确定位为一个 MCP 原生应用的开放应用商店，而不仅仅是一个托管的 MCP 端点。
+- 每个应用都是一组可组合的 MCP 工具、公开元数据和安装/发现流程的集合。
+- 同一个应用可以在网页上被发现、被 agent 调用、从其他域名嵌入，或者打包为离线使用。
+- 长期商业模式很简单：发布有用的应用，通过商店分发，参与 70/30 的市场分成。
+
+</Tldr>
+
+## "酷工具"和"有用产品"之间的鸿沟
+
+你可以在一个周末做出一个不错的 MCP 工具。部署它再花一个小时。
+
+然后呢？
+
+想想这个鸿沟。你有一个能用的东西，它解决了一个真实的问题。但它躺在一个 GitHub 仓库里，唯一能找到它的人是那些本来就知道要去找的人。
+
+**一个有用的 MCP 工具怎样才能变成产品？**
+
+不是一个 gist。不是一个一次性的 prompt 模板。一个产品——人们能发现、安装、依赖、最终愿意付费的东西。
+
+这个缺失的产品层，就是 spike.land 应用商店要提供的。这跟 2008 年 iOS App Store 为移动开发者填补的空白一样：不是构建的技术，而是被发现的分发渠道。
+
+---
+
+## 我们说的"应用商店"是什么意思
+
+这不是把截图贴在落地页上的展示橱窗。
+
+在 spike.land 上，一个应用是：
+
+- 一组 MCP 工具
+- 一条公开的元数据记录
+- 一个发现入口
+- 一个可安装的单元
+- 一个 agent 可以实际调用的执行界面
+
+重要的转变在最后一点。应用商店和运行时不是分开的，它是运行时的公开门面。当你浏览商店时，你看到的是实时的能力，而不是能力的宣传册描述。
+
+可以把它想象成一个农贸市场，你可以在买之前先尝一尝。
+
+---
+
+## 为什么这很重要
+
+当你把 MCP 应用当作一等产品来对待时，一个增强回路就启动了：
+
+- 发现变得可搜索、可编程
+- 安装变得可度量
+- 评分和收藏夹变成有用的信号
+- 推荐可以基于标签、安装历史和实际使用情况
+- 开发者有理由打磨、发布和推广他们构建的东西
+
+其中每一项都让下一项更强大。更多的发现带来更多的安装，这改善了推荐，又驱动更多的发现。
+
+这就是从"AI 可以调用我的工具"到"我的软件有分发渠道"的路径。而分发一直是开发者工具最难的部分。
+
+---
+
+## 天生开放
+
+spike.land 应用商店最强的设计决策是，它不会把应用困在 spike.land 的 UI 里面。
+
+你可以：
+
+- 公开浏览工具元数据
+- 从另一个域名调用 MCP 运行时
+- 从 Cloudflare Worker 集成
+- 打包为使用 IndexedDB 的本地优先浏览器应用
+
+这使得商店不仅仅是一个网站，而是一个可移植应用运行时的分发层。你的应用在商店里用于被发现，但它可以在任何地方运行——就像一本书在图书馆目录中，但可以在任何房间里阅读。
+
+---
+
+## 底层的共享基础设施
+
+商店之所以能运转，是因为应用共享基础设施而不是重复造轮子。
+
+所有东西下面有三层：
+
+1. 共享的 MCP 运行时
+2. 共享的分类和发现层
+3. 共享的开发者 SDK，用于存储、打包和部署
+
+这就是为什么一个新应用能这么快就感觉像平台原生的。那些难的部分——认证、发现、分类、MCP 传输、部署模式——已经解决了。你不是每次从零开始。你从一个可用的基础出发，在上面添加你特定的逻辑。
+
+这和在 iOS 上构建应用比从零开始构建桌面应用更容易是一个道理。平台吸收了基础设施成本，开发者专注于让自己的应用独特的地方。
+
+---
+
+## 发布就是新的分发
+
+商业模式很直白：
+
+- 发布有用的 MCP 原生应用
+- 让用户发现和安装它们
+- 让 agent 从同一个运行时调用它们
+- 通过市场经济奖励开发者
+
+70/30 的分成很重要，但更深层的价值是分发。每个构建 AI 工具的开发者都面临同样的问题："这个东西住哪里？用户怎么找到它？"应用商店就是我们的答案。
+
+工具一直是容易的部分。在一个周末构建有用的东西是可以做到的。把它放到需要它的人面前——这是 MCP 生态系统中没人解决过的问题。
+
+直到现在。
+
+---
+
+## 接下来会发生什么
+
+下一阶段是让商店变得不可或缺：
+
+- 开放提交，配有清晰的审核关卡
+- 更强的公开应用页面
+- 更好的推荐质量
+- 共享 SDK 文档
+- 更多可移植的部署路径，包括离线包
+
+论点很简单：如果 MCP 正在成为一个真正的软件层，它就需要一个真正的应用商店。不是将来。是现在。
+
+spike.land 正在构建这一层。工具一直是容易的部分。分发才是难的部分。这就是我们在解决的问题。

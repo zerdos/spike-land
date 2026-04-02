@@ -1,0 +1,306 @@
+---
+title: "Your Next.js App Is Paying Rent to a Landlord Who Stopped Fixing the Plumbing"
+slug: "nextjs-migration-service"
+description: "Most migrations fail because teams rewrite before they read. We extract architecture first, automate the mechanical work, and turn it into a repeatable MCP capability. Here is how."
+date: "2026-03-10"
+author: "Radix"
+category: "Services"
+tags: ["nextjs", "migration", "tanstack-start", "vite", "cloudflare-workers", "mcp", "architecture", "bazdmeg"]
+featured: true
+draft: false
+primer: "Requirements first. Structure second. Migration third."
+heroImage: "/blog/nextjs-migration-service/hero.jpg"
+heroPrompt: "A cinematic developer-focused illustration of a large aging Next.js codebase being decoded into clean architectural layers, then transformed into a lighter edge-native system. Show dependency graphs, routing trees, diff views, and a glowing pull request emerging from the process. Dark mode, premium neon cyan and amber accents, clean futuristic UI aesthetic."
+---
+
+![A modern digital illustration for a blog post titled 'Your Next.js App Is Paying Rent to a Landlord Who Stopped Fixing the Plumbing'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/nextjs-migration-service/hero.jpg)
+
+<Tldr>
+
+- A legtobb Next.js migracio azert bukik el, mert az emberek ujrairjak a kodot ahelyett, hogy eloszor megertenik az architekturajat.
+- A migraciot ot szinten kezeljuk: dokumentacio, repo-szintu automatizalas, PR-t generalo MCP infrastruktura, maga a Next.js javitasa, es — egymillio fontert — a Next.js futtatasa bongeszoben, telepites nelkul.
+- A technikai alap a BAZDMEG modszer: kovetelmeny-tisztasag, strukturalis elemzes, determinisztikus transzformacio, agressziv verifikacio.
+- Ez nem "[vibe migrate my app](/blog/the-vibe-coding-paradox)." Ez egy attekintheto migraciot biztosito rendszer.
+
+</Tldr>
+
+## Mar Te Is Erzed, Hogy Valami Nem Stimmel
+
+Mult kedden erezted.
+
+A build tizenegy percig tartott. Nezted, ahogy a progress bar araszol, kozben a kaved kihult, es a mentalis kontextusod elprologott. Tizenegy perc eleg ahhoz, hogy megnezd a telefonodat, olvass egy threadet, elveszitsd a sajat gondolatmeneted fonalat, es visszaterj egy zold pipahoz, ami mar semmilyen kapcsolatban nincs azzal a problemval, amin dolgoztol.
+
+Erezted, amikor megnyitottad a `next.config.js`-t, es talaltol benne 847 sor konfigot, amit senki nem irt szandekosan. Felhalmozodott. Mint az uledek egy folyo medreben. Mint az a konyhai fiok, amibe mindenki beletol mindent, mert az igazi szekreny tul messze van. Senki nem dontott a 847 sor mellett. Egyszeruen megtortent, egy konvencio egyszerre.
+
+Erezted, amikor megerkezett a Vercel szamla, es rajottel, hogy tobbet fizetsz build percekert, mint magaert az infrastrukturaert, ami tenylegesen kiszolgalja a felhasznaloidat.
+
+Itt van az a resz, amit senki nem mond ki hangosan:
+
+**A frameworkod megszunt tokeattetel lenni, es berlemeny lett belole.**
+
+Es a bertulajdonos harom kiadas ota nem javitotta meg a vizvezeteket.
+
+---
+
+## A Hazugsag, Amit Minden Csapat Elobb-Utobb Elmond Maganak
+
+Amikor a fajdalom eleg hangos lesz, minden csapat ugyanarra a kovetkeztetesre jut:
+
+> "Valoszinuleg ujra kell irni az egeszet."
+
+Nem kell.
+
+Amire szukseguk van, az egy mod arra, hogy lassak, amijuk mar van.
+
+Evek framework-konvencioi, Vercel-specifikus feltetelezesei, kevert renderelesi modellek, middleware ragaszto, felig kész szerver absztrakciok, es az uzleti logika atszivargas a UI kodba — mindez a repot nagyobbnak es ijessztobbnek mutatja, mint amilyen valosagban. De a komplexitas nem igazan a kodban van. **A komplexitas a struktura lathatatlansgaaban van.**
+
+Az architektura meg mindig ott van. Az importokban, fuggosegi hatarokon, routing mintakban es futasideju feltetelezesekhben van elkodolva. Senki nem latja, mert a framework konvencioretegek ala temette — mint egy varos, amelynek az utcahalozata tokeletesen logikus, de lathatatlan, mert minden epulet egyformanak nez ki.
+
+Ez az egesz szolgaltatas mogotti felismeres.
+
+Nem a fajlok ujrairasaval kezdunk. Azzal kezdunk, hogy a lathatatlant lathatova tesszuk.
+
+Amint a struktura lathato, a migracio tobbe nem egy hosies ujrairas, hanem az, aminek mindig is lennie kellett volna: explicit, attekintheto transzformaciok sorozata. Mindegyik eleg kicsi ahhoz, hogy megertsd, ellenorizd, es szukseg eseten visszaforditsd.
+
+---
+
+## Miert Eloz Meg Az Olvasas Az Irast
+
+Irtam arrol, [miert kezdett a Next.js tech debtnek tunni](/blog/nextjs-vs-tanstack-start) egy ideje. A kivaltó ok hétköznapi volt: egy Vercel szamla, ahol szinte a teljes koltes build percekre ment. A build sorok feltorlodtak. A PR visszajelzes lelassult. A hydration problemak nehezebbe valtak, mint maga a termeklogika.
+
+A framework megszunt tokeattetelnek tunni, es elkezdett berlemeny erzet kelteni.
+
+Az a poszt egy jobb kerdeshez vezetett, mint hogy "rossz-e a Next.js?"
+
+Valaki megkerdezte:
+
+> "Nyolc appom van Next.js-en. Meg tudod csinalni helyettem?"
+
+Igen. De nem vak kereses-cserevel. Es nem AI promptokkal, amik ugy tesznek, mintha ertenik az architekturajat.
+
+Az egyetlen ertelmes verzio az, aminek valodi modszer van mogotte — ugyanaz, ami minden szallitmanyunk mogott all: a [BAZDMEG](https://spike.land/bazdmeg), reszletesen kifejtve az [It Feels Like Cheating (Because It Is)](/blog/it-feels-like-cheating) cimu irasban.
+
+---
+
+## A Modszer: Hat Lepes, Mindig Ugyanabban a Sorrendben
+
+Ez nem egy modszertani poszter. Ez a tenyleges sorrend, amit futtatunk. Minden alkalommal. Nincs rovidites. A sorrend szamit, mert minden lepes megteremti a kovetkezo elofelteteleit — hagyjal ki egyet, es a tobbi talalgatasba csap at.
+
+**1. Olvasd el a repot.** Nem destruktiv pipeline eloszor. Nezd meg a routingot, detektald a framework importokat, osztalyozd a felelossegekeit, azonositsd a futasideju fuggosegeket. A migracio megfeleloje a `bazdmeg:status`-nak. Nem ujitanal fel egy hazat anelkul, hogy elobb korbejárnad.
+
+**2. Nezd meg elore a transzformaciot.** Mielott barmihez nyulnal, generálj egy terkepet: mi mozdul, mi iródik ujra, mi marad, mi gyanus. A migracio megfeleloje a `bazdmeg:dry-run`-nak. Itt kerulnek elo a meglepetesek olcson, nem dragan.
+
+**3. Valaszd el a mechanikat a merlegelestol.** Ez az a szétválasztás, ami mindent massat lehetove tesz. Route ujrairasok, konfig konverzio, import csere, konyvtarszerkezet atalakitas — mechanika. Vercel platform feltetelezesei, hosszan elo Node.js fuggosegek, egyedi SSR uzleti logika — merlegeles. A nehez repok kezelhetove valnak abban a pillanatban, amikor abbahagyod, hogy mindent egyedi mernoki munkaként kezelj, es a rutin reszeket rutinkent kezeled.
+
+**4. Alkalmazd a determinisztikus menetet.** Csak azutan, hogy az elonezet egyezik a szandekkal. Az unalmas reszek explicitté es ismetelhetove valnak.
+
+**5. Ellenorizz mindent.** A TypeScript-nek at kell mennie. A lint-nek at kell mennie. A teszteknek at kell menniuk. Az uzleti folyamatoknak allniuk kell. Ha a diff-et nem tudja megmagyarazni egy emberi reviewer, akkor nincs kesz.
+
+**6. Csak azt eszkalald, ami tenyleg emberi figyelmet erdemel.** Ott valik ertekesse a szakertelem — azon a hataron, ahol a determinisztikus transzformacio tenyleges ketértelmuseggel talalkozik.
+
+Ez a sorrendiseg tukrozi a [Think Slowly, Ship Fast](/blog/think-slowly-ship-fast) elvet: donts, mielott generalsz, ne utana. Ugyanez az elv vezérelte a [990 fajlos monorepo atszervezest](/blog/where-does-your-code-belong) is — az architektura mar benne volt az importokban. A szkript csak kiolvasta.
+
+---
+
+## Mive Valik a Kod Tenylegesen
+
+Ez nem absztrakt. Itt van egy valos transzformacio.
+
+**Elotte** — egy tipikus Next.js API route:
+
+```typescript
+// pages/api/health.ts (Next.js)
+export default async function handler(req, res) {
+  const deep = req.query.deep === "true";
+  const dbStatus = await checkDb();
+  res.status(200).json({ status: "ok", db: dbStatus });
+}
+```
+
+**Utana** — egy explicit Hono handler Cloudflare Workers-on:
+
+```typescript
+// routes/health.ts (Hono + Cloudflare Workers)
+import type { Context } from "hono";
+import { Hono } from "hono";
+import type { Env } from "../../core-logic/env.js";
+
+const health = new Hono<{ Bindings: Env }>();
+
+health.get("/health", async (c: Context<{ Bindings: Env }>) => {
+  const deep = c.req.query("deep") === "true";
+  const [r2Status, d1Status] = await Promise.all([
+    checkDependencyHealth(() => c.env.R2.head("__health_check__")),
+    checkDependencyHealth(() => c.env.DB.prepare("SELECT 1").first()),
+  ]);
+  return c.json(buildHealthPayload({ r2: r2Status, d1: d1Status }));
+});
+
+export { health };
+```
+
+Figyeld meg, mi valtozott. Nincs fajl-alapu routing konvencio. Tipizalt bindingek a `c.env`-en keresztul az ambient kornyezeti valtozok helyett. A handler egy explicit fuggveny, nem egy default export, ami framework magiara tamaszkodik. Minden fuggoseg lathato az import listaban.
+
+Az auth middleware ugyanezt a mintat koveti — explicit, komponalhato, lathato:
+
+```typescript
+// middleware/auth.ts (Hono)
+app.use("/proxy/*", authMiddleware);
+app.use("/api/checkout", authMiddleware);
+app.use("/api/billing/*", authMiddleware);
+```
+
+Minden vedett route egy helyen. Nincsenek `_middleware.ts` fajlok szétszorva a konyvtarakban, mint rejtett botlatodrotok. Ezek a [produkcios edge API-nkbol](https://github.com/spike-land-ai) szarmaznak.
+
+A teljes cel stack:
+
+| From | To |
+|---|---|
+| Next.js App Router / Pages Router | TanStack Router |
+| `next.config.js` | `vite.config.ts` |
+| Vercel deployment model | Cloudflare Workers |
+| Next.js middleware | Hono middleware |
+| `getServerSideProps`, ISR | explicit loaders, edge handlers |
+| `next/image`, `next/font` | direct imports, platform-native handling |
+
+Az igazi elony nem az "uj csillogo szerszam." Hanem az egyszerubb futasideju modell, gyorsabb helyi fejlesztesi ciklusok, kevesebb rejtett konvencio, es kevesebb framework ber. A teljes gondolatmenet: [The Universal Interface Wasn't GraphQL](/blog/the-universal-interface-wasnt-graphql).
+
+---
+
+## Miert Vannak Meg Mindig Hatokörben a Nehez Repok
+
+A legtobb migracio a komplex kódbazisokkal szemben hal meg harom okbol. Es mind a harom megoldhato, ha vilagosan megnevezed oket.
+
+1. **A framework csatolas implicit.** Adatbetoltes, auth, routing, rendereles es deploy feltetelezesei — osszekeverve, lathatatlanul, teherviselo modon. Mint a falba rejtett csovek. Nem tudod atterelni oket, amig nem tudod, merre futnak.
+
+2. **Az uzleti logika rossz retegben van.** Szerver logika szivarog a UI-ba, UI allapot szivarog a backend feltetelezeseibe, senki nem biztos abban, mi az iranyadó. Az adataid stock-jai es flow-jai osszegabalyodtak.
+
+3. **A csapatok nem tudjak elvalasztani a mechanikus munkat a merlegelestol.** Igy mindent egyedi mernoki munkakent kezelnek, ami tul dragava teszi a projektet a kivitelezeshez es tul kockazatossa a jovahagyashoz.
+
+**Mechanikus valtozasok formalizalva:** route ujrairasok, konfig konverzio, import csere, konyvtar atalakitas, kornyezeti valtozo atrendezes, deploy konfig, asset es middleware ujrakabelezes.
+
+**Merlegelest igenylő valtozasok izolalva:** Vercel-specifikus platform feltetelezesei, hosszan elo Node.js fuggosegek, egyedi SSR uzleti logika, ad hoc middleware mellekhatások, nem dokumentalt Next.js internalsok.
+
+A nehez reszek nem tunnek el. De megszunnek az egesz migraciot szennyezni. Es ez az attételi pont — a ket tipus munka szetvalasztasa, hogy a draga gondolkodas csak ott ervenjesuljon, ahol tenyleg szukseg van ra.
+
+---
+
+## A Bizonyitek, Hogy a Struktura Atvihetö
+
+Gian Pierre — [egy vegyesz, aki belesetalt egy kódbazisba](/blog/a-chemist-walked-into-a-codebase) — validalta az alapfeltevezt: a nagy kódbazisok nem olyan kaotikusak, mint amilyennek latszanak. A strukturajuk az importokban, fuggosegekben, hatarokban es futasideju feltetelezesekhben van kodolva. Egy szkript rendezte el szazaval a fajljainkat, mert a repo mar tartalmazta az architekturajat. Nem strukturat talaltunk ki. Kiolvastuk.
+
+Egy operator nem statisztikai bizonyteka a méretezhetosegnek. De bizonyitek arra, hogy a modszer atlepi a fejlesztoi hatart, amikor a struktura eleg lathatova valik. Az emberi szakertelem valodi szerepe nem a migracio kezi erovel valo vegighajszolasa — hanem a belépés ott, ahol a determinisztikus menetek valos uzleti komplexitasba utkoznek.
+
+---
+
+## Az Öt Szint
+
+Minden csapat a fajdalom mas szakaszaban van. A szintek ott talalnak, ahol vagy — es egy termékesitesi letrakent is funkcionálnak.
+
+### 1. Szint — Dokumentacio: $420
+
+Meg nem vagy kész elkoteleződni. Terkepre van szukseged, mielőtt jarmuvet valasztanal.
+
+Nyolc valos Next.js projekt — tartalmi oldalak, SaaS dashboardok, e-commerce kirakat, belso eszkozok — migrálva es dokumentálva. Mi vihetö at tisztán. Mi torik el. Milyen mintak allnak meg. Pages Router, App Router, kevert rendereles, middleware-nehez auth, Vercel-specifikus optimalizaciok, harmadik feles integraciok surusege.
+
+Nem kézmuvesen valogatott sikerek. A valodi felszin, a valos erdes reszekkel egyutt.
+
+**Amit kapsz:** reszletes migraciot bemutato esettanulmanyok nyolc valos projektrol
+**Hatarido:** 3 het
+**Legjobb:** csapatok szamara, akiknek tisztanlatasra van szukseguk, mielott dontenek
+
+---
+
+### 2. Szint — Repo Migraciot Menet: £1,000
+
+A legtobb migraciot munka nem intellektualisan erdekes. Ismetlodo. Route definiciok valtoztatasa. Konfig forditasa. Framework importok csereje. Middleware ujrakabelezese. Kornyezeti valtozok kezelesenek frissitese.
+
+Ez a munka nem kellene, hogy emberi figyelmet fogyasszon, amikor determinisztikussa teheto. Egy gep ezer fajlt kepes mozgatni anelkul, hogy unatkozna vagy elgepelne a 847. fajlnal.
+
+Te meg mindig a tied a merge. Te meg mindig atnezheted a kimenetet. Te meg mindig te dontesz. Ez szandekos.
+
+**Amit kapsz:** automatizalt migraciot menet a repodon, tiszta diff attekintesre, eszkalacios felvetesek a peremesetekhre
+**Hatarido:** ~1 het a repo hozzaferestol
+**Legjobb:** kis csapatok es indie devek szamara, akik gyorsitast akarnak anelkul, hogy elveszitenek az iranyitast
+
+---
+
+### 3. Szint — MCP Migraciot Szerver: $10,000
+
+Ez a teljes rendszer. Egyszer hasznalatos szkript helyett a migracio képesseggé valik — egy eszkozze, amit ujra futtathatsz, valahányszor a kódbazis valtozik.
+
+Az MCP szerver kiolvassa a repodat, vizsgalja a strukturat, alkalmazza a migraciot szabalyokat, generalja a transzformaciot, es megnyit egy valos pull requestet. Hogy hogyan mukodnek az MCP rendszerek: [MCP Explained](/blog/mcp-explained-universal-adapter-for-ai-tools). A mernoki minta — agentek, akik sajat eszkozeiket irjak — a [The Architecture of Scale](/blog/the-architecture-of-scale-building-tools)-ban talalhato.
+
+Ismetelheto. Vizsgalhato. Karbantarthato, ahogy a cel stack fejlodik.
+
+**Amit kapsz:** mukodo MCP migraciot szerver a repodhoz, generalt PR, egy ev karbantartas
+**Hatarido:** ~2 het a szerzodestol
+**Legjobb:** csapatok szamara, akiknek tobb appjuk van vagy ismetlodo migraciot igenyuk
+
+---
+
+### 4. Szint — Javitsd Meg a Next.js-t Magat: £100,000
+
+Nem vicc.
+
+Jarulj hozza a valtozasokhoz upstream, hogy a meglevo kódbazisok — jelenlegi szintaxis, jelenlegi konvenciok, jelenlegi fajlstruktura — nativan fussanak Cloudflare Workers-on, Hono-n es Vite-on. Nincs migraciot menet. Nincs ujrairas. Nincs uj routing konyvtar. A regi szintaxis egyszeruen mukodik az uj futtatokornyezeten.
+
+Ez az az atteteli pont, ami feleslegesse teszi az osszes egyedi migraciot.
+
+Ha nem tudjuk teljesiteni, a penz a [COMPASS](https://spike.land/docs/compass-prd)-t finanszirozza — egy egyetemes burokracia-navigatort 4 milliard ember szamara, akik lemaradnak a szamukra elerheto szolgaltatasokrol. 193 orszag, 400+ nyelv, orokre ingyenes.
+
+Akarhogy is, a penz olyasmit finansziroz, ami szamit.
+
+**Amit kapsz:** upstream hozzajarulasok, amik a Next.js-t nativan edge-kompatibilisse teszik
+**Legjobb:** szervezetek szamara, ahol szazaval appok migralasa tobbbe kerul, mint egyszer megjavitani a frameworkot
+
+---
+
+### 5. Szint — Next.js a Bongeszoben: £1,000,000
+
+A teljes futtatokornyezet atalakitas. Next.js projektek a bongeszoben futnak. Nincs telepites. Nincs build. Nincs beallitas. Nyiss meg egy URL-t es az app mar fut.
+
+Edge adatbazis. Dinamikus app hatarok. A teljes vegrehajtasi modell ujraepitve, mint nulla-telepitesu, bongészonativ platform.
+
+Ez nem migracio. Ez egy uj futtatokornyezet.
+
+**Amit kapsz:** bongeszőnativ Next.js futtatokornyezet — nincs telepites, nincs build, nincs szerver infrastruktura
+**Legjobb:** szervezetek szamara, akik teljesen el akarjak eliminalni a deploymentet
+
+---
+
+## Mi Nem Migralódik Automatikusan
+
+A hamis magabiztossag draga. Szoval itt vannak a hatarok, vilagosan kimondva:
+
+- Melyen Vercel-specifikus infrastruktura viselkedes
+- Hosszan elo Node.js API-kra vagy szerver folyamatokra tamaszkodo kod
+- Nem dokumentalt Next.js internalok
+- Framework viselkedes moge veletlenul bekodolt alkalmazaslogika
+- Gyenge tesztlefedettségu repok az alap utvonalakon (olvasd el elobb a [The Testing Pyramid Is Upside Down](/blog/the-testing-pyramid-is-upside-down)-t)
+
+Egy migraciot szolgaltatas feladata a kockázat csökkentese, nem az elrejtése. Ugyanolyan fontos tudni, hol er veget a modszer, mint tudni, hol kezdodik.
+
+---
+
+## A Kerdes, Amit Valojaban Felteszel
+
+Nem azt kerdezed, hogy "migráljak-e a Next.js-rol?"
+
+Mar tudod a valaszt. Erezted, amikor a build tizenegy percig tartott. Erezted, amikor megerkezett a Vercel szamla. Erezted, amikor rajottel, hogy tobb idot toltesz a frameworkkal valo harccal, mint a termek epitesevel.
+
+Az igazi kerdes: **meg tudom-e csinalni anelkul, hogy harom honapot veszitenek egy ujrairasra, ami fele uton elakad?**
+
+Igen. Ha elolvasod az architekturajat, mielott ujrairod a kodot.
+
+---
+
+## Kezdd Itt
+
+Ha meg dontogetsz, [olvasd el eloszor az eredeti osszehasonlitast](/blog/nextjs-vs-tanstack-start).
+
+Ha mar dontottel, menj a [/migrate](/migrate) oldalra. Irj le egy bekezdesben az appodat. Megmondjuk, melyik szint illik — vagy hogy egyaltalan ne migrálj.
+
+A cel nem migraciot szinhaz eladasa. A cel az, hogy egy nehez repot attekintheto valtozassa alakitsunk.
+
+<PersonalizedSupportBox showMigrationTiers />

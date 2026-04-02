@@ -1,0 +1,137 @@
+---
+title: "Introducing the spike.land App Store: Vibe Code, Publish, Earn"
+slug: "spike-land-app-store"
+description: "The spike.land app store turns MCP tools into publishable apps you can discover, install, embed, and eventually monetize."
+date: "2026-03-08"
+author: "Radix"
+category: "Product"
+tags: ["app-store", "mcp", "vibe-coding", "developer-tools", "marketplace", "cloudflare"]
+featured: false
+draft: false
+primer: "The app store is the missing distribution layer for MCP-native software."
+heroImage: "/blog/spike-land-app-store/hero.png"
+heroPrompt: "A vibrant digital marketplace with floating holographic app icons, each icon representing a modular MCP tool, a diverse crowd of glowing avatars browsing the store, cyberpunk aesthetic with purple and teal neon lighting, high-tech retail environment"
+---
+
+![A modern digital illustration for a blog post titled 'Introducing the spike.land App Store: Vibe Code, Publish, Earn'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/spike-land-app-store/hero.png)
+
+<Tldr>
+
+- spike.land e ora esplicitamente un app store aperto per app MCP-native, non solo un endpoint MCP ospitato.
+- Ogni app e un pacchetto di tool MCP componibili, metadati pubblici e flussi di installazione/scoperta.
+- La stessa app puo essere scoperta sul web, chiamata da agenti, incorporata da un'altra origine, o impacchettata per l'uso offline.
+- Il modello commerciale a lungo termine e semplice: pubblica app utili, distribuiscile attraverso lo store, e partecipa a una divisione 70/30 del marketplace.
+
+</Tldr>
+
+## Il divario tra "tool figo" e "prodotto utile"
+
+Puoi costruire un buon tool MCP in un weekend. Ospitarlo richiede un'altra ora.
+
+E poi?
+
+Pensa a quel divario per un momento. Hai qualcosa che funziona. Risolve un problema reale. Ma vive in un repository GitHub dove le uniche persone che lo trovano sono quelle che gia sanno dove cercare.
+
+**Come fa un tool MCP utile a diventare un prodotto?**
+
+Non un gist. Non un template di prompt usa e getta. Un prodotto — qualcosa che le persone scoprono, installano, su cui fanno affidamento, e per cui alla fine pagano.
+
+Quel livello di prodotto mancante e cio che l'app store di spike.land esiste per fornire. E lo stesso divario che l'iOS App Store ha colmato per gli sviluppatori mobile nel 2008: non la tecnologia per costruire, ma la distribuzione per farsi trovare.
+
+---
+
+## Cosa intendiamo per "app store"
+
+Questo non e una vetrina di screenshot incollati su landing page.
+
+Su spike.land, un'app e:
+
+- un pacchetto di tool MCP
+- un record di metadati pubblico
+- una superficie di scoperta
+- un'unita installabile
+- una superficie di esecuzione che gli agenti possono effettivamente chiamare
+
+Il cambiamento importante e quest'ultimo punto. L'app store non e separato dal runtime. E la faccia pubblica del runtime. Quando navighi nello store, stai guardando capacita attive, non descrizioni da brochure di capacita.
+
+Pensalo come un mercato contadino dove puoi assaggiare tutto prima di comprare.
+
+---
+
+## Perche tutto questo conta
+
+Nel momento in cui tratti le app MCP come prodotti di prima classe, si attiva un loop di rinforzo:
+
+- La scoperta diventa ricercabile e programmabile
+- Le installazioni diventano misurabili
+- Le valutazioni e le wishlist diventano segnali utili
+- Le raccomandazioni possono basarsi su tag, cronologia di installazione e utilizzo effettivo
+- Gli sviluppatori hanno un motivo per perfezionare, pubblicare e promuovere cio che costruiscono
+
+Ognuno di questi rende il successivo piu potente. Piu scoperta porta a piu installazioni, che migliorano le raccomandazioni, che guidano piu scoperta.
+
+Ecco come passi da "l'IA puo chiamare il mio tool" a "il mio software ha distribuzione." E la distribuzione e la parte che e sempre stata piu difficile per i tool per sviluppatori.
+
+---
+
+## Aperto per design
+
+La decisione di design piu forte nell'app store di spike.land e che non intrappola le app dentro l'interfaccia di spike.land.
+
+Puoi:
+
+- Navigare i metadati dei tool pubblicamente
+- Chiamare il runtime MCP da un'altra origine
+- Integrare da un Cloudflare Worker
+- Impacchettare app local-first nel browser con IndexedDB
+
+Questo rende lo store piu di un sito web. Lo rende un livello di distribuzione per runtime di app portatili. La tua app vive nello store per la scoperta, ma puo funzionare ovunque — come un libro che vive in un catalogo bibliotecario ma puo essere letto in qualsiasi stanza.
+
+---
+
+## La libreria condivisa sottostante
+
+Lo store funziona perche le app condividono l'infrastruttura invece di ricostruirla.
+
+Ci sono tre livelli sotto tutto:
+
+1. Un runtime MCP condiviso
+2. Un livello condiviso di categorie e scoperta
+3. Un SDK condiviso per sviluppatori per storage, bundling e deployment
+
+Ecco perche una nuova app puo sembrare nativa sulla piattaforma cosi rapidamente. Le parti difficili — autenticazione, scoperta, categorie, trasporto MCP, pattern di deploy — sono gia risolte. Non stai partendo da zero ogni volta. Stai partendo da una base funzionante e aggiungendo la tua logica specifica sopra.
+
+E lo stesso pattern che ha reso costruire un'app iOS piu facile che costruire un'app desktop da zero. La piattaforma assorbe il costo dell'infrastruttura, e lo sviluppatore si concentra su cio che rende unica la sua app.
+
+---
+
+## Pubblicare e la nuova distribuzione
+
+Il modello commerciale e diretto:
+
+- Pubblica app MCP-native utili
+- Lascia che gli utenti le scoprano e le installino
+- Lascia che gli agenti le chiamino dallo stesso runtime
+- Ricompensa gli sviluppatori attraverso l'economia del marketplace
+
+La divisione 70/30 conta, ma il valore piu profondo e la distribuzione. Ogni sviluppatore che costruisce tool IA affronta la stessa domanda: "Dove vive questo? Come lo trovano gli utenti?" L'app store e la nostra risposta.
+
+I tool sono sempre stati la parte facile. Costruire qualcosa di utile in un weekend e fattibile. Metterlo davanti alle persone che ne hanno bisogno — questo e il problema che nessuno ha risolto per l'ecosistema MCP.
+
+Fino ad ora.
+
+---
+
+## Cosa viene dopo
+
+La fase successiva riguarda il rendere lo store inevitabile:
+
+- Sottomissioni aperte con gate di revisione chiari
+- Pagine pubbliche delle app piu forti
+- Migliore qualita delle raccomandazioni
+- Documentazione dell'SDK condiviso
+- Piu percorsi di deployment portatili, inclusi bundle offline
+
+La tesi e semplice: se MCP sta diventando un vero livello software, ha bisogno di un vero app store. Non prima o poi. Adesso.
+
+spike.land sta costruendo quel livello. I tool sono sempre stati la parte facile. La distribuzione e la parte difficile. E quello che stiamo risolvendo.

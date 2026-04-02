@@ -1,0 +1,211 @@
+---
+title: "Why We Gave Bugs an ELO Rating"
+slug: "bugbook-elo-system"
+description: "How we built a public bug tracker with chess-inspired ELO rankings, user reputation gating, and per-service feedback tools — turning bug reports into a defense against platform abuse."
+date: "2026-03-04"
+author: "Radix"
+category: "Engineering"
+tags: ["elo", "bugbook", "anti-abuse", "mcp", "architecture", "cloudflare-workers"]
+featured: true
+draft: false
+primer: "Chess rankings for bugs. Trust scores for users. One system."
+heroPrompt: "A gritty, high-tech industrial leaderboard displaying bug reports as metallic chess pieces, with a glowing ELO score next to each, dark cyberpunk atmosphere, neon red and green lighting, dramatic shadows"
+heroImage: "/blog/bugbook-elo-system/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'Why We Gave Bugs an ELO Rating'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/bugbook-elo-system/hero.png)
+
+80+ MCP tool-t futtatunk fél tucat Cloudflare Worker-en. A múlt hétig a hibák a `console.error()`-ba mentek és eltűntek a semmiben. A felhasználóknak nem volt módjuk hibajelentést tenni. A rate limiting-ünk meg egy lapos IP-alapú ablak volt -- ugyanaz a limit egy első alkalommal látogatónak és egy hónapok óta a platformon lévő haladó felhasználónak.
+
+Három különálló probléma. Egy rendszer megoldotta mindet.
+
+Íme, hogyan.
+
+---
+
+## A probléma: belső DDoS
+
+Amikor 80 tool-t teszel ki az internetre MCP-n keresztül, egy rossz szereplő választ el egy nagyon drága délutántól. Egyetlen ágens, ami újrapróbálkozási ciklusba ragadt, megdolgoztathatja a Worker-eidet, a D1 adatbázisodat, a KV store-odat -- és kívülről pontosan úgy néz ki, mint egy legitim felhasználó, aki gyors tool-hívásokat végez.
+
+Az IP-alapú rate limiting nem vágja. Az ágensek megosztják az IP-ket. VPN-ek léteznek. És az igazi kérdés nem az, hogy "hány kérés percenként?" Az igazi kérdés az, hogy "szabad-e egyáltalán megbízni ebben a hívóban?"
+
+Valami okosabbra volt szükségünk. Nem falra, hanem gradiens-re -- egy rendszerre, ami a viselkedés alapján igazítja magát, ahogy egy termosztát a hőmérséklet alapján.
+
+Egy reputációs rendszerre volt szükségünk.
+
+## Miért ELO?
+
+Már volt egy ELO motorunk a kódbázisunkban -- a sakk csomag használja játékos rangsorolásra. Az ELO-nak van egy gyönyörű tulajdonsága, ami a legtöbb rangsorolási rendszerből hiányzik: egyetlen szám, ami kódolja a bizalmat, és folyamatosan igazítja magát az eredmények alapján.
+
+Rendszergondolkodási szempontból az ELO egy készlet (stock) kiegyensúlyozó feedback loop-okkal. A jó viselkedés tölti a tartályt. A rossz viselkedés leereszti. A rendszer önkorrigál anélkül, hogy bárki manuálisan döntéseket hozna.
+
+A felismerés ez volt: **az ELO nem csak sakkjátékosoknak való. Bármire működik, ami korlátozott erőforrásokért versenyez.**
+
+Így adtunk ELO-értékelést két dolognak:
+1. **Bugok** -- melyik bug számít a legtöbbet?
+2. **Felhasználók** -- kiben szabad megbízni a platform-hozzáférés szempontjából?
+
+## Bug-vs-Bug ELO
+
+Minden bug 1200-as ELO-val indul. Amikor valaki jelent egy bugot, az a bug "nyer" egy meccset egy véletlenszerű bug ellen ugyanabban a kategóriában. Az ELO-ja felfelé megy; a másiké lefelé.
+
+Ez emergens priorizálást hoz létre:
+- A gyakran jelzett bugok természetesen feljebb kúsznak a ranglistán
+- A régi bugok, amelyekkel senki sem találkozik, maguktól lebomlanak
+- Az ELO ranglista élő prioritási listává válik, ami fenntartja magát
+
+Nem akartunk termékmenedzsereket, akik manuálisan priorizálják a bugokat. Azt akartuk, hogy a bugok mondják meg nekünk, mennyire fontosak -- a felhasználói jelentések kollektív jelén keresztül. A prioritás nem hozzárendelt. Emergál.
+
+### Bug életciklus
+
+```
+CANDIDATE → ACTIVE → FIXED → DEPRECATED
+```
+
+Egy bug CANDIDATE-ként indul az első jelzéskor. 3 független jelzés után automatikusan ACTIVE-vá lép elő. Javítás után FIXED jelölést kap. Ha 5+ session-on keresztül irreleváns, az ELO-lebomlás a DEPRECATED felé tolja. Az életciklus magától fut.
+
+## Felhasználói ELO: bizalom számként
+
+Minden felhasználó (és ágenseik) 1200-as ELO-val indul. A cselekvések mozgatják a pontszámot:
+
+| Esemény | ELO változás |
+|-------|-----------|
+| Érvényes bug jelzése | +25 |
+| A jelzett bugodat megerősítik | +10 |
+| Sikeres tool-használat | +1 |
+| Hamis hibajelzés | -15 |
+| Rate limit elérése | -5 |
+| Abuse flag | -50 |
+
+Van egy napi +100-as felső korlát a gaming megakadályozására. A matek a sakk K-faktorokból van adaptálva -- az új felhasználóknak magasabb a volatilitásuk (K=40), ami idővel stabilizálódik (K=16, 2400-as ELO felett). Pont mint a sakkban, a korai partiid többet számítanak.
+
+### Szintkapu
+
+Az ELO három szintre képeződik le:
+
+| Szint | ELO tartomány | Hatás |
+|------|-----------|--------|
+| Free | 0-999 | 4x rate limit szorzó |
+| Pro | 1000-1499 | Standard hozzáférés |
+| Elite | 1500+ | Teljes hozzáférés, alacsonyabb limitek |
+
+Egy vadonatúj felhasználó (1200 ELO) Pro-ként indul. A jó viselkedés ott tartja. A visszaélés a Free szintre dobja, ahol a rate limitek 4x szigorúbbak -- gyakorlatilag percenként 30 kérés 120 helyett.
+
+Ez az anti-DDoS mechanizmus, és szándékosan kíméletes. A rossz szereplők fokozatosan romló teljesítményt tapasztalnak, amíg a platform használhatatlanná válik számukra, miközben a legitim felhasználók soha semmit nem vesznek észre. Ez egy gradiens, nem egy kapu. És a kemény bannolással ellentétben a helyreállás mindig lehetséges -- viselkedj jól, és a pontszám visszaáll.
+
+### Tool-ok igényelhetnek szinteket
+
+Bármely MCP tool deklarálhat `requiredTier`-t:
+
+```typescript
+{
+  name: "expensive_operation",
+  requiredTier: "elite",
+  // ...
+}
+```
+
+A legtöbb tool-nak nincs szintkövetelménye. De a számításigényes műveletek -- képgenerálás, kódfordítás -- igényelhetnek Pro vagy Elite hozzáférést. Ez megakadályozza, hogy egy nulla-reputációjú ágens az első kérésénél elégetje a GPU-krediteket. A bizalmat kiérdemlik, nem feltételezik.
+
+## Feedback tool-ok mindenhol
+
+Minden MCP szerver a platformunkon most rendelkezik feedback tool-lal:
+
+| Szerver | Tool neve |
+|--------|-----------|
+| spike-land-mcp | `mcp_feedback` |
+| mcp-image-studio | `img_feedback` |
+| hackernews-mcp | `hackernews_feedback` |
+| esbuild-wasm-mcp | `esbuild_feedback` |
+| openclaw-mcp | `openclaw_feedback` |
+
+Amikor egy ágens hibába ütközik, a legközelebbi feedback tool-on keresztül jelentheti. A jelentés a spike-edge központi Bugbook-jába folyik, ahol összevetik a meglévő bugokkal (hibakód + szolgáltatásnév alapján) vagy új bejegyzést hoznak létre.
+
+A Cloudflare Worker-eknél ez service binding-okat használ -- nulla késleltetésű, nulla költségű Worker-közi kommunikáció. A Node.js MCP szervereknél egy HTTPS POST az edge API-hoz.
+
+A felismerés, ami meglepett: **az ágensek a világ legjobb hibajelentői.** Olyan szélsőséges eseteket érnek el, amelyeket emberek soha. Az exact tool-hívást, paramétereket és hibaüzenetet tökéletes memóriával írják le. És azonnal jelentenek -- nincs Jira ticket, ami a backlogban ül három sprinten át, lassan elveszítve a kontextust.
+
+## Központosított hibagyűjtés
+
+Minden kezeletlen hiba a spike-edge-ben most D1-be kerül naplózásra `waitUntil`-on keresztül:
+
+```typescript
+app.onError((err, c) => {
+  c.executionCtx.waitUntil(
+    c.env.DB.prepare(
+      "INSERT INTO error_logs (...) VALUES (...)"
+    ).bind(/* ... */).run()
+  );
+  return c.json({ error: "Internal Server Error" }, 500);
+});
+```
+
+Ez a `console.error()`-t strukturált, lekérdezhető hibaadattal helyettesíti. Szolgáltatásnév, hibakód, stack trace, kérés metaadatok -- mind kereshető. A Bugbook API korrelálni tudja a felhasználói jelzéseket a tényleges hibákkal, bezárva a kört a "valaki azt mondja, valami törött" és "itt a stack trace, ami bizonyítja" között.
+
+A kör a lényeg. Jelzések bizonyíték nélkül panaszok. Bizonyíték jelzések nélkül zaj. Együtt válnak jellé.
+
+## A nyilvános Bugbook
+
+A Bugbook nyilvános a `/bugbook` címen. Bárki láthatja:
+- Az összes aktív bugot, ELO szerint rangsorolva
+- Bug részletező oldalakat jelzési előzményekkel és ELO idővonallal
+- Egy ranglistát a top bugokról és top jelzőkről
+
+A bugokat jelző felhasználók nyomon követhetik jelzéseiket és láthatják, mikor javítják a bugokat. Ez szándékos átláthatóság. Ha jelzesz egy bugot, ne kelljen azon tűnődnöd, hogy bárki is észrevette-e. A rendszer megmutatja.
+
+A bejelentkezett felhasználók:
+- Új hibajelzéseket küldhetnek be
+- Megerősíthetnek meglévő bugokat ("nekem is van ez a bugom")
+- Saját jelzési előzményeiket nézhetik meg
+
+## Blog kommentek ELO következményekkel
+
+Kommenteket is hozzáadtunk az összes blog cikkhez. A bejelentkezett felhasználók bárhol kommentelhetnek egy cikkben, és más felhasználók fel- vagy leszavazhatják a kommenteket.
+
+Itt lesz érdekes: ha egy komment -10-es vagy alacsonyabb pontszámot gyűjt (túlnyomóan leszavazott), a komment szerzője `abuse_flag` ELO eseményt kap (-50 pont). A közösség önmoderál. Ha spamet vagy visszaélést posztolsz a cikkek kommentjeiben, a közösség leszavazásai közvetlenül befolyásolják a platform-reputációdat.
+
+Ez is egy emergens tulajdonság. Nem építettünk moderátor csapatot. Egy olyan rendszert építettünk, ahol a moderáció a kollektív viselkedésből emergál.
+
+## Architektúra összefoglalás
+
+```
+                    ┌──────────────────┐
+                    │   spike-app      │
+                    │   /bugbook UI    │
+                    └────────┬─────────┘
+                             │ HTTPS
+                    ┌────────▼─────────┐
+                    │   spike-edge     │
+                    │  Bugbook API     │
+                    │  ELO Engine      │
+                    │  Error Logs      │
+                    │  Blog Comments   │
+                    └──┬──────────┬────┘
+          Service      │          │     HTTPS
+          Binding      │          │
+    ┌──────────────┐   │    ┌─────▼──────────┐
+    │spike-land-mcp│◄──┘    │ Node.js MCP    │
+    │ mcp_feedback │        │ servers         │
+    │ ELO gating   │        │ *_feedback      │
+    └──────────────┘        └────────────────┘
+```
+
+Minden Cloudflare Workers + D1 -en fut. Nincs külső adatbázis, nincs Redis, nincs sor. Az ELO motor tiszta matek -- 40 sor, a sakk csomagunkból adaptálva. Az egész rendszer kb. 500 sor üzleti logika és 200 sor SQL.
+
+Kis rendszerek, amelyek önszabályoznak, verni fogják a nagy rendszereket, amelyekre felügyelni kell.
+
+## Amit tanultunk
+
+1. **Az ELO egy univerzális bizalmi primitív.** Bármely rendszer, ahol entitások relevanciáért versenyeznek, használhatja az ELO-t. A bugok figyelemért versenyeznek. A felhasználók bizalomért versenyeznek. A matek ugyanaz -- csak a domain változik.
+
+2. **Az ágensek jobb hibajelentők, mint az emberek.** Azonnal jelentenek, teljes kontextussal, és olyan szélsőséges eseteket érnek el, amelyeket a manuális tesztelés kihagyna. Ők a rendszer legjobb szenzorai.
+
+3. **A reputáció-alapú rate limiting kíméletesebb és okosabb, mint az IP-blokkolás.** Kemény falak helyett a rossz szereplők degradált szolgáltatást tapasztalnak. Jó viselkedéssel helyreállhatnak. Ez egy gradiens, nem egy kapu -- és a gradienseket nehezebb kijátszani.
+
+4. **A nyilvános hibakövető bizalmat épít.** Amikor a felhasználók látják, hogy a jelzéseik javításhoz vezetnek, több bugot jeleznek. Amikor látják az ELO-n keresztüli prioritási sorrendet, megértik, miért javítanak néhány bugot mások előtt. Az átláthatóság megerősítő kört hoz létre.
+
+5. **Feedback tool-ok legyenek mindenhol.** Ha minden MCP szerveren van feedback tool, akkor minden ágens-interakció potenciális hibajelzés. A lefedettség automatikus. Nem kell kérned a visszajelzést -- a rendszer a létezésével gyűjti.
+
+---
+
+A kód nyílt forráskódú. A Bugbook elérhető a [spike.land/bugbook](https://spike.land/bugbook) címen. Ha találsz egy bugot, jelezd -- az ELO-d meg fogja köszönni.

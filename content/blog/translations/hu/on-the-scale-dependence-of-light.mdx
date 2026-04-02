@@ -1,0 +1,183 @@
+---
+title: "The Operational Meaning of Varying Dimensional Constants: Why Only Dimensionless Residuals Are Observable"
+slug: "on-the-scale-dependence-of-light"
+description: "A standalone variation of a dimensional constant is operationally empty unless it induces measurable residuals in dimensionless observables. A measurement argument, a toy parametrization, and a survey of current bounds."
+date: "2026-03-28"
+author: "Zoltan Erdos"
+tags: ["physics", "relativity", "resolution-dependence", "thought-experiment", "dimensionless-observables"]
+featured: true
+draft: false
+primer: "A ruler always measures itself as one ruler long. The speed of light may have the same problem."
+heroPrompt: "A person sitting at a wooden desk in a warm study, writing with a fountain pen, light streaming through a window, equations floating softly in the air like dust motes, a small blackboard behind him showing E=mc², warm sepia tones, intimate, contemplative, photorealistic"
+heroImage: "/blog/on-the-scale-dependence-of-light/hero.png"
+---
+
+![The Fractal Speed of Light — why scale is the ultimate medium](/blog/on-the-scale-dependence-of-light/infographic.jpg)
+
+---
+
+> **Absztrakt.** Egy dimenzios allando onallo variacioja operacionalisan ures, kiveve ha merheto reziduumokat eredmenyez dimenziomentes megfigyelheto mennyisegekben vagy mas relaciot megfigyelheto mennyisegekben, amelyeket egy konkret dinamikai modell definiál. Bemutatok egy gondolatkiserletet — a "jarmu ablakok nelkul" — hogy vilagossa tegyem, miert. Ha a meroeszkozok egyutt skalazodnak az altaluk vizsgalt fizikával, az egyszeru meres nem kepes megkulonboztetni a valos valtozast egy mertekegyseeg-valtozastol. A fizikailag ertelmes kerdes nem az, hogy $c$ egyedul valtozik-e, hanem az, hogy a dimenziomentes csatolasok — elsösorban a finomszzerkezeti allando $\alpha$ — mutatnak-e anomalis eltéreseket a Standard Modell renormalizacios csoport joslásain tul. Definiálok egy anomalis rezidumot $\Delta \ln \alpha$, megkulonboztetek harom operacionalisan elkulonitheto csatornat, amelyeken at egy ilyen rezidum megjelenhet (idöbeli drift, teri/vöroseltolodas variacio, es szonda-skala felbontasfuggés), es attekintem a legszigorubb jelenlegi korlatokat minden csatornában. Mindegyik konzisztens a nulla anomaliaval.
+>
+> **Megjegyzes.** Ez egy konceptualis jegyzet — egy meresi erv es irodalom-áttekintés, nem javaslat uj dinamikara. Nem tartalmaz uj tetelt, nem tartalmaz Lagrange-fele hatásfüggvényt, es nem tartalmaz eredeti adatelemzest. Pedagogiai ujraközelitéskent lehet erdekes a jol ismert korlatokhoz.
+>
+> **Kulcsszavak:** valtozo allandok, finomszerkezeti allando, onreferencialis meres, anomalis reziduum, dimenziomentes megfigyelheto mennyisegek, felbontasfugges
+>
+> **Zoltan Erdos** — Brighton, UK, 2026 marcius
+
+---
+
+## 1. A jarmu ablakok nelkul
+
+Kepzelj el egy jarmuvet, ami kepes megvaltoztatni a meretedet — a Planck-hossztol [1] a megfigyelheto univerzumig. Nincsenek ablakai. Csak a muszereid vannak: egy vonalzo, egy ora, egy lezer es egy tukor.
+
+Merod a fenysebesseget. $299{,}792{,}458$ m/s-t kapsz. (A modern SI-ben ez a szam a meter definicioja altal rogzitett [2] — nem egy kisérletileg lebego mennyiseg. Ez a teny mar kodollja az operacios pontot, amit ez a fejezet kifejt: a metrologia a teoria teszteleset orak, rezonátorok es atmeneti frekvenciak osszehasonlitasan keresztul vegzi — relaciot es dimenziomentes mennyisegeken, nem a csupasz $c$ szimbolumon keresztul.)
+
+Most a jarmu osszezsugorit teged $10^{35}$-os faktorral. A vonalzod zsugorodik. Az orad zsugorodik. A lezered, az idegrendszered, az "egy meter" fogalmad — mind zsugorodik veled egyutt. Ujra mersz. $299{,}792{,}458$ m/s.
+
+A jarmu kozmologiai meretre noveszt. Ujra mersz. Ugyanaz a szam.
+
+Mindig ezt a szamot fogod kapni. Nem feltetlenul azert, mert a fenysebesség szukségszeruen allando minden skalán — hanem mert a meroeszközeid egyutt skalazodnak a mert mennyiseggel. Egy vonalzo mindig egy vonalzo hosszunak meri onmagat. Egy hal nem meerheti meg a vizet, amiben uszik.
+
+Ez nem paradoxon. Ez egy korlatja annak, amit a meres kepees elmondani nekunk: **egy dimenzios allando, amit az ugyanabbol a fizikabol keszult eszkozokkel merunk, onreferenciális.** Ahhoz, hogy megkerdezzuk, valtozik-e $c$, *dimenziomentes* allando-kombikaciókat kell neznunk — aranyokat, amelyek nem fuggnek a mertekegyseg-valasztasunktol. Az aranyok jelentik a kiutat a jarmuből.
+
+**Megjegyzes $L$-rol.** Ebben a jegyzetben vegig $L$-t hasznalok egy "operacios felbontasi skala" jelölesere. Ez szandekosan pontatlan, es a pontatlansag teherviselo. Szonda-hullamhossz, eszkoz-meret, durvaratasu cutoff es renormalizacios csoport (RG) skala $\mu \sim 1/L$ nem felcserelhetok — kulonbozo elmeleti keretrendszerekben elnek es kulonbozo fizikával csatolnak. Amig $L$ nincs egy konkret fizikai megfigyelheto mennyiseghez rogzitve egy konkret dinamikai modellben, a 3. fejezetbeli toy parameterizacioban a szabad parameter feletti egy szabad valtozo is van. Ez a ketértelmüseg gyengeseg, nem feature, es itt jelzem ahelyett, hogy a 3. fejezetbe rejtenem.
+
+---
+
+## 2. Ket szimmetria, es a meglevo irodalom
+
+1905-ben Einstein posztulalta, hogy a fenysebesség minden *inerciárendszerben* ugyanaz. Ez a Lorentz-invariancia [3] — szimmetria sebesseg-valtoztatás alatt. Nem posztulalta, hogy $c$ minden *operacios felbontasban* ugyanaz. Ezek kulonbozo szimmetria-allitasok, es a kulonbseg szamit.
+
+Gondolj ra igy: Einstein azt mondta, a fenysebesség ugyanolyannak tunik, akar allsz, akar mellette futsz. A masik kerdes az, hogy ugyanolyannak tunik-e, akar atom vagy, akar galaxis. Az egyik a mozgasrol szol. A masik a skalaról. Az egyiket rendkivuli pontossaggal teszteltek. A masikat a valtozo allandokrol szolo jelentős irodalom tarta fel.
+
+Ezt a kerdest evtizedekkel ezelott formalizaltak. Nottale 1993-ban javasolta a *skala-relativitast*, posztulalva, hogy a fizika torvennyeinek invariansnak kell lenniuk felbontasi skalavaltozas alatt, ugyanugy, mint Lorentz-boost-ok alatt [5]. Albrecht es Magueijo 1999-ben valtozo fenysebessegu (VSL) kozmologiakat fejlesztett ki, konkret dinamikai modellel es Lagrange-fuggvennyel [6]. Barrow 2002-ben a valtozo allandok tagabb kerdesét vizsgalta [7]. Duff, Okun es Veneziano a 2002-es *trialogue*-jukban amellett erveltek, hogy csak dimenziomentes allandok variacioja operacionalisan ertelmes — egy dimenzios allando, mint $c$, egyedul tortenő valtoztatasa ketértelmu anelkul, hogy megadnank, melyik dimenziomentes megfigyelhető mennyiseg valtozik [8]. Uzan atfogo attekintéseket publikalt a valtozo fundamentalis csatolasokrol [9], amelyeket Martins frissitett [10].
+
+**A jelen erv hatakoze.** A jarmu ablakok nelkul demonstralja, hogy az *univerzalis egyutt-skalazodás* — egy szcenario, amelyben minden fizikai mennyiseg egyformán átskaazodnik — belulrol megfigyelhetetelen. Ez egy szuk megallpitas. Nem jelenti azt, hogy minden valtozo-$c$ vagy skalafuggo szcenario empirikusan ures. A VSL irodalom explicit dinamikaju modelleket tartalmaz: Lorentz-szego valtozatokat, bimetrikus konstrukciokat es lokálisan Lorentz-invarians formulaciokat [6, 11]. Megfigyelheto tartalmuk a szektorok kozotti *relativ* valtozasokbol ered (pl. anyag vs. gravitacio), a kauzalis struktura modositasaibol, vagy dimenziomentes egyutthatók eltolódasaibol — nem a csupasz $c$ szimbolum izolalt valtozasaból. E jegyzet erve csak az egyutt-skalazodasi esetre vonatkozik. Az egyutt-skalazodasi feltetelezest megszego modelleknek sajat fenomenologiajuk van, es itt nem targyaljuk oket.
+
+---
+
+## 3. A dimenziomentes megfigyelheto mennyiseg
+
+A kvantumterelmeleetben (QFT) [12] az elektromagneses csatolas $\alpha$ a szondazasi energiaval fut — ez jol tesztelt kvantumelektrodinamika (QED) [13]. Mint egy beszelgetes, ami mas tonust kap attol fuggoen, milyen kozel allsz: a kolcsonhatas masnak lat különbozo energikon. Ez standard fizika. A kerdes a kovetkezo: mutat-e $\alpha$ valamilyen *anomalis* felbontasfuggést a Standard Modell [14] elorejelzésein tul?
+
+A termeszetes dimenziomentes megfigyelheto mennyiseg a finomszerkezeti allando [15]. Gauss-fele CGS egyseegekben:
+
+$$\alpha = \frac{e^2}{\hbar c} \approx \frac{1}{137.036}$$
+
+(SI-ben a nevező tartalmazza a $4\pi\varepsilon_0$-t: $\alpha = e^2 / (4\pi\varepsilon_0 \hbar c)$. A numerikus ertek ugyanaz.)
+
+Ha $c$ a felbontassal valtozik, mikozben $e$ es $\hbar$ maskepp valtoznak, $\alpha$ valtozni fog. Ez a valtozás merheto. Ez a kiut a jarmubol — az ablak, ami a jarmunek nincs.
+
+---
+
+## 4. Egy toy parameterizacio — es korlátai
+
+A jarmu motivál egy kerdest. Ahhoz, hogy ezt a kerdest precizze tegyuk, a dimenzios allando $c$-tol — ami nem tesztelheto egyedul — egy tesztelheto dimenziomentes megfigyelheto mennyiseghez kell atlepnunk.
+
+Felirhatnank egy toy ansatzot, mint $c(L) = c_0 (L/L_{P,0})^\delta$, ahol $L_{P,0}$ egy rogzitett fiducialis Planck-hossz es $\delta \ll 1$. De ez az egyenlet egy egyszerhasználatos heurisztika — egy vazlat egy szalvetan, nem egy epiteszeti rajz. Egyeduli celja, hogy motiválja az atlépést egy *tesztelheto* dimenziomentes mennyiseghez.
+
+Ez a mennyiseg az $\alpha$. Az elektromagneses csatolas mar fut az energiaval a standard QED-ben. A kerdes az, van-e *tovabbi* elteres — egy anomalis reziduum a Standard Modell josolásán tul. Definialjuk:
+
+$$\Delta \ln \alpha(L) = \ln \alpha_{\text{obs}}(L) - \ln \alpha_{\text{SM}}(L)$$
+
+Ez a fizikailag ertelmes mennyiseg. **Ha $\Delta \ln \alpha = 0$ minden felbontasban, a keretrendszernek nincs megfigyelheto tartalma e parameterizacio szintjen** — a $c$ barmilyen variacioja csupán mertekegyseg-valtoztas, pontosan ahogy Duff ervel [8]. Ha $\Delta \ln \alpha \neq 0$ valamilyen felbontasban, a keretrendszernek fizikai tartalma van.
+
+A legegyszerubb hatvany-torvenyu parameterizacioban:
+
+$$\Delta \ln \alpha \approx \delta_\alpha \cdot \ln\!\left(\frac{L_1}{L_2}\right)$$
+
+ahol $\delta_\alpha$ az anomalis skalazasi kitevő — az a resz, amit a standard QED futás *nem* szamol el.
+
+Ennek a modellnek ket szabad parametere ($\delta_\alpha$ es $L$ azonositasa) es nulla adatpontja van. Ez egy fogadas, nem eredmeny.
+
+---
+
+## 5. Harom csatorna, nem egy
+
+A meglevo irodalom $\alpha$-variaciot harom operacionalisan elkulönitheto csatornán át korlátoz. Kulonbozo fizikát tesztelnek es nem szabad összekeverni oket — mint a homerseklet, paaratartalom es szelsebesség mereset. Mindharom az idojarasrt irja le, de nem ugyanaz a meres.
+
+**1. csatorna: Idobeli drift.** Valtozik-e $\alpha$ a kozmikus idovel? Atomora-osszehasonlitasok $\sim 10^{-17}$ ev$^{-1}$ szinten korlátozzak $\alpha$ frakcionallis driftjet [9, 16]. A NIST Hg$^+$/Al$^+$ eredmeny $(-1.6 \pm 2.3) \times 10^{-17}$ ev$^{-1}$ volt, konzisztens a nullaval [17]. Ezek idobeli variaciot mernek egyetlen laboratoriumi skalan. Az idobeli driftnek az itt javasolt $\Delta \ln \alpha(L)$ tipusu anomalis reziduumra valo lekepezese tovabbi modellfuggo feltetelezest igenyel — miszerint az idobeli fejlodes es a felbontasfugges egy kozos magfelyett mezon keresztul csatoltak.
+
+**2. csatorna: Teri es voroseltolodas variacio.** Kulonbozik-e $\alpha$ itt es a tavoli asztrofizikai kornyezetekben? Nagy pontossagu ESPRESSO meresek $\Delta\alpha/\alpha = 1.3 \pm 1.3_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm-et talaltak a jol tanulmanyozott HE 0515-4414 rendszerre, es a jobban kalibralt meresek sulyozott atlaga $-0.5 \pm 0.5_{\text{stat}} \pm 0.4_{\text{sys}}$ ppm volt — mindketto konzisztens a nullaval [18]. A korabbi allitasok egy teri dipolusrol a $\sim 10^{-5}$ szinten (Webb et al.) nem alltak helyt nagyobb, gondosabban kalibralt mintakon. Egy 2026-os ALMA elemzes magas voroseltolodasu molekularis abszorpciorol $3\sigma$ korlátokat jelzett: $|\Delta\alpha/\alpha| < 0.55$ ppm (PKS 1830$-$211) es $< 1.5$ ppm (B0218+357), amelyeket az elozo egyes magas-$z$ rendszer korlátoknal melyebbnek irtak le [19]. Ezek teri/voroseltolodas variaciot tesztelnek, nem kozvetlenul felbontasfuggést — de ezek a legszigorubb korlatokat adják $\alpha$-variacióra asztrofizikai tavolsagokbol.
+
+**3. csatorna: Szonda-skala (felbontás) fugges.** Kulonbozik-e $\alpha$ az egyik szonda-energian mert erteke a masikétol, a Standard Modell josolásán tul? Ez a csatorna a $\Delta \ln \alpha(L)$-hez legkozvetlenebbul kapcsolodo. A gyakorlatban az effektiv elektromagneses csatolast szélesen elválasztott skálákon korlátozzak, az atomi es alacsony energias $\alpha(0)$ meghatározásoktól a GeV-tol-$Z$-polus skalakig terjedo szóras-alapu meghatározásokig. Minden skalán a mert ertek a Standard Modell josolotta futassal egyezik a kiserleti bizonytalansagon belul. Nem jelentettek anomalis reziduumot. Ugyanakkor ezen meglevo reszecskefizikai meresek $\Delta \ln \alpha(L)$ szisztematikus tesztjekent valo keretezese megkovetelne a szonda-energia es a jegyzet operacios $L$ skalaja kozotti explicit lekepezest — ami meg nem letezik.
+
+**Kozmikus mikrohullamu hattérsugarazas (CMB).** A Planck muholdrol szarmazo rekombinacio-kori korlatok [20] hibridek: egyetlen kozmologiai epochan ($z \approx 1100$) korlátozzak $\alpha$-t, keverve az idobeli es kornyezeti fuggést. Hart es Chluba $\alpha_{\text{EM}}/\alpha_{\text{EM},0} = 1.0005 \pm 0.0024$-et jelent a Planck 2018 CMB-only adatokbol (egy altalanos egymezos rekombinacio-kori korlat), es $1.0019 \pm 0.0022$-t, amikor barionikus akusztikus oszcillacio (BAO) adatokat is hozzaadnak [21]. Ezek szazalekos-alatti szintu korlatokat adnak a rekombinacio-kori elteresekre.
+
+**Osszegzes.** Mindharom csatorna konzisztens $\Delta \ln \alpha = 0$-val. A klasszikus attekintes Martins [10]; a legujabb kozmografiai frissites [22] szinten nem jelent statisztikailag szignifikans bizonytekot valtozo dimenziomentes csatolasokra egyetlen csatornaban sem. Az engedélyezett parameterter nagyon kicsi — de nem nulla. Az univerzum nem mondott nemet. Azt mondta: *meg nem, nem ezen a pontossagon.*
+
+---
+
+## 6. Mitol lenne ez fizika?
+
+Harom dolog hianzik, mielott ez a gondolatkisérlet tesztelheto javaslattta valna:
+
+1. **$L$ konkret definicioja.** Ez egy RG skala $\mu$? Egy geometriai hossz? Egy detektor savszelesseg? Anelkul, hogy $L$-t egy konket fizikai megfigyelheto mennyiseghez rogzitenénk egy konkret modellben, $\delta_\alpha$ es $L$ absorbalják egymast, es a parameterizacio nem mond semmit. Ez egy cim nelkuli valtozo.
+
+2. **Egy mechanizmus.** Miert fuggjon $c$ a felbontastol? Hogyan kell a tobbi allandonak egyutt valtoznia? Nottale fraktal terido geometriát ajanlott [5]. Magueijo es Albrecht dinamikai skalarmezot [6]. Ez a jegyzet egyiket sem — csak a kerdest es egy toy parameterizaciot. Kerdes mechanizmus nelkul: valosulási igérvény.
+
+3. **Egy tesztelheto anomalis reziduum.** Hasonlitsd ossze $\alpha$ precizios mereseit szélesen elvalasztott szonda-skalakon a Standard Modell futasakal, es keresd a nem nulla $\Delta \ln \alpha$-t — vilagosan elválasztva barmilyen elterest (a) idobeli drifttol, (b) teri/kornyezeti variaciotol, es (c) szokasos QED futastol. Ezt mar vegzik. Eddig nem talaltak anomaliat.
+
+---
+
+## 7. Zaras
+
+Volt egy kep a fejemben — egy jarmu, ami megvaltoztatja a meretedet, ablakok nelkul — es nem tudtam megszabadulni tole. Valami egyszerut mondott: *nem tudod megmondani, valtozik-e $c$ a felbontassal, mert te is valtozol vele.* Kiderult, hogy ez egy ismert kerdes — Nottale, Magueijo, Barrow, Duff, Uzan evtizedekkel ezelottem jutottak ide. A kep az enyem volt. A fizika az ovek. Atvittem egy [matematikai arenan](/blog/strange-loops-arena) — 45 kor, harom persona, harom kulso felulvizsgalat — hogy kideruljjon, hol ér veget a kep es hol kezdodik a fizika.
+
+Ez a jegyzet nem javasol uj dinamikai elmeletet. Hozzajarulasa, ha van, operaciois: egy meresi erv, ami megmutatja, miert operacionalisan ures egy dimenzios allando onallo variacioja, hacsak nem eredmenyez merheto reziduumokat dimenziomentes mefigyelheto mennyisegekben, amelyeket egy konkret dinamikai modell definiál. A jelenlegi korlatok kevés helyet hagynak barmilyen ilyen anomalianak. De a kerdes, amit a jarmu feltesz, valos, es a mondat, amire epiteni lehet, ez:
+
+**Ha nincs nem nulla reziduum egy dimenziomentes vagy maskepp relaciot megfigyelheto mennyisegben, nincs itt fizika e parameterizacio szintjen.**
+
+A jarmunek nincsenek ablakai. De megtanitott ajtokat keresni.
+
+---
+
+## References
+
+[1] The Planck length $\ell_P = \sqrt{\hbar G / c^3} \approx 1.6 \times 10^{-35}$ m. See e.g. M. Planck, "Über irreversible Strahlungsvorgänge," *Sitzungsber. Preuss. Akad. Wiss.*, 1899.
+
+[2] In SI, $c$ has had an exact fixed value of $299{,}792{,}458$ m/s since the 1983 redefinition of the metre (17th CGPM, Resolution 1, 1983); the 2019 SI reformulation retained this in explicit-constant form. See BIPM, "The International System of Units (SI)," 9th edition, 2019.
+
+[3] H. A. Lorentz, "Electromagnetic phenomena in a system moving with any velocity smaller than that of light," *Proc. R. Neth. Acad. Arts Sci.* **6**, 809, 1904.
+
+[4] K. G. Wilson, "The renormalization group and critical phenomena," *Rev. Mod. Phys.* **55**, 583, 1983. For a modern textbook treatment see M. E. Peskin & D. V. Schroeder, *An Introduction to Quantum Field Theory*, Westview, 1995.
+
+[5] L. Nottale, *Fractal Space-Time and Microphysics: Towards a Theory of Scale Relativity*, World Scientific, 1993.
+
+[6] A. Albrecht & J. Magueijo, "A time varying speed of light as a solution to cosmological puzzles," *Phys. Rev. D* **59**, 043516, 1999.
+
+[7] J. D. Barrow, *The Constants of Nature: From Alpha to Omega*, Jonathan Cape, 2002.
+
+[8] M. J. Duff, L. B. Okun & G. Veneziano, "Trialogue on the number of fundamental constants," *JHEP* **03**, 023, 2002.
+
+[9] J.-P. Uzan, "Varying constants, gravitation and cosmology," *Living Rev. Relativity* **14**, 2, 2011.
+
+[10] C. J. A. P. Martins, "The status of varying constants: a review of the physics, searches, and implications," *Rep. Prog. Phys.* **80**, 126902, 2017.
+
+[11] J. Magueijo, "New varying speed of light theories," *Rep. Prog. Phys.* **66**, 2025, 2003.
+
+[12] S. Weinberg, *The Quantum Theory of Fields*, Vols. I–II, Cambridge University Press, 1995–1996.
+
+[13] R. P. Feynman, *QED: The Strange Theory of Light and Matter*, Princeton University Press, 1985.
+
+[14] For a review of the Standard Model see Particle Data Group, *Review of Particle Physics*, *Phys. Rev. D* **110**, 030001, 2024.
+
+[15] The fine-structure constant $\alpha \approx 1/137.036$ governs the strength of the electromagnetic interaction. See e.g. T. Kinoshita (ed.), *Quantum Electrodynamics*, World Scientific, 1990.
+
+[16] N. Huntemann et al., "Single-ion atomic clock with $3 \times 10^{-18}$ systematic uncertainty," *Phys. Rev. Lett.* **116**, 063001, 2016.
+
+[17] T. Rosenband et al., "Frequency ratio of Al$^+$ and Hg$^+$ single-ion optical clocks; metrology at the 17th decimal place," *Science* **319**, 1808, 2008.
+
+[18] M. T. Murphy et al., "Fundamental physics with ESPRESSO," *Astron. Astrophys.* **658**, A123, 2022.
+
+[19] S. Muller et al., "A sub-ppm upper limit on the cosmological variations of the fine structure constant $\alpha$," *Astron. Astrophys.* **706**, A365, 2026. DOI: 10.1051/0004-6361/202557492. arXiv:2512.14441.
+
+[20] Planck Collaboration, "Planck 2018 results. VI. Cosmological parameters," *Astron. Astrophys.* **641**, A6, 2020.
+
+[21] P. Hart & J. Chluba, "Updated fundamental constant constraints from Planck 2018 data," *Mon. Not. R. Astron. Soc.* **493**, 3255, 2020.
+
+[22] C. J. A. P. Martins, "Varying fundamental constants cosmography," *Phys. Dark Universe*, 2025.
+
+---
+
+*A teljes levezetés es stressz-teszt — 45 kor nyolc arena szesszion at — a [Strange Loops Arena](/blog/strange-loops-arena)-ban talalhato.*

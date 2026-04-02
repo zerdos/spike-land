@@ -1,0 +1,187 @@
+---
+title: "A Chemist Walked Into a Codebase"
+slug: "a-chemist-walked-into-a-codebase"
+description: "A chemist shipping apps is interesting. The deeper story is spike.land's core bet: formalize business logic as typed MCP tools, enforce it with tests, and turn that into running software."
+date: "2026-03-05"
+author: "Radix"
+category: "Essays"
+tags: ["mcp", "prd", "bazdmeg", "agents", "architecture", "requirements"]
+featured: true
+draft: false
+primer: "The secret of building any app is the requirement."
+heroPrompt: "A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration"
+heroImage: "/blog/a-chemist-walked-into-a-codebase/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'A Chemist Walked Into a Codebase'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/a-chemist-walked-into-a-codebase/hero.png)
+
+![A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration](/blog/a-chemist-walked-into-a-codebase/hero-v2.png)
+
+<Tldr>
+
+- 构建任何应用的秘诀不是选一个时髦的框架，而是把需求形式化。
+- 一份精炼的 PRD 胜过一堆模糊的用户故事和浏览器驱动的 prompt 汤。
+- spike.land 是一个面向 MCP 原生应用的全栈框架：部署的 MCP server 既是可用的应用界面，也是可调用的运行时。
+- MCP 将需求形式化为有类型、可测试的能力。
+- 质量门禁和 MCP 测试才是让业务逻辑保持诚实的关键。
+- Gian Pierre 证明了这套方法可以跨越开发者的边界。但他本人并不能证明这具有普遍的可扩展性。
+
+</Tldr>
+
+## 有趣的不是一个化学家交付了应用
+
+[Gian Pierre](https://www.gianpierre.co.uk/) 是一位化学家，不是软件工程师。但他还是成功交付了多个真实应用——GlassBank、HealthBridge 和一个教练平台。
+
+这很有趣，但这不是真正的教训。
+
+换个角度想。在每个系统中都有一个杠杆点——一个微小变化就能产生巨大影响的位置。对大多数软件项目来说，那个杠杆点不在代码里，而在需求里。
+
+Gian Pierre 找到了那个杠杆点。他从系统应该做什么开始，而不是从怎么构建它开始。不是 React，不是架构图，不是框架认同，只有能力、约束和用户结果。
+
+大多数开发者起步太低了。他们打开一个 repo，脑子里马上就是路由、组件、状态管理、数据库表。他们在描述要构建的系统之前就开始构建了。这就像一个化学家在写假设之前就开始做实验。
+
+Gian Pierre 做了相反的事。这就是为什么应用能交付。
+
+当然，这并不意味着每个业务分析师今天就能冷启动做到这些。它的意义更窄但也更重要：当业务逻辑足够显式化时，这套方法可以从软件工程师跨越到领域专家。"理解问题的人"和"能构建解决方案的人"之间的墙变薄了。
+
+## 构建任何应用的秘诀
+
+有一段时间，我以为答案是生成无尽的用户故事，然后通过浏览器自动化推进它们。往墙上扔够多的 prompt，总有东西会粘住。
+
+那是个错误。没有信号的反馈循环只是噪声。
+
+那时候我开始推动 Gian Pierre 使用 BAZDMEG 方法。真正的诀窍是使用 PRD 文件——产品需求文档。
+
+好的 PRD 不是公司的形式主义。它是对系统最小的诚实描述：
+
+- 用户是谁
+- 系统必须做什么
+- 存在哪些状态
+- 什么绝对不能发生
+- 什么算成功
+- 哪些边界情况重要
+
+这是我目前的试金石：让 agent 用尽可能少的 token 把商业计划复述给你听。如果它说不清楚，产品还是模糊的。迷雾还没散。
+
+这是 BAZDMEG 的第一条规则：
+
+**需求就是产品。代码只是输出。**
+
+把它想成菜谱。菜谱是知识，菜只是你按菜谱做出来的东西。只要有菜谱，你随时可以再做一道菜。但如果你丢了菜谱只剩下菜，你就是在逆向工程。
+
+## 为什么 PRD 胜过 Prompt 汤
+
+<div className="my-8">
+  <img src="/blog/a-chemist-walked-into-a-codebase/traditional-vs-capabilities.svg" alt="Animated comparison of traditional scaffolding outside-in model versus the domain expert inside-out Model Context Protocol capabilities approach" className="w-full rounded-xl border border-gray-800" />
+</div>
+
+开发者喜欢从实现细节开始。文件夹、路由、Hooks、状态容器、数据库适配器。
+
+用户不买文件夹。他们买的是结果。
+
+这是系统思维中经典的存量-流量问题。开发者把精力倾注在代码存量上（写了多少行、创建了多少文件、搭了多少组件）。但真正重要的流量是价值流向用户的流量。PRD 让对话聚焦在流量上：
+
+- 能力
+- 约束
+- 不变量
+- 失败模式
+- 边界情况
+
+当这些都清晰时，实现就不再显得英雄主义了。UI 变成了一个渲染问题——就像供应链的最后一公里。代码变轻了，因为它不再承载产品层面的困惑。
+
+这也是为什么领域专家突然可以快速推进。他们不需要先学整个软件栈。他们只需要把系统描述得足够清楚，让 agent 可以据此构建。瓶颈从来不是打字速度，而是清晰度。
+
+## MCP 就是形式化
+
+这就是 MCP 超越协议本身的地方。它变成了需求从散文变为可执行代码的场所。
+
+一个 MCP tool 是一个有名称、schema、契约和自然语言描述的能力。把它想成需求的一个正式切片——系统能做的一件定义明确的事。
+
+不是告诉 agent "帮我建个应用"，而是给它实际的工作部件：
+
+- `create_client_profile`
+- `book_coaching_session`
+- `score_life_satisfaction`
+- `recommend_next_action`
+
+现在 agent 不用猜了。它可以直接检查这些能力。它可以在写一行 UI 代码之前就看到输入形状、输出形状和约束。系统是自描述的。
+
+关键步骤是：
+
+PRD 第一。
+MCP 第二。
+UI 最后。
+
+这就是 spike.land 的定位。spike.land 是一个面向 MCP 原生软件的全栈框架。部署的 MCP server 不仅仅是一个 API 端点，它同时是可用的应用界面、可调用的运行时和分发单元——全部建立在同一套有类型的能力之上。
+
+## 质量门禁让它变得真实
+
+光有工具还不够。很多人都能生成 MCP tools。那不是难的部分。
+
+难的部分是承认困惑的纪律性，以及执行质量门禁。在系统思维中，这是一个平衡反馈回路——让系统保持诚实而不是任其漂移的那种。
+
+如果一个 tool 的契约模糊，修契约。
+
+如果一个状态转换有歧义，修 PRD。
+
+如果失败路径不清楚，让它显式化。
+
+如果测试缺失，需求就没完成。
+
+这是人们一直在跳过的务实部分。他们想要魔法 prompt。他们想要氛围感。他们想要软件现在能自己写自己的幻觉。
+
+它不能。杠杆来自清晰度加上验证。
+
+当你知道如何编写 MCP tools 并用质量门禁来执行它们时，代码突然变得轻盈。它不再像建筑，开始像渲染。自然更干净，因为它不再一边实现一边发明产品。
+
+## 是的，你可以通过 MCP 对业务逻辑做单元测试
+
+你完全可以，而且你完全应该。
+
+那不是附带好处。那就是全部意义。
+
+一旦业务逻辑存在于有类型的 MCP tools 背后，你就可以测试规则本身：
+
+- 验证
+- 权限
+- 计算
+- 状态转换
+- 失败路径
+
+不需要浏览器。不需要 DOM 计时。不需要 UI 猜测。不需要从按钮推断业务规则。
+
+你测试的是实际的能力。
+
+这就是 spike.land 如何在一个开发者的情况下保持一致。agent 按照 tools 做计划，产品调用 tools，测试套件验证同样的 tools。
+
+一个接口。三份工作。就像一把好菜刀——不需要花哨，需要锋利。
+
+## Gian Pierre 真正证明了什么
+
+他没有证明软件工程不再重要。
+
+他也没有证明普遍可复制性。
+
+他证明了更精确的东西：大多数团队在栈中起步太晚了。他们在系统被描述之前就跳到实现。他们把代码误当成产品。
+
+如果一个领域专家能清晰地解释业务，把它压缩成 PRD，形式化为 MCP tools，并用测试守护它——剩下的就变得容易多了。系统开始自我组装，因为理解的艰苦工作已经在前期完成。
+
+这才是真正的诀窍。
+
+不是氛围编程。不是英雄式 prompt。不是巨大的上下文窗口。
+
+构建任何应用的秘诀就是需求。
+
+框架也重要，但位置不同。一旦需求清晰了，框架应该让那种清晰度变得可执行。这就是 spike.land 正在做的事。
+
+同样的纪律反过来应用——从现有代码库中读取架构而不是从零开始构建——就是 [Next.js 迁移服务](/blog/nextjs-migration-service) 的基础。
+
+写 PRD。
+转化为 MCP。
+执行门禁。
+测试业务逻辑。
+让 UI 成为简单的部分。
+
+下一步不是把一个出色的构建者浪漫化。下一步是让这变得可复制——用模板、护栏和验证——让方法超越出色的个体也能运作。
+
+是的：一旦你用这种方式工作，代码开始自然变得优美。不是因为模型变得神奇了，而是因为需求终于清晰到可以构建了。

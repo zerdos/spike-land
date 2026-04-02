@@ -1,0 +1,187 @@
+---
+title: "A Chemist Walked Into a Codebase"
+slug: "a-chemist-walked-into-a-codebase"
+description: "A chemist shipping apps is interesting. The deeper story is spike.land's core bet: formalize business logic as typed MCP tools, enforce it with tests, and turn that into running software."
+date: "2026-03-05"
+author: "Radix"
+category: "Essays"
+tags: ["mcp", "prd", "bazdmeg", "agents", "architecture", "requirements"]
+featured: true
+draft: false
+primer: "The secret of building any app is the requirement."
+heroPrompt: "A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration"
+heroImage: "/blog/a-chemist-walked-into-a-codebase/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'A Chemist Walked Into a Codebase'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/a-chemist-walked-into-a-codebase/hero.png)
+
+![A chemist in a lab coat looking at glowing digital code floating in the air, cinematic lighting, conceptual illustration](/blog/a-chemist-walked-into-a-codebase/hero-v2.png)
+
+<Tldr>
+
+- Il segreto per costruire qualsiasi app non e scegliere un framework alla moda. E formalizzare il requisito.
+- Un PRD compatto batte una pila di user story vaghe e prompt soup da browser.
+- spike.land e un framework full-stack per app MCP-native: il server MCP deployato diventa una superficie applicativa utilizzabile e un runtime invocabile.
+- MCP formalizza il requisito in capability tipizzate e testabili.
+- I quality gate e i test MCP sono cio che mantiene onesta la business logic.
+- Gian Pierre e la prova che il metodo puo oltrepassare la barriera dello sviluppatore. Non e, di per se, la prova della scalabilita universale.
+
+</Tldr>
+
+## La parte interessante non e che un chimico abbia pubblicato delle app
+
+[Gian Pierre](https://www.gianpierre.co.uk/) e un chimico. Non un ingegnere del software. Eppure e riuscito a pubblicare diverse app reali — GlassBank, HealthBridge e una piattaforma di coaching.
+
+Questo e interessante, ma non e la vera lezione.
+
+Pensateci cosi. In ogni sistema c'e un punto di leva — il punto in cui un piccolo cambiamento produce un grande effetto. Per la maggior parte dei progetti software, quel punto di leva non e il codice. E il requisito.
+
+Gian Pierre ha trovato il punto di leva. E partito da cosa il sistema dovrebbe fare, non da come costruirlo. Non React. Non diagrammi architetturali. Non l'identita del framework. Solo capability, vincoli e risultati per l'utente.
+
+La maggior parte degli sviluppatori parte troppo in basso nello stack. Aprono una repo e pensano subito a routing, componenti, gestione dello stato, tabelle del database. Iniziano a costruire prima di aver descritto il sistema che stanno costruendo. E come se un chimico iniziasse un esperimento prima di scrivere l'ipotesi.
+
+Gian Pierre ha fatto il contrario. Ed e per questo che le app sono state pubblicate.
+
+Ora, questo non significa che qualsiasi business analyst possa farlo a freddo oggi. Cio che significa e piu ristretto e piu importante: quando la business logic e sufficientemente esplicita, il metodo puo oltrepassare il confine dagli ingegneri del software agli esperti di dominio. Il muro tra "persone che capiscono il problema" e "persone che possono costruire la soluzione" diventa piu sottile.
+
+## Il segreto per costruire qualsiasi app
+
+Per un po' ho pensato che la risposta fosse generare infinite user story e spingerle attraverso l'automazione del browser. Lanciare abbastanza prompt al muro e qualcosa avrebbe funzionato.
+
+E stato un errore. Un feedback loop senza segnale e solo rumore.
+
+E in quel momento che ho iniziato a spingere Gian Pierre verso il metodo BAZDMEG. Il vero trucco e lavorare con file PRD — Product Requirement Document.
+
+Un buon PRD non e teatro aziendale. E la descrizione onesta piu piccola del sistema:
+
+- chi e l'utente
+- cosa deve fare il sistema
+- quali stati esistono
+- cosa non deve mai accadere
+- cosa conta come successo
+- quali edge case contano
+
+Ecco il mio test di validazione attuale: chiedi all'agente di spiegarti il business plan nel minor numero possibile di token. Se non riesce a farlo chiaramente, il prodotto e ancora sfocato. La nebbia non si e ancora alzata.
+
+Questa e la prima regola del BAZDMEG:
+
+**I requisiti sono il prodotto. Il codice e solo l'output.**
+
+Pensatelo come una ricetta. La ricetta e la conoscenza. Il piatto e solo cio che succede quando la segui. Puoi sempre cucinare il piatto di nuovo se hai la ricetta. Ma se perdi la ricetta e hai solo il piatto, stai facendo reverse engineering.
+
+## Perche i PRD battono il prompt soup
+
+<div className="my-8">
+  <img src="/blog/a-chemist-walked-into-a-codebase/traditional-vs-capabilities.svg" alt="Animated comparison of traditional scaffolding outside-in model versus the domain expert inside-out Model Context Protocol capabilities approach" className="w-full rounded-xl border border-gray-800" />
+</div>
+
+Gli sviluppatori adorano partire dai dettagli implementativi. Cartelle. Route. Hook. Container di stato. Adattatori per database.
+
+Gli utenti non comprano cartelle. Comprano risultati.
+
+Questo e il classico problema stock-and-flow del pensiero sistemico. Gli sviluppatori versano sforzo nello stock di codice (righe scritte, file creati, componenti scaffoldati). Ma il flusso che conta e il flusso di valore verso l'utente. Un PRD mantiene la conversazione sul flusso:
+
+- capability
+- vincoli
+- invarianti
+- modalita di fallimento
+- edge case
+
+Quando questi sono chiari, l'implementazione smette di sembrare eroica. La UI diventa un problema di rendering — come l'ultimo miglio di una catena di approvvigionamento. Il codice diventa piu leggero perche non sta piu trasportando confusione di prodotto al suo interno.
+
+Questo e anche il motivo per cui un esperto di dominio puo improvvisamente muoversi veloce. Non ha bisogno di imparare prima l'intero stack software. Ha solo bisogno di spiegare il sistema con sufficiente chiarezza perche un agente possa costruirci sopra. Il collo di bottiglia non e mai stata la velocita di digitazione. E la chiarezza.
+
+## MCP e la formalizzazione
+
+Qui e dove MCP diventa piu di un protocollo. Diventa il luogo in cui i requisiti smettono di essere prosa e iniziano a essere eseguibili.
+
+Uno strumento MCP e una capability con un nome, uno schema, un contratto e una descrizione in linguaggio naturale. Pensatelo come una fetta formale del requisito — una cosa ben definita che il sistema puo fare.
+
+Invece di dire a un agente "costruisci la mia app", gli dai le parti funzionanti reali:
+
+- `create_client_profile`
+- `book_coaching_session`
+- `score_life_satisfaction`
+- `recommend_next_action`
+
+Ora l'agente non sta tirando a indovinare. Puo ispezionare direttamente le capability. Puo vedere le forme di input, le forme di output e i vincoli prima di scrivere una singola riga di codice UI. Il sistema si auto-descrive.
+
+Questa e la mossa chiave:
+
+PRD prima.
+MCP poi.
+UI per ultimo.
+
+Ed e qui che si inserisce spike.land. spike.land e un framework full-stack per software MCP-native. Un server MCP deployato non e solo un endpoint API. Diventa una superficie applicativa utilizzabile, un runtime invocabile e un'unita di distribuzione — tutto costruito sulle stesse capability tipizzate.
+
+## I quality gate sono cio che rende tutto reale
+
+Gli strumenti da soli non bastano. Molte persone possono generare strumenti MCP. Non e la parte difficile.
+
+La parte difficile e la disciplina di ammettere la confusione presto e applicare quality gate. Nel pensiero sistemico, questo e un feedback loop bilanciante — il tipo che mantiene un sistema onesto invece di lasciarlo deviare.
+
+Se un contratto di strumento e vago, correggi il contratto.
+
+Se una transizione di stato e ambigua, correggi il PRD.
+
+Se il percorso di fallimento non e chiaro, rendilo esplicito.
+
+Se il test manca, il requisito non e finito.
+
+Questa e la parte pragmatica che le persone continuano a saltare. Vogliono prompt magici. Vogliono la vibe. Vogliono l'illusione che il software ora si scriva da solo.
+
+Non e cosi. La leva viene dalla chiarezza piu la verifica.
+
+Quando sai come scrivere strumenti MCP e applicarli con quality gate, il codice diventa improvvisamente senza peso. Smette di sembrare una costruzione e inizia a sembrare rendering. Naturalmente piu pulito, perche non sta piu cercando di inventare il prodotto mentre lo implementa.
+
+## Si, puoi fare unit test della business logic attraverso gli MCP
+
+Assolutamente si, e assolutamente dovresti.
+
+Non e un beneficio collaterale. E l'intero punto.
+
+Una volta che la business logic vive dietro strumenti MCP tipizzati, puoi testare la regola stessa:
+
+- validazione
+- permessi
+- calcoli
+- transizioni di stato
+- percorsi di fallimento
+
+Nessun browser. Nessun timing del DOM. Nessun guesswork sulla UI. Nessun tentativo di inferire regole di business dai pulsanti.
+
+Testi la capability effettiva.
+
+Ecco come spike.land resta coerente con un singolo sviluppatore. L'agente pianifica contro gli strumenti, il prodotto chiama gli strumenti e la suite di test verifica gli stessi strumenti.
+
+Un'interfaccia. Tre lavori. Come un buon coltello da cucina — non ha bisogno di essere elegante. Ha bisogno di essere affilato.
+
+## Cosa ha davvero dimostrato Gian Pierre
+
+Non ha dimostrato che l'ingegneria del software non conta piu.
+
+Non ha dimostrato neanche la ripetibilita universale.
+
+Ha dimostrato qualcosa di piu preciso: la maggior parte dei team parte troppo tardi nello stack. Saltano all'implementazione prima che il sistema sia descritto. Confondono il codice con il prodotto.
+
+Se un esperto di dominio puo spiegare chiaramente il business, comprimerlo in un PRD, formalizzarlo come strumenti MCP e proteggerlo con test — il resto diventa molto piu facile. Il sistema inizia ad assemblarsi da solo, perche il lavoro difficile di comprensione e stato fatto in anticipo.
+
+Questo e il vero trucco.
+
+Non vibe coding. Non prompt eroici. Non finestre di contesto gigantesche.
+
+Il segreto per costruire qualsiasi app e il requisito.
+
+Anche il framework conta, ma in un posto diverso. Una volta che il requisito e chiaro, il framework dovrebbe rendere eseguibile quella chiarezza. Questo e il lavoro che spike.land sta cercando di fare.
+
+La stessa disciplina applicata nella direzione opposta — leggere l'architettura da un codebase esistente invece di costruire da zero — e la base per il [servizio di migrazione Next.js](/blog/nextjs-migration-service).
+
+Scrivi il PRD.
+Trasformalo in MCP.
+Applica i gate.
+Testa la business logic.
+Lascia che la UI sia la parte facile.
+
+Il prossimo passo non e romanticizzare un singolo costruttore eccezionale. Il prossimo passo e rendere tutto questo ripetibile — con template, guardrail e verifica — cosi che il metodo funzioni oltre gli individui eccezionali.
+
+E si: una volta che lavori cosi, il codice inizia a sembrare naturalmente bello. Non perche il modello e diventato magico, ma perche il requisito e finalmente diventato abbastanza chiaro da costruire.

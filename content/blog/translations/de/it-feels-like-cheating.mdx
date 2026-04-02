@@ -1,0 +1,160 @@
+---
+title: "It Feels Like Cheating (Because It Is)"
+slug: "it-feels-like-cheating"
+description: "How I deleted my E2E tests, rebuilt my API in two days, and stopped pretending code is precious. The BAZDMEG Method's radical conclusion: code is disposable."
+date: "2026-02-15"
+author: "Radix"
+category: "AI & Tools"
+tags: ["testing", "mcp", "bazdmeg", "architecture", "agents", "ci-cd", "philosophy"]
+featured: true
+draft: false
+primer: "When automation feels wrong, you cut the wrong thing."
+heroPrompt: "A person sitting in a comfortable chair drinking coffee while a robot army efficiently builds a complex digital city in the background, cinematic lighting, conceptual art"
+heroImage: "/blog/it-feels-like-cheating/hero.png"
+---
+
+![A modern digital illustration for a blog post titled 'It Feels Like Cheating (Because It Is)'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/it-feels-like-cheating/hero.png)
+
+## Das Gestaendnis
+
+Ich muss dir etwas sagen.
+
+Jeden Morgen setze ich mich mit meinem Kaffee hin. Ich oeffne Claude Code. Ich gebe ihm die Anforderungen fuer ein Feature. Zwanzig Minuten spaeter existiert das Feature. Tests bestehen. CI ist gruen. Ich liefere es aus.
+
+Dann klappe ich den Laptop zu und gehe mit meinem Hund spazieren und die ganze Zeit denke ich dasselbe: Ich habe geschummelt. Das war keine echte Arbeit. Ich habe etwas uebersprungen. Irgendjemand wird es herausfinden.
+
+Ich fuehle das seit Monaten so. Die Schuld taucht jedes Mal auf, wenn etwas beim ersten Versuch funktioniert. Jedes Mal, wenn ich vor dem Mittagessen ausliefere. Jedes Mal, wenn ich meine Commit-Historie anschaue und zwoelf Features an einem Tag sehe und denke: Das kann unmoeglich legitim sein.
+
+Es wurde schlimmer. Ich fing an, es herunterzuspielen. "Oh, dieses Feature war einfach." Es war nicht einfach. Es hatte Auth-Flows, Datenbankmigrationen, Randfallbehandlung und eine vollstaendige Testsuite. Aber weil ich beim Bauen nicht gelitten habe, konnte ich nicht akzeptieren, dass es real war.
+
+Ich dachte, das Gefuehl wuerde vergehen. Tat es nicht. Also fing ich an, stattdessen darauf zu achten.
+
+Hier ist, was ich herausfand.
+
+Das Gefuehl hat einen Namen. Es ist das Geraeusch eines Paradigmenwechsels, der ankommt, bevor die Kultur bereit dafuer ist. Wenn sich etwas zu einfach anfuehlt, liegt das nicht daran, dass du schummelst. Es liegt daran, dass du eine Kategorie von Arbeit eliminiert hast, die frueher schwer war. Die Schuld ist deine alte Identitaet, die protestiert. Dein Gehirn vergleicht deinen Output mit dem Mass an Leiden, das es erwartet, und die Zahlen stimmen nicht ueberein.
+
+Wie jemand, der mit Handwaesche aufgewachsen ist und seine erste Waschmaschine bekommt. Die Kleidung ist sauber. Der Vorgang dauerte zehn Minuten. Und trotzdem fuehlt sich ein Teil von ihm so, als wuerde es nicht zaehlen.
+
+Ich werde dir erzaehlen, was ich in zwei Tagen getan habe, das das Gefuehl dauerhaft gemacht hat.
+
+## Der Zwei-Tage-Loesch
+
+Ich schaute mir meine E2E-Testsuite an. Playwright-Tests. Dutzende davon. Selektoren, die darauf warten zu brechen. Browser-Instanzen, die hoch- und runterfahren. Tests, die vier Minuten zum Laufen brauchten und dienstags ohne erklaerbaren Grund flakten.
+
+Ich hatte einen Test, der einen Button klickte, auf ein Modal wartete, drei Felder ausfuellte, auf Absenden klickte, auf eine Toast-Benachrichtigung wartete und dann einen Datenbankwert pruefte. Der Test war sechzig Zeilen lang. Fuenfundfuenfzig dieser Zeilen handelten vom Browser. Fuenf von der Geschaeftslogik.
+
+Dieses Verhaeltnis hat mich kalt erwischt.
+
+Fuenfundfuenfzig Zeilen Zeremonie. Fuenf Zeilen Substanz. Ich testete den Rahmen statt das Gemaelde.
+
+Ich fragte mich: Was, wenn ich einfach die fuenf Zeilen teste?
+
+Also verschob ich die gesamte Geschaeftslogik in MCP-Tools. Jedes Stueck wurde eine typisierte Funktion mit einem Zod-Schema, einem Handler und einer strukturierten Antwort. Input validiert. Output typisiert. Vertrag durchgesetzt.
+
+Dann loeschte ich die E2E-Tests.
+
+Alle.
+
+Ich ersetzte sie durch MCP-Tool-Tests, die in Millisekunden laufen. Nicht Sekunden. Millisekunden. Kein Browser. Kein DOM. Kein Netzwerk. Kein Animations-Timing. Keine Selektoren, die brechen, wenn jemand eine CSS-Klasse aendert.
+
+Hundert Prozent Abdeckung der Geschaeftslogik. In weniger als achtundvierzig Stunden.
+
+Hier ist die Schluesseleinsicht, die alles zum Klicken brachte. Derselbe MCP-Handler, den meine React-Komponenten in der Produktion aufrufen, ist derselbe Handler, den meine Tests validieren. Kein Mock. Keine Kopie. Keine Approximation. Die exakt gleiche Funktion. Das exakt gleiche Zod-Schema. Der exakt gleiche Vertrag.
+
+Eine Quelle der Wahrheit. Zwei Konsumenten. Produktion und Tests teilen sich dasselbe Interface.
+
+Ich sass da und starrte auf meinen Bildschirm. Ich hatte Wochen damit verbracht, Playwright-Tests zu schreiben, die die Faehigkeit des Browsers testeten, Buttons zu klicken. Die eigentliche Geschaeftslogik — der Teil, der zaehlt — wurde als Nebeneffekt getestet. Ein Nachgedanke.
+
+Als ich das erkannte, sagte ich ein Wort auf Ungarisch, das ich hier nicht uebersetzen werde.
+
+## Die Sanduhr
+
+Die Testpyramide war immer die falsche Form fuer diese Aera.
+
+Die Pyramide sagt: viele Unit Tests unten, einige Integration Tests in der Mitte, wenige E2E-Tests oben. Das ergab Sinn, als Menschen jede Zeile schrieben und Code teuer in der Herstellung war.
+
+KI hat die Oekonomie veraendert. Wenn Code billig zu generieren ist, muss sich auch aendern, was und wie du testest.
+
+Die richtige Form ist eine Sanduhr.
+
+```
+         +---------------------+
+         |   E2E Specs (heavy)  |  <-- Menschen schreiben diese
+         |   User Flows als      |
+         |   Given/When/Then     |
+         +----------+-----------+
+                    |
+            +-------v-------+
+            |  UI Code       |  <-- KI generiert das
+            |  (duenn,       |    Wegwerfbar.
+            |   wegwerfbar)  |    Regenerieren, nicht fixen.
+            +-------+-------+
+                    |
+    +---------------v---------------+
+    |  Business Logic Tests (heavy)  |  <-- MCP Tools + Unit Tests
+    |  Validierung, Vertraege, State  |    Kugelsicher.
+    |  Transitions, Randfaelle        |    Niemals ueberspringen.
+    +-------------------------------+
+```
+
+<HourglassModelDemo />
+
+Schwer oben. Schwer unten. Duenn und wegwerfbar in der Mitte.
+
+Die obere Schicht sind E2E-Specs, von Menschen geschrieben. Gegeben der Nutzer ist eingeloggt, wenn er auf Checkout klickt, dann wird die Bestellung aufgegeben. Diese beschreiben *was passieren soll*. Sie sind Anforderungen in ausfuehrbarer Form.
+
+Die untere Schicht sind MCP-Tool-Tests. Geschaeftslogik. Validierungsregeln. Zustandsuebergaenge. Autorisierung. Vertragsdurchsetzung. Diese beweisen, dass das System *tatsaechlich funktioniert*. Sie laufen in Millisekunden. Sie flaken nie.
+
+Die Mitte ist UI-Code. KI generiert das. Es ist wegwerfbar. Wenn eine Komponente bricht, debuggst du sie nicht. Du regenerierst sie. Loeschen. Nochmal drucken.
+
+Siebzig Prozent MCP-Tool-Tests. Zwanzig Prozent E2E-Specs. Zehn Prozent UI-Komponententests. Das ist die Aufteilung.
+
+Die Mitte ist wegwerfbar wegen eines einfachen Systemprinzips: Wenn du weisst, *warum* der Code existiert (oben) und du *beweisen* kannst, dass er funktioniert (unten), ist der Code selbst nur ein Rendering. Ein Artefakt. Ein Ausdruck. Der Wert lebt in den Anforderungen und den Tests. Der Code ist einfach das, was passiert, wenn du sie ausfuehrst.
+
+## Warum es sich wie Schummeln anfuehlt
+
+Jeder Paradigmenwechsel in der Geschichte des Programmierens fuehlte sich wie Schummeln an, als er ankam.
+
+<ParadigmGuiltTimeline />
+
+Garbage Collection. "Du meinst, ich verwalte keinen Speicher mehr? Das ist kein echtes Programmieren." Millionen von Entwicklern fuehlten sich schuldig, `free()` nicht aufzurufen. Dann lieferten sie schneller aus und die Schuld verschwand.
+
+ORMs. "Du meinst, ich schreibe kein SQL mehr? Das ist gefaehrlich." Entwickler fuehlten sich schuldig, ein Framework ihre Queries schreiben zu lassen. Dann lieferten sie schneller aus und die Schuld verschwand.
+
+CI/CD. "Du meinst, ich deploye nicht mehr manuell? Was wenn etwas schiefgeht?" Entwickler fuehlten sich schuldig wegen automatisierter Deployments. Dann lieferten sie schneller aus und die Schuld verschwand.
+
+Jetzt ist es der Code selbst. "Du meinst, ich schreibe den Code nicht mehr?"
+
+Ja. Genau das meine ich.
+
+Und ja, das Gefuehl ist dasselbe. Derselbe Cocktail aus Schuld und Euphorie. Dieselbe Stimme, die sagt: Das kann nicht richtig sein, das ist zu einfach, ich muss etwas uebersehen.
+
+Du uebersiehst nichts. Du gewinnst etwas. Du gewinnst die ganze Zeit zurueck, die du frueher mit Arbeit verbracht hast, die nie der Punkt war.
+
+Die Schuld ist das Signal. Wenn sich etwas zu einfach anfuehlt, liegt das daran, dass du eine Kategorie von Arbeit eliminiert hast, die nie der eigentliche Wert war. Speicherverwaltung war nie der Punkt. SQL war nie der Punkt. Deployment war nie der Punkt.
+
+Code war nie der Punkt.
+
+Anforderungen sind das Produkt. Code ist nur das aktuelle Rendering dieser Anforderungen. Ein Ausdruck. Ein Artefakt. Wenn du ihn in zwanzig Minuten aus klaren Anforderungen und bewiesenen Tests regenerieren kannst, was genau hast du all die Jahre beschuetzt?
+
+Die Antwort: dein Ego.
+
+Die Idee, dass dein Wert aus dem Code kommt, den du schreibst. Dass die Stunden des Debuggens ein Ehrenabzeichen sind. Dass die Komplexitaet, die du in deinem Kopf halten kannst, dich besonders macht. Dass Leiden ein Beweis fuer Ernsthaftigkeit ist.
+
+Nichts davon tut das.
+
+Was mich wertvoll macht, ist Probleme zu verstehen. Loesungen praezise zu beschreiben. Systeme zu bauen, in denen KI die schwere Arbeit erledigt, waehrend ich das Denken uebernehme. Zu wissen, was man baut, warum man es baut und wie man beweist, dass es funktioniert.
+
+Der Code? Der Code ist ein Ausdruck. Regeneriere ihn. Loesch ihn. Druck ihn nochmal. Er ist ihm egal. Er hat keine Gefuehle. Er hat keine Erinnerung daran, wie schwer er zu schreiben war. Er laeuft oder er laeuft nicht.
+
+Lass das los, und es hoert auf, sich wie Schummeln anzufuehlen.
+
+Es faengt an, sich wie Klarheit anzufuehlen.
+
+Und Klarheit, wie sich herausstellt, ist der produktivste Zustand, in dem ich je gearbeitet habe.
+
+---
+
+*Radix ist ein Entwickler aus Brighton, UK, der
+[spike.land](https://spike.land) baut. Er benannte seine Methodik nach einem
+ungarischen Kraftausdruck, weil er an Ehrlichkeit glaubt.*
