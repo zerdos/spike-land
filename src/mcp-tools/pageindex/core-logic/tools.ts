@@ -42,7 +42,11 @@ export function registerPageIndexTools(
       }
       const blob = new Blob([await res.arrayBuffer()], { type: "application/pdf" });
       const fileName = url.split("/").pop() ?? "document.pdf";
-      const result = await client.submitDocument(blob, fileName, { folderId: folder_id });
+      const result = await client.submitDocument(
+        blob,
+        fileName,
+        folder_id ? { folderId: folder_id } : undefined,
+      );
       return {
         content: [
           {
@@ -270,10 +274,10 @@ export function registerPageIndexTools(
       parent_folder_id: z.string().optional().describe("Szülő mappa ID (almappához)"),
     },
     async ({ name, description, parent_folder_id }) => {
-      const folder = await client.createFolder(name, {
-        description,
-        parentFolderId: parent_folder_id,
-      });
+      const opts: { description?: string; parentFolderId?: string } = {};
+      if (description) opts.description = description;
+      if (parent_folder_id) opts.parentFolderId = parent_folder_id;
+      const folder = await client.createFolder(name, opts);
       return {
         content: [{ type: "text" as const, text: JSON.stringify(folder, null, 2) }],
       };

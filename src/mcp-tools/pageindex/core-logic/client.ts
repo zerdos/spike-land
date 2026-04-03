@@ -53,7 +53,7 @@ export class PageIndexError extends Error {
     this.code = details?.errorCode
       ? (details.errorCode as PageIndexErrorCode)
       : mapStatusToErrorCode(statusCode);
-    this.details = details;
+    if (details) this.details = details;
   }
 }
 
@@ -136,7 +136,7 @@ export class PageIndexClient {
   constructor(config: PageIndexConfig) {
     this.apiKey = config.apiKey;
     this.baseUrl = config.baseUrl ?? BASE_URL;
-    this.folderId = config.folderId;
+    if (config.folderId) this.folderId = config.folderId;
   }
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
