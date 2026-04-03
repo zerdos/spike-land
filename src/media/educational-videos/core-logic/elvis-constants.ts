@@ -53,6 +53,8 @@ export const ELVIS_AUDIO_AVAILABLE: Record<string, boolean> = {
   "perc-act5": false,
   "synth-pad": false,
   "vocoder-hook": false,
+  "background-music": true, // Suno "Elvis We Love You" track
+  voices: true, // ElevenLabs persona voice clips
 };
 
 // ── Persona types ──────────────────────────────────────────────────────
