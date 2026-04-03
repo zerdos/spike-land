@@ -1,0 +1,11 @@
+{
+  "name": "pageindex",
+  "category": "mcp-tools",
+  "dependencies": ["@spike-land-ai/mcp-server-base"],
+  "files": [
+    "core-logic/client.ts",
+    "core-logic/tools.ts",
+    "core-logic/self-improve.ts",
+    "mcp/index.ts"
+  ]
+}

@@ -5,4 +5,5 @@ export * from "./google-analytics";
 export * from "./hackernews";
 export * from "./image-studio";
 export * from "./openclaw";
+export * from "./pageindex";
 export * from "./stripe-analytics";

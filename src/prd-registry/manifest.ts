@@ -34,6 +34,7 @@ import { imageStudioPrd } from "./prds/apps/image-studio.js";
 import { qaStudioPrd } from "./prds/apps/qa-studio.js";
 import { beuniqPrd } from "./prds/apps/beuniq.js";
 import { spikeChatWidgetPrd } from "./prds/apps/spike-chat-widget.js";
+import { pageindexPrd } from "./prds/apps/pageindex.js";
 import { radixBrightonPrd } from "./prds/apps/radix-brighton.js";
 import { supportPrd } from "./prds/apps/support.js";
 
@@ -70,6 +71,7 @@ const ALL_PRDS: PrdDefinition[] = [
   spikeChatWidgetPrd,
   supportPrd,
   radixBrightonPrd,
+  pageindexPrd,
 ];
 
 let registrationFailures: string[] = [];

@@ -53,6 +53,7 @@ const packagePathMap: Record<string, string> = {
   "mcp-image-studio": "mcp-tools/image-studio",
   "mcp-server-base": "core/server-base",
   "openclaw-mcp": "mcp-tools/openclaw",
+  "pageindex-mcp": "mcp-tools/pageindex",
   "qa-studio": "core/browser-automation",
   "react-ts-worker": "core/react-engine",
   shared: "core/shared-utils",
@@ -313,6 +314,10 @@ const packages: Record<string, PkgConfig> = {
     thresholds: { lines: 95, functions: 85, branches: 96, statements: 95 },
     coverageReporter: ["text-summary"],
     coverageExclude: ["**/types.ts", "**/*.d.ts"],
+  },
+  "pageindex-mcp": {
+    tier: 2,
+    coverageReporter: ["text-summary"],
   },
 
   "qa-studio": { tier: 2, pool: "forks" },
