@@ -8,11 +8,22 @@ import { z } from "zod";
 import { PageIndexClient } from "./client.js";
 import { InsightStore } from "./self-improve.js";
 
+const INSIGHTS_FILE = ".pageindex-insights.json";
+
 export function registerPageIndexTools(
   server: McpServer,
   client: PageIndexClient,
   insightStore: InsightStore,
 ): void {
+  // Auto-save after mutations
+  async function autoSave(): Promise<void> {
+    try {
+      await insightStore.saveToFile(INSIGHTS_FILE);
+    } catch {
+      // silent — best effort persistence
+    }
+  }
+
   // ── Upload Document ──
   server.tool(
     "pageindex_upload_document",
@@ -73,7 +84,6 @@ export function registerPageIndexTools(
       temperature: z.number().min(0).max(1).default(0.1).describe("Sampling hőmérséklet"),
     },
     async ({ query, doc_id, temperature }) => {
-      // Build self-improving context
       const priorContext = insightStore.buildContext(query);
       const messages: Array<{ role: "user" | "system"; content: string }> = [];
       if (priorContext) {
@@ -88,7 +98,6 @@ export function registerPageIndexTools(
 
       const answer = result.choices[0]?.message?.content ?? "Nincs válasz.";
 
-      // Extract citation markers
       const citationRegex = /<doc=[^;]+;page=(\d+)>/g;
       const citations: string[] = [];
       let match: RegExpExecArray | null;
@@ -96,14 +105,15 @@ export function registerPageIndexTools(
         citations.push(`page ${match[1]}`);
       }
 
-      // Self-improving: store insight
-      insightStore.add({
+      // Self-improving: store & auto-save
+      const insight = insightStore.add({
         docId: typeof doc_id === "string" ? doc_id : (doc_id?.[0] ?? "all"),
         query,
         answer,
         citations,
         confidence: citations.length > 0 ? 0.9 : 0.6,
       });
+      await autoSave();
 
       return {
         content: [
@@ -114,11 +124,52 @@ export function registerPageIndexTools(
                 answer,
                 citations,
                 usage: result.usage,
+                insight_id: insight.id,
                 insights_count: insightStore.getAll().length,
+                prior_context_used: !!priorContext,
               },
               null,
               2,
             ),
+          },
+        ],
+      };
+    },
+  );
+
+  // ── Rate Insight ──
+  server.tool(
+    "pageindex_rate",
+    "Insight értékelése: thumbs up (+1) vagy thumbs down (-1). A self-improving loop tanul a feedback-ből.",
+    {
+      insight_id: z.string().describe("Az insight azonosítója (pageindex_chat válaszából)"),
+      rating: z.enum(["up", "down"]).describe("Értékelés: up = hasznos, down = rossz/irreleváns"),
+    },
+    async ({ insight_id, rating }) => {
+      const delta = rating === "up" ? 1 : -1;
+      const updated = insightStore.rate(insight_id, delta as 1 | -1);
+      if (!updated) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({ error: "Insight nem található", insight_id }),
+            },
+          ],
+          isError: true,
+        };
+      }
+      await autoSave();
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify({
+              rated: true,
+              insight_id,
+              new_confidence: Math.round(updated.confidence * 100),
+              total_feedback: updated.feedback,
+            }),
           },
         ],
       };
@@ -185,12 +236,14 @@ export function registerPageIndexTools(
     },
   );
 
-  // ── Self-Improving Context ──
+  // ── Self-Improving Loop Management ──
   server.tool(
     "pageindex_improve_context",
-    "A self-improving loop kezelése: korábbi megállapítások listázása, törlése, vagy exportálása",
+    "A self-improving loop kezelése: insights listázása, törlése, exportálása, statisztikák, vagy fájlból betöltés",
     {
-      action: z.enum(["list", "clear", "export"]).describe("Művelet: list/clear/export"),
+      action: z
+        .enum(["list", "clear", "export", "stats", "load"])
+        .describe("Művelet: list/clear/export/stats/load"),
     },
     async ({ action }) => {
       switch (action) {
@@ -200,10 +253,7 @@ export function registerPageIndexTools(
               {
                 type: "text" as const,
                 text: JSON.stringify(
-                  {
-                    insights: insightStore.getAll(),
-                    count: insightStore.getAll().length,
-                  },
+                  { insights: insightStore.getAll(), count: insightStore.getAll().length },
                   null,
                   2,
                 ),
@@ -212,6 +262,7 @@ export function registerPageIndexTools(
           };
         case "clear":
           insightStore.clear();
+          await autoSave();
           return {
             content: [{ type: "text" as const, text: JSON.stringify({ cleared: true }) }],
           };
@@ -219,6 +270,29 @@ export function registerPageIndexTools(
           return {
             content: [{ type: "text" as const, text: insightStore.toJSON() }],
           };
+        case "stats":
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(insightStore.stats(), null, 2),
+              },
+            ],
+          };
+        case "load": {
+          const loaded = await insightStore.loadFromFile(INSIGHTS_FILE);
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({
+                  loaded,
+                  count: insightStore.getAll().length,
+                }),
+              },
+            ],
+          };
+        }
       }
     },
   );
