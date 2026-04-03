@@ -29,10 +29,10 @@ describe("PageIndexClient", () => {
 
       expect(result).toEqual(mockDoc);
       expect(fetch).toHaveBeenCalledWith(
-        "https://test.api/v1/documents/doc_123",
+        "https://test.api/doc/doc_123/",
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: "Bearer test-key",
+            api_key: "test-key",
           }),
         }),
       );
@@ -69,10 +69,7 @@ describe("PageIndexClient", () => {
 
       expect(result.status).toBe("completed");
       expect(result.tree?.title).toBe("Root");
-      expect(fetch).toHaveBeenCalledWith(
-        "https://test.api/v1/documents/doc_123/tree?nodeSummary=true",
-        expect.anything(),
-      );
+      expect(fetch).toHaveBeenCalledWith("https://test.api/doc/doc_123/", expect.anything());
     });
   });
 
@@ -118,7 +115,7 @@ describe("PageIndexClient", () => {
 
       expect(result.documents).toHaveLength(1);
       expect(fetch).toHaveBeenCalledWith(
-        "https://test.api/v1/documents?limit=50&offset=0",
+        "https://test.api/docs?limit=50&offset=0",
         expect.anything(),
       );
     });
@@ -133,7 +130,7 @@ describe("PageIndexClient", () => {
       await client.deleteDocument("doc_123");
 
       expect(fetch).toHaveBeenCalledWith(
-        "https://test.api/v1/documents/doc_123",
+        "https://test.api/doc/doc_123/",
         expect.objectContaining({ method: "DELETE" }),
       );
     });

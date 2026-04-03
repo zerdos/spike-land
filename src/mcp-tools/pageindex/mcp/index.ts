@@ -54,7 +54,16 @@ const insightStore = new InsightStore();
 registerPageIndexTools(server, client, insightStore);
 registerFeedbackTool(server, { serviceName: "pageindex-mcp", toolName: "pageindex_feedback" });
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+async function main() {
+  // Korábbi insights betöltése
+  await insightStore.loadFromFile(".pageindex-insights.json");
 
-process.stderr.write("PageIndex MCP Server running on stdio.\n");
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  process.stderr.write("PageIndex MCP Server running on stdio.\n");
+}
+
+main().catch((err) => {
+  process.stderr.write(`Fatal: ${err}\n`);
+  process.exit(1);
+});

@@ -1,6 +1,10 @@
 /**
  * PageIndex API client — wraps the PageIndex.ai REST API.
  * Vectorless, reasoning-based RAG: tree-structured document indexing.
+ *
+ * API docs: https://docs.pageindex.ai/endpoints
+ * Auth: api_key header
+ * Base: https://api.pageindex.ai
  */
 
 const BASE_URL = "https://api.pageindex.ai";
@@ -14,7 +18,7 @@ export interface DocumentSubmitResult {
   doc_id: string;
 }
 
-export interface DocumentInfo {
+export interface DocumentMetadata {
   id: string;
   name: string;
   description: string | null;
@@ -33,9 +37,10 @@ export interface TreeNode {
   nodes: TreeNode[];
 }
 
-export interface TreeResult {
+export interface DocumentResult {
   status: "processing" | "completed" | "failed";
   tree?: TreeNode;
+  metadata?: DocumentMetadata;
 }
 
 export interface ChatMessage {
@@ -53,7 +58,7 @@ export interface ChatResponse {
 }
 
 export interface DocumentListResult {
-  documents: DocumentInfo[];
+  documents: DocumentMetadata[];
   total: number;
   limit: number;
   offset: number;
@@ -72,7 +77,7 @@ export class PageIndexClient {
     const res = await fetch(`${this.baseUrl}${path}`, {
       ...init,
       headers: {
-        Authorization: `Bearer ${this.apiKey}`,
+        api_key: this.apiKey,
         "Content-Type": "application/json",
         ...init?.headers,
       },
@@ -87,9 +92,9 @@ export class PageIndexClient {
   async submitDocument(file: Blob, fileName: string): Promise<DocumentSubmitResult> {
     const formData = new FormData();
     formData.append("file", file, fileName);
-    const res = await fetch(`${this.baseUrl}/v1/documents`, {
+    const res = await fetch(`${this.baseUrl}/doc/`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${this.apiKey}` },
+      headers: { api_key: this.apiKey },
       body: formData,
     });
     if (!res.ok) {
@@ -99,21 +104,24 @@ export class PageIndexClient {
     return res.json() as Promise<DocumentSubmitResult>;
   }
 
-  async getDocument(docId: string): Promise<DocumentInfo> {
-    return this.request<DocumentInfo>(`/v1/documents/${docId}`);
+  async getDocument(docId: string): Promise<DocumentResult> {
+    return this.request<DocumentResult>(`/doc/${docId}/`);
   }
 
-  async getTree(docId: string, nodeSummary = false): Promise<TreeResult> {
-    const qs = nodeSummary ? "?nodeSummary=true" : "";
-    return this.request<TreeResult>(`/v1/documents/${docId}/tree${qs}`);
+  async getMetadata(docId: string): Promise<DocumentMetadata> {
+    return this.request<DocumentMetadata>(`/doc/${docId}/metadata`);
+  }
+
+  async getTree(docId: string, _nodeSummary = false): Promise<DocumentResult> {
+    return this.request<DocumentResult>(`/doc/${docId}/`);
   }
 
   async listDocuments(limit = 50, offset = 0): Promise<DocumentListResult> {
-    return this.request<DocumentListResult>(`/v1/documents?limit=${limit}&offset=${offset}`);
+    return this.request<DocumentListResult>(`/docs?limit=${limit}&offset=${offset}`);
   }
 
   async deleteDocument(docId: string): Promise<void> {
-    await this.request<unknown>(`/v1/documents/${docId}`, { method: "DELETE" });
+    await this.request<unknown>(`/doc/${docId}/`, { method: "DELETE" });
   }
 
   async chat(
@@ -121,7 +129,7 @@ export class PageIndexClient {
     docId?: string | string[],
     options?: { enableCitations?: boolean; temperature?: number },
   ): Promise<ChatResponse> {
-    return this.request<ChatResponse>("/v1/chat/completions", {
+    return this.request<ChatResponse>("/chat/completions", {
       method: "POST",
       body: JSON.stringify({
         messages,
@@ -132,10 +140,8 @@ export class PageIndexClient {
     });
   }
 
-  async searchDocuments(query: string): Promise<DocumentInfo[]> {
+  async searchDocuments(query: string): Promise<DocumentMetadata[]> {
     const result = await this.listDocuments(100);
-    // PageIndex doesn't have a dedicated search endpoint for docs,
-    // filter client-side by name/description
     const q = query.toLowerCase();
     return result.documents.filter(
       (d) =>
