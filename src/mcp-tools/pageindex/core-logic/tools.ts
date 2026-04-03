@@ -5,8 +5,8 @@
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { PageIndexClient } from "./client.js";
-import { InsightStore } from "./self-improve.js";
+import type { PageIndexClient } from "./client.js";
+import type { InsightStore } from "./self-improve.js";
 
 const INSIGHTS_FILE = ".pageindex-insights.json";
 

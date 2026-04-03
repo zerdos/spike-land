@@ -564,7 +564,7 @@ export class InsightStore {
     return relevant.map((i) => {
       // Cache hit ellenőrzés
       if (!this.blocksDirty && this.cachedBlocks.has(i.id)) {
-        return this.cachedBlocks.get(i.id)!;
+        return this.cachedBlocks.get(i.id) ?? "";
       }
 
       const conf = Math.round(i.confidence * 100);
