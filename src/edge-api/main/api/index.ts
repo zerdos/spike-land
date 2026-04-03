@@ -297,7 +297,11 @@ app.use("*", async (c, next) => {
 // api.spike.land rewrite: strip subdomain prefix, prepend /api/
 app.use("*", async (c, next) => {
   const host = c.req.header("host") ?? "";
-  if (host.startsWith("api.spike.land") && !c.req.path.startsWith("/api/")) {
+  if (
+    host.startsWith("api.spike.land") &&
+    !c.req.path.startsWith("/api/") &&
+    !c.req.path.startsWith("/analytics/")
+  ) {
     const url = new URL(c.req.url);
     url.pathname = `/api${url.pathname}`;
     const res = await app.fetch(new Request(url.toString(), c.req.raw), c.env, c.executionCtx);
