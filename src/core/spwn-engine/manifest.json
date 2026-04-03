@@ -1,0 +1,17 @@
+{
+  "name": "spwn-engine",
+  "category": "core",
+  "dependencies": [],
+  "files": [
+    "core-logic/ast.ts",
+    "core-logic/builtins.ts",
+    "core-logic/environment.ts",
+    "core-logic/evaluator.ts",
+    "core-logic/index.ts",
+    "core-logic/lexer.ts",
+    "core-logic/parser.ts",
+    "core-logic/values.ts",
+    "core-logic/worker.ts",
+    "index.ts"
+  ]
+}
