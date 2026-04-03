@@ -28,8 +28,11 @@ export function registerPageIndexTools(
   server.tool(
     "pageindex_upload_document",
     "PDF dokumentum feltöltése és fa-struktúrájú index létrehozása (vectorless RAG)",
-    { url: z.string().url().describe("A PDF dokumentum URL-je") },
-    async ({ url }) => {
+    {
+      url: z.string().url().describe("A PDF dokumentum URL-je"),
+      folder_id: z.string().optional().describe("Mappa azonosító (opcionális)"),
+    },
+    async ({ url, folder_id }) => {
       const res = await fetch(url);
       if (!res.ok) {
         return {
@@ -39,7 +42,7 @@ export function registerPageIndexTools(
       }
       const blob = new Blob([await res.arrayBuffer()], { type: "application/pdf" });
       const fileName = url.split("/").pop() ?? "document.pdf";
-      const result = await client.submitDocument(blob, fileName);
+      const result = await client.submitDocument(blob, fileName, { folderId: folder_id });
       return {
         content: [
           {
@@ -74,7 +77,7 @@ export function registerPageIndexTools(
   // ── Chat with Document ──
   server.tool(
     "pageindex_chat",
-    "Kérdés feltevése dokumentumoknak — reasoning-alapú keresés oldalszintű hivatkozásokkal. Self-improving: a válaszok kontextusként visszatáplálódnak.",
+    "Kérdés feltevése dokumentumoknak — reasoning-alapú keresés oldalszintű hivatkozásokkal. Self-improving: a válaszok kontextusként visszatáplálódnak, topic-fába rendeződnek.",
     {
       query: z.string().describe("A kérdés a dokumentumhoz"),
       doc_id: z
@@ -85,10 +88,24 @@ export function registerPageIndexTools(
     },
     async ({ query, doc_id, temperature }) => {
       const priorContext = insightStore.buildContext(query);
+      const topRated = insightStore.getTopRated(2);
       const messages: Array<{ role: "user" | "system"; content: string }> = [];
+
       if (priorContext) {
         messages.push({ role: "system", content: priorContext });
       }
+
+      // Few-shot: top-rated insight-ok mint példák
+      if (topRated.length > 0) {
+        const examples = topRated
+          .map((i) => `K: ${i.query}\nV: ${i.answer.slice(0, 100)}`)
+          .join("\n---\n");
+        messages.push({
+          role: "system",
+          content: `── Legjobban értékelt korábbi válaszok (példa a kívánt stílusra) ──\n${examples}`,
+        });
+      }
+
       messages.push({ role: "user", content: query });
 
       const result = await client.chat(messages, doc_id, {
@@ -105,7 +122,7 @@ export function registerPageIndexTools(
         citations.push(`page ${match[1]}`);
       }
 
-      // Self-improving: store & auto-save
+      // Self-improving: store & classify into topic tree & auto-save
       const insight = insightStore.add({
         docId: typeof doc_id === "string" ? doc_id : (doc_id?.[0] ?? "all"),
         query,
@@ -113,6 +130,10 @@ export function registerPageIndexTools(
         citations,
         confidence: citations.length > 0 ? 0.9 : 0.6,
       });
+
+      // Periodic topic freezing
+      insightStore.topicTree.freezeStaleTopics();
+
       await autoSave();
 
       return {
@@ -125,8 +146,10 @@ export function registerPageIndexTools(
                 citations,
                 usage: result.usage,
                 insight_id: insight.id,
+                topic_id: insight.topicId,
                 insights_count: insightStore.getAll().length,
                 prior_context_used: !!priorContext,
+                top_rated_examples: topRated.length,
               },
               null,
               2,
@@ -140,7 +163,7 @@ export function registerPageIndexTools(
   // ── Rate Insight ──
   server.tool(
     "pageindex_rate",
-    "Insight értékelése: thumbs up (+1) vagy thumbs down (-1). A self-improving loop tanul a feedback-ből.",
+    "Insight értékelése: thumbs up (+1) vagy thumbs down (-1). A self-improving loop tanul a feedback-ből — topic routing és confidence is frissül.",
     {
       insight_id: z.string().describe("Az insight azonosítója (pageindex_chat válaszából)"),
       rating: z.enum(["up", "down"]).describe("Értékelés: up = hasznos, down = rossz/irreleváns"),
@@ -169,6 +192,7 @@ export function registerPageIndexTools(
               insight_id,
               new_confidence: Math.round(updated.confidence * 100),
               total_feedback: updated.feedback,
+              topic_id: updated.topicId,
             }),
           },
         ],
@@ -236,14 +260,53 @@ export function registerPageIndexTools(
     },
   );
 
+  // ── Folder Management ──
+  server.tool(
+    "pageindex_create_folder",
+    "Új mappa létrehozása dokumentumok rendszerezéséhez",
+    {
+      name: z.string().describe("Mappa neve"),
+      description: z.string().optional().describe("Mappa leírása"),
+      parent_folder_id: z.string().optional().describe("Szülő mappa ID (almappához)"),
+    },
+    async ({ name, description, parent_folder_id }) => {
+      const folder = await client.createFolder(name, {
+        description,
+        parentFolderId: parent_folder_id,
+      });
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(folder, null, 2) }],
+      };
+    },
+  );
+
+  server.tool(
+    "pageindex_list_folders",
+    "Mappák listázása",
+    {
+      parent_folder_id: z.string().optional().describe("Szülő mappa ID szűréshez"),
+    },
+    async ({ parent_folder_id }) => {
+      const folders = await client.listFolders(parent_folder_id);
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify({ folders, count: folders.length }, null, 2),
+          },
+        ],
+      };
+    },
+  );
+
   // ── Self-Improving Loop Management ──
   server.tool(
     "pageindex_improve_context",
-    "A self-improving loop kezelése: insights listázása, törlése, exportálása, statisztikák, vagy fájlból betöltés",
+    "A self-improving loop kezelése: insights listázása, törlése, exportálása, statisztikák, topic-fa info, vagy fájlból betöltés",
     {
       action: z
-        .enum(["list", "clear", "export", "stats", "load"])
-        .describe("Művelet: list/clear/export/stats/load"),
+        .enum(["list", "clear", "export", "stats", "load", "top_rated", "topics", "freeze"])
+        .describe("Művelet: list/clear/export/stats/load/top_rated/topics/freeze"),
     },
     async ({ action }) => {
       switch (action) {
@@ -289,6 +352,50 @@ export function registerPageIndexTools(
                   loaded,
                   count: insightStore.getAll().length,
                 }),
+              },
+            ],
+          };
+        }
+        case "top_rated":
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    top_rated: insightStore.getTopRated(10),
+                    count: insightStore.getTopRated(10).length,
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        case "topics":
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    tree: JSON.parse(insightStore.topicTree.toJSON()),
+                    stats: insightStore.topicTree.stats(),
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        case "freeze": {
+          const frozen = insightStore.topicTree.freezeStaleTopics();
+          await autoSave();
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({ frozen_count: frozen }),
               },
             ],
           };

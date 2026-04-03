@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PageIndexClient } from "../../src/mcp-tools/pageindex/core-logic/client.js";
+import {
+  PageIndexClient,
+  PageIndexError,
+} from "../../src/mcp-tools/pageindex/core-logic/client.js";
 
 describe("PageIndexClient", () => {
   let client: PageIndexClient;
@@ -10,7 +13,7 @@ describe("PageIndexClient", () => {
   });
 
   describe("getDocument", () => {
-    it("fetches document info with auth header", async () => {
+    it("fetches document info with api_key header", async () => {
       const mockDoc = {
         id: "doc_123",
         name: "test.pdf",
@@ -38,17 +41,39 @@ describe("PageIndexClient", () => {
       );
     });
 
-    it("throws on API error", async () => {
+    it("throws PageIndexError with typed code on API error", async () => {
       vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-        new Response("Not found", { status: 404 }),
+        new Response(JSON.stringify({ error: "Not found" }), { status: 404 }),
       );
 
-      await expect(client.getDocument("bad_id")).rejects.toThrow("PageIndex API error 404");
+      try {
+        await client.getDocument("bad_id");
+        expect.fail("Should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(PageIndexError);
+        const pErr = err as PageIndexError;
+        expect(pErr.code).toBe("NOT_FOUND");
+        expect(pErr.statusCode).toBe(404);
+      }
+    });
+
+    it("throws PageIndexError on non-JSON error body", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response("Server Error", { status: 500 }),
+      );
+
+      try {
+        await client.getDocument("bad_id");
+        expect.fail("Should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(PageIndexError);
+        expect((err as PageIndexError).code).toBe("INTERNAL_ERROR");
+      }
     });
   });
 
   describe("getTree", () => {
-    it("fetches tree structure", async () => {
+    it("fetches tree structure with type=tree param", async () => {
       const mockTree = {
         status: "completed",
         tree: {
@@ -69,7 +94,23 @@ describe("PageIndexClient", () => {
 
       expect(result.status).toBe("completed");
       expect(result.tree?.title).toBe("Root");
-      expect(fetch).toHaveBeenCalledWith("https://test.api/doc/doc_123/", expect.anything());
+      expect(fetch).toHaveBeenCalledWith(
+        "https://test.api/doc/doc_123/?type=tree&summary=true",
+        expect.anything(),
+      );
+    });
+
+    it("omits summary param when false", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify({ status: "completed" }), { status: 200 }),
+      );
+
+      await client.getTree("doc_123", false);
+
+      expect(fetch).toHaveBeenCalledWith(
+        "https://test.api/doc/doc_123/?type=tree",
+        expect.anything(),
+      );
     });
   });
 
@@ -119,6 +160,19 @@ describe("PageIndexClient", () => {
         expect.anything(),
       );
     });
+
+    it("includes folder_id param when provided", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify({ documents: [], total: 0, limit: 50, offset: 0 }), {
+          status: 200,
+        }),
+      );
+
+      await client.listDocuments(10, 0, "folder_abc");
+
+      const url = vi.mocked(fetch).mock.calls[0][0] as string;
+      expect(url).toContain("folder_id=folder_abc");
+    });
   });
 
   describe("deleteDocument", () => {
@@ -132,6 +186,54 @@ describe("PageIndexClient", () => {
       expect(fetch).toHaveBeenCalledWith(
         "https://test.api/doc/doc_123/",
         expect.objectContaining({ method: "DELETE" }),
+      );
+    });
+  });
+
+  describe("createFolder", () => {
+    it("creates folder with name and description", async () => {
+      const mockFolder = {
+        id: "folder_1",
+        name: "Pénzügy",
+        description: "Pénzügyi dokumentumok",
+        parentFolderId: null,
+      };
+
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify(mockFolder), { status: 200 }),
+      );
+
+      const result = await client.createFolder("Pénzügy", { description: "Pénzügyi dokumentumok" });
+
+      expect(result.name).toBe("Pénzügy");
+      const fetchCall = vi.mocked(fetch).mock.calls[0];
+      const body = JSON.parse(fetchCall[1]?.body as string);
+      expect(body.name).toBe("Pénzügy");
+      expect(body.description).toBe("Pénzügyi dokumentumok");
+    });
+  });
+
+  describe("listFolders", () => {
+    it("lists folders without filter", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify([]), { status: 200 }),
+      );
+
+      await client.listFolders();
+
+      expect(fetch).toHaveBeenCalledWith("https://test.api/folders/", expect.anything());
+    });
+
+    it("lists folders with parent filter", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify([]), { status: 200 }),
+      );
+
+      await client.listFolders("parent_123");
+
+      expect(fetch).toHaveBeenCalledWith(
+        "https://test.api/folders/?parent_folder_id=parent_123",
+        expect.anything(),
       );
     });
   });
@@ -154,7 +256,33 @@ describe("PageIndexClient", () => {
 
       const results = await client.searchDocuments("annual");
 
-      expect(results).toHaveLength(2); // both match "annual"
+      expect(results).toHaveLength(2);
+    });
+  });
+
+  describe("submitDocument", () => {
+    it("accepts ArrayBuffer input", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify({ doc_id: "new_doc" }), { status: 200 }),
+      );
+
+      const buffer = new ArrayBuffer(8);
+      const result = await client.submitDocument(buffer, "test.pdf");
+
+      expect(result.doc_id).toBe("new_doc");
+    });
+
+    it("throws PageIndexError on upload failure", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response("Too large", { status: 413 }),
+      );
+
+      try {
+        await client.submitDocument(new ArrayBuffer(8), "big.pdf");
+        expect.fail("Should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(PageIndexError);
+      }
     });
   });
 });

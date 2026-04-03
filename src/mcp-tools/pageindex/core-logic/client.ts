@@ -9,9 +9,60 @@
 
 const BASE_URL = "https://api.pageindex.ai";
 
+// ─── Typed Errors ───
+
+export type PageIndexErrorCode =
+  | "USAGE_LIMIT_REACHED"
+  | "INVALID_INPUT"
+  | "NOT_FOUND"
+  | "UNAUTHORIZED"
+  | "RATE_LIMITED"
+  | "PLAN_REQUIRED"
+  | "FOLDER_SCOPE_VIOLATION"
+  | "SERVICE_UNAVAILABLE"
+  | "INTERNAL_ERROR";
+
+function mapStatusToErrorCode(status: number): PageIndexErrorCode {
+  switch (status) {
+    case 400:
+      return "INVALID_INPUT";
+    case 401:
+      return "UNAUTHORIZED";
+    case 403:
+      return "PLAN_REQUIRED";
+    case 404:
+      return "NOT_FOUND";
+    case 429:
+      return "RATE_LIMITED";
+    case 503:
+      return "SERVICE_UNAVAILABLE";
+    default:
+      return "INTERNAL_ERROR";
+  }
+}
+
+export class PageIndexError extends Error {
+  code: PageIndexErrorCode;
+  statusCode: number;
+  details?: Record<string, unknown>;
+
+  constructor(message: string, statusCode: number, details?: Record<string, unknown>) {
+    super(message);
+    this.name = "PageIndexError";
+    this.statusCode = statusCode;
+    this.code = details?.errorCode
+      ? (details.errorCode as PageIndexErrorCode)
+      : mapStatusToErrorCode(statusCode);
+    this.details = details;
+  }
+}
+
+// ─── Types ───
+
 export interface PageIndexConfig {
   apiKey: string;
   baseUrl?: string;
+  folderId?: string;
 }
 
 export interface DocumentSubmitResult {
@@ -57,6 +108,10 @@ export interface ChatResponse {
   usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
 }
 
+export interface ChatCompletionChunk {
+  choices: Array<{ delta: { content?: string }; finish_reason?: string }>;
+}
+
 export interface DocumentListResult {
   documents: DocumentMetadata[];
   total: number;
@@ -64,13 +119,24 @@ export interface DocumentListResult {
   offset: number;
 }
 
+export interface FolderInfo {
+  id: string;
+  name: string;
+  description: string | null;
+  parentFolderId: string | null;
+}
+
+// ─── Client ───
+
 export class PageIndexClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  private folderId?: string;
 
   constructor(config: PageIndexConfig) {
     this.apiKey = config.apiKey;
     this.baseUrl = config.baseUrl ?? BASE_URL;
+    this.folderId = config.folderId;
   }
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -84,14 +150,33 @@ export class PageIndexClient {
     });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new Error(`PageIndex API error ${res.status}: ${text}`);
+      let details: Record<string, unknown> | undefined;
+      try {
+        details = JSON.parse(text) as Record<string, unknown>;
+      } catch {
+        // not JSON
+      }
+      throw new PageIndexError(
+        details?.error ? String(details.error) : `PageIndex API error ${res.status}: ${text}`,
+        res.status,
+        details,
+      );
     }
     return res.json() as Promise<T>;
   }
 
-  async submitDocument(file: Blob, fileName: string): Promise<DocumentSubmitResult> {
+  async submitDocument(
+    file: Blob | ArrayBuffer,
+    fileName: string,
+    options?: { mode?: string; folderId?: string },
+  ): Promise<DocumentSubmitResult> {
     const formData = new FormData();
-    formData.append("file", file, fileName);
+    const blob = file instanceof Blob ? file : new Blob([file], { type: "application/pdf" });
+    formData.append("file", blob, fileName);
+    if (options?.mode) formData.append("mode", options.mode);
+    const fId = options?.folderId ?? this.folderId;
+    if (fId) formData.append("folder_id", fId);
+
     const res = await fetch(`${this.baseUrl}/doc/`, {
       method: "POST",
       headers: { api_key: this.apiKey },
@@ -99,7 +184,7 @@ export class PageIndexClient {
     });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new Error(`PageIndex upload error ${res.status}: ${text}`);
+      throw new PageIndexError(`PageIndex upload error ${res.status}: ${text}`, res.status);
     }
     return res.json() as Promise<DocumentSubmitResult>;
   }
@@ -112,16 +197,43 @@ export class PageIndexClient {
     return this.request<DocumentMetadata>(`/doc/${docId}/metadata`);
   }
 
-  async getTree(docId: string, _nodeSummary = false): Promise<DocumentResult> {
-    return this.request<DocumentResult>(`/doc/${docId}/`);
+  async getTree(docId: string, nodeSummary = false): Promise<DocumentResult> {
+    const params = new URLSearchParams({ type: "tree" });
+    if (nodeSummary) params.set("summary", "true");
+    return this.request<DocumentResult>(`/doc/${docId}/?${params}`);
   }
 
-  async listDocuments(limit = 50, offset = 0): Promise<DocumentListResult> {
-    return this.request<DocumentListResult>(`/docs?limit=${limit}&offset=${offset}`);
+  async listDocuments(limit = 50, offset = 0, folderId?: string): Promise<DocumentListResult> {
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+    });
+    const fId = folderId ?? this.folderId;
+    if (fId) params.set("folder_id", fId);
+    return this.request<DocumentListResult>(`/docs?${params}`);
   }
 
   async deleteDocument(docId: string): Promise<void> {
     await this.request<unknown>(`/doc/${docId}/`, { method: "DELETE" });
+  }
+
+  async createFolder(
+    name: string,
+    options?: { description?: string; parentFolderId?: string },
+  ): Promise<FolderInfo> {
+    return this.request<FolderInfo>("/folder/", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        description: options?.description,
+        parent_folder_id: options?.parentFolderId,
+      }),
+    });
+  }
+
+  async listFolders(parentFolderId?: string): Promise<FolderInfo[]> {
+    const params = parentFolderId ? `?parent_folder_id=${parentFolderId}` : "";
+    return this.request<FolderInfo[]>(`/folders/${params}`);
   }
 
   async chat(
@@ -138,6 +250,52 @@ export class PageIndexClient {
         temperature: options?.temperature ?? 0.1,
       }),
     });
+  }
+
+  async *chatStream(
+    messages: ChatMessage[],
+    docId?: string | string[],
+    options?: { enableCitations?: boolean; temperature?: number },
+  ): AsyncGenerator<ChatCompletionChunk> {
+    const res = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        api_key: this.apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messages,
+        doc_id: docId,
+        enable_citations: options?.enableCitations ?? true,
+        temperature: options?.temperature ?? 0.1,
+        stream: true,
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new PageIndexError(`PageIndex stream error ${res.status}: ${text}`, res.status);
+    }
+    if (!res.body) return;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ") || trimmed === "data: [DONE]") continue;
+          const chunk = JSON.parse(trimmed.slice(6)) as ChatCompletionChunk;
+          yield chunk;
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
   }
 
   async searchDocuments(query: string): Promise<DocumentMetadata[]> {
