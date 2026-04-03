@@ -29,7 +29,7 @@ import {
 
 type ReaderStatus = "ended" | "idle" | "loading" | "paused" | "playing" | "unsupported";
 type ReaderTone = "mist" | "paper" | "sage";
-type ReaderEngine = "browser" | "elevenlabs";
+type ReaderEngine = "browser" | "elevenlabs" | "pregenerated";
 
 interface ReaderPreferences {
   autoFollow: boolean;
@@ -91,7 +91,9 @@ function readReaderPreferences(): ReaderPreferences {
           ? parsed.elevenLabsVoice
           : DEFAULT_PREFERENCES.elevenLabsVoice,
       engine:
-        parsed.engine === "browser" || parsed.engine === "elevenlabs"
+        parsed.engine === "browser" ||
+        parsed.engine === "elevenlabs" ||
+        parsed.engine === "pregenerated"
           ? parsed.engine
           : DEFAULT_PREFERENCES.engine,
       fontScale:
@@ -146,15 +148,24 @@ function pickVoice(synth: SpeechSynthesis, lang: string) {
 export function BlogReaderControls({
   contentKey,
   scopeRef,
+  audioUrl,
 }: {
   contentKey: string;
   scopeRef: RefObject<HTMLElement | null>;
+  /** Pre-generated read-aloud MP3 URL (e.g. /blog/{slug}/read-aloud.mp3) */
+  audioUrl?: string;
 }) {
   const preferences = readReaderPreferences();
+  const hasPregenerated = Boolean(audioUrl);
+  const initialEngine: ReaderEngine = hasPregenerated
+    ? "pregenerated"
+    : preferences.engine === "pregenerated"
+      ? "browser"
+      : preferences.engine;
   const [autoFollow, setAutoFollow] = useState(preferences.autoFollow);
   const [blocks, setBlocks] = useState<ReaderBlock[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [engine, setEngine] = useState<ReaderEngine>(preferences.engine);
+  const [engine, setEngine] = useState<ReaderEngine>(initialEngine);
   const [elevenLabsVoice, setElevenLabsVoice] = useState(preferences.elevenLabsVoice);
   const [fontScale, setFontScale] = useState(preferences.fontScale);
   const [progressSeconds, setProgressSeconds] = useState(0);
@@ -170,8 +181,11 @@ export function BlogReaderControls({
   const timelineRef = useRef<ReaderTimelineEntry[]>([]);
   const autoFollowRef = useRef(autoFollow);
   const elevenLabsRef = useRef<ElevenLabsTtsEngine | null>(null);
+  const pregenAudioRef = useRef<HTMLAudioElement | null>(null);
+  const pregenDurationRef = useRef(0);
 
   const isElevenLabs = engine === "elevenlabs";
+  const isPregenerated = engine === "pregenerated";
 
   const timeline = useMemo(() => buildReaderTimeline(blocks, rate), [blocks, rate]);
   const totalSeconds = timeline.at(-1)?.end ?? 0;
@@ -181,7 +195,8 @@ export function BlogReaderControls({
     () => blocks.filter((block) => block.kind.startsWith("heading-")),
     [blocks],
   );
-  const audioDisabled = blocks.length === 0 || (status === "unsupported" && !isElevenLabs);
+  const audioDisabled =
+    blocks.length === 0 || (status === "unsupported" && !isElevenLabs && !isPregenerated);
 
   useEffect(() => {
     blocksRef.current = blocks;
@@ -240,6 +255,83 @@ export function BlogReaderControls({
     ttsEngine.initialize(blocks, elevenLabsVoice);
   }, [blocks, elevenLabsVoice, isElevenLabs]);
 
+  // Initialize pre-generated audio engine
+  useEffect(() => {
+    if (!isPregenerated || !audioUrl || blocks.length === 0) return;
+
+    const audio = new Audio(audioUrl);
+    audio.preload = "metadata";
+    pregenAudioRef.current = audio;
+
+    const onLoadedMetadata = () => {
+      pregenDurationRef.current = audio.duration;
+    };
+
+    const onTimeUpdate = () => {
+      const duration = pregenDurationRef.current || audio.duration;
+      if (duration <= 0) return;
+
+      const fraction = audio.currentTime / duration;
+      const totalBlocks = blocksRef.current.length;
+      if (totalBlocks === 0) return;
+
+      // Map audio progress to block index proportionally by word count
+      const totalWords = blocksRef.current.reduce((sum, b) => sum + b.words, 0);
+      const targetWord = fraction * totalWords;
+      let accumulated = 0;
+      let blockIdx = 0;
+      for (let i = 0; i < totalBlocks; i++) {
+        const block = blocksRef.current[i];
+        if (!block) continue;
+        accumulated += block.words;
+        if (accumulated >= targetWord) {
+          blockIdx = i;
+          break;
+        }
+        blockIdx = i;
+      }
+
+      syncActiveBlock(blockIdx);
+
+      // Map to estimated timeline for progress display
+      const entry = timelineRef.current[blockIdx];
+      if (entry) {
+        const blockWords = blocksRef.current[blockIdx]?.words ?? 1;
+        const wordsBeforeBlock = blocksRef.current
+          .slice(0, blockIdx)
+          .reduce((sum, b) => sum + b.words, 0);
+        const wordProgress = Math.min(1, (targetWord - wordsBeforeBlock) / blockWords);
+        setProgressSeconds(entry.start + entry.seconds * wordProgress);
+      }
+    };
+
+    const onEnded = () => {
+      setStatus("ended");
+      const lastEntry = timelineRef.current.at(-1);
+      if (lastEntry) setProgressSeconds(lastEntry.end);
+    };
+
+    const onError = () => {
+      setStatus("idle");
+    };
+
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("error", onError);
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("error", onError);
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      pregenAudioRef.current = null;
+    };
+  }, [isPregenerated, audioUrl, blocks]);
+
   function syncActiveBlock(nextIndex: number) {
     const nextBlock = blocksRef.current[nextIndex] ?? null;
 
@@ -267,6 +359,15 @@ export function BlogReaderControls({
   }
 
   function stopPlayback(nextStatus: Exclude<ReaderStatus, "unsupported"> = "idle") {
+    if (isPregenerated) {
+      const audio = pregenAudioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      setStatus(nextStatus);
+      return;
+    }
     if (isElevenLabs) {
       elevenLabsRef.current?.stop();
       return;
@@ -280,6 +381,23 @@ export function BlogReaderControls({
       0,
       Math.min(nextIndex, Math.max(0, blocksRef.current.length - 1)),
     );
+
+    if (isPregenerated) {
+      const audio = pregenAudioRef.current;
+      const duration = pregenDurationRef.current || (audio?.duration ?? 0);
+      if (audio && duration > 0) {
+        // Seek audio to proportional position based on word count
+        const totalWords = blocksRef.current.reduce((sum, b) => sum + b.words, 0);
+        const wordsBeforeBlock = blocksRef.current
+          .slice(0, clampedIndex)
+          .reduce((sum, b) => sum + b.words, 0);
+        audio.currentTime = (wordsBeforeBlock / totalWords) * duration;
+      }
+      syncActiveBlock(clampedIndex);
+      const entry = timelineRef.current[clampedIndex];
+      setProgressSeconds(entry?.start ?? 0);
+      return;
+    }
 
     if (isElevenLabs) {
       if (continuePlayback) {
@@ -389,7 +507,15 @@ export function BlogReaderControls({
 
     cancelSpeech();
     elevenLabsRef.current?.stop();
-    setStatus(getSpeechSupport() || engine === "elevenlabs" ? "idle" : "unsupported");
+    if (pregenAudioRef.current) {
+      pregenAudioRef.current.pause();
+      pregenAudioRef.current.currentTime = 0;
+    }
+    setStatus(
+      getSpeechSupport() || engine === "elevenlabs" || engine === "pregenerated"
+        ? "idle"
+        : "unsupported",
+    );
     setProgressSeconds(0);
 
     const schedule =
@@ -426,11 +552,39 @@ export function BlogReaderControls({
     return () => {
       cancelSpeech();
       elevenLabsRef.current?.stop();
+      if (pregenAudioRef.current) {
+        pregenAudioRef.current.pause();
+        pregenAudioRef.current.removeAttribute("src");
+        pregenAudioRef.current.load();
+      }
     };
   }, []);
 
   const handlePlayPause = () => {
     if (blocksRef.current.length === 0) return;
+
+    if (isPregenerated) {
+      const audio = pregenAudioRef.current;
+      if (!audio) return;
+
+      if (status === "playing") {
+        audio.pause();
+        setStatus("paused");
+        return;
+      }
+      if (status === "paused" || status === "idle" || status === "ended") {
+        if (status === "ended") {
+          audio.currentTime = 0;
+        }
+        audio.playbackRate = rateRef.current;
+        void audio
+          .play()
+          .then(() => setStatus("playing"))
+          .catch(() => setStatus("idle"));
+        return;
+      }
+      return;
+    }
 
     if (isElevenLabs) {
       const ttsEngine = elevenLabsRef.current;
@@ -475,6 +629,12 @@ export function BlogReaderControls({
   const handleRateChange = (nextRate: number) => {
     setRate(nextRate);
 
+    if (isPregenerated) {
+      const audio = pregenAudioRef.current;
+      if (audio) audio.playbackRate = nextRate;
+      return;
+    }
+
     if (isElevenLabs) {
       elevenLabsRef.current?.setPlaybackRate(nextRate);
       return;
@@ -492,8 +652,13 @@ export function BlogReaderControls({
 
   const handleEngineChange = (nextEngine: ReaderEngine) => {
     stopPlayback("idle");
+    // Also stop pregenerated audio when switching away
+    if (isPregenerated && pregenAudioRef.current) {
+      pregenAudioRef.current.pause();
+      pregenAudioRef.current.currentTime = 0;
+    }
     setEngine(nextEngine);
-    if (nextEngine === "elevenlabs" || getSpeechSupport()) {
+    if (nextEngine === "elevenlabs" || nextEngine === "pregenerated" || getSpeechSupport()) {
       setStatus("idle");
     }
   };
@@ -526,7 +691,11 @@ export function BlogReaderControls({
           {/* Engine toggle */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex rounded-2xl border border-border/55 bg-background/55 p-0.5">
-              {(["browser", "elevenlabs"] as ReaderEngine[]).map((eng) => (
+              {(
+                (hasPregenerated
+                  ? ["pregenerated", "browser", "elevenlabs"]
+                  : ["browser", "elevenlabs"]) as ReaderEngine[]
+              ).map((eng) => (
                 <button
                   key={eng}
                   type="button"
@@ -537,12 +706,18 @@ export function BlogReaderControls({
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {eng === "browser" ? (
+                  {eng === "pregenerated" ? (
+                    <Volume2 className="size-3.5" />
+                  ) : eng === "browser" ? (
                     <Volume2 className="size-3.5" />
                   ) : (
                     <Mic className="size-3.5" />
                   )}
-                  {eng === "browser" ? "Browser" : "ElevenLabs"}
+                  {eng === "pregenerated"
+                    ? "Pre-recorded"
+                    : eng === "browser"
+                      ? "Browser"
+                      : "ElevenLabs"}
                 </button>
               ))}
             </div>
