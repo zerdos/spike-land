@@ -997,6 +997,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chenglou/pretext@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@chenglou/pretext@npm:0.0.4"
+  checksum: 10c0/d878fcc23858f8af66c8e4d75a02bb4124972835659766804040aa2c73794cfde77bec6ac91e17e1975bdc29b5292dda9a07b59be8517166e4c0afcc36f13579
+  languageName: node
+  linkType: hard
+
 "@clack/core@npm:1.1.0":
   version: 1.1.0
   resolution: "@clack/core@npm:1.1.0"
@@ -5668,6 +5675,7 @@ __metadata:
   resolution: "@spike-land-ai/react-ts-worker@workspace:packages/react-ts-worker"
   dependencies:
     "@changesets/cli": "npm:2.30.0"
+    "@chenglou/pretext": "npm:^0.0.4"
     eslint: "npm:10.0.3"
     jsdom: "npm:28.1.0"
     typescript: "npm:5.9.3"
