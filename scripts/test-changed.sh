@@ -80,7 +80,7 @@ elif [[ "$PACKAGES" != "NO_CHANGES" ]]; then
   done
   echo "" >&2
 
-  yarn vitest run --config "$VITEST_CONFIG" "${PROJECT_FLAGS[@]}" --reporter=verbose --reporter=default
+  yarn vitest run --config "$VITEST_CONFIG" "${PROJECT_FLAGS[@]}" --reporter=default
 fi
 
 if [[ "$SCRIPT_TEST_CHANGED" -eq 1 ]]; then
