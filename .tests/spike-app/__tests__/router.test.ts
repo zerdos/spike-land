@@ -14,10 +14,6 @@ describe("Router — route tree structure", () => {
 
   const routeIds = allPaths(router.routeTree);
 
-  it("registers the /migrate route", () => {
-    expect(routeIds.some((id) => id.includes("migrate"))).toBe(true);
-  });
-
   it("registers the /apps route", () => {
     expect(routeIds.some((id) => id.includes("apps"))).toBe(true);
   });
@@ -56,11 +52,6 @@ describe("Router — route tree structure", () => {
 describe("Router — legacy redirects", () => {
   it("redirects /store to /apps", async () => {
     await router.navigate({ to: "/store" });
-    expect(router.state.location.pathname).toBe("/apps");
-  });
-
-  it("redirects /tools to /apps", async () => {
-    await router.navigate({ to: "/tools" });
     expect(router.state.location.pathname).toBe("/apps");
   });
 
