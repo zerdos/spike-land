@@ -1,0 +1,168 @@
+---
+title: "Node.js Is a Security Nightmare. It Isn't Fixable."
+slug: "nodejs-security-nightmare"
+description: "Node.js has a fundamentally broken security model. Every company still building on it — Next.js shops, telecoms, enterprise backends — is already dead. They just don't know it yet."
+date: "2026-04-05"
+author: "Zoltan"
+category: "Engineering"
+tags: ["nodejs", "security", "nextjs", "supply-chain", "runtime", "opinion"]
+featured: true
+draft: false
+primer: "Every npm install is a prayer. The runtime that ate the world has no immune system."
+heroPrompt: "A crumbling fortress made of JavaScript code and npm package boxes, dark storm clouds gathering overhead, chains of dependencies stretching into darkness, red warning signs scattered throughout, dramatic lighting with deep reds and dark grays, digital illustration style, ominous atmosphere"
+---
+
+# Node.js Is a Security Nightmare. It Isn't Fixable.
+
+*I am writing this at 4 AM because I cannot sleep. The irony of losing sleep over the technology that is supposed to make developers' lives easier is not lost on me.*
+
+---
+
+## The thesis
+
+Node.js has no security model. Not a bad one. Not a weak one. **None.**
+
+Every time you run `npm install`, you are giving every single one of those packages — and every one of *their* dependencies, and every one of *their* dependencies — full, unrestricted access to:
+
+- Your file system
+- Your network
+- Your environment variables (hello, API keys)
+- Your child processes
+- Your operating system
+
+There is no sandbox. There is no permission system. There is no capability model. A package called `left-pad` has the same privileges as your kernel.
+
+This is not a bug. This is the architecture.
+
+---
+
+## "But Deno fixed this"
+
+Deno added a permission system. Good. Brave. Correct instinct.
+
+Then the ecosystem ignored it, because every real-world Deno project ends up with `--allow-all` in the run command, because the dependency tree is too deep to audit and too intertwined to decompose. The permission model works for *your* code. It does not work for the 1,400 transitive dependencies your framework pulled in.
+
+The problem was never the runtime binary. The problem is **npm**.
+
+---
+
+## The supply chain is the attack surface
+
+Let me spell it out:
+
+1. **npm has 2.1 million packages.** Most are unmaintained. Many are abandoned. Some are actively hostile.
+2. **A single `postinstall` script runs arbitrary code on your machine** the moment you install a package. Not when you import it. When you *install* it.
+3. **Typosquatting works.** It has worked for years. It will keep working. `express` vs `expresss`. `lodash` vs `1odash`. The npm registry has no meaningful defense against this.
+4. **Maintainer accounts get compromised.** The `event-stream` incident in 2018 was not an anomaly. It was a proof of concept. The `ua-parser-js` incident in 2021 was the confirmation. The `colors` and `faker` self-sabotage in 2022 was the author telling you the model is broken. Nobody listened.
+5. **You cannot audit what you cannot read.** The average Next.js project has north of 1,000 dependencies. Nobody has read them. Nobody will read them. The audit surface is larger than any human team can cover.
+
+This is not theoretical. This is happening. Right now. To you.
+
+---
+
+## And it goes deeper than npm: the runtime itself is broken
+
+As if the supply chain wasn't enough, **the V8 engine underneath Node.js just had a HashDoS vulnerability disclosed** ([CVE-2026-21717](https://nodejs.org/en/blog/vulnerability/march-2026-hashdos), March 2026).
+
+The gist: array index strings in V8 used a **fully deterministic hash function with zero randomization**. The hash of `"1234"` was literally `(4 << 24) | 1234`. An attacker could predict every collision, craft a ~2 MB JSON payload, and hang your server's `JSON.parse` for **30 seconds** on powerful hardware. That is not a slow endpoint. That is a denial of service from a single HTTP request.
+
+This was not an obscure edge case. This was `JSON.parse`. The function every Node.js server calls on every incoming request body. The function that sits between your users and your application logic. Deterministic. Predictable. Exploitable.
+
+The fix required a 3-round xorshift-multiply permutation with random seeding — clever cryptographic work by Joyee Cheung at Igalia. But think about what this means: **for 17 years, every Node.js server in production was vulnerable to a trivial HashDoS attack through the most basic operation in the runtime.** Every Express server. Every Fastify server. Every Next.js API route. Every serverless function. All of them.
+
+And this is just the vulnerability that got found and disclosed. How many more are sitting in V8's internalization paths, in libuv's event loop, in the HTTP parser? Nobody knows. The attack surface is not just npm. It is the runtime itself.
+
+---
+
+## Next.js: good luck, you are dead
+
+I need to say this plainly, because I have spent enough nights staring at ceilings thinking about it:
+
+**If your company is built on Next.js, your security posture is already compromised. You just haven't found the breach yet.**
+
+Next.js is a beautiful piece of engineering. Vercel is a talented team. But Next.js sits on top of Node.js, which sits on top of npm, which sits on top of a mountain of unaudited, unpinned, auto-updating dependencies that have full access to your server's memory, your database credentials, your customers' data, and your production environment.
+
+The server-side rendering model means every request passes through the full Node.js dependency tree. Every. Single. Request. Your users' data flows through code you have never read, written by people you have never met, maintained by accounts that may have already been compromised.
+
+The new App Router made it worse, not better. Server Components run *more* code server-side, not less. Server Actions execute user-triggered mutations through the same unaudited dependency graph. The attack surface grew.
+
+And the response from the ecosystem? "Just run `npm audit`." As if `npm audit` has ever caught a real supply-chain attack. As if a tool that reports 47 "moderate" vulnerabilities in every fresh `create-next-app` install is a meaningful security control.
+
+---
+
+## VMO2: I am sorry, you are also dead
+
+I won't name every company. But I will name the pattern.
+
+Large telecoms. Banks. Government contractors. Healthcare platforms. They all made the same bet: "Node.js is popular, so it must be safe." They built their customer-facing platforms on Express, or Fastify, or Next.js, or Nest. They deployed to production. They passed their compliance audits — because the audits were written for a world where you controlled your own code.
+
+Nobody audits the 1,847th transitive dependency in your `node_modules` folder. The compliance frameworks were not designed for a world where a single `npm install` downloads more third-party code than your entire engineering team wrote in a year.
+
+VMO2 — Virgin Media O2, one of the UK's largest telecoms — if you are running Node.js in your customer data pipeline, and I suspect you are, then your customers' data has already passed through code that no human at your company has ever reviewed. The same is true for every Node.js shop. The question is not *whether* there is a vulnerability. The question is *how many*, and *whether anyone is already exploiting them*.
+
+I am sorry. I genuinely am. This is not schadenfreude. This is grief.
+
+---
+
+## Why it isn't fixable
+
+Here is the part that really keeps me up at night.
+
+**You cannot fix Node.js security without breaking Node.js.**
+
+The entire ecosystem — every framework, every library, every tool — is built on the assumption of unrestricted access. Add a permission model and you break every existing package. Add mandatory code signing and you exclude every hobbyist maintainer. Add dependency vendoring requirements and you collapse the convenience model that made Node.js popular in the first place.
+
+The security model of Node.js is not a feature that was forgotten. It is a design constraint that was traded for adoption speed in 2009, and now 17 years of accumulated ecosystem debt makes it impossible to retrofit.
+
+This is a *structural* problem:
+
+- **Python** has the same issue (pip is npm with a different accent)
+- **Go** got it right (vendored dependencies, no postinstall scripts, reproducible builds)
+- **Rust** got it right (cargo is strict, crates.io is audited, no arbitrary install scripts)
+- **Deno** tried to fix it (permission model) but cannot escape the npm gravity well
+- **Bun** did not even try (performance-focused, same security model)
+
+The Node.js ecosystem is a city built on a swamp. You can keep adding floors, but the foundation is not going to improve.
+
+---
+
+## What we are doing about it
+
+At spike.land, we moved the execution boundary. Instead of running untrusted dependency trees on the server, we:
+
+1. **Run MCP tool contracts at the edge** — Cloudflare Workers have a V8 isolate model with actual capability boundaries. Each worker gets its own isolate. No shared memory. No file system access. No ambient authority.
+2. **Keep the browser as a thin smoke layer** — the important verification logic runs as typed contracts, not as npm-dependent server routes.
+3. **Vendor and pin everything** — our dependency graph is explicit, locked, and reviewable. No phantom transitive dependencies.
+
+Is it perfect? No. Is it structurally better than "hope nobody compromised express's 847th dependency"? Yes.
+
+We are happy to help companies migrate. We have the architecture. We have the tools. We have the runtime.
+
+But I will be honest: I am busy with life right now. I am experiencing insomnia — caused by the stress of watching Next.js shops and telecoms sleepwalk into supply-chain disasters. How ironic is that? The technology that was supposed to save everyone time is costing me sleep, and not because I am using it, but because I *care* about the people who are.
+
+---
+
+## The uncomfortable conclusion
+
+If you are a CTO reading this at a company built on Node.js:
+
+1. **You are not safe.** `npm audit` is not a security strategy. It is a comfort blanket.
+2. **You cannot fix this incrementally.** There is no "secure Node.js" configuration. The architecture does not permit it.
+3. **Your compliance certification is theater.** SOC 2 does not audit your transitive dependency tree. PCI-DSS does not check whether `postinstall` scripts in your `node_modules` are exfiltrating environment variables.
+4. **The clock is ticking.** Every day you stay on this stack is another day your attack surface grows, because your dependencies update, their dependencies update, and nobody is watching.
+
+I know this sounds alarmist. I know the Node.js community will push back. I know people will say "every ecosystem has vulnerabilities."
+
+They are right. Every ecosystem does.
+
+But not every ecosystem gives every vulnerability **root access by default**.
+
+---
+
+*It is 5 AM now. I should try to sleep. But I keep thinking about the millions of production servers running `node index.js` right now, with thousands of unaudited dependencies loaded into memory, processing real people's data, with no sandboxing, no isolation, no capability boundaries.*
+
+*They are already dead. They just don't know it yet.*
+
+---
+
+**If you want to talk about migration paths, edge-first architectures, or just commiserate about npm at 4 AM, reach out. We are at [spike.land](https://spike.land). We are building the alternative. One typed contract at a time.**
