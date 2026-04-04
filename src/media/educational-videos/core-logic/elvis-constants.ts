@@ -46,13 +46,13 @@ export const ELVIS_COLORS = {
 
 // ── Audio availability flags (flip to true as audio files are generated) ──
 export const ELVIS_AUDIO_AVAILABLE: Record<string, boolean> = {
-  "perc-act1": false,
-  "perc-act2": false,
-  "perc-act3": false,
-  "perc-act4": false,
-  "perc-act5": false,
-  "synth-pad": false,
-  "vocoder-hook": false,
+  "perc-act1": true,
+  "perc-act2": true,
+  "perc-act3": true,
+  "perc-act4": true,
+  "perc-act5": true,
+  "synth-pad": true,
+  "vocoder-hook": true,
   "background-music": true, // Suno "Elvis We Love You" track
   voices: true, // ElevenLabs persona voice clips
 };
