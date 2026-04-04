@@ -5,7 +5,6 @@ import Footer from '../../components/Footer.astro';
 import QaStudioPage from '../../components/react/qa-studio/QaStudioApp.tsx';
 import SpikeChatPage from '../../components/apps/SpikeChatPage.astro';
 import Analytics from '../../components/Analytics.astro';
-import CookieConsent from '../../components/CookieConsent.astro';
 import { appCatalog, getAppById } from '../../data/apps';
 
 export function getStaticPaths() {
@@ -86,7 +85,6 @@ const appName = app.name;
         <Footer />
       </>
     )}
-    <CookieConsent />
   </div>
 </Layout>
 

@@ -433,38 +433,34 @@ spa.get("/*", async (c) => {
     }
 
     const existingCookie = c.req.header("cookie") ?? "";
-    // Only set tracking cookie if user has consented (GDPR compliance)
-    const hasConsent = existingCookie.includes("cookie_consent=accepted");
-    let clientId = "anonymous";
+    let clientId: string;
 
-    if (hasConsent) {
-      if (!existingCookie.includes("spike_client_id=")) {
-        clientId = await getClientId(c.req.raw);
-        response.headers.append(
-          "set-cookie",
-          `spike_client_id=${clientId}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`,
-        );
-      } else {
-        clientId =
-          existingCookie.match(/spike_client_id=([^;]+)/)?.[1] || (await getClientId(c.req.raw));
-      }
+    if (!existingCookie.includes("spike_client_id=")) {
+      clientId = await getClientId(c.req.raw);
+      response.headers.append(
+        "set-cookie",
+        `spike_client_id=${clientId}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`,
+      );
+    } else {
+      clientId =
+        existingCookie.match(/spike_client_id=([^;]+)/)?.[1] || (await getClientId(c.req.raw));
+    }
 
-      try {
-        c.executionCtx.waitUntil(
-          sendGA4Events(c.env, clientId, [
-            {
-              name: "page_view",
-              params: {
-                page_path: path,
-                referrer: (c.req.header("referer") ?? "").slice(0, 500),
-                user_agent: (c.req.header("user-agent") ?? "").slice(0, 200),
-              },
+    try {
+      c.executionCtx.waitUntil(
+        sendGA4Events(c.env, clientId, [
+          {
+            name: "page_view",
+            params: {
+              page_path: path,
+              referrer: (c.req.header("referer") ?? "").slice(0, 500),
+              user_agent: (c.req.header("user-agent") ?? "").slice(0, 200),
             },
-          ]),
-        );
-      } catch {
-        /* no ExecutionContext in test environment */
-      }
+          },
+        ]),
+      );
+    } catch {
+      /* no ExecutionContext in test environment */
     }
 
     // Analytics Engine — no PII, runs for all requests

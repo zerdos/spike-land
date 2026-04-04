@@ -10,7 +10,7 @@ import { useDevMode } from "@spike-land-ai/block-website/core";
 import { LoginButton } from "../components/LoginButton";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppFooter } from "../components/AppFooter";
-import { CookieConsent } from "../components/CookieConsent";
+
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
 import { MadMaxProtocol } from "../components/MadMaxProtocol";
 import { WelcomeModal } from "../components/WelcomeModal";
@@ -621,7 +621,6 @@ export function RootLayout() {
           </main>
 
           <AppFooter />
-          <CookieConsent />
           <WelcomeModal userName={null} />
           <MadMaxProtocol />
         </div>
