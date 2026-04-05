@@ -29,8 +29,11 @@ export function parseSource(source: string): Statement[] {
   return parser.parse(tokens);
 }
 
+/** No-op print callback used when the caller provides no output handler. */
+const noopPrint: PrintCallback = () => undefined;
+
 /** Evaluate SPWN source code and return the final value. */
-export function run(source: string, printFn?: PrintCallback): Value {
+export function run(source: string, printFn: PrintCallback = noopPrint): Value {
   const program = parseSource(source);
   const evaluator = new Evaluator(printFn);
   return evaluator.evaluate(program);

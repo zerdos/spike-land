@@ -20,6 +20,24 @@ export type UserRole = "user" | "admin" | "super_admin";
 
 export type AuthVariables = { userId: string; db: DrizzleDB; userRole: UserRole };
 
+/** Resolve a user's role from the database, defaulting to "user" on any error. */
+async function resolveUserRole(db: DrizzleDB, userId: string): Promise<UserRole> {
+  try {
+    const row = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    const role = row[0]?.role;
+    if (role === "admin" || role === "super_admin") {
+      return role;
+    }
+  } catch {
+    // Default to "user" if role lookup fails
+  }
+  return "user";
+}
+
 export const authMiddleware = createMiddleware<{
   Bindings: Env;
   Variables: AuthVariables;
@@ -34,23 +52,9 @@ export const authMiddleware = createMiddleware<{
     constantTimeEquals(internalSecret, c.env.MCP_INTERNAL_SECRET) &&
     internalUserId
   ) {
-    let userRole: UserRole = "user";
-    try {
-      const userRow = await db
-        .select({ role: users.role })
-        .from(users)
-        .where(eq(users.id, internalUserId))
-        .limit(1);
-      if (userRow[0]?.role) {
-        userRole = userRow[0].role as UserRole;
-      }
-    } catch {
-      // Default to "user" if role lookup fails
-    }
-
     c.set("userId", internalUserId);
     c.set("db", db);
-    c.set("userRole", userRole);
+    c.set("userRole", await resolveUserRole(db, internalUserId));
     return next();
   }
 
@@ -63,7 +67,7 @@ export const authMiddleware = createMiddleware<{
   if (sessionId && c.req.method === "POST") {
     c.set("userId", "session");
     c.set("db", db);
-    c.set("userRole", "user" as UserRole);
+    c.set("userRole", "user");
     return next();
   }
 
@@ -91,7 +95,7 @@ export const authMiddleware = createMiddleware<{
       if (isLifecycle || isAnonymousTool || isToolsList) {
         c.set("userId", "anonymous");
         c.set("db", db);
-        c.set("userRole", "user" as UserRole);
+        c.set("userRole", "user");
         return next();
       }
     }
@@ -157,23 +161,8 @@ export const authMiddleware = createMiddleware<{
     );
   }
 
-  // Resolve user role for RBAC
-  let userRole: UserRole = "user";
-  try {
-    const userRow = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
-    if (userRow[0]?.role) {
-      userRole = userRow[0].role as UserRole;
-    }
-  } catch {
-    // Default to "user" if role lookup fails
-  }
-
   c.set("userId", userId);
   c.set("db", db);
-  c.set("userRole", userRole);
+  c.set("userRole", await resolveUserRole(db, userId));
   return next();
 });

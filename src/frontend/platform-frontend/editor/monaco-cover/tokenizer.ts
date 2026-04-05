@@ -196,6 +196,7 @@ function isDigit(ch: string): boolean {
   return ch >= "0" && ch <= "9";
 }
 
+// Note: newline (\n) is intentionally excluded — source is pre-split on \n before scanning.
 function isWhitespace(ch: string): boolean {
   return ch === " " || ch === "\t" || ch === "\r";
 }
@@ -211,18 +212,20 @@ interface ScanState {
   pos: number;
   /** Last non-whitespace token value on the current line. */
   lastSigValue: string;
-  /** Multi-line state carried across lines. 0=normal, 1=block comment, 2=doc comment, 3=template literal. */
-  mlState: number;
+  /** Multi-line state carried across lines. */
+  mlState: MlState;
   /** Nesting depth inside `${...}` within template literals. */
   templateDepth: number;
   /** Brace depth tracker per template nesting level. */
   templateBraceStack: number[];
 }
 
-const ML_NORMAL = 0;
-const ML_BLOCK_COMMENT = 1;
-const ML_DOC_COMMENT = 2;
-const ML_TEMPLATE_LITERAL = 3;
+const ML_NORMAL = 0 as const;
+const ML_BLOCK_COMMENT = 1 as const;
+const ML_DOC_COMMENT = 2 as const;
+const ML_TEMPLATE_LITERAL = 3 as const;
+
+type MlState = 0 | 1 | 2 | 3;
 
 function peek(s: ScanState, offset: number = 0): string {
   const idx = s.pos + offset;
@@ -413,35 +416,34 @@ function consumeNumber(tokens: Token[], s: ScanState): void {
       tokenType = "number.hex";
       s.pos += 2;
       while (s.pos < s.line.length && /[0-9a-fA-F_]/.test(s.line[s.pos])) s.pos++;
-      pushNumber(tokens, s, start, tokenType);
-      return;
-    }
-    if (next === "o") {
+    } else if (next === "o") {
       s.pos += 2;
       while (s.pos < s.line.length && /[0-7_]/.test(s.line[s.pos])) s.pos++;
-      pushNumber(tokens, s, start, tokenType);
-      return;
-    }
-    if (next === "b") {
+    } else if (next === "b") {
       s.pos += 2;
       while (s.pos < s.line.length && /[01_]/.test(s.line[s.pos])) s.pos++;
-      pushNumber(tokens, s, start, tokenType);
-      return;
+    } else {
+      // Decimal starting with 0
+      while (s.pos < s.line.length && /[0-9_]/.test(s.line[s.pos])) s.pos++;
     }
+  } else {
+    // Decimal integer part
+    while (s.pos < s.line.length && /[0-9_]/.test(s.line[s.pos])) s.pos++;
   }
 
-  // Decimal integer part
-  while (s.pos < s.line.length && /[0-9_]/.test(s.line[s.pos])) s.pos++;
-
-  // Fractional part
-  if (s.pos < s.line.length && s.line[s.pos] === ".") {
+  // Fractional part (only for decimal numbers)
+  if (tokenType === "number" && s.pos < s.line.length && s.line[s.pos] === ".") {
     tokenType = "number.float";
     s.pos++;
     while (s.pos < s.line.length && /[0-9_]/.test(s.line[s.pos])) s.pos++;
   }
 
-  // Exponent part
-  if (s.pos < s.line.length && (s.line[s.pos] === "e" || s.line[s.pos] === "E")) {
+  // Exponent part (only for decimal numbers)
+  if (
+    tokenType !== "number.hex" &&
+    s.pos < s.line.length &&
+    (s.line[s.pos] === "e" || s.line[s.pos] === "E")
+  ) {
     tokenType = "number.float";
     s.pos++;
     if (s.pos < s.line.length && (s.line[s.pos] === "+" || s.line[s.pos] === "-")) s.pos++;
@@ -453,10 +455,6 @@ function consumeNumber(tokens: Token[], s: ScanState): void {
     s.pos++;
   }
 
-  pushNumber(tokens, s, start, tokenType);
-}
-
-function pushNumber(tokens: Token[], s: ScanState, start: number, tokenType: string): void {
   const value = s.line.substring(start, s.pos);
   tokens.push({ type: tokenType, value });
   s.lastSigValue = value;

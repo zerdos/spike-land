@@ -32,6 +32,9 @@ class BreakSignal {}
 
 class ContinueSignal {}
 
+const BREAK_SIGNAL = new BreakSignal();
+const CONTINUE_SIGNAL = new ContinueSignal();
+
 class ThrowSignal {
   constructor(public value: Value) {}
 }
@@ -51,7 +54,7 @@ export class Evaluator {
   private typeRegistry: Map<string, TypeValue> = new Map();
   private printFn: PrintCallback;
 
-  constructor(printFn: PrintCallback = (text) => console.log(text)) {
+  constructor(printFn: PrintCallback) {
     this.printFn = printFn;
     this.globalEnv = new Environment();
     this.setupGlobals();
@@ -68,8 +71,12 @@ export class Evaluator {
       if (result instanceof ThrowSignal) {
         throw new RuntimeError(`Uncaught throw: ${displayValue(result.value)}`);
       }
-      if (result !== null) {
-        last = result as Value;
+      if (
+        result !== null &&
+        !(result instanceof BreakSignal) &&
+        !(result instanceof ContinueSignal)
+      ) {
+        last = result;
       }
     }
     return last;
@@ -116,10 +123,10 @@ export class Evaluator {
       }
 
       case "BreakStatement":
-        return new BreakSignal();
+        return BREAK_SIGNAL;
 
       case "ContinueStatement":
-        return new ContinueSignal();
+        return CONTINUE_SIGNAL;
 
       case "ThrowStatement": {
         const val = this.evalExpr(stmt.value, env);
@@ -542,7 +549,7 @@ export class Evaluator {
     return {
       kind: "Builtin",
       name: "bound_method",
-      fn: (args: Value[], _printFn: PrintCallback) => {
+      fn: (args: Value[]) => {
         return this.callMacro(original, [self, ...args], [null, ...args.map(() => null)]);
       },
     };
@@ -733,17 +740,16 @@ export class Evaluator {
       }
     }
 
-    // Execute body
+    // Execute body — Statement[] for block macros, Expression for arrow macros
     if (Array.isArray(macro.body)) {
-      const result = this.execBlock(macro.body as import("./ast.js").Statement[], callEnv);
+      const result = this.execBlock(macro.body, callEnv);
       if (result instanceof ReturnSignal) return result.value;
       if (result instanceof ThrowSignal) throw new RuntimeError(displayValue(result.value));
       if (result instanceof BreakSignal || result instanceof ContinueSignal || result === null)
         return nullVal;
       return result;
     } else {
-      // Arrow expression body
-      return this.evalExpr(macro.body as Expression, callEnv);
+      return this.evalExpr(macro.body, callEnv);
     }
   }
 

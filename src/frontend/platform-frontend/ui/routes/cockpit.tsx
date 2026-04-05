@@ -5,7 +5,7 @@ import { ChatThread } from "../components/ChatThread";
 import { apiUrl } from "../../core-logic/api";
 import type { Message } from "../components/ChatThread";
 
-const ADMIN_EMAILS = new Set(["hello@spike.land", "hello@spike.land"]);
+const ADMIN_EMAILS = new Set(["hello@spike.land"]);
 const CHAT_STORAGE_KEY = "cockpit_chat_history";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -231,6 +231,7 @@ function CockpitChat() {
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="text-sm font-semibold text-foreground">AI Chat</h3>
         <button
+          type="button"
           onClick={clearHistory}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
@@ -326,6 +327,7 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
   return (
     <div className="rubik-panel overflow-hidden">
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
       >
@@ -388,6 +390,7 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
 
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={runEvaluation}
               disabled={evaluating || exp.status !== "active"}
               className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
@@ -607,7 +610,10 @@ function MetricsDashboard() {
           </p>
           <div className="space-y-2">
             {data.recentServicePurchases.map((p, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
+              <div
+                key={`${p.service}-${p.created_at}-${i}`}
+                className="flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success-foreground">
                     {p.service.replace(/_/g, " ")}

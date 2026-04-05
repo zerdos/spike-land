@@ -24,24 +24,36 @@ export interface Env {
   APPLE_CLIENT_SECRET?: string;
 }
 
-/** Context type for the QR auth endpoint handler, replacing untyped `any`. */
+/**
+ * Minimal shape of the context object passed to a Better Auth endpoint handler.
+ * Typed narrowly to what the QR handler actually uses, avoiding `any`.
+ */
 interface QRAuthContext {
   body: { qrHash: string; qrOneTimeCode: string };
-  request: Request;
   json: (data: unknown, options?: { status: number }) => Response;
-  context: {
-    internalAdapter: {
-      createSession: (userId: string, request: Request) => Promise<unknown>;
-    };
-  };
 }
+
+/**
+ * Better Auth's `createAuthEndpoint` is a generic factory whose full type is
+ * internal to the library. We cast to this minimal callable signature so the
+ * compiler can verify our handler without relying on `any`.
+ */
+type TypedCreateEndpoint = (
+  path: string,
+  options: {
+    method: string;
+    body: ReturnType<typeof z.object>;
+    use: never[];
+  },
+  handler: (ctx: QRAuthContext) => Promise<Response>,
+) => ReturnType<typeof createAuthEndpoint>;
 
 export function createAuth(env: Env) {
   const db = drizzle(env.AUTH_DB, { schema });
 
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
-    baseURL: env.APP_URL || "https://auth-mcp.spike.land",
+    baseURL: env.APP_URL ?? "https://auth-mcp.spike.land",
     trustedOrigins: AUTH_TRUSTED_ORIGINS,
     advanced: {
       trustProxy: true,
@@ -61,7 +73,7 @@ export function createAuth(env: Env) {
     }),
     user: {
       additionalFields: {
-        role: { type: "string" }, // store role
+        role: { type: "string" },
       },
     },
     session: {
@@ -110,25 +122,13 @@ export function createAuth(env: Env) {
     },
     plugins: [
       magicLink({
-        sendMagicLink: async () => {
-          // This will be called from the Worker to send magic links
-          // Send via external service...
-        },
+        // Magic link delivery is handled externally by the Worker caller.
+        sendMagicLink: async () => {},
       }),
       {
         id: "qr-auth",
         endpoints: {
-          signInQR: (
-            createAuthEndpoint as unknown as (
-              path: string,
-              options: {
-                method: string;
-                body: ReturnType<typeof z.object>;
-                use: never[];
-              },
-              handler: (ctx: QRAuthContext) => Promise<Response>,
-            ) => ReturnType<typeof createAuthEndpoint>
-          )(
+          signInQR: (createAuthEndpoint as unknown as TypedCreateEndpoint)(
             "/sign-in/qr",
             {
               method: "POST",

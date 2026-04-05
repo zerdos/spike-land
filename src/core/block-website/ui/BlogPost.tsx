@@ -125,40 +125,38 @@ function ScrollStoryCardCompat(props: Record<string, unknown>) {
   );
 }
 
+/** Resolve a camelCase or lowercase MDX attribute to a string, with an optional fallback. */
+function resolveProp(
+  props: Record<string, unknown>,
+  camel: string,
+  lower: string,
+): string | undefined;
+function resolveProp(
+  props: Record<string, unknown>,
+  camel: string,
+  lower: string,
+  fallback: string,
+): string;
+function resolveProp(
+  props: Record<string, unknown>,
+  camel: string,
+  lower: string,
+  fallback?: string,
+): string | undefined {
+  if (typeof props[camel] === "string") return props[camel] as string;
+  if (typeof props[lower] === "string") return props[lower] as string;
+  return fallback;
+}
+
 function SpikeChatEmbedCompat(props: Record<string, unknown>) {
-  const channelSlug =
-    typeof props["channelSlug"] === "string"
-      ? props["channelSlug"]
-      : typeof props["channelslug"] === "string"
-        ? props["channelslug"]
-        : "blog";
-  const workspaceSlug =
-    typeof props["workspaceSlug"] === "string"
-      ? props["workspaceSlug"]
-      : typeof props["workspaceslug"] === "string"
-        ? props["workspaceslug"]
-        : "spike-land";
+  const channelSlug = resolveProp(props, "channelSlug", "channelslug", "blog");
+  const workspaceSlug = resolveProp(props, "workspaceSlug", "workspaceslug", "spike-land");
   const guestAccess =
     props["guestAccess"] !== undefined ? props["guestAccess"] : props["guestaccess"];
   const height = props["height"];
-  const blogSlug =
-    typeof props["blogSlug"] === "string"
-      ? props["blogSlug"]
-      : typeof props["blogslug"] === "string"
-        ? props["blogslug"]
-        : undefined;
-  const blogTitle =
-    typeof props["blogTitle"] === "string"
-      ? props["blogTitle"]
-      : typeof props["blogtitle"] === "string"
-        ? props["blogtitle"]
-        : undefined;
-  const contentSnippet =
-    typeof props["contentSnippet"] === "string"
-      ? props["contentSnippet"]
-      : typeof props["contentsnippet"] === "string"
-        ? props["contentsnippet"]
-        : undefined;
+  const blogSlug = resolveProp(props, "blogSlug", "blogslug");
+  const blogTitle = resolveProp(props, "blogTitle", "blogtitle");
+  const contentSnippet = resolveProp(props, "contentSnippet", "contentsnippet");
   const persona = typeof props["persona"] === "string" ? props["persona"] : undefined;
 
   return (
@@ -188,6 +186,65 @@ function ResponsiveIframe(props: React.IframeHTMLAttributes<HTMLIFrameElement>) 
           loading="lazy"
           className="h-full w-full border-0"
         />
+      </div>
+    </div>
+  );
+}
+
+function TldrBlock({ children, title }: { children?: React.ReactNode; title?: string }) {
+  return (
+    <div
+      data-reader-block="true"
+      data-reader-kind="summary"
+      className="bg-primary/[0.03] border-2 border-primary/10 rounded-[2rem] p-8 my-12 relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12">
+        <Zap size={80} className="text-primary" />
+      </div>
+      <h3 className="text-lg font-black uppercase tracking-[0.24em] mb-4 text-primary flex items-center gap-2">
+        <Zap className="size-4" />
+        {title ?? "The Quick Version"}
+      </h3>
+      <div className="text-foreground/80 font-medium space-y-3 leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
+const CALLOUT_CONFIGS = {
+  info: {
+    className:
+      "bg-info/10 border-l-info-foreground border-y border-r border-info-foreground/20 text-info-foreground",
+    Icon: Info,
+    iconClass: "text-info-foreground",
+  },
+  success: {
+    className:
+      "bg-success/10 border-l-success-foreground border-y border-r border-success-foreground/20 text-success-foreground",
+    Icon: CheckCircle2,
+    iconClass: "text-success-foreground",
+  },
+  warning: {
+    className:
+      "bg-warning/10 border-l-warning-foreground border-y border-r border-warning-foreground/20 text-warning-foreground",
+    Icon: AlertTriangle,
+    iconClass: "text-warning-foreground",
+  },
+} as const;
+
+function CalloutBlock({ children, type }: { children?: React.ReactNode; type?: string }) {
+  const kind = type === "success" || type === "warning" ? type : "info";
+  const { className, Icon, iconClass } = CALLOUT_CONFIGS[kind];
+  return (
+    <div
+      data-reader-block="true"
+      data-reader-kind="callout"
+      className={cn("p-6 my-10 rounded-2xl border-l-4 shadow-sm", className)}
+    >
+      <div className="flex gap-4">
+        <div className="shrink-0 mt-1">
+          <Icon size={20} className={iconClass} />
+        </div>
+        <div className="font-medium leading-relaxed italic">{children}</div>
       </div>
     </div>
   );
@@ -249,53 +306,26 @@ const CUSTOM_COMPONENT_MAP: Record<string, React.ComponentType<Record<string, un
   personaswitcher: PersonaSwitcher as React.ComponentType<Record<string, unknown>>,
   blogpoll: BlogPoll as React.ComponentType<Record<string, unknown>>,
   pollanalyticsdashboard: PollAnalyticsDashboard as React.ComponentType<Record<string, unknown>>,
-  tldr: ({ children, title }: { children?: React.ReactNode; title?: string }) => (
-    <div
-      data-reader-block="true"
-      data-reader-kind="summary"
-      className="bg-primary/[0.03] border-2 border-primary/10 rounded-[2rem] p-8 my-12 relative overflow-hidden"
-    >
-      <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12">
-        <Zap size={80} className="text-primary" />
-      </div>
-      <h3 className="text-lg font-black uppercase tracking-[0.24em] mb-4 text-primary flex items-center gap-2">
-        <Zap className="size-4" />
-        {title ?? "The Quick Version"}
-      </h3>
-      <div className="text-foreground/80 font-medium space-y-3 leading-relaxed">{children}</div>
-    </div>
-  ),
-  callout: ({ children, type }: { children?: React.ReactNode; type?: string }) => {
-    const isInfo = type === "info" || !type;
-    const isSuccess = type === "success";
-    const isWarning = type === "warning";
-
-    return (
-      <div
-        data-reader-block="true"
-        data-reader-kind="callout"
-        className={cn(
-          "p-6 my-10 rounded-2xl border-l-4 shadow-sm",
-          isInfo &&
-            "bg-info/10 border-l-info-foreground border-y border-r border-info-foreground/20 text-info-foreground",
-          isSuccess &&
-            "bg-success/10 border-l-success-foreground border-y border-r border-success-foreground/20 text-success-foreground",
-          isWarning &&
-            "bg-warning/10 border-l-warning-foreground border-y border-r border-warning-foreground/20 text-warning-foreground",
-        )}
-      >
-        <div className="flex gap-4">
-          <div className="shrink-0 mt-1">
-            {isInfo && <Info size={20} className="text-info-foreground" />}
-            {isSuccess && <CheckCircle2 size={20} className="text-success-foreground" />}
-            {isWarning && <AlertTriangle size={20} className="text-warning-foreground" />}
-          </div>
-          <div className="font-medium leading-relaxed italic">{children}</div>
-        </div>
-      </div>
-    );
-  },
+  tldr: TldrBlock as React.ComponentType<Record<string, unknown>>,
+  callout: CalloutBlock as React.ComponentType<Record<string, unknown>>,
 } as Record<string, React.ComponentType<Record<string, unknown>>>;
+
+/**
+ * Factory for reader-annotated heading components.
+ * Avoids repeating identical JSX for h2–h6.
+ */
+function makeHeading(
+  Tag: "h2" | "h3" | "h4" | "h5" | "h6",
+): React.ComponentType<React.HTMLAttributes<HTMLHeadingElement>> {
+  const level = Tag.slice(1);
+  return function ReaderHeading({ children, ...props }) {
+    return (
+      <Tag data-reader-block="true" data-reader-kind={`heading-${level}`} {...props}>
+        {children}
+      </Tag>
+    );
+  };
+}
 
 /**
  * HTML element override components typed against react-markdown's Components.
@@ -303,31 +333,11 @@ const CUSTOM_COMPONENT_MAP: Record<string, React.ComponentType<Record<string, un
 const HTML_COMPONENT_MAP = {
   pre: ({ children }) => <>{children}</>,
   code: CodeBlock as Components["code"],
-  h2: ({ children, ...props }) => (
-    <h2 data-reader-block="true" data-reader-kind="heading-2" {...props}>
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }) => (
-    <h3 data-reader-block="true" data-reader-kind="heading-3" {...props}>
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }) => (
-    <h4 data-reader-block="true" data-reader-kind="heading-4" {...props}>
-      {children}
-    </h4>
-  ),
-  h5: ({ children, ...props }) => (
-    <h5 data-reader-block="true" data-reader-kind="heading-5" {...props}>
-      {children}
-    </h5>
-  ),
-  h6: ({ children, ...props }) => (
-    <h6 data-reader-block="true" data-reader-kind="heading-6" {...props}>
-      {children}
-    </h6>
-  ),
+  h2: makeHeading("h2"),
+  h3: makeHeading("h3"),
+  h4: makeHeading("h4"),
+  h5: makeHeading("h5"),
+  h6: makeHeading("h6"),
   p: ({ children, ...props }) => (
     <p
       data-reader-block="true"
@@ -411,6 +421,63 @@ function normalizeBlogPost(post: BlogPost): BlogPost {
     heroPrompt,
     content: body,
   };
+}
+
+const SHARE_PILL_CLASS =
+  "inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border/60 bg-muted/30 text-xs font-bold text-muted-foreground hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-all";
+
+function SocialShareBar({
+  slug,
+  title,
+  copied,
+  onCopy,
+}: {
+  slug: string;
+  title: string;
+  copied: boolean;
+  onCopy: () => void;
+}) {
+  const shareUrl = `https://spike.land/blog/${slug}`;
+  const xShareIntent = `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`;
+  const liShareIntent = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+  const redditIntent = `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`;
+  const hnIntent = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(shareUrl)}&t=${encodeURIComponent(title)}`;
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-border/30">
+      <span className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/40">
+        Share
+      </span>
+      <a href={xShareIntent} target="_blank" rel="noopener noreferrer" className={SHARE_PILL_CLASS}>
+        <Twitter size={14} /> X
+      </a>
+      <a
+        href={liShareIntent}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={SHARE_PILL_CLASS}
+      >
+        <Linkedin size={14} /> LinkedIn
+      </a>
+      <a href={redditIntent} target="_blank" rel="noopener noreferrer" className={SHARE_PILL_CLASS}>
+        Reddit
+      </a>
+      <a href={hnIntent} target="_blank" rel="noopener noreferrer" className={SHARE_PILL_CLASS}>
+        HN
+      </a>
+      <button onClick={onCopy} className={SHARE_PILL_CLASS}>
+        {copied ? (
+          <>
+            <Check size={14} /> Copied!
+          </>
+        ) : (
+          <>
+            <Copy size={14} /> Link
+          </>
+        )}
+      </button>
+    </div>
+  );
 }
 
 export function BlogPostView({
@@ -715,73 +782,16 @@ export function BlogPostView({
             )}
 
             {/* Social Share Bar */}
-            {(() => {
-              const shareUrl = `https://spike.land/blog/${resolvedPost.slug}`;
-              const shareTitle = resolvedPost.title;
-              const xShareIntent = `https://x.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`;
-              const liShareIntent = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-              const redditIntent = `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}`;
-              const hnIntent = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(shareUrl)}&t=${encodeURIComponent(shareTitle)}`;
-              const sharePillClass =
-                "inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border/60 bg-muted/30 text-xs font-bold text-muted-foreground hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-all";
-              return (
-                <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-border/30">
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/40">
-                    Share
-                  </span>
-                  <a
-                    href={xShareIntent}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={sharePillClass}
-                  >
-                    <Twitter size={14} /> X
-                  </a>
-                  <a
-                    href={liShareIntent}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={sharePillClass}
-                  >
-                    <Linkedin size={14} /> LinkedIn
-                  </a>
-                  <a
-                    href={redditIntent}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={sharePillClass}
-                  >
-                    Reddit
-                  </a>
-                  <a
-                    href={hnIntent}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={sharePillClass}
-                  >
-                    HN
-                  </a>
-                  <button
-                    onClick={() => {
-                      void navigator.clipboard.writeText(shareUrl);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
-                    className={sharePillClass}
-                  >
-                    {copied ? (
-                      <>
-                        <Check size={14} /> Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={14} /> Link
-                      </>
-                    )}
-                  </button>
-                </div>
-              );
-            })()}
+            <SocialShareBar
+              slug={resolvedPost.slug}
+              title={resolvedPost.title}
+              copied={copied}
+              onCopy={() => {
+                void navigator.clipboard.writeText(`https://spike.land/blog/${resolvedPost.slug}`);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            />
           </header>
 
           <div

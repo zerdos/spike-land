@@ -85,7 +85,6 @@ interface HintMove {
 
 declare global {
   interface Window {
-    advanceTime?: (ms: number) => void;
     render_game_to_text?: () => string;
   }
 }
@@ -549,11 +548,8 @@ export function ChessArenaApp() {
       });
     };
 
-    window.advanceTime = () => {};
-
     return () => {
       delete window.render_game_to_text;
-      delete window.advanceTime;
     };
   }, [
     announcement,

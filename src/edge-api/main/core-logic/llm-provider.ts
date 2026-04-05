@@ -4,8 +4,11 @@
  * to use the same BYOK + multi-provider logic.
  */
 
+import { createLogger } from "@spike-land-ai/shared";
 import { resolveByokKey, type ByokProvider } from "./byok.js";
 import type { Env } from "./env.js";
+
+const log = createLogger("llm-provider");
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -470,11 +473,19 @@ function compactUsage(values: {
   completion_tokens: number | undefined;
   total_tokens: number | undefined;
 }): UsageShape | undefined {
+  const { prompt_tokens, completion_tokens, total_tokens } = values;
+  if (
+    prompt_tokens === undefined &&
+    completion_tokens === undefined &&
+    total_tokens === undefined
+  ) {
+    return undefined;
+  }
   const usage: UsageShape = {};
-  if (values.prompt_tokens !== undefined) usage.prompt_tokens = values.prompt_tokens;
-  if (values.completion_tokens !== undefined) usage.completion_tokens = values.completion_tokens;
-  if (values.total_tokens !== undefined) usage.total_tokens = values.total_tokens;
-  return Object.keys(usage).length > 0 ? usage : undefined;
+  if (prompt_tokens !== undefined) usage.prompt_tokens = prompt_tokens;
+  if (completion_tokens !== undefined) usage.completion_tokens = completion_tokens;
+  if (total_tokens !== undefined) usage.total_tokens = total_tokens;
+  return usage;
 }
 
 export async function callOpenAiStyleProvider(
@@ -504,7 +515,6 @@ export async function callOpenAiStyleProvider(
   });
 
   if (!res.ok) {
-    console.error("[llm-provider] openai-style synthesis failed", { endpoint, status: res.status });
     throw new Error(`Synthesis provider request failed with status ${res.status}.`);
   }
 
@@ -569,7 +579,6 @@ export async function callAnthropicProvider(
   });
 
   if (!res.ok) {
-    console.error("[llm-provider] anthropic synthesis failed", { status: res.status });
     throw new Error(`Anthropic synthesis request failed with status ${res.status}.`);
   }
 
@@ -578,15 +587,16 @@ export async function callAnthropicProvider(
     .map((entry) => (entry.type === "text" ? (entry.text ?? "") : ""))
     .join("");
 
+  const anthropicUsage = data.usage;
   return {
     content,
-    usage: data.usage
+    usage: anthropicUsage
       ? compactUsage({
-          prompt_tokens: data.usage.input_tokens,
-          completion_tokens: data.usage.output_tokens,
+          prompt_tokens: anthropicUsage.input_tokens,
+          completion_tokens: anthropicUsage.output_tokens,
           total_tokens:
-            data.usage.input_tokens !== undefined || data.usage.output_tokens !== undefined
-              ? (data.usage.input_tokens ?? 0) + (data.usage.output_tokens ?? 0)
+            anthropicUsage.input_tokens !== undefined || anthropicUsage.output_tokens !== undefined
+              ? (anthropicUsage.input_tokens ?? 0) + (anthropicUsage.output_tokens ?? 0)
               : undefined,
         })
       : undefined,
@@ -631,7 +641,6 @@ export async function callGoogleProvider(
   );
 
   if (!res.ok) {
-    console.error("[llm-provider] google synthesis failed", { status: res.status, model });
     throw new Error(`Google synthesis request failed with status ${res.status}.`);
   }
 
@@ -717,12 +726,12 @@ export async function streamCompletion(
 ): Promise<Response> {
   // OpenAI/xAI/Ollama support native streaming
   if (target.provider === "openai" || target.provider === "xai" || target.provider === "ollama") {
-    const endpoint =
-      target.provider === "openai"
-        ? "https://api.openai.com/v1/chat/completions"
-        : target.provider === "ollama"
-          ? "http://localhost:11435/v1/chat/completions"
-          : "https://api.x.ai/v1/chat/completions";
+    const OPENAI_COMPAT_ENDPOINTS: Record<string, string> = {
+      openai: "https://api.openai.com/v1/chat/completions",
+      xai: "https://api.x.ai/v1/chat/completions",
+      ollama: "http://localhost:11435/v1/chat/completions",
+    };
+    const endpoint = OPENAI_COMPAT_ENDPOINTS[target.provider]!;
 
     const body: Record<string, unknown> = {
       model: target.upstreamModel,
@@ -746,7 +755,6 @@ export async function streamCompletion(
 
     if (!res.ok) {
       const errText = await res.text();
-      console.error(`[llm-provider] streaming failed ${res.status}: ${errText}`);
       throw new Error(`AI service error (${res.status}): ${errText.slice(0, 200)}`);
     }
 
@@ -821,8 +829,8 @@ export async function streamCompletionWithFallback(
           () => {},
         );
       }
-      console.warn(
-        `[llm-provider] fallback: ${target.provider}/${target.upstreamModel} failed (${lastError.message}), trying next provider...`,
+      log.warn(
+        `fallback: ${target.provider}/${target.upstreamModel} failed (${lastError.message}), trying next provider...`,
       );
     }
   }

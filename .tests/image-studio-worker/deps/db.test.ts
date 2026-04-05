@@ -96,7 +96,12 @@ describe("db", () => {
 
   it("jobCreate", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "job-1" });
+    d1.mockFirst.mockResolvedValueOnce({
+      id: "job-1",
+      imageId: "img-1",
+      tier: "FREE",
+      status: "PENDING",
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.jobCreate({
       imageId: "img" as ImageId,
@@ -126,7 +131,9 @@ describe("db", () => {
 
   it("jobFindMany", async () => {
     const d1 = createMockDb();
-    d1.mockAll.mockResolvedValueOnce({ results: [{ id: "job-1" }] });
+    d1.mockAll.mockResolvedValueOnce({
+      results: [{ id: "job-1", imageId: "img-1", tier: "FREE", status: "PENDING" }],
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.jobFindMany({
       userId: "u",
@@ -139,7 +146,12 @@ describe("db", () => {
 
   it("jobUpdate", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "job-1" });
+    d1.mockFirst.mockResolvedValueOnce({
+      id: "job-1",
+      imageId: "img-1",
+      tier: "FREE",
+      status: "COMPLETED",
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.jobUpdate("job-1" as JobId, {
       status: "COMPLETED",
@@ -156,7 +168,12 @@ describe("db", () => {
 
   it("albumCreate", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "alb-1" });
+    d1.mockFirst.mockResolvedValueOnce({
+      id: "alb-1",
+      handle: "h",
+      privacy: "PUBLIC",
+      defaultTier: "FREE",
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.albumCreate({
       handle: "h" as AlbumHandle,
@@ -175,9 +192,11 @@ describe("db", () => {
 
   it("albumFindByHandle", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "alb-1" }).mockResolvedValueOnce({
-      count: 5,
-    });
+    d1.mockFirst
+      .mockResolvedValueOnce({ id: "alb-1", handle: "h", privacy: "PUBLIC", defaultTier: "FREE" })
+      .mockResolvedValueOnce({
+        count: 5,
+      });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     const res = await db.albumFindByHandle("h" as AlbumHandle);
     expect(res?.id).toBe("alb-1");
@@ -188,9 +207,11 @@ describe("db", () => {
 
   it("albumFindById", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "alb-1" }).mockResolvedValueOnce({
-      count: 5,
-    });
+    d1.mockFirst
+      .mockResolvedValueOnce({ id: "alb-1", handle: "h", privacy: "PUBLIC", defaultTier: "FREE" })
+      .mockResolvedValueOnce({
+        count: 5,
+      });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     const res = await db.albumFindById("alb-1");
     expect(res?.id).toBe("alb-1");
@@ -201,7 +222,9 @@ describe("db", () => {
 
   it("albumFindMany", async () => {
     const d1 = createMockDb();
-    d1.mockAll.mockResolvedValueOnce({ results: [{ id: "alb-1" }] });
+    d1.mockAll.mockResolvedValueOnce({
+      results: [{ id: "alb-1", handle: "h", privacy: "PUBLIC", defaultTier: "FREE" }],
+    });
     d1.mockFirst.mockResolvedValue({ count: 5 });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.albumFindMany({ userId: "u", limit: 10 });
@@ -210,7 +233,12 @@ describe("db", () => {
 
   it("albumUpdate", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "alb-1" });
+    d1.mockFirst.mockResolvedValueOnce({
+      id: "alb-1",
+      handle: "h",
+      privacy: "PRIVATE",
+      defaultTier: "FREE",
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.albumUpdate("h" as AlbumHandle, {
       name: "n",
@@ -266,7 +294,7 @@ describe("db", () => {
   it("albumImageList", async () => {
     const d1 = createMockDb();
     d1.mockAll.mockResolvedValueOnce({
-      results: [{ id: "ai-1", img_id: "img-1" }],
+      results: [{ id: "ai-1", imageId: "img-1", img_id: "img-1" }],
     });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     await db.albumImageList("alb-1");
@@ -423,7 +451,7 @@ describe("db", () => {
 
   it("subjectCreate", async () => {
     const d1 = createMockDb();
-    d1.mockFirst.mockResolvedValueOnce({ id: "sub-1" });
+    d1.mockFirst.mockResolvedValueOnce({ id: "sub-1", imageId: "img-1", type: "character" });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     if (db.subjectCreate) {
       await db.subjectCreate({
@@ -439,7 +467,9 @@ describe("db", () => {
 
   it("subjectFindMany", async () => {
     const d1 = createMockDb();
-    d1.mockAll.mockResolvedValueOnce({ results: [{ id: "sub-1" }] });
+    d1.mockAll.mockResolvedValueOnce({
+      results: [{ id: "sub-1", imageId: "img-1", type: "character" }],
+    });
     const db = createD1Db({ IMAGE_DB: d1 as unknown as D1Database } as never);
     if (db.subjectFindMany) {
       await db.subjectFindMany({ userId: "u" });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { cn } from "../../styling/cn";
 
 // ---------------------------------------------------------------------------
@@ -193,6 +193,10 @@ npx @spike-land-ai/cli token-pool credits
 
 const COMMUNITY_TOKEN_COUNT_SEED = 1847;
 
+const PRODUCT_OPTIONS = PRODUCTS.map((p) => ({ value: p.id, label: p.name })).concat([
+  { value: "general", label: "General feedback" },
+]);
+
 // ---------------------------------------------------------------------------
 // Hooks
 // ---------------------------------------------------------------------------
@@ -343,8 +347,7 @@ function CodeBlock({ code }: { code: string }) {
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(code).catch(() => {});
     setCopied(true);
-    const id = setTimeout(() => setCopied(false), 2000);
-    return () => clearTimeout(id);
+    setTimeout(() => setCopied(false), 2000);
   }, [code]);
 
   return (
@@ -646,14 +649,6 @@ function FeedbackForm({ defaultProduct }: { defaultProduct: string }) {
     }
   }, [defaultProduct, dispatch]);
 
-  const productOptions = useMemo(
-    () =>
-      PRODUCTS.map((p) => ({ value: p.id, label: p.name })).concat([
-        { value: "general", label: "General feedback" },
-      ]),
-    [],
-  );
-
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -713,7 +708,7 @@ function FeedbackForm({ defaultProduct }: { defaultProduct: string }) {
           className="rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-2.5 text-sm text-white focus:border-cyan-500/60 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 appearance-none"
         >
           <option value="">Select a product...</option>
-          {productOptions.map((opt) => (
+          {PRODUCT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
@@ -829,7 +824,7 @@ function BackgroundOrbs() {
 export function ApiPage() {
   const [heroRevealed, setHeroRevealed] = useState(false);
   const [activeProductId, setActiveProductId] = useState<string>("");
-  const feedbackRef = useRef<HTMLDivElement>(null);
+  const feedbackRef = useRef<HTMLElement | null>(null);
 
   // Hero entrance
   useEffect(() => {
@@ -842,6 +837,16 @@ export function ApiPage() {
   const { ref: productsRef, visible: productsVisible } = useIntersectionOnce(0.05);
   const { ref: donateRef, visible: donateVisible } = useIntersectionOnce(0.2);
   const { ref: feedbackSectionRef, visible: feedbackVisible } = useIntersectionOnce(0.15);
+
+  // Merge the scroll-target ref and the intersection-observer ref into one callback ref.
+  const feedbackRefCallback = useCallback(
+    (el: HTMLElement | null) => {
+      feedbackRef.current = el;
+      (feedbackSectionRef as React.MutableRefObject<HTMLDivElement | null>).current =
+        el as HTMLDivElement | null;
+    },
+    [feedbackSectionRef],
+  );
 
   // Scroll to feedback and pre-select product
   const handleRequestAccess = useCallback((productId: string) => {
@@ -1156,11 +1161,7 @@ export function ApiPage() {
       {/* ------------------------------------------------------------------ */}
       <section
         id="feedback"
-        ref={(el) => {
-          // Attach both refs
-          (feedbackSectionRef as React.MutableRefObject<HTMLElement | null>).current = el;
-          (feedbackRef as React.MutableRefObject<HTMLElement | null>).current = el;
-        }}
+        ref={feedbackRefCallback}
         className={cn(
           "relative z-10 mx-4 mb-24 overflow-hidden rounded-2xl",
           "border border-slate-700/50 bg-slate-900/60 backdrop-blur-sm",
@@ -1206,7 +1207,7 @@ export function ApiPage() {
           </div>
 
           {/* Right: form */}
-          <div className="border-t border-slate-700/30 lg:border-t-0 lg:border-l border-slate-700/30 p-8 lg:p-12">
+          <div className="border-t border-slate-700/30 lg:border-t-0 lg:border-l p-8 lg:p-12">
             <FeedbackForm defaultProduct={activeProductId} />
           </div>
         </div>

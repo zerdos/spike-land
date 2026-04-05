@@ -146,6 +146,30 @@ const DOMAINS: Domain[] = [
   },
 ];
 
+interface FeatureHighlight {
+  icon: React.ElementType;
+  title: string;
+  body: string;
+}
+
+const FEATURE_HIGHLIGHTS: FeatureHighlight[] = [
+  {
+    icon: Zap,
+    title: "Function-Speed Verification",
+    body: "The first value is not another dashboard. It is moving critical checks out of brittle browser flows and into fast, typed contracts.",
+  },
+  {
+    icon: Code2,
+    title: "Typed Contracts",
+    body: "Strict types and validated inputs create a reusable surface that CI, internal tooling, the CLI, and agents can all call consistently.",
+  },
+  {
+    icon: Layers,
+    title: "Managed Runtime Above Cloudflare",
+    body: "Cloudflare supplies the primitives. spike.land adds registry, auth, metering, governance, and a workflow model teams can actually buy.",
+  },
+];
+
 const STATS: StatItem[] = [
   { value: 80, suffix: "+", label: "Hosted Tools", icon: Zap },
   { value: 1, suffix: "", label: "Paid Wedge", icon: Layers },
@@ -584,23 +608,7 @@ export function WhatWeDoPage() {
       >
         <DotGrid />
         <div className="relative grid gap-px sm:grid-cols-3">
-          {[
-            {
-              icon: Zap,
-              title: "Function-Speed Verification",
-              body: "The first value is not another dashboard. It is moving critical checks out of brittle browser flows and into fast, typed contracts.",
-            },
-            {
-              icon: Code2,
-              title: "Typed Contracts",
-              body: "Strict types and validated inputs create a reusable surface that CI, internal tooling, the CLI, and agents can all call consistently.",
-            },
-            {
-              icon: Layers,
-              title: "Managed Runtime Above Cloudflare",
-              body: "Cloudflare supplies the primitives. spike.land adds registry, auth, metering, governance, and a workflow model teams can actually buy.",
-            },
-          ].map(({ icon: Icon, title, body }) => (
+          {FEATURE_HIGHLIGHTS.map(({ icon: Icon, title, body }) => (
             <div
               key={title}
               className="group flex flex-col gap-3 p-8 hover:bg-primary/5 transition-colors duration-300"

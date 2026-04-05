@@ -2,6 +2,28 @@ import { applySessionDelta, computeSessionHash, tryCatch } from "@spike-land-ai/
 import type { SessionDelta } from "@spike-land-ai/code";
 import type { Code } from "./chatRoom";
 
+/** Narrow an unknown value to string, returning null if it is not a string. */
+function asString(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+/** Narrow an unknown value to a string array, returning [] if it is not one. */
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+/**
+ * Type guard that checks whether a message record carries the minimum fields
+ * required by {@link SessionDelta}. The `delta` field is not checked here since
+ * its structure is opaque — `applySessionDelta` will validate it internally.
+ */
+function isSessionDelta(
+  data: Record<string, unknown>,
+): data is Record<string, unknown> & SessionDelta {
+  return typeof data["oldHash"] === "string" && typeof data["hashCode"] === "string";
+}
+
 /**
  * Metadata for a registered swarm agent connected via WebSocket.
  */
@@ -94,7 +116,7 @@ export class WebSocketHandler {
     }
 
     if (data["type"] === "subscribe") {
-      const subscribeTopics = Array.isArray(data["topics"]) ? (data["topics"] as string[]) : [];
+      const subscribeTopics = asStringArray(data["topics"]);
       for (const topic of subscribeTopics) {
         if (!attachment.subscribedTopics.includes(topic)) {
           attachment.subscribedTopics.push(topic);
@@ -114,7 +136,7 @@ export class WebSocketHandler {
     }
 
     if (data["type"] === "unsubscribe") {
-      const unsubscribeTopics = Array.isArray(data["topics"]) ? (data["topics"] as string[]) : [];
+      const unsubscribeTopics = asStringArray(data["topics"]);
       for (const topic of unsubscribeTopics) {
         const idx = attachment.subscribedTopics.indexOf(topic);
         if (idx !== -1) {
@@ -132,11 +154,12 @@ export class WebSocketHandler {
     }
 
     if (data["type"] === "publish") {
-      const subscribers = this.topics.get(data["topic"] as string);
-      if (subscribers) {
+      const topic = asString(data["topic"]);
+      const subscribers = topic !== null ? this.topics.get(topic) : undefined;
+      if (subscribers && topic !== null) {
         const msg = JSON.stringify({
           type: "message",
-          topic: data["topic"],
+          topic,
           data: data["data"],
         });
         for (const subscriber of subscribers) {
@@ -146,7 +169,7 @@ export class WebSocketHandler {
       this.safeSend(ws, {
         type: "ack",
         action: "publish",
-        topic: data["topic"],
+        topic: topic ?? data["topic"],
       });
       return;
     }
@@ -163,7 +186,7 @@ export class WebSocketHandler {
           (typeof data["display_name"] === "string" ? data["display_name"] : "") ||
           attachment.name ||
           "anonymous",
-        capabilities: Array.isArray(data["capabilities"]) ? (data["capabilities"] as string[]) : [],
+        capabilities: asStringArray(data["capabilities"]),
         registeredAt: Date.now(),
       };
       attachment.name = attachment.swarmAgent.agentId;
@@ -177,14 +200,15 @@ export class WebSocketHandler {
     }
 
     if (data["type"] === "swarm_message") {
+      const targetAgentId = asString(data["target_agent_id"]);
       const sockets = this.state.getWebSockets();
       let targetWs: WebSocket | null = null;
       let targetAttachment: WsAttachment | null = null;
       for (const s of sockets) {
         const a = this.getAttachment(s);
         if (
-          a.swarmAgent?.agentId === data["target_agent_id"] ||
-          a.name === data["target_agent_id"]
+          (targetAgentId !== null && a.swarmAgent?.agentId === targetAgentId) ||
+          (targetAgentId !== null && a.name === targetAgentId)
         ) {
           targetWs = s;
           targetAttachment = a;
@@ -204,7 +228,7 @@ export class WebSocketHandler {
           this.safeSend(ws, {
             type: "ack",
             action: "swarm_message",
-            target: data["target_agent_id"],
+            target: targetAgentId,
           });
         } catch {
           // Socket may have closed, queue the message
@@ -214,7 +238,7 @@ export class WebSocketHandler {
           }
           this.safeSend(ws, {
             type: "swarm_message_queued",
-            target_agent_id: data["target_agent_id"],
+            target_agent_id: targetAgentId,
             message: "Target agent offline, message queued.",
           });
         }
@@ -223,7 +247,7 @@ export class WebSocketHandler {
         for (const s of sockets) {
           if (s === ws) continue;
           const a = this.getAttachment(s);
-          if (a.name === data["target_agent_id"]) {
+          if (targetAgentId !== null && a.name === targetAgentId) {
             a.blockedMessages.push(payload);
             s.serializeAttachment(a);
             break;
@@ -231,7 +255,7 @@ export class WebSocketHandler {
         }
         this.safeSend(ws, {
           type: "swarm_message_queued",
-          target_agent_id: data["target_agent_id"],
+          target_agent_id: targetAgentId,
           message: "Target agent offline, message queued.",
         });
       }
@@ -239,14 +263,15 @@ export class WebSocketHandler {
     }
 
     if (data["type"] === "swarm_delegate") {
+      const targetAgentId = asString(data["target_agent_id"]);
       const sockets = this.state.getWebSockets();
       let targetWs: WebSocket | null = null;
       let targetAttachment: WsAttachment | null = null;
       for (const s of sockets) {
         const a = this.getAttachment(s);
         if (
-          a.swarmAgent?.agentId === data["target_agent_id"] ||
-          a.name === data["target_agent_id"]
+          (targetAgentId !== null && a.swarmAgent?.agentId === targetAgentId) ||
+          (targetAgentId !== null && a.name === targetAgentId)
         ) {
           targetWs = s;
           targetAttachment = a;
@@ -257,7 +282,7 @@ export class WebSocketHandler {
         type: "swarm_task",
         from_agent_id: attachment.swarmAgent?.agentId || attachment.name || "unknown",
         task_description: data["task_description"],
-        priority: data["priority"] || "medium",
+        priority: data["priority"] ?? "medium",
         context: data["context"],
         timestamp: Date.now(),
       };
@@ -267,7 +292,7 @@ export class WebSocketHandler {
           this.safeSend(ws, {
             type: "ack",
             action: "swarm_delegate",
-            target: data["target_agent_id"],
+            target: targetAgentId,
           });
         } catch {
           if (targetAttachment) {
@@ -276,7 +301,7 @@ export class WebSocketHandler {
           }
           this.safeSend(ws, {
             type: "swarm_delegate_queued",
-            target_agent_id: data["target_agent_id"],
+            target_agent_id: targetAgentId,
             message: "Target agent offline, task queued.",
           });
         }
@@ -284,7 +309,7 @@ export class WebSocketHandler {
         for (const s of sockets) {
           if (s === ws) continue;
           const a = this.getAttachment(s);
-          if (a.name === data["target_agent_id"]) {
+          if (targetAgentId !== null && a.name === targetAgentId) {
             a.blockedMessages.push(payload);
             s.serializeAttachment(a);
             break;
@@ -292,7 +317,7 @@ export class WebSocketHandler {
         }
         this.safeSend(ws, {
           type: "swarm_delegate_queued",
-          target_agent_id: data["target_agent_id"],
+          target_agent_id: targetAgentId,
           message: "Target agent offline, task queued.",
         });
       }
@@ -308,11 +333,11 @@ export class WebSocketHandler {
       return;
     }
 
-    if (data["oldHash"]) {
+    if (isSessionDelta(data)) {
       const currentSession = this.code.getSession();
       const currentHash = computeSessionHash(currentSession);
 
-      if (currentHash !== data["oldHash"]) {
+      if (currentHash !== data.oldHash) {
         console.error("Hash mismatch");
         this.safeSend(ws, {
           type: "error",
@@ -321,7 +346,7 @@ export class WebSocketHandler {
         return;
       }
 
-      const patchedSession = applySessionDelta(currentSession, data as unknown as SessionDelta);
+      const patchedSession = applySessionDelta(currentSession, data);
       const { error } = await tryCatch(this.code.updateAndBroadcastSession(patchedSession, ws));
       if (error) {
         this.safeSend(ws, {
@@ -337,11 +362,12 @@ export class WebSocketHandler {
       return;
     }
 
-    if (data["target"]) {
+    const target = asString(data["target"]);
+    if (target !== null) {
       const sockets = this.state.getWebSockets();
       for (const s of sockets) {
         const a = this.getAttachment(s);
-        if (a.name === data["target"]) {
+        if (a.name === target) {
           this.safeSend(s, message);
           break;
         }
@@ -349,8 +375,9 @@ export class WebSocketHandler {
       return;
     }
 
-    if (data["name"] && attachment.name !== data["name"]) {
-      attachment.name = typeof data["name"] === "string" ? data["name"] : String(data["name"]);
+    const name = asString(data["name"]);
+    if (name !== null && attachment.name !== name) {
+      attachment.name = name;
       ws.serializeAttachment(attachment);
 
       // Deliver blocked messages from other sockets with matching name
@@ -358,7 +385,7 @@ export class WebSocketHandler {
       for (const s of sockets) {
         if (s === ws) continue;
         const a = this.getAttachment(s);
-        if (a.name === data["name"] && a.blockedMessages.length > 0) {
+        if (a.name === name && a.blockedMessages.length > 0) {
           for (const blockedMsg of a.blockedMessages) {
             try {
               this.safeSend(ws, blockedMsg);
@@ -375,7 +402,7 @@ export class WebSocketHandler {
       this.safeSend(ws, {
         type: "ack",
         action: "nameUpdate",
-        name: data["name"],
+        name,
       });
     }
 
@@ -383,7 +410,7 @@ export class WebSocketHandler {
     this.safeSend(ws, {
       type: "ack",
       message: "Message received",
-      receivedType: data["type"] || "unknown",
+      receivedType: asString(data["type"]) ?? "unknown",
     });
   }
 

@@ -1,4 +1,4 @@
-import { Hono, type Context } from "hono";
+import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
 
 const iwd = new Hono<{ Bindings: Env }>();
@@ -376,7 +376,7 @@ function normalizeVisitor(row: VisitorRow): IwdVisitor {
 function parseEmojiJson(value: string | null | undefined): AllowedEmoji[] {
   if (!value) return [];
   try {
-    const parsed = JSON.parse(value) as GreetingInfo;
+    const parsed = JSON.parse(value) as unknown;
     if (!Array.isArray(parsed)) return [];
     return parsed.filter(
       (item): item is AllowedEmoji =>
@@ -421,21 +421,20 @@ async function findTodayVisitor(db: D1Database, visitorId: string): Promise<Visi
 
 async function loadFeed(db: D1Database, since?: number): Promise<FeedPayload> {
   const dayStart = todayStartMs();
-  const visitorSince = since && since > 0 ? since : dayStart;
-  const messageSince = since && since > 0 ? since : dayStart;
+  const feedSince = since && since > 0 ? since : dayStart;
 
   const visitorsPromise = db
     .prepare(
       "SELECT id, latitude, longitude, city, country, locale, greeting, language_label, created_at FROM iwd_visitors WHERE created_at >= ? ORDER BY created_at ASC",
     )
-    .bind(visitorSince)
+    .bind(feedSince)
     .all<VisitorRow>();
 
   const messagesPromise = db
     .prepare(
       "SELECT id, visitor_id, text, emoji_json, country, city, latitude, longitude, locale, greeting, image_prompt, image_job_id, image_url, image_status, error_message, created_at, updated_at FROM iwd_messages WHERE created_at >= ? AND updated_at >= ? ORDER BY updated_at ASC",
     )
-    .bind(dayStart, messageSince)
+    .bind(dayStart, feedSince)
     .all<MessageRow>();
 
   const leaderboardPromise = db
@@ -2339,7 +2338,7 @@ function renderPage(origin: string, viewerGreeting: GreetingInfo): string {
 </html>`;
 }
 
-function jsonResponse(_c: Context<{ Bindings: Env }>, data: unknown, status = 200): Response {
+function jsonResponse(data: unknown, status = 200): Response {
   const headers = noStoreHeaders(
     new Headers({ "Content-Type": "application/json; charset=utf-8" }),
   );
@@ -2352,18 +2351,36 @@ function jsonResponse(_c: Context<{ Bindings: Env }>, data: unknown, status = 20
 iwd.get("/api/iwd/feed", async (c) => {
   const since = numberValue(c.req.query("since"), 0);
   const feed = await loadFeed(c.env.DB, since > 0 ? since : undefined);
-  return jsonResponse(c, feed);
+  return jsonResponse(feed);
 });
 
 iwd.get("/api/iwd/visitors", async (c) => {
   const since = numberValue(c.req.query("since"), 0);
   const feed = await loadFeed(c.env.DB, since > 0 ? since : undefined);
-  return jsonResponse(c, {
+  return jsonResponse({
     visitors: feed.visitors,
     count: feed.totalVisitors,
     serverTime: feed.serverTime,
   });
 });
+
+async function checkinResponse(
+  db: D1Database,
+  visitorRow: VisitorRow,
+  greeting: GreetingInfo,
+  isNew: boolean,
+): Promise<Response> {
+  const feed = await loadFeed(db);
+  const response = jsonResponse({
+    ok: true,
+    isNew,
+    visitor: normalizeVisitor(visitorRow),
+    viewerGreeting: greeting,
+    ...feed,
+  });
+  response.headers.set("Set-Cookie", serializeCookie(IWD_COOKIE, visitorRow.id));
+  return response;
+}
 
 iwd.post("/api/iwd/checkin", async (c) => {
   const cf = (c.req.raw as unknown as { cf?: Record<string, unknown> }).cf;
@@ -2375,16 +2392,12 @@ iwd.post("/api/iwd/checkin", async (c) => {
   if (existingCookieId) {
     const existing = await findTodayVisitor(c.env.DB, existingCookieId);
     if (existing) {
-      const feed = await loadFeed(c.env.DB);
-      const response = jsonResponse(c, {
-        ok: true,
-        isNew: false,
-        visitor: normalizeVisitor(existing),
-        viewerGreeting: resolveGreeting(acceptLanguage, existing.country),
-        ...feed,
-      });
-      response.headers.set("Set-Cookie", serializeCookie(IWD_COOKIE, existing.id));
-      return response;
+      return checkinResponse(
+        c.env.DB,
+        existing,
+        resolveGreeting(acceptLanguage, existing.country),
+        false,
+      );
     }
   }
 
@@ -2415,16 +2428,7 @@ iwd.post("/api/iwd/checkin", async (c) => {
     .first<VisitorRow>();
 
   if (deduped) {
-    const feed = await loadFeed(c.env.DB);
-    const response = jsonResponse(c, {
-      ok: true,
-      isNew: false,
-      visitor: normalizeVisitor(deduped),
-      viewerGreeting: greeting,
-      ...feed,
-    });
-    response.headers.set("Set-Cookie", serializeCookie(IWD_COOKIE, deduped.id));
-    return response;
+    return checkinResponse(c.env.DB, deduped, greeting, false);
   }
 
   const inserted = await c.env.DB.prepare(
@@ -2442,7 +2446,7 @@ iwd.post("/api/iwd/checkin", async (c) => {
     .first<VisitorRow>();
 
   const feed = await loadFeed(c.env.DB);
-  const response = jsonResponse(c, {
+  const response = jsonResponse({
     ok: true,
     isNew: true,
     visitor: inserted ? normalizeVisitor(inserted) : null,
@@ -2469,7 +2473,6 @@ iwd.post("/api/iwd/message", async (c) => {
     (typeof body?.visitorId === "string" && body.visitorId) || cookieVisitorId || "";
   if (!visitorId) {
     return jsonResponse(
-      c,
       { error: "Visit the map first so we know where to place your message." },
       400,
     );
@@ -2478,7 +2481,6 @@ iwd.post("/api/iwd/message", async (c) => {
   const visitor = await findTodayVisitor(c.env.DB, visitorId);
   if (!visitor) {
     return jsonResponse(
-      c,
       { error: "Your visitor session expired. Refresh the page and try again." },
       400,
     );
@@ -2487,7 +2489,7 @@ iwd.post("/api/iwd/message", async (c) => {
   const text = sanitizeMessageText(body?.text);
   const emojis = sanitizeEmojis(body?.emojis);
   if (!text && emojis.length === 0) {
-    return jsonResponse(c, { error: "Add a short note or at least one emoji." }, 400);
+    return jsonResponse({ error: "Add a short note or at least one emoji." }, 400);
   }
 
   const lastMessage = await c.env.DB.prepare(
@@ -2498,7 +2500,6 @@ iwd.post("/api/iwd/message", async (c) => {
 
   if (lastMessage && Date.now() - numberValue(lastMessage.created_at) < IWD_MESSAGE_COOLDOWN_MS) {
     return jsonResponse(
-      c,
       { error: "Give the last celebration a few seconds to land before sending another." },
       429,
     );
@@ -2522,17 +2523,17 @@ iwd.post("/api/iwd/message", async (c) => {
     .first<MessageRow>();
 
   if (!inserted) {
-    return jsonResponse(c, { error: "Message launch failed." }, 500);
+    return jsonResponse({ error: "Message launch failed." }, 500);
   }
 
   const normalized = normalizeMessage(inserted);
-  try {
+  if (c.executionCtx) {
     c.executionCtx.waitUntil(generateArtwork(c.env, normalized));
-  } catch {
+  } else {
     void generateArtwork(c.env, normalized);
   }
 
-  return jsonResponse(c, { ok: true, message: normalized });
+  return jsonResponse({ ok: true, message: normalized });
 });
 
 iwd.get("/iwd/og.svg", () => {

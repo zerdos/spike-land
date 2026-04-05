@@ -47,7 +47,7 @@ program
       const { stop } = await startDevMode(codespaces, {
         debounceMs: Math.max(0, Math.min(60000, parseInt(options.debounce, 10) || 300)),
         onSync: (id) => {
-          console.log(`🔄 ${id} synced - iframe should reload`);
+          console.log(`${id} synced - iframe should reload`);
         },
       });
 
@@ -101,12 +101,12 @@ program
       const localPath = getLocalPath(options.codespace);
       const code = await readFile(localPath, "utf-8");
 
-      console.log(`📤 Pushing ${options.codespace} (${code.length} bytes)...`);
+      console.log(`Pushing ${options.codespace} (${code.length} bytes)...`);
       const result = await pushCode(options.codespace, code, options.run !== false);
 
-      console.log(`✅ Pushed successfully`);
-      console.log(`   Hash: ${result.hash}`);
-      console.log(`   Updated: ${result.updated.join(", ")}`);
+      console.log(`Pushed successfully`);
+      console.log(`  Hash: ${result.hash}`);
+      console.log(`  Updated: ${result.updated.join(", ")}`);
     } catch (error) {
       console.error("Push failed:", error);
       process.exit(1);
@@ -337,7 +337,7 @@ program
         args.push("-");
       }
 
-      console.log(`🤖 Starting Claude Code...`);
+      console.log(`Starting Claude Code...`);
       if (options.codespace) {
         console.log(`   Codespace: ${options.codespace}`);
       }

@@ -7,6 +7,7 @@ import { oauthAccessTokens } from "../db/db/schema";
 import { eq } from "drizzle-orm";
 import { approveDeviceCode, createDeviceCode, exchangeDeviceCode } from "../db/auth/oauth-device";
 import { checkRateLimit } from "../core-logic/kv/rate-limit";
+import { constantTimeEquals } from "../../common/core-logic/security-utils.js";
 
 /** Typed shape for OAuth request bodies (device grant + revoke endpoints). */
 interface OAuthRequestBody {
@@ -108,7 +109,11 @@ oauthRoute.post("/token", oauthTokenHandler);
 // Protected by MCP_INTERNAL_SECRET header
 export const oauthDeviceApproveHandler = async (c: Context<{ Bindings: Env }>) => {
   const secret = c.req.header("X-Internal-Secret");
-  if (secret !== c.env.MCP_INTERNAL_SECRET) {
+  if (
+    !secret ||
+    !c.env.MCP_INTERNAL_SECRET ||
+    !constantTimeEquals(secret, c.env.MCP_INTERNAL_SECRET)
+  ) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 

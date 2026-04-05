@@ -216,15 +216,14 @@ function getOverallPresentation(overall: DashboardPayload["overall"]): {
   label: string;
   tone: string;
 } {
-  if (overall === "major_outage") {
-    return { label: "Major Outage", tone: "#ff7b72" };
+  switch (overall) {
+    case "major_outage":
+      return { label: "Major Outage", tone: "#ff7b72" };
+    case "partial_degradation":
+      return { label: "Partial Degradation", tone: "#f7c86a" };
+    case "operational":
+      return { label: "Operational", tone: "#82f9c8" };
   }
-
-  if (overall === "partial_degradation") {
-    return { label: "Partial Degradation", tone: "#f7c86a" };
-  }
-
-  return { label: "Operational", tone: "#82f9c8" };
 }
 
 function buildPlatformSummary(services: StatusServiceView[]): DashboardPayload["platform"] {
@@ -325,33 +324,33 @@ async function buildDashboardPayload(
   };
 }
 
-function renderIncidentsSection(incidents: DashboardPayload["incidents"]): string {
-  if (incidents.active.length === 0 && incidents.recent.length === 0) {
-    return "";
-  }
+function formatIncidentTimestamp(ms: number): string {
+  return new Date(ms).toISOString().replace("T", " ").slice(0, 19) + " UTC";
+}
 
-  function formatTs(ms: number): string {
-    return new Date(ms).toISOString().replace("T", " ").slice(0, 19) + " UTC";
-  }
+function renderIncidentRow(incident: Incident): string {
+  const sevColor = incident.severity === "down" ? "var(--danger)" : "var(--warn)";
+  const statusLabel = incident.status === "open" ? "OPEN" : "RESOLVED";
+  const resolvedInfo = incident.resolved_at
+    ? ` · Resolved ${formatIncidentTimestamp(incident.resolved_at)}`
+    : "";
 
-  function renderIncidentRow(incident: Incident): string {
-    const sevColor = incident.severity === "down" ? "var(--danger)" : "var(--warn)";
-    const statusLabel = incident.status === "open" ? "OPEN" : "RESOLVED";
-    const resolvedInfo = incident.resolved_at
-      ? ` · Resolved ${formatTs(incident.resolved_at)}`
-      : "";
-
-    return `
+  return `
       <div class="incident-row" style="border-left:3px solid ${sevColor}">
         <div class="incident-header">
           <strong>${escapeHtml(incident.service_name)}</strong>
           <span class="status-badge" style="--status-color:${sevColor};font-size:.68rem;padding:5px 8px">${statusLabel}</span>
         </div>
         <p class="incident-meta">
-          ${escapeHtml(incident.severity.toUpperCase())} · Opened ${formatTs(incident.opened_at)}${resolvedInfo}
+          ${escapeHtml(incident.severity.toUpperCase())} · Opened ${formatIncidentTimestamp(incident.opened_at)}${resolvedInfo}
         </p>
         ${incident.notes ? `<p class="incident-notes">${escapeHtml(incident.notes)}</p>` : ""}
       </div>`;
+}
+
+function renderIncidentsSection(incidents: DashboardPayload["incidents"]): string {
+  if (incidents.active.length === 0 && incidents.recent.length === 0) {
+    return "";
   }
 
   const sections: string[] = [];

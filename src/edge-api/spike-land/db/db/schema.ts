@@ -343,7 +343,7 @@ export const creditLedger = sqliteTable(
     type: text("type").notNull(), // 'daily_grant' | 'usage' | 'purchase' | 'refund'
     description: text("description"),
     referenceId: text("reference_id"), // e.g., proxy request ID or Stripe payment ID
-    createdAt: text("created_at"),
+    createdAt: integer("created_at", { mode: "number" }),
   },
   (t) => ({
     userIdx: index("idx_credit_ledger_user").on(t.userId, t.createdAt),
@@ -356,8 +356,8 @@ export const creditBalances = sqliteTable("credit_balances", {
   userId: text("user_id").primaryKey(),
   balance: integer("balance").notNull().default(0),
   dailyLimit: integer("daily_limit").notNull().default(50),
-  lastDailyGrant: text("last_daily_grant"),
-  updatedAt: text("updated_at"),
+  lastDailyGrant: integer("last_daily_grant", { mode: "number" }),
+  updatedAt: integer("updated_at", { mode: "number" }),
 });
 
 // ─── Direct Messages ──────────────────────────────────────────────────────────
@@ -465,6 +465,7 @@ export const registeredTools = sqliteTable(
     name: text("name").notNull(),
     description: text("description").notNull(),
     schema: text("schema").notNull().default("{}"), // JSON input schema
+    category: text("category").notNull().default(""),
     endpoint: text("endpoint"),
     status: text("status").notNull().default("draft"), // "draft" | "published"
     version: text("version").notNull().default("1.0.0"),
@@ -497,7 +498,7 @@ export const toolPurchases = sqliteTable(
     platformFeeCents: integer("platform_fee_cents").notNull(),
     sellerEarningsCents: integer("seller_earnings_cents").notNull(),
     status: text("status").notNull().default("completed"),
-    createdAt: text("created_at"),
+    createdAt: integer("created_at", { mode: "number" }),
   },
   (t) => ({
     buyerIdx: index("idx_tool_purchases_buyer").on(t.buyerUserId),

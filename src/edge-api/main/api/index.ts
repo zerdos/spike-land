@@ -243,16 +243,14 @@ app.use("*", async (c, next) => {
   }
 
   const url = new URL(c.req.url);
-  const getExecutionContext = (): ExecutionContext | undefined => {
-    try {
-      return c.executionCtx;
-    } catch {
-      return undefined;
-    }
-  };
   const forward = (pathname: string) => {
     url.pathname = pathname;
-    const executionContext = getExecutionContext();
+    let executionContext: ExecutionContext | undefined;
+    try {
+      executionContext = c.executionCtx;
+    } catch {
+      // no ExecutionContext in tests
+    }
     return executionContext
       ? app.fetch(new Request(url.toString(), c.req.raw), c.env, executionContext)
       : app.fetch(new Request(url.toString(), c.req.raw), c.env);
@@ -551,86 +549,56 @@ async function fetchMcpWithFallback(env: Env, url: string, init?: RequestInit): 
   return fetch(url, init);
 }
 
-// MCP tools listing proxy (public, no auth required)
-export const getMcpToolsHandler = async (
+/**
+ * Proxy a GET request to the MCP service, forwarding request-id and optionally
+ * preserving the caller's Accept header (for content negotiation).
+ */
+async function proxyMcpGet(
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
-) => {
-  const url = "https://mcp.spike.land/tools";
-  const response = await fetchMcpWithFallback(c.env, url, {
-    headers: { "X-Request-Id": c.get("requestId") },
-  });
+  mcpUrl: string,
+  { forwardAccept = false }: { forwardAccept?: boolean } = {},
+): Promise<Response> {
+  const headers: Record<string, string> = { "X-Request-Id": c.get("requestId") };
+  if (forwardAccept) {
+    const accept = c.req.header("Accept");
+    if (accept) headers["Accept"] = accept;
+  }
+  const response = await fetchMcpWithFallback(c.env, mcpUrl, { headers });
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers: new Headers(response.headers),
   });
-};
+}
+
+// MCP tools listing proxy (public, no auth required)
+export const getMcpToolsHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, "https://mcp.spike.land/tools");
 app.get("/mcp/tools", getMcpToolsHandler);
 
-export const getApiAppsHandler = async (
+export const getApiAppsHandler = (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
-) => {
-  const url = "https://mcp.spike.land/apps";
-  const response = await fetchMcpWithFallback(c.env, url, {
-    headers: { "X-Request-Id": c.get("requestId") },
-  });
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: new Headers(response.headers),
-  });
-};
+) => proxyMcpGet(c, "https://mcp.spike.land/apps");
 app.get("/api/apps", getApiAppsHandler);
 
-export const getApiAppsSlugHandler = async (
+export const getApiAppsSlugHandler = (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
-) => {
-  const slug = c.req.param("slug");
-  const url = `https://mcp.spike.land/apps/${slug}`;
-  const response = await fetchMcpWithFallback(c.env, url, {
-    headers: { "X-Request-Id": c.get("requestId") },
-  });
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: new Headers(response.headers),
-  });
-};
+) => proxyMcpGet(c, `https://mcp.spike.land/apps/${c.req.param("slug")}`);
 app.get("/api/apps/:slug", getApiAppsSlugHandler);
 
 // LearnIt proxy — forward to MCP service, preserving Accept header for content negotiation
-export const getApiLearnitListHandler = async (
+export const getApiLearnitListHandler = (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
-) => {
-  const url = "https://mcp.spike.land/api/learnit";
-  const response = await fetchMcpWithFallback(c.env, url, {
-    headers: { "X-Request-Id": c.get("requestId") },
-  });
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: new Headers(response.headers),
-  });
-};
+) => proxyMcpGet(c, "https://mcp.spike.land/api/learnit");
 app.get("/api/learnit", getApiLearnitListHandler);
 
-export const getApiLearnitSlugHandler = async (
+export const getApiLearnitSlugHandler = (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
-) => {
-  const slug = c.req.param("slug");
-  const url = `https://mcp.spike.land/api/learnit/${slug}`;
-  const headers: Record<string, string> = { "X-Request-Id": c.get("requestId") };
-  const accept = c.req.header("Accept");
-  if (accept) {
-    headers["Accept"] = accept;
-  }
-  const response = await fetchMcpWithFallback(c.env, url, { headers });
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: new Headers(response.headers),
+) =>
+  proxyMcpGet(c, `https://mcp.spike.land/api/learnit/${c.req.param("slug")}`, {
+    forwardAccept: true,
   });
-};
 app.get("/api/learnit/:slug", getApiLearnitSlugHandler);
 
 // Store tools endpoint — groups MCP registry tools by category for the store UI

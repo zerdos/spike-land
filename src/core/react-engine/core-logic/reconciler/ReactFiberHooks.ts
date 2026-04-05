@@ -43,8 +43,11 @@ interface EffectInstance {
 }
 
 // --- Module-level state ---
+/** Sentinel used when no fiber is currently rendering. Cast is intentional — callers guard before use. */
+const NO_FIBER = null as unknown as Fiber;
+
 let renderLanes: Lanes = NoLanes;
-let currentlyRenderingFiber: Fiber = null as unknown as Fiber;
+let currentlyRenderingFiber: Fiber = NO_FIBER;
 let currentHook: Hook | null = null;
 let workInProgressHook: Hook | null = null;
 let didScheduleRenderPhaseUpdateDuringThisPass: boolean = false;
@@ -305,10 +308,8 @@ function mountStateImpl<S>(initialState: (() => S) | S): Hook {
 
 function mountState<S>(initialState: (() => S) | S): [S, (action: S | ((s: S) => S)) => void] {
   const hook = mountStateImpl(initialState);
-  if (!hook.queue) {
-    throw new Error("mountState: hook queue was not initialized by mountStateImpl");
-  }
-  const queue = hook.queue;
+  // mountStateImpl always initializes hook.queue — access is safe
+  const queue = hook.queue!;
   const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue) as unknown as (
     action: S | ((s: S) => S),
   ) => void;
@@ -710,10 +711,8 @@ function updateDeferredValue<T>(value: T, _initialValue?: T): T {
 
 function mountTransition(): [boolean, (callback: () => void) => void] {
   const stateHook = mountStateImpl(false as boolean);
-  if (!stateHook.queue) {
-    throw new Error("mountTransition: stateHook queue was not initialized by mountStateImpl");
-  }
-  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue, true, false);
+  // mountStateImpl always initializes stateHook.queue — access is safe
+  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue!, true, false);
   const hook = mountWorkInProgressHook();
   hook.memoizedState = start;
   return [false, start];
@@ -727,6 +726,31 @@ function updateTransition(): [boolean, (callback: () => void) => void] {
   return [isPending, start];
 }
 
+function requireScheduler(): NonNullable<typeof scheduleUpdateOnFiberFn> {
+  if (!scheduleUpdateOnFiberFn) {
+    throw new Error(
+      "ReactFiberHooks: scheduleUpdateOnFiberFn not initialized. Call setHooksExternals() first.",
+    );
+  }
+  return scheduleUpdateOnFiberFn;
+}
+
+function enqueueAndSchedule(
+  fiber: Fiber,
+  queue: UpdateQueue<unknown, unknown>,
+  update: Update<unknown, unknown>,
+  lane: Lane,
+): void {
+  if (isRenderPhaseUpdate(fiber)) {
+    enqueueRenderPhaseUpdate(queue, update);
+  } else {
+    const root = enqueueUpdate(fiber, queue, update, lane);
+    if (root !== null) {
+      requireScheduler()(root, fiber, lane);
+    }
+  }
+}
+
 function startTransition(
   fiber: Fiber,
   queue: UpdateQueue<unknown, unknown>,
@@ -736,7 +760,6 @@ function startTransition(
 ): void {
   const lane = requestUpdateLaneFn?.() ?? SyncLane;
 
-  // Set pending state
   const pendingUpdate: Update<unknown, unknown> = {
     lane,
     action: pendingState,
@@ -744,25 +767,11 @@ function startTransition(
     eagerState: null,
     next: null,
   };
-
-  if (isRenderPhaseUpdate(fiber)) {
-    enqueueRenderPhaseUpdate(queue, pendingUpdate);
-  } else {
-    const root = enqueueUpdate(fiber, queue, pendingUpdate, lane);
-    if (root !== null) {
-      if (!scheduleUpdateOnFiberFn) {
-        throw new Error(
-          "ReactFiberHooks: scheduleUpdateOnFiberFn not initialized. Call setHooksExternals() first.",
-        );
-      }
-      scheduleUpdateOnFiberFn(root, fiber, lane);
-    }
-  }
+  enqueueAndSchedule(fiber, queue, pendingUpdate, lane);
 
   try {
     callback();
   } finally {
-    // Set finished state
     const finishedUpdate: Update<unknown, unknown> = {
       lane,
       action: finishedState,
@@ -770,20 +779,7 @@ function startTransition(
       eagerState: null,
       next: null,
     };
-
-    if (isRenderPhaseUpdate(fiber)) {
-      enqueueRenderPhaseUpdate(queue, finishedUpdate);
-    } else {
-      const root = enqueueUpdate(fiber, queue, finishedUpdate, lane);
-      if (root !== null) {
-        if (!scheduleUpdateOnFiberFn) {
-          throw new Error(
-            "ReactFiberHooks: scheduleUpdateOnFiberFn not initialized. Call setHooksExternals() first.",
-          );
-        }
-        scheduleUpdateOnFiberFn(root, fiber, lane);
-      }
-    }
+    enqueueAndSchedule(fiber, queue, finishedUpdate, lane);
   }
 }
 
@@ -801,12 +797,7 @@ function subscribeToStore<T>(
       const lane = SyncLane;
       const root = markUpdateLaneFromFiberToRoot(fiber, lane);
       if (root !== null) {
-        if (!scheduleUpdateOnFiberFn) {
-          throw new Error(
-            "ReactFiberHooks: scheduleUpdateOnFiberFn not initialized. Call setHooksExternals() first.",
-          );
-        }
-        scheduleUpdateOnFiberFn(root, fiber, lane);
+        requireScheduler()(root, fiber, lane);
       }
     }
   };
@@ -1221,7 +1212,7 @@ function renderWithHooksAgain<Props>(
   props: Props,
   secondArg: unknown,
 ): unknown {
-  let children;
+  let children: unknown = undefined;
   let numberOfReRenders = 0;
 
   do {
@@ -1229,13 +1220,13 @@ function renderWithHooksAgain<Props>(
 
     if (numberOfReRenders >= RE_RENDER_LIMIT) {
       throw new Error(
-        "Too many re-renders. React limits the number of renders to prevent " + "an infinite loop.",
+        "Too many re-renders. React limits the number of renders to prevent an infinite loop.",
       );
     }
 
     numberOfReRenders += 1;
 
-    // Start over from the beginning of the list
+    // Start over from the beginning of the hook list
     currentHook = null;
     workInProgressHook = null;
 
@@ -1253,7 +1244,7 @@ function finishRenderingHooks(_current: Fiber | null, _workInProgress: Fiber): v
   ReactSharedInternals.H = ContextOnlyDispatcher;
 
   renderLanes = NoLanes;
-  currentlyRenderingFiber = null as unknown as Fiber;
+  currentlyRenderingFiber = NO_FIBER;
 
   currentHook = null;
   workInProgressHook = null;
@@ -1269,7 +1260,7 @@ export function bailoutHooks(current: Fiber, workInProgress: Fiber, lanes: Lanes
 
 // Export for use by work loop
 export function resetHooksAfterThrow(): void {
-  currentlyRenderingFiber = null as unknown as Fiber;
+  currentlyRenderingFiber = NO_FIBER;
   currentHook = null;
   workInProgressHook = null;
   didScheduleRenderPhaseUpdateDuringThisPass = false;

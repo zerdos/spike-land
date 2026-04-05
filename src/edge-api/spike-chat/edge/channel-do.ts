@@ -3,24 +3,34 @@ import type { Env } from "../core-logic/env";
 import type { WsAttachment } from "../core-logic/types";
 
 // Messages sent from Client -> Server
-type ClientMessage =
-  | { type: "auth"; token?: string }
-  | { type: "typing_start" }
-  | { type: "typing_stop" }
-  | { type: "ping" };
+type ClientMessage = { type: "typing_start" } | { type: "typing_stop" } | { type: "ping" };
+
+function isClientMessage(value: unknown): value is ClientMessage {
+  if (typeof value !== "object" || value === null) return false;
+  const type = (value as Record<string, unknown>)["type"];
+  return type === "typing_start" || type === "typing_stop" || type === "ping";
+}
+
+function getAttachment(ws: WebSocket): WsAttachment | null {
+  const raw = ws.deserializeAttachment() as unknown;
+  if (typeof raw !== "object" || raw === null) return null;
+  const obj = raw as Record<string, unknown>;
+  // Only userId is required at runtime; the full shape is guaranteed by serializeAttachment.
+  if (typeof obj["userId"] !== "string") return null;
+  return raw as WsAttachment;
+}
 
 export class ChannelDurableObject extends DurableObject {
   private typingUsers: Set<string> = new Set();
-  private typingTimeouts: Map<string, number> = new Map();
+  private typingTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
   }
 
-  override async fetch(request: Request) {
+  override async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     if (request.headers.get("Upgrade") === "websocket") {
-      // Create a WebSocket pair
       const pair = new WebSocketPair();
       const client = pair[0];
       const server = pair[1];
@@ -28,12 +38,11 @@ export class ChannelDurableObject extends DurableObject {
         return new Response("WebSocket pair unavailable", { status: 500 });
       }
 
-      // Authenticate via attachment? We can pass userId in headers or URL during upgrade
       const userId =
-        request.headers.get("x-user-id") || url.searchParams.get("userId") || "anonymous";
+        request.headers.get("x-user-id") ?? url.searchParams.get("userId") ?? "anonymous";
       const displayName =
-        request.headers.get("x-display-name") || url.searchParams.get("displayName") || "Unknown";
-      const channelId = url.searchParams.get("channelId") || "unknown";
+        request.headers.get("x-display-name") ?? url.searchParams.get("displayName") ?? "Unknown";
+      const channelId = url.searchParams.get("channelId") ?? "unknown";
 
       const attachment: WsAttachment = {
         userId,
@@ -42,19 +51,14 @@ export class ChannelDurableObject extends DurableObject {
         isBot: false,
       };
 
-      // Accept the connection using Hibernation API
       this.ctx.acceptWebSocket(server, [channelId]);
-
-      // Store attachment
       server.serializeAttachment(attachment);
 
-      // Broadcast user_joined (optional, maybe too noisy for large channels)
       return new Response(null, { status: 101, webSocket: client });
     }
 
-    // HTTP endpoint for internal broadcasts (from Hono API routes)
     if (request.method === "POST" && url.pathname === "/broadcast") {
-      const body = await request.json();
+      const body: unknown = await request.json();
       this.broadcast(JSON.stringify(body));
       return new Response("OK", { status: 200 });
     }
@@ -62,70 +66,76 @@ export class ChannelDurableObject extends DurableObject {
     return new Response("Not found", { status: 404 });
   }
 
-  private broadcast(message: string, excludeWs?: WebSocket) {
-    const sockets = this.ctx.getWebSockets();
-    for (const ws of sockets) {
+  private broadcast(message: string, excludeWs?: WebSocket): void {
+    for (const ws of this.ctx.getWebSockets()) {
       if (ws !== excludeWs) {
         try {
           ws.send(message);
-        } catch (_e) {
-          // ignore
+        } catch {
+          // ignore send errors for individual sockets
         }
       }
     }
   }
 
   // --- Hibernation API handlers ---
-  override async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
+  override webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer): void {
     if (typeof msg !== "string") return;
 
+    let data: unknown;
     try {
-      const data = JSON.parse(msg) as ClientMessage;
-      const attachment = ws.deserializeAttachment() as WsAttachment | null;
-      if (!attachment) return;
+      data = JSON.parse(msg);
+    } catch {
+      console.error("[ChannelDurableObject] Invalid JSON in WS message");
+      return;
+    }
 
-      switch (data.type) {
-        case "ping":
-          ws.send(JSON.stringify({ type: "pong" }));
-          break;
-        case "typing_start":
-          this.typingUsers.add(attachment.userId);
-          // Clear any existing timeout
-          const existing = this.typingTimeouts.get(attachment.userId);
-          if (existing) clearTimeout(existing);
+    if (!isClientMessage(data)) return;
 
-          this.typingTimeouts.set(
-            attachment.userId,
-            setTimeout(() => this.clearTyping(attachment.userId), 5000) as unknown as number,
-          );
+    const attachment = getAttachment(ws);
+    if (!attachment) return;
 
-          this.broadcast(JSON.stringify({ type: "typing", users: Array.from(this.typingUsers) }));
-          break;
-        case "typing_stop":
-          this.clearTyping(attachment.userId);
-          break;
+    switch (data.type) {
+      case "ping": {
+        ws.send(JSON.stringify({ type: "pong" }));
+        break;
       }
-    } catch (e) {
-      console.error("Invalid WS message", e);
+      case "typing_start": {
+        this.typingUsers.add(attachment.userId);
+        const existing = this.typingTimeouts.get(attachment.userId);
+        if (existing !== undefined) clearTimeout(existing);
+        this.typingTimeouts.set(
+          attachment.userId,
+          setTimeout(() => this.clearTyping(attachment.userId), 5000),
+        );
+        this.broadcast(JSON.stringify({ type: "typing", users: Array.from(this.typingUsers) }));
+        break;
+      }
+      case "typing_stop": {
+        this.clearTyping(attachment.userId);
+        break;
+      }
     }
   }
 
-  private clearTyping(userId: string) {
+  private clearTyping(userId: string): void {
+    const timer = this.typingTimeouts.get(userId);
+    if (timer !== undefined) clearTimeout(timer);
     this.typingUsers.delete(userId);
     this.typingTimeouts.delete(userId);
     this.broadcast(JSON.stringify({ type: "typing", users: Array.from(this.typingUsers) }));
   }
 
-  override async webSocketClose(ws: WebSocket, _code: number, _reason: string, _wasClean: boolean) {
-    const attachment = ws.deserializeAttachment() as WsAttachment | null;
+  override webSocketClose(ws: WebSocket, _code: number, _reason: string, _wasClean: boolean): void {
+    const attachment = getAttachment(ws);
     if (attachment) {
       this.clearTyping(attachment.userId);
     }
   }
 
-  override async webSocketError(ws: WebSocket, error: unknown) {
+  override webSocketError(ws: WebSocket, error: unknown): void {
     console.error("[ChannelDurableObject] WebSocket error:", error);
-    const attachment = ws.deserializeAttachment() as WsAttachment | null;
+    const attachment = getAttachment(ws);
     if (attachment) {
       this.clearTyping(attachment.userId);
     }

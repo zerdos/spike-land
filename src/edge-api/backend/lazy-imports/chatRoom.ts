@@ -59,9 +59,8 @@ export class Code implements DurableObject {
   private static readonly MAX_LOG_ENTRIES = 50;
   private xLog: (sess: ICodeSession) => Promise<void>;
 
-  public getSession() {
-    const session = this.session;
-    return sanitizeSession(Object.freeze(session)) as ICodeSession;
+  public getSession(): ICodeSession {
+    return sanitizeSession(Object.freeze(this.session));
   }
 
   /**
@@ -132,13 +131,12 @@ export class Code implements DurableObject {
     this.state = state;
     this.env = env;
 
-    // this.historyManager = createCodeHistoryManager(this.env);
     this.xLog = async (c: ICodeSession) => {
       this.logs.push(c);
       if (this.logs.length > Code.MAX_LOG_ENTRIES) {
         this.logs = this.logs.slice(-Code.MAX_LOG_ENTRIES);
       }
-    }; // this.historyManager.logCodeSpace.bind(this.historyManager);
+    };
 
     this.backupSession = sanitizeSession({
       code: `export default function LandingPage() {
@@ -313,7 +311,7 @@ export class Code implements DurableObject {
 
     this.session = this.backupSession;
     this.largeStorage = new LargeValueStorage(
-      this.state.storage as DurableObjectStorage,
+      this.state.storage,
       this.env.R2,
       this.state.id.toString(),
     );
@@ -538,11 +536,10 @@ export class Code implements DurableObject {
                 const source = `${this.origin}/live/${baseCodeSpace}/session.json`;
                 const response = await fetch(source);
                 if (response.ok) {
+                  // The remote /session.json endpoint returns a full ICodeSession.
+                  // sanitizeSession normalises it and ensures codeSpace is overridden.
                   const backupCode = (await response.json()) as ICodeSession;
-                  this.backupSession = sanitizeSession({
-                    ...backupCode,
-                    codeSpace,
-                  });
+                  this.backupSession = sanitizeSession({ ...backupCode, codeSpace });
                 } else {
                   throw new Error(`Failed to fetch base session: ${response.status}`);
                 }
@@ -575,8 +572,6 @@ export class Code implements DurableObject {
 
           this.session = this.backupSession;
         }
-
-        // this.state.storage.put("session", this.backupSession); // Old logic
       }
 
       this.initialized = true;
@@ -593,7 +588,6 @@ export class Code implements DurableObject {
       if (this.session) {
         await this.xLog(this.session);
       }
-      // }
     });
 
     await this._saveSession();
@@ -631,7 +625,9 @@ export class Code implements DurableObject {
 
       if (request.method === "POST" && request.url.endsWith("/session")) {
         try {
-          const newSession = (await request.json()) as ICodeSession;
+          // request.json() returns unknown; sanitizeSession requires a full ICodeSession.
+          // The POST /session endpoint is an internal API that always sends a full session.
+          const newSession = sanitizeSession((await request.json()) as ICodeSession);
           await this.updateAndBroadcastSession(newSession);
         } catch (_error) {
           return new Response("Invalid session data", { status: 400 });

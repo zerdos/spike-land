@@ -229,7 +229,7 @@ async function handleIpfsRequest(request: Request): Promise<Response> {
   return fetch(fallbackUrl);
 }
 
-async function handleLiveRequest(path: string[], request: Request, env: Env) {
+async function handleLiveRequest(path: string[], request: Request, env: Env): Promise<Response> {
   const [, codeSpace, ...remainingPath] = path;
 
   if (!codeSpace) {
@@ -253,7 +253,12 @@ async function handleLiveRequest(path: string[], request: Request, env: Env) {
   );
 }
 
-async function handlePublicRequest(codeSpace: string, path: string[], request: Request, env: Env) {
+async function handlePublicRequest(
+  codeSpace: string,
+  path: string[],
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const key = `live/${codeSpace}/${path.join("/")}`;
 
   switch (request.method) {
@@ -288,7 +293,7 @@ async function handlePublicRequest(codeSpace: string, path: string[], request: R
   }
 }
 
-async function handleLiveIndexRequest(request: Request, env: Env) {
+async function handleLiveIndexRequest(request: Request, env: Env): Promise<Response> {
   const key = request.url;
   switch (request.method) {
     case "PUT":

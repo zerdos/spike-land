@@ -1,5 +1,5 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   ArrowRight,
   Blocks,
@@ -344,35 +344,44 @@ export function BuildPage() {
       ? "Showing curated atlas"
       : "Live registry connected";
 
-  const selectApp = (appSlug: string) => {
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        app: appSlug,
-      }),
-    });
-  };
+  const selectApp = useCallback(
+    (appSlug: string) => {
+      void navigate({
+        search: (prev) => ({
+          ...prev,
+          app: appSlug,
+        }),
+      });
+    },
+    [navigate],
+  );
 
-  const selectCategory = (category: string) => {
-    const section = atlasSections.find((candidate) => candidate.category === category);
+  const selectCategory = useCallback(
+    (category: string) => {
+      const section = atlasSections.find((candidate) => candidate.category === category);
 
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        category,
-        app: section?.apps[0]?.slug ?? prev.app,
-      }),
-    });
-  };
+      void navigate({
+        search: (prev) => ({
+          ...prev,
+          category,
+          app: section?.apps[0]?.slug ?? prev.app,
+        }),
+      });
+    },
+    [navigate, atlasSections],
+  );
 
-  const selectSurface = (surface: SurfaceId) => {
-    void navigate({
-      search: (prev) => ({
-        ...prev,
-        surface,
-      }),
-    });
-  };
+  const selectSurface = useCallback(
+    (surface: SurfaceId) => {
+      void navigate({
+        search: (prev) => ({
+          ...prev,
+          surface,
+        }),
+      });
+    },
+    [navigate],
+  );
 
   return (
     <div
@@ -524,9 +533,9 @@ export function BuildPage() {
             </div>
 
             <div className="mt-5 space-y-3">
-              {CHANNEL_EVENTS.map((event, index) => (
+              {CHANNEL_EVENTS.map((event) => (
                 <div
-                  key={String(index)}
+                  key={event.speaker}
                   className="rounded-[24px] border p-4"
                   style={{
                     borderColor: "color-mix(in srgb, var(--border-color) 78%, transparent)",

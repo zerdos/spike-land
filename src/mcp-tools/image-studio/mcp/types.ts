@@ -18,44 +18,45 @@ export type SubjectLabel = Brand<string, "SubjectLabel">;
 
 // ── Branded Type Guards ──
 
+/** Returns true for non-empty strings up to `maxLen` characters. */
+function isBoundedString(s: unknown, maxLen: number): s is string {
+  return typeof s === "string" && s.length > 0 && s.length <= maxLen;
+}
+
 export function isImageId(s: unknown): s is ImageId {
-  return typeof s === "string" && s.length > 0 && s.length <= 64;
+  return isBoundedString(s, 64);
 }
 export function isAlbumHandle(s: unknown): s is AlbumHandle {
-  return typeof s === "string" && s.length > 0 && s.length <= 64;
+  return isBoundedString(s, 64);
 }
 export function isPipelineId(s: unknown): s is PipelineId {
-  return typeof s === "string" && s.length > 0 && s.length <= 64;
+  return isBoundedString(s, 64);
 }
 export function isJobId(s: unknown): s is JobId {
-  return typeof s === "string" && s.length > 0 && s.length <= 64;
+  return isBoundedString(s, 64);
 }
 export function isSubjectLabel(s: unknown): s is SubjectLabel {
-  return typeof s === "string" && s.length > 0 && s.length <= 128;
+  return isBoundedString(s, 128);
 }
 
 // ── Branded Type Constructors (throw on invalid) ──
 
-export function asImageId(s: string): ImageId {
-  if (!isImageId(s)) throw new Error(`Invalid ImageId: "${s}"`);
-  return s;
+/** Creates a branded type constructor that throws on invalid input. */
+function makeBrandedConstructor<T extends string>(
+  guard: (s: unknown) => s is T,
+  typeName: string,
+): (s: string) => T {
+  return (s: string): T => {
+    if (!guard(s)) throw new Error(`Invalid ${typeName}: "${s}"`);
+    return s as T;
+  };
 }
-export function asAlbumHandle(s: string): AlbumHandle {
-  if (!isAlbumHandle(s)) throw new Error(`Invalid AlbumHandle: "${s}"`);
-  return s;
-}
-export function asPipelineId(s: string): PipelineId {
-  if (!isPipelineId(s)) throw new Error(`Invalid PipelineId: "${s}"`);
-  return s;
-}
-export function asJobId(s: string): JobId {
-  if (!isJobId(s)) throw new Error(`Invalid JobId: "${s}"`);
-  return s;
-}
-export function asSubjectLabel(s: string): SubjectLabel {
-  if (!isSubjectLabel(s)) throw new Error(`Invalid SubjectLabel: "${s}"`);
-  return s;
-}
+
+export const asImageId = makeBrandedConstructor(isImageId, "ImageId");
+export const asAlbumHandle = makeBrandedConstructor(isAlbumHandle, "AlbumHandle");
+export const asPipelineId = makeBrandedConstructor(isPipelineId, "PipelineId");
+export const asJobId = makeBrandedConstructor(isJobId, "JobId");
+export const asSubjectLabel = makeBrandedConstructor(isSubjectLabel, "SubjectLabel");
 
 // ─── Structural Parameter Types ───
 
@@ -371,7 +372,7 @@ export interface EnhancementJobRow {
   enhancedSizeBytes: number | null;
   errorMessage: string | null;
   retryCount: number;
-  metadata: unknown | null;
+  metadata: unknown;
   processingStartedAt: Date | null;
   processingCompletedAt: Date | null;
   createdAt: Date;
@@ -845,7 +846,6 @@ export const ERROR_CODES = {
   BALANCE_NOT_FOUND: "BALANCE_NOT_FOUND",
   BATCH_ENHANCE_FAILED: "BATCH_ENHANCE_FAILED",
   BATCH_STATUS_FAILED: "BATCH_STATUS_FAILED",
-  CODE: "CODE",
   COMPARISON_FAILED: "COMPARISON_FAILED",
   CONFIRMATION_REQUIRED: "CONFIRMATION_REQUIRED",
   CREATE_FAILED: "CREATE_FAILED",
@@ -855,8 +855,6 @@ export const ERROR_CODES = {
   DELETE_FAILED: "DELETE_FAILED",
   DESCRIPTION_FAILED: "DESCRIPTION_FAILED",
   DOWNLOAD_FAILED: "DOWNLOAD_FAILED",
-  ERR1: "ERR1",
-  ERR2: "ERR2",
   EXPORT_FAILED: "EXPORT_FAILED",
   FETCH_FAILED: "FETCH_FAILED",
   FILE_TOO_LARGE: "FILE_TOO_LARGE",

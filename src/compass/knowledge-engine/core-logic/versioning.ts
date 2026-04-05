@@ -163,9 +163,7 @@ export class VersionTracker {
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   private daysSince(isoTimestamp: ISODateTime): number {
-    const thenMs = new Date(isoTimestamp).getTime();
-    const nowMs = new Date(this.now()).getTime();
-    const diffMs = nowMs - thenMs;
+    const diffMs = Date.parse(this.now()) - Date.parse(isoTimestamp);
     return diffMs / (1000 * 60 * 60 * 24);
   }
 }

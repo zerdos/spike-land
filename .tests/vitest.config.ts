@@ -367,8 +367,11 @@ const packages: Record<string, PkgConfig> = {
 
   status: {
     tier: 3,
-    includeTests: [src("edge-api/status/__tests__/**/*.test.ts")],
-    includeSrc: [src("edge-api/status/**/*.ts")],
+    includeTests: [
+      src("edge-api/status/__tests__/**/*.test.ts"),
+      src("edge-api/common/core-logic/__tests__/**/*.test.ts"),
+    ],
+    includeSrc: [src("edge-api/status/**/*.ts"), src("edge-api/common/**/*.ts")],
     coverageExclude: [],
   },
 

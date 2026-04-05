@@ -16,12 +16,20 @@ import type { Env } from "../env";
 /** Minimal env fields required by AI gateway tools. */
 type AiGatewayEnv = Pick<Env, "ANTHROPIC_API_KEY" | "OPENAI_API_KEY" | "GEMINI_API_KEY">;
 
+type AiProvider = "anthropic" | "openai" | "google";
+
+const VALID_PROVIDERS = new Set<AiProvider>(["anthropic", "openai", "google"]);
+
+function isValidProvider(value: string): value is AiProvider {
+  return VALID_PROVIDERS.has(value as AiProvider);
+}
+
 // ─── Inline Model Registry ──────────────────────────────────────────────────
 
 interface ModelInfo {
   id: string;
   displayName: string;
-  provider: "anthropic" | "openai" | "google";
+  provider: AiProvider;
   aliases: string[];
   capabilities: string[];
   maxOutputTokens: number;
@@ -91,12 +99,9 @@ function resolveModel(modelInput: string): ModelInfo | undefined {
   return MODEL_REGISTRY.find((m) => m.id === lower || m.aliases.includes(lower));
 }
 
-function resolveProvider(
-  modelInput?: string,
-  providerOverride?: string,
-): "anthropic" | "openai" | "google" {
-  if (providerOverride) {
-    return providerOverride as "anthropic" | "openai" | "google";
+function resolveProvider(modelInput?: string, providerOverride?: string): AiProvider {
+  if (providerOverride && isValidProvider(providerOverride)) {
+    return providerOverride;
   }
   if (modelInput) {
     const model = resolveModel(modelInput);
@@ -117,6 +122,14 @@ interface AnthropicResponse {
   usage: { input_tokens: number; output_tokens: number };
 }
 
+interface AnthropicRequestBody {
+  model: string;
+  max_tokens: number;
+  messages: Array<{ role: "user"; content: string }>;
+  system?: string;
+  temperature?: number;
+}
+
 async function callAnthropic(
   env: Pick<Env, "ANTHROPIC_API_KEY">,
   message: string,
@@ -130,13 +143,13 @@ async function callAnthropic(
     throw new McpError("ANTHROPIC_API_KEY not configured.", McpErrorCode.AUTH_ERROR, false);
   }
 
-  const body: Record<string, unknown> = {
+  const body: AnthropicRequestBody = {
     model: modelId,
     max_tokens: maxTokens,
     messages: [{ role: "user", content: message }],
+    ...(systemPrompt !== undefined ? { system: systemPrompt } : {}),
+    ...(temperature != null ? { temperature } : {}),
   };
-  if (systemPrompt) body["system"] = systemPrompt;
-  if (temperature != null) body["temperature"] = temperature;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -177,6 +190,15 @@ interface OpenAIResponse {
   usage: { prompt_tokens: number; completion_tokens: number };
 }
 
+type OpenAIRole = "system" | "user";
+
+interface OpenAIRequestBody {
+  model: string;
+  max_tokens: number;
+  messages: Array<{ role: OpenAIRole; content: string }>;
+  temperature?: number;
+}
+
 async function callOpenAI(
   env: Pick<Env, "OPENAI_API_KEY">,
   message: string,
@@ -190,16 +212,16 @@ async function callOpenAI(
     throw new McpError("OPENAI_API_KEY not configured.", McpErrorCode.AUTH_ERROR, false);
   }
 
-  const messages: Array<{ role: string; content: string }> = [];
+  const messages: Array<{ role: OpenAIRole; content: string }> = [];
   if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
   messages.push({ role: "user", content: message });
 
-  const body: Record<string, unknown> = {
+  const body: OpenAIRequestBody = {
     model: modelId,
     max_tokens: maxTokens,
     messages,
+    ...(temperature != null ? { temperature } : {}),
   };
-  if (temperature != null) body["temperature"] = temperature;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -242,6 +264,12 @@ interface GeminiResponse {
   usageMetadata?: { promptTokenCount: number; candidatesTokenCount: number };
 }
 
+interface GeminiRequestBody {
+  contents: Array<{ role: "user"; parts: Array<{ text: string }> }>;
+  generationConfig: { maxOutputTokens: number; temperature?: number };
+  systemInstruction?: { parts: Array<{ text: string }> };
+}
+
 async function callGemini(
   env: Pick<Env, "GEMINI_API_KEY">,
   message: string,
@@ -255,16 +283,16 @@ async function callGemini(
     throw new McpError("GEMINI_API_KEY not configured.", McpErrorCode.AUTH_ERROR, false);
   }
 
-  const body: Record<string, unknown> = {
+  const body: GeminiRequestBody = {
     contents: [{ role: "user", parts: [{ text: message }] }],
     generationConfig: {
       maxOutputTokens: maxTokens,
       ...(temperature != null ? { temperature } : {}),
     },
+    ...(systemPrompt !== undefined
+      ? { systemInstruction: { parts: [{ text: systemPrompt }] } }
+      : {}),
   };
-  if (systemPrompt) {
-    body["systemInstruction"] = { parts: [{ text: systemPrompt }] };
-  }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent`;
 

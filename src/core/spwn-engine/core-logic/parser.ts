@@ -531,11 +531,23 @@ export class Parser {
         this.advance();
         return { kind: "Identifier", name: tok.value };
       }
-      case "Minus":
-      case "Bang": {
+      case "Minus": {
         this.advance();
         const operand = this.parseExpression(PREC_UNARY);
         return { kind: "UnaryExpression", operator: tok.value as UnaryOperator, operand };
+      }
+      case "Bang": {
+        this.advance();
+        // Trigger macro: !{ body }
+        if (this.current().kind === "LBrace") {
+          this.advance();
+          const body = this.parseBlockBody();
+          this.expect("RBrace");
+          return { kind: "MacroExpression", params: [], body, isTrigger: true };
+        }
+        // Unary logical not: !expr
+        const operand = this.parseExpression(PREC_UNARY);
+        return { kind: "UnaryExpression", operator: "!" as UnaryOperator, operand };
       }
       case "PlusPlus":
       case "MinusMinus": {
@@ -551,18 +563,6 @@ export class Parser {
       }
       case "LBrace": {
         return this.parseDictLiteral();
-      }
-      case "Bang": {
-        this.advance();
-        this.expect("LBrace");
-        const body = this.parseBlockBody();
-        this.expect("RBrace");
-        return {
-          kind: "MacroExpression",
-          params: [],
-          body,
-          isTrigger: true,
-        };
       }
       case "Obj": {
         this.advance();
@@ -599,8 +599,9 @@ export class Parser {
           return { kind: "MacroExpression", params, body, isTrigger: false };
         }
       }
-    } catch {
-      // fall through to grouping
+    } catch (err) {
+      if (!(err instanceof ParseError)) throw err;
+      // ParseError during speculative parse — fall through to grouped expression
     }
 
     // Restore and parse as grouped expression

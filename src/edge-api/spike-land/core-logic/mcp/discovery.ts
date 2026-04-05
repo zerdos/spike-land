@@ -17,8 +17,5 @@ export interface ToolModuleExport {
   condition?: () => boolean;
 }
 
-export interface ToolModuleEntry {
-  register: (registry: ToolRegistry, userId: string, db: DrizzleDB) => void;
-  categories?: string[];
-  condition?: () => boolean;
-}
+/** @deprecated Use {@link ToolModuleExport} instead — identical shape. */
+export type ToolModuleEntry = ToolModuleExport;

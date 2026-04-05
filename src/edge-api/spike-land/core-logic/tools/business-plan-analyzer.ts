@@ -54,7 +54,7 @@ export async function fetchWebsiteContent(url: string): Promise<ExtractedContent
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5",
       },
-      signal: controller.signal as AbortSignal,
+      signal: controller.signal,
       redirect: "follow",
     });
   } catch (error: unknown) {

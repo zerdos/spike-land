@@ -1,48 +1,43 @@
 import { Hono } from "hono";
+import { eq, asc, inArray } from "drizzle-orm";
 import type { Env } from "../core-logic/env";
 import type { AuthVariables } from "./middleware";
+import { createDb } from "../db/db/db-index.ts";
+import { mcpApps, registeredTools } from "../db/db/schema";
 import { generateAppMdx } from "../core-logic/tools/store/mdx-templates";
 import type { AppToolDef } from "../core-logic/tools/store/mdx-templates";
-
-interface McpAppRow {
-  slug: unknown;
-  name: unknown;
-  description: unknown;
-  emoji: unknown;
-  category: unknown;
-  tags: unknown;
-  tagline: unknown;
-  pricing: unknown;
-  is_featured: unknown;
-  is_new: unknown;
-  tool_count: unknown;
-  sort_order: unknown;
-  status?: unknown;
-  tools?: unknown;
-  graph?: unknown;
-  markdown?: unknown;
-}
 
 export const publicAppsRoute = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
 publicAppsRoute.get("/", async (c) => {
-  const result = await c.env.DB.prepare(
-    `SELECT slug, name, description, emoji, category, tags, tagline, pricing, is_featured, is_new, tool_count, sort_order
-     FROM mcp_apps
-     WHERE status = 'live'
-     ORDER BY sort_order ASC`,
-  ).all();
+  const db = createDb(c.env.DB);
 
-  const apps = (result.results ?? []).map((rawRow) => {
-    const row = rawRow as unknown as McpAppRow;
-    let tags = [];
+  const apps = await db
+    .select({
+      slug: mcpApps.slug,
+      name: mcpApps.name,
+      description: mcpApps.description,
+      emoji: mcpApps.emoji,
+      category: mcpApps.category,
+      tags: mcpApps.tags,
+      tagline: mcpApps.tagline,
+      pricing: mcpApps.pricing,
+      isFeatured: mcpApps.isFeatured,
+      isNew: mcpApps.isNew,
+      toolCount: mcpApps.toolCount,
+      sortOrder: mcpApps.sortOrder,
+    })
+    .from(mcpApps)
+    .where(eq(mcpApps.status, "live"))
+    .orderBy(asc(mcpApps.sortOrder));
 
+  const result = apps.map((row) => {
+    let tags: string[] = [];
     try {
-      tags = JSON.parse(String(row.tags ?? "[]"));
+      tags = JSON.parse(row.tags) as string[];
     } catch (e) {
-      console.error(`Failed to parse 'tags' for app ${String(row.slug ?? "<unknown>")}`, e);
+      console.error(`Failed to parse 'tags' for app ${row.slug}`, e);
     }
-
     return {
       slug: row.slug,
       name: row.name,
@@ -52,49 +47,48 @@ publicAppsRoute.get("/", async (c) => {
       tags,
       tagline: row.tagline,
       pricing: row.pricing,
-      is_featured: Boolean(row.is_featured),
-      is_new: Boolean(row.is_new),
-      tool_count: row.tool_count,
-      sort_order: row.sort_order,
+      is_featured: row.isFeatured,
+      is_new: row.isNew,
+      tool_count: row.toolCount,
+      sort_order: row.sortOrder,
     };
   });
 
   c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
-  return c.json({ apps });
+  return c.json({ apps: result });
 });
 
 publicAppsRoute.get("/:slug", async (c) => {
   const slug = c.req.param("slug");
+  const db = createDb(c.env.DB);
 
-  const rawRow = await c.env.DB.prepare(
-    `SELECT slug, name, description, emoji, category, tags, tagline, pricing, is_featured, is_new, status, tools, graph, markdown, tool_count, sort_order
-     FROM mcp_apps
-     WHERE slug = ?`,
-  )
-    .bind(slug)
-    .first();
+  const row = await db
+    .select()
+    .from(mcpApps)
+    .where(eq(mcpApps.slug, slug))
+    .limit(1)
+    .then((rows) => rows[0] ?? null);
 
-  if (!rawRow) {
+  if (!row) {
     return c.json({ error: "App not found" }, 404);
   }
 
-  const row = rawRow as unknown as McpAppRow;
-  let tools = [];
-  let graph = {};
-  let tags = [];
+  let tools: string[] = [];
+  let graph: Record<string, unknown> = {};
+  let tags: string[] = [];
 
   try {
-    tools = JSON.parse(row.tools as string);
+    tools = JSON.parse(row.tools) as string[];
   } catch (e) {
     console.error(`Failed to parse 'tools' for app ${slug}`, e);
   }
   try {
-    tags = JSON.parse(row.tags as string);
+    tags = JSON.parse(row.tags) as string[];
   } catch (e) {
     console.error(`Failed to parse 'tags' for app ${slug}`, e);
   }
   try {
-    graph = JSON.parse(row.graph as string);
+    graph = JSON.parse(row.graph) as Record<string, unknown>;
   } catch (e) {
     console.error(`Failed to parse 'graph' for app ${slug}`, e);
   }
@@ -108,14 +102,14 @@ publicAppsRoute.get("/:slug", async (c) => {
     tags,
     tagline: row.tagline,
     pricing: row.pricing,
-    is_featured: Boolean(row.is_featured),
-    is_new: Boolean(row.is_new),
+    is_featured: row.isFeatured,
+    is_new: row.isNew,
     status: row.status,
     tools,
     graph,
     markdown: row.markdown,
-    tool_count: row.tool_count,
-    sort_order: row.sort_order,
+    tool_count: row.toolCount,
+    sort_order: row.sortOrder,
   };
 
   c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
@@ -131,39 +125,48 @@ publicAppsRoute.get("/:slug", async (c) => {
  */
 publicAppsRoute.get("/:slug/mdx", async (c) => {
   const slug = c.req.param("slug");
+  const db = createDb(c.env.DB);
 
-  const rawRow = await c.env.DB.prepare(
-    `SELECT slug, name, description, emoji, category, tags, tagline, pricing, tools, markdown
-     FROM mcp_apps
-     WHERE slug = ?`,
-  )
-    .bind(slug)
-    .first();
+  const row = await db
+    .select({
+      slug: mcpApps.slug,
+      name: mcpApps.name,
+      description: mcpApps.description,
+      emoji: mcpApps.emoji,
+      category: mcpApps.category,
+      tags: mcpApps.tags,
+      tagline: mcpApps.tagline,
+      pricing: mcpApps.pricing,
+      tools: mcpApps.tools,
+      markdown: mcpApps.markdown,
+    })
+    .from(mcpApps)
+    .where(eq(mcpApps.slug, slug))
+    .limit(1)
+    .then((rows) => rows[0] ?? null);
 
-  if (!rawRow) {
+  if (!row) {
     return c.text(`# ${slug}\n\nApp not found.`, 404);
   }
 
-  const row = rawRow as unknown as McpAppRow;
-
   // If stored markdown exists, return it directly
-  if (row.markdown && typeof row.markdown === "string" && row.markdown.trim().length > 0) {
+  if (row.markdown.trim().length > 0) {
     c.header("Content-Type", "text/plain; charset=utf-8");
     c.header("Cache-Control", "public, max-age=14400, stale-while-revalidate=86400");
-    return c.text(row.markdown as string);
+    return c.text(row.markdown);
   }
 
   // Generate MDX on-the-fly from app metadata + tools list
   let toolNames: string[] = [];
   try {
-    toolNames = JSON.parse(row.tools as string) as string[];
+    toolNames = JSON.parse(row.tools) as string[];
   } catch {
     // ignore parse error — tools defaults to empty array
   }
 
   let tags: string[] = [];
   try {
-    tags = JSON.parse(row.tags as string) as string[];
+    tags = JSON.parse(row.tags) as string[];
   } catch {
     // ignore parse error
   }
@@ -172,18 +175,20 @@ publicAppsRoute.get("/:slug/mdx", async (c) => {
   let toolDefs: AppToolDef[] = [];
   if (toolNames.length > 0) {
     try {
-      const placeholders = toolNames.map(() => "?").join(", ");
-      const toolRows = await c.env.DB.prepare(
-        `SELECT name, description, category FROM registered_tools WHERE name IN (${placeholders}) LIMIT 50`,
-      )
-        .bind(...toolNames)
-        .all();
+      const toolRows = await db
+        .select({
+          name: registeredTools.name,
+          description: registeredTools.description,
+          category: registeredTools.category,
+        })
+        .from(registeredTools)
+        .where(inArray(registeredTools.name, toolNames))
+        .limit(50);
 
-      toolDefs = (toolRows.results ?? []).map((r) => {
-        const tr = r as { name: unknown; description: unknown; category: unknown };
-        const def: AppToolDef = { name: String(tr.name ?? "") };
-        if (tr.description) def.description = String(tr.description);
-        if (tr.category) def.category = String(tr.category);
+      toolDefs = toolRows.map((t) => {
+        const def: AppToolDef = { name: t.name };
+        if (t.description) def.description = t.description;
+        if (t.category) def.category = t.category;
         return def;
       });
     } catch {
@@ -193,16 +198,16 @@ publicAppsRoute.get("/:slug/mdx", async (c) => {
   }
 
   const mdxContext: Parameters<typeof generateAppMdx>[0] = {
-    slug: String(row.slug ?? slug),
-    name: String(row.name ?? slug),
-    description: String(row.description ?? ""),
-    emoji: String(row.emoji ?? "🔧"),
-    category: String(row.category ?? ""),
+    slug: row.slug,
+    name: row.name,
+    description: row.description,
+    emoji: row.emoji,
+    category: row.category,
     tags,
     tools: toolDefs,
   };
-  if (row.tagline) mdxContext.tagline = String(row.tagline);
-  if (row.pricing) mdxContext.pricing = String(row.pricing);
+  if (row.tagline) mdxContext.tagline = row.tagline;
+  if (row.pricing) mdxContext.pricing = row.pricing;
 
   const mdx = generateAppMdx(mdxContext);
 

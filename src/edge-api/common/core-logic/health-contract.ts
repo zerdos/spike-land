@@ -28,11 +28,7 @@ const BOOT_TIME = Date.now();
 declare const __BUILD_SHA__: string;
 
 function getBuildSha(): string {
-  try {
-    return typeof __BUILD_SHA__ !== "undefined" ? __BUILD_SHA__ : "dev";
-  } catch {
-    return "dev";
-  }
+  return typeof __BUILD_SHA__ !== "undefined" ? __BUILD_SHA__ : "dev";
 }
 
 export interface BuildHealthResponseOptions {
@@ -110,11 +106,11 @@ export async function timedFetchCheck(
       { signal: controller.signal },
     );
     const latency_ms = Date.now() - start;
+    const detail = !response.ok ? `HTTP ${response.status}` : (options.label ?? undefined);
     return {
       status: response.ok ? "ok" : "degraded",
       latency_ms,
-      ...(options.label ? { detail: options.label } : {}),
-      ...(!response.ok ? { detail: `HTTP ${response.status}` } : {}),
+      ...(detail !== undefined ? { detail } : {}),
     };
   } catch (err) {
     return {

@@ -143,22 +143,22 @@ function generateOptions(
 ): [string, string, string, string] {
   const prefix = truncate(keySentence, 30);
   const correct = `This accurately reflects: ${prefix}`;
-  const distractors = [
+  const distractors: [string, string, string] = [
     `This contradicts: ${prefix}`,
     `This is unrelated to: ${prefix}`,
     `This oversimplifies: ${prefix}`,
   ];
 
-  const options: string[] = [];
+  const options: [string, string, string, string] = ["", "", "", ""];
   let distractorIdx = 0;
   for (let i = 0; i < OPTIONS_PER_QUESTION; i++) {
     if (i === correctIndex) {
-      options.push(correct);
+      options[i] = correct;
     } else {
-      options.push(distractors[distractorIdx++] ?? `Distractor ${i}`);
+      options[i] = distractors[distractorIdx++] ?? `Distractor ${i}`;
     }
   }
-  return options as [string, string, string, string];
+  return options;
 }
 
 function getDefaultConcepts(): ConceptDefinition[] {
@@ -743,6 +743,12 @@ export function generateNextRound(session: QuizSession): QuizRound {
     } satisfies QuizQuestion;
   });
 
+  if (questions.length !== QUESTIONS_PER_ROUND) {
+    throw new Error(
+      `Expected ${QUESTIONS_PER_ROUND} questions for a round, got ${questions.length}`,
+    );
+  }
+
   return {
     roundNumber: session.roundNumber,
     questions: questions as [QuizQuestion, QuizQuestion, QuizQuestion],
@@ -913,16 +919,14 @@ export function createQuizSession(
 ): QuizSession {
   const conceptStates = createConceptStates(concepts);
 
-  const session: QuizSession = {
+  // Build the session without currentRound first, then generate it.
+  // The roundNumber must be set before generateNextRound is called.
+  const partial: Omit<QuizSession, "currentRound"> = {
     id,
     userId,
     article: articleContent,
     concepts,
     conceptStates,
-    currentRound: {
-      roundNumber: 0,
-      questions: [] as unknown as [QuizQuestion, QuizQuestion, QuizQuestion],
-    },
     roundNumber: 1,
     conflicts: [],
     completed: false,
@@ -931,6 +935,7 @@ export function createQuizSession(
     completedAt: null,
   };
 
+  const session = partial as QuizSession;
   session.currentRound = generateNextRound(session);
   return session;
 }

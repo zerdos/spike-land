@@ -62,13 +62,25 @@ function addSecurityHeaders(response: Response): Response {
   });
 }
 
+/**
+ * Cloudflare Workers augments the standard Request with a `cf` property
+ * containing geo/ASN metadata. It is not present in the standard Request type.
+ */
+interface CloudflareRequest extends Request {
+  cf?: {
+    asOrganization?: string;
+    country?: string;
+    colo?: string;
+  };
+}
+
 export async function handleMainFetch(
   request: Request,
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
-  const { cf } = request as unknown as { cf?: { asOrganization?: string } };
-  if (cf?.asOrganization?.startsWith("YANDEX")) {
+  const cfRequest = request as CloudflareRequest;
+  if (cfRequest.cf?.asOrganization?.startsWith("YANDEX")) {
     return handleUnauthorizedRequest();
   }
 

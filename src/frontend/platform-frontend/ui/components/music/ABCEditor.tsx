@@ -214,6 +214,8 @@ export const ABCEditor = memo(function ABCEditor({ initialCode }: ABCEditorProps
   const [rendering, setRendering] = useState(false);
   const [sheetSvg, setSheetSvg] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Kept current so the mount effect can call synthesize without being a dep
+  const synthesizeRef = useRef<() => Promise<void>>(async () => {});
 
   const meta = parseAbcMeta(code);
 
@@ -263,10 +265,13 @@ export const ABCEditor = memo(function ABCEditor({ initialCode }: ABCEditorProps
     setRendering(false);
   }, [code, meta.tempo]);
 
-  // Auto-synthesize on first render
+  // Keep ref current so the mount effect below doesn't need synthesize as a dep
+  synthesizeRef.current = synthesize;
+
+  // Auto-synthesize on first render only
   useEffect(() => {
-    void synthesize();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    void synthesizeRef.current();
+  }, []);
 
   return (
     <div className="abc-editor">

@@ -15,25 +15,10 @@ function esc(s: string): string {
     .replace(/'/g, "&#x27;");
 }
 
-export function renderDashboard(user: DashboardUser): string {
-  const safeName = esc(user.name);
-  const safeEmail = esc(user.email);
-  const safeRole = esc(user.role);
-  const safeImage = user.image ? esc(user.image) : "";
-  const avatarHtml = safeImage
-    ? `<img src="${safeImage}" alt="${safeName}" class="avatar-img">`
-    : `<div class="avatar-fallback">${safeName.charAt(0).toUpperCase()}</div>`;
+// ── CSS ───────────────────────────────────────────────────────────────────────
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>spike.land admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
+function buildStyles(): string {
+  return `<style>
 :root{
   --bg:#06100c;
   --surface-1:rgba(14,28,22,.92);
@@ -459,10 +444,18 @@ button{cursor:pointer;font-family:inherit}
   .bento{grid-template-columns:1fr}
   .topbar-link{display:none}
 }
-</style>
-</head>
-<body>
+</style>`;
+}
 
+// ── HTML shell ────────────────────────────────────────────────────────────────
+
+function buildHtmlShell(
+  avatarHtml: string,
+  safeName: string,
+  safeRole: string,
+  safeEmail: string,
+): string {
+  return `
 <!-- Impersonation banner -->
 <div class="impersonate-banner" id="impersonate-banner">
   <span>Viewing as <strong id="impersonate-name"></strong> (<span id="impersonate-email"></span>)</span>
@@ -516,9 +509,13 @@ button{cursor:pointer;font-family:inherit}
       <button class="btn btn-danger" id="modal-confirm" onclick="">Confirm</button>
     </div>
   </div>
-</div>
+</div>`;
+}
 
-<script>
+// ── Client-side script ────────────────────────────────────────────────────────
+
+function buildScript(): string {
+  return `<script>
 (function(){
 'use strict';
 
@@ -547,6 +544,19 @@ const LIMIT = 25;
 let userSearch = '', userRole = '';
 let auditAction = '';
 let searchTimer = null;
+
+// ── Shared inline style fragments ─────────────────────────────────────────
+const S_BOLD       = 'font-weight:600';
+const S_MUTED_MONO = 'color:var(--muted);font-size:.78rem;font-family:\\'JetBrains Mono\\',monospace';
+const S_MUTED_SM   = 'color:var(--muted);font-size:.82rem';
+
+// ── Loading / error fragments ──────────────────────────────────────────────
+function loadingHtml(label) {
+  return '<div class="loading"><div class="spinner"></div><span>'+esc(label)+'</span></div>';
+}
+function errorHtml(msg) {
+  return '<div class="empty">'+esc(msg)+'</div>';
+}
 
 // ── Utilities ─────────────────────────────────────────────────────────────
 const $ = (sel, ctx) => (ctx || document).querySelector(sel);
@@ -678,7 +688,7 @@ function buildTabRow() {
 
 // ── Overview tab ──────────────────────────────────────────────────────────
 async function loadOverview() {
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading overview...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading overview...');
   try {
     const stats = await fetchApi('/dashboard/api/stats');
     TAB_COUNTS['users'] = stats.totalUsers;
@@ -720,7 +730,7 @@ async function loadOverview() {
 
     $('#app').innerHTML = html;
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed to load stats: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed to load stats: '+e.message);
   }
 }
 
@@ -759,7 +769,7 @@ async function loadUsers(page) {
   page = page || pages.users;
   clearSelection();
   const params = new URLSearchParams({search:userSearch,role:userRole,page:String(page),limit:String(LIMIT)});
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading users...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading users...');
   try {
     const data = await fetchApi('/dashboard/api/users?'+params.toString());
     pages.users = page;
@@ -787,8 +797,8 @@ async function loadUsers(page) {
       const checked = selectedIds.has(u.id) ? ' checked' : '';
       html += '<tr>'
         +'<td class="check-col"><input type="checkbox" class="checkbox" data-id="'+esc(u.id)+'"'+checked+'></td>'
-        +'<td><div style="font-weight:600">'+esc(u.name||'—')+'</div>'
-        +'<div style="color:var(--muted);font-size:.78rem;font-family:\'JetBrains Mono\',monospace">'+esc(u.email)+'</div></td>'
+        +'<td><div style="'+S_BOLD+'">'+esc(u.name||'—')+'</div>'
+        +'<div style="'+S_MUTED_MONO+'">'+esc(u.email)+'</div></td>'
         +'<td><select class="dropdown" style="padding:4px 8px;font-size:.78rem" onchange="patchUserRole(\''+esc(u.id)+'\',this)">'
         +'<option value="user"'+(u.role==='user'?' selected':'')+'>user</option>'
         +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>admin</option>'
@@ -835,7 +845,7 @@ async function loadUsers(page) {
       };
     }
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed to load users: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed to load users: '+e.message);
   }
 }
 
@@ -888,7 +898,7 @@ async function bulkExportUsers() {
 async function loadSessions(page) {
   page = page || pages.sessions;
   clearSelection();
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading sessions...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading sessions...');
   try {
     const data = await fetchApi('/dashboard/api/sessions?page='+page+'&limit='+LIMIT);
     pages.sessions = page;
@@ -906,8 +916,8 @@ async function loadSessions(page) {
       const expired = s.expiresAt && new Date(s.expiresAt) < new Date();
       html += '<tr>'
         +'<td class="check-col"><input type="checkbox" class="checkbox" data-id="'+esc(s.id)+'"></td>'
-        +'<td><div style="font-weight:600">'+esc(s.userName||'—')+'</div>'
-        +'<div style="color:var(--muted);font-size:.78rem;font-family:\'JetBrains Mono\',monospace">'+esc(s.userEmail||'')+'</div></td>'
+        +'<td><div style="'+S_BOLD+'">'+esc(s.userName||'—')+'</div>'
+        +'<div style="'+S_MUTED_MONO+'">'+esc(s.userEmail||'')+'</div></td>'
         +'<td class="mono">'+esc(s.ipAddress||'—')+'</td>'
         +'<td class="truncate" title="'+esc(s.userAgent||'')+'">'+esc(s.userAgent||'—')+'</td>'
         +'<td class="mono">'+fmtDate(s.createdAt)+'</td>'
@@ -936,7 +946,7 @@ async function loadSessions(page) {
       };
     }
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed to load sessions: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed to load sessions: '+e.message);
   }
 }
 
@@ -967,7 +977,7 @@ async function bulkRevokeSessions() {
 
 // ── Organizations tab ─────────────────────────────────────────────────────
 async function loadOrganizations() {
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading organizations...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading organizations...');
   try {
     const data = await fetchApi('/dashboard/api/organizations');
     const orgs = data.organizations || [];
@@ -995,7 +1005,7 @@ async function loadOrganizations() {
     html += '</div>';
     $('#app').innerHTML = html;
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed: '+e.message);
   }
 }
 
@@ -1018,10 +1028,10 @@ window.toggleOrg = async function(id) {
       html += '<p class="section-title">Pending Invites</p>';
       html += data.invites.map(inv =>
         '<div class="data-row"><span class="data-row-label mono">'+esc(inv.email)+'</span>'
-        +'<span style="color:var(--muted);font-size:.78rem">'+fmtDate(inv.expiresAt)+'</span></div>'
+        +'<span style="'+S_MUTED_SM+'">'+fmtDate(inv.expiresAt)+'</span></div>'
       ).join('');
     }
-    el.innerHTML = html || '<div style="color:var(--muted);font-size:.82rem">No member data.</div>';
+    el.innerHTML = html || '<div style="'+S_MUTED_SM+'">No member data.</div>';
   } catch(e) {
     el.innerHTML = '<div style="color:var(--danger);font-size:.82rem">Failed: '+esc(e.message)+'</div>';
   }
@@ -1029,7 +1039,7 @@ window.toggleOrg = async function(id) {
 
 // ── API Keys tab ──────────────────────────────────────────────────────────
 async function loadApiKeys() {
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading API keys...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading API keys...');
   try {
     const [keysData, clientsData, codesData] = await Promise.all([
       fetchApi('/dashboard/api/api-keys'),
@@ -1048,7 +1058,7 @@ async function loadApiKeys() {
         +'</tr></thead><tbody>';
       keys.forEach(k => {
         html += '<tr>'
-          +'<td style="font-weight:600">'+esc(k.name||'—')+'</td>'
+          +'<td style="'+S_BOLD+'">'+esc(k.name||'—')+'</td>'
           +'<td class="mono">'+esc(k.prefix||k.keyHash?.slice(0,8)||'—')+'…</td>'
           +'<td class="mono" style="font-size:.78rem">'+esc(k.userEmail||k.userId||'—')+'</td>'
           +'<td class="mono">'+relTime(k.lastUsedAt)+'</td>'
@@ -1097,7 +1107,7 @@ async function loadApiKeys() {
 
     $('#app').innerHTML = html;
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed: '+e.message);
   }
 }
 
@@ -1115,7 +1125,7 @@ window.revokeApiKey = function(id) {
 // ── Audit Log tab ─────────────────────────────────────────────────────────
 async function loadAuditLog(page) {
   page = page || pages['audit-log'];
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading audit log...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading audit log...');
   try {
     const params = new URLSearchParams({page:String(page),limit:String(LIMIT),action:auditAction});
     const data = await fetchApi('/dashboard/api/audit-log?'+params.toString());
@@ -1157,7 +1167,7 @@ async function loadAuditLog(page) {
           +'</div>'
           +'<div class="audit-meta">'
           +'<span class="audit-time">'+fmtTime(e.createdAt)+'</span>'
-          +(e.ipAddress ? '<span style="color:var(--muted);font-size:.75rem;font-family:\'JetBrains Mono\',monospace">'+esc(e.ipAddress)+'</span>' : '')
+          +(e.ipAddress ? '<span style="color:var(--muted);font-size:.75rem;font-family:\\'JetBrains Mono\\',monospace">'+esc(e.ipAddress)+'</span>' : '')
           +'</div>'
           +(e.details ? '<button class="expand-btn" onclick="toggleAuditDetails(this)">details ▸</button>'
             +'<div class="audit-details">'+esc(JSON.stringify(e.details, null, 2))+'</div>' : '')
@@ -1174,7 +1184,7 @@ async function loadAuditLog(page) {
     const af = $('#audit-action-filter');
     if (af) af.onchange = (ev) => { auditAction = ev.target.value; loadAuditLog(1); };
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed: '+e.message);
   }
 }
 
@@ -1186,7 +1196,7 @@ window.toggleAuditDetails = function(btn) {
 
 // ── Security tab ──────────────────────────────────────────────────────────
 async function loadSecurity() {
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Analyzing security...</span></div>';
+  $('#app').innerHTML = loadingHtml('Analyzing security...');
   try {
     const data = await fetchApi('/dashboard/api/security');
 
@@ -1228,7 +1238,7 @@ async function loadSecurity() {
 
     $('#app').innerHTML = html;
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed: '+e.message);
   }
 }
 
@@ -1244,7 +1254,7 @@ window.cleanStaleSessions = function() {
 
 // ── System tab ────────────────────────────────────────────────────────────
 async function loadSystem() {
-  $('#app').innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading system info...</span></div>';
+  $('#app').innerHTML = loadingHtml('Loading system info...');
   try {
     const data = await fetchApi('/dashboard/api/system');
 
@@ -1281,33 +1291,25 @@ async function loadSystem() {
 
     $('#app').innerHTML = html;
   } catch(e) {
-    $('#app').innerHTML = '<div class="empty">Failed: '+esc(e.message)+'</div>';
+    $('#app').innerHTML = errorHtml('Failed: '+e.message);
   }
 }
 
 // ── Export tab ────────────────────────────────────────────────────────────
+function exportCard(title, desc, type) {
+  return '<div class="card"><h3>'+title+'</h3>'
+    +'<p style="'+S_MUTED_SM+';margin-bottom:16px">'+desc+'</p>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="btn btn-primary" onclick="exportCsv(\''+type+'\')">Download CSV</button>'
+    +'</div></div>';
+}
+
 function loadExport() {
   let html = '<p class="section-title" style="margin-top:0">Export Data</p>';
   html += '<div class="data-grid">';
-
-  html += '<div class="card"><h3>Users</h3>'
-    +'<p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Export all user accounts including profile, role, and verification status.</p>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +'<button class="btn btn-primary" onclick="exportCsv(\'users\')">Download CSV</button>'
-    +'</div></div>';
-
-  html += '<div class="card"><h3>Sessions</h3>'
-    +'<p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Export all sessions including IP, user agent, and expiry information.</p>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +'<button class="btn btn-primary" onclick="exportCsv(\'sessions\')">Download CSV</button>'
-    +'</div></div>';
-
-  html += '<div class="card"><h3>Audit Log</h3>'
-    +'<p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Export complete audit trail including actor, action, target, and timestamps.</p>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +'<button class="btn btn-primary" onclick="exportCsv(\'audit-log\')">Download CSV</button>'
-    +'</div></div>';
-
+  html += exportCard('Users',     'Export all user accounts including profile, role, and verification status.',               'users');
+  html += exportCard('Sessions',  'Export all sessions including IP, user agent, and expiry information.',                   'sessions');
+  html += exportCard('Audit Log', 'Export complete audit trail including actor, action, target, and timestamps.',             'audit-log');
   html += '</div>';
 
   $('#bulk-actions').innerHTML = '';
@@ -1408,7 +1410,34 @@ function init() {
 
 init();
 })();
-</script>
+<\/script>`;
+}
+
+// ── Public entry point ────────────────────────────────────────────────────────
+
+export function renderDashboard(user: DashboardUser): string {
+  const safeName = esc(user.name);
+  const safeEmail = esc(user.email);
+  const safeRole = esc(user.role);
+  const safeImage = user.image ? esc(user.image) : "";
+  const avatarHtml = safeImage
+    ? `<img src="${safeImage}" alt="${safeName}" class="avatar-img">`
+    : `<div class="avatar-fallback">${safeName.charAt(0).toUpperCase()}</div>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>spike.land admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+${buildStyles()}
+</head>
+<body>
+${buildHtmlShell(avatarHtml, safeName, safeRole, safeEmail)}
+${buildScript()}
 </body>
 </html>`;
 }

@@ -1,19 +1,21 @@
 import type {
-  AlbumHandle,
   AlbumImageRow,
+  AlbumPrivacy,
   AlbumRow,
   EnhancementJobRow,
   GenerationJobRow,
-  ImageId,
   ImageRow,
   ImageStudioDeps,
-  JobId,
-  PipelineId,
   PipelineRow,
+  PipelineVisibility,
   SubjectRow,
 } from "@spike-land-ai/mcp-image-studio";
+import { asAlbumHandle, asImageId, asJobId, asPipelineId } from "@spike-land-ai/mcp-image-studio";
 import type { Env } from "../env.d.ts";
 import { nanoid } from "../core-logic/nanoid.ts";
+
+/** Union of values accepted as D1 bound parameters. */
+type SqlValue = string | number | boolean | null;
 
 // ─── Row mappers (D1 rows → typed rows) ───
 
@@ -64,7 +66,7 @@ interface D1ImageRow {
 
 function mapImageRow(r: D1ImageRow): ImageRow {
   return {
-    id: r.id as ImageId,
+    id: asImageId(r.id),
     userId: r.userId,
     name: r.name,
     description: r.description,
@@ -87,9 +89,9 @@ interface D1JobRow {
   id: string;
   imageId: string;
   userId: string;
-  tier: string;
+  tier: EnhancementJobRow["tier"];
   creditsCost: number;
-  status: string;
+  status: EnhancementJobRow["status"];
   enhancedUrl: string | null;
   enhancedR2Key: string | null;
   enhancedWidth: number | null;
@@ -107,10 +109,8 @@ interface D1JobRow {
 function mapJobRow(r: D1JobRow): EnhancementJobRow {
   return {
     ...r,
-    id: r.id as JobId,
-    imageId: r.imageId as ImageId,
-    tier: r.tier as EnhancementJobRow["tier"],
-    status: r.status as EnhancementJobRow["status"],
+    id: asJobId(r.id),
+    imageId: asImageId(r.imageId),
     metadata: parseJson(r.metadata),
     processingStartedAt: parseDateOrNull(r.processingStartedAt),
     processingCompletedAt: parseDateOrNull(r.processingCompletedAt),
@@ -126,8 +126,8 @@ interface D1AlbumRow {
   name: string;
   description: string | null;
   coverImageId: string | null;
-  privacy: string;
-  defaultTier: string;
+  privacy: AlbumPrivacy;
+  defaultTier: AlbumRow["defaultTier"];
   shareToken: string | null;
   sortOrder: number;
   isDefault: number;
@@ -143,12 +143,10 @@ export interface GalleryAlbumRow extends AlbumRow {
 function mapAlbumRow(r: D1AlbumRow): GalleryAlbumRow {
   return {
     ...r,
-    handle: r.handle as AlbumHandle,
-    coverImageId: r.coverImageId as ImageId | null,
-    privacy: r.privacy as AlbumRow["privacy"],
-    defaultTier: r.defaultTier as AlbumRow["defaultTier"],
+    handle: asAlbumHandle(r.handle),
+    coverImageId: r.coverImageId != null ? asImageId(r.coverImageId) : null,
     isDefault: r.isDefault === 1,
-    pipelineId: r.pipelineId as PipelineId | null,
+    pipelineId: r.pipelineId != null ? asPipelineId(r.pipelineId) : null,
     createdAt: parseDate(r.createdAt),
     updatedAt: parseDate(r.updatedAt),
   };
@@ -159,9 +157,9 @@ interface D1PipelineRow {
   name: string;
   description: string | null;
   userId: string | null;
-  visibility: string;
+  visibility: PipelineVisibility;
   shareToken: string | null;
-  tier: string;
+  tier: PipelineRow["tier"];
   analysisConfig: string | null;
   autoCropConfig: string | null;
   promptConfig: string | null;
@@ -174,9 +172,7 @@ interface D1PipelineRow {
 function mapPipelineRow(r: D1PipelineRow): PipelineRow {
   return {
     ...r,
-    id: r.id as PipelineId,
-    visibility: r.visibility as PipelineRow["visibility"],
-    tier: r.tier as PipelineRow["tier"],
+    id: asPipelineId(r.id),
     analysisConfig: parseJson(r.analysisConfig),
     autoCropConfig: parseJson(r.autoCropConfig),
     promptConfig: parseJson(r.promptConfig),
@@ -189,10 +185,10 @@ function mapPipelineRow(r: D1PipelineRow): PipelineRow {
 interface D1GenJobRow {
   id: string;
   userId: string;
-  type: string;
-  tier: string;
+  type: GenerationJobRow["type"];
+  tier: GenerationJobRow["tier"];
   creditsCost: number;
-  status: string;
+  status: GenerationJobRow["status"];
   prompt: string;
   inputImageUrl: string | null;
   outputImageUrl: string | null;
@@ -207,10 +203,7 @@ interface D1GenJobRow {
 function mapGenJobRow(r: D1GenJobRow): GenerationJobRow {
   return {
     ...r,
-    id: r.id as JobId,
-    type: r.type as GenerationJobRow["type"],
-    tier: r.tier as GenerationJobRow["tier"],
-    status: r.status as GenerationJobRow["status"],
+    id: asJobId(r.id),
     createdAt: parseDate(r.createdAt),
     updatedAt: parseDate(r.updatedAt),
   };
@@ -221,7 +214,7 @@ interface D1SubjectRow {
   userId: string;
   imageId: string;
   label: string;
-  type: string;
+  type: SubjectRow["type"];
   description: string | null;
   createdAt: string;
 }
@@ -229,13 +222,29 @@ interface D1SubjectRow {
 function mapSubjectRow(r: D1SubjectRow): SubjectRow {
   return {
     ...r,
-    imageId: r.imageId as ImageId,
-    type: r.type as SubjectRow["type"],
+    imageId: asImageId(r.imageId),
     createdAt: parseDate(r.createdAt),
   };
 }
 
 // ─── D1 Database Implementation ───
+
+// ─── Shared helpers ───
+
+/** Enriches a mapped album row with its image count. */
+async function withAlbumCount(
+  db: D1Database,
+  row: D1AlbumRow,
+): Promise<GalleryAlbumRow & { _count: { albumImages: number } }> {
+  const countRow = await db
+    .prepare("SELECT COUNT(*) as count FROM album_images WHERE albumId = ?")
+    .bind(row.id)
+    .first<{ count: number }>();
+  return {
+    ...mapAlbumRow(row),
+    _count: { albumImages: countRow?.count ?? 0 },
+  };
+}
 
 export function createD1Db(env: Env): ImageStudioDeps["db"] {
   const db = env.IMAGE_DB;
@@ -302,7 +311,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async imageFindMany(opts) {
       let sql = "SELECT * FROM images WHERE userId = ?";
-      const params: unknown[] = [opts.userId];
+      const params: SqlValue[] = [opts.userId];
 
       if (opts.search) {
         sql += " AND (name LIKE ? OR description LIKE ?)";
@@ -331,7 +340,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async imageUpdate(id, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.name !== undefined) {
         sets.push("name = ?");
@@ -430,7 +439,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         ...job,
         image: img
           ? {
-              id: img.id as ImageId,
+              id: asImageId(img.id),
               name: img.name,
               originalUrl: img.originalUrl,
             }
@@ -440,7 +449,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async jobFindMany(opts) {
       let sql = "SELECT * FROM enhancement_jobs WHERE userId = ?";
-      const params: unknown[] = [opts.userId];
+      const params: SqlValue[] = [opts.userId];
 
       if (opts.imageId) {
         sql += " AND imageId = ?";
@@ -467,7 +476,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async jobUpdate(id, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.status !== undefined) {
         sets.push("status = ?");
@@ -561,17 +570,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM albums WHERE handle = ?")
         .bind(handle)
         .first<D1AlbumRow>();
-      if (!row) return null;
-
-      const countRow = await db
-        .prepare("SELECT COUNT(*) as count FROM album_images WHERE albumId = ?")
-        .bind(row.id)
-        .first<{ count: number }>();
-
-      return {
-        ...mapAlbumRow(row),
-        _count: { albumImages: countRow?.count ?? 0 },
-      };
+      return row ? withAlbumCount(db, row) : null;
     },
 
     async albumFindById(id) {
@@ -579,22 +578,12 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .prepare("SELECT * FROM albums WHERE id = ?")
         .bind(id)
         .first<D1AlbumRow>();
-      if (!row) return null;
-
-      const countRow = await db
-        .prepare("SELECT COUNT(*) as count FROM album_images WHERE albumId = ?")
-        .bind(row.id)
-        .first<{ count: number }>();
-
-      return {
-        ...mapAlbumRow(row),
-        _count: { albumImages: countRow?.count ?? 0 },
-      };
+      return row ? withAlbumCount(db, row) : null;
     },
 
     async albumFindMany(opts) {
       let sql = "SELECT * FROM albums WHERE userId = ? ORDER BY sortOrder ASC";
-      const params: unknown[] = [opts.userId];
+      const params: SqlValue[] = [opts.userId];
 
       if (opts.limit) {
         sql += " LIMIT ?";
@@ -606,23 +595,12 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         .bind(...params)
         .all<D1AlbumRow>();
 
-      return Promise.all(
-        result.results.map(async (row: D1AlbumRow) => {
-          const countRow = await db
-            .prepare("SELECT COUNT(*) as count FROM album_images WHERE albumId = ?")
-            .bind(row.id)
-            .first<{ count: number }>();
-          return {
-            ...mapAlbumRow(row),
-            _count: { albumImages: countRow?.count ?? 0 },
-          };
-        }),
-      );
+      return Promise.all(result.results.map((row) => withAlbumCount(db, row)));
     },
 
     async albumUpdate(handle, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.name !== undefined) {
         sets.push("name = ?");
@@ -699,10 +677,10 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         return {
           id,
           albumId,
-          imageId,
+          imageId: asImageId(imageId),
           sortOrder,
           addedAt: new Date(now),
-        } as AlbumImageRow;
+        } satisfies AlbumImageRow;
       } catch {
         // UNIQUE constraint violation — image already in album
         return null;
@@ -757,11 +735,11 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
       return result.results.map((r) => ({
         id: r.id,
         albumId: r.albumId,
-        imageId: r.imageId as ImageId,
+        imageId: asImageId(r.imageId),
         sortOrder: r.sortOrder,
         addedAt: parseDate(r.addedAt),
         image: {
-          id: r.img_id as ImageId,
+          id: asImageId(r.img_id),
           name: r.img_name,
           originalUrl: r.img_url,
           originalWidth: r.img_w,
@@ -834,7 +812,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async pipelineFindMany(opts) {
       let sql = "SELECT * FROM pipelines WHERE userId = ? ORDER BY createdAt DESC";
-      const params: unknown[] = [opts.userId];
+      const params: SqlValue[] = [opts.userId];
 
       if (opts.limit) {
         sql += " LIMIT ?";
@@ -850,7 +828,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async pipelineUpdate(id, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.name !== undefined) {
         sets.push("name = ?");
@@ -973,7 +951,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async toolCallUpdate(id, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.durationMs !== undefined) {
         sets.push("durationMs = ?");
@@ -1004,21 +982,23 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
     },
 
     async toolCallList({ limit }) {
+      type D1ToolCallRow = {
+        id: string;
+        userId: string;
+        toolName: string;
+        args: string;
+        durationMs: number;
+        isError: number;
+        status: "PENDING" | "COMPLETED" | "ERROR";
+        result: string | null;
+        createdAt: string;
+        updatedAt: string;
+      };
+
       const result = await db
         .prepare("SELECT * FROM tool_calls ORDER BY createdAt DESC LIMIT ?")
         .bind(limit)
-        .all<{
-          id: string;
-          userId: string;
-          toolName: string;
-          args: string;
-          durationMs: number;
-          isError: number;
-          status: string;
-          result: string | null;
-          createdAt: string;
-          updatedAt: string;
-        }>();
+        .all<D1ToolCallRow>();
 
       return result.results.map((r) => ({
         id: r.id,
@@ -1027,7 +1007,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
         args: r.args,
         durationMs: r.durationMs,
         isError: r.isError === 1,
-        status: r.status as "PENDING" | "COMPLETED" | "ERROR",
+        status: r.status,
         result: r.result,
         createdAt: parseDate(r.createdAt),
         updatedAt: parseDate(r.updatedAt),
@@ -1036,7 +1016,7 @@ export function createD1Db(env: Env): ImageStudioDeps["db"] {
 
     async generationJobUpdate(id, data) {
       const sets: string[] = [];
-      const params: unknown[] = [];
+      const params: SqlValue[] = [];
 
       if (data.status !== undefined) {
         sets.push("status = ?");
@@ -1164,7 +1144,7 @@ export async function galleryRecentImages(
 ): Promise<{ images: ImageRow[]; nextCursor: string | null }> {
   const limit = opts.limit ?? 50;
   let sql = "SELECT * FROM images WHERE userId = ?";
-  const params: unknown[] = [userId];
+  const params: SqlValue[] = [userId];
 
   if (opts.search) {
     sql += " AND (name LIKE ? OR description LIKE ?)";

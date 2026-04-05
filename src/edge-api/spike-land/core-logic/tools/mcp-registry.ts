@@ -20,13 +20,24 @@ const GLAMA_API_BASE = "https://glama.ai/api/mcp/v1/servers";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
+type McpTransport = "stdio" | "sse" | "streamable-http";
+
+const VALID_TRANSPORTS = new Set<McpTransport>(["stdio", "sse", "streamable-http"]);
+
+function resolveTransport(raw: string | undefined): McpTransport {
+  if (raw !== undefined && VALID_TRANSPORTS.has(raw as McpTransport)) {
+    return raw as McpTransport;
+  }
+  return "stdio";
+}
+
 interface McpServerInfo {
   id: string;
   name: string;
   description: string;
   source: "smithery" | "official" | "glama";
   url: string;
-  transport: "stdio" | "sse" | "streamable-http";
+  transport: McpTransport;
   envVarsRequired: string[];
   homepage?: string;
   stars?: number;
@@ -89,7 +100,7 @@ async function searchOfficialRegistry(query: string, limit: number): Promise<Mcp
       description: s.description ?? "",
       source: "official" as const,
       url: s.url ?? "",
-      transport: (s.transport as "stdio" | "sse" | "streamable-http") ?? "stdio",
+      transport: resolveTransport(s.transport),
       envVarsRequired: [] as string[],
     }));
   } catch {
@@ -120,7 +131,7 @@ async function searchGlama(query: string, limit: number): Promise<McpServerInfo[
       description: s.description ?? "",
       source: "glama" as const,
       url: s.url ?? "",
-      transport: (s.transport as "stdio" | "sse" | "streamable-http") ?? "stdio",
+      transport: resolveTransport(s.transport),
       envVarsRequired: [] as string[],
       ...(s.stars !== undefined ? { stars: s.stars } : {}),
     }));

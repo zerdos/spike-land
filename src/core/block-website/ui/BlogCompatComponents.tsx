@@ -27,6 +27,22 @@ import {
   type OnboardingPersona,
 } from "../../../edge-api/spike-land/core-logic/lib/persona-data";
 
+/** Shared pill badge used across multiple compat components. */
+function PillBadge({
+  icon: Icon,
+  children,
+}: {
+  icon?: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
+      {Icon && <Icon className="size-3.5" />}
+      {children}
+    </div>
+  );
+}
+
 const PERSONA_EVENT = "spike:persona-change";
 const POLL_EVENT = "spike:blog-poll-change";
 const PERSONA_STORAGE_KEY = "spike_persona";
@@ -260,10 +276,7 @@ export function AudioPlayer({ src, title }: { src: string; title?: string }) {
     <div className="not-prose my-12 rounded-[2rem] border border-border/60 bg-card/75 p-5 shadow-[var(--panel-shadow)] backdrop-blur-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
-            <AudioLines className="size-3.5" />
-            Companion Audio
-          </div>
+          <PillBadge icon={AudioLines}>Companion Audio</PillBadge>
           <div>
             <p className="text-lg font-black tracking-tight text-foreground">
               {title ?? "Listen to this article"}
@@ -373,10 +386,7 @@ export function PersonaLandingPreview() {
   return (
     <div className="not-prose my-12 grid gap-4 rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-[var(--panel-shadow)] backdrop-blur-sm md:grid-cols-[1.25fr_0.9fr]">
       <div className="space-y-4 rounded-[1.6rem] border border-border/55 bg-background/65 p-5">
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
-          <UserRoundSearch className="size-3.5" />
-          {PERSONA_GROUP_LABELS[group]}
-        </div>
+        <PillBadge icon={UserRoundSearch}>{PERSONA_GROUP_LABELS[group]}</PillBadge>
         <div>
           <h3 className="text-2xl font-black tracking-tight text-foreground">{persona.name}</h3>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">{persona.heroText}</p>
@@ -426,10 +436,7 @@ export function PersonaSwitcher() {
     <div className="not-prose my-12 rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-[var(--panel-shadow)] backdrop-blur-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
-            <UserRoundSearch className="size-3.5" />
-            Persona Switcher
-          </div>
+          <PillBadge icon={UserRoundSearch}>Persona Switcher</PillBadge>
           <div>
             <p className="text-lg font-black tracking-tight text-foreground">
               Move the article into a different audience lens
@@ -489,10 +496,7 @@ export function BlogPoll({ slug }: { slug: string }) {
   return (
     <div className="not-prose my-12 rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-[var(--panel-shadow)] backdrop-blur-sm">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
-          <Sparkles className="size-3.5" />
-          Personalized Poll
-        </div>
+        <PillBadge icon={Sparkles}>Personalized Poll</PillBadge>
         <span className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
           {persona.name}
         </span>
@@ -587,10 +591,7 @@ export function PollAnalyticsDashboard({ slug }: { slug: string }) {
     <div className="not-prose my-12 rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-[var(--panel-shadow)] backdrop-blur-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
-            <BarChart3 className="size-3.5" />
-            Persona Dashboard
-          </div>
+          <PillBadge icon={BarChart3}>Persona Dashboard</PillBadge>
           <h3 className="mt-3 text-xl font-black tracking-tight text-foreground">
             How each audience cluster leans
           </h3>

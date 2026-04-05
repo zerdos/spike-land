@@ -60,7 +60,7 @@ export async function downloadToLocal(codespaceId: string): Promise<string> {
   const localPath = getLocalPath(codespaceId);
 
   await writeFile(localPath, code, "utf-8");
-  console.log(`📥 Downloaded ${codespaceId} → ${localPath} (${code.length} bytes)`);
+  console.log(`Downloaded ${codespaceId} -> ${localPath} (${code.length} bytes)`);
 
   // Also save metadata
   const metaPath = localPath.replace(".tsx", ".meta.json");
@@ -91,7 +91,7 @@ export function watchCodespace(
   const { debounceMs = DEBOUNCE_MS, onSync, onError } = options;
 
   const localPath = getLocalPath(codespaceId);
-  console.log(`👀 Watching ${localPath}`);
+  console.log(`Watching ${localPath}`);
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -113,15 +113,15 @@ export function watchCodespace(
     debounceTimer = setTimeout(async () => {
       try {
         const code = await readFile(localPath, "utf-8");
-        console.log(`📤 Syncing ${codespaceId} (${code.length} bytes)...`);
+        console.log(`Syncing ${codespaceId} (${code.length} bytes)...`);
 
         await withRetry(() => pushCode(codespaceId, code));
 
-        console.log(`✅ Synced ${codespaceId}`);
+        console.log(`Synced ${codespaceId}`);
         onSync?.(codespaceId);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        console.error(`❌ Sync failed: ${err.message}`);
+        console.error(`Sync failed: ${err.message}`);
         onError?.(codespaceId, err);
       }
     }, debounceMs);
@@ -129,7 +129,7 @@ export function watchCodespace(
 
   watcher.on("error", (error: unknown) => {
     const err = error instanceof Error ? error : new Error(String(error));
-    console.error(`❌ Watcher error: ${err.message}`);
+    console.error(`Watcher error: ${err.message}`);
     onError?.(codespaceId, err);
   });
 
@@ -142,7 +142,7 @@ export function watchCodespace(
         clearTimeout(debounceTimer);
       }
       await watcher.close();
-      console.log(`🛑 Stopped watching ${codespaceId}`);
+      console.log(`Stopped watching ${codespaceId}`);
     },
   };
 }
@@ -163,9 +163,9 @@ export async function startDevMode(
     watchers.push(watcher);
   }
 
-  console.log(`\n🚀 Development mode active for ${codespaceIds.length} codespace(s)`);
-  console.log(`   Edit files in ./live/ directory`);
-  console.log(`   Changes auto-sync to testing.spike.land\n`);
+  console.log(`\nDevelopment mode active for ${codespaceIds.length} codespace(s)`);
+  console.log(`  Edit files in ./live/ directory`);
+  console.log(`  Changes auto-sync to testing.spike.land\n`);
 
   return {
     watchers,

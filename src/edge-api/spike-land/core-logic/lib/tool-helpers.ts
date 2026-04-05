@@ -327,7 +327,7 @@ export async function apiRequest<T>(
     const response = await fetch(url, {
       ...options,
       headers: { ...headers, ...(options.headers as Record<string, string>) },
-      signal: controller.signal as NonNullable<RequestInit["signal"]>,
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
@@ -361,7 +361,9 @@ export async function apiRequest<T>(
     }
 
     if (response.status === 204) {
-      return undefined as unknown as T;
+      // 204 No Content — callers that care about empty responses should type T as `T | undefined`.
+      // Cast is intentional: the API contract for 204 responses returns no body.
+      return undefined as T;
     }
 
     return response.json() as Promise<T>;

@@ -145,6 +145,16 @@ function pickVoice(synth: SpeechSynthesis, lang: string) {
   );
 }
 
+/** Shared label row used above slider controls. */
+function SliderHeader({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5">{left}</span>
+      <span>{right}</span>
+    </div>
+  );
+}
+
 export function BlogReaderControls({
   contentKey,
   scopeRef,
@@ -693,8 +703,8 @@ export function BlogReaderControls({
             <div className="inline-flex rounded-2xl border border-border/55 bg-background/55 p-0.5">
               {(
                 (hasPregenerated
-                  ? ["pregenerated", "browser", "elevenlabs"]
-                  : ["browser", "elevenlabs"]) as ReaderEngine[]
+                  ? (["pregenerated", "browser", "elevenlabs"] as const)
+                  : (["browser", "elevenlabs"] as const)) as readonly ReaderEngine[]
               ).map((eng) => (
                 <button
                   key={eng}
@@ -706,12 +716,10 @@ export function BlogReaderControls({
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {eng === "pregenerated" ? (
-                    <Volume2 className="size-3.5" />
-                  ) : eng === "browser" ? (
-                    <Volume2 className="size-3.5" />
-                  ) : (
+                  {eng === "elevenlabs" ? (
                     <Mic className="size-3.5" />
+                  ) : (
+                    <Volume2 className="size-3.5" />
                   )}
                   {eng === "pregenerated"
                     ? "Pre-recorded"
@@ -797,10 +805,7 @@ export function BlogReaderControls({
           <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-3 rounded-[1.6rem] border border-border/55 bg-background/55 p-4">
               <div>
-                <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
-                  <span>Jump</span>
-                  <span>{blocks.length} readable blocks</span>
-                </div>
+                <SliderHeader left="Jump" right={`${blocks.length} readable blocks`} />
                 <input
                   type="range"
                   min={0}
@@ -839,13 +844,15 @@ export function BlogReaderControls({
 
             <div className="space-y-3 rounded-[1.6rem] border border-border/55 bg-background/55 p-4">
               <div>
-                <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Volume2 className="size-3.5" />
-                    Rate
-                  </span>
-                  <span>{rate.toFixed(1)}x</span>
-                </div>
+                <SliderHeader
+                  left={
+                    <>
+                      <Volume2 className="size-3.5" />
+                      Rate
+                    </>
+                  }
+                  right={`${rate.toFixed(1)}x`}
+                />
                 <input
                   type="range"
                   min={0.7}
@@ -860,13 +867,15 @@ export function BlogReaderControls({
               </div>
 
               <div>
-                <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Type className="size-3.5" />
-                    Font Size
-                  </span>
-                  <span>{Math.round(fontScale * 100)}%</span>
-                </div>
+                <SliderHeader
+                  left={
+                    <>
+                      <Type className="size-3.5" />
+                      Font Size
+                    </>
+                  }
+                  right={`${Math.round(fontScale * 100)}%`}
+                />
                 <input
                   type="range"
                   min={0.9}
@@ -880,21 +889,25 @@ export function BlogReaderControls({
               </div>
 
               <div>
-                <div className="flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Palette className="size-3.5" />
-                    Tone
-                  </span>
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={autoFollow}
-                      onChange={(event) => setAutoFollow(event.target.checked)}
-                      className="size-3.5 rounded border-border/60 accent-primary"
-                    />
-                    Auto-follow
-                  </label>
-                </div>
+                <SliderHeader
+                  left={
+                    <>
+                      <Palette className="size-3.5" />
+                      Tone
+                    </>
+                  }
+                  right={
+                    <label className="inline-flex cursor-pointer items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={autoFollow}
+                        onChange={(event) => setAutoFollow(event.target.checked)}
+                        className="size-3.5 rounded border-border/60 accent-primary"
+                      />
+                      Auto-follow
+                    </label>
+                  }
+                />
                 <div className="mt-3 flex flex-wrap gap-2">
                   {(["paper", "mist", "sage"] as ReaderTone[]).map((toneOption) => (
                     <button
