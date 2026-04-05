@@ -514,7 +514,7 @@ secret**
 - **How to obtain**:
   1. Go to https://github.com/settings/tokens?type=beta
   2. Create a fine-grained Personal Access Token
-  3. Repository access: Select `spike-land-ai/spike.land`
+  3. Repository access: Select `spike-land-ai/spike-land`
   4. Permissions: `Contents` (read/write), `Issues` (read/write),
      `Pull
      requests` (read/write)

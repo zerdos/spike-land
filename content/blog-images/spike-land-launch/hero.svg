@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#042f2e" />
+      <stop offset="100%" stop-color="#134e4a" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#042f2e" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <circle cx="565.3" cy="64.7" r="163.2" fill="#14b8a6" opacity="0.20" />
+<circle cx="462.5" cy="29.2" r="187.5" fill="#14b8a6" opacity="0.15" />
+<circle cx="814.0" cy="357.0" r="209.3" fill="#5eead4" opacity="0.23" />
+<circle cx="470.4" cy="87.3" r="115.7" fill="#2dd4bf" opacity="0.16" />
+<circle cx="478.4" cy="412.8" r="203.1" fill="#2dd4bf" opacity="0.17" />
+<circle cx="740.1" cy="61.4" r="97.3" fill="#5eead4" opacity="0.14" />
+<circle cx="234.7" cy="576.5" r="35.0" fill="#2dd4bf" opacity="0.23" />
+<circle cx="604.5" cy="378.5" r="110.2" fill="#0d9488" opacity="0.22" />
+<circle cx="437.1" cy="381.4" r="128.7" fill="#5eead4" opacity="0.24" />
+<circle cx="330.1" cy="222.1" r="104.8" fill="#14b8a6" opacity="0.23" />
+<circle cx="901.0" cy="397.9" r="158.1" fill="#2dd4bf" opacity="0.12" />
+<circle cx="873.8" cy="94.3" r="180.9" fill="#0d9488" opacity="0.09" />
+<circle cx="909.1" cy="518.6" r="154.0" fill="none" stroke="#14b8a6" stroke-width="2.9" opacity="0.43" />
+<circle cx="293.3" cy="293.1" r="115.5" fill="none" stroke="#14b8a6" stroke-width="1.7" opacity="0.37" />
+<circle cx="850.5" cy="407.7" r="158.8" fill="none" stroke="#14b8a6" stroke-width="2.2" opacity="0.19" />
+<circle cx="1132.4" cy="135.2" r="114.0" fill="none" stroke="#14b8a6" stroke-width="1.4" opacity="0.21" />
+<circle cx="411.0" cy="486.4" r="94.7" fill="none" stroke="#0d9488" stroke-width="2.7" opacity="0.38" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="94" height="28" rx="14" fill="#0d9488" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">PRODUCT</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">Introducing spike.land — The MCP-First</tspan>
+    <tspan x="48" dy="50">AI Platform</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#2dd4bf" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

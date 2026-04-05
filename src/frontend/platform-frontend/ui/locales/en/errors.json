@@ -1,0 +1,18 @@
+{
+  "notFound": {
+    "code": "404",
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist or has been moved.",
+    "home": "Go Home",
+    "apps": "App Store",
+    "blog": "Blog",
+    "store": "Store"
+  },
+  "unauthorized": "You are not authorized to view this page",
+  "forbidden": "Access denied",
+  "serverError": "Something went wrong. Please try again later.",
+  "networkError": "Network error. Please check your connection.",
+  "timeout": "Request timed out. Please try again.",
+  "validation": "Please check your input and try again.",
+  "generic": "An unexpected error occurred."
+}

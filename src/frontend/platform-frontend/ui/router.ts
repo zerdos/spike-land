@@ -373,6 +373,12 @@ const bazdmegRoute = createRoute({
   component: withSuspense(() => import("./bazdmeg/BazdmegPage"), "BazdmegPage"),
 });
 
+const bugbookRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/bugbook",
+  component: withSuspense(() => import("./routes/bugbook"), "BugbookPage"),
+});
+
 const chessRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/chess",
@@ -390,6 +396,38 @@ const buildRoute = createRoute({
   path: "/build",
   beforeLoad: () => {
     throw redirect({ to: "/vibe-code" });
+  },
+});
+
+const dashboardRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard",
+  beforeLoad: () => {
+    throw redirect({ to: "/cockpit" });
+  },
+});
+
+const quizRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/quiz",
+  beforeLoad: () => {
+    throw redirect({ to: "/learnit" });
+  },
+});
+
+const supportRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/support",
+  beforeLoad: () => {
+    throw redirect({ to: "/about" });
+  },
+});
+
+const migrateRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/migrate",
+  beforeLoad: () => {
+    throw redirect({ to: "/what-we-do" });
   },
 });
 
@@ -502,10 +540,15 @@ const routeTree = rootRoute.addChildren([
   chatRoute,
   rubikChatRoute,
   bazdmegRoute,
+  bugbookRoute,
   chessRoute,
   whatWeDoRoute,
   vibeCodeRoute,
   buildRoute,
+  dashboardRedirectRoute,
+  quizRedirectRoute,
+  supportRedirectRoute,
+  migrateRedirectRoute,
   toolSurfaceRoute,
   toolsIndexRoute,
   legacyToolDetailRedirectRoute,

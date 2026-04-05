@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <circle cx="407.9" cy="300.2" r="149.4" fill="#0ea5e9" opacity="0.25" />
+<circle cx="713.8" cy="297.6" r="174.8" fill="#22d3ee" opacity="0.24" />
+<circle cx="892.6" cy="440.5" r="186.2" fill="#0ea5e9" opacity="0.10" />
+<circle cx="928.8" cy="131.5" r="168.2" fill="#06b6d4" opacity="0.24" />
+<circle cx="78.1" cy="12.7" r="109.5" fill="#67e8f9" opacity="0.23" />
+<circle cx="834.2" cy="188.3" r="160.9" fill="#67e8f9" opacity="0.22" />
+<circle cx="219.5" cy="112.6" r="121.5" fill="#06b6d4" opacity="0.19" />
+<circle cx="1102.5" cy="194.5" r="147.7" fill="#67e8f9" opacity="0.28" />
+<circle cx="1022.8" cy="79.5" r="182.9" fill="#06b6d4" opacity="0.25" />
+<circle cx="1090.3" cy="85.5" r="37.4" fill="#06b6d4" opacity="0.13" />
+<circle cx="664.3" cy="18.2" r="103.3" fill="#06b6d4" opacity="0.18" />
+<circle cx="279.9" cy="506.7" r="150.0" fill="#67e8f9" opacity="0.20" />
+<circle cx="399.3" cy="286.0" r="52.9" fill="none" stroke="#0ea5e9" stroke-width="1.8" opacity="0.15" />
+<circle cx="115.7" cy="65.8" r="167.2" fill="none" stroke="#06b6d4" stroke-width="2.0" opacity="0.32" />
+<circle cx="97.7" cy="405.6" r="96.4" fill="none" stroke="#0ea5e9" stroke-width="2.3" opacity="0.31" />
+<circle cx="147.5" cy="54.8" r="164.5" fill="none" stroke="#0ea5e9" stroke-width="1.1" opacity="0.21" />
+<circle cx="685.5" cy="4.4" r="168.8" fill="none" stroke="#0ea5e9" stroke-width="2.7" opacity="0.38" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="224" height="28" rx="14" fill="#0ea5e9" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">DEVELOPER EXPERIENCE</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">defineBlock(): How I Built a</tspan>
+    <tspan x="48" dy="50">Full-Stack Database Abstraction on</tspan>
+    <tspan x="48" dy="50">Cloudflare Workers</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#22d3ee" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

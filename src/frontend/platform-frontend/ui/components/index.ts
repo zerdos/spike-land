@@ -4,7 +4,6 @@ export * from "./AppProductPage";
 export * from "./AuthGuard";
 export * from "./BuyCredits";
 export * from "./ChatThread";
-export * from "./CookieConsent";
 export * from "./CreditWidget";
 export * from "./ErrorBoundary";
 export * from "./LivePreview";

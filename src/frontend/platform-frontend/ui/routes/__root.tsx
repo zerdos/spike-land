@@ -10,7 +10,7 @@ import { useDevMode } from "@spike-land-ai/block-website/core";
 import { LoginButton } from "../components/LoginButton";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppFooter } from "../components/AppFooter";
-import { CookieConsent } from "../components/CookieConsent";
+
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
 import { MadMaxProtocol } from "../components/MadMaxProtocol";
 import { WelcomeModal } from "../components/WelcomeModal";
@@ -24,7 +24,7 @@ import { apiUrl } from "../../core-logic/api";
 import { initGoogleAds } from "../../core-logic/google-ads";
 import { resolveSupportedLanguage } from "../i18n";
 
-const DEFAULT_OG_IMAGE = "https://spike.land/og-image.png";
+const DEFAULT_OG_IMAGE = "https://spike.land/android-chrome-512x512.png";
 const SITE_URL = "https://spike.land";
 
 type RouteMeta = { title: string; description: string; ogImage?: string };
@@ -133,7 +133,7 @@ function buildOrganizationJsonLd(description: string) {
     "@type": "Organization",
     name: "spike.land",
     url: SITE_URL,
-    logo: `${SITE_URL}/og-image.png`,
+    logo: `${SITE_URL}/android-chrome-512x512.png`,
     description,
     sameAs: ["https://github.com/spike-land-ai"],
   });
@@ -227,7 +227,6 @@ const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
     heading: "Learn",
     items: [
       { to: "/learnit", label: "LearnIt", icon: "📚" },
-      { to: "/quiz", label: "Quiz", icon: "❓" },
       { to: "/blog", label: "Blog", icon: "📝" },
       { to: "/docs", label: "Docs", icon: "📖" },
     ],
@@ -239,7 +238,7 @@ const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
   {
     heading: "You",
     items: [
-      { to: "/dashboard", label: "Dashboard", icon: "📊" },
+      { to: "/cockpit", label: "Dashboard", icon: "📊" },
       { to: "/analytics", label: "Analytics", icon: "📈" },
       { to: "/settings", label: "Settings", icon: "⚙️" },
     ],
@@ -247,9 +246,8 @@ const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Platform",
     items: [
-      { to: "/support", label: "Support", icon: "❤️" },
-      { to: "/migrate", label: "Migrate", icon: "🚀" },
       { to: "/about", label: "About", icon: "ℹ️" },
+      { to: "/pricing", label: "Pricing", icon: "💰" },
       { to: "/status", label: "Status", icon: "🟢" },
     ],
   },
@@ -623,7 +621,6 @@ export function RootLayout() {
           </main>
 
           <AppFooter />
-          <CookieConsent />
           <WelcomeModal userName={null} />
           <MadMaxProtocol />
         </div>

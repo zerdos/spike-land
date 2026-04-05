@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0a09" />
+      <stop offset="100%" stop-color="#1c1917" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0c0a09" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <ellipse cx="996.5" cy="140.1" rx="206.8" ry="93.3" transform="rotate(302 996.5 140.1)" fill="#a5b4fc" opacity="0.13" />
+<ellipse cx="987.0" cy="126.8" rx="104.4" ry="116.2" transform="rotate(104 987.0 126.8)" fill="#4f46e5" opacity="0.21" />
+<ellipse cx="826.0" cy="99.1" rx="180.6" ry="134.1" transform="rotate(6 826.0 99.1)" fill="#a5b4fc" opacity="0.14" />
+<ellipse cx="755.7" cy="49.6" rx="131.2" ry="133.6" transform="rotate(46 755.7 49.6)" fill="#6366f1" opacity="0.10" />
+<ellipse cx="876.1" cy="366.3" rx="115.5" ry="89.8" transform="rotate(127 876.1 366.3)" fill="#6366f1" opacity="0.18" />
+<ellipse cx="1163.5" cy="346.9" rx="103.9" ry="145.4" transform="rotate(317 1163.5 346.9)" fill="#818cf8" opacity="0.20" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="124" height="28" rx="14" fill="#4f46e5" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">AI &amp; TOOLS</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">It Feels Like Cheating (Because It Is)</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#818cf8" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

@@ -16,7 +16,7 @@
 ## Quick Start
 
 ```bash
-git clone https://github.com/spike-land-ai/spike.land
+git clone https://github.com/spike-land-ai/spike-land
 cd spike.land && npm install
 cd src/spike-app && npm run dev
 ```

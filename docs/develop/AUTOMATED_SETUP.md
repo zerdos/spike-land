@@ -35,7 +35,7 @@ Both must use the **same secret value** for the bypass to work correctly.
 The `E2E_BYPASS_SECRET` is already configured in GitHub Secrets:
 
 - **Location**:
-  https://github.com/spike-land-ai/spike.land/settings/secrets/actions
+  https://github.com/spike-land-ai/spike-land/settings/secrets/actions
 - **Added**: October 27, 2025
 - **Status**: Active and functional
 
@@ -44,7 +44,7 @@ The `E2E_BYPASS_SECRET` is already configured in GitHub Secrets:
 ```javascript
 // Navigate to GitHub Secrets page
 await page.goto(
-  "https://github.com/spike-land-ai/spike.land/settings/secrets/actions",
+  "https://github.com/spike-land-ai/spike-land/settings/secrets/actions",
 );
 
 // Verify E2E_BYPASS_SECRET exists
@@ -64,7 +64,7 @@ If you need to regenerate or create the secret:
    Example output: `xK9vL2mN5pQ8rT4wU6yZ0aB1cD3eF7gH9iJ2kL5mN8pQ1rS4tU7v`
 
 2. **Navigate to GitHub Secrets:**
-   - Go to: https://github.com/spike-land-ai/spike.land/settings/secrets/actions
+   - Go to: https://github.com/spike-land-ai/spike-land/settings/secrets/actions
    - Click "New repository secret"
 
 3. **Add the secret:**

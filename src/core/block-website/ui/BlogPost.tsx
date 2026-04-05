@@ -438,6 +438,7 @@ export function BlogPostView({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isHeroExpanded, setIsHeroExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [readAloudUrl, setReadAloudUrl] = useState<string>("");
   const readerScopeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -480,6 +481,18 @@ export function BlogPostView({
   }, [normalizedPostOverride, skipFetch, slug, lang]);
 
   const resolvedPost = normalizedPostOverride ?? post;
+
+  // Check if pre-generated read-aloud audio exists
+  useEffect(() => {
+    if (!resolvedPost?.slug) return;
+    const url = `/blog/${resolvedPost.slug}/read-aloud.mp3`;
+    fetch(url, { method: "HEAD" })
+      .then((res) => {
+        if (res.ok) setReadAloudUrl(url);
+        else setReadAloudUrl("");
+      })
+      .catch(() => setReadAloudUrl(""));
+  }, [resolvedPost?.slug]);
 
   useEffect(() => {
     const existing = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
@@ -630,7 +643,11 @@ export function BlogPostView({
           </>
         )}
 
-        <BlogReaderControls contentKey={resolvedPost.slug} scopeRef={readerScopeRef} />
+        <BlogReaderControls
+          contentKey={resolvedPost.slug}
+          scopeRef={readerScopeRef}
+          {...(readAloudUrl ? { audioUrl: readAloudUrl } : {})}
+        />
 
         <div ref={readerScopeRef} data-reader-surface="true">
           <header className="mb-16 max-w-3xl mx-auto space-y-8">

@@ -1,0 +1,18 @@
+{
+  "notFound": {
+    "code": "404",
+    "title": "Az oldal nem található",
+    "message": "A keresett oldal nem létezik vagy áthelyezésre került.",
+    "home": "Főoldal",
+    "apps": "App Store",
+    "blog": "Blog",
+    "store": "Store"
+  },
+  "unauthorized": "Nincs jogosultsága az oldal megtekintéséhez",
+  "forbidden": "Hozzáférés megtagadva",
+  "serverError": "Hiba történt. Kérjük, próbálja újra később.",
+  "networkError": "Hálózati hiba. Kérjük, ellenőrizze a kapcsolatot.",
+  "timeout": "A kérés időtúllépés miatt megszakadt. Kérjük, próbálja újra.",
+  "validation": "Kérjük, ellenőrizze a megadott adatokat.",
+  "generic": "Váratlan hiba történt."
+}

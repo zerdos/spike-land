@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#022c22" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#022c22" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <circle cx="320.5" cy="443.2" r="122.4" fill="#34d399" opacity="0.27" />
+<circle cx="789.0" cy="404.8" r="163.0" fill="#10b981" opacity="0.21" />
+<circle cx="18.5" cy="459.7" r="145.3" fill="#6ee7b7" opacity="0.19" />
+<circle cx="604.6" cy="502.2" r="174.1" fill="#34d399" opacity="0.26" />
+<circle cx="376.5" cy="49.3" r="173.4" fill="#6ee7b7" opacity="0.08" />
+<circle cx="141.2" cy="109.5" r="89.6" fill="#6ee7b7" opacity="0.20" />
+<circle cx="791.7" cy="260.2" r="171.2" fill="#059669" opacity="0.23" />
+<circle cx="722.6" cy="269.8" r="124.1" fill="#34d399" opacity="0.14" />
+<circle cx="890.1" cy="242.3" r="200.6" fill="#10b981" opacity="0.12" />
+<circle cx="113.1" cy="168.8" r="180.1" fill="#059669" opacity="0.22" />
+<circle cx="432.2" cy="386.6" r="34.9" fill="#34d399" opacity="0.12" />
+<circle cx="847.1" cy="148.5" r="77.9" fill="#6ee7b7" opacity="0.27" />
+<circle cx="1151.7" cy="179.0" r="131.8" fill="none" stroke="#10b981" stroke-width="1.6" opacity="0.40" />
+<circle cx="645.7" cy="316.6" r="87.3" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.42" />
+<circle cx="720.8" cy="581.0" r="59.0" fill="none" stroke="#059669" stroke-width="2.7" opacity="0.26" />
+<circle cx="201.8" cy="255.9" r="86.7" fill="none" stroke="#10b981" stroke-width="2.0" opacity="0.19" />
+<circle cx="70.3" cy="163.4" r="67.5" fill="none" stroke="#059669" stroke-width="2.1" opacity="0.29" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="174" height="28" rx="14" fill="#059669" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">SCIENCE &amp; ARENA</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">What Einstein Learned in the Arena</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#34d399" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

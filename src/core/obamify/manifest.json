@@ -1,0 +1,12 @@
+{
+  "name": "obamify",
+  "category": "core",
+  "dependencies": [],
+  "files": [
+    "core-logic/types.ts",
+    "core-logic/heuristic.ts",
+    "core-logic/obamify.ts",
+    "core-logic/worker.ts",
+    "core-logic/index.ts"
+  ]
+}

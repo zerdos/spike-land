@@ -318,7 +318,7 @@ See [openapi.yaml](./openapi.yaml) - Complete specification
 
 - Email: hello@spike.land
 - Website: https://spike.land
-- GitHub: https://github.com/spike-land-ai/spike.land
+- GitHub: https://github.com/spike-land-ai/spike-land
 
 ## API Status
 

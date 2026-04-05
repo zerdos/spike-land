@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#312e81" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#1e1b4b" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <ellipse cx="838.1" cy="207.8" rx="195.8" ry="91.4" transform="rotate(121 838.1 207.8)" fill="#a78bfa" opacity="0.20" />
+<ellipse cx="506.9" cy="326.1" rx="252.9" ry="172.2" transform="rotate(99 506.9 326.1)" fill="#7c3aed" opacity="0.07" />
+<ellipse cx="271.1" cy="555.1" rx="113.4" ry="111.4" transform="rotate(215 271.1 555.1)" fill="#c4b5fd" opacity="0.16" />
+<ellipse cx="123.6" cy="547.3" rx="220.0" ry="181.0" transform="rotate(282 123.6 547.3)" fill="#a78bfa" opacity="0.10" />
+<ellipse cx="1145.4" cy="410.5" rx="242.7" ry="82.7" transform="rotate(351 1145.4 410.5)" fill="#7c3aed" opacity="0.14" />
+<ellipse cx="417.3" cy="577.2" rx="152.3" ry="100.8" transform="rotate(179 417.3 577.2)" fill="#a78bfa" opacity="0.19" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="124" height="28" rx="14" fill="#7c3aed" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">SPIKE.LAND</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">The AI Found Another Spike Land. In My</tspan>
+    <tspan x="48" dy="50">City.</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#a78bfa" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

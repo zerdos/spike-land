@@ -27,7 +27,10 @@
     "./react-worker-dom": "./dist/react-worker-dom/index.js",
     "./react-worker-dom/main": "./dist/react-worker-dom/main-entry.js",
     "./react-worker-dom/bridge": "./dist/react-worker-dom/bridge/index.js",
-    "./scheduler": "./dist/scheduler/Scheduler.js"
+    "./scheduler": "./dist/scheduler/Scheduler.js",
+    "./react-canvas": "./dist/react-canvas/index.js",
+    "./react-canvas/client": "./dist/react-canvas/client.js",
+    "./react-canvas/bridge": "./dist/react-canvas/bridge/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -50,5 +53,8 @@
     "typescript-eslint": "8.57.0",
     "vitest": "4.1.0"
   },
-  "source": "./index.ts"
+  "source": "./index.ts",
+  "dependencies": {
+    "@chenglou/pretext": "^0.0.4"
+  }
 }

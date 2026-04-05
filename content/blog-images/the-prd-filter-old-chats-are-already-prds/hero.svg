@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" />
+      <stop offset="100%" stop-color="#292524" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#1c1917" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <ellipse cx="703.9" cy="353.2" rx="117.7" ry="186.7" transform="rotate(277 703.9 353.2)" fill="#fcd34d" opacity="0.18" />
+<ellipse cx="693.9" cy="128.1" rx="166.8" ry="138.1" transform="rotate(233 693.9 128.1)" fill="#f59e0b" opacity="0.11" />
+<ellipse cx="820.8" cy="202.6" rx="108.1" ry="166.2" transform="rotate(292 820.8 202.6)" fill="#d97706" opacity="0.07" />
+<ellipse cx="750.6" cy="111.0" rx="94.7" ry="106.4" transform="rotate(302 750.6 111.0)" fill="#fcd34d" opacity="0.20" />
+<ellipse cx="214.1" cy="108.7" rx="139.1" ry="86.8" transform="rotate(15 214.1 108.7)" fill="#d97706" opacity="0.20" />
+<ellipse cx="281.8" cy="221.0" rx="226.3" ry="93.1" transform="rotate(95 281.8 221.0)" fill="#fbbf24" opacity="0.14" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="224" height="28" rx="14" fill="#d97706" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">DEVELOPER EXPERIENCE</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">The PRD Filter: Your Old Chats Are</tspan>
+    <tspan x="48" dy="50">Already PRDs</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#fbbf24" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

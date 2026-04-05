@@ -124,7 +124,7 @@ function StarCta() {
         Enjoyed this? Star us on GitHub — it helps others discover spike.land.
       </span>
       <a
-        href="https://github.com/spike-land-ai/spike.land"
+        href="https://github.com/spike-land-ai/spike-land"
         target="_blank"
         rel="noopener noreferrer"
         className="ml-auto shrink-0 inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"

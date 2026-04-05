@@ -1,0 +1,21 @@
+{
+  "name": "@spike-land-ai/audio-synth",
+  "version": "0.1.0",
+  "description": "Programmatic audio synthesis: drums, pads, vocoders. Pure TypeScript DSP.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "audio-synth": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate:elvis": "tsx src/presets/elvis.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@spike-land-ai/tsconfig": "workspace:*",
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0"
+  }
+}

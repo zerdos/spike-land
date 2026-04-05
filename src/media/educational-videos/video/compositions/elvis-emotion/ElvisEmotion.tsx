@@ -10,7 +10,10 @@ import {
   ELVIS_TIMING,
 } from "../../../core-logic/elvis-constants";
 import { musicVolumeAtFrame } from "../../lib/audio-helpers";
-import { getElvisVoiceActiveFrames } from "../../../core-logic/elvis-narration";
+import {
+  getElvisVoiceActiveFrames,
+  getElvisPersonaEntries,
+} from "../../../core-logic/elvis-narration";
 
 import { Scene01_Overture } from "./Scene01_Overture";
 import { Scene02_WhoIsElvis } from "./Scene02_WhoIsElvis";
@@ -30,7 +33,7 @@ const SCENES = [
   { component: Scene07_Finale, duration: ELVIS_DURATIONS.finale },
 ] as const;
 
-/** Map percussion stems to scene frame ranges */
+/** Map percussion stems to scene frame ranges (for future use) */
 const PERCUSSION_ACTS: {
   audioKey: string;
   file: string;
@@ -80,7 +83,21 @@ const PERCUSSION_ACTS: {
   },
 ];
 
+/** Build voice audio entries for all scenes with personas */
+function buildVoiceEntries(): { personaId: string; startFrame: number; durationFrames: number }[] {
+  const sceneKeys: (keyof typeof ELVIS_DURATIONS)[] = [
+    "whoIsElvis",
+    "philosophers",
+    "publicAndTech",
+    "qaRapidFire",
+    "crowdChant",
+  ];
+
+  return sceneKeys.flatMap((key) => getElvisPersonaEntries(key));
+}
+
 const voiceActiveFrames = getElvisVoiceActiveFrames();
+const voiceEntries = buildVoiceEntries();
 
 export const ElvisEmotion: FC = () => {
   const transitionDuration = ELVIS_TIMING.transitionFrames;
@@ -92,7 +109,15 @@ export const ElvisEmotion: FC = () => {
         fontFamily: TYPOGRAPHY.fontFamily.sans,
       }}
     >
-      {/* Percussion stems — one per act, sequenced */}
+      {/* Background music — Suno "Elvis We Love You" (single track) */}
+      {ELVIS_AUDIO_AVAILABLE["background-music"] && (
+        <Audio
+          src={staticFile("audio/elvis-background-music.mp3")}
+          volume={(f) => musicVolumeAtFrame(f, voiceActiveFrames, 0.3, 0.12, 8)}
+        />
+      )}
+
+      {/* Percussion stems — individual acts (for future use when generated) */}
       {PERCUSSION_ACTS.map(
         (act) =>
           ELVIS_AUDIO_AVAILABLE[act.audioKey] && (
@@ -111,7 +136,7 @@ export const ElvisEmotion: FC = () => {
           ),
       )}
 
-      {/* Synth pad — full duration, auto-ducked */}
+      {/* Synth pad — full duration, auto-ducked (for future use) */}
       {ELVIS_AUDIO_AVAILABLE["synth-pad"] && (
         <Audio
           src={staticFile("audio/elvis-synth-pad.mp3")}
@@ -119,7 +144,7 @@ export const ElvisEmotion: FC = () => {
         />
       )}
 
-      {/* Vocoder hook — triggered at specific moments */}
+      {/* Vocoder hook — triggered at specific moments (for future use) */}
       {ELVIS_AUDIO_AVAILABLE["vocoder-hook"] && (
         <>
           <Sequence from={450} durationInFrames={120}>
@@ -130,6 +155,18 @@ export const ElvisEmotion: FC = () => {
           </Sequence>
         </>
       )}
+
+      {/* Persona voice clips — sequenced per scene slot */}
+      {ELVIS_AUDIO_AVAILABLE["voices"] &&
+        voiceEntries.map((entry) => (
+          <Sequence
+            key={`voice-${entry.personaId}`}
+            from={entry.startFrame}
+            durationInFrames={entry.durationFrames}
+          >
+            <Audio src={staticFile(`audio/elvis-voice-${entry.personaId}.mp3`)} volume={0.85} />
+          </Sequence>
+        ))}
 
       {/* Visual scenes with fade transitions */}
       <TransitionSeries>

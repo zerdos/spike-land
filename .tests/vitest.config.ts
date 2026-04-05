@@ -41,6 +41,7 @@ const packagePathMap: Record<string, string> = {
   "block-tasks": "core/block-tasks",
   "block-website": "core/block-website",
   "chess-engine": "core/chess",
+  obamify: "core/obamify",
   code: "frontend/monaco-editor",
   "esbuild-wasm-mcp": "mcp-tools/esbuild-wasm",
   "google-analytics-mcp": "mcp-tools/google-analytics",
@@ -67,6 +68,7 @@ const packagePathMap: Record<string, string> = {
   "stripe-analytics-mcp": "mcp-tools/stripe-analytics",
   "reorganize-mcp": "mcp-tools/reorganize",
   "state-machine": "core/statecharts",
+  "spwn-engine": "core/spwn-engine",
   transpile: "edge-api/transpile",
   "vibe-dev": "cli/docker-dev",
   video: "media/educational-videos",
@@ -206,6 +208,15 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: ["**/generated/**", "**/lib/prisma.ts"],
     coverageAll: true,
     reportsDirectory: path.join(root, "coverage/chess-engine"),
+  },
+
+  obamify: {
+    tier: 2,
+    setup: [tests("obamify/setup.ts")],
+    includeTests: [tests("obamify/**/*.test.ts")],
+    includeSrc: [src("core/obamify/**/*.ts")],
+    coverageExclude: ["**/worker.ts", "**/types.ts"],
+    reportsDirectory: path.join(root, "coverage/obamify"),
   },
 
   code: {
@@ -484,6 +495,11 @@ const packages: Record<string, PkgConfig> = {
   "state-machine": {
     tier: 2,
     coverageExclude: ["**/cli.ts", "**/types.ts", "**/prisma.d.ts"],
+  },
+
+  "spwn-engine": {
+    tier: 2,
+    coverageExclude: ["**/worker.ts", "**/index.ts"],
   },
 
   transpile: {

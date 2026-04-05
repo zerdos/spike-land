@@ -84,14 +84,6 @@ function scheduleFlush() {
   }
 }
 
-function hasAnalyticsConsent(): boolean {
-  try {
-    return localStorage.getItem("cookie_consent") === "accepted";
-  } catch {
-    return false;
-  }
-}
-
 /**
  * Mirror high-value conversion events to GA4 alongside the internal ingest
  * pipeline so they appear in GA4 reports and Google Ads attribution.
@@ -115,8 +107,20 @@ const GA4_MIRRORED_EVENTS = new Set([
   "migration_tier_click",
 ]);
 
+function isConsentGranted(): boolean {
+  try {
+    return (
+      typeof localStorage !== "undefined" && localStorage.getItem("cookie_consent") === "accepted"
+    );
+  } catch {
+    return false;
+  }
+}
+
 function enqueueEvent(event: string, data: Record<string, unknown>) {
-  if (!hasAnalyticsConsent()) return;
+  // Only send analytics when user has accepted cookies
+  if (!isConsentGranted()) return;
+
   // Deduplicate consecutive page_view for the same path
   if (event === "page_view") {
     const path = data.path as string | undefined;
@@ -139,10 +143,6 @@ function enqueueEvent(event: string, data: Record<string, unknown>) {
   scheduleFlush();
 }
 
-/**
- * Called by useCookieConsent after the user grants consent so any events
- * that arrived before consent is stored are flushed immediately.
- */
 export function flushAnalyticsQueue(): void {
   flushEvents();
 }

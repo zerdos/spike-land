@@ -26,9 +26,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anthropic-ai/sdk@npm:0.78.0":
-  version: 0.78.0
-  resolution: "@anthropic-ai/sdk@npm:0.78.0"
+"@anthropic-ai/sdk@npm:0.82.0":
+  version: 0.82.0
+  resolution: "@anthropic-ai/sdk@npm:0.82.0"
   dependencies:
     json-schema-to-ts: "npm:^3.1.1"
   peerDependencies:
@@ -38,7 +38,7 @@ __metadata:
       optional: true
   bin:
     anthropic-ai-sdk: bin/cli
-  checksum: 10c0/a43c83047d0f6ac8d50938e8a07aee27b8891cf51011fcbdb07159996762f262734e4839df00e57f713e25c8c740424939e13c91e6b3f5b12879b9cde1d9c835
+  checksum: 10c0/2d6b1ed34335b736a5bb794853469a76bcd223a56bbc6695b81c9ffa2b906b4a0dff44a1ab1ce5aa5795ee49ac88489eae7cb6383923256cbfff3103ebdd0737
   languageName: node
   linkType: hard
 
@@ -994,6 +994,13 @@ __metadata:
     human-id: "npm:^4.1.1"
     prettier: "npm:^2.7.1"
   checksum: 10c0/311f4d0e536d1b5f2d3f9053537d62b2d4cdbd51e1d2767807ac9d1e0f380367f915d2ad370e5c73902d5a54bffd282d53fff5418c8ad31df51751d652bea826
+  languageName: node
+  linkType: hard
+
+"@chenglou/pretext@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@chenglou/pretext@npm:0.0.4"
+  checksum: 10c0/d878fcc23858f8af66c8e4d75a02bb4124972835659766804040aa2c73794cfde77bec6ac91e17e1975bdc29b5292dda9a07b59be8517166e4c0afcc36f13579
   languageName: node
   linkType: hard
 
@@ -5668,6 +5675,7 @@ __metadata:
   resolution: "@spike-land-ai/react-ts-worker@workspace:packages/react-ts-worker"
   dependencies:
     "@changesets/cli": "npm:2.30.0"
+    "@chenglou/pretext": "npm:^0.0.4"
     eslint: "npm:10.0.3"
     jsdom: "npm:28.1.0"
     typescript: "npm:5.9.3"
@@ -5704,7 +5712,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@spike-land-ai/spike-cli@workspace:packages/spike-cli"
   dependencies:
-    "@anthropic-ai/sdk": "npm:0.78.0"
+    "@anthropic-ai/sdk": "npm:0.82.0"
     "@changesets/cli": "npm:2.30.0"
     "@modelcontextprotocol/sdk": "npm:1.27.1"
     "@types/cors": "npm:^2.8.19"

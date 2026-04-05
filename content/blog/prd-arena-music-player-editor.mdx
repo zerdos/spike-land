@@ -1,0 +1,302 @@
+---
+title: "PRD Arena: Inline Music Player & Editor"
+slug: "prd-arena-music-player-editor"
+description: "32-round product requirements document for an inline music player and editor in spike.land chat"
+date: "2026-04-03"
+author: "Zoltán"
+category: "PRD Arena"
+tags: ["prd", "arena", "music", "player", "editor", "chat", "product"]
+featured: false
+draft: false
+primer: "When users talk music, they should hear it — and remix it — right there in the conversation."
+heroPrompt: "A sleek audio waveform flowing through a chat bubble interface, neon gradient from purple to cyan, mixing console faders visible in background, dark studio atmosphere"
+heroImage: "/blog/prd-arena-music-player-editor/hero.svg"
+---
+
+# PRD Arena: Inline Music Player & Editor
+
+**Objective:** When a user discusses music in a spike.land chat session (e.g. with Zoltan chat), the platform should detect musical context and render an interactive music player/editor component inline. No navigation away from the conversation. No separate app. Music lives inside the chat.
+
+**Baseline assumption:** The chat already supports rich rendering (React components, embeds, interactive blocks). This PRD defines the music-specific surface.
+
+---
+
+## Round 1 — Audio Element & Waveform Canvas
+
+- Render a `<MusicPlayer>` React component inline when the assistant references a playable audio source.
+- Display a waveform visualization using Web Audio API `AnalyserNode` drawn on a `<canvas>` element.
+- Waveform updates in real time during playback at 60fps.
+- Component is self-contained: no external CSS framework dependency, uses Tailwind utility classes.
+- Fallback to a static waveform image if Web Audio API is unavailable.
+
+## Round 2 — Play, Pause, Seek
+
+- Play/pause toggle button with clear visual state (icon swap + color shift).
+- Seekable progress bar overlaid on the waveform — click or drag to seek.
+- Display current position and total duration in `mm:ss` format.
+- Keyboard shortcuts: Space to play/pause, Left/Right arrows to seek +/-5s.
+- Only one `MusicPlayer` instance plays at a time across the entire chat; starting one pauses others.
+
+## Round 3 — Volume & Mute
+
+- Volume slider (vertical or horizontal, configurable) with smooth gain node control.
+- Mute/unmute toggle that remembers pre-mute volume level.
+- Volume state persists across chat messages within the same session (stored in React context).
+- Visual volume indicator icon changes based on level (muted, low, medium, high).
+
+## Round 4 — Track Metadata Display
+
+- Show track title, artist, album art (if available) in a compact header above the waveform.
+- Parse ID3 tags from uploaded MP3/FLAC files using a lightweight client-side parser.
+- For URL-sourced audio, attempt to extract Open Graph metadata from the source page.
+- Display audio format, bitrate, and sample rate in a collapsible details section.
+- Support dark and light theme variants, inheriting from the chat theme.
+
+## Round 5 — YouTube Integration
+
+- Detect YouTube URLs in chat messages and auto-render an embedded player.
+- Use YouTube IFrame API for playback control, keeping the same play/pause/seek UI.
+- Extract video title and thumbnail via oEmbed endpoint (no API key required).
+- Option to extract audio-only stream for waveform visualization (where legally permitted).
+- Respect YouTube's terms of service — no download functionality, embed only.
+
+## Round 6 — Spotify Integration
+
+- Detect Spotify track/album/playlist URLs and render the Spotify embed player.
+- Use Spotify oEmbed for metadata extraction (title, artist, cover art).
+- Provide a "Listen on Spotify" deep link for full playback (free tier embeds are 30s preview).
+- Style the embed wrapper to match the chat theme while preserving Spotify's required branding.
+- Support Spotify URIs (`spotify:track:...`) in addition to HTTPS URLs.
+
+## Round 7 — File Upload
+
+- Drag-and-drop or click-to-upload for audio files (MP3, WAV, FLAC, OGG, AAC, WebM).
+- Client-side file validation: max 50MB, supported MIME types only.
+- Upload to R2 storage via the spike-edge API; return a signed URL for playback.
+- Show upload progress bar with cancel option.
+- Uploaded files are associated with the chat session and accessible from message history.
+
+## Round 8 — URL Audio Loading
+
+- Paste any direct audio URL (`.mp3`, `.wav`, `.ogg`, etc.) and auto-detect it as playable.
+- Proxy through spike-edge to handle CORS restrictions on third-party audio files.
+- Support HLS (`.m3u8`) and DASH streams via hls.js / dash.js integration.
+- Display a loading skeleton while the audio buffer is being fetched.
+- Cache fetched audio in IndexedDB for offline replay within the session.
+
+## Round 9 — Trim & Cut
+
+- Enter "edit mode" on any loaded track to reveal trim handles on the waveform.
+- Drag start/end handles to define a selection region, highlighted in a contrasting color.
+- "Trim" button crops the audio to the selected region; "Cut" removes the selection.
+- All edits are non-destructive: maintain an undo stack (Ctrl+Z / Cmd+Z to revert).
+- Export trimmed audio as a new file (WAV or MP3) downloadable from the chat.
+
+## Round 10 — Loop Sections
+
+- Select a region on the waveform and toggle "Loop" to repeat that section.
+- Visual loop markers (vertical lines with loop icon) on the waveform.
+- Adjustable loop count: infinite, or N times (1-99).
+- Loop region is adjustable during playback without stopping.
+- Loop settings are shareable — encoded in a URL hash parameter.
+
+## Round 11 — Speed Control
+
+- Playback speed selector: 0.25x, 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x.
+- Custom speed input for any value between 0.1x and 4x.
+- Speed change uses `playbackRate` on the audio element, preserving pitch by default.
+- Option to disable pitch preservation (for DJ-style speed changes).
+- Current speed displayed as a badge on the player.
+
+## Round 12 — Pitch Shift
+
+- Pitch shift control: -12 to +12 semitones in 1-semitone steps.
+- Fine-tune slider for cents adjustment (-50 to +50 cents).
+- Implemented via Web Audio API `PitchShifter` (using Soundtouch.js or similar).
+- Independent of speed control — pitch and speed are separately adjustable.
+- Reset button to return to original pitch.
+
+## Round 13 — Spectrogram View
+
+- Toggle between waveform and spectrogram visualization modes.
+- Spectrogram rendered via FFT data from `AnalyserNode`, color-mapped (magma or viridis palette).
+- Frequency axis (Hz) on the left, time axis on the bottom.
+- Hover to display frequency and amplitude at cursor position.
+- Configurable FFT size (256, 512, 1024, 2048, 4096) for resolution/performance tradeoff.
+
+## Round 14 — Beat Detection
+
+- Analyze loaded audio to detect beat positions using onset detection algorithm.
+- Display beat markers as vertical ticks on the waveform/spectrogram.
+- Snap-to-beat when placing trim handles or loop markers.
+- Beat grid overlay toggleable on/off.
+- Detection runs in a Web Worker to avoid blocking the main thread.
+
+## Round 15 — BPM Display
+
+- Calculate BPM from beat detection results; display prominently on the player.
+- Support manual BPM tap: user taps a button in rhythm and the system averages the interval.
+- BPM range detection for tracks with tempo changes (e.g., "120-124 BPM").
+- "Copy BPM" button for quick use in other tools.
+- BPM accuracy target: within 1 BPM for constant-tempo tracks.
+
+## Round 16 — Key Detection
+
+- Detect musical key using chromagram analysis (Krumhansl-Schmuckler algorithm or similar).
+- Display detected key (e.g., "C minor", "G# major") alongside BPM.
+- Confidence indicator (low/medium/high) based on correlation strength.
+- Camelot wheel notation option for DJ workflows (e.g., "5A" instead of "C minor").
+- Key detection runs client-side in a Web Worker using pre-compiled WASM module.
+
+## Round 17 — AI Music Description
+
+- User describes what they want to hear in natural language in the chat.
+- The assistant interprets the description and suggests matching tracks from integrated sources.
+- "Describe this track" button generates an AI-written description of the loaded audio (mood, genre, instrumentation, energy level).
+- Descriptions are generated via the spike-edge API calling an LLM with audio feature embeddings.
+- Results render inline as a styled card below the player.
+
+## Round 18 — AI Music Generation
+
+- "Generate" button takes a text prompt and produces a short audio clip (5-30s).
+- Generation powered by a music generation model accessed via MCP tool.
+- Generated audio loads directly into the inline player for immediate playback.
+- Generation parameters: duration, genre hint, tempo hint, key hint.
+- Generated tracks are saved to the user's session and can be further edited.
+
+## Round 19 — Remix Suggestions
+
+- After loading a track, the assistant can suggest remix ideas (tempo change, key shift, genre crossover).
+- Each suggestion is actionable: clicking it applies the transformation.
+- "Surprise me" button applies a random creative transformation.
+- Transformation history is shown as a timeline of applied changes.
+- Undo any transformation independently without losing subsequent edits.
+
+## Round 20 — Mood Tagging
+
+- Auto-detect mood from audio features: energy, valence, danceability, acousticness.
+- Display mood as tags (e.g., "energetic", "melancholic", "dreamy", "aggressive").
+- User can manually add/remove mood tags.
+- Mood tags are searchable across the user's uploaded tracks.
+- Mood radar chart visualization (spider chart with 6-8 axes).
+
+## Round 21 — Shared Playlists in Chat
+
+- Any chat participant can create a playlist from tracks discussed in the conversation.
+- Playlist is a Durable Object — real-time synchronized across all participants.
+- Drag-and-drop reordering; any participant can add or remove tracks.
+- Playlist renders as a collapsible track list with mini-waveforms.
+- "Play all" starts sequential playback with crossfade between tracks (configurable 0-10s).
+
+## Round 22 — Real-Time Collaborative Editing
+
+- Multiple users can open the same track editor simultaneously.
+- Edits are synchronized via WebSocket through the spike-land-backend Durable Object.
+- Cursor positions of other editors are visible on the waveform (colored cursors with user names).
+- Conflict resolution: last-write-wins for parameter changes; additive for annotations.
+- Presence indicators show who is currently viewing/editing.
+
+## Round 23 — Annotations & Comments on Timeline
+
+- Click any point on the waveform to drop a timestamped annotation.
+- Annotations appear as colored markers; hover to reveal the comment text.
+- Reply threads on annotations — mini-discussion at specific timestamps.
+- Filter annotations by author or tag.
+- Export annotations as a text file with timestamps (SRT-like format).
+
+## Round 24 — Version History
+
+- Every edit creates a version snapshot (auto-saved, debounced at 5s intervals).
+- Version history panel lists all snapshots with timestamp and description of changes.
+- Click any version to preview it; "Restore" button reverts to that state.
+- Diff view highlights what changed between two selected versions.
+- Versions are stored in R2 with automatic cleanup after 30 days for free-tier users.
+
+## Round 25 — Multi-Track Mixing
+
+- Split view: up to 8 tracks stacked vertically, each with independent waveform.
+- Per-track controls: volume, pan, mute, solo.
+- Master bus with combined waveform and master volume.
+- Tracks are time-aligned; drag to offset a track's start position.
+- Mixdown to a single stereo file (WAV or MP3) via offline audio context rendering.
+
+## Round 26 — Effects Chain
+
+- Per-track effects chain with drag-to-reorder processing nodes.
+- Built-in effects: EQ (3-band parametric), reverb (convolution), delay, compressor, distortion, chorus.
+- Each effect has a bypass toggle and wet/dry mix knob.
+- Presets: "Radio Voice", "Lo-Fi", "Concert Hall", "Telephone", "Underwater".
+- Custom effect parameters are saveable as user presets.
+
+## Round 27 — MIDI Support
+
+- Load `.mid` files and render as piano roll visualization.
+- MIDI playback using Web MIDI API or built-in synthesizer (Web Audio oscillators).
+- Basic MIDI editing: add/remove/move notes on the piano roll.
+- Convert MIDI to audio using a selected instrument patch (GM soundfont).
+- Export edited MIDI as `.mid` file.
+
+## Round 28 — Export Formats
+
+- Export audio in: WAV (16/24-bit), MP3 (128/192/320 kbps), OGG, FLAC, AAC.
+- Export project as a `.spike-music` JSON bundle (all tracks, edits, effects, annotations).
+- Share export as a direct download link or copy-to-clipboard (for short clips, base64 data URI).
+- Batch export: export all tracks in a playlist as a ZIP.
+- Export includes embedded metadata (title, artist, BPM, key, mood tags).
+
+## Round 29 — Blog Post Embedding
+
+- `<MusicPlayer src="..." />` MDX component for embedding players in blog posts.
+- Auto-generates waveform thumbnail for the blog post card.
+- Supports all player features (play, seek, speed, visualizations) in the blog context.
+- Responsive layout: full-width on mobile, constrained on desktop.
+- Lazy-loads audio data — only fetches when the player enters the viewport.
+
+## Round 30 — App Store Distribution
+
+- Package a music project as a spike.land app store item.
+- App metadata: title, description, tags, preview audio, cover image.
+- Install flow: one-click to add the music tool to your chat workspace.
+- Versioned app updates via Changesets — users get update notifications.
+- Rating and review system for published music tools/presets.
+
+## Round 31 — MCP Tool API
+
+- Register music player/editor capabilities as MCP tools in the spike-land-mcp registry.
+- Tools: `music.play`, `music.analyze`, `music.generate`, `music.remix`, `music.export`.
+- Each tool has Zod-validated input/output schemas.
+- Tools are composable: an MCP client can chain `music.generate` into `music.analyze` into `music.export`.
+- Rate limiting: 100 generations/day for free tier, unlimited for Pro.
+
+## Round 32 — Analytics & Insights
+
+- Track usage metrics: plays, edits, exports, generations, shares per user/session.
+- Dashboard in the app store listing showing engagement metrics for published music apps.
+- Audio analytics: most-used effects, average edit session duration, popular export formats.
+- Privacy-first: all analytics are aggregated, no raw audio is stored for analytics purposes.
+- Weekly digest email (opt-in) summarizing music activity across the user's workspaces.
+
+---
+
+## Success Criteria
+
+| Metric | Target |
+|--------|--------|
+| Time to first playback from music mention in chat | < 2 seconds |
+| Audio editing latency (trim, pitch, speed) | < 100ms perceived |
+| Concurrent collaborative editors supported | 8+ per session |
+| AI music generation time (30s clip) | < 15 seconds |
+| Supported audio formats for import | 6+ (MP3, WAV, FLAC, OGG, AAC, WebM) |
+| Mobile responsiveness | Full feature parity on touch devices |
+| Accessibility | WCAG 2.1 AA compliant |
+
+## Technical Dependencies
+
+- **Web Audio API** — core audio processing and analysis
+- **spike-edge** — proxy, upload, metadata extraction
+- **spike-land-backend Durable Objects** — real-time collaboration and playlists
+- **R2 Storage** — audio file persistence
+- **spike-land-mcp** — MCP tool registration
+- **hls.js / dash.js** — streaming format support
+- **Soundtouch.js** — pitch shifting
+- **Web Workers** — background analysis (beat detection, key detection, BPM)

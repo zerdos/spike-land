@@ -475,7 +475,7 @@ gh run download <RUN-ID> -n "e2e-reports-shard-*"
 Coverage is uploaded to Codecov. View at:
 
 - PR comment from codecov bot
-- [codecov.io/gh/spike-land-ai/spike.land](https://codecov.io/gh/spike-land-ai/spike.land)
+- [codecov.io/gh/spike-land-ai/spike-land](https://codecov.io/gh/spike-land-ai/spike-land)
 
 ---
 

@@ -20,7 +20,7 @@ const LOCALHOST_ORIGIN_PATTERN = /^https?:\/\/localhost(:\d+)?$/i;
 //   and Google Fonts loader. Mitigated by not allowing unsafe-eval.
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com https://esm.sh https://esm.spike.land https://unpkg.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com https://esm.sh https://esm.spike.land https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://esm.spike.land https://unpkg.com",
   "img-src 'self' https://*.r2.dev https://*.r2.cloudflarestorage.com https://avatars.githubusercontent.com https://*.googleusercontent.com https://*.basemaps.cartocdn.com https://image-studio-mcp.spike.land https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://*.google.co.uk https://www.googletagmanager.com data: blob:",
   "font-src 'self' https://fonts.gstatic.com https://esm.spike.land data:",

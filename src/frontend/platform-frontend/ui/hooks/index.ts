@@ -2,7 +2,6 @@ export * from "./useInstall";
 export * from "./useAnalytics";
 export * from "./useAuth";
 export * from "./useBugbook";
-export * from "./useCookieConsent";
 export * from "./useDarkMode";
 export * from "./useFocusTrap";
 export * from "./useInstalledApps";
