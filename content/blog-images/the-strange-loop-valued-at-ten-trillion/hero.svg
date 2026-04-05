@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <ellipse cx="902.4" cy="404.7" rx="183.5" ry="177.6" transform="rotate(125 902.4 404.7)" fill="#475569" opacity="0.13" />
+<ellipse cx="84.7" cy="225.7" rx="233.0" ry="197.3" transform="rotate(185 84.7 225.7)" fill="#cbd5e1" opacity="0.14" />
+<ellipse cx="619.4" cy="78.1" rx="134.1" ry="132.0" transform="rotate(54 619.4 78.1)" fill="#cbd5e1" opacity="0.14" />
+<ellipse cx="994.6" cy="74.1" rx="250.8" ry="108.3" transform="rotate(92 994.6 74.1)" fill="#94a3b8" opacity="0.08" />
+<ellipse cx="917.5" cy="435.1" rx="119.8" ry="188.4" transform="rotate(92 917.5 435.1)" fill="#cbd5e1" opacity="0.19" />
+<ellipse cx="1194.2" cy="106.5" rx="188.7" ry="148.6" transform="rotate(7 1194.2 106.5)" fill="#cbd5e1" opacity="0.16" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="84" height="28" rx="14" fill="#475569" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">ESSAYS</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">The Strange Loop Valued at Ten</tspan>
+    <tspan x="48" dy="50">Trillion</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#94a3b8" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>

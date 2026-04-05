@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#312e81" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="30" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#1e1b4b" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Generative shapes -->
+  <line x1="361.6" y1="253.8" x2="819.6" y2="284.1" stroke="#7c3aed" stroke-width="2.3" opacity="0.29" />
+<line x1="361.6" y1="253.8" x2="880.0" y2="407.0" stroke="#7c3aed" stroke-width="1.3" opacity="0.14" />
+<line x1="361.6" y1="253.8" x2="723.5" y2="467.3" stroke="#a78bfa" stroke-width="1.7" opacity="0.22" />
+<line x1="361.6" y1="253.8" x2="879.7" y2="778.3" stroke="#7c3aed" stroke-width="1.4" opacity="0.16" />
+<line x1="361.6" y1="253.8" x2="583.9" y2="684.3" stroke="#8b5cf6" stroke-width="2.0" opacity="0.12" />
+<line x1="361.6" y1="253.8" x2="409.4" y2="533.7" stroke="#7c3aed" stroke-width="2.0" opacity="0.19" />
+<line x1="361.6" y1="253.8" x2="355.9" y2="504.9" stroke="#a78bfa" stroke-width="1.3" opacity="0.18" />
+<line x1="361.6" y1="253.8" x2="197.8" y2="803.3" stroke="#7c3aed" stroke-width="0.7" opacity="0.31" />
+<line x1="361.6" y1="253.8" x2="236.7" y2="428.1" stroke="#7c3aed" stroke-width="0.8" opacity="0.13" />
+<line x1="361.6" y1="253.8" x2="34.3" y2="579.8" stroke="#a78bfa" stroke-width="0.8" opacity="0.29" />
+<line x1="361.6" y1="253.8" x2="94.8" y2="375.6" stroke="#7c3aed" stroke-width="0.9" opacity="0.17" />
+<line x1="361.6" y1="253.8" x2="-406.4" y2="381.7" stroke="#a78bfa" stroke-width="0.5" opacity="0.18" />
+<line x1="361.6" y1="253.8" x2="-368.1" y2="247.5" stroke="#a78bfa" stroke-width="0.9" opacity="0.32" />
+<line x1="361.6" y1="253.8" x2="155.0" y2="187.3" stroke="#8b5cf6" stroke-width="0.8" opacity="0.22" />
+<line x1="361.6" y1="253.8" x2="29.7" y2="42.3" stroke="#a78bfa" stroke-width="2.0" opacity="0.17" />
+<line x1="361.6" y1="253.8" x2="176.2" y2="38.1" stroke="#a78bfa" stroke-width="0.7" opacity="0.13" />
+<line x1="361.6" y1="253.8" x2="247.3" y2="25.9" stroke="#7c3aed" stroke-width="2.3" opacity="0.32" />
+<line x1="361.6" y1="253.8" x2="255.6" y2="-156.7" stroke="#a78bfa" stroke-width="0.7" opacity="0.12" />
+<line x1="361.6" y1="253.8" x2="401.1" y2="-164.3" stroke="#8b5cf6" stroke-width="0.7" opacity="0.33" />
+<line x1="361.6" y1="253.8" x2="490.2" y2="-171.3" stroke="#7c3aed" stroke-width="2.4" opacity="0.22" />
+<line x1="361.6" y1="253.8" x2="557.4" y2="-21.3" stroke="#7c3aed" stroke-width="1.7" opacity="0.19" />
+<line x1="361.6" y1="253.8" x2="908.0" y2="-257.2" stroke="#a78bfa" stroke-width="1.8" opacity="0.17" />
+<line x1="361.6" y1="253.8" x2="771.7" y2="28.9" stroke="#8b5cf6" stroke-width="2.0" opacity="0.30" />
+<line x1="361.6" y1="253.8" x2="697.3" y2="182.5" stroke="#8b5cf6" stroke-width="0.6" opacity="0.21" />
+<circle cx="361.6" cy="253.8" r="80" fill="#7c3aed" opacity="0.15" filter="url(#glow)" />
+
+
+  <!-- Vignette -->
+  <rect width="1200" height="630" fill="url(#bg)" opacity="0.3" />
+
+  <!-- Category badge -->
+  <rect x="48" y="40" width="224" height="28" rx="14" fill="#7c3aed" opacity="0.9" />
+  <text x="60" y="59" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase" fill="white">DEVELOPER EXPERIENCE</text>
+
+  <!-- Title -->
+  <text x="48" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="white" filter="url(#textShadow)" letter-spacing="-1">
+    <tspan x="48" dy="0">How the spike.land OpenAI-compatible</tspan>
+    <tspan x="48" dy="50">endpoint works, and how to try it</tspan>
+    <tspan x="48" dy="50">locally</tspan>
+  </text>
+
+  <!-- spike.land watermark -->
+  <text x="1152" y="606" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#a78bfa" opacity="0.6" text-anchor="end">spike.land</text>
+</svg>
