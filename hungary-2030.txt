@@ -1,0 +1,409 @@
+Hungary 2030: Three Scenarios for a Country Running Out of Road
+
+Zoltan Erdos
+April 2026
+
+
+Preface: Why This Is Painful to Write
+
+I left Hungary. I am writing this from Brighton, where I build software
+and walk my dogs along the seafront and do not have to think about
+Hungarian politics unless I choose to. I am choosing to now because
+someone asked, and because looking away is also a choice, and because
+four years is long enough for things to get either meaningfully better
+or irreversibly worse, and I no longer trust my instinct for which.
+
+What follows is not prediction. It is scenario analysis -- three
+plausible futures for Hungary by 2030, built on what we know as of
+spring 2026. I have tried to be honest rather than hopeful. Hope is
+easy from abroad.
+
+
+1. Where We Stand: Spring 2026
+
+Viktor Orban has been Prime Minister since 2010. Fidesz holds a
+constitutional supermajority for the fourth consecutive term. The 2026
+spring elections -- the most contested in a decade -- produced a result
+that landed somewhere between the opposition's desperate hopes and the
+regime's confident projections.
+
+The key dynamics entering the 2026 election cycle:
+
+Magyar Peter and TISZA. The most significant opposition figure to emerge
+since 2010. A former Fidesz insider who broke with the regime in 2024,
+Magyar built TISZA (Tisztelet es Szabadsag -- Respect and Freedom) into
+a genuine electoral force within eighteen months. His European Parliament
+result in June 2024 -- nearly 30% on a standing start -- was the first
+credible challenge to Fidesz's dominance in a decade. Whether TISZA
+could translate European election momentum into a national result was
+the central question of 2025-2026.
+
+The economy. Hungary's GDP growth has been anaemic. Inflation, which
+peaked above 25% in early 2023, came down but left permanent damage to
+household purchasing power. The forint remains structurally weak. EU
+cohesion funds -- tens of billions of euros -- remained partially frozen
+over rule-of-law conditionality. The brain drain continues: an estimated
+600,000-800,000 Hungarians live abroad, disproportionately young,
+educated, and productive. The demographic arithmetic is brutal: Hungary
+is losing the people it needs most to sustain the economy it has.
+
+The media landscape. Fidesz controls or influences approximately 80% of
+Hungarian media. The Central European Press and Media Foundation (KESMA)
+-- a Fidesz-aligned media conglomerate declared a matter of "national
+strategic importance" to exempt it from competition scrutiny -- dominates
+regional media. Independent outlets survive but reach a self-selecting
+audience. The information asymmetry between urban and rural Hungary is
+not a bug; it is the architecture.
+
+The EU relationship. Hungary under Orban has been the EU's most
+persistent internal disrupter: vetoing Ukraine aid, blocking sanctions,
+courting Moscow and Beijing, holding the 2024 Council presidency while
+freelancing a "peace mission" to Kyiv and Moscow that infuriated every
+other member state. The EU's leverage -- frozen funds, rule-of-law
+mechanisms, potential voting-rights suspension under Article 7 --
+remains powerful in theory and hesitant in practice.
+
+The constitutional lock. Fidesz rewrote the constitution (Fundamental
+Law) in 2011 and has amended it repeatedly since. The electoral system
+is gerrymandered. The Constitutional Court is packed. The prosecution
+service is controlled. The state audit office targets opposition
+parties. Media regulation favours regime-aligned outlets. These are not
+features of a normal democracy experiencing a right-wing government.
+They are features of a hybrid regime that has restructured the state to
+make power transfer extraordinarily difficult even if the electorate
+turns.
+
+This is the machine any future has to pass through.
+
+
+2. Scenario A: Managed Stagnation (Most Likely)
+
+Probability estimate: 50%
+
+In this scenario, the 2026 elections produce a result close to the
+structural expectation: Fidesz loses vote share but retains a
+parliamentary majority, possibly losing the supermajority. TISZA and
+allied opposition parties make significant gains but fall short of
+government. The opposition declares moral victory. Fidesz declares
+actual victory. Nothing fundamental changes.
+
+By 2030 under this scenario:
+
+Politics. Orban, now 67, remains Prime Minister. Succession speculation
+intensifies but produces no resolution. Fidesz's internal structure --
+a patronage network organised around personal loyalty to Orban rather
+than institutional party governance -- makes succession inherently
+destabilising. The party cannot easily replace its central node without
+the network fragmenting. Orban's strategy is to make this everyone
+else's problem by not retiring.
+
+The opposition consolidates around TISZA as the primary vehicle but
+remains structurally disadvantaged by the electoral system, media
+landscape, and campaign finance asymmetry. Opposition support stabilises
+at 35-42% of the national vote -- enough to sustain hope, not enough to
+win power under the current rules. The democratic opposition faces the
+classic authoritarian-competitive trap: participating in elections
+legitimises a system designed to produce predetermined outcomes, but
+boycotting elections abandons the only remaining institutional pathway
+to power.
+
+Economy. GDP growth remains below the EU average. The EU partially
+releases frozen funds under a face-saving compromise (Hungary makes
+cosmetic rule-of-law concessions; the Commission declares progress;
+everyone knows it is theatre). The funds flow primarily through
+Fidesz-connected contractors and municipal governments, reinforcing the
+patronage network. The brain drain does not reverse. Wages in healthcare,
+education, and public administration remain uncompetitive with Western
+Europe. The demographic crisis deepens: Hungary's population, already
+below 9.6 million, continues to decline.
+
+Society. The culture war -- anti-LGBTQ legislation, "gender ideology"
+panic, anti-immigration rhetoric, "sovereignty protection" -- continues
+to serve its primary political function: keeping the base mobilised and
+the opposition divided between liberals who prioritise rights and
+pragmatists who want to talk about the economy. Hungarian society
+becomes incrementally more atomised: low trust, low civic participation,
+high emigration intent among the young.
+
+EU relationship. Hungary remains inside the EU but operates as a
+permanent spoiler, extracting concessions by threatening vetoes on
+matters requiring unanimity. The EU's institutional inability to expel
+or effectively discipline a member state becomes a chronic governance
+problem. Hungary is not the only beneficiary of this weakness (Poland's
+trajectory, Italy's Meloni government, the rise of hard-right parties
+across the continent all exploit the same structural gap), but it is the
+most systematic.
+
+This scenario is depressing not because it is catastrophic but because
+it is sustainable. The system is not in crisis. It is in equilibrium.
+The equilibrium is simply unjust, undemocratic, and economically
+suboptimal. Managed stagnation can continue for a long time. Ask any
+Hungarian who lived through the Kadar era.
+
+
+3. Scenario B: Democratic Breakthrough (Possible but Fragile)
+
+Probability estimate: 25%
+
+In this scenario, the 2026 elections produce a narrower-than-expected
+Fidesz result -- perhaps a simple majority of 2-5 seats, or an outright
+opposition victory through an electoral alliance. Alternatively, a
+post-election crisis (economic shock, corruption scandal reaching
+Orban's inner circle, a foreign policy humiliation) fragments Fidesz
+sufficiently to force early elections or a coalition realignment.
+
+By 2030 under this scenario:
+
+Politics. A non-Fidesz government takes office, either after 2026 or in
+a subsequent early election. The immediate challenge is governing within
+institutions that Fidesz spent 16 years reshaping. The Constitutional
+Court, prosecution service, state audit office, media authority, and
+central bank are all staffed with Fidesz loyalists whose terms extend
+well beyond any single electoral cycle. A new government faces the same
+structural problem Poland's Tusk government faced after 2023: winning
+the election is the easy part; unwinding institutional capture is the
+decade-long part.
+
+The new government is a coalition of convenience -- TISZA, remnants of
+the traditional opposition (DK, Momentum, or their successors), and
+possibly defectors from Fidesz. It is ideologically incoherent, united
+only by opposition to Orban. Internal tensions between liberal
+internationalists and national-conservative reformers surface within
+months. Governing is harder than opposing. The coalition's approval
+rating drops rapidly as it inherits an economy distorted by 16 years of
+crony capitalism, a public administration hollowed out by political
+loyalty requirements, and a population exhausted by politics.
+
+Economy. EU funds are fully released, providing a short-term stimulus.
+But the structural problems -- low productivity, dependence on
+automotive manufacturing (increasingly exposed to Chinese EV
+competition), underinvestment in education and healthcare, demographic
+decline -- require reforms that take longer than one electoral cycle to
+produce results. The government must choose between popular short-term
+spending and unpopular structural reform. History suggests it will
+choose spending.
+
+Society. A democratic breakthrough produces a brief euphoria followed
+by disappointment as the depth of institutional damage becomes visible.
+The Hungarian diaspora watches with cautious hope. Some return. Most do
+not -- they have built lives elsewhere, and "the country is changing"
+is a less compelling reason to uproot than "the country has changed."
+The cultural divide between urban liberals and rural conservatives does
+not dissolve with a change of government; it may sharpen as the losing
+side feels newly threatened.
+
+Risk. Fidesz in opposition is a formidable force. It retains media
+dominance, municipal power bases, and the institutional loyalists
+embedded throughout the state. It campaigns on the theme that the new
+government is destroying Hungary's sovereignty, caving to Brussels, and
+betraying national values. If the new government stumbles -- and it
+will -- Fidesz returns in the next election with a narrative of
+restoration. The democratic breakthrough becomes an interregnum rather
+than a transition.
+
+This scenario is not impossible. The Polish precedent shows that
+competitive authoritarian regimes can lose elections. But Poland's
+opposition had stronger institutional foundations, a less gerrymandered
+electoral system, and the galvanising effect of the abortion ban. Hungary
+would need a comparable catalyst and a more disciplined opposition
+coalition than it has yet demonstrated.
+
+
+4. Scenario C: Authoritarian Consolidation (Unlikely but Not Impossible)
+
+Probability estimate: 15%
+
+In this scenario, Fidesz uses its supermajority to further entrench its
+position: additional constitutional amendments, further media
+consolidation, restrictions on civil society funding, expanded
+surveillance under "sovereignty protection" legislation, and possible
+withdrawal from or effective nullification of EU judicial oversight. The
+2026 election result is comfortable enough to embolden further
+institutional capture.
+
+By 2030 under this scenario:
+
+Politics. Hungary moves from competitive authoritarianism (elections
+happen but are structurally unfair) toward hegemonic authoritarianism
+(elections happen but outcomes are effectively predetermined). The
+distinction matters: in competitive authoritarian regimes, the
+opposition can still win; in hegemonic regimes, it cannot. The key
+indicators would be: prosecution of opposition figures on politically
+motivated charges, restrictions on independent media funding, mandatory
+"transparency" requirements for civil society that function as
+harassment, and electoral law changes that further disadvantage the
+opposition.
+
+Orban's model has always been Kadar's "goulash communism" updated for
+the 21st century: material comfort in exchange for political quiescence,
+national pride as a substitute for democratic participation, and a
+controlled public sphere that makes alternatives invisible. The
+question is whether this model is sustainable in a digitally connected,
+EU-member state where the population can leave freely.
+
+Economy. The authoritarian consolidation scenario paradoxically requires
+economic performance. If living standards decline, the regime loses its
+implicit social contract (stability and modest prosperity in exchange
+for democratic concessions). The risk is that corruption, which is
+structural rather than incidental in the Fidesz system, degrades
+economic performance to the point where the contract breaks. But
+corruption also distributes rents to a large enough coalition of
+beneficiaries that many actors have a material interest in the regime's
+survival. The system is corrupt and stable, until it isn't.
+
+Brain drain. This scenario accelerates emigration. By 2030, the
+Hungarian diaspora in Western Europe could exceed one million -- a
+staggering figure for a country of under ten million. The demographic
+consequences compound: fewer young workers, higher dependency ratios,
+lower tax revenue, declining public services, more emigration. This is
+the doom loop that no amount of pro-natalist policy (baby bonds,
+mortgage subsidies, IVF funding) can reverse, because the push factors
+are not primarily economic. They are about whether young Hungarians see
+a future worth staying for.
+
+EU. The EU's tolerance for internal democratic backsliding has limits
+that have not yet been reached. An Article 7 procedure, which could
+suspend Hungary's voting rights, requires unanimity among all other
+member states -- a threshold that has never been met. But financial
+conditionality is already being applied, and further authoritarian moves
+could trigger harsher measures: suspension from EU programmes,
+exclusion from Schengen, or informal marginalisation in Council
+decision-making. The ultimate question -- whether Hungary could be
+effectively expelled or choose to leave -- is one that neither side has
+an interest in forcing, but that authoritarian consolidation brings
+closer to the table.
+
+I give this scenario only 15% because it requires Fidesz to take risks
+that managed stagnation does not require. The regime's genius has been
+to achieve authoritarian outcomes without authoritarian aesthetics: it
+looks democratic enough to avoid the costs of overt repression. Moving
+beyond competitive authoritarianism would sacrifice that deniability for
+marginal additional control. Orban is many things, but he is not stupid.
+
+
+5. The Variables That Matter Most
+
+Across all three scenarios, four variables carry disproportionate weight.
+
+Orban's health and succession. The system is built around one person.
+There is no institutional mechanism for succession. There is no
+designated heir. There is no Fidesz without Orban, only a collection of
+patronage networks that Orban holds together. Any scenario involving
+Orban's departure -- health, retirement, scandal, fatigue -- triggers a
+succession crisis that could produce outcomes none of the three
+scenarios anticipate.
+
+The EU's willingness to enforce. The EU has the tools to discipline
+Hungary. It has not consistently used them. If the EU hardens its
+approach -- genuinely conditioning all structural funds on democratic
+standards, using the rule-of-law conditionality regulation aggressively,
+building coalitions to isolate Hungary in the Council -- the cost of
+managed stagnation rises. If the EU continues to compromise, managed
+stagnation remains cheap.
+
+Economic shocks. The Hungarian economy is unusually exposed to
+automotive manufacturing (German supply chains), energy dependence
+(historically on Russian gas, now diversifying but slowly), and
+demographic decline. A European recession, an energy crisis, or a
+collapse in automotive demand (driven by Chinese EV competition) could
+destabilise the social contract that sustains the regime. Economic
+crises do not automatically produce democratic outcomes -- they can just
+as easily produce authoritarian deepening -- but they force change.
+
+The opposition's institutional capacity. Magyar Peter proved in 2024
+that a single charismatic figure can galvanise opposition support. But
+charismatic leadership is not institutional capacity. TISZA in 2026
+faces the same challenge every Hungarian opposition party has faced
+since 2010: building durable organisations -- with local branches,
+trained candidates, fundraising infrastructure, media capacity, and
+policy development -- under conditions deliberately designed to prevent
+exactly that. The question is whether TISZA is a party or a person. If
+it is a person, its half-life is one electoral cycle.
+
+
+6. What the Diaspora Can and Cannot Do
+
+There are approximately 600,000-800,000 Hungarians living abroad.
+Diaspora voting rights exist but are structurally disadvantaged: postal
+voting is available to ethnic Hungarians in neighbouring countries
+(Fidesz voters, predominantly) but citizens living in the EU must vote
+at embassies in person. The system is designed to enfranchise the
+diaspora that votes Fidesz and disenfranchise the diaspora that does
+not.
+
+Beyond voting, the diaspora's influence is ambiguous. Remittances
+support family members. Professional networks create opportunities.
+Cultural ties persist. But the act of leaving is also an act of exit
+in Hirschman's sense: choosing exit over voice reduces the domestic
+pressure for change. Every young Hungarian who moves to London, Berlin,
+or Brighton is one fewer voter, one fewer taxpayer, one fewer voice in
+domestic politics. The regime benefits from this safety valve. If the
+dissatisfied cannot leave, they must organise. If they can leave, many
+do -- and the ones who remain are disproportionately those who benefit
+from, or are resigned to, the status quo.
+
+I am part of this equation. I left. I build things in Brighton. I write
+essays about Hungarian politics from a comfortable distance. This is
+not a neutral position. It is a choice that makes me simultaneously
+more free to speak honestly and less entitled to prescribe solutions
+for people who stayed.
+
+
+7. What I Actually Think
+
+The honest answer is that I expect managed stagnation. Not because it
+is the best outcome, but because it is the most structurally stable.
+The regime is not collapsing. The opposition is not strong enough to
+win under the current rules. The EU is not willing to force the issue.
+The economy is bad enough to produce emigration but not bad enough to
+produce revolt. The cultural infrastructure of democratic citizenship
+-- independent media, civic organisations, institutional trust, a
+shared commitment to procedural fairness -- has been systematically
+degraded over 16 years. Rebuilding it takes longer than destroying it
+took.
+
+Hungary in 2030 will most likely look like Hungary in 2026, only more
+so: a little poorer relative to its neighbours, a little smaller in
+population, a little more captured institutionally, a little more
+isolated within the EU, a little more resigned. The people who could
+change this -- the young, the educated, the energetic -- will
+disproportionately be living somewhere else.
+
+This is not despair. Despair would be saying it cannot change. It can.
+Poland changed. Slovakia wobbles. Romania surprises. The Central
+European story is not one-directional. But the window for change in
+Hungary is narrower than in 2010, and narrowing.
+
+The thing I keep coming back to is something Istvan Bibo wrote in 1948,
+in "The Misery of the Small States of Eastern Europe": that the
+fundamental political pathology of the region is the fear of the
+community's extinction -- a fear that makes democratic self-governance
+feel like an unaffordable luxury, and strongman rule feel like
+protection. Orban understands this fear better than his opponents do.
+He does not need to be loved. He needs to be seen as necessary. And in
+a country that has been invaded, partitioned, occupied, and betrayed by
+every major power in its neighbourhood over the past three centuries,
+the argument that Hungary needs a strong hand at the helm resonates at
+a level that liberal universalism cannot easily reach.
+
+The opposition's task is not to defeat Orban. It is to offer a
+different answer to the same fear. One that says: we can be safe and
+free. We can be Hungarian and European. We can be proud and democratic.
+We can be small and sovereign without being captured by a single party
+that has confused the nation with itself.
+
+That is a harder story to tell than "Brussels wants to destroy us."
+But it is the only story that leads somewhere worth going.
+
+
+Note on Sources
+
+This is a scenario analysis, not an academic paper. It draws on publicly
+available reporting, EU institutional documents, Hungarian election data,
+and the author's own experience as a Hungarian citizen living abroad.
+Specific claims about media ownership, electoral system design, and EU
+fund conditionality are well-documented in Freedom House reports,
+Transparency International Hungary publications, the European
+Commission's annual Rule of Law Reports, and the academic work of
+Balint Magyar (The Post-Communist Mafia State, 2016) and Gabor Scheiring
+(The Retreat of Liberal Democracy, 2020).

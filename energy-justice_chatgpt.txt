@@ -1,0 +1,980 @@
+Community Energy and Energy Justice in Post-Regulatory Urban England:
+A Systems-Thinking Analysis of Brighton and Hove
+
+Zoltan Erdos
+April 2026
+
+
+Abstract
+
+This chapter asks: how, and under what conditions, do community energy
+projects in UK cities advance distributional, recognition, and
+procedural justice? Existing scholarship demonstrates that community
+energy can produce local benefits (Seyfang et al., 2013; Bauwens, 2016),
+but less is known about which specific mechanisms translate
+participation into energy justice outcomes in dense urban settings under
+post-Feed-in Tariff policy conditions. Through a theory-led analysis of
+policy documents, sector reports, and local authority materials, with
+Brighton and Hove as the primary site and comparative reference to
+Bristol and London, the chapter makes three contributions. First, it
+proposes an explicit division of labour between the energy justice
+framework (Jenkins et al., 2016), leverage points theory (Meadows,
+1999), and the multi-level perspective (Geels, 2002), arguing that each
+addresses a distinct analytical gap the others leave open. Second, it
+identifies the specific political, infrastructural, and demographic
+conditions under which community energy projects are most likely to
+deliver justice outcomes -- and the conditions under which they
+reproduce existing inequalities. Third, it examines a speculative
+intervention design, Radix Brighton, as an illustrative case of how
+systems thinking might operationalise energy justice at the
+neighbourhood scale, while maintaining critical distance from the
+design's untested assumptions. The chapter concludes that community
+energy's justice potential is real but conditional, and that the current
+policy window -- opened by the Great British Energy Act 2025, the Local
+Power Plan, and the Simpler Recycling mandate of March 2026 -- is
+necessary but not sufficient for that potential to be realised.
+
+
+1. Introduction
+
+1.1 The Problem
+
+The United Kingdom's energy transition is proceeding unevenly. The
+country has committed to net zero by 2050 and to decarbonising its
+electricity grid by 2030 under the Clean Power Mission. Yet 2.36 million
+English households remain in fuel poverty under the Low Income Low Energy
+Efficiency (LILEE) measure -- 9.4% of all households -- with an
+aggregate fuel poverty gap of GBP 896 million per year (DESNZ, 2026).
+The earlier 2024 data showed 2.73 million fuel-poor households (11.0%)
+and a gap of GBP 1.11 billion (DESNZ, 2025); the decline reflects
+falling energy prices rather than structural improvement in housing
+stock or income distribution. Under the broader 10% income threshold
+measure, 36.3% of English households -- 8.99 million -- still exceed
+the affordability threshold (DESNZ, 2025). In Scotland, 34% of
+households are fuel poor, rising to 44% in remote rural areas (Scottish
+House Condition Survey, 2023). The transition, if governed primarily by
+incumbent market actors, risks reproducing these inequalities at scale.
+
+Community energy projects are frequently cited as a corrective: locally
+owned, democratically governed, oriented toward community benefit
+(Walker and Devine-Wright, 2008; Seyfang et al., 2013). The sector has
+reached meaningful scale. Community Energy England's State of the Sector
+2025 report documents 614 active organisations with 411 MW of
+community-owned renewable capacity, generating 575 GWh annually. The
+government's Local Power Plan evidence annex gives somewhat different
+figures: close to 700 community energy groups, approximately 440 MW of
+operational capacity, and roughly 695 MW in the development pipeline
+(GBE, 2026). The discrepancy reflects differences in organisational
+definition (CEE counts only formally constituted community energy
+organisations; GBE includes broader local energy groups) and reporting
+periods. Both sources confirm the same trajectory: a sector growing
+despite the withdrawal of the Feed-in Tariff in 2019.
+
+Yet growth is not justice. The critical question is not whether
+community energy is expanding but whether it is expanding in ways that
+deliver fair outcomes for those who need them most. This chapter
+addresses that question.
+
+1.2 Research Question
+
+How, and under what conditions, do community energy projects in UK
+cities advance distributional, recognition, and procedural justice?
+
+1.3 Contribution
+
+Existing work on community energy and justice tends toward one of two
+modes: theoretical frameworks that remain abstract (Jenkins et al.,
+2016; Sovacool and Dworkin, 2015), or empirical case studies that remain
+descriptive (Hargreaves et al., 2013; Hoffman and High-Pippert, 2015).
+Work that bridges the gap -- applying justice frameworks to specific
+urban contexts under current UK policy conditions -- is thin. This
+chapter contributes by:
+
+(a) proposing a structured analytical relationship between three
+frameworks that are typically deployed in isolation;
+
+(b) identifying the enabling and constraining conditions for justice
+outcomes in a specific urban setting (Brighton and Hove), with
+comparative reference to Bristol and London;
+
+(c) examining a speculative intervention design (Radix Brighton) not as
+evidence of what works, but as a device for surfacing the assumptions
+that systems-level community energy design must confront.
+
+1.4 Structure
+
+Section 2 establishes the theoretical framework. Section 3 describes the
+analytical approach. Section 4 surveys the UK community energy landscape
+and policy context. Section 5 examines Brighton and Hove as an empirical
+site. Section 6 presents the Radix intervention design as a speculative
+case. Section 7 provides critical analysis. Section 8 concludes.
+
+
+2. Theoretical Framework
+
+2.1 Three Frameworks and Their Division of Labour
+
+This chapter draws on three bodies of theory. They are not
+interchangeable, and deploying them together requires stating explicitly
+what each one does that the others cannot.
+
+Energy justice (Jenkins et al., 2016) tells us what kind of fairness
+matters. The three-tenet framework -- distributional, recognition, and
+procedural justice -- provides the normative criteria against which
+community energy outcomes are assessed. Without it, we could describe
+community energy systems in detail but have no basis for judging whether
+they are just. Energy justice is the evaluative lens.
+
+Leverage points theory (Meadows, 1999; 2008) tells us where
+intervention bites. Meadows' twelve-point hierarchy distinguishes
+shallow interventions (adjusting parameters within existing system
+structures) from deep interventions (changing goals, mindsets, and
+paradigms). Without it, we could identify injustice but have no
+framework for understanding why some interventions produce
+transformation while others merely adjust the surface. Leverage points
+is the intervention-depth lens.
+
+The multi-level perspective (Geels, 2002; 2014) tells us how
+innovations diffuse or stall. The MLP's niche-regime-landscape
+architecture explains why technically viable and normatively desirable
+innovations can fail to scale -- because they face regime resistance
+from incumbents whose interests are served by the existing system.
+Without it, we could design high-leverage interventions that address
+real injustices but have no account of why they might not be adopted.
+The MLP is the diffusion lens.
+
+A sceptical reader might object that three frameworks is one too many --
+that each is being recruited because it supports the preferred
+conclusion. The defence is that each addresses a gap the others leave
+conspicuously open. Energy justice has no theory of intervention depth;
+it can say that the energy system is unjust but not why carbon pricing
+fails to fix it while community ownership might. Meadows has no
+normative framework; leverage points theory can say that paradigm-level
+interventions are more powerful than parameter-level ones but cannot say
+whether a given paradigm shift is just. Geels has no normative framework
+either, and adds no account of intervention design; MLP explains
+diffusion dynamics but not whether the innovations diffusing are worth
+diffusing, or how to design them. The three frameworks are not redundant.
+They are complementary, and the gaps between them are where this chapter
+works.
+
+2.2 Energy Justice: The Three Tenets
+
+The foundational framework was established by Jenkins, McCauley, Heffron,
+Stephan, and Rehner (2016) as "a new crosscutting social science
+research agenda which seeks to apply justice principles to energy
+policy, energy production and systems, energy consumption, energy
+activism, energy security and climate change" (p. 175).
+
+Distributional justice concerns the fair allocation of both burdens
+(pollution, health impacts, infrastructure proximity, cost) and benefits
+(affordable energy, revenue, employment) across society. Distributional
+injustice in the UK is structural: 55% of social housing with Energy
+Performance Certificate ratings of D to G is fuel poor (DESNZ, 2026).
+The fuel poverty gap is not closing because of improved justice; it is
+narrowing because wholesale energy prices fell.
+
+Recognition justice requires that the identities, needs, and
+vulnerabilities of different social groups be substantively acknowledged
+in energy governance -- not merely formally included. In the UK,
+recognition failures implicate ethnic minority communities
+disproportionately affected by fuel poverty, social housing tenants with
+no control over their building's energy efficiency, disabled people with
+higher energy needs, and rural households facing both higher costs and
+lower infrastructure investment.
+
+Procedural justice addresses the fairness of decision-making processes:
+who participates, whose voice carries weight, whether processes are
+transparent and accountable. The UK energy system has historically
+concentrated decision-making authority in national government, Ofgem,
+and large utilities, with minimal meaningful public participation
+(Chilvers and Longhurst, 2016).
+
+Sovacool and Dworkin (2015) extend these tenets to encompass
+availability, affordability, due process, sustainability,
+intergenerational equity, and responsibility, connecting energy justice
+to human rights frameworks. Heffron, McCauley, and de Rubens (2018)
+propose a whole-systems approach covering the full energy life-cycle and
+introduce the Energy Justice Metric. They also advocate adding
+restorative justice as a fourth tenet -- the obligation to remedy past
+harm, not merely prevent future harm. This chapter uses the original
+three-tenet framework as its primary evaluative structure, drawing on
+the extensions where they illuminate specific gaps.
+
+2.3 Leverage Points
+
+Meadows' hierarchy (1999; 2008) ranks twelve places to intervene in a
+complex system, from low-leverage (adjusting numerical parameters) to
+high-leverage (changing paradigms and transcending paradigms). The
+hierarchy is a heuristic, not a measurement instrument. It is useful for
+distinguishing interventions that adjust numbers within existing
+structures from those that alter the structures themselves.
+
+Applied to energy systems: carbon pricing operates at the parameter
+level (leverage point 12); feed-in tariffs adjust reinforcing feedback
+loops (leverage point 7); community energy projects plausibly engage
+higher leverage points by altering information flows (point 6), changing
+rules of ownership (point 5), enabling self-organisation (point 4), and
+-- more speculatively -- shifting goals from profit maximisation to
+community benefit (point 3) or challenging the paradigm that energy
+production belongs to private utilities (point 2).
+
+The qualifier "plausibly" matters. Meadows herself warns that leverage
+points are "not easily accessible, even if we know where they are" and
+that "the system will fight back" (1999, p. 18). Claiming that community
+energy operates at paradigm level is analytically bold; demonstrating it
+requires evidence that actual beliefs and institutional structures have
+shifted, not merely that a cooperative was formed. This chapter treats
+leverage-point mapping as indicative rather than definitive, and
+examines the evidence for and against high-leverage claims in specific
+cases.
+
+2.4 The Multi-Level Perspective
+
+Geels' MLP (2002; 2014; 2016) describes socio-technical transitions as
+interactions between three levels: niches (protected spaces for radical
+innovation), regimes (dominant socio-technical systems), and landscapes
+(exogenous macro-trends). Community energy organisations are niche
+actors. Their role in MLP terms is to develop and stabilise innovations
+that can, under favourable landscape pressures, challenge the regime.
+
+Geels' comparative analysis of German and UK low-carbon transitions
+(Geels et al., 2016) shows that Germany followed a substitution pathway
+-- new entrants, including energy cooperatives, driving small-scale
+renewables -- while the UK followed a transformation pathway in which
+incumbents deployed large-scale renewables under government direction.
+This structural bias toward incumbents explains the comparative
+underdevelopment of British community energy and gives the current policy
+shift (GBE, Local Power Plan) its historical significance.
+
+Geels (2014) also introduces the concept of regime resistance: incumbent
+actors deploying political and regulatory power to slow niche
+innovations. In the UK, regime resistance is visible in the withdrawal
+of the Feed-in Tariff without replacement, the decade-long failure of
+the Local Electricity Bill, and the planning restrictions on onshore
+wind only partially lifted in 2024. The MLP framework predicts that
+even favourable policy intent will face resistance from actors whose
+interests are served by the existing regime structure.
+
+
+3. Analytical Approach
+
+This is a theory-led qualitative analysis. It does not claim the
+methodological status of a formal case study in the Yin (2018) sense,
+nor does it employ process tracing or discourse analysis as a systematic
+method. What it does is apply a structured theoretical framework to a
+bounded empirical context, using documentary evidence to assess the
+conditions under which community energy advances energy justice.
+
+3.1 Case Selection
+
+Brighton and Hove was selected for four reasons: (a) it hosts multiple
+community energy organisations operating in complementary domains,
+enabling analysis of a local ecosystem rather than a single organisation;
+(b) it has an unusually favourable political context (Green-led council,
+Climate Emergency declaration, 2030 carbon neutrality target), providing
+a best-case scenario for examining what community energy achieves even
+under supportive conditions; (c) it is among the local authorities that
+met the Simpler Recycling deadline of 31 March 2026, enabling analysis
+of the food waste-energy nexus; and (d) it is the proposed site of a
+speculative intervention design (Radix) that permits examination of
+systems-level design assumptions.
+
+Bristol and London serve as comparative reference points: Bristol for its
+community energy ecosystem (Bristol Energy Cooperative, Lawrence Weston
+wind turbine) and as a case where distributional justice outcomes are
+more directly observable; London (Repowering London) for its explicit
+targeting of underrepresented communities and as a contrasting urban
+form.
+
+3.2 Evidence Base
+
+The analysis draws on: (a) sector reports (Community Energy England,
+2024; 2025); (b) government policy documents (Great British Energy Act
+2025; Local Power Plan, 2026; Fuel Poverty Strategy for England, 2026);
+(c) Brighton and Hove City Council materials (2030 Carbon Neutral
+Programme, Climate Assembly report, Defra grant allocations);
+(d) organisational materials from Brighton Energy Co-operative (BEC),
+Brighton and Hove Energy Services Co-operative (BHESCo), Repowering
+London, and Bristol Energy Cooperative; (e) academic literature on
+energy justice, systems thinking, and socio-technical transitions; and
+(f) the Radix Brighton business plan, treated as a design document
+rather than an empirical source.
+
+3.3 Reflexive Disclosure
+
+The author is the founder of spike.land, the platform on which Radix
+Brighton is designed to be built. This creates an obvious conflict of
+interest. The chapter handles this in two ways. First, the Radix
+material is quarantined in a separate section (Section 6) and explicitly
+labelled as a speculative intervention design -- an exercise in applying
+theoretical frameworks to a proposed system, not an evaluation of an
+operational one. Second, the critical analysis (Section 7) subjects
+Radix to the same sceptical scrutiny applied to the broader community
+energy sector. The reader should treat the Radix material as a thought
+experiment informed by the theoretical framework, not as evidence.
+
+3.4 What Counts as Evidence
+
+For claims about distributional justice, the chapter relies on
+quantified financial flows (community benefit fund disbursements,
+revenue returned to local economies, household energy cost impacts)
+where available, and qualitative descriptions of benefit distribution
+where not. For recognition justice, it examines organisational
+membership composition, explicit targeting of underrepresented groups,
+and the presence or absence of mechanisms for acknowledging diverse
+needs. For procedural justice, it examines governance structures
+(cooperative vs. company, one-member-one-vote vs. shareholder
+proportion), participation rates, and accessibility of decision-making
+processes. Competing explanations -- that observed benefits result from
+pre-existing community capacity rather than the energy project itself,
+or that justice claims are performative rather than substantive -- are
+addressed in Section 7.
+
+
+4. The UK Community Energy Landscape
+
+4.1 Scale, Growth, and Source Consistency
+
+The sector's scale is documented by two primary sources whose figures
+do not fully align. Community Energy England's State of the Sector 2025
+report identifies 614 active organisations with 411 MW of
+community-owned renewable capacity generating 575 GWh annually. The
+government's Local Power Plan evidence annex (GBE, 2026) refers to
+close to 700 community energy groups, approximately 440 MW of
+operational capacity, and roughly 695 MW in the development pipeline.
+
+The discrepancy is methodological, not contradictory. CEE counts only
+formally constituted community energy organisations (registered
+cooperatives, community benefit societies, community interest companies).
+GBE's broader definition includes informal local energy groups and
+council-led community energy schemes. The capacity difference (411 MW
+vs. 440 MW) likely reflects different cut-off dates and the inclusion of
+partially commissioned projects. A thesis should not treat these as
+interchangeable numbers; they measure overlapping but non-identical
+populations of organisations and assets.
+
+The sector added 22 MW of new capacity in 2024, created 88 full-time
+equivalent jobs, and saw a 58% rise in organisational turnover
+year-on-year (CEE, 2025). These figures represent growth despite the
+loss of the Feed-in Tariff -- the sector's primary revenue mechanism
+until its closure to new applicants in 2019.
+
+4.2 Three Comparative Cases
+
+Brighton Energy Co-operative (BEC), founded in 2010 as a Community
+Benefit Society, has raised over GBP 5 million in community investment,
+installed 4,844 kWp of solar capacity, generated nearly 22,000 MWh of
+clean electricity, and avoided over 4,500 tonnes of CO2 emissions. It
+operates 13 Solar Schools and has deployed the South of England's first
+community-owned solar-connected electric vehicle charger. BEC's
+governance is one-member-one-vote; its community share offers have
+typically returned 2-5% annual interest while directing surplus to
+community benefit.
+
+Repowering London operates across nine London boroughs, has delivered
+over 1.5 MWp of rooftop solar with 650 member investors, and ringfences
+GBP 200,000 for local community projects. What distinguishes Repowering
+is its explicit focus on recognition justice: the organisation targets
+underrepresented communities, diversifies cooperative membership beyond
+the typical profile of community energy participants (older, white,
+homeowning, middle-class), and runs youth engagement programmes
+including "Creative Energy Clubs."
+
+Bristol Energy Cooperative operates a 9 MW solar portfolio powering
+3,000 homes -- 33% of solar energy in Bristol. The adjacent Lawrence
+Weston wind turbine (Ambition Community Energy CIC) is a 4.2 MW,
+GBP 4 million community project returning GBP 100,000 per year to one
+of Bristol's most deprived neighbourhoods. Lawrence Weston is the
+strongest UK example of community energy delivering measurable
+distributional justice: the revenue flows to a specific area of high
+deprivation, and the community had genuine decision-making authority
+over the project's development.
+
+4.3 Policy Context: 2025-2026
+
+Three policy developments converge to create the current landscape.
+
+The Great British Energy Act 2025 received Royal Assent on 15 May 2025,
+establishing GBE as a publicly owned clean energy company. Following
+sustained advocacy by Community Energy England, the final text includes
+community energy explicitly in GBE's statutory objects. The Act is
+enabling legislation; its practical significance depends on how GBE
+deploys its mandate.
+
+The Local Power Plan, published by GBE on 11 February 2026, commits up
+to GBP 1 billion in investment, targets the support of over 1,000
+community energy projects by 2030, and identifies approximately 1.9 GW
+of projects already in the development pipeline. Near-term milestones
+include first grant schemes in spring 2026, shared ownership template
+documents, and a GBE Capital Toolkit portfolio by autumn 2026. The Plan
+specifically targets underserved areas with historically low uptake.
+
+The Simpler Recycling mandate, which took effect on 31 March 2026,
+requires all English local authorities to implement weekly separate food
+waste collections. This creates a new intersection between waste policy
+and distributed energy production: food waste processed through
+anaerobic digestion (AD) produces biogas for local electricity
+generation or biomethane for grid injection. The UK biogas sector
+processes 36 million tonnes of organic waste annually, generating 21 TWh
+of biogas (ADBA/Tolvik, 2025). Food waste AD capacity is projected to
+power the equivalent of 163,000 homes by 2027.
+
+4.4 Barriers and Regime Resistance
+
+Favourable policy signals coexist with persistent structural barriers.
+The Feed-in Tariff's withdrawal in 2019 removed the sector's primary
+revenue mechanism without adequate replacement. The Local Electricity
+Bill, championed by the Power for People campaign to enable small-scale
+generators to sell directly to local consumers, failed to pass in
+successive parliamentary sessions and is now legislatively dead. A
+separate instrument -- the Community Energy (Review) Bill, a private
+member's bill introduced in the 2024-26 session -- requires the
+Secretary of State to review community energy's contribution to the
+Clean Power 2030 mission, but remains at Commons second reading with no
+guarantee of passage. These are distinct instruments; conflating them, as
+some sector commentary does, obscures the legislative gap.
+
+Planning restrictions on onshore wind, only partially lifted in 2024,
+continue to constrain development. Access to commercial-scale finance
+remains difficult for smaller organisations. And the GBE's Local Power
+Plan, while ambitious, has not yet delivered its first round of grants
+as of April 2026.
+
+In Geels' (2014) terms, these barriers represent regime resistance:
+the transformation pathway that has historically characterised UK energy
+governance -- favouring large incumbents over distributed actors --
+persists in regulatory structures even as political rhetoric shifts
+toward community empowerment. The translation of policy intent into
+regulatory reality is incomplete and contested.
+
+
+5. Brighton and Hove: Empirical Context
+
+5.1 Political and Institutional Setting
+
+Brighton and Hove elected the UK's first Green-led council in 2011. The
+council declared a Climate and Biodiversity Emergency in December 2018
+and adopted a 2030 Carbon Neutral Programme following the city's first
+Climate Assembly in 2021. The Tyndall Centre for Climate Change
+calculated that the city must reduce greenhouse gas emissions by 12.7%
+annually from 2020 to remain within its carbon budget. Over GBP 7.1
+million has been allocated to the programme.
+
+This political context creates what the MLP would describe as a locally
+favourable regime environment: the local authority is aligned with,
+rather than resistant to, niche energy innovations. This is analytically
+significant because it allows examination of what community energy
+achieves even when the most commonly cited barrier -- hostile local
+government -- is absent. If justice gaps persist under these conditions,
+the explanation must lie elsewhere.
+
+5.2 The Local Community Energy Ecosystem
+
+Brighton hosts two complementary community energy organisations. BEC
+(generation-focused: rooftop solar, 4,844 kWp installed) and BHESCo
+(efficiency-focused: retrofit financing for fuel-poor households and
+commercial properties). The coexistence of generation and efficiency
+cooperatives within a single city is relatively unusual in the UK and
+suggests that Brighton's community energy sector has reached a degree of
+functional differentiation typically associated with more mature
+ecosystems.
+
+However, the distributional reach of these organisations requires
+scrutiny. BEC's community share offers attract investors who can afford
+minimum stakes (typically GBP 100-250). Its solar installations are
+concentrated on schools, public buildings, and commercial rooftops --
+sites selected for roof suitability and institutional cooperation rather
+than neighbourhood deprivation. BHESCo's retrofit work is more directly
+targeted at fuel poverty, but its scale remains modest relative to the
+city's 2.36 million-household-equivalent share of national fuel poverty
+(approximately 12,000-15,000 fuel-poor households in Brighton and Hove,
+extrapolating from the national 9.4% rate). The question of whether
+community energy in Brighton primarily benefits already-engaged,
+relatively affluent households or reaches those in deepest energy
+poverty remains empirically open.
+
+5.3 Demographics and Urban Form
+
+Brighton's compact urban form creates high community engagement density
+-- a structural advantage for initiatives that depend on
+neighbourhood-level participation. The city's 34,000-plus university
+students (Sussex and Brighton) are often cited as early adopters, but
+student populations are also transient, time-poor, and predominantly
+renters with no control over their building's energy infrastructure.
+Their "early adoption" may be shallow: signing up for an app is not the
+same as investing in a community share offer or participating in
+cooperative governance.
+
+The tourism economy (11 million annual visitors) means that visible
+sustainability carries brand value for local businesses. This creates
+economic incentives for participation in sustainability schemes but
+also raises questions about whether sustainability becomes performative
+-- a marketing proposition rather than a justice one.
+
+5.4 Food Waste Infrastructure
+
+Brighton and Hove City Council received GBP 3,122,659.37 in Defra
+grants for the Simpler Recycling rollout and was among councils ready
+for the 31 March 2026 deadline, already collecting weekly food waste.
+This positions the city ahead of the 79 councils (one in four) that
+missed the deadline and the more than one-third that had not yet begun
+food waste collection on any basis. The existing infrastructure
+eliminates the cold-start problem and creates the material conditions
+for food waste-to-energy projects.
+
+The city diverts approximately 15,000 tonnes of food waste from landfill
+annually. Each tonne of diverted food waste avoids approximately 0.5
+tonnes of CO2 equivalent and yields approximately 150 cubic metres of
+biogas (WRAP, 2026). The waste-energy nexus is operational, not
+hypothetical.
+
+
+6. Speculative Intervention Design: Radix Brighton
+
+6.1 Framing Note
+
+This section examines a proposed platform, Radix Brighton, as a designed
+system intended to operationalise energy justice principles at the
+neighbourhood scale. Radix has not been deployed. The material here is
+drawn from the project's business plan, which the author, as founder of
+the underlying platform, has a direct interest in. The section's purpose
+is not to present Radix as evidence of what works. It is to use the
+design as a lens for examining what a systems-level community energy
+intervention would need to achieve, and what assumptions it would need
+to hold, to advance energy justice in a setting like Brighton. The
+reader should approach this section as a thought experiment, not as
+empirical analysis.
+
+6.2 Design Concept
+
+Radix is a hyperlocal circular-economy platform designed to sit on top
+of Brighton's existing food waste collection infrastructure, adding a
+digital layer of tracking, community engagement, and local economic
+value. The core mechanism is a feedback loop: residents log food waste
+contributions, receive information about the energy equivalent of their
+contribution (using WRAP-verified conversion factors: one kitchen caddy
+of food waste is equivalent to approximately 18 hours of fridge power
+via biogas), and earn recycling credits redeemable at local independent
+businesses.
+
+The design has five components: a waste tracker (individual logging), an
+impact dashboard (neighbourhood-level aggregation), a community
+leaderboard (inter-ward competition), a local rewards system (credits
+at independents), and route intelligence (collection optimisation
+offered to the council). Financial projections and unit economics are
+detailed in Appendix A; they are excluded from the main text because
+they are modelled assumptions, not observed outcomes, and their presence
+in an analytical chapter would conflate speculative commercial
+modelling with academic argument.
+
+6.3 Systems-Level Analysis
+
+Analysed through leverage points theory, Radix's design engages several
+levels of intervention -- though the depth of that engagement is
+uncertain and should be stated with appropriate caution.
+
+At the information flow level (leverage point 6), the design is most
+clearly justified. The current food waste system is informationally
+opaque: residents place waste in a caddy, the council collects it, and
+whatever happens thereafter is invisible. Radix proposes to make the
+energy and carbon consequences of household waste diversion visible at
+the individual and neighbourhood scale. Information flow interventions
+are among the more reliably effective leverage points in Meadows'
+hierarchy, and the evidence from behavioural science on feedback
+mechanisms and energy consumption (Allcott, 2011; Schultz et al., 2007)
+supports the general proposition that making consequences visible
+changes behaviour.
+
+At the rules level (leverage point 5), the design is more ambiguous. The
+local rewards system changes the economic rules of who benefits from
+waste diversion: value circulates to local independent businesses rather
+than being captured by centralised waste processing firms. But the
+"rules" in Meadows' sense are the formal and informal agreements that
+govern system behaviour. A rewards programme is a rule change only if it
+becomes institutionally embedded -- if the council, businesses, and
+residents come to treat it as part of how waste management works in
+Brighton. A standalone app with declining retention is a feature, not a
+rule.
+
+At the goal and paradigm levels (leverage points 3 and 2), claims must
+be highly tentative. The design aspires to shift the goal of waste
+management from compliance to community empowerment, and to challenge
+the paradigm that citizens are passive recipients of municipal services.
+Whether a digital platform can actually achieve paradigm-level change is
+an empirical question that cannot be answered by examining the design
+alone. Meadows (1999) warns that the most powerful leverage points are
+also the most difficult to access, and that systems resist paradigm
+change. A platform that gamifies recycling may reinforce the existing
+paradigm of individual consumer responsibility rather than challenging
+it.
+
+6.4 Energy Justice Assessment (Prospective)
+
+A prospective energy justice analysis -- assessing what the design would
+need to achieve, not what it has achieved -- reveals both promise and
+exposure.
+
+Distributional justice: The design proposes to channel economic value
+toward local independents and to reduce council operational costs
+through route optimisation. If realised, this represents a modest
+redistribution. But the distribution of benefits depends on who
+participates. If participation clusters in already-engaged, relatively
+affluent wards (the pilot targets Hanover, Kemptown, and Preston Park --
+areas with high Green vote share and dense community networks, not the
+city's most deprived neighbourhoods), the platform could reinforce
+rather than challenge existing distributional patterns.
+
+Recognition justice: The neighbourhood-level design acknowledges that
+Brighton's communities are heterogeneous. But acknowledging heterogeneity
+in a design document is different from achieving it in practice.
+Gamification structures (leaderboards, competitions) tend to favour
+participants with existing social capital, digital literacy, and time --
+precisely the resources that marginalised communities are least likely
+to have. The design does not currently include mechanisms for
+identifying and actively reaching under-participating groups.
+
+Procedural justice: Radix operates with council cooperation but is not
+controlled by the council, creating a governance space between municipal
+authority and commercial platform. This is procedurally interesting but
+also procedurally ambiguous: residents participate as users of a
+platform, not as members of a cooperative with voting rights and
+governance authority. The procedural justice credentials of a
+platform-mediated engagement system are weaker than those of a
+community benefit society with formal democratic governance.
+
+
+7. Critical Analysis
+
+7.1 The Limits of Community Energy as Justice
+
+The evidence assembled in this chapter supports a conditional claim:
+community energy projects can advance energy justice, but they do so
+unevenly, and the conditions under which they succeed are more specific
+than the literature often acknowledges.
+
+The strongest evidence for distributional justice comes from Bristol,
+where the Lawrence Weston wind turbine returns GBP 100,000 per year to
+a neighbourhood of high deprivation. This is a direct, quantifiable,
+geographically targeted flow of economic benefit. It is also a large,
+capital-intensive project that took years to develop and required
+exceptional community leadership. It is not easily replicated.
+
+The strongest evidence for recognition justice comes from London, where
+Repowering explicitly targets underrepresented communities and has
+invested in diversifying its cooperative membership. But Repowering's
+recognition work is resource-intensive -- it requires dedicated
+outreach, multilingual materials, youth programmes, and sustained
+community presence. These are not features of a scalable platform; they
+are features of patient, locally embedded organisational work.
+
+The strongest evidence for procedural justice comes from the cooperative
+governance model itself: one-member-one-vote, community share offers,
+transparent annual reporting. But procedural justice at the
+organisational level does not automatically translate to justice at the
+neighbourhood or city level. A cooperative with 600 members in a city
+of 290,000 people is democratically governed within its own boundaries
+but represents a tiny fraction of the population. The vast majority of
+Brighton's residents have no procedural relationship with BEC or BHESCo.
+
+7.2 Community Energy's Uncomfortable Patterns
+
+A serious analysis of community energy and justice must confront
+patterns that the sector's own advocacy literature tends to minimise.
+
+Participant demographics: Community energy cooperatives in the UK
+disproportionately attract older, white, homeowning, middle-class
+participants (Bauwens, 2016; Simcock et al., 2016). Share offers
+require disposable capital; governance participation requires time;
+engagement with cooperative meetings requires cultural familiarity with
+formal democratic processes. The communities that most need energy
+justice -- renters, ethnic minorities, people in fuel poverty -- are
+systematically underrepresented.
+
+Unpaid labour: Community energy organisations depend heavily on
+volunteer effort, particularly in their early stages. This unpaid
+labour is disproportionately provided by people who can afford to donate
+their time -- retired professionals, people with flexible employment,
+those with existing community networks. The sector's low cost base,
+often presented as an advantage, partially reflects an uncosted transfer
+of labour from volunteers to the organisation.
+
+Scaling paradox: The features that make community energy just --
+democratic governance, local embeddedness, community ownership -- are
+also the features that make it hard to scale. A cooperative that grows
+too fast risks losing the relational density that makes it a
+cooperative rather than a company with shares. The tension between
+justice and scale is structural, not incidental.
+
+Dependence on the state: Community energy in the UK has never been
+autonomous from state support. The sector's growth was enabled by the
+Feed-in Tariff; its contraction followed the tariff's withdrawal; its
+current expansion depends on the Great British Energy Act, the Local
+Power Plan, and Defra grants for Simpler Recycling. Community energy
+claims to challenge the centralised energy paradigm, but its material
+existence depends on central government policy. This is not a fatal
+contradiction, but it is a tension that needs honest acknowledgment.
+
+7.3 Radix: What the Design Assumes and What Could Fail
+
+The Radix design makes several assumptions that are not self-evident.
+
+First, it assumes that information visibility drives behaviour change.
+The evidence for this in energy consumption (Allcott, 2011) is
+reasonably strong, but the evidence for waste behaviour is weaker and
+more context-dependent. Making biogas output visible is not the same as
+making electricity bills visible; the feedback pathway is longer and
+less personally consequential.
+
+Second, it assumes that gamification sustains long-term engagement. The
+literature on gamification in pro-environmental behaviour is mixed
+(Hamari et al., 2014). Leaderboards and competitions can produce
+initial spikes in participation followed by sharp declines as novelty
+fades. The 40% retention target at Year 2 is ambitious for a
+gamification-based engagement model.
+
+Third, it assumes that the rewards mechanism creates meaningful local
+economic circulation. At the projected scale (GBP 150,000 flowing to
+local independents by Year 2), the macroeconomic effect is negligible.
+The value is symbolic and relational -- demonstrating a link between
+waste and local commerce -- rather than transformative.
+
+Fourth, and most critically, it assumes that a platform-mediated model
+can deliver the kinds of justice that the community energy literature
+attributes to organisational models. A cooperative is a governance
+structure. An app is an interface. The gap between the two is not
+bridged by the Radix design, and this is its deepest limitation.
+
+7.4 Competing Explanations
+
+An alternative reading of the Brighton evidence is that the city's
+community energy successes result from pre-existing community capacity
+-- Green political culture, high social capital, educated population,
+dense organisational landscape -- rather than from the community energy
+projects themselves. On this reading, BEC and BHESCo are expressions of
+Brighton's civic character, not causes of energy justice. The policy
+implication would be quite different: instead of scaling community
+energy models to other cities, the priority would be building the
+underlying civic capacity that makes community energy viable.
+
+This chapter cannot definitively adjudicate between these explanations
+with the evidence available. The question of whether community energy
+creates justice or merely correlates with pre-existing conditions that
+independently produce both community energy and justice outcomes is an
+empirical question requiring longitudinal comparative research beyond
+this chapter's scope. What can be said is that both mechanisms are
+likely at work: Brighton's civic infrastructure enables community energy,
+and community energy strengthens civic infrastructure, in a reinforcing
+loop. The relative weight of each direction is unknown.
+
+
+8. Conclusion
+
+This chapter asked how, and under what conditions, community energy
+projects in UK cities advance distributional, recognition, and
+procedural justice. The answer is conditional.
+
+Community energy advances distributional justice when revenue flows to
+specific areas of deprivation (Lawrence Weston), when efficiency
+retrofits target fuel-poor households (BHESCo), and when economic
+value circulates locally rather than being extracted by centralised
+actors. It fails when participation clusters among the already affluent,
+when share offers exclude those without disposable capital, and when
+benefits accrue to the community energy organisation rather than the
+wider community.
+
+Community energy advances recognition justice when organisations
+explicitly target underrepresented groups (Repowering London), invest
+in multilingual and culturally accessible outreach, and design
+governance structures that accommodate diverse forms of participation.
+It fails when membership demographics reproduce existing social
+hierarchies and when "community" is tacitly defined as those who already
+show up.
+
+Community energy advances procedural justice when governance is
+genuinely democratic (one-member-one-vote cooperatives), when
+decision-making is transparent, and when participation pathways are
+accessible. It fails when procedural justice at the organisational level
+does not translate to procedural influence at the municipal or national
+level, and when platform-mediated engagement substitutes for genuine
+governance authority.
+
+The current policy window -- the Great British Energy Act 2025, the
+Local Power Plan, and the Simpler Recycling mandate -- is the most
+favourable in a decade. But policy windows open conditions; they do not
+guarantee outcomes. The GBE's GBP 1 billion commitment and 1,000-project
+target will produce community energy growth. Whether that growth delivers
+energy justice depends on choices the policy does not make: who is
+included, who governs, who benefits, and whether the organisations that
+emerge are structured for justice or merely for clean energy production.
+
+Brighton, with its Green council, established cooperatives, compact
+urban form, and early food waste infrastructure, is the best-case
+scenario. If community energy cannot deliver energy justice here, it is
+unlikely to deliver it anywhere without more fundamental structural
+intervention. The evidence from this analysis suggests that it can
+deliver justice here, partially, under specific conditions, for some
+residents. That is a more honest conclusion than the sector's advocacy
+literature typically offers, and a more useful starting point for
+designing interventions -- like Radix, if it can solve the problems
+this chapter identifies -- that might extend justice further.
+
+The speculative Radix design exposes the gap between systems-level
+ambition and the granular organisational work that justice requires. A
+platform can create information flows. It can gamify participation. It
+can circulate economic value locally. What it cannot easily do is
+substitute for the democratic governance, sustained community
+relationships, and patient organisational development that the strongest
+community energy examples depend on. The systems thinker's temptation is
+to believe that a well-designed feedback loop can produce transformation.
+Sometimes it can. But energy justice is not a systems dynamics problem.
+It is a political one.
+
+
+References
+
+Allcott, H. (2011). 'Social norms and energy conservation.' Journal of
+    Public Economics, 95(9-10), pp. 1082-1095.
+
+Bauwens, T. (2016). 'Explaining the diversity of motivations behind
+    community renewable energy.' Energy Policy, 93, pp. 278-290.
+
+Chilvers, J. and Longhurst, N. (2016). 'Participation in transition(s):
+    reconceiving public engagements in energy transitions as
+    co-produced, emergent and diverse.' Journal of Environmental Policy
+    and Planning, 18(5), pp. 585-607.
+
+Community Energy England (2025). State of the Sector 2025. London:
+    Community Energy England.
+
+Department for Energy Security and Net Zero (2025). Annual Fuel Poverty
+    Statistics in England, 2025 (2024 data). London: DESNZ.
+
+Department for Energy Security and Net Zero (2026). Annual Fuel Poverty
+    Statistics in England, 2026 (2025 data). London: DESNZ.
+
+Geels, F.W. (2002). 'Technological transitions as evolutionary
+    reconfiguration processes: a multi-level perspective and a
+    case-study.' Research Policy, 31(8-9), pp. 1257-1274.
+
+Geels, F.W. (2014). 'Regime Resistance against Low-Carbon Transitions:
+    Introducing Politics and Power into the Multi-Level Perspective.'
+    Theory, Culture & Society, 31(5), pp. 21-40.
+
+Geels, F.W., Kern, F., Fuchs, G., Hindmarsh, R., Kungl, G., Mylan, J.,
+    Neukirch, M. and Wassermann, S. (2016). 'The enactment of
+    socio-technical transition pathways: A reformulated typology and a
+    comparative multi-level analysis of the German and UK low-carbon
+    electricity transitions (1990-2014).' Research Policy, 45(4),
+    pp. 896-913.
+
+Great British Energy (2026). Local Power Plan. London: GBE.
+
+Great British Energy Act 2025, c.16. London: The Stationery Office.
+
+Hamari, J., Koivisto, J. and Sarsa, H. (2014). 'Does gamification
+    work? A literature review of empirical studies on gamification.'
+    Proceedings of the 47th Hawaii International Conference on System
+    Sciences, pp. 3025-3034.
+
+Hargreaves, T., Hielscher, S., Seyfang, G. and Smith, A. (2013).
+    'Grassroots innovations in community energy: the role of
+    intermediaries in niche development.' Global Environmental Change,
+    23(5), pp. 868-880.
+
+Heffron, R., McCauley, D. and de Rubens, G.Z. (2018). 'Balancing the
+    energy trilemma through the Energy Justice Metric.' Applied Energy,
+    229, pp. 1191-1201.
+
+HM Government (2026). Fuel Poverty Strategy for England. CP 1497.
+    London: The Stationery Office.
+
+Hoffman, S.M. and High-Pippert, A. (2015). 'Community energy: a social
+    architecture for an alternative energy future.' Bulletin of Science,
+    Technology and Society, 25(5), pp. 387-401.
+
+Jenkins, K.E.H., McCauley, D., Heffron, R., Stephan, H. and Rehner,
+    R.W.M. (2016). 'Energy justice: a conceptual review.' Energy
+    Research and Social Science, 11, pp. 174-182.
+
+Meadows, D.H. (1999). Leverage Points: Places to Intervene in a System.
+    Hartland, VT: Sustainability Institute.
+
+Meadows, D.H. (2008). Thinking in Systems: A Primer. White River
+    Junction, VT: Chelsea Green Publishing.
+
+Schultz, P.W., Nolan, J.M., Cialdini, R.B., Goldstein, N.J. and
+    Griskevicius, V. (2007). 'The constructive, destructive, and
+    reconstructive power of social norms.' Psychological Science, 18(5),
+    pp. 429-434.
+
+Scottish House Condition Survey (2023). Key Findings 2023. Edinburgh:
+    Scottish Government.
+
+Seyfang, G., Park, J.J. and Smith, A. (2013). 'A thousand flowers
+    blooming? An examination of community energy in the UK.' Energy
+    Policy, 61, pp. 977-989.
+
+Simcock, N., Willis, R. and Capener, P. (2016). Cultures of Community
+    Energy. Lancaster: Lancaster University / Friends of the Earth.
+
+Sovacool, B.K. and Dworkin, M.H. (2015). 'Energy justice: Conceptual
+    insights and practical applications.' Applied Energy, 142(C),
+    pp. 435-444.
+
+Sovacool, B.K., Burke, M., Baker, L., Kotikalapudi, C.K. and Wlokas, H.
+    (2017). 'New frontiers and conceptual frameworks for energy justice.'
+    Energy Policy, 105(C), pp. 677-691.
+
+Walker, G. and Devine-Wright, P. (2008). 'Community renewable energy:
+    what should it mean?' Energy Policy, 36(2), pp. 497-500.
+
+WRAP (2026). Simpler Recycling: Guidance for Local Authorities. Banbury:
+    WRAP.
+
+Yin, R.K. (2018). Case Study Research and Applications: Design and
+    Methods. 6th edn. Thousand Oaks, CA: Sage.
+
+
+Appendix A: Radix Brighton Financial Projections (Speculative)
+
+The following figures are modelled assumptions from the Radix Brighton
+business plan. They are not observed outcomes and should not be treated
+as evidence. They are included here for transparency and to allow the
+reader to assess the commercial assumptions underlying the intervention
+design discussed in Section 6.
+
+Revenue projections:
+    Year 1: GBP 100,000
+    Year 2: GBP 280,000
+    Year 3: GBP 520,000
+
+Revenue streams:
+    B2G SaaS (council dashboard, route optimisation):
+        Y1 GBP 60k / Y2 GBP 120k / Y3 GBP 200k
+    B2B rewards network (GBP 25/month listing fee):
+        Y1 GBP 30k / Y2 GBP 90k / Y3 GBP 180k
+    Sponsored challenges:
+        Y1 GBP 10k / Y2 GBP 40k / Y3 GBP 80k
+    Data licensing (anonymised insights to WRAP/Defra):
+        Y1 GBP 0 / Y2 GBP 30k / Y3 GBP 60k
+
+Unit economics (Year 2 target):
+    Households on platform: 15,000 (of ~125,000 in Brighton & Hove)
+    Active weekly loggers: 6,000 (40% retention)
+    Local businesses in rewards network: 300
+    Customer acquisition cost: GBP 2/household
+    Lifetime value: GBP 18/household/year (blended)
+
+Year 1 costs:
+    Engineering: GBP 0 (built on spike.land platform)
+    Community manager (part-time, Brighton-based): GBP 18,000
+    Marketing and launch events: GBP 8,000
+    Council partnership development: GBP 5,000
+    Infrastructure (Cloudflare Workers, D1): GBP 2,000
+    Total: GBP 33,000
+
+Impact projections (Year 2, WRAP-verified conversion factors):
+    Additional food waste diverted: 3,000 tonnes
+    CO2 equivalent avoided: 1,500 tonnes
+    Revenue to Brighton independents via rewards: GBP 150,000
