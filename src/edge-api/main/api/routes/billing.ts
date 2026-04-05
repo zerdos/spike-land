@@ -56,11 +56,6 @@ billing.get("/api/billing/status", async (c) => {
 });
 
 async function handleBillingPortal(c: Context<{ Bindings: Env; Variables: Variables }>) {
-  const apiKey = c.env.CREEM_API_KEY;
-  if (!apiKey) {
-    return c.json({ error: "Payment provider not configured" }, 503);
-  }
-
   const userId = c.get("userId") as string | undefined;
   if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
@@ -75,6 +70,10 @@ async function handleBillingPortal(c: Context<{ Bindings: Env; Variables: Variab
   // Try Creem first, fall back to Stripe for legacy customers
   const creemCustomerId = row?.creem_customer_id;
   if (creemCustomerId) {
+    const apiKey = c.env.CREEM_API_KEY;
+    if (!apiKey) {
+      return c.json({ error: "Payment provider not configured" }, 503);
+    }
     const res = await createBillingPortal(apiKey, creemCustomerId);
     if (!res.ok) {
       log.error("Failed to create Creem billing portal", { data: JSON.stringify(res.data) });

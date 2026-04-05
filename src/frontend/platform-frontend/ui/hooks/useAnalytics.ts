@@ -107,7 +107,20 @@ const GA4_MIRRORED_EVENTS = new Set([
   "migration_tier_click",
 ]);
 
+function isConsentGranted(): boolean {
+  try {
+    return (
+      typeof localStorage !== "undefined" && localStorage.getItem("cookie_consent") === "accepted"
+    );
+  } catch {
+    return false;
+  }
+}
+
 function enqueueEvent(event: string, data: Record<string, unknown>) {
+  // Only send analytics when user has accepted cookies
+  if (!isConsentGranted()) return;
+
   // Deduplicate consecutive page_view for the same path
   if (event === "page_view") {
     const path = data.path as string | undefined;
@@ -128,6 +141,10 @@ function enqueueEvent(event: string, data: Record<string, unknown>) {
   }
 
   scheduleFlush();
+}
+
+export function flushAnalyticsQueue(): void {
+  flushEvents();
 }
 
 export function trackAnalyticsPageView(route: string, sessionDuration = 0): void {

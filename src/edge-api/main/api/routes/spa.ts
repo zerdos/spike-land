@@ -433,9 +433,10 @@ spa.get("/*", async (c) => {
     }
 
     const existingCookie = c.req.header("cookie") ?? "";
+    const hasConsent = existingCookie.includes("cookie_consent=accepted");
     let clientId: string;
 
-    if (!existingCookie.includes("spike_client_id=")) {
+    if (hasConsent && !existingCookie.includes("spike_client_id=")) {
       clientId = await getClientId(c.req.raw);
       response.headers.append(
         "set-cookie",
