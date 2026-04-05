@@ -52,7 +52,9 @@ export function renderPad(config: PadConfig): Float32Array {
 
   for (let slot = 0; slot < totalChordSlots; slot++) {
     const chordIdx = slot % config.chords.length;
-    const freqs = chordFreqs(config.chords[chordIdx]);
+    const chord = config.chords[chordIdx];
+    if (!chord) continue;
+    const freqs = chordFreqs(chord);
     const startSample = Math.floor(slot * chordDuration * SAMPLE_RATE);
     const slotDur = Math.min(chordDuration + 0.1, config.duration - slot * chordDuration);
     if (slotDur <= 0) break;
@@ -71,7 +73,7 @@ export function renderPad(config: PadConfig): Float32Array {
 
       const mixed = new Float32Array(wave.length);
       for (let i = 0; i < mixed.length; i++) {
-        mixed[i] = wave[i] * 0.5 + detuned[i] * 0.5;
+        mixed[i] = (wave[i] ?? 0) * 0.5 + (detuned[i] ?? 0) * 0.5;
       }
 
       const shaped = applyEnvelope(mixed, env);

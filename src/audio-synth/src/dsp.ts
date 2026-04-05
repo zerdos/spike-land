@@ -13,26 +13,26 @@ export function createBuffer(seconds: number): Float32Array {
 
 export function mixInto(dest: Float32Array, src: Float32Array, offset = 0, gain = 1): void {
   for (let i = 0; i < src.length && offset + i < dest.length; i++) {
-    dest[offset + i] += src[i] * gain;
+    dest[offset + i] = (dest[offset + i] ?? 0) + (src[i] ?? 0) * gain;
   }
 }
 
 export function applyGain(buf: Float32Array, gain: number): Float32Array {
-  for (let i = 0; i < buf.length; i++) buf[i] *= gain;
+  for (let i = 0; i < buf.length; i++) buf[i] = (buf[i] ?? 0) * gain;
   return buf;
 }
 
 export function fadeOut(buf: Float32Array, fadeSamples: number): Float32Array {
   const start = buf.length - fadeSamples;
   for (let i = 0; i < fadeSamples; i++) {
-    buf[start + i] *= 1 - i / fadeSamples;
+    buf[start + i] = (buf[start + i] ?? 0) * (1 - i / fadeSamples);
   }
   return buf;
 }
 
 export function fadeIn(buf: Float32Array, fadeSamples: number): Float32Array {
   for (let i = 0; i < fadeSamples && i < buf.length; i++) {
-    buf[i] *= i / fadeSamples;
+    buf[i] = (buf[i] ?? 0) * (i / fadeSamples);
   }
   return buf;
 }
@@ -121,7 +121,7 @@ export function expDecay(duration: number, decayTime: number): Float32Array {
 export function applyEnvelope(signal: Float32Array, env: Float32Array): Float32Array {
   const out = new Float32Array(signal.length);
   for (let i = 0; i < signal.length; i++) {
-    out[i] = signal[i] * (i < env.length ? env[i] : 0);
+    out[i] = (signal[i] ?? 0) * (i < env.length ? (env[i] ?? 0) : 0);
   }
   return out;
 }
@@ -134,9 +134,9 @@ export function lowPass(signal: Float32Array, cutoffHz: number): Float32Array {
   const rc = 1 / (2 * Math.PI * cutoffHz);
   const dt = 1 / SAMPLE_RATE;
   const alpha = dt / (rc + dt);
-  out[0] = signal[0] * alpha;
+  out[0] = (signal[0] ?? 0) * alpha;
   for (let i = 1; i < signal.length; i++) {
-    out[i] = out[i - 1] + alpha * (signal[i] - out[i - 1]);
+    out[i] = (out[i - 1] ?? 0) + alpha * ((signal[i] ?? 0) - (out[i - 1] ?? 0));
   }
   return out;
 }
@@ -155,7 +155,7 @@ export function lowPassSweep(
     const rc = 1 / (2 * Math.PI * cutoff);
     const dt = 1 / SAMPLE_RATE;
     const alpha = dt / (rc + dt);
-    out[i] = out[i - 1] + alpha * (signal[i] - out[i - 1]);
+    out[i] = (out[i - 1] ?? 0) + alpha * ((signal[i] ?? 0) - (out[i - 1] ?? 0));
   }
   return out;
 }
@@ -166,9 +166,9 @@ export function highPass(signal: Float32Array, cutoffHz: number): Float32Array {
   const rc = 1 / (2 * Math.PI * cutoffHz);
   const dt = 1 / SAMPLE_RATE;
   const alpha = rc / (rc + dt);
-  out[0] = signal[0];
+  out[0] = signal[0] ?? 0;
   for (let i = 1; i < signal.length; i++) {
-    out[i] = alpha * (out[i - 1] + signal[i] - signal[i - 1]);
+    out[i] = alpha * ((out[i - 1] ?? 0) + (signal[i] ?? 0) - (signal[i - 1] ?? 0));
   }
   return out;
 }
@@ -229,7 +229,7 @@ const NOTE_MAP: Record<string, number> = {
 export function noteToMidi(name: string): number {
   const match = name.match(/^([A-G][#b]?)(\d)$/);
   if (!match) throw new Error(`Invalid note: ${name}`);
-  return (parseInt(match[2]) + 1) * 12 + (NOTE_MAP[match[1]] ?? 0);
+  return (parseInt(match[2]!) + 1) * 12 + (NOTE_MAP[match[1]!] ?? 0);
 }
 
 export function noteToFreq(name: string): number {

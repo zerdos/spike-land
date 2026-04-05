@@ -373,6 +373,12 @@ const bazdmegRoute = createRoute({
   component: withSuspense(() => import("./bazdmeg/BazdmegPage"), "BazdmegPage"),
 });
 
+const bugbookRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/bugbook",
+  component: withSuspense(() => import("./routes/bugbook"), "BugbookPage"),
+});
+
 const chessRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/chess",
@@ -534,6 +540,7 @@ const routeTree = rootRoute.addChildren([
   chatRoute,
   rubikChatRoute,
   bazdmegRoute,
+  bugbookRoute,
   chessRoute,
   whatWeDoRoute,
   vibeCodeRoute,

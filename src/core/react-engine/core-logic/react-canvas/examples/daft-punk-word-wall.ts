@@ -137,7 +137,7 @@ interface WordBlock {
 }
 
 function randomWord(): string {
-  return WORDS[Math.floor(Math.random() * WORDS.length)];
+  return WORDS[Math.floor(Math.random() * WORDS.length)] ?? WORDS[0]!;
 }
 
 function createBlock(): WordBlock {

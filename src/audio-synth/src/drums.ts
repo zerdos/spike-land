@@ -11,7 +11,6 @@ import {
   noise,
   expDecay,
   applyEnvelope,
-  lowPass,
   highPass,
   bandPass,
   sine,
@@ -32,7 +31,7 @@ export function kick(gain = 0.9): Float32Array {
   const clickSig = applyEnvelope(click, clickEnv);
   mixInto(result, clickSig, 0, 0.3);
 
-  for (let i = 0; i < result.length; i++) result[i] *= gain;
+  for (let i = 0; i < result.length; i++) result[i] = (result[i] ?? 0) * gain;
   return result;
 }
 
@@ -54,7 +53,7 @@ export function snare(gain = 0.7): Float32Array {
   const noiseEnv = expDecay(dur, 0.06);
   mixInto(buf, applyEnvelope(filtered, noiseEnv), 0, 0.6);
 
-  for (let i = 0; i < buf.length; i++) buf[i] *= gain;
+  for (let i = 0; i < buf.length; i++) buf[i] = (buf[i] ?? 0) * gain;
   return buf;
 }
 
@@ -67,7 +66,7 @@ export function hihatClosed(gain = 0.3): Float32Array {
   const filtered = highPass(n, 7000);
   const env = expDecay(dur, 0.015);
   const result = applyEnvelope(filtered, env);
-  for (let i = 0; i < result.length; i++) result[i] *= gain;
+  for (let i = 0; i < result.length; i++) result[i] = (result[i] ?? 0) * gain;
   return result;
 }
 
@@ -79,7 +78,7 @@ export function hihatOpen(gain = 0.25): Float32Array {
   const filtered = highPass(n, 6000);
   const env = expDecay(dur, 0.08);
   const result = applyEnvelope(filtered, env);
-  for (let i = 0; i < result.length; i++) result[i] *= gain;
+  for (let i = 0; i < result.length; i++) result[i] = (result[i] ?? 0) * gain;
   return result;
 }
 
@@ -96,7 +95,7 @@ export function rimshot(gain = 0.4): Float32Array {
   const clickFiltered = bandPass(click, 2000, 10000);
   mixInto(result, clickFiltered, 0, 0.5);
 
-  for (let i = 0; i < result.length; i++) result[i] *= gain;
+  for (let i = 0; i < result.length; i++) result[i] = (result[i] ?? 0) * gain;
   return result;
 }
 
@@ -123,7 +122,7 @@ export function clap(gain = 0.5): Float32Array {
   const tailEnv = expDecay(0.1, 0.04);
   mixInto(buf, applyEnvelope(tailFiltered, tailEnv), Math.floor(0.03 * SAMPLE_RATE), 0.3);
 
-  for (let i = 0; i < buf.length; i++) buf[i] *= gain;
+  for (let i = 0; i < buf.length; i++) buf[i] = (buf[i] ?? 0) * gain;
   return buf;
 }
 
@@ -170,7 +169,7 @@ export function renderPattern(pattern: DrumPattern): Float32Array {
 
   // Soft clip
   for (let i = 0; i < buf.length; i++) {
-    buf[i] = Math.tanh(buf[i]);
+    buf[i] = Math.tanh(buf[i] ?? 0);
   }
 
   return buf;

@@ -34,7 +34,7 @@ export function encodeWav(samples: Float32Array, sampleRate = SAMPLE_RATE): Buff
 
   // Write samples (float -> int16)
   for (let i = 0; i < samples.length; i++) {
-    const clamped = Math.max(-1, Math.min(1, samples[i]));
+    const clamped = Math.max(-1, Math.min(1, samples[i] ?? 0));
     const int16 = clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff;
     buffer.writeInt16LE(Math.round(int16), headerLength + i * 2);
   }
