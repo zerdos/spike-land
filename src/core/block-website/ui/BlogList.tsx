@@ -92,8 +92,9 @@ function FeaturedCard({
   const content = (
     <div className="flex flex-col lg:flex-row h-full">
       <CardImage post={post} className="lg:w-3/5 lg:h-full aspect-[16/9] lg:aspect-auto" />
-      <div className="flex w-full flex-col justify-center bg-card p-8 lg:w-2/5 lg:p-12">
-        <div className="mb-6 flex flex-wrap items-center gap-4 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <div className="flex w-full flex-col justify-center bg-card p-10 lg:w-2/5 lg:p-14">
+        {/* Meta row */}
+        <div className="mb-7 flex flex-wrap items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {post.draft && (
             <span className="rubik-chip border-warning/20 bg-warning/70 px-3 py-1 text-warning-foreground">
               Draft
@@ -102,7 +103,7 @@ function FeaturedCard({
           {post.category && (
             <span className="rubik-chip rubik-chip-accent px-3 py-1">{post.category}</span>
           )}
-          <div className="flex items-center gap-1.5 text-muted-foreground/60">
+          <div className="flex items-center gap-1.5 text-muted-foreground/50">
             <Calendar className="size-3" />
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString([], {
@@ -114,18 +115,21 @@ function FeaturedCard({
           </div>
         </div>
 
-        <h3 className="mb-6 text-3xl font-semibold leading-[0.95] tracking-[-0.05em] text-foreground transition-colors group-hover:text-primary sm:text-4xl lg:text-5xl">
+        {/* Title */}
+        <h3 className="mb-7 text-3xl font-semibold leading-[1.05] tracking-[-0.04em] text-foreground transition-colors group-hover:text-primary sm:text-4xl lg:text-5xl">
           {post.title}
         </h3>
 
+        {/* Excerpt */}
         {post.primer && (
-          <p className="mb-8 line-clamp-3 text-lg font-medium leading-8 text-muted-foreground">
+          <p className="mb-10 line-clamp-3 text-base font-normal leading-7 text-muted-foreground sm:text-lg sm:leading-8">
             {post.primer}
           </p>
         )}
 
-        <div className="rubik-kicker-link mt-auto text-[0.78rem] font-semibold uppercase tracking-[0.16em]">
-          Read Full Story
+        {/* CTA */}
+        <div className="rubik-kicker-link mt-auto">
+          Read the story
           <ArrowRight className="size-4" />
         </div>
       </div>
@@ -133,7 +137,7 @@ function FeaturedCard({
   );
 
   return (
-    <article className="rubik-panel group relative mb-16 overflow-hidden rounded-[var(--radius-panel-lg)] transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/30 hover:shadow-[var(--panel-shadow-strong)]">
+    <article className="rubik-panel group relative mb-20 overflow-hidden rounded-[var(--radius-panel-lg)] transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/30 hover:shadow-[var(--panel-shadow-strong)] hover:-translate-y-0.5">
       {LinkComp === "a" ? (
         <a href={`/blog/${post.slug}`} className="block h-full w-full">
           {content}
@@ -163,40 +167,48 @@ function BlogCard({
   const content = (
     <>
       <CardImage post={post} className="aspect-[16/10]" />
-      <div className="flex flex-1 flex-col p-6 sm:p-8">
-        <div className="mb-4 flex items-center gap-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <div className="flex flex-1 flex-col p-7 sm:p-8">
+        {/* Meta */}
+        <div className="mb-5 flex items-center gap-2.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
           {post.draft && (
             <>
               <span className="text-warning-foreground">Draft</span>
               <span className="opacity-30">&middot;</span>
             </>
           )}
-          <Tag className="size-3" />
-          <span>{post.category || "General"}</span>
-          <span className="opacity-30">&middot;</span>
-          <Clock className="size-3" />
-          <span>5 min read</span>
+          {post.category && (
+            <>
+              <Tag className="size-3 shrink-0" />
+              <span>{post.category}</span>
+              <span className="opacity-30">&middot;</span>
+            </>
+          )}
+          <Clock className="size-3 shrink-0" />
+          <span>5 min</span>
         </div>
 
-        <h3 className="mb-4 line-clamp-2 text-xl font-semibold leading-tight tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
+        {/* Title */}
+        <h3 className="mb-4 line-clamp-2 text-xl font-semibold leading-[1.2] tracking-[-0.03em] text-foreground transition-colors group-hover:text-primary">
           {post.title}
         </h3>
 
+        {/* Excerpt */}
         {post.primer && (
-          <p className="mb-6 line-clamp-2 text-sm font-medium leading-7 text-muted-foreground">
+          <p className="mb-auto line-clamp-3 text-sm leading-6 text-muted-foreground">
             {post.primer}
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-6">
+        {/* Footer */}
+        <div className="mt-7 flex items-center justify-between border-t border-border/40 pt-5">
           <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <div className="rubik-icon-badge size-6 rounded-full text-[10px] font-semibold text-muted-foreground">
-              {post.author?.[0] || "S"}
+            <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
+              {post.author?.[0] ?? "S"}
             </div>
-            <span>{post.author || "Spike Team"}</span>
+            <span>{post.author ?? "Spike Team"}</span>
           </div>
-          <div className="rubik-icon-badge size-8 rounded-full text-muted-foreground transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
-            <ArrowRight className="size-4" />
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
+            <ArrowRight className="size-3.5" />
           </div>
         </div>
       </div>
@@ -204,13 +216,13 @@ function BlogCard({
   );
 
   return (
-    <article className="rubik-panel group relative flex h-full flex-col overflow-hidden transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/24 hover:shadow-[var(--panel-shadow-strong)] hover:-translate-y-0.5">
+    <article className="rubik-panel group relative flex h-full flex-col overflow-hidden transition-[border-color,box-shadow,transform] duration-300 hover:border-primary/24 hover:shadow-[var(--panel-shadow-strong)] hover:-translate-y-1">
       {LinkComp === "a" ? (
-        <a href={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+        <a href={`/blog/${post.slug}`} className="flex h-full w-full flex-1 flex-col">
           {content}
         </a>
       ) : (
-        <LinkComp to={`/blog/${post.slug}`} className="block h-full w-full flex flex-col flex-1">
+        <LinkComp to={`/blog/${post.slug}`} className="flex h-full w-full flex-1 flex-col">
           {content}
         </LinkComp>
       )}
@@ -238,7 +250,11 @@ function CategoryFilter({
   const allCount = posts.length;
 
   return (
-    <div className="mb-12 flex flex-wrap gap-2" role="group" aria-label="Filter posts by category">
+    <div
+      className="mb-14 flex flex-wrap gap-2.5"
+      role="group"
+      aria-label="Filter posts by category"
+    >
       <button
         onClick={() => onSelect(null)}
         aria-pressed={activeCategory === null}
@@ -413,15 +429,15 @@ export function BlogListView({
   return (
     <div className={cn("rubik-container font-sans", showHeader && "rubik-page")}>
       {showHeader && (
-        <div className="mx-auto mb-24 max-w-4xl space-y-6 text-center">
-          <div className="rubik-eyebrow border-primary/14 bg-primary/10 text-primary">
+        <div className="mx-auto mb-16 max-w-4xl space-y-7 text-center">
+          <div className="rubik-eyebrow mx-auto border-primary/14 bg-primary/10 text-primary">
             <Clock className="size-3" />
             <span>Latest Updates</span>
           </div>
-          <h1 className="text-5xl font-semibold leading-[0.85] tracking-[-0.06em] text-foreground sm:text-7xl lg:text-8xl">
+          <h1 className="text-5xl font-semibold leading-[1] tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl">
             The <span className="text-primary italic">Spike.land</span> Blog
           </h1>
-          <p className="mx-auto max-w-2xl text-xl font-medium leading-8 text-muted-foreground sm:text-2xl">
+          <p className="mx-auto max-w-2xl text-lg font-normal leading-8 text-muted-foreground sm:text-xl">
             Deep dives into autonomous agents, edge computing, and the Model Context Protocol.
           </p>
         </div>
@@ -431,7 +447,7 @@ export function BlogListView({
 
       {featured && <FeaturedCard post={featured} LinkComp={LinkComp} />}
 
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {rest.map((post) => (
           <BlogCard key={post.slug} post={post} LinkComp={LinkComp} />
         ))}

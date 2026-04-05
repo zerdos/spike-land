@@ -95,10 +95,25 @@ const MILESTONES: Milestone[] = [
   },
 ];
 
-const KANBAN_COLS: { id: KanbanStatus; label: string; dotClass: string }[] = [
-  { id: "planned", label: "Planned", dotClass: "bg-muted-foreground" },
-  { id: "in-progress", label: "In Progress", dotClass: "bg-amber-500" },
-  { id: "done", label: "Done", dotClass: "bg-success" },
+const KANBAN_COLS: { id: KanbanStatus; label: string; dotClass: string; headerClass: string }[] = [
+  {
+    id: "planned",
+    label: "Planned",
+    dotClass: "bg-muted-foreground",
+    headerClass: "text-muted-foreground",
+  },
+  {
+    id: "in-progress",
+    label: "In Progress",
+    dotClass: "bg-amber-500",
+    headerClass: "text-amber-600 dark:text-amber-400",
+  },
+  {
+    id: "done",
+    label: "Done",
+    dotClass: "bg-success",
+    headerClass: "text-success-foreground",
+  },
 ];
 
 // Priority badge uses design system semantic tokens — no raw color values
@@ -117,10 +132,12 @@ function RoadmapBoard() {
         const items = MILESTONES.filter((m) => m.status === col.id);
         return (
           <div key={col.id} className="rubik-panel p-4 space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 pb-1">
               <span className={`h-2 w-2 rounded-full ${col.dotClass}`} />
-              <h3 className="text-sm font-semibold text-foreground">{col.label}</h3>
-              <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              <h3 className={`text-xs font-bold uppercase tracking-wider ${col.headerClass}`}>
+                {col.label}
+              </h3>
+              <span className="ml-auto rounded-full bg-muted/80 border border-border/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                 {items.length}
               </span>
             </div>
@@ -128,19 +145,21 @@ function RoadmapBoard() {
               {items.map((m) => (
                 <div
                   key={m.id}
-                  className="rounded-lg border border-border bg-background p-3 space-y-1.5"
+                  className="group rounded-xl border border-border/70 bg-background/70 p-3 space-y-2 hover:border-border transition-colors"
                 >
-                  <p className="text-sm font-medium text-foreground leading-snug">{m.title}</p>
+                  <p className="text-sm font-semibold text-foreground leading-snug">{m.title}</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{m.description}</p>
                   <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${PRIORITY_BADGE[m.priority]}`}
+                    className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${PRIORITY_BADGE[m.priority]}`}
                   >
                     {m.priority}
                   </span>
                 </div>
               ))}
               {items.length === 0 && (
-                <p className="text-xs text-muted-foreground py-4 text-center">Nothing here yet.</p>
+                <p className="text-xs text-muted-foreground/60 py-6 text-center">
+                  Nothing here yet.
+                </p>
               )}
             </div>
           </div>
@@ -228,12 +247,18 @@ function CockpitChat() {
 
   return (
     <div className="rubik-panel overflow-hidden flex flex-col" style={{ height: "480px" }}>
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">AI Chat</h3>
+      <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+        <div className="flex items-center gap-2.5">
+          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <h3 className="text-sm font-semibold text-foreground">AI Assistant</h3>
+          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase tracking-wide">
+            Claude
+          </span>
+        </div>
         <button
           type="button"
           onClick={clearHistory}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted"
         >
           Clear history
         </button>
@@ -325,77 +350,104 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
   const runtimeDays = Math.round((Date.now() - exp.createdAt) / 86400000);
 
   return (
-    <div className="rubik-panel overflow-hidden">
+    <div className="rubik-panel overflow-hidden transition-shadow">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/30 transition-colors"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <span
-            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[exp.status] ?? "bg-muted text-muted-foreground"}`}
+            className={`shrink-0 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${STATUS_BADGE[exp.status] ?? "bg-muted text-muted-foreground"}`}
           >
             {exp.status}
           </span>
-          <div>
-            <p className="text-sm font-medium text-foreground">{exp.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {exp.dimension} — {runtimeDays}d running
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate">{exp.name}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {exp.dimension} &middot; {runtimeDays}d running
             </p>
           </div>
         </div>
-        <span className="text-muted-foreground text-xs">{expanded ? "▲" : "▼"}</span>
+        <svg
+          className={`ml-4 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
       {expanded && metrics && (
-        <div className="border-t border-border p-4 space-y-4">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-muted-foreground border-b border-border">
-                <th className="text-left py-1 pr-2">Variant</th>
-                <th className="text-right py-1 px-2">Impressions</th>
-                <th className="text-right py-1 px-2">Donations</th>
-                <th className="text-right py-1 px-2">Donate Rate</th>
-                <th className="text-right py-1 px-2">Revenue</th>
-                <th className="text-right py-1 pl-2">Fistbumps</th>
-              </tr>
-            </thead>
-            <tbody>
-              {metrics.variants.map((v) => (
-                <tr
-                  key={v.variantId}
-                  className={metrics.winner === v.variantId ? "bg-success/10" : ""}
-                >
-                  <td className="py-1.5 pr-2 font-medium text-foreground">
-                    {v.variantId}
-                    {metrics.winner === v.variantId && (
-                      <span className="ml-1 text-success-foreground text-[10px]">winner</span>
-                    )}
-                  </td>
-                  <td className="text-right py-1.5 px-2 text-muted-foreground">
-                    {v.impressions.toLocaleString()}
-                  </td>
-                  <td className="text-right py-1.5 px-2 text-muted-foreground">{v.donations}</td>
-                  <td className="text-right py-1.5 px-2 text-muted-foreground">
-                    {(v.donateRate * 100).toFixed(2)}%
-                  </td>
-                  <td className="text-right py-1.5 px-2 font-semibold text-foreground">
-                    ${(v.revenue / 100).toFixed(2)}
-                  </td>
-                  <td className="text-right py-1.5 pl-2 text-muted-foreground">{v.fistbumps}</td>
+        <div className="border-t border-border px-5 py-4 space-y-4 bg-muted/20">
+          <div className="overflow-x-auto rounded-xl border border-border/60 bg-background">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border/60 bg-muted/40">
+                  <th className="text-left py-2 px-3 font-semibold text-muted-foreground">
+                    Variant
+                  </th>
+                  <th className="text-right py-2 px-3 font-semibold text-muted-foreground">
+                    Impressions
+                  </th>
+                  <th className="text-right py-2 px-3 font-semibold text-muted-foreground">
+                    Donations
+                  </th>
+                  <th className="text-right py-2 px-3 font-semibold text-muted-foreground">Rate</th>
+                  <th className="text-right py-2 px-3 font-semibold text-muted-foreground">
+                    Revenue
+                  </th>
+                  <th className="text-right py-2 px-3 font-semibold text-muted-foreground">
+                    Fistbumps
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {metrics.variants.map((v) => (
+                  <tr
+                    key={v.variantId}
+                    className={`transition-colors ${metrics.winner === v.variantId ? "bg-success/8" : "hover:bg-muted/30"}`}
+                  >
+                    <td className="py-2.5 px-3 font-medium text-foreground">
+                      {v.variantId}
+                      {metrics.winner === v.variantId && (
+                        <span className="ml-1.5 rounded-full bg-success/15 px-1.5 py-0.5 text-[9px] font-bold text-success-foreground uppercase tracking-wide">
+                          winner
+                        </span>
+                      )}
+                    </td>
+                    <td className="text-right py-2.5 px-3 text-muted-foreground">
+                      {v.impressions.toLocaleString()}
+                    </td>
+                    <td className="text-right py-2.5 px-3 text-muted-foreground">{v.donations}</td>
+                    <td className="text-right py-2.5 px-3 text-muted-foreground">
+                      {(v.donateRate * 100).toFixed(2)}%
+                    </td>
+                    <td className="text-right py-2.5 px-3 font-semibold text-foreground">
+                      ${(v.revenue / 100).toFixed(2)}
+                    </td>
+                    <td className="text-right py-2.5 px-3 text-muted-foreground">{v.fistbumps}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <button
               type="button"
               onClick={runEvaluation}
               disabled={evaluating || exp.status !== "active"}
-              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              className="rounded-xl bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors shadow-sm"
             >
-              {evaluating ? "Evaluating..." : "Run Evaluation"}
+              {evaluating ? "Evaluating…" : "Run evaluation"}
             </button>
 
             {evalResult && (
@@ -403,8 +455,8 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
                 {!evalResult.ready ? (
                   <span>{evalResult.reason}</span>
                 ) : evalResult.graduated ? (
-                  <span className="text-success-foreground font-semibold">
-                    Graduated! Winner: {evalResult.winner} (+{evalResult.improvement}%)
+                  <span className="font-semibold text-success-foreground">
+                    Graduated — winner: {evalResult.winner} (+{evalResult.improvement}%)
                   </span>
                 ) : (
                   <span>
@@ -438,33 +490,42 @@ function ExperimentsDashboard() {
 
   if (!data) {
     return (
-      <div className="rubik-panel p-8 flex flex-col items-center justify-center gap-3 min-h-40">
-        <p className="text-sm text-muted-foreground">Loading experiments...</p>
+      <div className="rubik-panel p-10 flex items-center justify-center">
+        <div className="h-6 w-6 animate-spin rounded-full border-[3px] border-border border-t-primary" />
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="rubik-panel p-4 flex items-center justify-between">
+      {/* Experiment revenue stat */}
+      <div className="rubik-panel p-5 flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            24h Experiment Revenue
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            24h experiment revenue
           </p>
-          <p className="text-2xl font-bold text-foreground">${data.revenue24h.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-foreground mt-1 tabular-nums">
+            ${data.revenue24h.toFixed(2)}
+          </p>
         </div>
-        <span className="text-xs text-muted-foreground">{data.experiments.length} experiments</span>
+        <span className="rounded-full bg-muted border border-border/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+          {data.experiments.length} experiment{data.experiments.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {data.experiments.length === 0 ? (
-        <div className="rubik-panel p-8 flex flex-col items-center justify-center gap-2 min-h-32">
-          <p className="text-sm text-muted-foreground">No active experiments</p>
-          <p className="text-xs text-muted-foreground/70">
+        <div className="rubik-panel p-10 flex flex-col items-center justify-center gap-2">
+          <p className="text-sm font-medium text-muted-foreground">No active experiments</p>
+          <p className="text-xs text-muted-foreground/60 text-center max-w-xs">
             Create an experiment via the experiments API to start tracking variants.
           </p>
         </div>
       ) : (
-        data.experiments.map((exp) => <ExperimentCard key={exp.id} exp={exp} />)
+        <div className="space-y-2">
+          {data.experiments.map((exp) => (
+            <ExperimentCard key={exp.id} exp={exp} />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -500,33 +561,43 @@ function DevHealth() {
       : errorSummary.total < 10
         ? "bg-amber-500"
         : "bg-destructive"
-    : "bg-muted";
+    : "bg-muted-foreground/40";
   const topCode = errorSummary?.topCodes[0];
   const errorNote = topCode
     ? `Top: ${topCode.error_code} (${topCode.count})`
     : errorSummary
       ? "No errors"
-      : "Loading...";
+      : "Loading…";
 
   const panels = [
-    { label: "CI Status", value: "--", note: "Last run: --", color: "bg-muted" },
-    { label: "Recent Deploys", value: "--", note: "No recent deploys", color: "bg-muted" },
+    { label: "CI Status", value: "--", note: "Last run: --", color: "bg-muted-foreground/40" },
+    {
+      label: "Recent Deploys",
+      value: "--",
+      note: "No recent deploys",
+      color: "bg-muted-foreground/40",
+    },
     { label: "Errors (24h)", value: String(errorCount), note: errorNote, color: errorColor },
-    { label: "Worker CPU p99", value: "--", note: "Cloudflare Analytics", color: "bg-muted" },
+    {
+      label: "Worker CPU p99",
+      value: "--",
+      note: "Cloudflare Analytics",
+      color: "bg-muted-foreground/40",
+    },
   ];
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {panels.map((p) => (
-        <div key={p.label} className="rubik-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+        <div key={p.label} className="rubik-panel p-5">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
             {p.label}
           </p>
-          <div className="flex items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${p.color}`} />
-            <span className="text-xl font-bold text-foreground">{p.value}</span>
+          <div className="flex items-baseline gap-2.5">
+            <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${p.color}`} />
+            <span className="text-2xl font-bold text-foreground tabular-nums">{p.value}</span>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">{p.note}</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">{p.note}</p>
         </div>
       ))}
     </div>
@@ -565,36 +636,47 @@ function MetricsDashboard() {
 
   const fmt = (n: number) => n.toLocaleString();
   const metrics = [
-    { label: "Total Users", value: data ? fmt(data.userCount) : "--" },
-    { label: "Active Subscriptions", value: data ? fmt(data.activeSubscriptions) : "--" },
-    { label: "MCP Tools", value: data ? fmt(data.toolCount) : "--" },
-    { label: "MRR", value: data ? `$${fmt(data.mrr)}` : "--" },
-    { label: "Service Purchases", value: data ? fmt(data.servicePurchases) : "--" },
+    { label: "Total Users", value: data ? fmt(data.userCount) : "--", highlight: false },
+    {
+      label: "Active Subscriptions",
+      value: data ? fmt(data.activeSubscriptions) : "--",
+      highlight: false,
+    },
+    { label: "MCP Tools", value: data ? fmt(data.toolCount) : "--", highlight: false },
+    { label: "MRR", value: data ? `$${fmt(data.mrr)}` : "--", highlight: true },
+    {
+      label: "Service Purchases",
+      value: data ? fmt(data.servicePurchases) : "--",
+      highlight: false,
+    },
   ];
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {metrics.map((m) => (
-          <div key={m.label} className="rubik-panel p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+          <div
+            key={m.label}
+            className={`rubik-panel p-5 ${m.highlight ? "rubik-panel-strong" : ""}`}
+          >
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
               {m.label}
             </p>
-            <p className="text-2xl font-bold text-foreground">{m.value}</p>
+            <p className="text-3xl font-bold text-foreground tabular-nums">{m.value}</p>
           </div>
         ))}
       </div>
 
       {data && data.recentSignups.length > 0 && (
-        <div className="rubik-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Recent Signups
-          </p>
-          <div className="space-y-2">
+        <div className="rubik-panel p-5">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+            Recent signups
+          </h4>
+          <div className="space-y-0 divide-y divide-border/60">
             {data.recentSignups.map((u) => (
-              <div key={u.id} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">{u.email}</span>
-                <span className="text-xs text-muted-foreground">
+              <div key={u.id} className="flex items-center justify-between py-2.5 text-sm">
+                <span className="font-medium text-foreground truncate">{u.email}</span>
+                <span className="ml-4 shrink-0 text-xs text-muted-foreground">
                   {new Date(u.created_at).toLocaleDateString()}
                 </span>
               </div>
@@ -604,23 +686,23 @@ function MetricsDashboard() {
       )}
 
       {data && data.recentServicePurchases.length > 0 && (
-        <div className="rubik-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Service Purchases
-          </p>
-          <div className="space-y-2">
+        <div className="rubik-panel p-5">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+            Service purchases
+          </h4>
+          <div className="space-y-0 divide-y divide-border/60">
             {data.recentServicePurchases.map((p, i) => (
               <div
                 key={`${p.service}-${p.created_at}-${i}`}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between py-2.5 text-sm"
               >
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold text-success-foreground">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="shrink-0 rounded-full bg-success/15 border border-success/20 px-2 py-0.5 text-[10px] font-bold text-success-foreground uppercase tracking-wide">
                     {p.service.replace(/_/g, " ")}
                   </span>
-                  <span className="text-foreground">{p.email ?? "guest"}</span>
+                  <span className="truncate text-foreground">{p.email ?? "guest"}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="ml-4 shrink-0 text-xs text-muted-foreground">
                   {new Date(p.created_at).toLocaleDateString()}
                 </span>
               </div>
@@ -629,13 +711,10 @@ function MetricsDashboard() {
         </div>
       )}
 
-      {/* Placeholder when no data has loaded yet */}
       {!data && (
-        <div className="rubik-panel p-8 flex flex-col items-center justify-center gap-3 min-h-40">
-          <p className="text-sm text-muted-foreground">Loading metrics...</p>
-          <p className="text-xs text-muted-foreground/70">
-            Fetching user counts, subscriptions, MRR, and tool stats.
-          </p>
+        <div className="rubik-panel p-10 flex flex-col items-center justify-center gap-3">
+          <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-border border-t-primary" />
+          <p className="text-sm text-muted-foreground">Loading metrics…</p>
         </div>
       )}
     </div>
@@ -644,10 +723,21 @@ function MetricsDashboard() {
 
 // ── Section wrapper ────────────────────────────────────────────────────────
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+    <section className="space-y-4">
+      <div className="space-y-0.5">
+        <h2 className="text-base font-bold text-foreground tracking-tight">{title}</h2>
+        {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      </div>
       {children}
     </section>
   );
@@ -660,8 +750,8 @@ export function CockpitPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-border border-t-primary" />
       </div>
     );
   }
@@ -675,34 +765,41 @@ export function CockpitPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Founder Cockpit</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+    <div className="mx-auto max-w-7xl space-y-10 pb-16">
+      {/* Page header */}
+      <div className="flex items-start justify-between gap-4 pb-2 border-b border-border">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Founder Cockpit</h1>
+            <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[11px] font-bold text-primary uppercase tracking-wide">
+              Private
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Private
-        </span>
+        <div className="shrink-0 flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-success" />
+          <span className="text-xs text-muted-foreground">All systems operational</span>
+        </div>
       </div>
 
-      <Section title="Experiments">
+      <Section title="Experiments" description="A/B test variants and revenue impact.">
         <ExperimentsDashboard />
       </Section>
 
-      <Section title="Metrics Dashboard">
+      <Section title="Key Metrics" description="Users, subscriptions, MRR, and tool installs.">
         <MetricsDashboard />
       </Section>
 
-      <Section title="Dev Health">
+      <Section title="Dev Health" description="CI, deploys, error rates, and Worker performance.">
         <DevHealth />
       </Section>
 
-      <Section title="Roadmap Board">
+      <Section title="Roadmap" description="Product milestones by status.">
         <RoadmapBoard />
       </Section>
 
-      <Section title="AI Chat">
+      <Section title="AI Assistant" description="Context-aware chat with platform knowledge.">
         <CockpitChat />
       </Section>
     </div>

@@ -44,7 +44,8 @@ interface StatItem {
 // Data
 // ---------------------------------------------------------------------------
 
-const DOMAINS: Domain[] = [
+// Preserved for future domain catalog section — prefixed to satisfy no-unused-vars
+const _DOMAINS: Domain[] = [
   {
     id: "code-intelligence",
     icon: Code2,
@@ -156,17 +157,32 @@ const FEATURE_HIGHLIGHTS: FeatureHighlight[] = [
   {
     icon: Zap,
     title: "Function-Speed Verification",
-    body: "The first value is not another dashboard. It is moving critical checks out of brittle browser flows and into fast, typed contracts.",
+    body: "Move critical checks out of brittle browser flows and into fast, typed contracts that run in milliseconds.",
   },
   {
     icon: Code2,
     title: "Typed Contracts",
-    body: "Strict types and validated inputs create a reusable surface that CI, internal tooling, the CLI, and agents can all call consistently.",
+    body: "Strict types and validated inputs create a reusable surface that CI, tooling, the CLI, and agents all call consistently.",
   },
   {
     icon: Layers,
-    title: "Managed Runtime Above Cloudflare",
-    body: "Cloudflare supplies the primitives. spike.land adds registry, auth, metering, governance, and a workflow model teams can actually buy.",
+    title: "Managed Runtime",
+    body: "Cloudflare supplies the primitives. spike.land adds registry, auth, metering, and a workflow model teams can actually ship.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Auth Built In",
+    body: "OAuth, RBAC, and API key vaulting are first-class citizens — not afterthoughts bolted on after the fact.",
+  },
+  {
+    icon: Server,
+    title: "Edge-Deployed Globally",
+    body: "Every tool runs at the edge. Zero cold starts, sub-50ms response times, no regions to configure.",
+  },
+  {
+    icon: Sparkles,
+    title: "80+ Ready-Made Tools",
+    body: "From image generation to chess engines, a broad library of composable tools ready to integrate immediately.",
   },
 ];
 
@@ -181,9 +197,6 @@ const STATS: StatItem[] = [
 // Hooks
 // ---------------------------------------------------------------------------
 
-/**
- * Fires the callback once when the referenced element enters the viewport.
- */
 function useIntersectionOnce(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -208,9 +221,6 @@ function useIntersectionOnce(threshold = 0.15) {
   return { ref, visible };
 }
 
-/**
- * Animated counter that ticks up from 0 to `target` once `active` is true.
- */
 function useCounter(target: number, active: boolean, duration = 1200) {
   const [count, setCount] = useState(0);
 
@@ -225,7 +235,6 @@ function useCounter(target: number, active: boolean, duration = 1200) {
     const tick = (now: number) => {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * target));
       if (progress < 1) raf = requestAnimationFrame(tick);
@@ -241,161 +250,52 @@ function useCounter(target: number, active: boolean, duration = 1200) {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function AnimatedCounter({ item, active }: { item: StatItem; active: boolean }) {
+function AnimatedStat({ item, active }: { item: StatItem; active: boolean }) {
   const count = useCounter(item.value, active);
-  const Icon = item.icon;
   return (
-    <div className="flex flex-col items-center gap-1 text-center">
-      <Icon className="h-5 w-5 text-primary mb-1" aria-hidden="true" />
-      <span className="text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
+    <div className="flex flex-col items-center gap-2 text-center">
+      <span className="text-5xl font-black tracking-tight text-foreground tabular-nums sm:text-6xl">
         {count}
         {item.suffix}
       </span>
-      <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
-        {item.label}
-      </span>
+      <span className="text-sm font-medium text-muted-foreground">{item.label}</span>
     </div>
   );
 }
 
-function DomainCard({
-  domain,
+function FeatureCard({
+  feature,
   index,
   visible,
 }: {
-  domain: Domain;
+  feature: FeatureHighlight;
   index: number;
   visible: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const Icon = domain.icon;
-
+  const Icon = feature.icon;
   return (
     <article
       className={cn(
-        "group relative flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 cursor-default",
-        "transition-all duration-300",
-        "hover:border-primary/40 hover:bg-card/80",
-        "hover:shadow-2xl hover:shadow-primary/5",
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+        "flex flex-col gap-4 rounded-2xl border border-border bg-card p-8",
+        "transition-all duration-500",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
       )}
-      style={{
-        transitionDelay: visible ? `${index * 60}ms` : "0ms",
-        transitionProperty: "opacity, transform, box-shadow, border-color, background-color",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      aria-label={`${domain.name}: ${domain.toolCount} tools`}
+      style={{ transitionDelay: visible ? `${index * 80}ms` : "0ms" }}
     >
-      {/* Glass shimmer overlay on hover */}
-      <div
-        className={cn(
-          "absolute inset-0 rounded-2xl bg-primary/5 pointer-events-none transition-opacity duration-300",
-          hovered ? "opacity-100" : "opacity-0",
-        )}
-        aria-hidden="true"
-      />
-
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div
-          className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-            "bg-primary/10 transition-all duration-300",
-            hovered && "bg-primary/20 scale-110",
-          )}
-        >
-          <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
-        </div>
-        <span
-          className={cn(
-            "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums",
-            "border border-border bg-muted text-muted-foreground",
-            "transition-colors duration-300",
-            hovered && "border-primary/30 bg-primary/10 text-primary",
-          )}
-        >
-          {domain.toolCount} tools
-        </span>
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+        <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
       </div>
-
-      {/* Body */}
-      <div className="flex flex-col gap-1.5">
-        <h3 className="text-sm font-semibold text-foreground leading-snug">{domain.name}</h3>
-        <p className="text-xs text-muted-foreground">{domain.description}</p>
-      </div>
-
-      {/* Expanded detail on hover */}
-      <div
-        className={cn(
-          "overflow-hidden transition-all duration-300 ease-in-out",
-          hovered ? "max-h-24 opacity-100" : "max-h-0 opacity-0",
-        )}
-      >
-        <p className="text-xs text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
-          {domain.detail}
-        </p>
-      </div>
-
-      {/* Arrow indicator */}
-      <ArrowRight
-        className={cn(
-          "absolute bottom-4 right-4 h-4 w-4 text-primary transition-all duration-300",
-          hovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
-        )}
-        aria-hidden="true"
-      />
+      <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
+      <p className="text-sm text-muted-foreground leading-relaxed">{feature.body}</p>
     </article>
   );
 }
 
-// Decorative floating orbs for the hero
-function HeroOrbs({ isDarkMode }: { isDarkMode: boolean }) {
+function StepDivider() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {/* Top-left orb */}
-      <div
-        className={cn(
-          "absolute -top-32 -left-32 h-96 w-96 rounded-full blur-3xl",
-          isDarkMode ? "bg-primary/15" : "bg-primary/8",
-          "animate-pulse",
-        )}
-        style={{ animationDuration: "4s" }}
-      />
-      {/* Top-right orb */}
-      <div
-        className={cn(
-          "absolute -top-16 right-0 h-72 w-72 rounded-full blur-3xl",
-          isDarkMode ? "bg-violet-500/10" : "bg-violet-300/15",
-          "animate-pulse",
-        )}
-        style={{ animationDuration: "6s", animationDelay: "1s" }}
-      />
-      {/* Bottom-center orb */}
-      <div
-        className={cn(
-          "absolute bottom-0 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full blur-3xl",
-          isDarkMode ? "bg-cyan-500/8" : "bg-cyan-300/12",
-          "animate-pulse",
-        )}
-        style={{ animationDuration: "5s", animationDelay: "2s" }}
-      />
+    <div className="hidden sm:flex items-center justify-center">
+      <ArrowRight className="h-6 w-6 text-muted-foreground/40" aria-hidden="true" />
     </div>
-  );
-}
-
-// Dot-grid texture overlay
-function DotGrid() {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0"
-      style={{
-        backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
-        opacity: 0.04,
-      }}
-    />
   );
 }
 
@@ -406,20 +306,15 @@ function DotGrid() {
 export function WhatWeDoPage() {
   const { isDarkMode } = useDarkMode();
 
-  // Hero text reveal
   const [heroRevealed, setHeroRevealed] = useState(false);
   useEffect(() => {
     const id = setTimeout(() => setHeroRevealed(true), 80);
     return () => clearTimeout(id);
   }, []);
 
-  // Stats counter trigger
   const { ref: statsRef, visible: statsVisible } = useIntersectionOnce(0.3);
-
-  // Domain cards trigger
-  const { ref: cardsRef, visible: cardsVisible } = useIntersectionOnce(0.1);
-
-  // CTA trigger
+  const { ref: featuresRef, visible: featuresVisible } = useIntersectionOnce(0.1);
+  const { ref: stepsRef, visible: stepsVisible } = useIntersectionOnce(0.2);
   const { ref: ctaRef, visible: ctaVisible } = useIntersectionOnce(0.2);
 
   return (
@@ -428,60 +323,67 @@ export function WhatWeDoPage() {
       {/* HERO                                                                */}
       {/* ------------------------------------------------------------------ */}
       <section
-        className="relative flex min-h-[92vh] flex-col items-center justify-center px-4 pt-16 pb-20 text-center"
+        className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
         aria-labelledby="hero-heading"
       >
-        <HeroOrbs isDarkMode={isDarkMode} />
-        <DotGrid />
-
-        {/* Eyebrow tag */}
-        <div
-          className={cn(
-            "relative mb-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/70 px-4 py-1.5 text-xs font-semibold text-muted-foreground backdrop-blur-sm",
-            "transition-all duration-700",
-            heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4",
-          )}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
-          Platform business. Narrow first wedge.
-          <span
-            className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
-            style={{ animationDelay: "0.5s" }}
-            aria-hidden="true"
+        {/* Ambient background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div
+            className={cn(
+              "absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full blur-3xl",
+              isDarkMode ? "bg-primary/12" : "bg-primary/6",
+            )}
+          />
+          <div
+            className={cn(
+              "absolute -bottom-20 right-0 h-[400px] w-[400px] rounded-full blur-3xl",
+              isDarkMode ? "bg-violet-500/8" : "bg-violet-300/10",
+            )}
           />
         </div>
 
-        {/* Main headline */}
+        {/* Eyebrow */}
+        <div
+          className={cn(
+            "mb-8 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur-sm",
+            "transition-all duration-600",
+            heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3",
+          )}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+          Open AI App Store
+        </div>
+
+        {/* Headline */}
         <h1
           id="hero-heading"
           className={cn(
-            "relative max-w-4xl text-4xl font-display font-black tracking-tight sm:text-5xl md:text-6xl lg:text-7xl",
+            "relative max-w-5xl text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl",
             "transition-all duration-700 delay-100",
-            heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+            heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
           )}
         >
-          <span className="block text-foreground">Move critical verification</span>
-          <span className="block text-primary">below the browser</span>
-          <span className="block text-foreground">without ripping everything out.</span>
+          <span className="block text-foreground leading-none">We build the</span>
+          <span className="block text-primary leading-none">infrastructure</span>
+          <span className="block text-foreground leading-none">for AI-powered apps.</span>
         </h1>
 
-        {/* Sub-headline */}
+        {/* Subtitle */}
         <p
           className={cn(
-            "relative mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed sm:text-xl",
+            "relative mt-8 max-w-2xl text-xl text-muted-foreground leading-relaxed",
             "transition-all duration-700 delay-200",
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          spike.land is the managed runtime for typed AI-callable tools. The first commercial motion
-          is QA-heavy agencies and AI consultancies that need fewer flaky Playwright or Cypress
-          builds, faster CI, and governed execution.
+          spike.land is the managed runtime that lets teams discover, compose, and ship AI-callable
+          tools at the edge — without rebuilding everything from scratch.
         </p>
 
-        {/* Hero CTA buttons */}
+        {/* Hero CTAs */}
         <div
           className={cn(
-            "relative mt-10 flex flex-col items-center gap-3 sm:flex-row",
+            "relative mt-12 flex flex-col items-center gap-4 sm:flex-row",
             "transition-all duration-700 delay-300",
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
@@ -489,29 +391,35 @@ export function WhatWeDoPage() {
           <a
             href="/apps"
             className={cn(
-              "inline-flex items-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground",
-              "hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 shadow-lg",
-              isDarkMode && "shadow-primary/30",
+              "inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-primary-foreground",
+              "hover:bg-primary/90 active:scale-[0.97] transition-all duration-200",
+              isDarkMode ? "shadow-lg shadow-primary/20" : "shadow-lg shadow-primary/10",
             )}
           >
-            <Zap className="h-4 w-4" aria-hidden="true" />
-            See QA Studio
+            Explore the app store
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+          <a
+            href="/tools"
+            className={cn(
+              "inline-flex items-center gap-2 rounded-2xl border border-border bg-card/80 px-8 py-4 text-base font-semibold text-foreground backdrop-blur-sm",
+              "hover:bg-card hover:border-primary/30 active:scale-[0.97] transition-all duration-200",
+            )}
+          >
+            Browse tools
           </a>
         </div>
 
-        {/* Scroll hint */}
+        {/* Scroll cue */}
         <div
           className={cn(
-            "absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1",
-            "transition-all duration-700 delay-500",
-            heroRevealed ? "opacity-60" : "opacity-0",
+            "absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
+            "transition-opacity duration-700 delay-700",
+            heroRevealed ? "opacity-40" : "opacity-0",
           )}
           aria-hidden="true"
         >
-          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-            Scroll
-          </span>
-          <div className="h-6 w-px bg-gradient-to-b from-muted-foreground to-transparent animate-pulse" />
+          <div className="h-10 w-px bg-gradient-to-b from-muted-foreground/60 to-transparent" />
         </div>
       </section>
 
@@ -522,148 +430,203 @@ export function WhatWeDoPage() {
         ref={statsRef}
         aria-label="Platform statistics"
         className={cn(
-          "relative mx-4 mb-16 rounded-2xl border border-border bg-card/60 backdrop-blur-sm",
+          "relative mx-6 mb-32 max-w-5xl xl:mx-auto",
           "transition-all duration-700",
           statsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
         )}
       >
-        <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="flex items-center justify-center py-7 px-4">
-              <AnimatedCounter item={stat} active={statsVisible} />
-            </div>
-          ))}
+        <div className="rounded-3xl border border-border bg-card">
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-border">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="flex items-center justify-center py-12 px-6">
+                <AnimatedStat item={stat} active={statsVisible} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* DOMAIN CARDS                                                        */}
+      {/* FEATURES GRID                                                       */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative px-4 pb-24" aria-labelledby="domains-heading">
+      <section className="relative px-6 pb-32" aria-labelledby="features-heading">
         <div className="mx-auto max-w-6xl">
-          {/* Section header */}
           <div
-            ref={cardsRef}
+            ref={featuresRef}
             className={cn(
-              "mb-12 text-center",
+              "mb-16 text-center",
               "transition-all duration-700",
-              cardsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+              featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
             )}
           >
             <h2
-              id="domains-heading"
-              className="text-3xl font-display font-bold tracking-tight text-foreground sm:text-4xl"
+              id="features-heading"
+              className="text-4xl font-black tracking-tight text-foreground sm:text-5xl"
             >
-              Platform breadth. <span className="text-primary">Focused first sale.</span>
+              Everything you need. <span className="text-primary">Nothing you don&apos;t.</span>
             </h2>
-            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              The platform spans multiple domains, but the first paid motion is tool-first QA. Hover
-              a card to see the broader runtime surface behind that wedge.
+            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
+              A complete platform built around the primitives AI-powered apps actually require.
             </p>
           </div>
 
-          {/* Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {DOMAINS.map((domain, i) => (
-              <DomainCard key={domain.id} domain={domain} index={i} visible={cardsVisible} />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURE_HIGHLIGHTS.map((feature, i) => (
+              <FeatureCard
+                key={feature.title}
+                feature={feature}
+                index={i}
+                visible={featuresVisible}
+              />
             ))}
-          </div>
-
-          {/* Tool count summary row */}
-          <div
-            className={cn(
-              "mt-8 flex flex-wrap items-center justify-center gap-2",
-              "transition-all duration-700 delay-700",
-              cardsVisible ? "opacity-100" : "opacity-0",
-            )}
-          >
-            {DOMAINS.map((d) => {
-              const Icon = d.icon;
-              return (
-                <span
-                  key={d.id}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground",
-                    "hover:border-primary/40 hover:text-foreground transition-colors duration-200",
-                  )}
-                >
-                  <Icon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                  {d.name}
-                  <span className="font-bold text-primary">{d.toolCount}</span>
-                </span>
-              );
-            })}
           </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* FEATURE HIGHLIGHTS                                                  */}
+      {/* HOW IT WORKS                                                        */}
       {/* ------------------------------------------------------------------ */}
       <section
-        className={cn(
-          "relative mx-4 mb-24 overflow-hidden rounded-2xl border border-border bg-card",
-        )}
-        aria-label="Platform highlights"
+        ref={stepsRef}
+        className="relative px-6 pb-32"
+        aria-labelledby="how-it-works-heading"
       >
-        <DotGrid />
-        <div className="relative grid gap-px sm:grid-cols-3">
-          {FEATURE_HIGHLIGHTS.map(({ icon: Icon, title, body }) => (
-            <div
-              key={title}
-              className="group flex flex-col gap-3 p-8 hover:bg-primary/5 transition-colors duration-300"
+        <div className="mx-auto max-w-5xl">
+          <div
+            className={cn(
+              "mb-16 text-center",
+              "transition-all duration-700",
+              stepsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+            )}
+          >
+            <h2
+              id="how-it-works-heading"
+              className="text-4xl font-black tracking-tight text-foreground sm:text-5xl"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
-              </div>
-              <h3 className="font-bold text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
-            </div>
-          ))}
+              How it works
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Three steps from idea to production.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-5 gap-6 items-center">
+            {/* Step 1 */}
+            <article
+              className={cn(
+                "sm:col-span-1 flex flex-col gap-4 rounded-3xl border border-border bg-card p-8 text-center",
+                "transition-all duration-500 delay-100",
+                stepsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+              )}
+            >
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
+                1
+              </span>
+              <h3 className="text-lg font-bold text-foreground">Discover tools</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Browse 80+ ready-made tools across code, AI, storage, auth, and more.
+              </p>
+            </article>
+
+            <StepDivider />
+
+            {/* Step 2 */}
+            <article
+              className={cn(
+                "sm:col-span-1 flex flex-col gap-4 rounded-3xl border border-border bg-card p-8 text-center",
+                "transition-all duration-500 delay-200",
+                stepsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+              )}
+            >
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
+                2
+              </span>
+              <h3 className="text-lg font-bold text-foreground">Compose workflows</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Chain tools into typed workflows. CI, agents, and humans call the same surface.
+              </p>
+            </article>
+
+            <StepDivider />
+
+            {/* Step 3 */}
+            <article
+              className={cn(
+                "sm:col-span-1 flex flex-col gap-4 rounded-3xl border border-border bg-card p-8 text-center",
+                "transition-all duration-500 delay-300",
+                stepsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+              )}
+            >
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
+                3
+              </span>
+              <h3 className="text-lg font-bold text-foreground">Ship to production</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Deploy to the edge in seconds. Global, fast, zero infrastructure to manage.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* CTA                                                                 */}
       {/* ------------------------------------------------------------------ */}
-      <section ref={ctaRef} className="relative px-4 pb-24" aria-labelledby="cta-heading">
+      <section ref={ctaRef} className="relative px-6 pb-32" aria-labelledby="cta-heading">
         <div
           className={cn(
-            "mx-auto max-w-3xl rounded-2xl border border-border bg-card px-8 py-14 text-center",
+            "mx-auto max-w-4xl rounded-3xl border border-border bg-card px-8 py-20 text-center",
             "transition-all duration-700",
-            ctaVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
+            ctaVisible ? "opacity-100 scale-100" : "opacity-0 scale-[0.97]",
           )}
         >
+          {/* Subtle inner glow */}
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0 rounded-3xl",
+              isDarkMode
+                ? "bg-gradient-to-b from-primary/5 to-transparent"
+                : "bg-gradient-to-b from-primary/3 to-transparent",
+            )}
+            aria-hidden="true"
+          />
+
           <h2
             id="cta-heading"
-            className="relative text-3xl font-display font-bold tracking-tight text-foreground sm:text-4xl"
+            className="relative text-4xl font-black tracking-tight text-foreground sm:text-5xl"
           >
-            Start with <span className="text-primary">one flow that keeps going red</span>.
+            Ready to build?
           </h2>
-          <p className="relative mt-4 text-muted-foreground max-w-lg mx-auto">
-            Best fit for teams with an existing Playwright or Cypress suite and a willingness to
-            move billing, auth, or permissions checks below the browser.
+          <p className="relative mt-5 text-xl text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            Start with one tool. Compose your first workflow. Ship it today.
           </p>
 
-          <div className="relative mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="relative mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href="/apps/qa-studio"
+              href="/apps"
               className={cn(
-                "inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground",
-                "hover:bg-primary/90 active:scale-[0.97] transition-all duration-200 shadow-lg",
-                isDarkMode && "shadow-primary/30",
+                "inline-flex items-center gap-2 rounded-2xl bg-primary px-10 py-4 text-base font-bold text-primary-foreground",
+                "hover:bg-primary/90 active:scale-[0.97] transition-all duration-200",
+                isDarkMode ? "shadow-lg shadow-primary/20" : "shadow-lg shadow-primary/10",
               )}
             >
-              <Layers className="h-4 w-4" aria-hidden="true" />
-              Open QA Studio
+              Start building
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href="/tools"
+              className={cn(
+                "inline-flex items-center gap-2 rounded-2xl border border-border bg-transparent px-10 py-4 text-base font-semibold text-foreground",
+                "hover:bg-card hover:border-primary/30 active:scale-[0.97] transition-all duration-200",
+              )}
+            >
+              View all tools
             </a>
           </div>
 
-          {/* Micro-trust signals */}
-          <p className="relative mt-6 text-xs text-muted-foreground">
-            Keep existing browser coverage &nbsp;&middot;&nbsp; No forced rip-and-replace
-            &nbsp;&middot;&nbsp; Edge-deployed globally
+          <p className="relative mt-8 text-sm text-muted-foreground">
+            No infrastructure to manage &nbsp;&middot;&nbsp; Edge-deployed globally
+            &nbsp;&middot;&nbsp; Keep your existing stack
           </p>
         </div>
       </section>

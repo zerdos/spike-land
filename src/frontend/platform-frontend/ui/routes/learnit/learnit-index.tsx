@@ -1,18 +1,20 @@
 /**
  * LearnIt Index Page
  *
- * Landing page for the AI-powered wiki with:
- * - 8 category cards with icons, topic count, and difficulty range
- * - Search bar with autocomplete suggestions
- * - Popular Topics grid
+ * Knowledge hub landing with:
+ * - Clean hero with large "Learn anything" heading
+ * - Prominent search bar with autocomplete
+ * - Category cards in a generous grid
+ * - Popular topic pills
  * - Recently Viewed section (localStorage)
  */
 
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Search, ArrowRight } from "lucide-react";
 import { useProgress } from "../../components/learnit/useProgress";
 
-// ─── Static Data ─────────────────────────────────────────────────────────────
+// ─── Static Data ──────────────────────────────────────────────────────────────
 
 interface Category {
   id: string;
@@ -21,7 +23,7 @@ interface Category {
   description: string;
   topicCount: number;
   difficulty: string;
-  color: string;
+  accent: string;
 }
 
 const CATEGORIES: Category[] = [
@@ -29,73 +31,73 @@ const CATEGORIES: Category[] = [
     id: "web-dev",
     label: "Web Development",
     icon: "🌐",
-    description: "Frontend, backend, APIs, and browser tech",
+    description: "Frontend, backend, APIs, and browser technologies",
     topicCount: 48,
-    difficulty: "Beginner–Advanced",
-    color: "from-blue-500/10 to-cyan-500/10 border-blue-500/20",
+    difficulty: "Beginner – Advanced",
+    accent: "bg-blue-500/8 border-blue-500/14 hover:border-blue-500/30",
   },
   {
     id: "ai-ml",
     label: "AI & Machine Learning",
     icon: "🤖",
-    description: "LLMs, transformers, RAG, and MCP protocol",
+    description: "LLMs, transformers, RAG pipelines, and the MCP protocol",
     topicCount: 36,
-    difficulty: "Intermediate–Expert",
-    color: "from-purple-500/10 to-pink-500/10 border-purple-500/20",
+    difficulty: "Intermediate – Expert",
+    accent: "bg-violet-500/8 border-violet-500/14 hover:border-violet-500/30",
   },
   {
     id: "cloud",
-    label: "Cloud",
+    label: "Cloud & Edge",
     icon: "☁️",
-    description: "Edge computing, Cloudflare Workers, serverless",
+    description: "Edge computing, Cloudflare Workers, serverless patterns",
     topicCount: 32,
-    difficulty: "Intermediate–Advanced",
-    color: "from-sky-500/10 to-blue-500/10 border-sky-500/20",
+    difficulty: "Intermediate – Advanced",
+    accent: "bg-sky-500/8 border-sky-500/14 hover:border-sky-500/30",
   },
   {
     id: "devops",
     label: "DevOps",
     icon: "🔧",
-    description: "CI/CD, Docker, Kubernetes, observability",
+    description: "CI/CD, Docker, Kubernetes, and observability",
     topicCount: 28,
-    difficulty: "Intermediate–Expert",
-    color: "from-orange-500/10 to-amber-500/10 border-orange-500/20",
+    difficulty: "Intermediate – Expert",
+    accent: "bg-orange-500/8 border-orange-500/14 hover:border-orange-500/30",
   },
   {
     id: "mobile",
     label: "Mobile",
     icon: "📱",
-    description: "React Native, PWA, iOS, Android, performance",
+    description: "React Native, PWA, iOS, Android, and performance",
     topicCount: 24,
-    difficulty: "Beginner–Advanced",
-    color: "from-green-500/10 to-emerald-500/10 border-green-500/20",
+    difficulty: "Beginner – Advanced",
+    accent: "bg-green-500/8 border-green-500/14 hover:border-green-500/30",
   },
   {
     id: "data",
     label: "Data",
     icon: "📊",
-    description: "Databases, pipelines, analytics, warehousing",
+    description: "Databases, pipelines, analytics, and warehousing",
     topicCount: 30,
-    difficulty: "Beginner–Advanced",
-    color: "from-yellow-500/10 to-amber-500/10 border-yellow-500/20",
+    difficulty: "Beginner – Advanced",
+    accent: "bg-amber-500/8 border-amber-500/14 hover:border-amber-500/30",
   },
   {
     id: "security",
     label: "Security",
     icon: "🔒",
-    description: "OAuth, JWT, API security, zero-trust",
+    description: "OAuth, JWT, API security, and zero-trust architecture",
     topicCount: 22,
-    difficulty: "Intermediate–Expert",
-    color: "from-red-500/10 to-rose-500/10 border-red-500/20",
+    difficulty: "Intermediate – Expert",
+    accent: "bg-rose-500/8 border-rose-500/14 hover:border-rose-500/30",
   },
   {
     id: "design",
     label: "Design",
     icon: "🎨",
-    description: "Design systems, Figma, UX research, accessibility",
+    description: "Design systems, Figma, UX research, and accessibility",
     topicCount: 20,
-    difficulty: "Beginner–Advanced",
-    color: "from-fuchsia-500/10 to-pink-500/10 border-fuchsia-500/20",
+    difficulty: "Beginner – Advanced",
+    accent: "bg-fuchsia-500/8 border-fuchsia-500/14 hover:border-fuchsia-500/30",
   },
 ];
 
@@ -155,37 +157,44 @@ function loadRecentlyViewed(): RecentTopic[] {
   }
 }
 
-// ─── Category Card ────────────────────────────────────────────────────────────
+// ─── Category Card ─────────────────────────────────────────────────────────────
 
 function CategoryCard({ category, progress }: { category: Category; progress: number }) {
   return (
     <Link
       to="/learnit/$topic"
       params={{ topic: category.id }}
-      className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 transition-all hover:scale-[1.02] hover:shadow-lg ${category.color}`}
+      className={`group flex flex-col gap-4 rounded-2xl border p-6 transition-all duration-300 hover:shadow-[var(--panel-shadow-strong)] hover:-translate-y-0.5 ${category.accent}`}
     >
       <div className="flex items-start justify-between">
-        <span className="text-3xl" aria-hidden="true">
+        <span className="text-2xl leading-none" aria-hidden="true">
           {category.icon}
         </span>
         {progress > 0 && (
-          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-widest text-primary">
             {progress}%
           </span>
         )}
       </div>
-      <h3 className="mt-3 font-semibold text-foreground group-hover:text-primary transition-colors">
-        {category.label}
-      </h3>
-      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{category.description}</p>
-      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{category.topicCount} topics</span>
-        <span className="rounded-full bg-background/50 px-2 py-0.5">{category.difficulty}</span>
+
+      <div className="flex-1 space-y-1.5">
+        <h3 className="font-semibold text-foreground transition-colors group-hover:text-primary">
+          {category.label}
+        </h3>
+        <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
+          {category.description}
+        </p>
       </div>
+
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span className="font-medium">{category.topicCount} topics</span>
+        <span>{category.difficulty}</span>
+      </div>
+
       {progress > 0 && (
-        <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-background/50">
+        <div className="h-0.5 w-full overflow-hidden rounded-full bg-border/50">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-primary transition-all duration-500"
             style={{ width: `${progress}%` }}
             role="progressbar"
             aria-valuenow={progress}
@@ -199,7 +208,7 @@ function CategoryCard({ category, progress }: { category: Category; progress: nu
   );
 }
 
-// ─── Search Bar with Autocomplete ─────────────────────────────────────────────
+// ─── Search Bar ────────────────────────────────────────────────────────────────
 
 function SearchBar() {
   const [query, setQuery] = useState("");
@@ -207,7 +216,6 @@ function SearchBar() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
 
   const filterSuggestions = useCallback((value: string) => {
     if (!value.trim()) {
@@ -232,7 +240,6 @@ function SearchBar() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions || suggestions.length === 0) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setFocusedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
@@ -261,9 +268,14 @@ function SearchBar() {
   const searchSlug = query.trim().toLowerCase().replace(/\s+/g, "-") || "getting-started";
 
   return (
-    <div className="relative mx-auto max-w-2xl">
-      <div className="flex gap-3">
+    <div className="relative mx-auto w-full max-w-2xl">
+      <div className="flex items-stretch gap-2">
         <div className="relative flex-1">
+          {/* Search icon inside input */}
+          <Search
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
           <input
             ref={inputRef}
             type="text"
@@ -272,22 +284,21 @@ function SearchBar() {
             onKeyDown={handleKeyDown}
             onFocus={() => query.trim() && setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-            placeholder="Search any topic... e.g. 'WebAssembly fundamentals'"
+            placeholder="Search any topic…"
             aria-label="Search topics"
             aria-autocomplete="list"
             aria-expanded={showSuggestions && suggestions.length > 0}
             aria-activedescendant={focusedIndex >= 0 ? `suggestion-${focusedIndex}` : undefined}
             aria-controls="autocomplete-list"
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-2xl border border-border bg-card py-3.5 pl-11 pr-4 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
           />
 
           {showSuggestions && suggestions.length > 0 && (
             <ul
-              ref={listRef}
               id="autocomplete-list"
               role="listbox"
               aria-label="Topic suggestions"
-              className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border border-border bg-background shadow-lg"
+              className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--panel-shadow-strong)]"
             >
               {suggestions.map((suggestion, i) => (
                 <li
@@ -295,7 +306,7 @@ function SearchBar() {
                   id={`suggestion-${i}`}
                   role="option"
                   aria-selected={i === focusedIndex}
-                  className={`cursor-pointer px-4 py-2.5 text-sm transition-colors ${
+                  className={`cursor-pointer px-4 py-3 text-sm transition-colors ${
                     i === focusedIndex
                       ? "bg-primary text-primary-foreground"
                       : "text-foreground hover:bg-muted"
@@ -312,9 +323,10 @@ function SearchBar() {
         <Link
           to="/learnit/$topic"
           params={{ topic: searchSlug }}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-[var(--panel-shadow-strong)] active:scale-[0.98]"
         >
           Search
+          <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       </div>
     </div>
@@ -332,83 +344,100 @@ export function LearnitIndexPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-14 px-4 py-10">
-      {/* Hero */}
-      <div className="space-y-5 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Learn Anything. Instantly.
-        </h1>
-        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-          AI-powered wiki that explains any topic at the depth you need. Search a topic or browse
-          categories below.
-        </p>
-        {totalCompleted > 0 && (
-          <p className="text-sm text-primary font-medium">
-            {totalCompleted} topic{totalCompleted !== 1 ? "s" : ""} completed
+    <div className="rubik-container rubik-page">
+      <div className="rubik-stack">
+        {/* ── Hero ── */}
+        <section className="mx-auto max-w-3xl space-y-8 pt-8 text-center">
+          <div className="rubik-eyebrow mx-auto border-primary/14 bg-primary/8 text-primary">
+            Knowledge Hub
+          </div>
+
+          <h1 className="tracking-tight text-foreground">Learn anything.</h1>
+
+          <p className="rubik-lede mx-auto text-center text-xl leading-relaxed">
+            An AI-powered wiki that explains any topic at exactly the depth you need. Search below
+            or browse by category.
           </p>
-        )}
-      </div>
 
-      {/* Search */}
-      <SearchBar />
+          {totalCompleted > 0 && (
+            <p className="text-sm font-semibold text-primary">
+              {totalCompleted} topic{totalCompleted !== 1 ? "s" : ""} completed
+            </p>
+          )}
+        </section>
 
-      {/* Categories */}
-      <section className="space-y-6" aria-labelledby="categories-heading">
-        <h2 id="categories-heading" className="text-2xl font-semibold">
-          Categories
-        </h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {CATEGORIES.map((cat) => (
-            <CategoryCard key={cat.id} category={cat} progress={getCategoryProgress(cat.id)} />
-          ))}
+        {/* ── Search ── */}
+        <div className="mx-auto w-full max-w-2xl">
+          <SearchBar />
         </div>
-      </section>
 
-      {/* Popular Topics */}
-      <section className="space-y-6" aria-labelledby="popular-heading">
-        <h2 id="popular-heading" className="text-2xl font-semibold">
-          Popular Topics
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {POPULAR_TOPICS.map((topic) => (
-            <Link
-              key={topic.slug}
-              to="/learnit/$topic"
-              params={{ topic: topic.slug }}
-              className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-primary"
-            >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
-                {topic.label.charAt(0)}
-              </span>
-              {topic.label}
-            </Link>
-          ))}
-        </div>
-      </section>
+        {/* ── Categories ── */}
+        <section aria-labelledby="categories-heading" className="space-y-8">
+          <div className="flex items-baseline justify-between">
+            <h2 id="categories-heading" className="text-fluid-h3 text-foreground">
+              Browse by category
+            </h2>
+            <span className="text-sm text-muted-foreground">{CATEGORIES.length} categories</span>
+          </div>
 
-      {/* Recently Viewed */}
-      {recentlyViewed.length > 0 && (
-        <section className="space-y-6" aria-labelledby="recent-heading">
-          <h2 id="recent-heading" className="text-2xl font-semibold">
-            Recently Viewed
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {CATEGORIES.map((cat) => (
+              <CategoryCard key={cat.id} category={cat} progress={getCategoryProgress(cat.id)} />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Popular Topics ── */}
+        <section aria-labelledby="popular-heading" className="space-y-8">
+          <h2 id="popular-heading" className="text-fluid-h3 text-foreground">
+            Popular topics
           </h2>
+
           <div className="flex flex-wrap gap-3">
-            {recentlyViewed.map((topic) => (
+            {POPULAR_TOPICS.map((topic) => (
               <Link
                 key={topic.slug}
                 to="/learnit/$topic"
                 params={{ topic: topic.slug }}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:shadow-sm"
               >
-                <span className="text-muted-foreground" aria-hidden="true">
-                  ↩
+                <span
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.6rem] font-bold text-primary"
+                  aria-hidden="true"
+                >
+                  {topic.label.charAt(0)}
                 </span>
                 {topic.label}
               </Link>
             ))}
           </div>
         </section>
-      )}
+
+        {/* ── Recently Viewed ── */}
+        {recentlyViewed.length > 0 && (
+          <section aria-labelledby="recent-heading" className="space-y-8">
+            <h2 id="recent-heading" className="text-fluid-h3 text-foreground">
+              Recently viewed
+            </h2>
+
+            <div className="flex flex-wrap gap-3">
+              {recentlyViewed.map((topic) => (
+                <Link
+                  key={topic.slug}
+                  to="/learnit/$topic"
+                  params={{ topic: topic.slug }}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:text-foreground"
+                >
+                  <span className="text-xs text-muted-foreground/60" aria-hidden="true">
+                    ↩
+                  </span>
+                  {topic.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

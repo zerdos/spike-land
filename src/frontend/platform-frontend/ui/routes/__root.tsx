@@ -5,17 +5,11 @@ import { useAnalytics } from "../hooks/useAnalytics";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useAuth } from "../hooks/useAuth";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { usePageLoadCounter } from "../hooks/usePageLoadCounter";
-import { useDevMode } from "@spike-land-ai/block-website/core";
 import { LoginButton } from "../components/LoginButton";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppFooter } from "../components/AppFooter";
 
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
-import { MadMaxProtocol } from "../components/MadMaxProtocol";
-import { WelcomeModal } from "../components/WelcomeModal";
-
-import { QuizPersonaBanner } from "../components/quiz/QuizPersonaBanner";
 import { AppDrawer } from "../components/drawer/AppDrawer";
 
 import { ChatProvider, ChatWidget } from "../components/chat";
@@ -188,93 +182,53 @@ function injectJsonLd(id: string, content: string) {
 }
 
 /**
- * Primary desktop nav — flat list of the most important destinations.
- * Keep this short (fits in one row on ≥1024px). Grouped sections appear in the mobile drawer.
+ * Primary desktop nav — 5 clean links centered in the header.
  */
 const NAV_LINK_ROUTES = [
-  { to: "/chat", label: "Chat" },
-  { to: "/apps", key: "apps" },
-  { to: "/create", label: "Create" },
-  { to: "/learnit", label: "LearnIt" },
-  { to: "/vibe-code", key: "vibeCode" },
-  { to: "/blog", key: "blog" },
-  { to: "/docs", key: "docs" },
+  { to: "/apps", label: "Apps" },
+  { to: "/build", label: "Build" },
+  { to: "/learnit", label: "Learn" },
+  { to: "/docs", label: "Docs" },
+  { to: "/pricing", label: "Pricing" },
 ] as const;
 
-type NavItem = { to: string; label: string; icon: string };
+type NavGroup = { items: { to: string; label: string }[] };
 
 /**
- * Grouped nav sections for the mobile drawer. Each section shows a heading
- * followed by its links.
+ * Flat groups for the mobile drawer — no section headings, just clean dividers.
  */
-const NAV_SECTIONS: { heading: string; items: NavItem[] }[] = [
+const MOBILE_NAV_GROUPS: NavGroup[] = [
   {
-    heading: "Discover",
     items: [
-      { to: "/chat", label: "Chat with Spike", icon: "💬" },
-      { to: "/apps", label: "App Store", icon: "🏪" },
-      { to: "/store", label: "Store", icon: "🛍️" },
+      { to: "/apps", label: "Apps" },
+      { to: "/build", label: "Build" },
+      { to: "/learnit", label: "Learn" },
     ],
   },
   {
-    heading: "Build",
     items: [
-      { to: "/create", label: "Create", icon: "✨" },
-      { to: "/vibe-code", label: "Vibe Code", icon: "💻" },
+      { to: "/blog", label: "Blog" },
+      { to: "/docs", label: "Docs" },
+      { to: "/pricing", label: "Pricing" },
     ],
   },
   {
-    heading: "Learn",
     items: [
-      { to: "/learnit", label: "LearnIt", icon: "📚" },
-      { to: "/blog", label: "Blog", icon: "📝" },
-      { to: "/docs", label: "Docs", icon: "📖" },
-    ],
-  },
-  {
-    heading: "Play",
-    items: [{ to: "/chess", label: "Chess", icon: "♟️" }],
-  },
-  {
-    heading: "You",
-    items: [
-      { to: "/cockpit", label: "Dashboard", icon: "📊" },
-      { to: "/analytics", label: "Analytics", icon: "📈" },
-      { to: "/settings", label: "Settings", icon: "⚙️" },
-    ],
-  },
-  {
-    heading: "Platform",
-    items: [
-      { to: "/about", label: "About", icon: "ℹ️" },
-      { to: "/pricing", label: "Pricing", icon: "💰" },
-      { to: "/status", label: "Status", icon: "🟢" },
+      { to: "/chess", label: "Chess" },
+      { to: "/status", label: "Status" },
+      { to: "/settings", label: "Settings" },
     ],
   },
 ];
 
 export function RootLayout() {
   useAnalytics();
-  usePageLoadCounter();
   const { theme, setTheme } = useDarkMode();
   useAuth();
-  const { isDeveloper } = useDevMode();
   const { t, i18n } = useTranslation(["common", "nav", "meta"]);
   const resolvedLanguage = resolveSupportedLanguage(i18n.resolvedLanguage ?? i18n.language);
 
-  const navLinks = useMemo(
-    () =>
-      NAV_LINK_ROUTES.map((route) => ({
-        to: route.to,
-        label:
-          "label" in route && route.label
-            ? route.label
-            : "key" in route && route.key
-              ? t(`nav:${route.key}`)
-              : route.to.replace(/^\//, ""),
-      })),
-    [t],
-  );
+  const navLinks = useMemo(() => NAV_LINK_ROUTES.map((r) => ({ to: r.to, label: r.label })), []);
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
@@ -432,54 +386,43 @@ export function RootLayout() {
         </a>
 
         <div className="flex flex-1 flex-col min-w-0">
-          <header className="sticky top-0 z-30 border-b border-border/80 bg-background/86 backdrop-blur-xl">
-            <div className="rubik-container flex h-14 lg:h-[4.5rem] items-center justify-between gap-6">
-              <div className="flex min-w-0 items-center gap-5">
-                <Link to="/" className="flex min-w-0 items-center gap-3">
-                  <div className="rubik-icon-badge h-11 w-11 rounded-2xl text-sm font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
-                    SL
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-[0.95rem] font-semibold tracking-[-0.03em] text-foreground">
-                      spike.land
-                    </p>
-                    <p className="hidden text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground md:block">
-                      {t("common:mcpNativePlatform")}
-                    </p>
-                  </div>
-                </Link>
-                <nav
-                  className="hidden lg:flex items-center gap-1.5"
-                  aria-label={t("common:mainNav")}
-                >
-                  {navLinks.map(({ to, label }) => (
-                    <Link
-                      key={to}
-                      to={to}
-                      aria-current={pathname === to ? "page" : undefined}
-                      className={`rounded-full px-3 py-2 text-[0.82rem] font-medium tracking-[0.01em] transition-colors ${
-                        pathname === to
-                          ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
-                          : "text-muted-foreground hover:bg-card/80 hover:text-foreground"
-                      }`}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </nav>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground xl:inline-flex">
-                  <span className="h-2 w-2 rounded-full bg-primary" />
-                  {t("common:toolsOnline")}
-                </div>
-                {isDeveloper && <ThemeSwitcher theme={theme} setTheme={setTheme} />}
+          <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+            <div className="rubik-container flex h-16 items-center justify-between gap-4">
+              {/* Left: wordmark */}
+              <Link
+                to="/"
+                className="shrink-0 text-xl font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+              >
+                spike.land
+              </Link>
+
+              {/* Center: main nav (desktop only) */}
+              <nav className="hidden md:flex items-center gap-0.5" aria-label={t("common:mainNav")}>
+                {navLinks.map(({ to, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    aria-current={pathname === to ? "page" : undefined}
+                    className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      pathname === to || pathname.startsWith(`${to}/`)
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Right: actions */}
+              <div className="flex items-center gap-2">
+                <ThemeSwitcher theme={theme} setTheme={setTheme} />
                 <LanguageSwitcher />
                 <LoginButton />
                 {/* Mobile hamburger */}
                 <button
                   type="button"
-                  className="flex items-center justify-center rounded-2xl border border-border bg-card p-3 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+                  className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground md:hidden"
                   aria-label={mobileNavOpen ? t("common:closeNavMenu") : t("common:openNavMenu")}
                   aria-expanded={mobileNavOpen}
                   aria-controls="mobile-nav"
@@ -526,26 +469,23 @@ export function RootLayout() {
             <div
               ref={mobileNavRef}
               id="mobile-nav"
-              className="glass-panel fixed inset-0 z-40 flex flex-col lg:hidden overflow-y-auto"
+              className="fixed inset-0 z-40 flex flex-col bg-background md:hidden overflow-y-auto"
               role="dialog"
               aria-modal="true"
               aria-label={t("common:mobileNav")}
             >
-              {/* Close button row */}
-              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border/60">
+              {/* Header row */}
+              <div className="flex items-center justify-between px-6 h-16 border-b border-border/60">
                 <Link
                   to="/"
-                  className="flex items-center gap-2"
+                  className="text-xl font-bold tracking-tight text-foreground"
                   onClick={() => setMobileNavOpen(false)}
                 >
-                  <div className="rubik-icon-badge h-8 w-8 rounded-xl text-xs font-semibold tracking-[-0.06em] text-foreground shadow-[var(--panel-shadow)]">
-                    SL
-                  </div>
-                  <span className="font-semibold text-foreground">spike.land</span>
+                  spike.land
                 </Link>
                 <button
                   type="button"
-                  className="flex items-center justify-center rounded-xl border border-border bg-card p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label={t("common:closeNavMenu")}
                   onClick={() => setMobileNavOpen(false)}
                 >
@@ -566,14 +506,14 @@ export function RootLayout() {
                 </button>
               </div>
 
-              <nav aria-label={t("common:mobileNavLinks")} className="flex-1 px-4 py-4 space-y-6">
-                {NAV_SECTIONS.map((section) => (
-                  <div key={section.heading}>
-                    <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/60">
-                      {section.heading}
-                    </p>
-                    <div className="space-y-0.5">
-                      {section.items.map(({ to, label, icon }) => {
+              <nav aria-label={t("common:mobileNavLinks")} className="flex-1 px-4 py-6">
+                {MOBILE_NAV_GROUPS.map((group, groupIndex) => (
+                  <div key={groupIndex}>
+                    {groupIndex > 0 && (
+                      <div className="my-3 border-t border-border/40" aria-hidden="true" />
+                    )}
+                    <div>
+                      {group.items.map(({ to, label }) => {
                         const isActive =
                           pathname === to || (to !== "/" && pathname.startsWith(`${to}/`));
                         return (
@@ -581,16 +521,13 @@ export function RootLayout() {
                             key={to}
                             to={to as "/"}
                             aria-current={isActive ? "page" : undefined}
-                            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                            className={`flex items-center rounded-md px-3 py-3 text-base font-medium transition-colors ${
                               isActive
-                                ? "bg-card text-foreground shadow-[var(--panel-shadow)]"
-                                : "text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                                ? "text-foreground"
+                                : "text-muted-foreground hover:text-foreground"
                             }`}
                             onClick={() => setMobileNavOpen(false)}
                           >
-                            <span className="text-base w-5 text-center" aria-hidden="true">
-                              {icon}
-                            </span>
                             {label}
                           </Link>
                         );
@@ -604,7 +541,7 @@ export function RootLayout() {
 
           <main
             id="main-content"
-            className="flex-1 min-h-[calc(100dvh-3.5rem)] lg:min-h-[calc(100dvh-4.5rem)] overflow-x-hidden pb-8"
+            className="flex-1 min-h-[calc(100dvh-4rem)] overflow-x-hidden pb-8"
           >
             <noscript>
               <div className="p-8 text-center">
@@ -612,17 +549,10 @@ export function RootLayout() {
                 <p>{t("common:jsRequiredDesc")}</p>
               </div>
             </noscript>
-            {pathname !== "/quiz" && (
-              <div className="rubik-container pt-4">
-                <QuizPersonaBanner />
-              </div>
-            )}
             <Outlet />
           </main>
 
           <AppFooter />
-          <WelcomeModal userName={null} />
-          <MadMaxProtocol />
         </div>
 
         <AppDrawer />

@@ -50,7 +50,7 @@ export function StoreSection({
 
       {isLoading ? (
         layout === "grid" ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: skeletonCount }).map((_, i) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: skeleton items have no stable identity
               <div key={i} className={GRID_SKELETON_CLASS} aria-hidden="true" />
@@ -79,7 +79,7 @@ export function StoreSection({
           )}
         </div>
       ) : layout === "grid" ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {apps.map((app) => (
             <StoreAppCard key={app.slug} app={app} categoryName={categoryName} layout="grid" />
           ))}

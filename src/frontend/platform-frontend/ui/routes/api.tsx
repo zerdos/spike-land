@@ -488,12 +488,12 @@ function ProductCard({
         </div>
 
         {/* CTA */}
-        <div className="mt-auto pt-2">
+        <div className="mt-auto pt-2 flex items-center gap-3">
           <button
             type="button"
             onClick={handleRequestAccess}
             className={cn(
-              "w-full rounded-xl px-4 py-2.5 text-sm font-bold tracking-wide",
+              "flex-1 rounded-xl px-4 py-2.5 text-sm font-bold tracking-wide",
               "bg-gradient-to-r text-white",
               product.accentColor,
               "hover:opacity-90 active:scale-[0.98] transition-all duration-200",
@@ -503,6 +503,30 @@ function ProductCard({
           >
             {product.status === "live" ? "Get Access" : "Join Waitlist"}
           </button>
+          <a
+            href={`/docs/api/${product.id}`}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-xl border border-slate-700/60 px-4 py-2.5 text-sm font-semibold text-slate-400",
+              "hover:border-slate-600 hover:text-slate-200 transition-all duration-200",
+            )}
+            aria-label={`View ${product.name} docs`}
+          >
+            Docs
+            <svg
+              className="h-3 w-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
         </div>
       </div>
     </article>
@@ -782,6 +806,72 @@ function FeedbackForm({ defaultProduct }: { defaultProduct: string }) {
   );
 }
 
+function FeaturedCodeCopyButton() {
+  const [copied, setCopied] = useState(false);
+  const FEATURED_CODE = `curl -X POST https://api.spike.land/v1/ask \\
+  -H "Authorization: Bearer $SPIKE_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"q": "Summarize this pull request"}'`;
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(FEATURED_CODE).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [FEATURED_CODE]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={copied ? "Copied to clipboard" : "Copy code to clipboard"}
+      className={cn(
+        "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold uppercase tracking-widest transition-all duration-200",
+        copied
+          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+          : "border-slate-700/60 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+      )}
+    >
+      {copied ? (
+        <>
+          <svg
+            className="h-3 w-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Copied
+        </>
+      ) : (
+        <>
+          <svg
+            className="h-3 w-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
+          </svg>
+          Copy
+        </>
+      )}
+    </button>
+  );
+}
+
 // Scanline / grid texture
 function GridTexture() {
   return (
@@ -887,47 +977,52 @@ export function ApiPage() {
         <h1
           id="api-hero-heading"
           className={cn(
-            "relative max-w-5xl text-4xl font-black tracking-tight break-words sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl",
+            "relative max-w-4xl text-5xl font-black tracking-tight break-words sm:text-6xl md:text-7xl lg:text-8xl",
             "transition-all duration-700 delay-100",
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
           )}
         >
-          <span className="block text-white">AI APIs that</span>
+          <span className="block text-white">AI Products</span>
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500">
-            don&apos;t hate you.
+            API
           </span>
         </h1>
 
         {/* Subhead */}
         <p
           className={cn(
-            "relative mt-6 max-w-2xl text-lg text-slate-400 leading-relaxed sm:text-xl",
+            "relative mt-6 max-w-xl text-lg text-slate-400 leading-relaxed sm:text-xl",
             "transition-all duration-700 delay-200",
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          Six products. One platform. Built by one person with no VC money.
-          <br />
-          Flat pricing. Community token pool. 80+ tools. No ceremony.
+          Six AI products. One HTTP surface. You pay exactly what the model costs — no markup, no
+          seat fees, no enterprise gate.
         </p>
 
-        {/* Pricing callout */}
+        {/* Pricing pillars */}
         <div
           className={cn(
-            "relative mt-8 flex flex-col items-center gap-2",
+            "relative mt-8 flex flex-wrap justify-center gap-3",
             "transition-all duration-700 delay-300",
             heroRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          <p className="text-sm font-bold text-slate-300">
-            Pricing:{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
-              pay what the AI costs. We add nothing on top.
-            </span>
-          </p>
-          <p className="text-xs text-slate-600 uppercase tracking-widest">
-            No markup. No seats. No enterprise gate.
-          </p>
+          {[
+            { label: "Flat pricing", detail: "cost pass-through" },
+            { label: "No seats", detail: "pay per token" },
+            { label: "80+ tools", detail: "via one endpoint" },
+            { label: "Community pool", detail: "free tier option" },
+          ].map((pill) => (
+            <div
+              key={pill.label}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-900/80 px-4 py-2 backdrop-blur-sm"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold text-white">{pill.label}</span>
+              <span className="text-xs text-slate-500">{pill.detail}</span>
+            </div>
+          ))}
         </div>
 
         {/* CTA buttons */}
@@ -946,6 +1041,15 @@ export function ApiPage() {
               "hover:opacity-90 active:scale-[0.97] transition-all duration-200 shadow-lg shadow-cyan-500/30",
             )}
           >
+            Browse products
+          </a>
+          <a
+            href="#code-example"
+            className={cn(
+              "inline-flex items-center gap-2 rounded-xl border border-slate-700/60 px-7 py-3.5 text-sm font-bold text-slate-300",
+              "hover:border-slate-600 hover:bg-slate-800/60 active:scale-[0.97] transition-all duration-200",
+            )}
+          >
             <svg
               className="h-4 w-4"
               fill="none"
@@ -957,19 +1061,19 @@ export function ApiPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
               />
             </svg>
-            See the APIs
+            View example
           </a>
           <a
-            href="#donate"
+            href="#pricing"
             className={cn(
-              "inline-flex items-center gap-2 rounded-xl border border-yellow-500/40 px-7 py-3.5 text-sm font-bold text-yellow-400",
-              "hover:bg-yellow-500/10 active:scale-[0.97] transition-all duration-200",
+              "inline-flex items-center gap-2 rounded-xl border border-slate-700/40 px-7 py-3.5 text-sm font-bold text-slate-400",
+              "hover:text-slate-300 hover:border-slate-600 active:scale-[0.97] transition-all duration-200",
             )}
           >
-            Donate a Token
+            Pricing
           </a>
         </div>
 
@@ -1048,18 +1152,20 @@ export function ApiPage() {
               productsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
             )}
           >
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Products
+            </p>
             <h2
               id="products-heading"
               className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
             >
               <span className="text-white">Six products.</span>{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">
-                One pricing rule.
+                One API key.
               </span>
             </h2>
-            <p className="mt-3 text-slate-400 max-w-xl mx-auto">
-              Click any card to see the exact HTTP interface. Click the button to join the waitlist
-              or get access now.
+            <p className="mt-3 text-slate-400 max-w-lg mx-auto">
+              Expand any card to see the exact HTTP interface. Docs link out to the full reference.
             </p>
           </div>
 
@@ -1073,6 +1179,255 @@ export function ApiPage() {
                 onRequestAccess={handleRequestAccess}
               />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* FEATURED CODE EXAMPLE                                              */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        id="code-example"
+        className="relative z-10 px-4 pb-24"
+        aria-labelledby="code-example-heading"
+      >
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-10 text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3">
+              Quick start
+            </p>
+            <h2
+              id="code-example-heading"
+              className="text-3xl font-black tracking-tight sm:text-4xl text-white"
+            >
+              One endpoint. Infinite use cases.
+            </h2>
+            <p className="mt-3 text-slate-400 max-w-lg mx-auto">
+              Works with curl, fetch, or any HTTP client. No SDK required.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-950 overflow-hidden shadow-2xl shadow-black/60">
+            {/* Window chrome */}
+            <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/80 px-5 py-3">
+              <div className="flex items-center gap-2" aria-hidden="true">
+                <span className="h-3 w-3 rounded-full bg-red-500/70" />
+                <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+                <span className="h-3 w-3 rounded-full bg-green-500/70" />
+                <span className="ml-3 text-xs font-mono text-slate-500">ask.sh</span>
+              </div>
+              <FeaturedCodeCopyButton />
+            </div>
+
+            {/* Tab bar */}
+            <div className="flex border-b border-slate-800 bg-slate-900/40 text-xs font-mono">
+              <button
+                type="button"
+                className="px-5 py-2.5 border-b-2 border-cyan-400 text-cyan-400 bg-slate-950/60"
+              >
+                curl
+              </button>
+              <button
+                type="button"
+                className="px-5 py-2.5 text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                fetch
+              </button>
+              <button
+                type="button"
+                className="px-5 py-2.5 text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                python
+              </button>
+            </div>
+
+            {/* Code body */}
+            <pre className="overflow-x-auto p-6 text-sm leading-7 text-slate-300 font-mono selection:bg-cyan-500/20">
+              <code>
+                <span className="text-slate-500"># Single-turn AI call — no session, no SDK</span>
+                {"\n"}
+                <span className="text-cyan-400">curl</span>
+                {" -X POST https://api.spike.land/v1/ask \\\n"}
+                {"  "}
+                <span className="text-slate-500">-H</span>{" "}
+                <span className="text-emerald-400">"Authorization: Bearer $SPIKE_KEY"</span>
+                {" \\\n"}
+                {"  "}
+                <span className="text-slate-500">-H</span>{" "}
+                <span className="text-emerald-400">"Content-Type: application/json"</span>
+                {" \\\n"}
+                {"  "}
+                <span className="text-slate-500">-d</span>{" "}
+                <span className="text-amber-300">
+                  &#123;"q": "Summarize this pull request"&#125;
+                </span>
+                {"\n\n"}
+                <span className="text-slate-500">
+                  # Response — deterministic shape, always JSON
+                </span>
+                {"\n"}
+                <span className="text-slate-600">{"{"}</span>
+                {"\n"}
+                {"  "}
+                <span className="text-violet-400">"answer"</span>
+                <span className="text-slate-600">:</span>{" "}
+                <span className="text-emerald-400">
+                  "This PR adds retry logic to the auth flow..."
+                </span>
+                <span className="text-slate-600">,</span>
+                {"\n"}
+                {"  "}
+                <span className="text-violet-400">"tokens"</span>
+                <span className="text-slate-600">:</span> <span className="text-amber-300">84</span>
+                <span className="text-slate-600">,</span>
+                {"\n"}
+                {"  "}
+                <span className="text-violet-400">"cost_usd"</span>
+                <span className="text-slate-600">:</span>{" "}
+                <span className="text-amber-300">0.00013</span>
+                <span className="text-slate-600">,</span>
+                {"\n"}
+                {"  "}
+                <span className="text-violet-400">"ms"</span>
+                <span className="text-slate-600">:</span>{" "}
+                <span className="text-amber-300">312</span>
+                {"\n"}
+                <span className="text-slate-600">{"}"}</span>
+              </code>
+            </pre>
+
+            {/* Footer bar */}
+            <div className="flex items-center justify-between border-t border-slate-800 bg-slate-900/40 px-5 py-3">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"
+                    aria-hidden="true"
+                  />
+                  POST /v1/ask
+                </span>
+                <span className="text-xs text-slate-600">200 OK · 312ms</span>
+              </div>
+              <span className="text-xs text-slate-600">
+                cost: <span className="text-slate-400 font-mono">$0.00013</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* PRICING TRANSPARENCY                                                */}
+      {/* ------------------------------------------------------------------ */}
+      <section id="pricing" className="relative z-10 px-4 pb-24" aria-labelledby="pricing-heading">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-10 text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">
+              Pricing
+            </p>
+            <h2
+              id="pricing-heading"
+              className="text-3xl font-black tracking-tight sm:text-4xl text-white"
+            >
+              You pay the model cost.{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">
+                Nothing else.
+              </span>
+            </h2>
+            <p className="mt-3 text-slate-400 max-w-md mx-auto">
+              Every product routes to the cheapest capable model for your request. The cost shown is
+              passed through verbatim.
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-700/50">
+            {/* Table header */}
+            <div className="grid grid-cols-4 gap-0 border-b border-slate-700/50 bg-slate-900/60 px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              <span>Product</span>
+              <span>Billing unit</span>
+              <span>Typical cost</span>
+              <span>Markup</span>
+            </div>
+
+            {/* Table rows */}
+            {[
+              {
+                product: "Spike Ask",
+                unit: "per 1k tokens",
+                cost: "$0.0005–$0.002",
+                markup: "$0",
+                gradient: "from-cyan-400 to-blue-500",
+              },
+              {
+                product: "Spike Threads",
+                unit: "per 1k tokens",
+                cost: "$0.0005–$0.002",
+                markup: "$0",
+                gradient: "from-violet-400 to-purple-600",
+              },
+              {
+                product: "Spike Tools",
+                unit: "per tool call",
+                cost: "$0.001–$0.01",
+                markup: "$0",
+                gradient: "from-emerald-400 to-teal-600",
+              },
+              {
+                product: "Spike Vision",
+                unit: "per image + tokens",
+                cost: "$0.002–$0.015",
+                markup: "$0",
+                gradient: "from-rose-400 to-pink-600",
+              },
+              {
+                product: "Spike Local",
+                unit: "free — runs on your GPU",
+                cost: "$0.00",
+                markup: "$0",
+                gradient: "from-amber-400 to-orange-500",
+              },
+              {
+                product: "Token Pool",
+                unit: "community credits",
+                cost: "Free tier",
+                markup: "$0",
+                gradient: "from-yellow-400 to-amber-500",
+              },
+            ].map((row, i) => (
+              <div
+                key={row.product}
+                className={cn(
+                  "grid grid-cols-4 gap-0 px-6 py-4 text-sm",
+                  "border-b border-slate-800/60 last:border-0",
+                  i % 2 === 0 ? "bg-slate-900/30" : "bg-transparent",
+                )}
+              >
+                <span className="flex items-center gap-2 font-semibold text-white">
+                  <span
+                    className={cn("h-2 w-2 rounded-full bg-gradient-to-r shrink-0", row.gradient)}
+                    aria-hidden="true"
+                  />
+                  {row.product}
+                </span>
+                <span className="text-slate-400 text-xs self-center">{row.unit}</span>
+                <span className="font-mono text-slate-300 text-xs self-center">{row.cost}</span>
+                <span className="font-bold text-emerald-400 self-center">{row.markup}</span>
+              </div>
+            ))}
+
+            {/* Footer note */}
+            <div className="border-t border-slate-700/50 bg-slate-900/60 px-6 py-4">
+              <p className="text-xs text-slate-500">
+                Token counts are reported in every response so you can calculate cost yourself. No
+                hidden metering.{" "}
+                <a
+                  href="/docs/pricing"
+                  className="text-slate-400 underline hover:text-white transition-colors"
+                >
+                  Full pricing docs
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -1172,37 +1527,35 @@ export function ApiPage() {
       >
         <div className="relative grid gap-0 lg:grid-cols-2">
           {/* Left: message */}
-          <div className="flex flex-col justify-center gap-6 p-8 lg:p-12">
+          <div className="flex flex-col justify-center gap-5 p-8 lg:p-12">
             <div>
-              <h2 id="feedback-heading" className="text-2xl font-black text-white">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3">
+                Feedback
+              </p>
+              <h2 id="feedback-heading" className="text-2xl font-black text-white leading-snug">
                 Tell me what you need.
               </h2>
-              <p className="mt-2 text-slate-400 leading-relaxed">
-                Solo dev here. No product team, no UX research budget. Your message goes directly to
-                the person writing the code. That person is me.
+              <p className="mt-3 text-slate-400 leading-relaxed max-w-sm">
+                Solo dev. No product team. Your message goes directly to the person writing the
+                code.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-2.5" aria-hidden="true">
               {[
-                "What use case are you trying to solve?",
-                "What's missing from existing AI APIs?",
+                "What are you building?",
+                "What's broken or missing?",
                 "Would you use Token Pool?",
-                "What would make you pay for this?",
               ].map((q) => (
-                <div
-                  key={q}
-                  className="flex items-start gap-2 text-sm text-slate-500"
-                  aria-hidden="true"
-                >
-                  <span className="text-cyan-500 font-mono text-xs mt-0.5">{">"}</span>
+                <li key={q} className="flex items-start gap-2.5 text-sm text-slate-500">
+                  <span className="text-cyan-500/70 font-mono shrink-0 mt-0.5">›</span>
                   {q}
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
-            <p className="text-xs text-slate-600 uppercase tracking-widest">
-              No spam. No drip campaign. Just a reply if I have one.
+            <p className="text-xs text-slate-700 uppercase tracking-widest">
+              No spam. Just a reply if I have one.
             </p>
           </div>
 

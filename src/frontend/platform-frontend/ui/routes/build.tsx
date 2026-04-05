@@ -388,58 +388,88 @@ export function BuildPage() {
       className="relative overflow-hidden"
       style={{
         background:
-          "radial-gradient(circle at top left, color-mix(in srgb, var(--chat-accent) 12%, transparent), transparent 28%), radial-gradient(circle at 85% 10%, color-mix(in srgb, var(--primary-light) 14%, transparent), transparent 30%), var(--bg)",
+          "radial-gradient(ellipse at 10% 0%, color-mix(in srgb, var(--chat-accent) 14%, transparent) 0%, transparent 35%), radial-gradient(ellipse at 88% 8%, color-mix(in srgb, var(--primary-light) 16%, transparent) 0%, transparent 35%), var(--bg)",
       }}
     >
+      {/* Ambient glow */}
       <div
-        className="pointer-events-none absolute left-0 top-0 h-[28rem] w-[28rem] rounded-full blur-3xl"
-        style={{ background: "color-mix(in srgb, var(--chat-accent) 10%, transparent)" }}
+        className="pointer-events-none absolute left-[-4rem] top-[-4rem] h-[36rem] w-[36rem] rounded-full blur-[100px]"
+        style={{ background: "color-mix(in srgb, var(--chat-accent) 9%, transparent)" }}
+        aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute right-[-5rem] top-[12rem] h-[24rem] w-[24rem] rounded-full blur-3xl"
-        style={{ background: "color-mix(in srgb, var(--primary-light) 13%, transparent)" }}
+        className="pointer-events-none absolute right-[-6rem] top-[10rem] h-[28rem] w-[28rem] rounded-full blur-[90px]"
+        style={{ background: "color-mix(in srgb, var(--primary-light) 11%, transparent)" }}
+        aria-hidden="true"
+      />
+      {/* Subtle grid texture */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(color-mix(in srgb, var(--border-color) 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--border-color) 18%, transparent) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+          maskImage: "radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%)",
+        }}
+        aria-hidden="true"
       />
 
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="relative mx-auto flex max-w-7xl flex-col gap-12 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <section className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr]">
           <div
-            className="rounded-[34px] border p-6 sm:p-8"
+            className="rounded-[34px] border p-7 sm:p-9"
             style={{
               borderColor: "color-mix(in srgb, var(--border-color) 85%, transparent)",
               background:
-                "linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 94%, transparent), color-mix(in srgb, var(--bg) 68%, transparent))",
-              boxShadow: "0 28px 90px color-mix(in srgb, var(--fg) 9%, transparent)",
+                "linear-gradient(160deg, color-mix(in srgb, var(--card-bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 72%, transparent) 100%)",
+              boxShadow:
+                "0 32px 96px color-mix(in srgb, var(--fg) 8%, transparent), inset 0 1px 0 color-mix(in srgb, white 8%, transparent)",
             }}
           >
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* Badge row */}
+            <div className="flex flex-wrap items-center gap-2">
               <span
-                className="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.28em]"
+                className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[0.28em]"
                 style={{
-                  background: "color-mix(in srgb, var(--chat-accent) 12%, transparent)",
+                  background: "color-mix(in srgb, var(--chat-accent) 14%, transparent)",
                   color: "var(--chat-accent)",
+                  border: "1px solid color-mix(in srgb, var(--chat-accent) 25%, transparent)",
                 }}
               >
+                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
                 vibe-code
               </span>
-              <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+              <span
+                className="rounded-full px-3 py-1 text-[11px] font-semibold"
+                style={{
+                  background: "color-mix(in srgb, var(--border-color) 60%, transparent)",
+                  color: "var(--muted-fg)",
+                }}
+              >
                 spike-chat native
               </span>
-              <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+              <span
+                className="rounded-full px-3 py-1 text-[11px] font-semibold"
+                style={{
+                  background: "color-mix(in srgb, var(--border-color) 60%, transparent)",
+                  color: "var(--muted-fg)",
+                }}
+              >
                 terminal + mdx + server
               </span>
             </div>
 
-            <div className="mt-6 max-w-3xl">
+            <div className="mt-7 max-w-3xl">
               <p className="text-xs font-black uppercase tracking-[0.34em] text-muted-foreground">
                 mcp apps with a conversation model
               </p>
-              <h1 className="mt-3 text-4xl font-black tracking-tight text-foreground sm:text-6xl">
+              <h1 className="mt-3 text-[2.6rem] font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl">
                 Every app should feel like
                 <span
-                  className="block text-transparent"
+                  className="mt-1 block text-transparent"
                   style={{
                     backgroundImage:
-                      "linear-gradient(135deg, var(--fg) 0%, var(--chat-accent-light) 44%, var(--primary-light) 100%)",
+                      "linear-gradient(130deg, var(--fg) 0%, var(--chat-accent-light, var(--chat-accent)) 40%, var(--primary-light, var(--primary-color)) 100%)",
                     WebkitBackgroundClip: "text",
                     backgroundClip: "text",
                   }}
@@ -447,7 +477,7 @@ export function BuildPage() {
                   chat, runtime, and source control at once.
                 </span>
               </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+              <p className="mt-5 max-w-2xl text-sm leading-[1.75] text-muted-foreground sm:text-base">
                 Vibe-code is the product page for a different operating model: each MCP app gets its
                 own spike-chat channel, can be browsed from an atlas, opened in terminal mode,
                 published as an MDX app, and even edited at the MCP server layer using spike.land
@@ -487,17 +517,25 @@ export function BuildPage() {
               {VALUE_POINTS.map(({ title, body, Icon }) => (
                 <div
                   key={title}
-                  className="rounded-[24px] border p-4"
+                  className="rounded-[24px] border p-4 transition-all duration-200 hover:-translate-y-0.5"
                   style={{
                     borderColor: "color-mix(in srgb, var(--border-color) 78%, transparent)",
-                    background: "color-mix(in srgb, var(--muted-bg) 62%, transparent)",
+                    background:
+                      "linear-gradient(180deg, color-mix(in srgb, var(--muted-bg) 70%, transparent), color-mix(in srgb, var(--muted-bg) 40%, transparent))",
+                    boxShadow: "0 8px 24px color-mix(in srgb, var(--fg) 4%, transparent)",
                   }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div
+                    className="mb-3 inline-flex items-center justify-center rounded-xl p-2"
+                    style={{
+                      background:
+                        "color-mix(in srgb, var(--primary-color, var(--primary)) 12%, transparent)",
+                    }}
+                  >
                     <Icon className="size-4 text-primary" />
-                    <p className="text-sm font-black tracking-tight text-foreground">{title}</p>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
+                  <p className="text-sm font-black tracking-tight text-foreground">{title}</p>
+                  <p className="mt-1.5 text-sm leading-[1.65] text-muted-foreground">{body}</p>
                 </div>
               ))}
             </div>

@@ -1,89 +1,40 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { triggerViewTransition } from "@spike-land-ai/block-website/core";
 import type { ThemePreference } from "../hooks/useDarkMode";
 
-// ─── Custom Spring physics from user's inspiration ───────────────────────────
+// ─── Icons ───────────────────────────────────────────────────────────────────
 
-function useSpring(target: number, k?: number, b?: number, m?: number) {
-  const stiffness = k || 200;
-  const damping = b || 22;
-  const mass = m || 1;
-  const [val, setVal] = useState(target);
-  const s = useRef({ pos: target, vel: 0, raf: 0 as number, tgt: target });
-
-  useEffect(() => {
-    const state = s.current;
-    state.tgt = target;
-    if (state.raf) cancelAnimationFrame(state.raf);
-    let prev: number | null = null;
-    const tick = (now: number) => {
-      if (!prev) prev = now;
-      const dt = Math.min((now - prev) / 1000, 0.05);
-      prev = now;
-      const { pos, vel, tgt } = state;
-      const a = (-stiffness * (pos - tgt) - damping * vel) / mass;
-      state.vel = vel + a * dt;
-      state.pos = pos + state.vel * dt;
-      if (Math.abs(state.pos - tgt) < 0.001 && Math.abs(state.vel) < 0.001) {
-        state.pos = tgt;
-        state.vel = 0;
-        setVal(tgt);
-        return;
-      }
-      setVal(state.pos);
-      state.raf = requestAnimationFrame(tick);
-    };
-    state.raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(state.raf);
-  }, [target, stiffness, damping, mass]);
-
-  return val;
-}
-
-// ─── SVGs from user's inspiration ───────────────────────────────────────────
-
-const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];
-
-function Sun({ rs }: { rs: number }) {
+function SunIcon() {
   return (
-    <svg width="22" height="22" viewBox="-11 -11 22 22" style={{ overflow: "visible" }}>
-      <circle r="5" fill="#f0a500" />
-      {RAYS.map((deg) => {
-        const r = (deg * Math.PI) / 180;
-        const c = Math.cos(r),
-          ss = Math.sin(r);
-        const len = 4.2 * Math.max(0, rs);
-        return (
-          <line
-            key={deg}
-            x1={c * 7}
-            y1={ss * 7}
-            x2={c * (7 + len)}
-            y2={ss * (7 + len)}
-            stroke="#f0a500"
-            strokeWidth="2.1"
-            strokeLinecap="round"
-            opacity={Math.max(0, rs)}
-          />
-        );
-      })}
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#f0a500"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4.5" fill="#f0a500" stroke="none" />
+      <line x1="12" y1="2" x2="12" y2="4.5" />
+      <line x1="12" y1="19.5" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="4.5" y2="12" />
+      <line x1="19.5" y1="12" x2="22" y2="12" />
+      <line x1="4.93" y1="4.93" x2="6.76" y2="6.76" />
+      <line x1="17.24" y1="17.24" x2="19.07" y2="19.07" />
+      <line x1="4.93" y1="19.07" x2="6.76" y2="17.24" />
+      <line x1="17.24" y1="6.76" x2="19.07" y2="4.93" />
     </svg>
   );
 }
 
-function Moon({ sa }: { sa: number }) {
-  const pts = [
-    { x: 5.5, y: -7.5, r: 1.1 },
-    { x: 9, y: -1.5, r: 0.8 },
-    { x: 3.5, y: 4, r: 0.85 },
-  ];
+function MoonIcon() {
   return (
-    <svg width="22" height="22" viewBox="-11 -11 22 22" style={{ overflow: "visible" }}>
-      <path d="M0,-8 A8,8 0 1,0 8,0 A5.5,5.5 0 1,1 0,-8 Z" fill="#c8cfee" />
-      {pts.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r={p.r} fill="#a8b0d8" opacity={Math.max(0, sa)} />
-      ))}
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#c8cfee" stroke="none" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
 }
@@ -99,13 +50,6 @@ export function ThemeSwitcher({ theme, setTheme }: ThemeSwitcherProps) {
   const isDark = theme === "dark";
   const prefersReduced = useReducedMotion();
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  // Springs matching the user's snippet physics
-  const tx = useSpring(isDark ? 5 : 41, 260, 21, 0.85);
-  const rs = useSpring(isDark ? 0 : 1, 150, 15, 0.9);
-  const sa = useSpring(isDark ? 1 : 0, 140, 18, 0.9);
-  const rot = useSpring(isDark ? 0 : 180, 200, 21, 0.8);
-
   const [rip, setRip] = useState(false);
 
   const handleToggle = useCallback(() => {
@@ -149,8 +93,9 @@ export function ThemeSwitcher({ theme, setTheme }: ThemeSwitcherProps) {
     >
       <div className="insp-halo" />
       <div key={rip ? 1 : 0} className={`insp-rip${rip ? " go" : ""}`} />
-      <div className="insp-thumb" style={{ left: tx, transform: `rotate(${rot}deg)` }}>
-        {isDark ? <Moon sa={sa} /> : <Sun rs={rs} />}
+      {/* CSS transition replaces spring physics — see .toggle-insp .insp-thumb in app.css */}
+      <div className="insp-thumb" style={{ left: isDark ? 5 : 41 }}>
+        {isDark ? <MoonIcon /> : <SunIcon />}
       </div>
     </button>
   );

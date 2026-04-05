@@ -131,6 +131,21 @@ async function handleCheckout(
   window.location.href = data.url;
 }
 
+function CheckIcon() {
+  return (
+    <svg
+      className="mt-0.5 h-[1.05rem] w-[1.05rem] shrink-0 text-primary"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
 function PlanCard({
   plan,
   annual,
@@ -148,110 +163,158 @@ function PlanCard({
 }) {
   const { t } = useTranslation("pricing");
   const isFree = plan.id === "free";
+  const isEnterprise = plan.id === "enterprise";
   const displayPrice = annual ? plan.annualPrice : plan.monthlyPrice;
   const planId = `plan-${plan.id}`;
-
-  const buttonClass = `mt-8 block w-full rounded-[calc(var(--radius-control)-0.1rem)] border px-6 py-3 text-center text-sm font-semibold transition ${
-    plan.highlighted
-      ? "border-transparent bg-foreground text-background hover:bg-foreground/92"
-      : isFree
-        ? "border-border bg-background text-foreground hover:border-primary/24 hover:text-primary"
-        : "border-border bg-secondary text-foreground hover:border-primary/24 hover:bg-secondary/88"
-  }`;
 
   return (
     <div
       role="region"
       aria-labelledby={planId}
-      className={`flex h-full flex-col p-6 ${plan.highlighted ? "rubik-panel-strong" : "rubik-panel"}`}
+      className={[
+        "relative flex flex-col rounded-[var(--radius-panel)] border p-8 transition-all duration-[240ms]",
+        plan.highlighted
+          ? "border-primary/30 bg-gradient-to-b from-[color-mix(in_srgb,var(--card-bg)_88%,var(--primary-color)_12%)] to-[var(--card-bg)] shadow-[var(--panel-shadow-strong)] scale-[1.02] z-10"
+          : "border-[color-mix(in_srgb,var(--border-color)_90%,transparent)] bg-gradient-to-b from-[color-mix(in_srgb,var(--card-bg)_96%,white_4%)] to-[color-mix(in_srgb,var(--muted-bg)_20%,var(--card-bg)_80%)] shadow-[var(--panel-shadow)]",
+      ].join(" ")}
     >
+      {/* Most Popular badge — absolute-positioned to float at top of card */}
       {plan.highlighted && (
-        <span className="rubik-chip rubik-chip-accent mb-4 self-start">{t("mostPopular")}</span>
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-primary-foreground shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/80" />
+            {t("mostPopular")}
+          </span>
+        </div>
       )}
 
-      <h2 id={planId} className="text-xl font-display font-bold tracking-tight text-foreground">
-        {plan.name}
-      </h2>
-      <p className="mt-2 text-sm leading-7 text-muted-foreground">{plan.description}</p>
+      {/* Plan header */}
+      <div className="mb-6">
+        <h2
+          id={planId}
+          className="text-base font-bold uppercase tracking-[0.1em] text-muted-foreground"
+        >
+          {plan.name}
+        </h2>
 
-      <div className="mt-4">
-        <span className="text-3xl font-semibold tracking-[-0.05em] text-foreground">
-          {displayPrice}
-        </span>
-        {plan.period && <span className="text-base text-muted-foreground">{plan.period}</span>}
-        {annual && !isFree && (
-          <p className="mt-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+        <div className="mt-4 flex items-end gap-1.5">
+          <span
+            className={[
+              "font-display font-bold tracking-[-0.06em] leading-none",
+              isEnterprise ? "text-3xl" : "text-5xl",
+            ].join(" ")}
+          >
+            {displayPrice}
+          </span>
+          {plan.period && !isEnterprise && (
+            <span className="mb-1.5 text-sm text-muted-foreground">{plan.period}</span>
+          )}
+        </div>
+
+        {annual && !isFree && !isEnterprise && (
+          <p className="mt-2 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {t("billedAnnually", { total: plan.annualTotal })}
           </p>
         )}
+
+        {annual && !isFree && !isEnterprise && (
+          <span className="mt-3 inline-flex items-center rounded-full border border-primary/20 bg-primary/8 px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-primary">
+            {t("saveAmount")}
+          </span>
+        )}
+
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{plan.description}</p>
       </div>
 
-      {annual && !isFree && (
-        <span className="mt-3 inline-flex self-start rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
-          {t("saveAmount")}
-        </span>
-      )}
+      {/* Divider */}
+      <div className="mb-6 h-px w-full bg-gradient-to-r from-transparent via-[color-mix(in_srgb,var(--border-color)_80%,transparent)] to-transparent" />
 
-      <ul className="mt-6 flex-1 space-y-3">
+      {/* Feature list */}
+      <ul className="flex-1 space-y-3.5">
         {plan.features.map((f) => (
-          <li key={f.text} className="flex items-start gap-2 text-sm leading-7 text-foreground">
-            <svg
-              className="mt-0.5 h-4 w-4 shrink-0 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            {f.text}
+          <li
+            key={f.text}
+            className="flex items-start gap-2.5 text-sm leading-snug text-foreground"
+          >
+            <CheckIcon />
+            <span>{f.text}</span>
           </li>
         ))}
       </ul>
 
-      {plan.tier ? (
-        <button
-          type="button"
-          onClick={() => handleCheckout(plan.tier, annual, isAuthenticated, trackEvent, showToast)}
-          className={buttonClass}
-        >
-          {!isAuthenticated && plan.tier ? getStartedLabel : plan.cta}
-        </button>
-      ) : (
-        <a
-          href={plan.ctaHref}
-          onClick={() => trackEvent("cta_clicked", { plan: plan.name, tier: plan.tier ?? "free" })}
-          className={buttonClass}
-        >
-          {plan.cta}
-        </a>
-      )}
+      {/* CTA */}
+      <div className="mt-8">
+        {plan.tier ? (
+          <button
+            type="button"
+            onClick={(() => {
+              const tier = plan.tier as "pro" | "business";
+              return () => handleCheckout(tier, annual, isAuthenticated, trackEvent, showToast);
+            })()}
+            className={[
+              "block w-full rounded-[calc(var(--radius-control)-0.1rem)] px-6 py-3 text-center text-sm font-semibold transition-all duration-[160ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              plan.highlighted
+                ? "bg-primary text-primary-foreground shadow-[0_2px_12px_color-mix(in_srgb,var(--primary-color)_28%,transparent)] hover:brightness-110 active:brightness-95"
+                : "border border-border bg-transparent text-foreground hover:border-primary/30 hover:bg-primary/5",
+            ].join(" ")}
+          >
+            {!isAuthenticated && plan.tier ? getStartedLabel : plan.cta}
+          </button>
+        ) : (
+          <a
+            href={plan.ctaHref}
+            onClick={() =>
+              trackEvent("cta_clicked", { plan: plan.name, tier: plan.tier ?? "free" })
+            }
+            className={[
+              "block w-full rounded-[calc(var(--radius-control)-0.1rem)] border px-6 py-3 text-center text-sm font-semibold transition-all duration-[160ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              isEnterprise
+                ? "border-border bg-transparent text-foreground hover:border-primary/30 hover:bg-primary/5"
+                : "border-border bg-transparent text-foreground hover:border-primary/30 hover:bg-primary/5",
+            ].join(" ")}
+          >
+            {plan.cta}
+          </a>
+        )}
+      </div>
     </div>
   );
 }
 
 function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <details className="group border-b border-border py-4 last:border-b-0">
-      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-left [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
-        <span className="text-sm font-semibold text-foreground">{question}</span>
-        <svg
-          className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+    <div className="border-b border-[color-mix(in_srgb,var(--border-color)_70%,transparent)] last:border-b-0">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full cursor-pointer items-start justify-between gap-6 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+      >
+        <span className="text-[0.9375rem] font-semibold leading-snug text-foreground">
+          {question}
+        </span>
+        <span
+          className={[
+            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground transition-transform duration-200",
+            open ? "rotate-180" : "",
+          ].join(" ")}
           aria-hidden="true"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </summary>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{answer}</p>
-    </details>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="h-3 w-3"
+            strokeWidth={2.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </button>
+      {open && <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{answer}</p>}
+    </div>
   );
 }
 
@@ -266,28 +329,28 @@ export function PricingPage() {
 
   return (
     <div className="rubik-container rubik-page rubik-stack">
-      <section className="rubik-panel-strong space-y-6 p-6 text-center sm:p-8">
-        <div className="space-y-4">
-          <span className="rubik-eyebrow">
+      {/* ── Hero header ── */}
+      <section className="pb-2 pt-8 text-center sm:pt-12">
+        <div className="mx-auto max-w-2xl space-y-5">
+          <span className="rubik-eyebrow mx-auto">
             <span className="h-2 w-2 rounded-full bg-primary" />
             {t("eyebrow")}
           </span>
-          <div className="space-y-3">
-            <h1 className="text-4xl font-display font-bold tracking-tight text-foreground sm:text-5xl">
-              {t("title")}
-            </h1>
-            <p className="rubik-lede mx-auto">{t("subtitle")}</p>
+
+          <h1 className="font-display font-bold tracking-tight text-foreground">{t("title")}</h1>
+          <p className="rubik-lede mx-auto text-center">{t("subtitle")}</p>
+
+          {/* Launch promo pill */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-2 text-sm font-medium text-primary">
+            {t("launchPromo")}
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-          {t("launchPromo")}
-        </div>
-
+        {/* Billing toggle */}
         <div
           role="radiogroup"
           aria-label={t("billingFrequency") as string}
-          className="mx-auto inline-flex items-center gap-3 rounded-full border border-border bg-muted p-1"
+          className="mx-auto mt-8 inline-flex items-center gap-1 rounded-full border border-border bg-muted p-1"
           onKeyDown={(e) => {
             if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
               e.preventDefault();
@@ -305,9 +368,12 @@ export function PricingPage() {
             aria-checked={!annual}
             tabIndex={!annual ? 0 : -1}
             onClick={() => setAnnual(false)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              !annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-            }`}
+            className={[
+              "rounded-full px-5 py-2 text-sm font-medium transition-all duration-[160ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              !annual
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            ].join(" ")}
           >
             {t("monthly")}
           </button>
@@ -317,19 +383,25 @@ export function PricingPage() {
             aria-checked={annual}
             tabIndex={annual ? 0 : -1}
             onClick={() => setAnnual(true)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              annual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-            }`}
+            className={[
+              "flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-all duration-[160ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              annual
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            ].join(" ")}
           >
             {t("annual")}
-            <span className="ml-1.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
+            <span className="rounded-full bg-primary/12 px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-primary">
               {t("annualSavings")}
             </span>
           </button>
         </div>
       </section>
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      {/* ── Pricing grid ── */}
+      {/* On mobile: stacked. sm: 2-col. xl: 4-col.
+          The highlighted pro card gets subtle scale via PlanCard internals. */}
+      <div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {plans.map((plan) => (
           <PlanCard
             key={plan.name}
@@ -343,39 +415,54 @@ export function PricingPage() {
         ))}
       </div>
 
-      <p className="text-center text-sm text-muted-foreground">
-        {t("customPlanPrefix")}{" "}
-        <a href="mailto:hello@spike.land" className="text-primary underline hover:text-primary/80">
-          {t("customPlanLink")}
-        </a>
-      </p>
+      {/* ── Fine print ── */}
+      <div className="space-y-2 text-center">
+        <p className="text-sm text-muted-foreground">
+          {t("customPlanPrefix")}{" "}
+          <a
+            href="mailto:hello@spike.land"
+            className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+          >
+            {t("customPlanLink")}
+          </a>
+        </p>
+        <p className="text-[0.8125rem] text-muted-foreground">
+          {t("pricingDisclaimer")}{" "}
+          {pricing.billedInUsd
+            ? t("priceDisplayUsd", { currency: pricing.currency })
+            : t("priceDisplayDefault")}{" "}
+          {t("vatNotice")}
+          <br />
+          {t("academicPrefix")}{" "}
+          <a
+            href="mailto:hello@spike.land"
+            className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+          >
+            {t("academicLink")}
+          </a>
+          .
+        </p>
+      </div>
 
-      <p className="text-center text-sm text-muted-foreground">
-        {t("pricingDisclaimer")}{" "}
-        {pricing.billedInUsd
-          ? t("priceDisplayUsd", { currency: pricing.currency })
-          : t("priceDisplayDefault")}{" "}
-        {t("vatNotice")}
-        <br />
-        {t("academicPrefix")}{" "}
-        <a href="mailto:hello@spike.land" className="text-primary underline hover:text-primary/80">
-          {t("academicLink")}
-        </a>
-        .
-      </p>
+      {/* ── FAQ ── */}
+      <section aria-labelledby="faq-heading" className="mx-auto w-full max-w-2xl">
+        <div className="mb-10 text-center">
+          <h2 id="faq-heading" className="font-display font-bold tracking-tight text-foreground">
+            {t("faq.title")}
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Everything you need to know about pricing and billing.
+          </p>
+        </div>
 
-      {/* FAQ */}
-      <div className="rubik-panel mx-auto max-w-3xl p-6 sm:p-8">
-        <h2 className="mb-6 text-center text-2xl font-display font-bold tracking-tight text-foreground">
-          {t("faq.title")}
-        </h2>
-        <div>
+        <div className="rounded-[var(--radius-panel)] border border-[color-mix(in_srgb,var(--border-color)_80%,transparent)] bg-gradient-to-b from-[color-mix(in_srgb,var(--card-bg)_96%,white_4%)] to-[color-mix(in_srgb,var(--muted-bg)_18%,var(--card-bg)_82%)] px-6 shadow-[var(--panel-shadow)] sm:px-8">
           {faqItems.map((item) => (
             <FaqItem key={item.question} question={item.question} answer={item.answer} />
           ))}
         </div>
-      </div>
+      </section>
 
+      {/* Structured data for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
