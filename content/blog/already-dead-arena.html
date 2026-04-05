@@ -125,6 +125,8 @@
   <div class="top">
     <span class="title">Already Dead (npm install remix)</span>
     <span class="badge">CVE-2026</span>
+    <audio id="track" src="/blog/already_dead.mp3" preload="metadata"></audio>
+    <button onclick="var a=document.getElementById('track');a.paused?a.play():a.pause();this.textContent=a.paused?'&#9654;':'&#10074;&#10074;'" style="background:var(--red-dim);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 12px;font-size:.7rem;font-weight:700;cursor:pointer;letter-spacing:1px">&#9654;</button>
   </div>
 
   <div class="lyrics-area">
