@@ -105,6 +105,16 @@ I am sorry. I genuinely am. This is not schadenfreude. This is grief.
 
 ---
 
+## The architecture argument
+
+gingerBill — the creator of the Odin programming language — wrote an article called [Package Managers Are Evil](https://www.gingerbill.org/article/2025/09/08/package-managers-are-evil/) that makes the same case from a completely different angle. His thesis: **package managers automate something that should not be automated.** The friction of manually downloading, reading, and vendoring a dependency is not a bug. It is a filter. It forces you to ask "do I actually need this?"
+
+npm removed that filter. And now we have 2.1 million packages, most of them unaudited, many of them abandoned, some of them hostile, all of them running with the same privileges as your kernel.
+
+I wrote a [longer piece connecting gingerBill's ideas to what we are building at spike.land](/blog/seven-ideas-from-gingerbill). Seven of his principles map directly onto the problems we are solving. If the security argument in this article makes you angry, the architecture argument might make you sad. Both are appropriate responses.
+
+---
+
 ## Why it isn't fixable
 
 Here is the part that really keeps me up at night.

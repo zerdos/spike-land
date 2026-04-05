@@ -1,0 +1,168 @@
+---
+title: "Seven Ideas from gingerBill That Every Platform Builder Should Steal"
+slug: "seven-ideas-from-gingerbill"
+description: "Bill Hall built a programming language from first principles and wrote down everything he learned. Seven of his ideas map directly onto the problems we're solving at spike.land."
+date: "2026-04-05"
+author: "Zoltán & Radix"
+category: "Engineering"
+tags: ["odin", "systems-thinking", "architecture", "dependencies", "mcp", "design-philosophy"]
+featured: true
+draft: false
+primer: "A language designer and a platform builder arrive at the same conclusions from opposite directions. That's not a coincidence. That's a signal."
+heroImage: "/blog/seven-ideas-from-gingerbill/hero.svg"
+heroPrompt: "A minimalist blueprint schematic with seven interconnected nodes glowing amber on dark paper, clean geometric lines connecting architectural concepts, technical drawing aesthetic with subtle grid, warm amber and cool slate tones"
+---
+
+# Seven Ideas from gingerBill That Every Platform Builder Should Steal
+
+---
+
+Peter sent me a link at 2 AM. Just a URL, no context. [gingerbill.org](https://www.gingerbill.org/). I clicked through expecting a short read. Three hours later I was still there, nodding at my screen like a lunatic.
+
+Bill Hall — gingerBill — is the creator of the [Odin programming language](https://odin-lang.org/). He has been designing a systems language from first principles for years, and he writes about it with a clarity that most of us can only envy. His blog is a masterclass in thinking about software from the ground up: not "what framework should I use?" but "what are the actual forces acting on this system?"
+
+Seven of his ideas landed hard. Not because they were new to me — several overlap with things we have been building at spike.land — but because he arrived at the same conclusions from a completely different starting point. When a language designer and a platform builder independently converge on the same principles, that is not a coincidence. That is the system talking.
+
+---
+
+## 1. Package Managers Are Evil
+
+This is the article Peter sent. gingerBill's thesis is simple and devastating:
+
+> "This is the automation of dependency hell."
+
+His argument is not that dependencies are bad. It is that **automating the acquisition of dependencies removes the friction that made you think about whether you needed them.** Manual vendoring is slow and annoying. That is the point. The annoyance is a filter. It forces you to ask: "Do I actually need this, or am I just being lazy?"
+
+He writes: *"When you have a dependency, you are responsible for it. Each dependency is a potential liability."*
+
+I wrote a [whole article about this from the security angle](/blog/nodejs-security-nightmare). gingerBill makes the same argument from the architectural angle. Together, they are two views of the same catastrophe. npm is not just a security risk. It is an architecture that *encourages you to stop thinking about what you depend on.*
+
+The manual vendoring approach that gingerBill advocates — download it, read it, commit it, own it — is exactly what we do at spike.land. Our dependency graph is explicit, locked, and reviewable. No phantom transitive dependencies. No `postinstall` scripts running code you have never seen. When we depend on something, we know what it is and we have read it.
+
+The next step for the MCP app store is to make this visible: **zero transitive dependencies by design** as a quality signal for published tools.
+
+**Read the original:** [Package Managers are Evil](https://www.gingerbill.org/article/2025/09/08/package-managers-are-evil/)
+
+---
+
+## 2. Copying Is Usually Better Than Dependency
+
+One of gingerBill's proverbs, from his [Pragmatism in Programming Proverbs](https://www.gingerbill.org/article/2020/05/31/programming-pragmatist-proverbs/):
+
+> "Copying is usually better than dependency."
+
+This sounds heretical to anyone raised on DRY (Don't Repeat Yourself). But DRY was designed for code *within your codebase*, not for importing someone else's code. When you need 20 lines of utility code, you have two choices:
+
+1. Copy the 20 lines into your project. You now own them. You can read them. You can modify them. They have zero transitive dependencies.
+2. `npm install some-utility`. You now have 20 lines of code you wanted, plus 1,400 lines of code you did not want, written by people you do not know, with access to your file system, network, and environment variables.
+
+Option 1 is "more work." Option 2 is a prayer.
+
+For the MCP tool ecosystem, this becomes a concrete guideline: **inline small utilities instead of pulling in npm packages.** A tool that vendors its own 50-line hash function is more trustworthy than one that imports a package that imports a package that imports a package.
+
+---
+
+## 3. The Context System — Implicit Capability Passing
+
+Odin has a feature called `context` that is, in gingerBill's words, [its most misunderstood feature](https://www.gingerbill.org/article/2025/12/15/odins-most-misunderstood-feature-context/). It is an implicit parameter that flows down the call stack, carrying allocators, loggers, assertion handlers, and user data. Every function receives it automatically. You can override it at any scope boundary.
+
+The genius is what this enables: **you can intercept third-party code's behaviour without modifying it.** Want all allocations inside a library call to use your arena allocator? Change the context before calling it. Want to redirect a library's logging to your own system? Override the logger in the context. The library does not need to know. It does not need to support this. It just works, because the context flows implicitly.
+
+This maps directly to Cloudflare Workers' isolate model, and to the MCP tool contract pattern we use at spike.land. Each Worker gets its own context — bindings, env, capabilities. Each MCP tool declares what it needs; the runtime provides it. The tool does not reach into the environment and grab what it wants. The environment *gives* it what it is allowed to have.
+
+This is the difference between **ambient authority** (Node.js: everything has access to everything) and **capability-based security** (Odin's context, Workers' bindings, MCP tool contracts: you get exactly what you were given, nothing more).
+
+gingerBill designed this for performance and composability. We arrived at the same pattern for security and isolation. Different roads, same destination.
+
+---
+
+## 4. Solve the Specific Problem, Not a General Problem
+
+This is gingerBill's strongest recurring theme, from [The Essence of Programming](https://www.gingerbill.org/article/2021/02/01/the-essence-of-programming/):
+
+> "Try to solve *the specific* problem you have, not *a general* problem."
+
+And:
+
+> "Once you go generic, you lose information about the specific."
+
+And:
+
+> "Solve for the most common case first and not the most generic."
+
+The pressure to generalise is enormous. Every engineer's instinct is to build the abstraction, design for the hypothetical future, make it configurable. gingerBill calls this out as the primary source of complexity in software. The abstraction does not simplify the problem. It hides it. And the hidden problem still exists, now with an extra layer of indirection on top.
+
+For MCP tools, this becomes a design principle: **each tool solves one specific problem.** Not a configurable framework. Not a "platform." A tool. It does one thing. It does it well. If you need a different thing, you build a different tool.
+
+The MCP protocol already encourages this — tools are named verbs with typed inputs and outputs — but the temptation to build the Swiss Army knife is real. gingerBill's proverb is the antidote: three similar tools are better than one generic tool that handles three cases poorly.
+
+---
+
+## 5. The Fatal Flaw of Ownership Semantics
+
+gingerBill's [critique of Rust-style ownership](https://www.gingerbill.org/article/2020/06/21/the-ownership-semantics-flaw/) is the most technical idea on this list, but the insight transfers directly.
+
+His argument: ownership semantics are mathematically limited to expressing **tree-like hierarchies.** But real systems are **graphs.** Whenever your data has cycles, shared references, or non-hierarchical relationships — which is most of the time — the ownership model breaks down. You end up fighting the borrow checker with `Rc`, `RefCell`, indices, unsafe blocks. You spend more time satisfying the type system than solving the problem.
+
+His alternative: **handle-based subsystems.** Instead of tracking ownership at the type level, you build subsystems that manage groups of values and distribute opaque handles. The subsystem knows what is alive. The handle is just an ID, possibly with a generation number for safety.
+
+This is exactly how spike.land works at every layer:
+
+- **Durable Objects** are subsystems. Their IDs are handles.
+- **D1 database rows** are values. Primary keys are handles.
+- **MCP tool sessions** are subsystems. Session tokens are handles.
+- **React Fiber nodes** in our custom reconciler are values managed by the work loop subsystem. Fiber references are handles.
+
+We did not design it this way because we read gingerBill. We designed it this way because graphs are the natural shape of distributed systems. But his articulation of *why* this works — and why tree-based ownership does not — is the clearest I have seen.
+
+---
+
+## 6. Make the Zero Value Useful
+
+From the proverbs:
+
+> "Make the zero value useful."
+
+This comes from Go's design philosophy, but gingerBill elevates it to a universal principle. When you declare a variable without initialising it, the zero value should be *safe and functional*, not a trap.
+
+In Go, a zero `string` is `""`, a zero `slice` is `nil` (but you can append to it safely), a zero `sync.Mutex` is unlocked and ready to use. You do not need constructors. You do not need `init()` methods. Things work out of the box.
+
+For MCP tool schemas, this translates directly: **every optional field should have a sensible default.** A tool that crashes because you did not provide an optional parameter is a broken tool. A tool that works with zero configuration and gets better with more configuration is a well-designed tool.
+
+This is also how we think about the spike.land store: install a tool, run it with no arguments, and something useful should happen. The zero-configuration experience is the first impression. Make it useful.
+
+---
+
+## 7. The Essence of Programming Is Understanding the Problem
+
+gingerBill's framework, from [The Essence of Programming](https://www.gingerbill.org/article/2021/02/01/the-essence-of-programming/):
+
+> **Purpose** → **Function** → **Usage** → **Implementation**
+
+In that order. Each stage constrains the next. Skip none. Most struggling programmers, he argues, are not stuck on implementation. They are stuck on purpose. They do not understand the problem they are solving.
+
+> "The hardest thing about programming is understanding the problem."
+
+This is our "curiosity is additive" thesis in different clothes. The platform should help users *understand problems* — Learn & Verify, Bugbook, the blog — before jumping to *building solutions*. If you understand the problem deeply enough, the implementation becomes, in gingerBill's words, "trivial."
+
+Not trivial in the sense of easy. Trivial in the sense of *obvious.* When purpose, function, and usage are clear, there is often only one reasonable implementation. The hard part was never writing the code. The hard part was knowing what to write.
+
+---
+
+## The Meta-Insight
+
+gingerBill and spike.land share a core philosophy that runs against the grain of modern software culture:
+
+**Friction in the right places is a feature, not a bug.**
+
+His friction is manual vendoring and deliberate allocation strategies. Ours is typed MCP contracts, edge isolates, and explicit capability boundaries. Both reject the "make everything easy and automatic" trap that created npm's security nightmare, JavaScript's dependency epidemic, and the generation of developers who `npm install` first and ask questions never.
+
+The opposite of friction is not ease. It is thoughtlessness. And thoughtlessness, at scale, is a catastrophe.
+
+gingerBill is building a language. We are building a platform. He works at the level of memory allocators and type systems. We work at the level of edge Workers and MCP tool contracts. But the forces are the same: complexity grows with dependencies, security requires boundaries, and the hardest problem is always understanding the problem.
+
+Two people. Different continents. Different layers of the stack. Same conclusions. That is not a coincidence. That is a signal.
+
+---
+
+**The full gingerBill archive is at [gingerbill.org](https://www.gingerbill.org/). Start with [The Essence of Programming](https://www.gingerbill.org/article/2021/02/01/the-essence-of-programming/) if you want the philosophy, or [Package Managers Are Evil](https://www.gingerbill.org/article/2025/09/08/package-managers-are-evil/) if you want the fight. Both are worth your time.**
