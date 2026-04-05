@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Already Dead (npm install remix) — Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#08080f;--red:#dc2626;--red-dim:rgba(220,38,38,.25);
+    --amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);
+    --sung:rgba(220,38,38,.65);--upcoming:rgba(255,255,255,.13);
+    --active-glow:0 0 24px rgba(220,38,38,.35),0 0 48px rgba(220,38,38,.12);
+    --terminal-green:#4ade80;
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--bg);color:#eee;
+    font-family:'Rubik',system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    user-select:none;-webkit-user-select:none;
+  }
+
+  .app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(120px)}
+  .orb-1{width:60vw;height:60vw;top:-15vw;left:-15vw;background:var(--red);opacity:.05}
+  .orb-2{width:40vw;height:40vw;bottom:-10vw;right:-10vw;background:var(--amber);opacity:.03}
+
+  .top{
+    flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+    padding:.6rem 1rem;z-index:2;
+  }
+  .title{font-size:.7rem;font-weight:600;color:rgba(255,255,255,.2);letter-spacing:2px;text-transform:uppercase}
+  .badge{font-size:.55rem;padding:2px 8px;border-radius:4px;background:var(--red-dim);color:var(--red);font-weight:700;letter-spacing:1px}
+
+  .lyrics-area{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:1.5rem 2rem;z-index:1;position:relative;gap:1.2rem;
+    overflow-y:auto;scrollbar-width:none;
+  }
+  .lyrics-area::-webkit-scrollbar{display:none}
+
+  .verse{
+    text-align:center;max-width:680px;width:100%;
+    margin-bottom:2rem;
+  }
+  .verse-label{
+    font-size:.6rem;font-weight:700;letter-spacing:3px;
+    color:rgba(255,255,255,.12);text-transform:uppercase;
+    margin-bottom:.75rem;
+  }
+  .line{
+    font-size:clamp(1rem,3vw,1.5rem);
+    line-height:1.6;font-weight:400;
+    color:rgba(255,255,255,.7);
+    margin-bottom:.4rem;
+  }
+  .line.chorus{
+    font-weight:700;
+    color:rgba(255,255,255,.85);
+    font-size:clamp(1.1rem,3.5vw,1.7rem);
+  }
+  .line .hl{color:var(--red);font-weight:600}
+  .line .hl-amber{color:var(--amber);font-weight:600}
+  .line .code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.85em;
+    color:var(--terminal-green);
+    background:rgba(74,222,128,.08);
+    padding:1px 6px;border-radius:4px;
+  }
+
+  .bridge{
+    text-align:center;max-width:600px;
+    padding:2rem 1rem;
+    border-top:1px solid rgba(255,255,255,.06);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    margin:1rem 0;
+  }
+  .bridge .line{
+    font-style:italic;
+    color:rgba(255,255,255,.5);
+  }
+
+  .footer{
+    flex-shrink:0;padding:.8rem 1rem;
+    display:flex;align-items:center;justify-content:space-between;
+    border-top:1px solid rgba(255,255,255,.05);z-index:2;
+  }
+  .footer-text{font-size:.6rem;color:rgba(255,255,255,.15);letter-spacing:1px}
+  .footer-link{color:var(--red);text-decoration:none;font-size:.6rem;font-weight:600;letter-spacing:1px}
+  .footer-link:hover{text-decoration:underline}
+
+  @keyframes pulse-red{
+    0%,100%{opacity:.05}
+    50%{opacity:.08}
+  }
+  .orb-1{animation:pulse-red 4s ease-in-out infinite}
+
+  @keyframes terminal-blink{
+    0%,100%{opacity:1}
+    50%{opacity:0}
+  }
+  .cursor{
+    display:inline-block;width:8px;height:1.1em;
+    background:var(--terminal-green);
+    vertical-align:text-bottom;
+    animation:terminal-blink 1s step-end infinite;
+    margin-left:2px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="ambient on">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="top">
+    <span class="title">Already Dead (npm install remix)</span>
+    <span class="badge">CVE-2026</span>
+  </div>
+
+  <div class="lyrics-area">
+
+    <!-- VERSE 1 — The Confession -->
+    <div class="verse">
+      <div class="verse-label">I. The Confession</div>
+      <div class="line">Writing this at <span class="hl">4 AM</span> because I cannot sleep,</div>
+      <div class="line">The irony of losing rest to tech that's meant to keep</div>
+      <div class="line">Our lives running smooth, our servers standing tall,</div>
+      <div class="line">But every <span class="code">npm install</span> is an open door for all.</div>
+    </div>
+
+    <!-- CHORUS 1 -->
+    <div class="verse">
+      <div class="verse-label">Chorus</div>
+      <div class="line chorus"><span class="hl">They're already dead,</span> they just don't know it yet,</div>
+      <div class="line chorus">A thousand dependencies they never even met,</div>
+      <div class="line chorus">No sandbox, no permission, <span class="hl">no regret,</span></div>
+      <div class="line chorus"><span class="code">left-pad</span> has the same rights as your <span class="hl-amber">kernel.</span></div>
+    </div>
+
+    <!-- VERSE 2 — The Architecture -->
+    <div class="verse">
+      <div class="verse-label">II. The Architecture</div>
+      <div class="line">Your file system, your network, your <span class="hl-amber">API keys</span>,</div>
+      <div class="line">Your child processes bowing down on their knees,</div>
+      <div class="line">This is not a bug, friends, this is the design,</div>
+      <div class="line">A city built on swampland, and we called it <span class="hl">fine.</span></div>
+    </div>
+
+    <!-- VERSE 3 — The Supply Chain -->
+    <div class="verse">
+      <div class="verse-label">III. The Supply Chain</div>
+      <div class="line"><span class="hl-amber">2.1 million</span> packages, most are left to rot,</div>
+      <div class="line">A <span class="code">postinstall</span> script runs the moment that you got</div>
+      <div class="line">The code on your machine — not import, not require,</div>
+      <div class="line">Just <span class="code">npm i</span> and your whole stack's on fire.</div>
+    </div>
+
+    <!-- CHORUS 2 -->
+    <div class="verse">
+      <div class="verse-label">Chorus</div>
+      <div class="line chorus"><span class="hl">They're already dead,</span> they just don't know it yet,</div>
+      <div class="line chorus"><span class="code">event-stream</span> was the proof, <span class="code">ua-parser</span> the bet,</div>
+      <div class="line chorus"><span class="code">colors</span> and <span class="code">faker</span> — the author's own threat,</div>
+      <div class="line chorus">He told you the model was broken. <span class="hl">You forget.</span></div>
+    </div>
+
+    <!-- VERSE 4 — The Runtime -->
+    <div class="verse">
+      <div class="verse-label">IV. The Runtime Itself</div>
+      <div class="line">And it goes deeper than npm — the engine's cracked,</div>
+      <div class="line">V8's <span class="code">JSON.parse</span> was a <span class="hl">HashDoS</span> artifact,</div>
+      <div class="line">Deterministic hashing, <span class="hl-amber">seventeen years</span> exposed,</div>
+      <div class="line">Every server in production — already <span class="hl">decomposed.</span></div>
+    </div>
+
+    <!-- BRIDGE — The Grief -->
+    <div class="bridge">
+      <div class="verse-label">Bridge</div>
+      <div class="line">I'm sorry. I genuinely am.</div>
+      <div class="line">This is not schadenfreude.</div>
+      <div class="line">This is <span class="hl" style="font-style:normal">grief.</span></div>
+    </div>
+
+    <!-- VERSE 5 — Next.js & The Industry -->
+    <div class="verse">
+      <div class="verse-label">V. The Industry</div>
+      <div class="line">Next.js is <span class="hl-amber">beautiful</span> engineering, I won't pretend,</div>
+      <div class="line">But every SSR request walks through the <span class="hl">depend-</span></div>
+      <div class="line">-ency tree unaudited, unpinned, unwatched, unread,</div>
+      <div class="line">Your compliance cert is theater for the <span class="hl">dead.</span></div>
+    </div>
+
+    <!-- VERSE 6 — The Unfixable -->
+    <div class="verse">
+      <div class="verse-label">VI. Why It Isn't Fixable</div>
+      <div class="line">You <span class="hl">cannot</span> fix Node.js without breaking Node.js,</div>
+      <div class="line">The ecosystem's built on unrestricted access,</div>
+      <div class="line">Go got it right, Rust locked it down with care,</div>
+      <div class="line">Deno tried but <span class="code">--allow-all</span> is everywhere.</div>
+    </div>
+
+    <!-- FINAL CHORUS -->
+    <div class="verse">
+      <div class="verse-label">Final Chorus</div>
+      <div class="line chorus"><span class="hl">They're already dead,</span> they just don't know it yet,</div>
+      <div class="line chorus">But we moved the boundary where the edge and trust have met,</div>
+      <div class="line chorus">V8 isolates, typed contracts, <span class="hl-amber">no cold sweat,</span></div>
+      <div class="line chorus"><span class="code">spike.land</span> — one typed contract, <span class="hl">no regret.</span></div>
+    </div>
+
+    <!-- OUTRO -->
+    <div class="verse">
+      <div class="verse-label">Outro</div>
+      <div class="line" style="color:rgba(255,255,255,.35)">It's 5 AM now. I should try to sleep.</div>
+      <div class="line" style="color:rgba(255,255,255,.25)">But I keep thinking about the millions of servers</div>
+      <div class="line" style="color:rgba(255,255,255,.15)">running <span class="code">node index.js</span> right now<span class="cursor"></span></div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">RADIX &middot; GIAN PIERRE &middot; ZOLTAN &middot; 2026</span>
+    <a href="https://spike.land" class="footer-link">spike.land</a>
+  </div>
+
+</div>
+</body>
+</html>

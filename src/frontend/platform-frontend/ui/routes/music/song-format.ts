@@ -154,4 +154,17 @@ export const SONG_CATALOG: Song[] = [
     blogSlug: "smalltown-boy-arena",
     gradient: ["#f093fb", "#f5576c"],
   },
+  {
+    id: "already-dead",
+    title: "Already Dead (npm install remix)",
+    artist: "Radix, Gian Pierre & Zoltán",
+    year: 2026,
+    duration: 240,
+    bpm: 138,
+    musicalKey: "D minor",
+    tags: ["arena", "electronic", "cyberpunk", "security", "node.js"],
+    type: "arena",
+    blogSlug: "already-dead-arena",
+    gradient: ["#dc2626", "#08080f"],
+  },
 ];
