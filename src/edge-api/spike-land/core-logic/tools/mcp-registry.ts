@@ -69,7 +69,7 @@ async function searchSmithery(query: string, limit: number): Promise<McpServerIn
       description: s.description ?? "",
       source: "smithery" as const,
       url: `https://smithery.ai/server/${s.qualifiedName}`,
-      transport: (s.connections?.[0]?.type as "stdio" | "sse" | "streamable-http") ?? "stdio",
+      transport: resolveTransport(s.connections?.[0]?.type),
       envVarsRequired: [] as string[],
       ...(s.homepage !== undefined ? { homepage: s.homepage } : {}),
     }));
