@@ -2,7 +2,7 @@
 
 > **Last Updated**: March 2026 **Status**: Pre-Launch Stage - Product Ready,
 > Marketing Gap **Issue**:
-> [#1027](https://github.com/spike-land-ai/spike.land/issues/1027)
+> [#1027](https://github.com/spike-land-ai/spike-land/issues/1027)
 
 ---
 
@@ -367,4 +367,4 @@ Copy.ai" **Goal**: Understand competitive positioning
 ---
 
 **Document Version**: 1.2 **Last Updated**: 2026-03-12 **Issue**:
-[#1027](https://github.com/spike-land-ai/spike.land/issues/1027)
+[#1027](https://github.com/spike-land-ai/spike-land/issues/1027)

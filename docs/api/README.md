@@ -503,7 +503,7 @@ For questions or issues:
 
 - Email: hello@spike.land
 - GitHub Issues:
-  [Report bug](https://github.com/spike-land-ai/spike.land/issues)
+  [Report bug](https://github.com/spike-land-ai/spike-land/issues)
 - Documentation: [spike.land/docs](https://spike.land/docs)
 
 ## Specification Compliance

@@ -1539,7 +1539,7 @@ not needed.
 For API issues or questions:
 
 - Email: hello@spike.land
-- GitHub Issues: https://github.com/spike-land-ai/spike.land/issues
+- GitHub Issues: https://github.com/spike-land-ai/spike-land/issues
 - Documentation: https://spike.land/docs
 - API Reference: [API_REFERENCE.md](./API_REFERENCE.md)
 - Token System: [TOKEN_SYSTEM.md](../develop/TOKEN_SYSTEM.md)

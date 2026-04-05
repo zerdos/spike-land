@@ -453,9 +453,9 @@ call_tool "reaction_log" '{}'
 # --- Orchestration ---
 echo ""
 echo "--- Orchestration (8 tools) ---"
-call_tool "context_index_repo" '{"repo_url":"https://github.com/spike-land-ai/spike.land"}'
-call_tool "context_pack" '{"repo_url":"https://github.com/spike-land-ai/spike.land","task_description":"auth middleware"}'
-call_tool "context_get_deps" '{"repo_url":"https://github.com/spike-land-ai/spike.land","file_path":"src/index.ts"}'
+call_tool "context_index_repo" '{"repo_url":"https://github.com/spike-land-ai/spike-land"}'
+call_tool "context_pack" '{"repo_url":"https://github.com/spike-land-ai/spike-land","task_description":"auth middleware"}'
+call_tool "context_get_deps" '{"repo_url":"https://github.com/spike-land-ai/spike-land","file_path":"src/index.ts"}'
 call_tool "sandbox_create" '{}'
 call_tool "sandbox_simulate" '{"sandbox_id":"nonexistent","code":"console.log(1)"}'
 call_tool "sandbox_read_file" '{"sandbox_id":"nonexistent","file_path":"index.ts"}'

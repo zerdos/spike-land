@@ -440,7 +440,7 @@ v2 Response (hypothetical flattening):
 Found a bug or inconsistency in the API?
 
 1. **Check existing issues** -
-   https://github.com/spike-land-ai/spike.land/issues
+   https://github.com/spike-land-ai/spike-land/issues
 2. **Report new issues** - Create issue with:
    - API endpoint affected
    - Request and response examples

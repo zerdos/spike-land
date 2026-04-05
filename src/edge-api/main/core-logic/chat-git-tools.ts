@@ -68,7 +68,7 @@ function ghHeaders(token: string): Record<string, string> {
 }
 
 function resolveRepo(repo: string): string {
-  // Allow short names like "spike.land" → "spike-land-ai/spike.land"
+  // Allow short names like "spike.land" → "spike-land-ai/spike-land"
   if (!repo.includes("/")) return `${ORG}/${repo}`;
   return repo;
 }
