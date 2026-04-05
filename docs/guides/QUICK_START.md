@@ -76,7 +76,7 @@ Once configured, ask your AI assistant to list available tools. You should see
 
 ## Next steps
 
-- [MCP Overview](https://github.com/spike-land-ai/spike-land-ai/blob/main/docs/mcp/DEVELOPMENT_INDEX.md) -- How MCP works on spike.land
-- [MCP Tools Reference](https://github.com/spike-land-ai/spike-land-ai/blob/main/docs/mcp/TOOL_GUIDELINES.md) -- Full tool documentation
-- [API Reference](https://github.com/spike-land-ai/spike-land-ai/blob/main/docs/api/API_REFERENCE.md) -- REST API docs
-- [Architecture](https://github.com/spike-land-ai/spike-land-ai/blob/main/docs/develop/EDGE_STACK.md) -- System design
+- [MCP Overview](https://github.com/spike-land-ai/spike-land/blob/main/docs/mcp/DEVELOPMENT_INDEX.md) — How MCP works on spike.land
+- [MCP Tools Reference](https://github.com/spike-land-ai/spike-land/blob/main/docs/mcp/TOOL_GUIDELINES.md) — Full tool documentation
+- [API Reference](https://github.com/spike-land-ai/spike-land/blob/main/docs/api/API_REFERENCE.md) — REST API docs
+- [Architecture](https://github.com/spike-land-ai/spike-land/blob/main/docs/develop/EDGE_STACK.md) — System design

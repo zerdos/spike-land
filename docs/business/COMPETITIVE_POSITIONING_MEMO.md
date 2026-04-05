@@ -1,5 +1,6 @@
-# COMPETITIVE POSITIONING MEMO
-## SPIKE LAND LTD — Confidential
+# Competitive Positioning Memo
+
+**SPIKE LAND LTD — Confidential**
 **Prepared:** March 2026 | **Classification:** Investment Bank Internal | **Stage:** Pre-Revenue, Production-Ready
 
 ---

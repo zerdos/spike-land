@@ -149,8 +149,6 @@ Where to reply: PR #187 comments
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **AI Orchestrator app's 8 MCP tools match BMAD personas.** The AI Orchestrator

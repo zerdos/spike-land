@@ -69,7 +69,7 @@ only when their respective components mount.
 
 ### CSS Configuration
 
-In `packages/spike-app/app.css`:
+In `src/frontend/platform-frontend/app.css`:
 ```css
 @theme {
   --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
@@ -156,7 +156,7 @@ When in doubt inside a preview, reduce vertical padding before reducing contrast
 
 spike.land blog posts use **expressive typography** — text that communicates
 through size, weight, and motion. Components live in
-`src/block-website/src/ui/components/typography/`.
+`src/core/block-website/` (animation/, ui/, and core-logic/ subdirectories).
 
 ### Available Components
 

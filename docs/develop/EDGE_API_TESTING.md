@@ -53,8 +53,8 @@ These still run quickly and stay close to the code they exercise.
 
 Examples:
 
-- `src/edge-api/main/api/__tests__/__tests__/blog.test.ts`
-- `src/edge-api/main/api/__tests__/__tests__/experiments.test.ts`
+- `src/edge-api/main/api/__tests__/blog.test.ts`
+- `src/edge-api/main/api/__tests__/experiments.test.ts`
 
 ### 3. Worker smoke tests
 

@@ -2,7 +2,7 @@
 
 > **Date**: 16 March 2026
 > **Author**: The Arena (Raju, Radix, Zoltan, Arnold, Erdos)
-> **Status**: Draft -- executable blueprint
+> **Status**: Draft — executable blueprint
 > **Company**: SPIKE LAND LTD
 > **Current state**: qa-studio exists with a single tool-vs-browser benchmark.
 > 287 MCP tools live on mcp.spike.land. No browser-based QA surface exists.
@@ -13,14 +13,14 @@
 
 ## 1. Product Vision
 
-A browser-based QA testing platform accessible from any device -- even a $100
+A browser-based QA testing platform accessible from any device — even a $100
 Android phone with a cracked screen on 3G. No install, no setup, no CLI. Open
 spike.land/qa, enter a URL, get a health report. Done.
 
 The QA Arena turns every spike.land user into a tester. It surfaces the
 platform's own health as a first-class feature, not a hidden ops dashboard. When
 a persona chat breaks, when a playground page 500s, when a blog post has broken
-images -- the QA Arena catches it before any user files a bug report, and Raju
+images — the QA Arena catches it before any user files a bug report, and Raju
 (the QA persona) can run checks on demand during any conversation.
 
 > **Raju**: "I have tested spike.land for months. The platform breaks. Pages
@@ -30,7 +30,7 @@ images -- the QA Arena catches it before any user files a bug report, and Raju
 
 > **Zoltan**: "The honest truth: we have 1 organic Google visitor. If the site is
 > broken when that visitor arrives, we lose 100% of our funnel. QA is not a nice-
-> to-have. It is survival infrastructure. But let us be clear about scope -- we
+> to-have. It is survival infrastructure. But let us be clear about scope — we
 > are not building Datadog. We are building a lightweight health dashboard that
 > works on a phone."
 
@@ -41,10 +41,10 @@ images -- the QA Arena catches it before any user files a bug report, and Raju
 
 > **Erdos**: "The elegant formulation: QA Arena = f(url) -> health_report. One
 > function. The entire product is making that function call trivially accessible
-> from any surface -- browser, chat persona, cron alarm, MCP tool call."
+> from any surface — browser, chat persona, cron alarm, MCP tool call."
 
 > **Radix**: "The existing qa-studio has exactly one file: a benchmark comparing
-> Playwright vs MCP tool calls. The benchmark proves the thesis -- MCP tool calls
+> Playwright vs MCP tool calls. The benchmark proves the thesis — MCP tool calls
 > are 20x faster and require 57% less code than browser automation. The QA Arena
 > builds on that thesis: test via MCP tools + fetch, not via Playwright."
 
@@ -73,7 +73,7 @@ Enter any spike.land URL. Get an instant health report.
 
 **Architecture**:
 
-- MCP tool: `qa_health_check` -- accepts a URL, returns structured JSON report
+- MCP tool: `qa_health_check` — accepts a URL, returns structured JSON report
 - Backend: Cloudflare Worker fetches the target URL, parses HTML, runs checks
 - Frontend: Astro page at `/qa` with a single input field and results panel
 - No Playwright. No headless browser. Pure fetch + HTML parsing on the edge
@@ -122,10 +122,10 @@ Raju: [calls qa_run_suite with suite=core] "Core suite: 18/20 passed.
 
 - Raju persona definition in spike-chat with `qa_health_check`,
   `qa_persona_test`, and `qa_run_suite` tools bound to its tool list
-- Each tool is a standard MCP tool on mcp.spike.land -- Raju calls them the
+- Each tool is a standard MCP tool on mcp.spike.land — Raju calls them the
   same way any MCP client would
 - Raju's system prompt includes instructions to format results as concise,
-  actionable reports -- not raw JSON dumps
+  actionable reports — not raw JSON dumps
 
 **Done-when criteria**:
 
@@ -165,13 +165,13 @@ Pre-built test suites for spike.land's critical flows, runnable from the browser
 
 **Architecture**:
 
-- Frontend: Astro page at `/qa/suites` -- list of available suites, run button,
+- Frontend: Astro page at `/qa/suites` — list of available suites, run button,
   live results
 - Each test is a thin wrapper around `qa_health_check` or `qa_persona_test` MCP
   tool calls
 - Tests run sequentially from the browser via `fetch()` to the MCP endpoint
 - Results displayed as a pass/fail dashboard with expandable details per test
-- No Playwright, no WebDriver, no npm install -- pure browser JavaScript
+- No Playwright, no WebDriver, no npm install — pure browser JavaScript
 
 **Results dashboard**:
 
@@ -231,7 +231,7 @@ Cron-based health checks that catch regressions before users do.
 
 **Storage**:
 
-- D1 table: `qa_health_history` -- timestamp, url, status, response_time_ms,
+- D1 table: `qa_health_history` — timestamp, url, status, response_time_ms,
   content_hash, broken_links, a11y_score
 - Retention: 90 days rolling
 - Aggregations: hourly average response time, daily uptime percentage
@@ -289,7 +289,7 @@ Per-page WCAG 2.1 AA compliance checks, built into the health scanner.
 
 - Integrated into `qa_health_check` as an optional `--a11y` flag
 - Standalone MCP tool: `qa_accessibility_audit` for deep audits
-- HTML-only analysis (no JavaScript execution) -- works on edge Workers
+- HTML-only analysis (no JavaScript execution) — works on edge Workers
 - Returns structured report with pass/fail per criterion, severity, and fix
   suggestions
 
@@ -399,7 +399,7 @@ These are hard constraints, not aspirations.
 
 > **Arnold**: "I will test every QA Arena page on a Xiaomi Redmi 9A with Chrome
 > on 3G throttling. If it does not load in 2 seconds, if any button is too small
-> to tap, if the results require horizontal scrolling -- it ships with a blocker
+> to tap, if the results require horizontal scrolling — it ships with a blocker
 > bug. The Phone Test is the final gate."
 
 > **Zoltan**: "< 100KB is aggressive but achievable. The landing page hero
@@ -413,17 +413,17 @@ These are hard constraints, not aspirations.
 
 These are things we are deliberately NOT building in this phase:
 
-- **Visual regression testing** (screenshot diffing) -- requires headless
+- **Visual regression testing** (screenshot diffing) — requires headless
   browser, violates mobile-first constraint
-- **Performance profiling** (CPU flame charts, memory heaps) -- build Datadog,
+- **Performance profiling** (CPU flame charts, memory heaps) — build Datadog,
   not a health checker
-- **Cross-browser testing** (Safari, Firefox matrix) -- we check HTTP responses,
+- **Cross-browser testing** (Safari, Firefox matrix) — we check HTTP responses,
   not rendering engines
-- **Load testing / stress testing** -- different problem, different tool
-- **User journey recording** (session replay) -- privacy concerns, heavy payload
-- **Custom test authoring UI** -- power users use the MCP tools directly or
+- **Load testing / stress testing** — different problem, different tool
+- **User journey recording** (session replay) — privacy concerns, heavy payload
+- **Custom test authoring UI** — power users use the MCP tools directly or
   write code; the browser UI runs pre-built suites only
-- **Playwright integration in browser** -- the entire thesis of qa-studio is
+- **Playwright integration in browser** — the entire thesis of qa-studio is
   that MCP tool calls replace browser automation for health checks
 
 > **Erdos**: "The elegance of a system is inversely proportional to the number of
@@ -437,7 +437,7 @@ These are things we are deliberately NOT building in this phase:
 - Health checks only target `*.spike.land` URLs. No arbitrary URL scanning
   (prevents SSRF and abuse as a proxy/scanner)
 - Rate limiting: 10 checks/minute anonymous, 60 checks/minute authenticated
-- No user data is stored in health check results -- only URL, status code, and
+- No user data is stored in health check results — only URL, status code, and
   timing data
 - D1 health history is workspace-scoped, not publicly queryable
 - Webhook alert payloads contain URL + status only, no page content
@@ -593,7 +593,7 @@ These are things we are deliberately NOT building in this phase:
 > **Zoltan**: "Let me be the mirror: this is a 14-day plan for a team that has
 > shipped 28 packages and 287 MCP tools. The scope is tight. The constraints are
 > real. If we execute this, spike.land becomes the only MCP platform that eats
-> its own dog food on QA -- publicly, from a browser, on any device. That is a
+> its own dog food on QA — publicly, from a browser, on any device. That is a
 > story worth telling."
 
 > **Arnold**: "The Phone Test is the only test that matters. If my grandmother

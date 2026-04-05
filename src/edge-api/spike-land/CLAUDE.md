@@ -25,20 +25,28 @@ npm run db:migrate:remote  # Apply migrations to remote D1
 ## Architecture
 
 ```
-├── index.ts           # Worker entry point
-├── app.ts             # Hono app setup
-├── env.ts             # Environment bindings
-├── auth/              # Authentication (API key, JWT, OAuth device flow)
-├── db/                # Drizzle ORM schema and database
-├── kv/                # KV-backed categories and rate limiting
-├── mcp/               # MCP server, registry, search, embeddings
-├── procedures/        # RPC procedures
-├── routes/            # HTTP routes (MCP, OAuth, well-known)
-└── tools/             # 80+ MCP tool definitions
-    ├── bazdmeg/       # Code review quality gates
-    ├── career/        # Career growth tools
-    ├── store/         # App store tools
-    └── *.ts           # Individual tool files
+├── index.ts                    # Worker entry point
+├── api/                        # HTTP routes and app setup
+│   ├── app.ts                  # Hono app setup
+│   ├── middleware.ts            # Auth and CORS middleware
+│   ├── mcp.ts                  # MCP route
+│   ├── oauth.ts                # OAuth routes
+│   ├── well-known.ts           # Well-known endpoints
+│   └── *.ts                    # Other route handlers
+├── core-logic/                 # Business logic
+│   ├── env.ts                  # Environment bindings
+│   ├── auth/                   # Authentication (API key, JWT, OAuth device flow)
+│   ├── kv/                     # KV-backed categories and rate limiting
+│   ├── mcp/                    # MCP server, registry, search, embeddings
+│   │   └── manifest.ts         # Authoritative store/runtime registration
+│   ├── middleware/             # Shared middleware logic
+│   └── tools/                  # 80+ MCP tool definitions
+│       ├── bazdmeg/            # Code review quality gates
+│       ├── career/             # Career growth tools
+│       ├── store/              # App store tools (search, install, ratings, skills, A/B)
+│       └── *.ts                # Individual tool files
+├── db/                         # Drizzle ORM schema and database
+└── lazy-imports/               # Lazy-loaded modules
 ```
 
 **Key technologies**: MCP SDK, Hono, Drizzle ORM, Cloudflare Workers + D1, Zod.
@@ -51,7 +59,7 @@ npm run db:migrate:remote  # Apply migrations to remote D1
 - `core-logic/mcp/manifest.ts` is the authoritative store/runtime registration
   surface.
 - `core-logic/tools/store/` contains the store-search, install, ratings,
-  skills, and A/B tool families.
+  skills, and A/B (`ab.ts`) tool families.
 
 **Dependency**: `@spike-land-ai/shared`
 

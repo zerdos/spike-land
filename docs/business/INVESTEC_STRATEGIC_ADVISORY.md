@@ -1,5 +1,4 @@
-# Strategic Advisory: SPIKE LAND LTD
-## Moving from 38/100 to Investment-Ready
+# Strategic Advisory: SPIKE LAND LTD — Moving from 38/100 to Investment-Ready
 
 > **Prepared by**: Integrity-led specialist bank, investor advisory function
 > **Date**: March 2026

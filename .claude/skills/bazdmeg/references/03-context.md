@@ -82,8 +82,6 @@ immediately.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **CLAUDE.md outdated directory tree misleading agents.** Before this update,

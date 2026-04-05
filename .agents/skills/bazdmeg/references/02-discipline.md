@@ -104,8 +104,6 @@ question reality and make incorrect decisions.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **98 MCP tools / 94 test files = 96% file coverage.** Every MCP tool file in

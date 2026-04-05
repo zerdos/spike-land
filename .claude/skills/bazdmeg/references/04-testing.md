@@ -99,8 +99,6 @@ economics.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **Chess tools follow the Hourglass perfectly.** The 4 chess MCP test files

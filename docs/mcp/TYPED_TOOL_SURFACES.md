@@ -17,10 +17,10 @@ That means a tool like `getUserProfile` should be able to produce:
 
 ## What Already Exists In This Repo
 
-- [`src/mcp-tools/image-studio/core-logic/define-tool.ts`](/Users/z/Developer/spike-land-ai/src/mcp-tools/image-studio/core-logic/define-tool.ts): a fluent typed tool builder with validation, ownership checks, billing hooks, job hooks, and agent instructions
-- [`src/mcp-tools/image-studio/core-logic/tool-manifest.ts`](/Users/z/Developer/spike-land-ai/src/mcp-tools/image-studio/core-logic/tool-manifest.ts): convention-based manifest derivation from generated schemas
-- [`src/frontend/platform-frontend/core-logic/mcp-client.ts`](/Users/z/Developer/spike-land-ai/src/frontend/platform-frontend/core-logic/mcp-client.ts): web-side MCP session bootstrap and tool execution
-- [`src/monaco-editor/src/languages/definitions/mdx/mdx.ts`](/Users/z/Developer/spike-land-ai/src/monaco-editor/src/languages/definitions/mdx/mdx.ts): MDX language support already exists in the editor stack
+- [`src/mcp-tools/image-studio/core-logic/define-tool.ts`](../../src/mcp-tools/image-studio/core-logic/define-tool.ts): a fluent typed tool builder with validation, ownership checks, billing hooks, job hooks, and agent instructions
+- [`src/mcp-tools/image-studio/core-logic/tool-manifest.ts`](../../src/mcp-tools/image-studio/core-logic/tool-manifest.ts): convention-based manifest derivation from generated schemas
+- [`src/frontend/platform-frontend/core-logic/mcp-client.ts`](../../src/frontend/platform-frontend/core-logic/mcp-client.ts): web-side MCP session bootstrap and tool execution
+- [`src/monaco-editor/src/languages/definitions/mdx/mdx.ts`](../../src/monaco-editor/src/languages/definitions/mdx/mdx.ts): MDX language support already exists in the editor stack
 
 ## Architecture Direction
 

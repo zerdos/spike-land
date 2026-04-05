@@ -1,6 +1,10 @@
 # Voucher System Documentation
 
-> **Last Updated**: December 2025 **Status**: MVP Release
+> **Last Updated**: December 2025 **Status**: MVP Design (Pre-implementation)
+>
+> **Note:** Schema and code examples use Prisma + Next.js API routes from the
+> legacy stack. The current platform uses Cloudflare D1 + Drizzle + Hono (via
+> spike-edge). Adapt schema and endpoint paths accordingly when implementing.
 
 ---
 

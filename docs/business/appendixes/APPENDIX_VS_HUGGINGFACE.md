@@ -1,8 +1,8 @@
 # Spike Land vs Hugging Face — Competitive Analysis
 
-**Classification:** Confidential — For Investor Use
-**Date:** March 2026
-**Version:** 1.0
+**Classification: Confidential — For Investor Use**
+**Date: March 2026**
+**Version: 1.0**
 
 ---
 

@@ -861,13 +861,13 @@ psql $DATABASE_URL -c "SELECT 1;"
 ## File Locations
 
 - **Route Handler**:
-  `/Users/z/Developer/spike-land-ai/spike-land/src/app/api/gallery/public-albums/route.ts`
+  `src/app/api/gallery/public-albums/route.ts`
 - **Unit Tests**:
-  `/Users/z/Developer/spike-land-ai/spike-land/src/app/api/gallery/public-albums/route.test.ts`
+  `src/app/api/gallery/public-albums/route.test.ts`
 - **Documentation**:
-  `/Users/z/Developer/spike-land-ai/spike-land/docs/API_PUBLIC_ALBUMS_GALLERY.md`
+  `docs/api/PUBLIC_ALBUMS_GALLERY.md`
 - **Database Schema**:
-  `/Users/z/Developer/spike-land-ai/spike-land/prisma/schema.prisma`
+  `prisma/schema.prisma`
 
 ## Changelog
 

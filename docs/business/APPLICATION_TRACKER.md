@@ -290,7 +290,6 @@ voice/audio features become a priority.
 | -------------------------------------------------- | ----------------- |
 | [ACCELERATOR_ROADMAP.md](./ACCELERATOR_ROADMAP.md) | Strategy overview |
 | [BUSINESS_STRUCTURE.md](./BUSINESS_STRUCTURE.md)   | Company details   |
-| [ZOLTAN_ERDOS.md](./ZOLTAN_ERDOS.md)               | Founder profile   |
 
 ---
 

@@ -2,11 +2,11 @@
 
 ## Overview
 
-QA Studio browser automation utilities for spike.land. Dual runtime:
+Browser automation utilities for spike.land. Dual runtime:
 - **Node.js CLI**: Playwright adapter (local dev, CI)
 - **Cloudflare Workers**: Puppeteer adapter (Browser Rendering API, production)
 
-Published as `@spike-land-ai/qa-studio`.
+Package name: `browser-automation`.
 
 ## Commands
 
@@ -22,24 +22,26 @@ npm run lint          # ESLint
 ## Architecture
 
 ```
-src/qa-studio/
-  adapter.ts              # BrowserAdapter + BrowserPage interfaces, shared rebuildTree()
-  adapter-playwright.ts   # Playwright impl (Node.js)
-  adapter-puppeteer.ts    # @cloudflare/puppeteer impl (CF Workers)
-  browser-session.ts      # Thin facade: tab management, idle timeout, snapshots
-  narrate.ts              # Full + compact narration engines
-  tools.ts                # 10 MCP tools (web_navigate, web_read, etc.)
-  types.ts                # TypeScript type definitions
-  session-do.ts           # BrowserSessionDO Durable Object
-  worker-entry.ts         # Hono app (CF Workers entry)
-  env.ts                  # Workers Env bindings type
-  mcp-server.ts           # Node.js MCP server entry (STDIO/HTTP)
-  http-server.ts          # Express SSE transport (legacy, to be removed)
-  index.ts                # Re-exports
-
-packages/qa-studio/
-  wrangler.toml           # Deploy config for CF Workers
-  package.json            # npm package config
+├── api/
+│   └── worker-entry.ts       # Hono app (CF Workers entry)
+├── core-logic/
+│   ├── adapter.ts            # BrowserAdapter + BrowserPage interfaces, shared rebuildTree()
+│   ├── browser-session.ts    # Thin facade: tab management, idle timeout, snapshots
+│   ├── env.ts                # Workers Env bindings type
+│   ├── narrate.ts            # Full + compact narration engines
+│   └── types.ts              # TypeScript type definitions
+├── edge/
+│   ├── adapter-puppeteer.ts  # @cloudflare/puppeteer impl (CF Workers)
+│   └── session-do.ts         # BrowserSessionDO Durable Object
+├── mcp/
+│   ├── mcp-server.ts         # Node.js MCP server entry (STDIO/HTTP)
+│   ├── tools.ts              # MCP tools (web_navigate, web_read, etc.)
+│   └── link-checker-tools.ts # Link checker MCP tools
+├── testing/
+│   └── adapter-playwright.ts # Playwright impl (Node.js)
+├── lazy-imports/
+│   └── http-server.ts        # Express SSE transport (legacy)
+└── index.ts                  # Re-exports
 ```
 
 ### Adapter Pattern
@@ -58,8 +60,8 @@ shared `rebuildTree()` function to produce identical `AccessibilityNode` trees.
 ### MCP Server Modes
 
 1. **STDIO Transport**: `npm run mcp` (default, local dev)
-2. **HTTP Transport**: `npm run mcp:http` (Express SSE, local web UI)
-3. **CF Workers**: `cd packages/qa-studio && npx wrangler deploy`
+2. **HTTP Transport**: `npm run mcp:http` (Express SSE via `lazy-imports/http-server.ts`, local web UI)
+3. **CF Workers**: deploy via wrangler from the packages shim directory
 
 ## Peer Dependencies
 
@@ -78,4 +80,4 @@ shared `rebuildTree()` function to produce identical `AccessibilityNode` trees.
 - Shared workflow: `.github/.github/workflows/ci-publish.yml`
 - Changesets for versioning
 - Publishes to GitHub Packages (`@spike-land-ai/*`)
-- Workers deploy: `cd packages/qa-studio && npx wrangler deploy`
+- Workers deploy: via wrangler from the packages shim directory

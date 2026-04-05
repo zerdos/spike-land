@@ -1,7 +1,7 @@
 ---
 name: Spike Chat
 slug: spike-chat
-emoji: "\u26A1"
+emoji: "⚡"
 description: AI chat assistant powered by Grok with Bayesian memory and multi-stage pipeline.
 tagline: Remembers what matters. Forgets what doesn't.
 category: Agents & Collaboration

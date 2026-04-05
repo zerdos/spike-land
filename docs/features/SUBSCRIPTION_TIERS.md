@@ -1,5 +1,9 @@
 # Platform Subscription Tiers
 
+> **Note:** The schema examples below use Prisma syntax from the legacy Next.js
+> stack. The current platform uses Cloudflare D1 with Drizzle. Tier logic and
+> pricing remain accurate; adapt schema definitions to Drizzle when implementing.
+
 This document describes the platform-level subscription system for Spike Land.
 
 ## Overview

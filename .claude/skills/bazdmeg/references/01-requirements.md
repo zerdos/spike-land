@@ -71,8 +71,6 @@ not know what data already existed on the server or which files were relevant.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **Store's `StoreApp` interface as requirements-as-code.** The

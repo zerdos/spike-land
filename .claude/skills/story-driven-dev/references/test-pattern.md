@@ -1,7 +1,7 @@
 # MCP Tool Test Pattern
 
-Based on patterns from `vault.test.ts` and `tool-factory.test.ts` in this
-codebase.
+Based on patterns from test files in
+`src/edge-api/spike-land/core-logic/tools/` in this codebase.
 
 ## Full Test Template
 

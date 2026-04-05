@@ -4,13 +4,13 @@
 
 This document is meant to be discussed as a podcast episode. The audience is broad: Zoltán's sister, paramedics, GPs, anyone who might encounter a person whose emotional regulation depends on their animals. Explain everything simply. Use no medical jargon without defining it. Be warm but firm. The goal is to make a 10-year-old understand why taking Zoltán away from his dogs would make things worse, not better.
 
-The author is Zoltán, a Hungarian programmer living alone in Brighton, UK, with two dogs — a 4-year-old golden retriever named Mad Max and a 4-month-old black Labrador puppy. He has ADHD. He is the founder of spike.land. On the night of March 17, 2026, this actually happened.
+The author is Zoltán, a Hungarian programmer living alone in Brighton, UK, with two dogs — a golden retriever named Pixel and a 4-month-old black Labrador puppy named Mad Max. He has ADHD. He is the founder of spike.land. On the night of March 17, 2026, this actually happened.
 
 ---
 
 ## What Happened
 
-It's 11 PM. Zoltán had taken a prescribed sleeping pill two hours earlier. His body was finally shutting down. He was in medicated sleep.
+It was 11 PM. Zoltán had taken a prescribed sleeping pill two hours earlier. His body was finally shutting down. He was in medicated sleep.
 
 Then the paramedics arrived.
 

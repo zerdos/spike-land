@@ -71,7 +71,7 @@ Test structure per tool:
    `{ isError: true }`
 4. **Edge cases** — quota limits, already-deleted items, concurrent access
 
-Run tests: `yarn vitest run path/to/tools/my-tool.test.ts`
+Run tests: `cd src/edge-api/spike-land && npm test`
 
 These tests run in milliseconds. They never flake. They test the same business
 logic that E2E tests would, without a browser.
@@ -107,6 +107,6 @@ Build UI as a thin rendering layer on top of the already-tested business logic.
 - [ ] Handler returns `CallToolResult` (success and error paths)
 - [ ] Unit tests cover happy path, errors, and edge cases
 - [ ] Tests pass: `yarn vitest run`
-- [ ] Category added to `CATEGORY_DESCRIPTIONS` in `tool-registry.ts`
-- [ ] Registration function called in `mcp-server.ts`
+- [ ] Category added to `CATEGORY_DESCRIPTIONS` in `src/edge-api/spike-land/core-logic/mcp/categories.ts`
+- [ ] Tool registration exported from `src/edge-api/spike-land/core-logic/tools/index.ts`
 - [ ] Agent tested the tools by calling them directly

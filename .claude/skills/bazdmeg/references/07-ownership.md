@@ -78,8 +78,6 @@ chaos.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **ADHD-Safe Protocol implements sustainable work.** The 5 hard rules in

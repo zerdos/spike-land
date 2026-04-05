@@ -426,10 +426,9 @@ agent maintains their own notes file with health scores and experiences.
 
 | Document                                         | Description                             |
 | ------------------------------------------------ | --------------------------------------- |
-| [ZOLTAN_ERDOS.md](./ZOLTAN_ERDOS.md)             | Founder profile, background, and vision |
 | [BUSINESS_STRUCTURE.md](./BUSINESS_STRUCTURE.md) | Company legal structure                 |
 
 ---
 
-**Document Owner**: [Founder](./ZOLTAN_ERDOS.md) (CEO) | **Last Updated**:
+**Document Owner**: Founder (CEO) | **Last Updated**:
 February 26, 2026 | **Version**: 1.3

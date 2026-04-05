@@ -1,4 +1,9 @@
-# Security Audit Report - Spike Land Platform
+# Security Audit Report - Spike Land Platform (Historical — Next.js Era)
+
+> **Note:** This report audited the legacy Next.js + Prisma + NextAuth stack
+> (December 2025). The platform has since migrated to Cloudflare Workers +
+> Better Auth + D1. For the current production audit, see
+> [SPIKE_EDGE_AUDIT.md](./SPIKE_EDGE_AUDIT.md) (2026-03-04).
 
 **Audit Date:** December 10, 2025 **Auditor:** Security Team (Automated Security
 Audit) **Platform Version:** Main Branch (commit: 14b22b6) **Scope:** Full
@@ -503,8 +508,8 @@ with CSP fixes)
 
 1. **No Centralized SIEM Integration** (Informational)
    - Logs to console only
-   - **Recommendation:** Use AWS CloudWatch and structured logging for
-     production monitoring
+   - **Recommendation:** Use Cloudflare Logpush + R2/external sink for
+     production log persistence (platform runs on Cloudflare Workers, not AWS)
    - **Priority:** Pre-launch (Medium)
 
 2. **No Alerting on Security Events** (Informational)
@@ -658,7 +663,7 @@ with CSP fixes)
    - Impact: Medium (for production)
    - Effort: Medium
    - Location: Infrastructure
-   - Action: Configure AWS CloudWatch and structured logging
+   - Action: Configure Cloudflare Logpush to R2 or external SIEM
 
 6. **Set Up Security Alerts**
    - Impact: Medium

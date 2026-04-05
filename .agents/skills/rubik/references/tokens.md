@@ -2,7 +2,7 @@
 
 ## Font Configuration
 
-### Tailwind v4 `@theme` block (in `packages/spike-app/app.css`)
+### Tailwind v4 `@theme` block (in `src/frontend/platform-frontend/app.css`)
 
 ```css
 @theme {

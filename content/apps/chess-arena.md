@@ -30,6 +30,7 @@ graph:
     inputs:
       gameId: from:chess_create_game.gameId
     outputs: {}
+    always_available: false
   chess_get_leaderboard:
     inputs: {}
     outputs: {}

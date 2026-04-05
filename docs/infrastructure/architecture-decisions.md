@@ -6,7 +6,7 @@
 **Rationale:**
 - Zero cold starts and global distribution out-of-the-box.
 - Integrated edge networking, security, and routing.
-- Eliminates the need for complex infrastructure-as-code (Terraform) in the early stages; `wrangler` is sufficient.
+- Worker deployments managed with `wrangler`; WAF/cache/zone settings managed with Terraform (see [CLOUDFLARE_SETUP.md](./CLOUDFLARE_SETUP.md)). Terraform scope is intentionally narrow: zone-level settings only, not application deployments.
 - Reduces infrastructure management time to near-zero, maximizing time spent on product.
 
 ## 2. Cloudflare D1 over Traditional Postgres

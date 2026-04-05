@@ -53,7 +53,7 @@ echo ""
 check_json "Health endpoint" "$BASE_URL/health" ".status" "ok"
 
 # 2. API health with D1 check
-check_json "API health (D1)" "$BASE_URL/api/health" ".d1" "ok"
+check_json "API health (D1)" "$BASE_URL/api/health" ".checks.d1.status" "ok"
 
 # 3. Auth endpoint reachable (returns null session or valid session)
 check "Auth get-session" "$BASE_URL/api/auth/get-session" "200"

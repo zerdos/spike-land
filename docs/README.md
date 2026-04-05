@@ -121,13 +121,14 @@ docs/
 
 ## Source-Of-Truth Notes
 
-- Source code lives under `src/**`.
+- Source code lives under `src/`.
 - Deployable and publishable shims live under `packages/*`.
+- Yarn workspaces: `packages/*` and `src/monaco-editor`.
 - The app store runtime is primarily implemented in:
-  - `src/edge-api/spike-land`
-  - `src/edge-api/main`
-  - `src/frontend/platform-frontend`
-  - `src/core/block-sdk`
+  - `src/edge-api/spike-land` — MCP registry, categories, store tool families, OAuth
+  - `src/edge-api/main` — first-party edge proxy routes, experiments engine
+  - `src/frontend/platform-frontend` — store UI and app-facing pages
+  - `src/core/block-sdk` — portable D1/IndexedDB/memory storage layer
 
 If you are editing behavior, prefer those source directories. If you are
 editing Worker deployment settings, follow the matching `packages/*` shim.

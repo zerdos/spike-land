@@ -82,7 +82,7 @@ For `spike-edge`, prefer a three-layer split:
 - a small number of Worker smoke tests for runtime-specific seams
 
 Detailed guidance and current migration status live in
-[EDGE_API_TESTING.md](/Users/z/Developer/spike-land-ai/docs/develop/EDGE_API_TESTING.md).
+[EDGE_API_TESTING.md](./EDGE_API_TESTING.md).
 
 ### E2E Tests (5%)
 

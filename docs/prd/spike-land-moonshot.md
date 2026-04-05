@@ -2,7 +2,7 @@
 
 > **Date**: 16 March 2026
 > **Author**: The Math Arena (Radix, Zoltan, Arnold, Erdos)
-> **Status**: Draft -- executable blueprint
+> **Status**: Draft — executable blueprint
 > **Company**: SPIKE LAND LTD
 > **Current state**: 80+ hosted MCP tools, 1,214 clones, 0 stars, 1 organic
 > Google visitor, 1 external tester, 28 packages, Stripe integrated, all
@@ -13,7 +13,7 @@
 ## 1. Product Vision: What spike.land Becomes in 6 Months
 
 spike.land becomes the place where developers go to discover, test, compose, and
-ship MCP tools -- the way npm is for packages, but for AI-callable tool
+ship MCP tools — the way npm is for packages, but for AI-callable tool
 contracts. Not a marketplace of links. A live runtime where every tool is
 callable from the browser, the CLI, or any agent, and where the act of trying a
 tool IS the onboarding.
@@ -55,7 +55,7 @@ Every tool on spike.land gets a live, interactive playground page. You land on
 No signup. No API key. No CLI install. Type input, see output.
 
 This is the single biggest differentiator. No other MCP registry lets you
-actually run the tool from the discovery page. Smithery, Glama, mcp.run -- they
+actually run the tool from the discovery page. Smithery, Glama, mcp.run — they
 all show you a README and tell you to go install something.
 
 **What exists today**: The MCP runtime is live. Tools are callable. The missing
@@ -122,7 +122,7 @@ composition UI and the workflow-as-tool packaging.
 ### Feature 3: Spike Chat with Live Tool Calling
 
 A chat interface where the AI personas (Radix, Zoltan, Arnold, Erdos) are not
-just conversational -- they actively call tools from the registry during the
+just conversational — they actively call tools from the registry during the
 conversation. Ask Radix to review your code and he calls `code_review`. Ask
 Arnold to test your landing page and he calls `qa_browser_automation`.
 
@@ -464,7 +464,7 @@ is the one number that proves the product is being used.
 
 ---
 
-## 7. The First 30 Days -- Concrete Action Plan
+## 7. The First 30 Days — Concrete Action Plan
 
 ### Week 1 (Days 1-7): The Playground Sprint
 

@@ -230,5 +230,4 @@ As a company director, you must:
 
 | Document                               | Description                             |
 | -------------------------------------- | --------------------------------------- |
-| [ZOLTAN_ERDOS.md](./ZOLTAN_ERDOS.md)   | Founder profile, background, and vision |
 | [CEO_DECISIONS.md](./CEO_DECISIONS.md) | Strategic decisions log                 |

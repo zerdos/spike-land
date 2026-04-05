@@ -362,7 +362,7 @@ Copy.ai" **Goal**: Understand competitive positioning
 | [PITCH_DECK_OUTLINE.md](./PITCH_DECK_OUTLINE.md)   | Slide-by-slide pitch deck structure |
 | [APPLICATION_TRACKER.md](./APPLICATION_TRACKER.md) | Track application status            |
 | [BUSINESS_STRUCTURE.md](./BUSINESS_STRUCTURE.md)   | Company details                     |
-| [FEATURES.md](./FEATURES.md)                       | Product documentation               |
+| [FEATURES.md](../features/FEATURES.md)              | Product documentation               |
 
 ---
 

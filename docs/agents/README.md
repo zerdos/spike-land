@@ -6,7 +6,7 @@ This note records a local benchmark run on March 9, 2026 for `claude`, `gemini`,
 
 - `claude` 2.1.71: authenticated and usable locally
 - `gemini` 0.32.1: authenticated and usable locally
-- `jules` v0.1.42: authenticated, but `spike-land-ai/spike-land-ai` is not connected in Jules
+- `jules` v0.1.42: authenticated, but `spike-land-ai/spike-land` is not connected in Jules
 
 ## Benchmark
 
@@ -18,7 +18,7 @@ This note records a local benchmark run on March 9, 2026 for `claude`, `gemini`,
 
 ## Findings
 
-- The root [`package.json`](/Users/z/Developer/spike-land-ai/package.json) and [`README.md`](/Users/z/Developer/spike-land-ai/README.md) disagree about workspace layout.
+- The root `package.json` and `README.md` in the umbrella repo disagree about workspace layout.
 - Claude handled the local repository context best, including dirty files.
 - Gemini can write local files successfully, but startup stderr is noisy because of local MCP discovery and config warnings.
 - Jules operates on connected remote repositories, so it does not see this local checkout's unstaged changes.
@@ -26,7 +26,7 @@ This note records a local benchmark run on March 9, 2026 for `claude`, `gemini`,
 ## Recommended Roles
 
 - Claude: first choice for scoped code edits, debugging, repo inspection, and fast local iteration.
-- Gemini: first choice for test-quality work, coverage closure, assertion tightening, and dependency slimming. This repo already uses it in [`scripts/gemini-review.sh`](/Users/z/Developer/spike-land-ai/scripts/gemini-review.sh) and [`scripts/typecheck-autofix.sh`](/Users/z/Developer/spike-land-ai/scripts/typecheck-autofix.sh). The dedicated helper is [`scripts/agents/gemini-test-quality.sh`](/Users/z/Developer/spike-land-ai/scripts/agents/gemini-test-quality.sh).
+- Gemini: first choice for test-quality work, coverage closure, assertion tightening, and dependency slimming.
 - Jules: async parallel worker for independent tasks on repos that are already connected in Jules. Avoid it for work that depends on local uncommitted changes.
 
 ## Quality Defaults
@@ -40,7 +40,6 @@ This note records a local benchmark run on March 9, 2026 for `claude`, `gemini`,
 
 - `yarn agent:claude:plan "Inspect package.json and README.md for workspace mismatches"`
 - `yarn agent:gemini:plan "Review the changed files for obvious bugs"`
-- `yarn agent:gemini:test-quality "Improve coverage for src/edge-api/main/api/routes/spa-route-logic.ts without adding dependencies"`
 - `yarn agent:status`
 - `yarn agent:triage:outage`
 - `yarn agent:jules:repos`
@@ -49,11 +48,11 @@ This note records a local benchmark run on March 9, 2026 for `claude`, `gemini`,
 
 ## Orchestration
 
-The first orchestrator lives at [`scripts/agents/orchestrate.ts`](/Users/z/Developer/spike-land-ai/scripts/agents/orchestrate.ts).
+The first orchestrator lives at `scripts/agents/orchestrate.ts` in the umbrella repo.
 
 - `status` verifies agent availability, auth state, and Jules repo connectivity.
 - `triage-outage` gathers a live production baseline, fans out read-only prompts to Claude and Gemini in parallel, queues Jules if the repo is connected, and writes a merged incident brief plus raw artifacts under `.prompt-history/runs/<date>/<run-id>/`.
 
 ## Next Step
 
-If you want Jules in the normal loop for this repo, connect `spike-land-ai/spike-land-ai` in Jules first. Until then, treat Jules as available for other connected repos only.
+If you want Jules in the normal loop for this repo, connect `spike-land-ai/spike-land` in Jules first. Until then, treat Jules as available for other connected repos only.

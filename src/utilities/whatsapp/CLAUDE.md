@@ -43,3 +43,10 @@ npm start            # Run the MCP server
 - Never add `eslint-disable` or `@ts-ignore` comments
 - TypeScript strict mode
 - All business logic must have test coverage
+
+## CI/CD
+
+- Shared workflow: `.github/.github/workflows/ci-publish.yml`
+- Changesets for versioning
+- Publishes to GitHub Packages (`@spike-land-ai/*`)
+- No internal `@spike-land-ai` dependencies (leaf package)

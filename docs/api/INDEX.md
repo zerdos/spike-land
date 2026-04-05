@@ -4,16 +4,15 @@ Complete reference guide for all API documentation files and endpoints.
 
 ## Quick Navigation
 
-| Document                                               | Purpose                    | Audience           | Length      |
-| ------------------------------------------------------ | -------------------------- | ------------------ | ----------- |
-| [openapi.yaml](#openapiyaml)                           | Complete API specification | Developers, tools  | 1,598 lines |
-| [README.md](#readmemd)                                 | Getting started with API   | All developers     | 349 lines   |
-| [INTEGRATION_GUIDE.md](#integration_guidemd)           | Implementation patterns    | Backend developers | 571 lines   |
-| [CURL_EXAMPLES.md](#curl_examplesmd)                   | Quick testing reference    | QA, API testers    | 680 lines   |
-| [IMPLEMENTATION_SUMMARY.md](#implementation_summarymd) | Project summary            | Project managers   | 389 lines   |
-| [QUICK_REFERENCE.md](#quick_referencemd)               | Essential info cheat sheet | All developers     | 284 lines   |
-| [ALBUM_ENDPOINTS.md](#album_endpointsmd)               | Album API details          | Backend developers | 666 lines   |
-| [IMAGE_ENDPOINTS.md](#image_endpointsmd)               | Image API details          | Backend developers | 776 lines   |
+| Document                                     | Purpose                    | Audience           |
+| -------------------------------------------- | -------------------------- | ------------------ |
+| [openapi.yaml](#openapiyaml)                 | Complete API specification | Developers, tools  |
+| [README.md](#readmemd)                       | Getting started with API   | All developers     |
+| [INTEGRATION_GUIDE.md](#integration_guidemd) | Implementation patterns    | Backend developers |
+| [CURL_EXAMPLES.md](#curl_examplesmd)         | Quick testing reference    | QA, API testers    |
+| [ALBUM_ENDPOINTS.md](#album_endpointsmd)     | Album API details          | Backend developers |
+| [IMAGE_ENDPOINTS.md](#image_endpointsmd)     | Image API details          | Backend developers |
+| [API_REFERENCE.md](./API_REFERENCE.md)       | Full endpoint reference    | All developers     |
 
 **Total Documentation**: 5,313 lines + existing API_REFERENCE.md
 
@@ -414,56 +413,6 @@ Quick reference for testing API with cURL:
 
 ---
 
-### IMPLEMENTATION_SUMMARY.md
-
-**Type**: Project Summary **Format**: Markdown **Size**: 389 lines, 11 KB
-
-Comprehensive summary of the API documentation project:
-
-- Deliverables overview
-- Architecture decisions and rationale
-- Tools and technologies
-- Integration points with existing API
-- Best practices implemented
-- Next steps (phased roadmap)
-- File locations and organization
-- Key metrics and statistics
-- Testing and validation approach
-- Support and maintenance guidelines
-
-**Audience**: Project managers, architects **Read Time**: 15-20 minutes **Key
-Sections**:
-
-- Phase 1: Validation (Complete)
-- Phase 2: Endpoint Documentation (Pending)
-- Phase 3: SDK Generation (Pending)
-- Phase 4: Documentation Deployment (Pending)
-- Phase 5: Maintenance (Ongoing)
-
----
-
-### QUICK_REFERENCE.md
-
-**Type**: Cheat Sheet **Format**: Markdown **Size**: 284 lines, 7 KB
-
-Essential information at a glance:
-
-- API base URLs
-- Authentication quick setup
-- Token costs and regeneration
-- Rate limits summary
-- Common HTTP status codes
-- Error response format
-- Key endpoints list
-- Query parameter reference
-- Response header guide
-- Useful tools and links
-
-**Audience**: All developers (bookmark this!) **Read Time**: 5-10 minutes
-**Use**: Quick lookup during development
-
----
-
 ### ALBUM_ENDPOINTS.md
 
 **Type**: Endpoint Documentation **Format**: Markdown **Size**: 666 lines, 16 KB
@@ -532,12 +481,11 @@ Detailed documentation for image operations:
 ### Frontend Developer
 
 1. Start: **README.md** (5 min)
-2. Quick ref: **QUICK_REFERENCE.md** (5 min)
-3. Examples: **CURL_EXAMPLES.md** (15 min)
-4. Implementation: **INTEGRATION_GUIDE.md** (20 min)
-5. Reference: **openapi.yaml** (as needed)
+2. Examples: **CURL_EXAMPLES.md** (15 min)
+3. Implementation: **INTEGRATION_GUIDE.md** (20 min)
+4. Reference: **openapi.yaml** (as needed)
 
-**Total Time**: ~45 minutes to get started
+**Total Time**: ~40 minutes to get started
 
 ### Backend Developer
 
@@ -551,29 +499,26 @@ Detailed documentation for image operations:
 
 ### QA / Test Engineer
 
-1. Quick ref: **QUICK_REFERENCE.md** (5 min)
-2. Examples: **CURL_EXAMPLES.md** (25 min)
-3. Endpoints: **ALBUM_ENDPOINTS.md** & **IMAGE_ENDPOINTS.md** (15 min)
-4. Reference: **openapi.yaml** (as needed)
+1. Examples: **CURL_EXAMPLES.md** (25 min)
+2. Endpoints: **ALBUM_ENDPOINTS.md** & **IMAGE_ENDPOINTS.md** (15 min)
+3. Reference: **openapi.yaml** (as needed)
 
-**Total Time**: ~45 minutes to start testing
+**Total Time**: ~40 minutes to start testing
 
 ### DevOps / API Consumer
 
 1. Overview: **README.md** (5 min)
-2. Reference: **QUICK_REFERENCE.md** (5 min)
-3. Spec: **openapi.yaml** (15 min)
-4. Integration: **INTEGRATION_GUIDE.md** (20 min)
+2. Spec: **openapi.yaml** (15 min)
+3. Integration: **INTEGRATION_GUIDE.md** (20 min)
 
-**Total Time**: ~45 minutes for integration
+**Total Time**: ~40 minutes for integration
 
 ### Project Manager / Architect
 
-1. Overview: **IMPLEMENTATION_SUMMARY.md** (15 min)
-2. Architecture: **README.md** (10 min)
-3. Details: **openapi.yaml** (20 min)
+1. Architecture: **README.md** (10 min)
+2. Details: **openapi.yaml** (20 min)
 
-**Total Time**: ~45 minutes for big picture
+**Total Time**: ~30 minutes for big picture
 
 ---
 
@@ -581,7 +526,7 @@ Detailed documentation for image operations:
 
 ### "I need to understand the API quickly"
 
-- Read: QUICK_REFERENCE.md (5 min)
+- Read: README.md (5 min)
 - Then: INTEGRATION_GUIDE.md (20 min)
 - Location: README.md → INTEGRATION_GUIDE.md
 

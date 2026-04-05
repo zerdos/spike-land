@@ -56,6 +56,6 @@ export async function myTool(
 
 ---
 
-> 📝 **Continuous Improvement** We encourage agents and developers to
+> **Continuous Improvement** We encourage agents and developers to
 > continually improve these guidelines.
-> [✏️ Edit this document on GitHub](https://github.com/spike-land-ai/spike-land/edit/main/docs/architecture/MCP_TOOL_GUIDELINES.md)
+> [Edit this document on GitHub](https://github.com/spike-land-ai/spike-land/edit/main/docs/mcp/TOOL_GUIDELINES.md)

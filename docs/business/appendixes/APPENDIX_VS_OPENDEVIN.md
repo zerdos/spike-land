@@ -1,6 +1,6 @@
 # Spike Land vs OpenDevin (OpenHands) — Competitive Analysis
 
-**Confidential — For Investor Use**
+**Classification: Confidential — For Investor Use**
 **Date: March 2026**
 **SPIKE LAND LTD | Company No. 16906682 | Incorporated 12 December 2025**
 

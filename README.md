@@ -18,7 +18,7 @@
 ```bash
 git clone https://github.com/spike-land-ai/spike-land
 cd spike.land && npm install
-cd src/spike-app && npm run dev
+cd src/monaco-editor && npm run dev:vite
 ```
 
 ## Architecture
@@ -29,30 +29,32 @@ cd src/spike-app && npm run dev
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| [spike-app](./src/spike-app) | Frontend SPA — Vite + TanStack Router + React |
-| [spike-edge](./src/spike-edge) | Primary edge API — Hono on Cloudflare Workers |
-| [spike-land-mcp](./src/spike-land-mcp) | MCP registry — 80+ tools, D1-backed |
-| [mcp-auth](./src/mcp-auth) | Auth service — Better Auth + Drizzle |
-| [mcp-server-base](./src/mcp-server-base) | Shared MCP server utilities |
-| [code](./src/code) | Monaco-based collaborative code editor |
-| [spike-land-backend](./src/spike-land-backend) | Durable Objects for real-time sync |
-| [transpile](./src/transpile) | Edge transpilation via esbuild-wasm |
-| [react-ts-worker](./src/react-ts-worker) | From-scratch React with Fiber reconciler |
-| [esbuild-wasm](./src/esbuild-wasm) | Cross-platform esbuild WASM binary |
-| [esbuild-wasm-mcp](./src/esbuild-wasm-mcp) | MCP server for esbuild lifecycle |
-| [shared](./src/shared) | Shared types, Zod validations, constants |
-| [spike-cli](./src/spike-cli) | MCP multiplexer CLI with Claude chat |
-| [mcp-image-studio](./src/mcp-image-studio) | AI image generation & enhancement (42 tools) |
-| [spike-review](./src/spike-review) | AI code review with quality gates |
-| [hackernews-mcp](./src/hackernews-mcp) | HackerNews MCP integration |
-| [openclaw-mcp](./src/openclaw-mcp) | OpenClaw gateway bridge |
-| [vibe-dev](./src/vibe-dev) | Docker-based dev workflow tool |
-| [chess-engine](./src/chess-engine) | Chess ELO engine with game/challenge managers |
-| [qa-studio](./src/qa-studio) | Browser automation (Playwright) |
-| [state-machine](./src/state-machine) | Statechart engine with guard parser |
-| [video](./src/video) | Programmatic video via Remotion |
+Packages are deploy shims under `packages/`; source lives under `src/`.
+
+| Package | Source | Description |
+|---------|--------|-------------|
+| [spike-edge](./packages/spike-edge) | `src/edge-api/main` | Primary edge API — Hono on Cloudflare Workers |
+| [spike-land-mcp](./packages/spike-land-mcp) | `src/edge-api/spike-land` | MCP registry — 80+ tools, D1-backed |
+| [mcp-auth](./packages/mcp-auth) | `src/edge-api/auth` | Auth service — Better Auth + Drizzle |
+| [spike-land-backend](./packages/spike-land-backend) | `src/edge-api/backend` | Durable Objects for real-time sync |
+| [transpile](./packages/transpile) | `src/edge-api/transpile` | Edge transpilation via esbuild-wasm |
+| [spike-chat](./packages/spike-chat) | `src/edge-api/spike-chat` | Chat API with context compression |
+| [mcp-server-base](./packages/mcp-server-base) | `src/core/server-base` | Shared MCP server utilities |
+| [react-ts-worker](./packages/react-ts-worker) | `src/core/react-engine` | From-scratch React with Fiber reconciler |
+| [shared](./packages/shared) | `src/core/shared-utils` | Shared types, Zod validations, constants |
+| [block-sdk](./packages/block-sdk) | `src/core/block-sdk` | Portable D1/IndexedDB/memory storage |
+| [esbuild-wasm](./packages/esbuild-wasm) | `packages/esbuild-wasm` | Cross-platform esbuild WASM binary |
+| [esbuild-wasm-mcp](./packages/esbuild-wasm-mcp) | `src/mcp-tools/esbuild-wasm` | MCP server for esbuild lifecycle |
+| [spike-cli](./packages/spike-cli) | `src/cli/spike-cli` | MCP multiplexer CLI with Claude chat |
+| [mcp-image-studio](./packages/mcp-image-studio) | `src/mcp-tools/image-studio` | AI image generation & enhancement (42 tools) |
+| [spike-review](./packages/spike-review) | `src/mcp-tools/code-review` | AI code review with quality gates |
+| [hackernews-mcp](./packages/hackernews-mcp) | `src/mcp-tools/hackernews` | HackerNews MCP integration |
+| [openclaw-mcp](./packages/openclaw-mcp) | `src/mcp-tools/openclaw` | OpenClaw gateway bridge |
+| [vibe-dev](./packages/vibe-dev) | `src/cli/docker-dev` | Docker-based dev workflow tool |
+| [chess-engine](./packages/chess-engine) | `src/core/chess` | Chess ELO engine with game/challenge managers |
+| [qa-studio](./packages/qa-studio) | `src/core/browser-automation` | Browser automation (Playwright) |
+| [state-machine](./packages/state-machine) | `src/core/statecharts` | Statechart engine with guard parser |
+| [educational-videos](./packages/educational-videos) | `packages/educational-videos` | Programmatic video via Remotion |
 
 ## MCP Ecosystem
 

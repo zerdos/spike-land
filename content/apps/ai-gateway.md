@@ -46,7 +46,7 @@ AI Gateway is now two things at once:
 - an OpenAI-compatible HTTP endpoint that lets existing clients talk to spike.land without learning a new request format
 
 If you want the HTTP surface specifically, open the dedicated playground at
-[#](#). That route explains the endpoint, shows the live request shapes, and lets you try the local worker directly.
+`/apps/ai-gateway/playground`. That route explains the endpoint, shows the live request shapes, and lets you try the local worker directly.
 
 ## OpenAI-Compatible Surface
 

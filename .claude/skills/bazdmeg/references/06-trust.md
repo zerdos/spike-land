@@ -95,8 +95,6 @@ process.** Name it. Discuss it. Fix it.
 
 ---
 
----
-
 ## Spike Land in Practice
 
 **CI branch protection enforces PR discipline.** The CLAUDE.md ADHD-Safe

@@ -97,6 +97,6 @@ The module includes comprehensive tests in the `__tests__/memfs` directory:
 Run the tests with:
 
 ```bash
-cd packages/code
+cd src/frontend/monaco-editor
 npx vitest run memfs
 ```

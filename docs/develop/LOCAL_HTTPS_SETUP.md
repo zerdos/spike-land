@@ -50,7 +50,7 @@ Add `https://local.spike.land:5173` to allowed origins in:
 
 - `mkcert` creates a local Certificate Authority trusted by your OS/browsers
 - Vite detects `.dev-certs/` and enables HTTPS automatically (configured in
-  `packages/spike-app/vite.config.ts`)
+  `src/spike-app/vite.config.ts`)
 - wrangler uses `--local-protocol=https` with the same certificates
 - No certificate warnings in any browser
 

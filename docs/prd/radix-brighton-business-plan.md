@@ -1,4 +1,4 @@
-# Radix Brighton -- Business Plan
+# Radix Brighton — Business Plan
 
 > Turning Brighton's food waste into energy, compost, and community value.
 
@@ -10,7 +10,7 @@
 
 ## 1. The Opportunity
 
-On 31 March 2026, England's **Simpler Recycling** rules took effect -- the
+On 31 March 2026, England's **Simpler Recycling** rules took effect — the
 biggest shake-up in recycling policy in 20 years. Key facts:
 
 | Metric | Value |
@@ -21,17 +21,17 @@ biggest shake-up in recycling policy in 20 years. Key facts:
 | **Brighton & Hove ready on time?** | **Yes** |
 | English councils not yet collecting food waste | >1/3 (incl. transitional) |
 
-Brighton & Hove is **ahead of the curve** -- already collecting weekly food
+Brighton & Hove is **ahead of the curve** — already collecting weekly food
 waste. This creates a first-mover window: the infrastructure exists, residents
 are onboarded, and GBP 3.1m in grant money is flowing.
 
 ### Why Brighton specifically
 
 - **Green identity:** Brighton & Hove elected the UK's first Green council
-  (2011). Sustainability isn't an upsell -- it's baseline expectation.
+  (2011). Sustainability isn't an upsell — it's baseline expectation.
 - **Dense, walkable:** Compact city = efficient collection routes and high
   community engagement density.
-- **University population:** 34,000+ students (Sussex + Brighton) -- early
+- **University population:** 34,000+ students (Sussex + Brighton) — early
   adopters, socially motivated, digitally native.
 - **Tourism economy:** 11m+ visitors/year. Visible sustainability = brand
   value for local businesses.
@@ -61,13 +61,13 @@ change reinforcement          (cafes, shops, markets)
 
 ### Product pillars
 
-1. **Waste tracker** -- scan/log weekly caddy contents, see energy-equivalent
+1. **Waste tracker** — scan/log weekly caddy contents, see energy-equivalent
    output ("your peelings powered a fridge for 18 hours")
-2. **Impact dashboard** -- neighbourhood-level biogas production, landfill
+2. **Impact dashboard** — neighbourhood-level biogas production, landfill
    diversion, CO2 reduction
-3. **Community leaderboard** -- streets/wards compete on diversion rates
-4. **Local rewards** -- recycling credits redeemable at Brighton independents
-5. **Route intelligence** -- optimise collection routes using participation
+3. **Community leaderboard** — streets/wards compete on diversion rates
+4. **Local rewards** — recycling credits redeemable at Brighton independents
+5. **Route intelligence** — optimise collection routes using participation
    data (sell to council as SaaS)
 
 ---
@@ -76,10 +76,10 @@ change reinforcement          (cafes, shops, markets)
 
 | Stream | Year 1 | Year 2 | Year 3 |
 |--------|--------|--------|--------|
-| **B2G SaaS** -- council dashboard + route optimisation | GBP 60k | GBP 120k | GBP 200k |
-| **B2B rewards network** -- local business listing fees (GBP 25/mo) | GBP 30k | GBP 90k | GBP 180k |
-| **Sponsored challenges** -- brand-funded community recycling drives | GBP 10k | GBP 40k | GBP 80k |
-| **Data licensing** -- anonymised waste composition insights to WRAP/Defra | GBP 0 | GBP 30k | GBP 60k |
+| **B2G SaaS** — council dashboard + route optimisation | GBP 60k | GBP 120k | GBP 200k |
+| **B2B rewards network** — local business listing fees (GBP 25/mo) | GBP 30k | GBP 90k | GBP 180k |
+| **Sponsored challenges** — brand-funded community recycling drives | GBP 10k | GBP 40k | GBP 80k |
+| **Data licensing** — anonymised waste composition insights to WRAP/Defra | GBP 0 | GBP 30k | GBP 60k |
 | **Total** | **GBP 100k** | **GBP 280k** | **GBP 520k** |
 
 ### Unit economics (Year 2 target)
@@ -113,7 +113,7 @@ change reinforcement          (cafes, shops, markets)
 ### Phase 3: Replicate (2027)
 
 - Package as white-label for other councils scrambling to meet compliance
-- Priority targets: the 79 councils that missed the deadline -- they need
+- Priority targets: the 79 councils that missed the deadline — they need
   tools to drive adoption once they launch
 - Sell route optimisation as standalone SaaS
 
@@ -146,7 +146,7 @@ problem. The platform that builds neighbourhood density first wins.
 | **Total Year 1** | **GBP 33k** |
 
 Building on spike.land's existing MCP platform means near-zero engineering
-cost -- the app is a composition of existing tools (waste tracking, analytics,
+cost — the app is a composition of existing tools (waste tracking, analytics,
 community, payments via Stripe).
 
 ---
@@ -167,16 +167,16 @@ GBP 150k in revenue flowing to Brighton independents via rewards.
 
 1. **Regulatory tailwind:** Simpler Recycling is law as of today (31 March 2026)
 2. **Funding available:** GBP 3.1m already allocated to Brighton & Hove
-3. **Brighton is ready:** Weekly collections already live -- no infrastructure gap
+3. **Brighton is ready:** Weekly collections already live — no infrastructure gap
 4. **79 councils are not ready:** Huge addressable market for year 2+ expansion
 5. **WRAP backing:** Climate action org actively promoting this as "the biggest
-   shake-up in 20 years" -- free ecosystem marketing
+   shake-up in 20 years" — free ecosystem marketing
 
 ---
 
 ## 9. Team
 
-Built on **spike.land** -- the open AI app store. Radix is an MCP-native app
+Built on **spike.land** — the open AI app store. Radix is an MCP-native app
 composed from platform tools. The spike.land platform provides auth, payments,
 analytics, and the MCP runtime. A Brighton-based community manager handles
 the local flywheel.

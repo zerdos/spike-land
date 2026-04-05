@@ -6,9 +6,9 @@ code in this repository.
 ## Overview
 
 This is the **spike-land-ai** consolidated monorepo under the `@spike-land-ai`
-GitHub org. All packages live under the `src/` directory as first-class source
-(no submodules). The root `package.json` uses a single Yarn workspace glob:
-`"workspaces": ["src/*"]`.
+GitHub org. Source code lives under `src/` and publishable packages live under
+`packages/` as deploy shims. The root `package.json` uses two Yarn workspace
+globs: `"workspaces": ["packages/*", "src/monaco-editor"]`.
 
 All packages are published to GitHub Packages (`npm.pkg.github.com`) under the
 `@spike-land-ai` scope using Changesets. CI/CD is shared via a reusable workflow
@@ -16,56 +16,63 @@ in `.github/.github/workflows/ci-publish.yml`.
 
 ## Packages
 
-All packages live under `src/`:
+Publishable packages live under `packages/` as deploy shims. Each shim's
+`index.ts` re-exports from its source directory under `src/`. The actual
+TypeScript source is under `src/` — always edit there.
 
-### Platform Stack
+### Edge Services (Cloudflare Workers)
 
-| Directory             | Package                          | Runtime                          | Purpose                                 |
-| --------------------- | -------------------------------- | -------------------------------- | --------------------------------------- |
-| `src/spike-app`       | `@spike-land-ai/spike-app`       | Browser (Vite + TanStack Router) | Frontend SPA                            |
-| `src/spike-edge`      | `@spike-land-ai/spike-edge`      | Cloudflare Workers               | Edge API service (Hono)                 |
-| `src/spike-land-mcp`  | `@spike-land-ai/spike-land-mcp`  | Cloudflare Workers + D1          | MCP registry with 80+ tools             |
-| `src/mcp-auth`        | `@spike-land-ai/mcp-auth`        | Cloudflare Workers               | Auth MCP server (Better Auth + Drizzle) |
-| `src/mcp-server-base` | `@spike-land-ai/mcp-server-base` | Node.js                          | Shared base utilities for MCP servers   |
+| Package (packages/)       | Source dir                          | Purpose                                                  |
+| ------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `spike-edge`              | `src/edge-api/main`                 | Primary edge API — Hono, proxy routes, experiments       |
+| `spike-land-mcp`          | `src/edge-api/spike-land`           | MCP registry — 80+ tools, D1-backed, OAuth               |
+| `mcp-auth`                | `src/edge-api/auth`                 | Auth service — Better Auth + Drizzle                     |
+| `spike-land-backend`      | `src/edge-api/backend`              | Durable Objects for real-time sync (Hono)                |
+| `transpile`               | `src/edge-api/transpile`            | On-demand JS/TS transpilation via esbuild-wasm           |
+| `spike-chat`              | `src/edge-api/spike-chat`           | Chat API with context compression                        |
+| `image-studio-worker`     | `src/edge-api/image-studio-worker`  | AI image generation edge worker                          |
 
-### Domain Packages
+### Frontend
 
-| Directory           | Package                        | Runtime | Purpose                                              |
-| ------------------- | ------------------------------ | ------- | ---------------------------------------------------- |
-| `src/chess-engine`  | `@spike-land-ai/chess-engine`  | Node.js | Chess ELO engine with game/player/challenge managers |
-| `src/qa-studio`     | `@spike-land-ai/qa-studio`     | Node.js | Browser automation utilities (Playwright)            |
-| `src/state-machine` | `@spike-land-ai/state-machine` | Node.js | Statechart engine with guard parser and CLI          |
+| Package (packages/)       | Source dir                          | Purpose                                                  |
+| ------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `spike-web`               | `src/app` (Astro)                   | Public website / marketing pages                         |
+| `src/monaco-editor`       | `src/monaco-editor`                 | Monaco-based collaborative code editor (Yarn workspace)  |
 
 ### Core Infrastructure
 
-| Directory                | Package                             | Runtime              | Purpose                                                                                 |
-| ------------------------ | ----------------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
-| `src/code`               | `@spike-land-ai/code`               | Browser (Vite)       | Monaco-based code editor with live preview                                              |
-| `src/spike-land-backend` | `@spike-land-ai/spike-land-backend` | Cloudflare Workers   | Backend API with Durable Objects, Hono framework                                        |
-| `src/transpile`          | `@spike-land-ai/transpile`          | Cloudflare Workers   | On-demand JS/TS transpilation via esbuild-wasm                                          |
-| `src/react-ts-worker`    | `@spike-land-ai/react-ts-worker`    | Browser/Workers/Node | From-scratch React implementation (Fiber reconciler, scheduler, multi-target rendering) |
-| `src/esbuild-wasm`       | `esbuild-wasm`       | Browser (WASM)       | Cross-platform esbuild WASM binary                                                      |
-| `src/esbuild-wasm-mcp`   | `esbuild-wasm-mcp`   | Node.js              | MCP server wrapping esbuild-wasm                                                        |
-| `src/shared`             | `@spike-land-ai/shared`             | Node/Browser         | Shared types, validations, constants, utilities                                         |
+| Package (packages/)       | Source dir                          | Purpose                                                                                 |
+| ------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------- |
+| `react-ts-worker`         | `src/core/react-engine`             | From-scratch React with Fiber reconciler, multi-target rendering                        |
+| `shared`                  | `src/core/shared-utils`             | Shared types, Zod validations, constants, utilities                                     |
+| `block-sdk`               | `src/core/block-sdk`                | Portable D1/IndexedDB/memory storage layer for hosted and offline apps                  |
+| `block-tasks`             | `src/core/block-tasks`              | Task management built on block-sdk                                                      |
+| `mcp-server-base`         | `src/core/server-base`              | Shared base utilities for MCP servers                                                   |
+| `esbuild-wasm`            | `packages/esbuild-wasm`             | Cross-platform esbuild WASM binary                                                      |
 
-### MCP Servers & Tools
+### MCP Tools
 
-| Directory              | Package                           | Runtime     | Purpose                                                        |
-| ---------------------- | --------------------------------- | ----------- | -------------------------------------------------------------- |
-| `src/spike-cli`        | `@spike-land-ai/spike-cli`        | Node.js CLI | MCP multiplexer CLI with Claude chat integration               |
-| `src/spike-review`     | `@spike-land-ai/spike-review`     | Node.js     | AI code review bot with GitHub integration                     |
-| `src/hackernews-mcp`   | `@spike-land-ai/hackernews-mcp`   | Node.js     | MCP server for HackerNews read/write                           |
-| `src/mcp-image-studio` | `@spike-land-ai/mcp-image-studio` | Node.js     | AI image generation, enhancement, albums & pipelines MCP tools |
-| `src/openclaw-mcp`     | `@spike-land-ai/openclaw-mcp`     | Node.js     | MCP bridge for OpenClaw gateway                                |
-| `src/vibe-dev`         | `@spike-land-ai/vibe-dev`         | Node.js CLI | Docker-based dev workflow tool                                 |
-| `src/video`            | `@spike-land-ai/video`            | Remotion    | Educational video compositions                                 |
+| Package (packages/)       | Source dir                          | Purpose                                                        |
+| ------------------------- | ----------------------------------- | -------------------------------------------------------------- |
+| `spike-cli`               | `src/cli/spike-cli`                 | MCP multiplexer CLI with Claude chat integration               |
+| `vibe-dev`                | `src/cli/docker-dev`                | Docker-based dev workflow tool                                 |
+| `spike-review`            | `src/mcp-tools/code-review`         | AI code review bot with GitHub integration                     |
+| `hackernews-mcp`          | `src/mcp-tools/hackernews`          | MCP server for HackerNews read/write                           |
+| `mcp-image-studio`        | `src/mcp-tools/image-studio`        | AI image generation, enhancement, albums & pipelines MCP tools |
+| `openclaw-mcp`            | `src/mcp-tools/openclaw`            | MCP bridge for OpenClaw gateway                                |
+| `esbuild-wasm-mcp`        | `src/mcp-tools/esbuild-wasm`        | MCP server wrapping esbuild-wasm                               |
+| `code-eval-mcp`           | `src/mcp-tools/code-eval`           | Code evaluation MCP server                                     |
+| `bazdmeg-mcp`             | `src/mcp-tools/bazdmeg`             | Bazdmeg feature set as MCP tools                               |
 
-### Shared Config
+### Domain Packages
 
-| Directory           | Package                        | Runtime | Purpose                         |
-| ------------------- | ------------------------------ | ------- | ------------------------------- |
-| `src/eslint-config` | `@spike-land-ai/eslint-config` | —       | Shared ESLint configuration     |
-| `src/tsconfig`      | `@spike-land-ai/tsconfig`      | —       | Shared TypeScript configuration |
+| Package (packages/)       | Source dir                          | Purpose                                              |
+| ------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| `chess-engine`            | `src/core/chess`                    | Chess ELO engine with game/player/challenge managers |
+| `qa-studio`               | `src/core/browser-automation`       | Browser automation utilities (Playwright)            |
+| `state-machine`           | `src/core/statecharts`              | Statechart engine with guard parser and CLI          |
+| `educational-videos`      | `packages/educational-videos`       | Educational video compositions (Remotion)            |
+| `blog`                    | `packages/blog`                     | Blog package (Astro-based)                           |
 
 ## Common Commands
 
@@ -76,31 +83,33 @@ Each package has its own scripts. The most common patterns:
 make health
 # or: bash .github/scripts/org-health.sh
 
-# spike-app (Vite + TanStack Router frontend)
-cd src/spike-app
-npm run dev           # Vite dev server
-npm run build         # Production build
-
-# spike-edge (Cloudflare Workers edge API)
-cd src/spike-edge
+# Primary edge API (spike-edge / src/edge-api/main)
+cd packages/spike-edge
 npm run dev           # Local wrangler dev
 npm run deploy        # Deploy to production
+
+# MCP registry (spike-land-mcp / src/edge-api/spike-land)
+cd packages/spike-land-mcp
+npm run dev           # Local wrangler dev
+npm run w:deploy:prod # Deploy to production
 
 # Most packages (Node.js / MCP servers)
 npm run build         # Build TypeScript
 npm test              # Run tests (Vitest)
 npm run test:coverage # Tests with coverage
 
-# Cloudflare Workers (spike-land-backend, transpile, spike-land-mcp, mcp-auth)
+# Cloudflare Workers (spike-land-backend, transpile, spike-land-mcp, mcp-auth, spike-chat)
 npm run dev           # Local wrangler dev
 npm run dev:remote    # Remote wrangler dev
 npm run w:deploy:prod # Deploy to production
 
-# code (Monaco editor)
+# Monaco editor (src/monaco-editor — Yarn workspace, not packages/)
+cd src/monaco-editor
 npm run dev:vite      # Vite dev server
 npm run build:vite    # Build for browser
 
 # react-ts-worker
+cd packages/react-ts-worker
 yarn build            # Build to dist/
 yarn test             # Vitest with jsdom
 yarn typecheck        # Type check only
@@ -109,30 +118,36 @@ yarn typecheck        # Type check only
 
 ## Architecture
 
-### Frontend (spike-app)
+### Frontend
 
-Vite + React + TanStack Router SPA. Talks to spike-edge.
+`src/monaco-editor` — Monaco-based collaborative code editor (Vite, Yarn workspace).
+`packages/spike-web` (source: `src/app`) — Astro-based public website and marketing pages.
+`src/frontend/platform-frontend` — Store UI and app-facing pages.
 
-### Edge Services (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile)
+### Edge Services (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, spike-chat)
 
-Cloudflare Workers using Hono framework. `spike-edge` is the primary edge API.
-`spike-land-mcp` is the MCP registry (80+ tools, D1-backed). `mcp-auth` handles
-authentication (Better Auth + Drizzle). `spike-land-backend` provides Durable
-Objects for real-time sync. `transpile` provides esbuild-wasm compilation at the
-edge.
+Cloudflare Workers using Hono framework. `spike-edge` (source: `src/edge-api/main`) is the
+primary edge API. `spike-land-mcp` (source: `src/edge-api/spike-land`) is the MCP registry
+(80+ tools, D1-backed). `mcp-auth` (source: `src/edge-api/auth`) handles authentication
+(Better Auth + Drizzle). `spike-land-backend` (source: `src/edge-api/backend`) provides
+Durable Objects for real-time sync. `transpile` (source: `src/edge-api/transpile`) provides
+esbuild-wasm compilation at the edge. `spike-chat` (source: `src/edge-api/spike-chat`)
+handles chat API with context compression.
 
 ### Custom React (react-ts-worker)
 
 Full React reimplementation with Fiber reconciler, lane-based scheduling, and
 host config pattern for multi-target rendering (DOM, Worker-DOM, server
-streaming). See `src/react-ts-worker/CLAUDE.md` for architecture details.
+streaming). Source: `src/core/react-engine`.
 
 ### MCP Ecosystem
 
 Multiple MCP servers following a common pattern: `@modelcontextprotocol/sdk` +
-Zod validation + Vitest tests. `mcp-server-base` provides shared utilities.
-`spike-land-mcp` acts as the MCP registry aggregating 80+ tools. Additional MCP
-servers: esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, openclaw-mcp.
+Zod validation + Vitest tests. `mcp-server-base` (source: `src/core/server-base`)
+provides shared utilities. `spike-land-mcp` (source: `src/edge-api/spike-land`)
+acts as the MCP registry aggregating 80+ tools. Additional MCP servers under
+`src/mcp-tools/`: esbuild-wasm-mcp, hackernews-mcp, mcp-image-studio, openclaw-mcp,
+code-eval-mcp, bazdmeg-mcp.
 
 ### App Store Context
 
@@ -152,20 +167,31 @@ Key source paths for app-store work:
 
 ### Domain Packages
 
-- `chess-engine` — Chess ELO engine with game/player/challenge managers
-- `qa-studio` — Browser automation utilities (Playwright)
-- `state-machine` — Statechart engine with guard parser and CLI
+- `chess-engine` (source: `src/core/chess`) — Chess ELO engine with game/player/challenge managers
+- `qa-studio` (source: `src/core/browser-automation`) — Browser automation utilities (Playwright)
+- `state-machine` (source: `src/core/statecharts`) — Statechart engine with guard parser and CLI
 
 ## Directory Layout: src/ vs packages/
 
 Source code lives in `src/`. The `packages/` directory contains **deploy shims**
-— thin `wrangler.toml` and `package.json` files that reference source in `src/`
-via relative paths (e.g., `main = "../../src/spike-edge/index.ts"`).
+— thin `wrangler.toml` and `package.json` files that re-export from `src/`
+via relative paths (e.g., `export * from "../../src/edge-api/main/api/index"`).
 
-| Directory    | Purpose                                           | When to use                       |
-| ------------ | ------------------------------------------------- | --------------------------------- |
-| `src/`       | Source of truth — all TypeScript source, tests     | Development, editing, reading     |
-| `packages/`  | Deploy shims — wrangler.toml + thin package.json   | CI deployment, `wrangler deploy`  |
+| Directory    | Purpose                                            | When to use                        |
+| ------------ | -------------------------------------------------- | ---------------------------------- |
+| `src/`       | Source of truth — all TypeScript source, tests      | Development, editing, reading      |
+| `packages/`  | Deploy shims — wrangler.toml + re-export index.ts   | CI deployment, `wrangler deploy`   |
+
+Key `src/` layout:
+
+| Path                          | What lives here                                 |
+| ----------------------------- | ----------------------------------------------- |
+| `src/edge-api/`               | All Cloudflare Workers source (main, spike-land, auth, backend, transpile, spike-chat, image-studio-worker) |
+| `src/frontend/`               | Platform frontend UI (`platform-frontend`), Monaco editor |
+| `src/cli/`                    | CLI tools (`spike-cli`, `docker-dev`)           |
+| `src/mcp-tools/`              | MCP server implementations                      |
+| `src/core/`                   | Shared libraries (react-engine, block-sdk, chess, statecharts, shared-utils, server-base) |
+| `src/monaco-editor`           | Monaco editor (also a Yarn workspace directly)  |
 
 **Rule:** Always edit files in `src/`. Only modify `packages/` for wrangler
 config changes (bindings, routes, migrations, environment settings).
@@ -221,7 +247,7 @@ bash .github/scripts/verify-deps.sh
 - `vinext.spike.land` — uses git-SHA deps, not registry versions
 - Leaf MCP servers (hackernews-mcp, mcp-image-studio, openclaw-mcp,
   spike-review, vibe-dev) — no internal deps
-- New leaf packages (mcp-auth, spike-app, spike-edge, qa-studio, state-machine,
+- New leaf packages (mcp-auth, spike-edge, qa-studio, state-machine,
   chess-engine) — no internal deps
 
 ## Content

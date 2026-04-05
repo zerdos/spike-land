@@ -1,7 +1,8 @@
 # Web Security Quick Reference
 
 A fast lookup guide for the most critical security implementations. For detailed
-information, see [web-security.md](./web-security.md).
+information, see [SECURITY_AUDIT_REPORT.md](./SECURITY_AUDIT_REPORT.md) and
+[SECURITY_HARDENING.md](./SECURITY_HARDENING.md).
 
 ---
 
@@ -155,7 +156,6 @@ X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: geolocation=(), microphone=(), camera=()
 Cache-Control: no-store, no-cache, must-revalidate
-X-Content-Type-Options: nosniff
 ```
 
 ---
@@ -453,11 +453,13 @@ describe("XSS Prevention", () => {
 
 ## Further Reading
 
-- **Full Documentation**: [web-security.md](./web-security.md)
+- **Platform Security Audit**: [SPIKE_EDGE_AUDIT.md](./SPIKE_EDGE_AUDIT.md)
+- **Platform Hardening**: [SECURITY_HARDENING.md](./SECURITY_HARDENING.md)
+- **App Store Security**: [APP_STORE_SECURITY.md](./APP_STORE_SECURITY.md)
 - **OWASP**: https://owasp.org/www-project-top-ten/
 - **MDN Web Security**: https://developer.mozilla.org/en-US/docs/Web/Security
 - **Web.dev Security**: https://web.dev/secure/
 
 ---
 
-**Version**: 1.0 **Updated**: December 2024 **Status**: Ready for Use
+**Version**: 1.1 **Updated**: March 2026 **Status**: Ready for Use

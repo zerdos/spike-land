@@ -1,13 +1,13 @@
 # MCP Tool Definition Pattern
 
-Based on patterns from `src/lib/mcp/server/tools/` in this codebase.
+Based on patterns from `src/edge-api/spike-land/core-logic/tools/` in this codebase.
 
 ## File Structure
 
 Each category gets its own file:
 
 ```
-src/lib/mcp/server/tools/
+src/edge-api/spike-land/core-logic/tools/
 ├── my-category.ts          # Tool definitions
 └── my-category.test.ts     # Tests (see test-pattern.md)
 ```
@@ -240,20 +240,17 @@ annotations: {
 
 Two steps after creating the tool file:
 
-### 1. Add category description in `tool-registry.ts`
+### 1. Add category description in `src/edge-api/spike-land/core-logic/mcp/categories.ts`
 
 ```typescript
-const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   // ... existing categories
   "my-category": "Description of what this category does",
 };
 ```
 
-### 2. Register in `mcp-server.ts`
+### 2. Export from `src/edge-api/spike-land/core-logic/tools/index.ts`
 
 ```typescript
-import { registerMyCategoryTools } from "./tools/my-category";
-
-// Inside createMcpServer():
-registerMyCategoryTools(registry, userId);
+export * from "./my-category";
 ```

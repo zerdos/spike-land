@@ -5,7 +5,15 @@ description: Create a new MCP tool for the spike.land platform. Covers the full 
 
 # MCP Tool Development
 
-Step-by-step guide for creating new MCP tools in `src/lib/mcp/server/tools/`.
+Step-by-step guide for creating new MCP tools in the spike.land platform.
+
+> **Note:** Tools for the main spike.land registry live in
+> `src/edge-api/spike-land/core-logic/tools/`. The registry uses
+> `ToolRegistryAdapter` with a `freeTool()` / `workspaceTool()` builder and
+> `registry.registerBuilt()`. See existing tool files (e.g.
+> `src/edge-api/spike-land/core-logic/tools/bazdmeg/gates.ts`) for the current
+> pattern. The template below shows the general structure; adapt imports and
+> registry calls to match the current codebase.
 
 ## Prerequisites
 
@@ -195,15 +203,15 @@ import { registerMyTools } from "./my-tool";
 ## Step 3: Run Tests and Verify Coverage
 
 ```bash
-yarn vitest run src/lib/mcp/server/tools/<name>.test.ts
-yarn test:coverage src/lib/mcp/server/tools/<name>
+cd src/edge-api/spike-land
+npm test -- --reporter=verbose src/edge-api/spike-land/core-logic/tools/<name>.test.ts
 ```
 
 **Required thresholds:** 80%+ lines, functions, statements; 75%+ branches.
 
 ## Step 4: Register in the MCP Server
 
-Edit `src/lib/mcp/server/mcp-server.ts`:
+Edit `src/edge-api/spike-land/core-logic/tools/index.ts`:
 
 1. Add the import at the top with the other tool imports:
 
@@ -240,7 +248,7 @@ if (process.env.NODE_ENV === "development") {
 ## Step 5: Add Category Description
 
 If this is a new category, add it to `CATEGORY_DESCRIPTIONS` in
-`src/lib/mcp/server/tool-registry.ts`:
+`src/edge-api/spike-land/core-logic/mcp/categories.ts`:
 
 ```ts
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
@@ -253,13 +261,13 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
 
 ```bash
 # Run the new tests
-yarn vitest run src/lib/mcp/server/tools/<name>.test.ts
+cd src/edge-api/spike-land && npm test
 
-# Run full MCP test suite to check nothing is broken
-yarn vitest run src/lib/mcp/
+# Typecheck
+npm run typecheck
 
 # Lint
-yarn lint
+npm run lint
 ```
 
 ## ToolDefinition Interface Reference
@@ -281,11 +289,12 @@ interface ToolDefinition {
 
 ## File Locations
 
-| File                                       | Purpose                                                                                 |
-| ------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `src/lib/mcp/server/tools/<name>.ts`       | Tool implementation                                                                     |
-| `src/lib/mcp/server/tools/<name>.test.ts`  | Tests                                                                                   |
-| `src/lib/mcp/server/tool-registry.ts`      | `ToolDefinition` interface, `CATEGORY_DESCRIPTIONS`                                     |
-| `src/lib/mcp/server/tools/tool-helpers.ts` | `safeToolCall`, `textResult`, `apiRequest`, `resolveWorkspace`                          |
-| `src/lib/mcp/server/__test-utils__/`       | Shared test utilities (`createMockRegistry`, `getText`, `isError`, node mock factories) |
-| `src/lib/mcp/server/mcp-server.ts`         | Server factory where tools are registered                                               |
+| File                                                              | Purpose                                                           |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `src/edge-api/spike-land/core-logic/tools/<name>.ts`             | Tool implementation                                               |
+| `src/edge-api/spike-land/core-logic/tools/<name>.test.ts`        | Tests                                                             |
+| `src/edge-api/spike-land/core-logic/mcp/categories.ts`           | `CATEGORY_DESCRIPTIONS`                                           |
+| `src/edge-api/spike-land/core-logic/lib/tool-helpers.ts`         | `safeToolCall`, `textResult`, `apiRequest`                        |
+| `src/edge-api/spike-land/lazy-imports/registry.ts`               | `ToolRegistryAdapter` interface                                   |
+| `src/edge-api/spike-land/lazy-imports/procedures-index.ts`       | `freeTool()` / `workspaceTool()` builder factories                |
+| `src/edge-api/spike-land/core-logic/tools/index.ts`              | Root tool registration (add new tool categories here)             |

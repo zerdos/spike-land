@@ -66,3 +66,9 @@ gates → commit → push (fail-fast) **Escalation**: `bazdmeg_signal_stuck`
 
 - `@spike-land-ai/mcp-server-base` for result helpers
 - No other internal dependencies (leaf package)
+
+## CI/CD
+
+- Shared workflow: `.github/.github/workflows/ci-publish.yml`
+- Changesets for versioning
+- Publishes to GitHub Packages (`@spike-land-ai/*`)

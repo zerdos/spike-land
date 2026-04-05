@@ -460,8 +460,8 @@ Availability
 
 **Learning**:
 
-- [Full Guide](./mcp-server-development.md) (1,611 lines, comprehensive)
-- [Index & Navigation](./MCP_DEVELOPMENT_INDEX.md) (this quick reference)
+- [Full Guide](./SERVER_DEVELOPMENT.md) (comprehensive)
+- [Index & Navigation](./DEVELOPMENT_INDEX.md) (this quick reference)
 
 **Community**:
 

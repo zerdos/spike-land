@@ -1,6 +1,6 @@
 # Spike Land - Complete Manual Testing Guide
 
-**Last Updated:** 2026-02-26 **Production URL:** https://spike.land **Pre-tested
+**Last Updated:** 2026-04-05 **Production URL:** https://spike.land **Pre-tested
 by:** Claude Code with Playwright MCP
 
 ---
@@ -378,29 +378,29 @@ Before testing, ensure you have:
 
 ## J. Production Monitoring
 
-### J.1 Checking Vercel Logs
+### J.1 Checking Cloudflare Worker Logs
 
-1. Go to https://vercel.com/dashboard
-2. Select the spike.land project
-3. Click "Deployments" tab
-4. Select the production deployment
-5. Click "Functions" or "Logs" tab
-6. **Expected:** Server logs visible, filter by time/type
+1. Go to https://dash.cloudflare.com
+2. Select the spike.land account
+3. Navigate to Workers & Pages
+4. Select the relevant Worker (spike-edge, spike-land-backend, etc.)
+5. Click "Logs" tab and enable real-time logging
+6. **Expected:** Server logs visible, filterable by time and level
 
 ### J.2 Error Tracking
 
-1. In Vercel dashboard, look for:
-   - Function errors
-   - Build errors
-   - Runtime exceptions
-2. Check for 500-series errors in logs
+1. In the Cloudflare dashboard, look for:
+   - Worker exceptions and uncaught errors
+   - CPU time exceeded errors
+   - Runtime exceptions in logs
+2. Check for 500-series errors in live tail logs
 3. **Expected:** Errors visible with stack traces
 
 ### J.3 Performance Monitoring
 
-1. In Vercel dashboard, check:
-   - Speed Insights
-   - Web Analytics
+1. In Cloudflare dashboard, check:
+   - Workers Analytics (request count, error rate, CPU time)
+   - Speed data via Cloudflare Observatory
 2. Look for Core Web Vitals:
    - LCP (Largest Contentful Paint)
    - FID (First Input Delay)

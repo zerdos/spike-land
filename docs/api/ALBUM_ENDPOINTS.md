@@ -654,7 +654,7 @@ console.log(`Cover updated to: ${album.coverImageId}`);
 
 Batch enhancement requests are rate limited to prevent abuse:
 
-- **Limit**: 10 requests per minute per user
+- **Limit**: 5 requests per minute per user
 - **Status**: 429 Too Many Requests
 
 ---

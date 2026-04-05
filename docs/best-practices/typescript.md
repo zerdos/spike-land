@@ -60,7 +60,7 @@ Beyond the core `strict` flag, consider enabling these additional options:
     "exactOptionalPropertyTypes": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitOverride": true,
-    "noFallthroughCasesInSwitch": true",
+    "noFallthroughCasesInSwitch": true,
     "useUnknownInCatchVariables": true
   }
 }

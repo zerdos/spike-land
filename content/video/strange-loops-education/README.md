@@ -2,7 +2,7 @@
 
 Personalised educational videos created using the **Radix agent persona** for
 Gian Pierre (Zoltan's friend, the chemist from the
-[A Chemist Walked Into a Codebase](../../blog/) blog post).
+[A Chemist Walked Into a Codebase](../../blog/a-chemist-walked-into-a-codebase) blog post).
 
 ## Context
 

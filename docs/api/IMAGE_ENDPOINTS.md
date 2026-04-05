@@ -3,7 +3,7 @@
 Complete REST API documentation for image management and AI-powered enhancement
 operations in Spike Land.
 
-Last Updated: December 2025 Status: Production Ready
+> **Last Updated**: December 2025 | **Status**: Production Ready
 
 ---
 

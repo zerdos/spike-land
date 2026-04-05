@@ -567,7 +567,7 @@ API changes are documented in multiple places for discoverability:
 
 | Location                      | Purpose                       | Audience          |
 | ----------------------------- | ----------------------------- | ----------------- |
-| `docs/API_CHANGELOG.md`       | Detailed technical changes    | Developers        |
+| `docs/api/API_CHANGELOG.md`   | Detailed technical changes    | Developers        |
 | `docs/migrations/v*-to-v*.md` | Step-by-step migration guides | Integrators       |
 | GitHub Releases               | High-level summaries          | All users         |
 | Email notifications           | Deprecation announcements     | Active developers |

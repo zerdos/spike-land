@@ -14,16 +14,16 @@ custom implementations of core algorithms.
 
 ```bash
 # Build TypeScript to dist/
-yarn build
+npm run build
 
 # Run all tests
-yarn test
+npm test
 
 # Run tests in watch mode
-yarn test:watch
+npm run test:watch
 
 # Type checking without emit
-yarn typecheck
+npm run typecheck
 ```
 
 ## Architecture
@@ -114,3 +114,10 @@ logic to target different platforms (DOM, Worker, Server).
 - TypeScript with strict mode enabled
 - Tests use Vitest with jsdom environment
 - Output is built to `dist/` with declarations and source maps
+
+## Code Quality Rules
+
+- Never use `any` type — use `unknown` or proper types
+- Never add `eslint-disable` or `@ts-ignore` comments
+- TypeScript strict mode
+- All business logic must have test coverage

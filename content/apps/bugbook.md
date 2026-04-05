@@ -12,7 +12,7 @@ tags:
   - "feedback"
 pricing: "free"
 status: "live"
-sort_order: 4
+sort_order: 5
 tools:
   - "report_bug"
 graph:

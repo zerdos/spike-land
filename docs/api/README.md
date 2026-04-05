@@ -57,7 +57,6 @@ This directory contains core API references plus integration guides covering:
 | ---------------------------------------------- | -------------------------------------- | --------- |
 | [INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md) | Code examples and integration patterns | 30 min    |
 | [CURL_EXAMPLES.md](./CURL_EXAMPLES.md)         | cURL command examples for testing      | 20 min    |
-| [CROSS_ORIGIN_API_GUIDE.md](./CROSS_ORIGIN_API_GUIDE.md) | Auth, CORS, rate limits, and base URLs for third-party apps | 15 min |
 
 ### Policies
 

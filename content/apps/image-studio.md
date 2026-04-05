@@ -56,6 +56,28 @@ graph:
     outputs:
       album_id: "string"
     always_available: true
+  img_crop:
+    inputs:
+      image_id: "from:img_generate.image_id"
+    outputs:
+      image_id: "string"
+    always_available: false
+  img_resize:
+    inputs:
+      image_id: "from:img_generate.image_id"
+    outputs:
+      image_id: "string"
+    always_available: false
+  img_album:
+    inputs:
+      album_id: "from:img_album_create.album_id"
+    outputs: {}
+    always_available: false
+  img_list:
+    inputs: {}
+    outputs:
+      image_id: "string"
+    always_available: true
 ---
 
 # Image Studio
