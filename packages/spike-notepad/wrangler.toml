@@ -1,0 +1,37 @@
+name = "spike-notepad"
+main = "./index.ts"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[dev]
+port = 8790
+
+[[d1_databases]]
+binding = "DB"
+database_name = "spike-notepad"
+database_id = "63af9a1f-d226-4753-8d5c-a4b82d602b83"
+migrations_dir = "db/migrations"
+
+[[services]]
+binding = "AUTH_MCP"
+service = "mcp-auth"
+
+[[routes]]
+pattern = "notepad.spike.land/*"
+zone_name = "spike.land"
+
+[[routes]]
+pattern = "notepad.spike.land"
+custom_domain = true
+
+[vars]
+APP_ENV = "production"
+
+[env.staging]
+name = "spike-notepad-staging"
+vars = { APP_ENV = "staging" }
+
+[[env.staging.routes]]
+pattern = "staging-notepad.spike.land/*"
+zone_name = "spike.land"

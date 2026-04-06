@@ -1,0 +1,32 @@
+{
+  "name": "@spike-land-ai/spike-notepad",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:remote": "wrangler dev --remote",
+    "build": "echo 'CF Worker — no build step required'",
+    "deploy": "wrangler deploy --minify",
+    "w:deploy:prod": "wrangler deploy --minify",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --quiet .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "hono": "^4.12.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260405.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^10.0.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.72.0"
+  },
+  "source": "./index.ts"
+}
