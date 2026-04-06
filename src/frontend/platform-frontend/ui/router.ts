@@ -437,6 +437,14 @@ const vibeCodeRoute = createRoute({
   component: withSuspense(() => import("./routes/vibe-code"), "VibeCodePage"),
 });
 
+const codespaceAppRedirectRoute = createRoute({
+  getParentRoute: () => appsRoute,
+  path: "codespace",
+  beforeLoad: () => {
+    throw redirect({ to: "/vibe-code" });
+  },
+});
+
 // Create routes
 const createPageRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -581,6 +589,7 @@ const routeTree = rootRoute.addChildren([
   appsRoute.addChildren([
     appsIndexRoute,
     appsCategoryRoute.addChildren([appsCategoryDetailRoute]),
+    codespaceAppRedirectRoute,
     appSessionRoute,
   ]),
   mcpRoute.addChildren([mcpIndexRoute, mcpAuthorizeRoute]),
