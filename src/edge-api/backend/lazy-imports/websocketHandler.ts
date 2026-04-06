@@ -19,7 +19,7 @@ export interface SwarmAgentInfo {
 export interface WsAttachment {
   name: string | null;
   subscribedTopics: string[];
-  blockedMessages: (string | object)[];
+  blockedMessages: (string | Record<string, unknown>)[];
   swarmAgent: SwarmAgentInfo | null;
 }
 
