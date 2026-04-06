@@ -539,7 +539,7 @@ const HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-landingRoute.get("/", async (c: Context<{ Bindings: Env }>, next: Next) => {
+landingRoute.get("/", async (c: Context<{ Bindings: Env }>, _next: Next) => {
   const accept = c.req.header("Accept") ?? "";
 
   if (!accept.includes("text/html")) {
