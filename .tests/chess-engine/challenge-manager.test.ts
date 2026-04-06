@@ -1,20 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const mockPrisma = vi.hoisted(() => ({
-  chessChallenge: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
-    updateMany: vi.fn(),
-  },
-  chessGame: {
-    create: vi.fn(),
-  },
-}));
-
-vi.mock("@/lib/prisma", () => ({ default: mockPrisma }));
-
+import { InMemoryChessStorage } from "../../src/core/chess/core-logic/in-memory-storage.js";
 import {
   acceptChallenge,
   cancelChallenge,
@@ -22,378 +7,393 @@ import {
   expireStaleChallenges,
   listChallenges,
   sendChallenge,
+  setStorage,
 } from "../../src/core/chess/core-logic/challenge-manager.js";
 
+const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 describe("challenge-manager", () => {
+  let storage: InMemoryChessStorage;
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    storage = new InMemoryChessStorage();
+    setStorage(storage);
   });
 
   it("sendChallenge creates with correct data and expiresAt", async () => {
-    const challenge = {
-      id: "c1",
-      senderId: "p1",
-      receiverId: "p2",
-      status: "PENDING",
-      timeControl: "BLITZ_5",
-    };
-    mockPrisma.chessChallenge.create.mockResolvedValue(challenge);
-
     const now = Date.now();
     const result = await sendChallenge("p1", "p2", "BLITZ_5", "white");
 
-    expect(mockPrisma.chessChallenge.create).toHaveBeenCalledWith({
-      data: {
-        senderId: "p1",
-        receiverId: "p2",
-        timeControl: "BLITZ_5",
-        senderColor: "white",
-        expiresAt: expect.any(Date),
-      },
-    });
-
-    const callArgs = mockPrisma.chessChallenge.create.mock.calls[0]?.[0];
-    const expiresAt = callArgs.data.expiresAt.getTime();
-    expect(expiresAt).toBeGreaterThanOrEqual(now + 5 * 60 * 1000 - 1000);
-    expect(expiresAt).toBeLessThanOrEqual(now + 5 * 60 * 1000 + 1000);
-    expect(result).toEqual(challenge);
+    expect(result.senderId).toBe("p1");
+    expect(result.receiverId).toBe("p2");
+    expect(result.timeControl).toBe("BLITZ_5");
+    expect(result.senderColor).toBe("white");
+    expect(result.status).toBe("PENDING");
+    expect(result.expiresAt).toBeInstanceOf(Date);
+    expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(now + 5 * 60 * 1000 - 1000);
+    expect(result.expiresAt.getTime()).toBeLessThanOrEqual(now + 5 * 60 * 1000 + 1000);
   });
 
-  it("sendChallenge works without timeControl and senderColor", async () => {
-    mockPrisma.chessChallenge.create.mockResolvedValue({});
-    await sendChallenge("p1", "p2");
-    expect(mockPrisma.chessChallenge.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        timeControl: "BLITZ_5",
-        senderColor: null,
-      }),
-    });
-  });
+  it("sendChallenge works without timeControl and senderColor (defaults to BLITZ_5 and null color)", async () => {
+    const result = await sendChallenge("p1", "p2");
 
-  it("acceptChallenge rejects if not found", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue(null);
-    await expect(acceptChallenge("c1", "p1")).rejects.toThrow("Challenge not found");
-  });
-
-  it("declineChallenge rejects if not found", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue(null);
-    await expect(declineChallenge("c1", "p1")).rejects.toThrow("Challenge not found");
-  });
-
-  it("cancelChallenge rejects if not found", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue(null);
-    await expect(cancelChallenge("c1", "p1")).rejects.toThrow("Challenge not found");
+    expect(result.timeControl).toBe("BLITZ_5");
+    expect(result.senderColor).toBeNull();
   });
 
   it("sendChallenge rejects self-challenge", async () => {
     await expect(sendChallenge("p1", "p1")).rejects.toThrow("Cannot challenge yourself");
-    expect(mockPrisma.chessChallenge.create).not.toHaveBeenCalled();
+
+    const challenges = await storage.listChallengesByPlayer("p1");
+    expect(challenges).toHaveLength(0);
   });
 
-  it("acceptChallenge updates status and creates game", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+  it("acceptChallenge rejects if not found", async () => {
+    await expect(acceptChallenge("nonexistent", "p1")).rejects.toThrow("Challenge not found");
+  });
+
+  it("declineChallenge rejects if not found", async () => {
+    await expect(declineChallenge("nonexistent", "p1")).rejects.toThrow("Challenge not found");
+  });
+
+  it("cancelChallenge rejects if not found", async () => {
+    await expect(cancelChallenge("nonexistent", "p1")).rejects.toThrow("Challenge not found");
+  });
+
+  it("acceptChallenge updates status to ACCEPTED and creates a game", async () => {
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: "white",
       timeControl: "BLITZ_5",
-    });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "ACCEPTED",
-      gameId: "g1",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    const result = await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    expect(result.gameId).toBe("g1");
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        status: "WAITING",
-        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        timeControl: "BLITZ_5",
-      }),
-    });
-    expect(mockPrisma.chessChallenge.update).toHaveBeenCalledWith({
-      where: { id: "c1" },
-      data: { status: "ACCEPTED", gameId: "g1" },
-    });
+    expect(result.gameId).toBeDefined();
+    expect(typeof result.gameId).toBe("string");
+
+    const updatedChallenge = await storage.getChallenge(challenge.id);
+    expect(updatedChallenge?.status).toBe("ACCEPTED");
+    expect(updatedChallenge?.gameId).toBe(result.gameId);
+
+    const game = await storage.getGame(result.gameId);
+    expect(game).not.toBeNull();
+    expect(game?.status).toBe("WAITING");
+    expect(game?.fen).toBe(INITIAL_FEN);
+    expect(game?.timeControl).toBe("BLITZ_5");
+    expect(game?.whiteTimeMs).toBe(300_000);
+    expect(game?.blackTimeMs).toBe(300_000);
   });
 
   it("acceptChallenge rejects if not receiver", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
+      senderColor: "white",
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await expect(acceptChallenge("c1", "p3")).rejects.toThrow(
+    await expect(acceptChallenge(challenge.id, "p3")).rejects.toThrow(
       "Not authorized to accept this challenge",
     );
   });
 
   it("acceptChallenge rejects if not PENDING status", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "DECLINED",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await expect(acceptChallenge("c1", "p2")).rejects.toThrow("Challenge is no longer pending");
+    await expect(acceptChallenge(challenge.id, "p2")).rejects.toThrow(
+      "Challenge is no longer pending",
+    );
   });
 
   it("declineChallenge updates status to DECLINED", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
-    });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "DECLINED",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    const result = await declineChallenge("c1", "p2");
+    const result = await declineChallenge(challenge.id, "p2");
 
-    expect(mockPrisma.chessChallenge.update).toHaveBeenCalledWith({
-      where: { id: "c1" },
-      data: { status: "DECLINED" },
-    });
     expect(result.status).toBe("DECLINED");
+
+    const persisted = await storage.getChallenge(challenge.id);
+    expect(persisted?.status).toBe("DECLINED");
   });
 
   it("declineChallenge rejects if not receiver", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await expect(declineChallenge("c1", "p1")).rejects.toThrow(
+    await expect(declineChallenge(challenge.id, "p1")).rejects.toThrow(
       "Not authorized to decline this challenge",
     );
   });
 
   it("cancelChallenge updates status to CANCELLED", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
-    });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "CANCELLED",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    const result = await cancelChallenge("c1", "p1");
+    const result = await cancelChallenge(challenge.id, "p1");
 
-    expect(mockPrisma.chessChallenge.update).toHaveBeenCalledWith({
-      where: { id: "c1" },
-      data: { status: "CANCELLED" },
-    });
     expect(result.status).toBe("CANCELLED");
+
+    const persisted = await storage.getChallenge(challenge.id);
+    expect(persisted?.status).toBe("CANCELLED");
   });
 
   it("cancelChallenge rejects if not sender", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await expect(cancelChallenge("c1", "p2")).rejects.toThrow(
+    await expect(cancelChallenge(challenge.id, "p2")).rejects.toThrow(
       "Not authorized to cancel this challenge",
     );
   });
 
-  it("listChallenges returns challenges for player", async () => {
-    const challenges = [
-      { id: "c1", senderId: "p1", receiverId: "p2" },
-      { id: "c2", senderId: "p3", receiverId: "p1" },
-    ];
-    mockPrisma.chessChallenge.findMany.mockResolvedValue(challenges);
+  it("listChallenges returns challenges for player (as sender or receiver)", async () => {
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p2",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
+    await storage.createChallenge({
+      senderId: "p3",
+      receiverId: "p1",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
 
     const result = await listChallenges("p1");
 
-    expect(mockPrisma.chessChallenge.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: {
-          OR: [{ senderId: "p1" }, { receiverId: "p1" }],
-        },
-      }),
-    );
     expect(result).toHaveLength(2);
   });
 
   it("listChallenges filters by status", async () => {
-    mockPrisma.chessChallenge.findMany.mockResolvedValue([]);
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p2",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p3",
+      status: "DECLINED",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
 
-    await listChallenges("p1", "PENDING");
+    const result = await listChallenges("p1", "PENDING");
 
-    expect(mockPrisma.chessChallenge.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: {
-          OR: [{ senderId: "p1" }, { receiverId: "p1" }],
-          status: "PENDING",
-        },
-      }),
-    );
+    expect(result).toHaveLength(1);
+    expect(result[0]?.status).toBe("PENDING");
   });
 
-  it("expireStaleChallenges updates expired challenges", async () => {
-    mockPrisma.chessChallenge.updateMany.mockResolvedValue({ count: 3 });
-
-    const result = await expireStaleChallenges();
-
-    expect(mockPrisma.chessChallenge.updateMany).toHaveBeenCalledWith({
-      where: {
-        status: "PENDING",
-        expiresAt: { lt: expect.any(Date) },
-      },
-      data: { status: "EXPIRED" },
+  it("expireStaleChallenges expires past-due PENDING challenges", async () => {
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p2",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() - 1000), // already expired
     });
-    expect(result).toBe(3);
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p3",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() - 2000), // also expired
+    });
+    await storage.createChallenge({
+      senderId: "p2",
+      receiverId: "p3",
+      status: "PENDING",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // still valid
+    });
+
+    const count = await expireStaleChallenges();
+
+    expect(count).toBe(2);
+
+    const allP1 = await storage.listChallengesByPlayer("p1");
+    for (const c of allP1) {
+      if (c.expiresAt.getTime() < Date.now()) {
+        expect(c.status).toBe("EXPIRED");
+      }
+    }
+  });
+
+  it("expireStaleChallenges does not expire already non-PENDING challenges", async () => {
+    await storage.createChallenge({
+      senderId: "p1",
+      receiverId: "p2",
+      status: "DECLINED",
+      senderColor: null,
+      timeControl: "BLITZ_5",
+      gameId: null,
+      expiresAt: new Date(Date.now() - 1000),
+    });
+
+    const count = await expireStaleChallenges();
+
+    expect(count).toBe(0);
   });
 
   it("acceptChallenge with senderColor 'white' assigns sender as white", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: "white",
       timeControl: "RAPID_10",
-    });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "ACCEPTED",
-      gameId: "g1",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        whitePlayerId: "p1",
-        blackPlayerId: "p2",
-      }),
-    });
+    const game = await storage.getGame(result.gameId);
+    expect(game?.whitePlayerId).toBe("p1");
+    expect(game?.blackPlayerId).toBe("p2");
   });
 
   it("acceptChallenge with senderColor 'black' assigns sender as black", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: "black",
       timeControl: "RAPID_10",
-    });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "ACCEPTED",
-      gameId: "g1",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        whitePlayerId: "p2",
-        blackPlayerId: "p1",
-      }),
-    });
+    const game = await storage.getGame(result.gameId);
+    expect(game?.whitePlayerId).toBe("p2");
+    expect(game?.blackPlayerId).toBe("p1");
   });
 
-  it("acceptChallenge with no senderColor picks randomly", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+  it("acceptChallenge with no senderColor picks randomly (sender as white when random < 0.5)", async () => {
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: null,
       timeControl: "BLITZ_5",
-    });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "ACCEPTED",
-      gameId: "g1",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    // Mock Math.random to return a deterministic value
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.3);
 
-    await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    // With Math.random() = 0.3 (< 0.5), sender should be white
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        whitePlayerId: "p1",
-        blackPlayerId: "p2",
-      }),
-    });
+    const game = await storage.getGame(result.gameId);
+    expect(game?.whitePlayerId).toBe("p1");
+    expect(game?.blackPlayerId).toBe("p2");
 
     randomSpy.mockRestore();
   });
 
-  it("acceptChallenge with no senderColor picks randomly (other branch)", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+  it("acceptChallenge with no senderColor picks randomly (receiver as white when random >= 0.5)", async () => {
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: null,
       timeControl: "BLITZ_5",
-    });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({
-      id: "c1",
-      status: "ACCEPTED",
-      gameId: "g1",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    // Mock Math.random to return a deterministic value
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.7);
 
-    await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    // With Math.random() = 0.7 (>= 0.5), receiver should be white
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        whitePlayerId: "p2",
-        blackPlayerId: "p1",
-      }),
-    });
+    const game = await storage.getGame(result.gameId);
+    expect(game?.whitePlayerId).toBe("p2");
+    expect(game?.blackPlayerId).toBe("p1");
 
     randomSpy.mockRestore();
   });
 
-  it("acceptChallenge handles unknown time control", async () => {
-    mockPrisma.chessChallenge.findUnique.mockResolvedValue({
-      id: "c1",
+  it("acceptChallenge with unknown time control falls back to 300_000ms", async () => {
+    const challenge = await storage.createChallenge({
       senderId: "p1",
       receiverId: "p2",
       status: "PENDING",
       senderColor: "white",
       timeControl: "UNKNOWN",
+      gameId: null,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
-    mockPrisma.chessGame.create.mockResolvedValue({ id: "g1" });
-    mockPrisma.chessChallenge.update.mockResolvedValue({});
 
-    await acceptChallenge("c1", "p2");
+    const result = await acceptChallenge(challenge.id, "p2");
 
-    expect(mockPrisma.chessGame.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        whiteTimeMs: 300_000, // Default fallback
-        blackTimeMs: 300_000,
-      }),
-    });
+    const game = await storage.getGame(result.gameId);
+    expect(game?.whiteTimeMs).toBe(300_000);
+    expect(game?.blackTimeMs).toBe(300_000);
   });
 });

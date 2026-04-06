@@ -1,22 +1,4 @@
-import prisma from "../lib/prisma";
-
-interface ChessPlayer {
-  id: string;
-  userId: string;
-  name: string;
-  avatar: string | null;
-  elo: number;
-  bestElo: number;
-  wins: number;
-  losses: number;
-  draws: number;
-  streak: number;
-  soundEnabled: boolean;
-  isOnline: boolean;
-  lastSeenAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { ChessStorage, ChessPlayer } from "./storage.js";
 
 interface PlayerStats {
   elo: number;
@@ -29,45 +11,33 @@ interface PlayerStats {
   winRate: number;
 }
 
+let storage: ChessStorage;
+
+export function setPlayerStorage(s: ChessStorage): void {
+  storage = s;
+}
+
+/** Alias for setPlayerStorage — convenience for tests importing from this module. */
+export { setPlayerStorage as setStorage };
+
 export async function createPlayer(
   userId: string,
   name: string,
   avatar?: string,
 ): Promise<ChessPlayer> {
-  return prisma.chessPlayer.create({
-    data: {
-      userId,
-      name,
-      ...(avatar !== undefined && { avatar }),
-    },
-  }) as Promise<ChessPlayer>;
+  return storage.createPlayer({
+    userId,
+    name,
+    ...(avatar !== undefined && { avatar }),
+  });
 }
 
 export async function getPlayer(playerId: string): Promise<ChessPlayer | null> {
-  return prisma.chessPlayer.findUnique({ where: { id: playerId } }) as Promise<ChessPlayer | null>;
+  return storage.getPlayer(playerId);
 }
 
 export async function getPlayersByUser(userId: string): Promise<ChessPlayer[]> {
-  return prisma.chessPlayer.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      userId: true,
-      name: true,
-      avatar: true,
-      elo: true,
-      bestElo: true,
-      wins: true,
-      losses: true,
-      draws: true,
-      streak: true,
-      soundEnabled: true,
-      isOnline: true,
-      lastSeenAt: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  }) as Promise<ChessPlayer[]>;
+  return storage.getPlayersByUser(userId);
 }
 
 export async function updatePlayer(
@@ -76,10 +46,7 @@ export async function updatePlayer(
   data: { name?: string; avatar?: string; soundEnabled?: boolean },
 ): Promise<ChessPlayer> {
   try {
-    return (await prisma.chessPlayer.update({
-      where: { id: playerId, userId },
-      data,
-    })) as ChessPlayer;
+    return await storage.updatePlayerOwned(playerId, userId, data);
   } catch {
     throw new Error("Not authorized to update this player");
   }
@@ -87,7 +54,7 @@ export async function updatePlayer(
 
 export async function deletePlayer(playerId: string, userId: string): Promise<void> {
   try {
-    await prisma.chessPlayer.delete({ where: { id: playerId, userId } });
+    await storage.deletePlayerOwned(playerId, userId);
   } catch {
     throw new Error("Not authorized to delete this player");
   }
@@ -99,12 +66,9 @@ export async function setPlayerOnline(
   isOnline: boolean,
 ): Promise<void> {
   try {
-    await prisma.chessPlayer.update({
-      where: { id: playerId, userId },
-      data: {
-        isOnline,
-        lastSeenAt: new Date(),
-      },
+    await storage.updatePlayerOwned(playerId, userId, {
+      isOnline,
+      lastSeenAt: new Date(),
     });
   } catch {
     throw new Error("Not authorized to update this player");
@@ -112,32 +76,11 @@ export async function setPlayerOnline(
 }
 
 export async function listOnlinePlayers(): Promise<ChessPlayer[]> {
-  return prisma.chessPlayer.findMany({
-    where: { isOnline: true },
-    select: {
-      id: true,
-      userId: true,
-      name: true,
-      avatar: true,
-      elo: true,
-      bestElo: true,
-      wins: true,
-      losses: true,
-      draws: true,
-      streak: true,
-      soundEnabled: true,
-      isOnline: true,
-      lastSeenAt: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  }) as Promise<ChessPlayer[]>;
+  return storage.listOnlinePlayers();
 }
 
 export async function getPlayerStats(playerId: string): Promise<PlayerStats> {
-  const player = (await prisma.chessPlayer.findUnique({
-    where: { id: playerId },
-  })) as ChessPlayer | null;
+  const player = await storage.getPlayer(playerId);
   if (!player) {
     throw new Error("Player not found");
   }
@@ -160,27 +103,5 @@ export async function updatePlayerElo(
   newElo: number,
   result: "win" | "loss" | "draw",
 ): Promise<void> {
-  const winIncrement = result === "win" ? 1 : 0;
-  const lossIncrement = result === "loss" ? 1 : 0;
-  const drawIncrement = result === "draw" ? 1 : 0;
-
-  const count = await prisma.$executeRaw`
-    UPDATE "ChessPlayer"
-    SET
-      elo = ${newElo},
-      "bestElo" = GREATEST("bestElo", ${newElo}),
-      wins = wins + ${winIncrement},
-      losses = losses + ${lossIncrement},
-      draws = draws + ${drawIncrement},
-      streak = CASE
-        WHEN ${result} = 'win' THEN CASE WHEN streak > 0 THEN streak + 1 ELSE 1 END
-        WHEN ${result} = 'loss' THEN CASE WHEN streak < 0 THEN streak - 1 ELSE -1 END
-        ELSE 0
-      END,
-      "updatedAt" = NOW()
-    WHERE id = ${playerId}
-  `;
-  if (count === 0) {
-    throw new Error("Player not found");
-  }
+  await storage.updatePlayerElo(playerId, newElo, result);
 }

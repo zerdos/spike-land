@@ -10,6 +10,8 @@ import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { AppFooter } from "../components/AppFooter";
 
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
+import { MadMaxProtocol } from "../components/MadMaxProtocol";
+import { WelcomeModal } from "../components/WelcomeModal";
 import { AppDrawer } from "../components/drawer/AppDrawer";
 
 import { ChatProvider, ChatWidget } from "../components/chat";
@@ -215,6 +217,7 @@ const MOBILE_NAV_GROUPS: NavGroup[] = [
   {
     items: [
       { to: "/chess", label: "Chess" },
+      { to: "/cockpit", label: "Dashboard" },
       { to: "/status", label: "Status" },
       { to: "/settings", label: "Settings" },
     ],
@@ -553,6 +556,8 @@ export function RootLayout() {
           </main>
 
           <AppFooter />
+          <WelcomeModal userName={null} />
+          <MadMaxProtocol />
         </div>
 
         <AppDrawer />

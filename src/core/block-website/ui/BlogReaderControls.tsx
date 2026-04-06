@@ -703,8 +703,8 @@ export function BlogReaderControls({
             <div className="inline-flex rounded-2xl border border-border/55 bg-background/55 p-0.5">
               {(
                 (hasPregenerated
-                  ? (["pregenerated", "browser", "elevenlabs"] as const)
-                  : (["browser", "elevenlabs"] as const)) as readonly ReaderEngine[]
+                  ? ["pregenerated", "browser", "elevenlabs"]
+                  : ["browser", "elevenlabs"]) as ReaderEngine[]
               ).map((eng) => (
                 <button
                   key={eng}

@@ -6,7 +6,7 @@ function tokenKinds(source: string) {
   return lexer.tokenize().map((t) => t.kind);
 }
 
-function _tokenValues(source: string) {
+function tokenValues(source: string) {
   const lexer = new Lexer(source);
   return lexer.tokenize().map((t) => ({ kind: t.kind, value: t.value }));
 }
