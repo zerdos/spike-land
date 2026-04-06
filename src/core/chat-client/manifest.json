@@ -1,0 +1,11 @@
+{
+  "name": "chat-client",
+  "category": "core",
+  "dependencies": [],
+  "files": [
+    "core-logic/client.ts",
+    "core-logic/service-binding.ts",
+    "core-logic/types.ts",
+    "index.ts"
+  ]
+}

@@ -563,3 +563,6 @@ export function isErrorResult(result: CallToolResult): boolean {
 // ─── Feedback & Error Shipper ────────────────────────────────────────────────
 export * from "./feedback.js";
 export * from "./error-shipper.js";
+
+// ─── Chat Notifications ───────────────────────────────────────────────────────
+export * from "./chat-notify.js";

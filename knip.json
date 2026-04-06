@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "packages/shared": {},
+    "packages/mcp-server-base": {},
+    "packages/spike-land-mcp": {},
+    "packages/mcp-auth": {},
+    "packages/spike-edge": {},
+    "packages/spike-web": {},
+    "src/monaco-editor": {}
+  }
+}

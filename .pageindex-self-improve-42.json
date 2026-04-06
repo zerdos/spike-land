@@ -1,0 +1,117 @@
+{
+  "insights": [
+    {
+      "id": "ins_1775442210211_r6c316",
+      "docId": "pageindex:self-improve",
+      "query": "Radix: locate the self-improving loop in this project",
+      "queryNorm": "radix locate self improving loop project",
+      "answer": "Radix: The concrete loop lives in the PageIndex subsystem, not in the general agent orchestration layer. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. The main implementation is src/mcp-tools/pageindex/core-logic/self-improve.ts. That file defines InsightStore, which keeps reusable query-answer insights with confidence, hit count, feedback, tags, and topic membership. The same file defines TopicTree, which clusters related insights so later queries can route through memory instead of starting cold. The loop is intentionally persistent: saveToFile and loadFromFile make the learned context survive across sessions. This is a real runtime loop because buildContext turns old insights into new system context for the next question. The PRD in src/prd-registry/prds/apps/pageindex.ts names the feature directly as a self-improving knowledge loop. That makes PageIndex the clearest self-improving loop in the repo: memory, routing, feedback, and persistence all live in one place.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        "src/mcp-tools/pageindex/core-logic/tools.ts",
+        "src/mcp-tools/pageindex/mcp/index.ts",
+        "src/prd-registry/prds/apps/pageindex.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.211Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["loop", "radix", "self", "pageindex", "memory"],
+      "topicId": "topic_1775442210212_t08y"
+    },
+    {
+      "id": "ins_1775442210212_6wiiib",
+      "docId": "pageindex:chat-flow",
+      "query": "Zoltan: explain how pageindex_chat feeds the loop",
+      "queryNorm": "zoltan explain pageindex_chat feeds loop",
+      "answer": "Zoltan: The improving pass happens inside pageindex_chat, where new answers are folded back into later prompts. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. pageindex_chat first asks the store for prior context by calling insightStore.buildContext(query). It then pulls the best-rated earlier insights with getTopRated(2) and injects them as few-shot examples. After the remote answer comes back, the tool extracts citations and stores the result with insightStore.add(...). That means every successful answer becomes a candidate training example for the next similar question. The tool also calls topicTree.freezeStaleTopics() so stable clusters stop thrashing and become durable memory. autoSave() writes the updated memory to .pageindex-insights.json, so the next run starts with accumulated context. The full chat path is therefore a loop: retrieve memory, answer, score by feedback, persist, and reuse.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/tools.ts",
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        "src/mcp-tools/pageindex/mcp/index.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.212Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["pageindex_chat", "zoltan", "loop", "pass", "query"],
+      "topicId": "topic_1775442210212_13lv"
+    },
+    {
+      "id": "ins_1775442210212_amq0j8",
+      "docId": "pageindex:topic-graph",
+      "query": "Erdos: describe the graph structure inside the self-improving loop",
+      "queryNorm": "erdos describe graph structure inside self improving loop",
+      "answer": "Erdos: The memory surface is not flat; it is organized as a topic graph with routing heuristics. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. TopicTree.classify assigns each new insight to the best matching topic or creates a new topic when none fits. Matching uses a combined similarity score built from cosine and Jaccard overlap over normalized text and tags. findRelevantTopics ranks topics by similarity, feedback, and size so strong clusters are reused earlier. getRelevantInsightIds walks those topics and returns the insight IDs that should influence the next answer. maybeRebalance collapses wide sibling sets into grouped parents when a node grows past maxChildren. freezeStaleTopics marks mature areas of the graph as frozen once they are large enough and old enough. So the loop is graph-shaped: repeated contact creates structure, and structure improves future retrieval.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        ".tests/pageindex-mcp/self-improve.test.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.212Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["topic", "erdos", "graph", "loop", "memory"],
+      "topicId": "topic_1775442210212_vacb"
+    },
+    {
+      "id": "ins_1775442210212_85wocm",
+      "docId": "pageindex:memory-management",
+      "query": "Radix: explain how the loop manages memory over time",
+      "queryNorm": "radix explain loop manages memory over time",
+      "answer": "Radix: A self-improving loop only matters if it can keep useful memory and evict weak memory without manual babysitting. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. InsightStore deduplicates near-identical questions by docId and similarity so repeated work compounds instead of fragmenting. When a later answer is longer and at least as well cited, the duplicate path upgrades the stored answer in place. evict() trims the store by a feedback-weighted score built from confidence, hit count, feedback, and topic presence. buildContext separates stable reusable blocks from a dynamic suffix, which is a ConDB-style cache-friendly layout. cachedBlocks and blocksDirty avoid rebuilding stable context strings when the underlying insight has not changed. pageindex_improve_context exposes list, export, stats, load, top_rated, topics, freeze, and clear operations for operators. That gives the loop operational controls instead of leaving memory quality to chance.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        "src/mcp-tools/pageindex/core-logic/tools.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.212Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["memory", "loop", "radix", "instead", "explain"],
+      "topicId": "topic_1775442210212_t08y"
+    },
+    {
+      "id": "ins_1775442210212_tg901e",
+      "docId": "pageindex:better-each-pass",
+      "query": "Zoltan: why does each iteration get better in the loop",
+      "queryNorm": "zoltan why does each iteration get better loop",
+      "answer": "Zoltan: Improvement is driven by accumulation, ranking, and explicit feedback, not by vague optimism. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. Repeated adds on the same query increase hitCount, so frequently reused memory becomes easier to surface. pageindex_rate applies thumbs up or thumbs down directly to feedback and confidence, so helpful memory is reinforced. getTopRated returns positively rated insights, and pageindex_chat feeds those back as style and content exemplars. Because buildContext also routes through related topics, strong answers help neighboring questions, not only exact repeats. Confidence rises when answers keep getting reused and falls when users down-rate them. Duplicate replacement lets a later, longer, better-cited answer overwrite a weaker earlier answer for the same knowledge slot. So the next pass is better because the loop remembers what worked, privileges it, and keeps replacing weaker state.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        "src/mcp-tools/pageindex/core-logic/tools.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.212Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["zoltan", "loop", "query", "memory", "does"],
+      "topicId": "topic_1775442210212_13lv"
+    },
+    {
+      "id": "ins_1775442210213_ch2ork",
+      "docId": "pageindex:health-metrics",
+      "query": "Erdos: what metrics prove the loop is improving",
+      "queryNorm": "erdos metrics prove loop improving",
+      "answer": "Erdos: A loop without observables is only a story, so the PageIndex memory exposes measurable health signals. This pass starts with 3 locally relevant memory candidate(s) already in the store. Prior context was available, so the new answer is refining stored state instead of replacing a blank slate. InsightStore.stats reports total insights, average confidence, average hit count, and positive versus negative ratings. It also emits topTags so you can see which semantic regions dominate the accumulated memory. The nested topicTree stats include topicCount, maxDepth, and avgFanout, which reveal whether clustering is actually forming. cacheHitRate shows whether the stable context block cache is warm or still being rebuilt. The loop therefore has both local metrics per insight and global metrics for the full memory structure. That is enough to track whether routing, reinforcement, and persistence are compounding over time. In this runner I add an explicit monotonic score on top, so every iteration must beat the previous one or the run fails.",
+      "citations": [
+        "src/mcp-tools/pageindex/core-logic/self-improve.ts",
+        "src/mcp-tools/pageindex/core-logic/tools.ts"
+      ],
+      "createdAt": "2026-04-06T02:23:30.213Z",
+      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "confidence": 1,
+      "hitCount": 7,
+      "feedback": 7,
+      "tags": ["loop", "erdos", "memory", "average", "metrics"],
+      "topicId": "topic_1775442210213_f0xc"
+    }
+  ],
+  "topicTree": "{\"id\":\"root\",\"name\":\"Root\",\"summary\":\"\",\"children\":[{\"id\":\"topic_1775442210212_t08y\",\"name\":\"loop radix self\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210211_r6c316\",\"ins_1775442210212_85wocm\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210212_13lv\",\"name\":\"pageindex_chat zoltan loop\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210212_6wiiib\",\"ins_1775442210212_tg901e\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210212_vacb\",\"name\":\"topic erdos graph\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210212_amq0j8\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210213_f0xc\",\"name\":\"loop erdos memory\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210213_ch2ork\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.213Z\",\"frozen\":false}],\"insightIds\":[],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.210Z\",\"frozen\":false}",
+  "version": 2
+}
