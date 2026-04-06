@@ -23,6 +23,10 @@ database_id = "f7219e86-7dc6-4627-92ad-17fce49ae35a"
 [alias]
 "esbuild-wasm/esbuild.wasm?url" = "../../src/edge-api/transpile/lazy-imports/esbuild-wasm-cf.ts"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 [[rules]]
 type = "CompiledWasm"
 globs = ["**/*.wasm"]

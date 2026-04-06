@@ -32,6 +32,10 @@ bucket_name = "spike-app-assets"
 binding = "SPIKE_EDGE"
 service = "spike-edge"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 [vars]
 APP_ENV = "development"
 GA_MEASUREMENT_ID = "G-9WNEM9ZHE7"

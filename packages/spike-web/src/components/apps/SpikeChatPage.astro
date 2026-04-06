@@ -1,4 +1,6 @@
 ---
+import { SpikeChatDemo } from "./SpikeChatDemo";
+
 interface Props {
   name: string;
   description: string;
@@ -84,69 +86,7 @@ const toolEvents = [
         </div>
       </div>
 
-      <div class="workspace glass-card">
-        <div class="workspace-topbar">
-          <div>
-            <p class="workspace-label">channel</p>
-            <h2 class="workspace-name">app-spike-chat</h2>
-          </div>
-          <div class="workspace-state">
-            <span class="stage-badge">execute</span>
-            <span class="memory-badge">memory +3</span>
-          </div>
-        </div>
-
-        <div class="workspace-body">
-          <div class="conversation">
-            <div class="bubble bubble-assistant">
-              <span class="bubble-role">Spike</span>
-              <p>I kept the stable prompt prefix cached. What do you want to ship today?</p>
-            </div>
-            <div class="bubble bubble-user">
-              <span class="bubble-role">You</span>
-              <p>Find the deploy regression on <code>/apps/spike-chat</code> and explain the fix.</p>
-            </div>
-            <div class="bubble bubble-assistant">
-              <span class="bubble-role">Spike</span>
-              <p>
-                Route traced. The page is missing from the prerender catalog, so production falls
-                back to the generic homepage shell.
-              </p>
-            </div>
-          </div>
-
-          <aside class="workspace-rail">
-            <div class="rail-card">
-              <p class="rail-label">Active notes</p>
-              <ul class="note-list">
-                {notes.map((note) => (
-                  <li class="note-item">
-                    <span class="note-score">{note.confidence}</span>
-                    <span>{note.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div class="rail-card">
-              <p class="rail-label">Tool activity</p>
-              <ul class="tool-list">
-                {toolEvents.map((event) => (
-                  <li class="tool-item">
-                    <span>{event.name}</span>
-                    <span class:list={["tool-status", event.status]}>{event.status}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-        </div>
-
-        <div class="composer">
-          <span class="composer-placeholder">Ask anything...</span>
-          <span class="composer-send">enter</span>
-        </div>
-      </div>
+      <SpikeChatDemo client:only="react" />
     </section>
 
     <section class="proof-grid">
@@ -208,7 +148,7 @@ const toolEvents = [
   </div>
 </section>
 
-<style>
+<style is:global>
   .chat-page {
     position: relative;
     padding-block: clamp(2rem, 5vw, 4.5rem);
@@ -555,7 +495,18 @@ const toolEvents = [
     font-size: 0.9rem;
   }
 
-  .composer-placeholder {
+  .composer-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    min-width: 0;
+  }
+
+  .composer-input::placeholder {
     color: var(--muted-fg);
   }
 
@@ -567,6 +518,13 @@ const toolEvents = [
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  .composer-send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .proof-grid {

@@ -23,6 +23,10 @@ database_id = "f7219e86-7dc6-4627-92ad-17fce49ae35a"
 binding = "IMAGE_R2"
 bucket_name = "pixel-studio"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 [[routes]]
 pattern = "image-studio-mcp.spike.land"
 custom_domain = true

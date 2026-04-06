@@ -52,6 +52,7 @@ const packagePathMap: Record<string, string> = {
   "image-studio-worker": "edge-api/image-studio-worker",
   "mcp-auth": "edge-api/auth",
   "mcp-image-studio": "mcp-tools/image-studio",
+  "chat-client": "core/chat-client",
   "mcp-server-base": "core/server-base",
   "openclaw-mcp": "mcp-tools/openclaw",
   "pageindex-mcp": "mcp-tools/pageindex",
@@ -318,7 +319,21 @@ const packages: Record<string, PkgConfig> = {
     coverageExclude: ["**/generated/**", "**/cli-server.ts"],
   },
 
-  "mcp-server-base": { tier: 3, coverageExclude: [] },
+  "chat-client": {
+    tier: 3,
+    includeTests: [src("core/chat-client/__tests__/**/*.test.ts")],
+    includeSrc: [src("core/chat-client/core-logic/**/*.ts")],
+    coverageExclude: ["**/types.ts"],
+  },
+
+  "mcp-server-base": {
+    tier: 3,
+    includeTests: [
+      tests("mcp-server-base/**/*.test.ts"),
+      src("core/server-base/core-logic/__tests__/**/*.test.ts"),
+    ],
+    coverageExclude: [],
+  },
 
   "openclaw-mcp": {
     tier: 1,

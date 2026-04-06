@@ -3,8 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import QaStudioPage from '../../components/react/qa-studio/QaStudioApp.tsx';
-import SpikeChatPage from '../../components/apps/SpikeChatPage.astro';
 import Analytics from '../../components/Analytics.astro';
+import TrackPageView from '../../components/TrackPageView.astro';
+import SpikeChatApp from '../../components/react/spike-chat/SpikeChatApp.tsx';
 import { appCatalog, getAppById } from '../../data/apps';
 
 export function getStaticPaths() {
@@ -34,18 +35,10 @@ const appName = app.name;
             <QaStudioPage client:only="react" />
         </main>
     ) : appId === 'spike-chat' ? (
-      <>
-        <Nav activePath="/apps" />
-        <main class="spike-chat-main">
-          <SpikeChatPage
-            name={app.name}
-            description={app.description}
-            accent={app.accent}
-            accentBg={app.accentBg}
-          />
-        </main>
-        <Footer />
-      </>
+      <main class="spike-chat-main">
+        <TrackPageView />
+        <SpikeChatApp client:only="react" />
+      </main>
     ) : (
       <>
         <Nav activePath="/apps" />

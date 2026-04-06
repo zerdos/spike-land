@@ -30,6 +30,10 @@ database_id = "52b72b0a-c0f8-4d7f-aaec-4f014594d0c1"
 binding = "AUTH_R2"
 bucket_name = "spike-auth-assets"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 # Secrets (set via `wrangler secret put`):
 # - DB_PASSWORD
 # - BETTER_AUTH_SECRET

@@ -60,6 +60,10 @@ service = "mcp-auth"
 binding = "MCP_SERVICE"
 service = "spike-land-mcp"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 [[routes]]
 pattern = "edge.spike.land"
 custom_domain = true

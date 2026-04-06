@@ -83,14 +83,24 @@ function makeId(prefix: string) {
   return `${prefix}-${Date.now()}-${++nextId}`;
 }
 
-export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
-  const storageKey = `${persona}-chat-messages`;
+export function useRadixChat(persona?: string): UseRadixChatReturn {
+  const personaSlug = persona?.trim() || "";
+  const storageKey = personaSlug ? `${personaSlug}-chat-messages` : "spike-chat-messages";
+  const messagePrefix = personaSlug || "spike-chat";
 
   const [messages, setMessages] = useState<RadixMessage[]>(() => loadStoredMessages(storageKey));
   const [isStreaming, setIsStreaming] = useState(false);
   const [currentStage, setCurrentStage] = useState<PipelineStage>("idle");
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    abortRef.current?.abort();
+    setMessages(loadStoredMessages(storageKey));
+    setIsStreaming(false);
+    setCurrentStage("idle");
+    setError(null);
+  }, [storageKey]);
 
   // Persist messages to localStorage (debounced)
   useEffect(() => {
@@ -105,7 +115,7 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
       if (!content.trim() || isStreaming) return;
 
       const userMsg: RadixMessage = {
-        id: makeId(persona),
+        id: makeId(messagePrefix),
         role: "user",
         content: content.trim(),
         timestamp: Date.now(),
@@ -117,7 +127,7 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
       setError(null);
 
       const assistantMsg: RadixMessage = {
-        id: makeId(persona),
+        id: makeId(messagePrefix),
         role: "assistant",
         content: "",
         timestamp: Date.now(),
@@ -153,7 +163,7 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
           body: JSON.stringify({
             message: content.trim(),
             history,
-            persona,
+            ...(personaSlug ? { persona: personaSlug } : {}),
             pageContext,
           }),
           signal: abortRef.current.signal,
@@ -255,7 +265,7 @@ export function useRadixChat(persona: string = "radix"): UseRadixChatReturn {
         abortRef.current = null;
       }
     },
-    [isStreaming, messages, persona],
+    [isStreaming, messagePrefix, messages, personaSlug],
   );
 
   const clearError = useCallback(() => setError(null), []);

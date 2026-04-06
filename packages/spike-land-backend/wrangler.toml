@@ -38,6 +38,10 @@ binding = "X9"
 bucket_name = "code-chain"
 preview_bucket_name = "code-chain"
 
+[[services]]
+binding = "SPIKE_CHAT"
+service = "spike-chat"
+
 [[migrations]]
 tag = "v1"
 new_classes = ["Users"]
