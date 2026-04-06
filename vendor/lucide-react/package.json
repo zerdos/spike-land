@@ -39,6 +39,8 @@
     "dynamicIconImports.d.ts"
   ],
   "devDependencies": {
+    "@lucide/build-icons": "1.1.0",
+    "@lucide/rollup-plugins": "1.0.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.1.2",
     "@types/react": "^18.2.37",
@@ -51,10 +53,7 @@
     "rollup-plugin-preserve-directives": "^0.4.0",
     "typescript": "^5.8.3",
     "vite": "^7.2.4",
-    "vitest": "^4.0.12",
-    "@lucide/build-icons": "1.1.0",
-    "@lucide/rollup-plugins": "1.0.0",
-    "@lucide/shared": "1.0.0"
+    "vitest": "^4.0.12"
   },
   "peerDependencies": {
     "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0"

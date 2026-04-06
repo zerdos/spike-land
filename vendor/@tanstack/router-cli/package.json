@@ -53,9 +53,9 @@
     "node": ">=20.19"
   },
   "dependencies": {
+    "@tanstack/router-generator": "1.166.7",
     "chokidar": "^3.6.0",
-    "yargs": "^17.7.2",
-    "@tanstack/router-generator": "1.166.7"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.33",

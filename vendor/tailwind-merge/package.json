@@ -60,7 +60,6 @@
     "version": "zx scripts/update-readme.mjs",
     "postversion": "if [ -n \"$DANYS_MACHINE\" ]; then git push --follow-tags && open https://github.com/dcastil/tailwind-merge/releases; fi"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",

@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/*",
     "src/monaco-editor",
-    "vendor/*"
+    "vendor/*",
+    "vendor/*/*"
   ],
   "scripts": {
     "prepare": "husky",
