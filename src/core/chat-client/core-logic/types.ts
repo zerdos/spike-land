@@ -5,11 +5,11 @@ export interface ChatClientConfig {
   /** Base URL of spike-chat service. Default: "https://chat.spike.land" */
   baseUrl?: string;
   /** Bearer token for auth (agents/bots) */
-  apiKey?: string;
+  apiKey?: string | undefined;
   /** Agent ID for x-agent-id header */
-  agentId?: string;
+  agentId?: string | undefined;
   /** Custom fetch implementation (for CF Workers service bindings) */
-  fetch?: typeof globalThis.fetch;
+  fetch?: typeof globalThis.fetch | undefined;
 }
 
 /**
