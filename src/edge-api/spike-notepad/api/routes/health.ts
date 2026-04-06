@@ -6,6 +6,6 @@ const health = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 health.get("/health", (c) => c.json({ status: "ok", service: "spike-notepad" }));
 
-health.get("/", (c) => c.json({ service: "spike-notepad", version: "0.1.0" }));
+health.get("/", (c) => c.redirect("/app"));
 
 export { health };

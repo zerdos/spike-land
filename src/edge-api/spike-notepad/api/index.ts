@@ -2,7 +2,10 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 
 import type { Env, Variables } from "../core-logic/env";
+import { canvas } from "./routes/canvas";
 import { health } from "./routes/health";
+import { notes } from "./routes/notes";
+import { projects } from "./routes/projects";
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -26,6 +29,9 @@ app.use("*", async (c, next) => {
 });
 
 app.route("/", health);
+app.route("/", projects);
+app.route("/", notes);
+app.route("/", canvas);
 
 app.onError((err, c) => {
   console.error(`[spike-notepad] ${err.message}`, err.stack);
