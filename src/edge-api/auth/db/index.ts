@@ -37,9 +37,9 @@ function timingSafeEqual(a: string, b: string): boolean {
   const bytesB = enc.encode(b);
   if (bytesA.length !== bytesB.length) {
     // Still iterate to avoid length-based timing leak
-    let diff = 0;
+    let _diff = 0;
     for (let i = 0; i < bytesA.length; i++) {
-      diff |= (bytesA[i] ?? 0) ^ (bytesB[i % bytesB.length] ?? 0);
+      _diff |= (bytesA[i] ?? 0) ^ (bytesB[i % bytesB.length] ?? 0);
     }
     return false;
   }
