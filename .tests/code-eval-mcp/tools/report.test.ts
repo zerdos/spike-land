@@ -7,9 +7,10 @@ describe("runEvalPipeline", () => {
     const challenge = generateChallenge("easy", "math", 42);
     expect(challenge).toBeDefined();
 
-    const report = await runEvalPipeline(challenge!.referenceSolution, challenge!.id);
+    const c1 = challenge as NonNullable<typeof challenge>;
+    const report = await runEvalPipeline(c1.referenceSolution, c1.id);
 
-    expect(report.challenge.id).toBe(challenge!.id);
+    expect(report.challenge.id).toBe(c1.id);
     expect(report.challenge.title).toBeDefined();
     expect(report.originalTestCount).toBeGreaterThan(0);
     expect(report.amplifiedTestCount).toBeGreaterThanOrEqual(report.originalTestCount);
@@ -23,7 +24,8 @@ describe("runEvalPipeline", () => {
     const challenge = generateChallenge("easy", "arrays", 42);
     expect(challenge).toBeDefined();
 
-    const report = await runEvalPipeline("function solution() { return 0; }", challenge!.id);
+    const c2 = challenge as NonNullable<typeof challenge>;
+    const report = await runEvalPipeline("function solution() { return 0; }", c2.id);
 
     expect(report.evalResult.passRate).toBeLessThan(1);
     expect(report.eloRating.elo).toBeLessThan(1600);
@@ -45,7 +47,8 @@ describe("runEvalPipeline", () => {
     const challenge = generateChallenge("easy", "strings", 99);
     expect(challenge).toBeDefined();
 
-    const report = await runEvalPipeline(challenge!.referenceSolution, challenge!.id);
+    const c3 = challenge as NonNullable<typeof challenge>;
+    const report = await runEvalPipeline(c3.referenceSolution, c3.id);
 
     // Amplification should add tests beyond the original set
     expect(report.amplifiedTestCount).toBeGreaterThanOrEqual(report.originalTestCount);
@@ -55,7 +58,8 @@ describe("runEvalPipeline", () => {
     const challenge = generateChallenge("easy", "math", 1);
     expect(challenge).toBeDefined();
 
-    const report = await runEvalPipeline(challenge!.referenceSolution, challenge!.id);
+    const c4 = challenge as NonNullable<typeof challenge>;
+    const report = await runEvalPipeline(c4.referenceSolution, c4.id);
 
     expect(report.summary).toContain("Elo");
     expect(report.summary).toMatch(/\d+\/\d+/); // "X/Y tests"

@@ -45,7 +45,9 @@ export class CanvasWorkerRenderer {
     const defaultFont = `400 ${fontSize}px ${fontFamily}`;
 
     this.canvas = new OffscreenCanvas(width, height);
-    this.ctx = this.canvas.getContext("2d")!;
+    const ctx = this.canvas.getContext("2d");
+    if (!ctx) throw new Error("Failed to acquire OffscreenCanvas 2d context");
+    this.ctx = ctx;
 
     const root: CanvasNode = {
       type: "__root__",

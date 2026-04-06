@@ -137,7 +137,9 @@ interface WordBlock {
 }
 
 function randomWord(): string {
-  return WORDS[Math.floor(Math.random() * WORDS.length)] ?? WORDS[0]!;
+  const word = WORDS[Math.floor(Math.random() * WORDS.length)] ?? WORDS[0];
+  if (word === undefined) throw new Error("WORDS array is empty");
+  return word;
 }
 
 function createBlock(): WordBlock {

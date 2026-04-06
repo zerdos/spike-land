@@ -21,8 +21,9 @@ describe("registerShellCommand", () => {
   it("registers expected options: --config, --server, --server-url", () => {
     const program = new Command();
     registerShellCommand(program);
-    const cmd = program.commands.find((c) => c.name() === "shell")!;
-    const optionFlags = cmd.options.map((o) => o.flags);
+    const cmdFound = program.commands.find((c) => c.name() === "shell");
+    if (!cmdFound) throw new Error("shell command not found");
+    const optionFlags = cmdFound.options.map((o) => o.flags);
     expect(optionFlags.some((f) => f.includes("--config"))).toBe(true);
     expect(optionFlags.some((f) => f.includes("--server "))).toBe(true);
     expect(optionFlags.some((f) => f.includes("--server-url"))).toBe(true);
@@ -31,7 +32,8 @@ describe("registerShellCommand", () => {
   it("has description mentioning REPL or MCP", () => {
     const program = new Command();
     registerShellCommand(program);
-    const cmd = program.commands.find((c) => c.name() === "shell")!;
+    const cmd = program.commands.find((c) => c.name() === "shell");
+    if (!cmd) throw new Error("shell command not found");
     expect(cmd.description().length).toBeGreaterThan(5);
   });
 });

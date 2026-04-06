@@ -46,12 +46,12 @@ const TERMINATION_MIN_MAX_DIST = 4;
  * Initialise `state` to any non-zero 32-bit unsigned integer.
  */
 function xorshift32(state: Uint32Array): number {
-  let x = state[0]!;
+  let x = state[0] ?? 0;
   x ^= x << 13;
   x ^= x >>> 17;
   x ^= x << 5;
   state[0] = x >>> 0;
-  return state[0]!;
+  return state[0] ?? 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +99,7 @@ export function obamify(
   const costs = new Float64Array(totalPixels);
   for (let i = 0; i < totalPixels; i++) {
     costs[i] = computeCost(
-      assignments[i]!,
+      assignments[i] ?? i,
       i,
       sourcePixels,
       targetPixels,
@@ -138,12 +138,12 @@ export function obamify(
       const b = by * width + bx;
       if (a === b) continue;
 
-      const srcA = assignments[a]!;
-      const srcB = assignments[b]!;
+      const srcA = assignments[a] ?? a;
+      const srcB = assignments[b] ?? b;
 
       // Current costs (already cached).
-      const costA = costs[a]!;
-      const costB = costs[b]!;
+      const costA = costs[a] ?? 0;
+      const costB = costs[b] ?? 0;
 
       // Hypothetical costs after swap.
       const newCostA = computeCost(
@@ -167,8 +167,8 @@ export function obamify(
 
       // Accept if swap reduces total cost (greedy).
       if (costA + costB - (newCostA + newCostB) > 0) {
-        assignments[a] = srcB!;
-        assignments[b] = srcA!;
+        assignments[a] = srcB;
+        assignments[b] = srcA;
         costs[a] = newCostA;
         costs[b] = newCostB;
         swapsMade++;
@@ -217,13 +217,13 @@ export function renderResult(
   const output = new Uint8ClampedArray(width * height * 4);
 
   for (let destIdx = 0; destIdx < assignments.length; destIdx++) {
-    const srcIdx = assignments[destIdx]!;
+    const srcIdx = assignments[destIdx] ?? destIdx;
     const s = srcIdx * 4;
     const d = destIdx * 4;
-    output[d] = sourcePixels[s]!;
-    output[d + 1] = sourcePixels[s + 1]!;
-    output[d + 2] = sourcePixels[s + 2]!;
-    output[d + 3] = sourcePixels[s + 3]!;
+    output[d] = sourcePixels[s] ?? 0;
+    output[d + 1] = sourcePixels[s + 1] ?? 0;
+    output[d + 2] = sourcePixels[s + 2] ?? 0;
+    output[d + 3] = sourcePixels[s + 3] ?? 0;
   }
 
   return new ImageData(output, width, height);

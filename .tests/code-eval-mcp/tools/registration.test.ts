@@ -65,7 +65,7 @@ describe("eval_code via mock server", () => {
     });
 
     expect(result.isError).toBeUndefined();
-    const data = JSON.parse(result.content[0]!.text);
+    const data = JSON.parse((result.content[0] as NonNullable<(typeof result.content)[0]>).text);
     expect(data.passed).toBe(1);
     expect(data.passRate).toBe(1);
   });
@@ -97,7 +97,7 @@ describe("generate_challenge via mock server", () => {
     });
 
     expect(result.isError).toBeUndefined();
-    const data = JSON.parse(result.content[0]!.text);
+    const data = JSON.parse((result.content[0] as NonNullable<(typeof result.content)[0]>).text);
     expect(data.id).toBeDefined();
     expect(data.title).toBeDefined();
     expect(data.tests.length).toBeGreaterThan(0);

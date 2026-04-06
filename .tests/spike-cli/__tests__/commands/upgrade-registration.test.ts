@@ -23,7 +23,8 @@ describe("registerUpgradeCommand — command structure", () => {
   it("registers --version option", () => {
     const program = new Command();
     registerUpgradeCommand(program);
-    const cmd = program.commands.find((c) => c.name() === "upgrade")!;
+    const cmd = program.commands.find((c) => c.name() === "upgrade");
+    if (!cmd) throw new Error("upgrade command not found");
     const flags = cmd.options.map((o) => o.flags);
     expect(flags.some((f) => f.includes("--version"))).toBe(true);
   });
@@ -31,7 +32,8 @@ describe("registerUpgradeCommand — command structure", () => {
   it("has a meaningful description", () => {
     const program = new Command();
     registerUpgradeCommand(program);
-    const cmd = program.commands.find((c) => c.name() === "upgrade")!;
+    const cmd = program.commands.find((c) => c.name() === "upgrade");
+    if (!cmd) throw new Error("upgrade command not found");
     expect(cmd.description().toLowerCase()).toContain("upgrade");
   });
 });

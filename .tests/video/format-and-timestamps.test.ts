@@ -132,8 +132,8 @@ describe("N404_NARRATION_TIMESTAMPS", () => {
   it("word timestamps are in ascending order within each scene", () => {
     for (const [key, entry] of Object.entries(N404_NARRATION_TIMESTAMPS)) {
       for (let i = 1; i < entry.words.length; i++) {
-        const prev = entry.words[i - 1]!;
-        const curr = entry.words[i]!;
+        const prev = entry.words[i - 1] as NonNullable<(typeof entry.words)[number]>;
+        const curr = entry.words[i] as NonNullable<(typeof entry.words)[number]>;
         expect(
           curr.start,
           `${key}[${i}].start (${curr.start}) should be >= prev.start (${prev.start})`,
@@ -213,8 +213,8 @@ describe("NARRATION_TIMESTAMPS (VCP)", () => {
   it("word timestamps are in ascending order", () => {
     for (const [key, entry] of Object.entries(NARRATION_TIMESTAMPS)) {
       for (let i = 1; i < entry.words.length; i++) {
-        const prev = entry.words[i - 1]!;
-        const curr = entry.words[i]!;
+        const prev = entry.words[i - 1] as NonNullable<(typeof entry.words)[number]>;
+        const curr = entry.words[i] as NonNullable<(typeof entry.words)[number]>;
         expect(
           curr.start,
           `${key}[${i}]: word start should be non-decreasing`,

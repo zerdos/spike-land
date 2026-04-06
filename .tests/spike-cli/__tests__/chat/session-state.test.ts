@@ -111,7 +111,7 @@ describe("SessionState — getSnapshot / loadSnapshot", () => {
     state.loadSnapshot(snap);
 
     // Mutate the original snapshot — should not affect state
-    snap.created["chess"]!.push("game-2");
+    (snap.created["chess"] as string[]).push("game-2");
     snap.configToolsCalled.push("another_tool");
 
     expect(state.getCreatedIds("chess")).toEqual(["game-1"]);

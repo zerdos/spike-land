@@ -169,7 +169,7 @@ export class HNWriteClient {
     }
 
     // Step 2: GET the vote URL
-    const voteUrl = voteMatch[1]!.replace(/&amp;/g, "&");
+    const voteUrl = (voteMatch[1] ?? "").replace(/&amp;/g, "&");
     const voteResp = await this.fetchFn(`${HN_WEB_BASE}/${voteUrl}`, {
       headers: { Cookie: this.session.getCookie() ?? "" },
       redirect: "manual",
@@ -224,7 +224,7 @@ export class HNWriteClient {
     const body = new URLSearchParams({
       parent: String(parentId),
       text,
-      hmac: hmacMatch[1]!,
+      hmac: hmacMatch[1] ?? "",
       goto: `item?id=${parentId}`,
     });
 
@@ -274,7 +274,7 @@ export class HNWriteClient {
       const retryBody = new URLSearchParams({
         parent: String(parentId),
         text,
-        hmac: retryHmac[1]!,
+        hmac: retryHmac[1] ?? "",
         goto: `item?id=${parentId}`,
       });
 
@@ -339,7 +339,10 @@ export class HNWriteClient {
       };
     }
 
-    return { success: true, token: fnidMatch[1]! };
+    const token = fnidMatch[1];
+    if (!token)
+      return { success: false, error: "CSRF_EXPIRED", message: "CSRF token value was empty" };
+    return { success: true, token };
   }
 
   private isRateLimited(html: string): boolean {

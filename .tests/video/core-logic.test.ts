@@ -189,7 +189,7 @@ describe("TYPOGRAPHY", () => {
   it("fontSize scale is strictly increasing", () => {
     const sizes = Object.values(TYPOGRAPHY.fontSize);
     for (let i = 1; i < sizes.length; i++) {
-      expect(sizes[i]).toBeGreaterThan(sizes[i - 1]!);
+      expect(sizes[i]).toBeGreaterThan(sizes[i - 1] as number);
     }
   });
 
@@ -650,7 +650,9 @@ describe("getSceneAudioEntries", () => {
   it("entries are in ascending startFrame order", () => {
     const entries = getSceneAudioEntries();
     for (let i = 1; i < entries.length; i++) {
-      expect(entries[i]!.startFrame).toBeGreaterThan(entries[i - 1]!.startFrame);
+      expect((entries[i] as NonNullable<(typeof entries)[number]>).startFrame).toBeGreaterThan(
+        (entries[i - 1] as NonNullable<(typeof entries)[number]>).startFrame,
+      );
     }
   });
 
@@ -665,7 +667,9 @@ describe("getSceneAudioEntries", () => {
     const entries = getSceneAudioEntries();
     const durations = Object.values(VCP_DURATIONS);
     for (let i = 1; i < entries.length; i++) {
-      const gap = entries[i]!.startFrame - entries[i - 1]!.startFrame;
+      const gap =
+        (entries[i] as NonNullable<(typeof entries)[number]>).startFrame -
+        (entries[i - 1] as NonNullable<(typeof entries)[number]>).startFrame;
       expect(gap).toBe(durations[i - 1]);
     }
   });
@@ -692,8 +696,8 @@ describe("getVoiceActiveFrames", () => {
   it("ranges do not overlap", () => {
     const ranges = getVoiceActiveFrames();
     for (let i = 1; i < ranges.length; i++) {
-      const prevEnd = ranges[i - 1]![1];
-      const currStart = ranges[i]![0];
+      const prevEnd = (ranges[i - 1] as NonNullable<(typeof ranges)[number]>)[1];
+      const currStart = (ranges[i] as NonNullable<(typeof ranges)[number]>)[0];
       expect(currStart).toBeGreaterThanOrEqual(prevEnd);
     }
   });
@@ -716,7 +720,9 @@ describe("getN404SceneAudioEntries", () => {
   it("entries are in ascending startFrame order", () => {
     const entries = getN404SceneAudioEntries();
     for (let i = 1; i < entries.length; i++) {
-      expect(entries[i]!.startFrame).toBeGreaterThan(entries[i - 1]!.startFrame);
+      expect((entries[i] as NonNullable<(typeof entries)[number]>).startFrame).toBeGreaterThan(
+        (entries[i - 1] as NonNullable<(typeof entries)[number]>).startFrame,
+      );
     }
   });
 
@@ -731,7 +737,9 @@ describe("getN404SceneAudioEntries", () => {
     const entries = getN404SceneAudioEntries();
     const durations = Object.values(N404_DURATIONS);
     for (let i = 1; i < entries.length; i++) {
-      const gap = entries[i]!.startFrame - entries[i - 1]!.startFrame;
+      const gap =
+        (entries[i] as NonNullable<(typeof entries)[number]>).startFrame -
+        (entries[i - 1] as NonNullable<(typeof entries)[number]>).startFrame;
       expect(gap).toBe(durations[i - 1]);
     }
   });
@@ -741,8 +749,8 @@ describe("getN404SceneAudioEntries", () => {
     // differs from the N404_TIMING.totalFrames constant (which may include
     // unscheduled padding not reflected in N404_DURATIONS).
     const entries = getN404SceneAudioEntries();
-    const lastEntry = entries.at(-1)!;
-    const lastDuration = Object.values(N404_DURATIONS).at(-1)!;
+    const lastEntry = entries.at(-1) as NonNullable<(typeof entries)[number]>;
+    const lastDuration = Object.values(N404_DURATIONS).at(-1) as number;
     const expectedTotal = Object.values(N404_DURATIONS).reduce((a, b) => a + b, 0);
     expect(lastEntry.startFrame + lastDuration).toBe(expectedTotal);
   });

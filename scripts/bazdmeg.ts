@@ -21,6 +21,7 @@ import {
   formatTrend,
 } from "./bazdmeg/metrics.js";
 import { setVerbose, isVerbose } from "./bazdmeg/verbose.js";
+import { syncWithMain, isBehindMain, fetchLatest, currentBranch } from "./bazdmeg/git.js";
 import {
   buildDryRunActions,
   getGitStatusSummary,
@@ -127,8 +128,24 @@ function printPhase3Plan(): void {
   console.log("");
 }
 
+function printSyncStatus(): void {
+  try {
+    fetchLatest();
+  } catch {
+    console.log("  ⚠ Could not fetch origin");
+    return;
+  }
+  const behind = isBehindMain();
+  const branch = currentBranch();
+  console.log("── Sync Status ───────────────────────");
+  console.log(`  Branch: ${branch}`);
+  console.log(`  Behind origin/main: ${behind ? "YES — rebase needed" : "no"}`);
+  console.log("");
+}
+
 function runStatusMode(): void {
   header("status");
+  printSyncStatus();
   printChangedFiles();
   printSpikeEdgeBacklog();
   printPhase3Plan();
@@ -144,6 +161,7 @@ function runStatusMode(): void {
 
 function runDryRunMode(): void {
   header("dry-run");
+  printSyncStatus();
   const suite = runAllChecks({ safe: true, timeoutMs: 60_000 });
   const git = getGitStatusSummary();
   const phase3Plan = getPhase3Plan();
@@ -394,6 +412,14 @@ async function main(): Promise<void> {
 
   header("run");
 
+  // ── Pre-flight: sync with origin/main to avoid merge conflicts ──
+  console.log("── Pre-flight: Sync ───────────────────");
+  if (!syncWithMain()) {
+    console.error("  ✗ Could not sync with origin/main. Resolve manually first.");
+    process.exit(1);
+  }
+  console.log(`  ✓ Synced with origin/main (branch: ${currentBranch()})\n`);
+
   const runId = generateRunId();
   const log = createRunLog(runId);
   const promptsUsed: PromptUsage[] = [];
@@ -403,6 +429,24 @@ async function main(): Promise<void> {
   try {
     const p1 = phase1(runId, log, promptsUsed);
     const p2 = phase2(runId, log, promptsUsed);
+
+    // ── Mid-flight: re-sync before deploy to catch any drift ──
+    fetchLatest();
+    if (isBehindMain()) {
+      console.log("── Mid-flight: Rebase ─────────────────");
+      if (!syncWithMain()) {
+        console.error("  ✗ Rebase failed after fixes. Resolve manually.");
+        process.exit(1);
+      }
+      // Re-verify checks still pass after rebase
+      const recheck = runAllChecks();
+      if (!recheck.allPassed) {
+        console.error("  ✗ Checks broke after rebase. Run bazdmeg again.");
+        process.exit(1);
+      }
+      console.log("  ✓ Rebased and checks still green.\n");
+    }
+
     const p3 = await phase3(log);
 
     const totalDurationMs = Date.now() - totalStart;

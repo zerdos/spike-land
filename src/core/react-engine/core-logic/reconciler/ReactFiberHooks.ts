@@ -309,7 +309,8 @@ function mountStateImpl<S>(initialState: (() => S) | S): Hook {
 function mountState<S>(initialState: (() => S) | S): [S, (action: S | ((s: S) => S)) => void] {
   const hook = mountStateImpl(initialState);
   // mountStateImpl always initializes hook.queue — access is safe
-  const queue = hook.queue!;
+  if (!hook.queue) throw new Error("mountStateImpl failed to initialize hook.queue");
+  const queue = hook.queue;
   const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue) as unknown as (
     action: S | ((s: S) => S),
   ) => void;
@@ -712,7 +713,8 @@ function updateDeferredValue<T>(value: T, _initialValue?: T): T {
 function mountTransition(): [boolean, (callback: () => void) => void] {
   const stateHook = mountStateImpl(false as boolean);
   // mountStateImpl always initializes stateHook.queue — access is safe
-  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue!, true, false);
+  if (!stateHook.queue) throw new Error("mountStateImpl failed to initialize stateHook.queue");
+  const start = startTransition.bind(null, currentlyRenderingFiber, stateHook.queue, true, false);
   const hook = mountWorkInProgressHook();
   hook.memoizedState = start;
   return [false, start];

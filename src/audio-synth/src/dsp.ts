@@ -229,7 +229,10 @@ const NOTE_MAP: Record<string, number> = {
 export function noteToMidi(name: string): number {
   const match = name.match(/^([A-G][#b]?)(\d)$/);
   if (!match) throw new Error(`Invalid note: ${name}`);
-  return (parseInt(match[2]!) + 1) * 12 + (NOTE_MAP[match[1]!] ?? 0);
+  const octave = match[2];
+  const noteName = match[1];
+  if (octave === undefined || noteName === undefined) throw new Error(`Invalid note: ${name}`);
+  return (parseInt(octave) + 1) * 12 + (NOTE_MAP[noteName] ?? 0);
 }
 
 export function noteToFreq(name: string): number {

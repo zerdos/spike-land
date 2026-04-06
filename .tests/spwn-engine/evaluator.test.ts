@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { run } from "../../src/core/spwn-engine/core-logic/index.js";
 import type { Value } from "../../src/core/spwn-engine/core-logic/values.js";
 import { displayValue } from "../../src/core/spwn-engine/core-logic/values.js";

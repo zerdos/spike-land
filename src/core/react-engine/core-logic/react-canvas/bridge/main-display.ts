@@ -37,7 +37,9 @@ export class CanvasMainDisplay {
     const ctx = this.canvas.getContext("bitmaprenderer");
     if (!ctx) {
       // Fallback to 2d context if bitmaprenderer not supported
-      this.ctx = this.canvas.getContext("2d")! as CanvasRenderingContext2D;
+      const ctx2d = this.canvas.getContext("2d");
+      if (!ctx2d) throw new Error("Failed to acquire 2d canvas context");
+      this.ctx = ctx2d as CanvasRenderingContext2D;
     } else {
       this.ctx = ctx as unknown as CanvasRenderingContext2D;
     }

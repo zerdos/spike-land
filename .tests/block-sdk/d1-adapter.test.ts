@@ -318,11 +318,12 @@ describe("d1Adapter - R2 blob adapter", () => {
     const adapter = d1Adapter({ db: makeD1(), r2 });
 
     const data = new TextEncoder().encode("hello r2").buffer as ArrayBuffer;
-    await adapter.blobs!.put("file.txt", data);
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
+    await blobs.put("file.txt", data);
 
-    const result = await adapter.blobs!.get("file.txt");
+    const result = await blobs.get("file.txt");
     expect(result).not.toBeNull();
-    expect(new TextDecoder().decode(result!)).toBe("hello r2");
+    expect(new TextDecoder().decode(result as ArrayBuffer)).toBe("hello r2");
   });
 
   it("puts Uint8Array by slicing to ArrayBuffer", async () => {
@@ -330,37 +331,41 @@ describe("d1Adapter - R2 blob adapter", () => {
     const adapter = d1Adapter({ db: makeD1(), r2 });
 
     const data = new Uint8Array([10, 20, 30, 40]);
-    await adapter.blobs!.put("bytes.bin", data);
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
+    await blobs.put("bytes.bin", data);
 
-    const result = await adapter.blobs!.get("bytes.bin");
-    expect(new Uint8Array(result!)).toEqual(new Uint8Array([10, 20, 30, 40]));
+    const result = await blobs.get("bytes.bin");
+    expect(new Uint8Array(result as ArrayBuffer)).toEqual(new Uint8Array([10, 20, 30, 40]));
   });
 
   it("returns null for missing blob", async () => {
     const r2 = makeR2();
     const adapter = d1Adapter({ db: makeD1(), r2 });
-    expect(await adapter.blobs!.get("nope")).toBeNull();
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
+    expect(await blobs.get("nope")).toBeNull();
   });
 
   it("delete always returns true", async () => {
     const r2 = makeR2();
     const adapter = d1Adapter({ db: makeD1(), r2 });
     // Delete non-existent key — R2 adapter always returns true
-    expect(await adapter.blobs!.delete("ghost")).toBe(true);
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
+    expect(await blobs.delete("ghost")).toBe(true);
   });
 
   it("lists blobs with prefix", async () => {
     const r2 = makeR2();
     const adapter = d1Adapter({ db: makeD1(), r2 });
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
 
-    await adapter.blobs!.put("img/a.png", new Uint8Array([1]).buffer as ArrayBuffer);
-    await adapter.blobs!.put("img/b.png", new Uint8Array([2]).buffer as ArrayBuffer);
-    await adapter.blobs!.put("doc/c.pdf", new Uint8Array([3]).buffer as ArrayBuffer);
+    await blobs.put("img/a.png", new Uint8Array([1]).buffer as ArrayBuffer);
+    await blobs.put("img/b.png", new Uint8Array([2]).buffer as ArrayBuffer);
+    await blobs.put("doc/c.pdf", new Uint8Array([3]).buffer as ArrayBuffer);
 
-    const imgs = await adapter.blobs!.list("img/");
+    const imgs = await blobs.list("img/");
     expect(imgs.sort()).toEqual(["img/a.png", "img/b.png"]);
 
-    const all = await adapter.blobs!.list();
+    const all = await blobs.list();
     expect(all).toHaveLength(3);
   });
 
@@ -378,8 +383,9 @@ describe("d1Adapter - R2 blob adapter", () => {
       },
     });
 
-    await adapter.blobs!.put("stream.txt", stream as unknown as ArrayBuffer);
-    const result = await adapter.blobs!.get("stream.txt");
-    expect(new TextDecoder().decode(result!)).toBe(text);
+    const blobs = adapter.blobs as NonNullable<typeof adapter.blobs>;
+    await blobs.put("stream.txt", stream as unknown as ArrayBuffer);
+    const result = await blobs.get("stream.txt");
+    expect(new TextDecoder().decode(result as ArrayBuffer)).toBe(text);
   });
 });

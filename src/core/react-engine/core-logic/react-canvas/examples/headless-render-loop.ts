@@ -192,7 +192,11 @@ export function fitTextToContainer(config: LoopConfig): {
   return {
     fontSize: lo, // Use the last known fitting size
     iterations,
-    finalMetrics: bestMetrics!,
+    finalMetrics:
+      bestMetrics ??
+      (() => {
+        throw new Error("No iterations executed — maxIterations must be > 0");
+      })(),
   };
 }
 

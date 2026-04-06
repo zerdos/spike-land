@@ -63,7 +63,7 @@ describe("buildPromptDrivenBlogImageSrc", () => {
     const result = buildPromptDrivenBlogImageSrc(null, "a glowing robot");
     expect(result).not.toBeNull();
     expect(result).toMatch(new RegExp(`^${IMAGE_STUDIO}/api/generate-image`));
-    const url = new URL(result!);
+    const url = new URL(result as string);
     expect(url.searchParams.get("prompt")).toBe("a glowing robot");
     expect(url.searchParams.get("v")).toBeTruthy();
   });
@@ -77,8 +77,8 @@ describe("buildPromptDrivenBlogImageSrc", () => {
   it("uses different version hashes for different prompts", () => {
     const r1 = buildPromptDrivenBlogImageSrc(null, "prompt A");
     const r2 = buildPromptDrivenBlogImageSrc(null, "prompt B");
-    const v1 = new URL(r1!).searchParams.get("v");
-    const v2 = new URL(r2!).searchParams.get("v");
+    const v1 = new URL(r1 as string).searchParams.get("v");
+    const v2 = new URL(r2 as string).searchParams.get("v");
     expect(v1).not.toBe(v2);
   });
 
@@ -90,7 +90,7 @@ describe("buildPromptDrivenBlogImageSrc", () => {
 
   it("trims whitespace from the prompt before encoding it", () => {
     const trimmed = buildPromptDrivenBlogImageSrc(null, "  spaced prompt  ");
-    const url = new URL(trimmed!);
+    const url = new URL(trimmed as string);
     expect(url.searchParams.get("prompt")).toBe("spaced prompt");
   });
 });

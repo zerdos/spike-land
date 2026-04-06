@@ -42,21 +42,24 @@ describe("generateChallenge", () => {
   it("generates a challenge with all required fields", () => {
     const challenge = generateChallenge("easy", "arrays", 42);
     expect(challenge).toBeDefined();
-    expect(challenge!.id).toBeDefined();
-    expect(challenge!.title).toBeDefined();
-    expect(challenge!.description).toBeDefined();
-    expect(challenge!.starterCode).toBeDefined();
-    expect(challenge!.referenceSolution).toBeDefined();
-    expect(challenge!.tests.length).toBeGreaterThan(0);
-    expect(challenge!.difficulty).toBe("easy");
-    expect(challenge!.category).toBe("arrays");
+    const c = challenge as NonNullable<typeof challenge>;
+    expect(c.id).toBeDefined();
+    expect(c.title).toBeDefined();
+    expect(c.description).toBeDefined();
+    expect(c.starterCode).toBeDefined();
+    expect(c.referenceSolution).toBeDefined();
+    expect(c.tests.length).toBeGreaterThan(0);
+    expect(c.difficulty).toBe("easy");
+    expect(c.category).toBe("arrays");
   });
 
   it("is deterministic with same seed", () => {
     const a = generateChallenge("medium", "strings", 123);
     const b = generateChallenge("medium", "strings", 123);
-    expect(a!.id).toBe(b!.id);
-    expect(a!.tests).toEqual(b!.tests);
+    const sa = a as NonNullable<typeof a>;
+    const sb = b as NonNullable<typeof b>;
+    expect(sa.id).toBe(sb.id);
+    expect(sa.tests).toEqual(sb.tests);
   });
 
   it("produces different challenges with different seeds", () => {
@@ -75,7 +78,8 @@ describe("generateChallenge", () => {
   it("generates valid test expressions", () => {
     const challenge = generateChallenge("easy", "math", 99);
     expect(challenge).toBeDefined();
-    for (const test of challenge!.tests) {
+    const c = challenge as NonNullable<typeof challenge>;
+    for (const test of c.tests) {
       expect(test.input).toMatch(/^solution\(/);
       expect(test.expected).toBeDefined();
     }
@@ -86,11 +90,13 @@ describe("getChallengeById", () => {
   it("retrieves a previously generated challenge", () => {
     const original = generateChallenge("easy", "arrays", 42);
     expect(original).toBeDefined();
+    const orig = original as NonNullable<typeof original>;
 
-    const retrieved = getChallengeById(original!.id);
+    const retrieved = getChallengeById(orig.id);
     expect(retrieved).toBeDefined();
-    expect(retrieved!.id).toBe(original!.id);
-    expect(retrieved!.tests).toEqual(original!.tests);
+    const ret = retrieved as NonNullable<typeof retrieved>;
+    expect(ret.id).toBe(orig.id);
+    expect(ret.tests).toEqual(orig.tests);
   });
 
   it("returns undefined for non-existent ID", () => {

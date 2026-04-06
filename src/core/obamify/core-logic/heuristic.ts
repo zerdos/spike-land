@@ -42,13 +42,13 @@ export function computeCost(
 
   // Colour distance squared between assigned source pixel and target pixel.
   // Bounds are guaranteed by caller — srcIdx/destIdx are within image dimensions.
-  const dr = sourcePixels[s4]! - targetPixels[d4]!;
-  const dg = sourcePixels[s4 + 1]! - targetPixels[d4 + 1]!;
-  const db = sourcePixels[s4 + 2]! - targetPixels[d4 + 2]!;
+  const dr = (sourcePixels[s4] ?? 0) - (targetPixels[d4] ?? 0);
+  const dg = (sourcePixels[s4 + 1] ?? 0) - (targetPixels[d4 + 1] ?? 0);
+  const db = (sourcePixels[s4 + 2] ?? 0) - (targetPixels[d4 + 2] ?? 0);
   const colorDistSq = dr * dr + dg * dg + db * db;
 
   // Weight from the mask (red channel of the grayscale weights image).
-  const weight = weightsPixels[d4]!;
+  const weight = weightsPixels[d4] ?? 0;
 
   // Spatial distance squared: original source position vs destination position.
   const srcX = srcIdx % width;

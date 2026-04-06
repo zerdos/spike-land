@@ -318,11 +318,11 @@ describe("InsightStore", () => {
 
     const rated = store.rate(insight.id, 1);
     expect(rated).toBeDefined();
-    expect(rated!.confidence).toBeGreaterThan(0.5);
-    expect(rated!.feedback).toBe(1);
+    expect((rated as NonNullable<typeof rated>).confidence).toBeGreaterThan(0.5);
+    expect((rated as NonNullable<typeof rated>).feedback).toBe(1);
 
     const downrated = store.rate(insight.id, -1);
-    expect(downrated!.feedback).toBe(0);
+    expect((downrated as NonNullable<typeof downrated>).feedback).toBe(0);
   });
 
   it("rate returns undefined for unknown id", () => {

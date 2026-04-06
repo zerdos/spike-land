@@ -253,14 +253,14 @@ describe("SQLite StorageAdapter", () => {
       await adapter.blobs?.put("stream-blob", stream);
       const result = await adapter.blobs?.get("stream-blob");
       expect(result).not.toBeNull();
-      expect(new TextDecoder().decode(result!)).toBe(text);
+      expect(new TextDecoder().decode(result as ArrayBuffer)).toBe(text);
     });
 
     it("should overwrite existing blob key", async () => {
       await adapter.blobs?.put("key1", new Uint8Array([1, 2]));
       await adapter.blobs?.put("key1", new Uint8Array([9, 8, 7]));
       const result = await adapter.blobs?.get("key1");
-      expect(new Uint8Array(result!)).toEqual(new Uint8Array([9, 8, 7]));
+      expect(new Uint8Array(result as ArrayBuffer)).toEqual(new Uint8Array([9, 8, 7]));
     });
   });
 

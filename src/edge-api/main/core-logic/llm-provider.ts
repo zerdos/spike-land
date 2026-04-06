@@ -731,7 +731,8 @@ export async function streamCompletion(
       xai: "https://api.x.ai/v1/chat/completions",
       ollama: "http://localhost:11435/v1/chat/completions",
     };
-    const endpoint = OPENAI_COMPAT_ENDPOINTS[target.provider]!;
+    const endpoint = OPENAI_COMPAT_ENDPOINTS[target.provider];
+    if (!endpoint) throw new Error(`No endpoint configured for provider: ${target.provider}`);
 
     const body: Record<string, unknown> = {
       model: target.upstreamModel,
