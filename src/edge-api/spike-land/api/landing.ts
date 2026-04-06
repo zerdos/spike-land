@@ -5,7 +5,7 @@ import type { Env } from "../core-logic/env";
 export const landingRoute = new Hono<{ Bindings: Env }>();
 
 const HTML = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,149 +20,229 @@ const HTML = `<!DOCTYPE html>
   <meta name="twitter:title" content="spike.land — MCP Registry">
   <meta name="twitter:description" content="80+ AI tools over the Model Context Protocol.">
   <title>spike.land — MCP Registry</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-code: #0d0d14;
-      --primary: #6366f1;
-      --primary-dim: rgba(99, 102, 241, 0.15);
-      --border: #1e1e2e;
-      --border-bright: #2e2e42;
-      --text: #e4e4e7;
-      --muted: #71717a;
-      --green: #22c55e;
-      --radius: 10px;
-      --radius-sm: 6px;
+      --bg: #050508;
+      --bg-card: rgba(18, 18, 26, 0.6);
+      --bg-code: rgba(13, 13, 20, 0.8);
+      --primary: #8b5cf6;
+      --primary-dim: rgba(139, 92, 246, 0.15);
+      --secondary: #ec4899;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.15);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #10b981;
+      --radius: 16px;
+      --radius-sm: 8px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Dynamic Mesh Background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      animation: pulseBg 15s ease-in-out infinite alternate;
+      pointer-events: none;
     }
 
-    a { color: var(--primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    @keyframes pulseBg {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.05); opacity: 1; }
+    }
+
+    a { color: var(--text); text-decoration: none; transition: color 0.2s; }
 
     /* ── Layout ── */
     .wrapper {
-      max-width: 860px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 0 1.25rem;
+      padding: 0 1.5rem;
       width: 100%;
     }
 
     /* ── Header ── */
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 1.1rem 0;
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5, 5, 8, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     header .wrapper {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
     }
 
     .logo {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .badge {
-      font-size: 0.7rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      background: var(--primary-dim);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 0.2rem 0.55rem;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+      color: #e2e8f0;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      padding: 0.25rem 0.75rem;
       border-radius: 999px;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
     }
 
     /* ── Main ── */
-    main { flex: 1; padding: 3.5rem 0 4rem; }
+    main { flex: 1; padding: 5rem 0 6rem; }
 
     /* ── Hero ── */
-    .hero { text-align: center; margin-bottom: 3rem; }
+    .hero { text-align: center; margin-bottom: 5rem; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .hero h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(3rem, 6vw, 4.5rem);
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      background: linear-gradient(160deg, #f4f4f5 0%, #a1a1aa 100%);
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      background: linear-gradient(160deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
     }
 
     .hero p {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       color: var(--muted);
-      max-width: 520px;
+      max-width: 580px;
       margin: 0 auto;
+      font-weight: 400;
     }
 
-    /* ── Card ── */
+    /* ── Glass Morphism Card ── */
     .card {
       background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .section-title::before {
+      content: "";
+      display: block;
+      width: 12px;
+      height: 2px;
+      background: var(--primary);
     }
 
     /* ── Endpoints ── */
-    .endpoints { margin-bottom: 2rem; }
-
-    .endpoints h2 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
+    .endpoints { margin-bottom: 3rem; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards; }
 
     .endpoint-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
       background: var(--bg-code);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
+      transition: all 0.2s;
     }
 
-    .endpoint-row + .endpoint-row { margin-top: 0.5rem; }
+    .endpoint-row:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      background: rgba(139, 92, 246, 0.05);
+      transform: translateX(4px);
+    }
+
+    .endpoint-row + .endpoint-row { margin-top: 0.75rem; }
 
     .endpoint-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--green);
       flex-shrink: 0;
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+      animation: pulseDot 2s infinite;
+    }
+    
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
     .endpoint-url {
-      font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
-      font-size: 0.875rem;
+      font-family: "Fira Code", monospace;
+      font-size: 0.95rem;
       color: var(--text);
       flex: 1;
       overflow: hidden;
@@ -171,164 +251,183 @@ const HTML = `<!DOCTYPE html>
     }
 
     .endpoint-tag {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      background: rgba(34, 197, 94, 0.12);
-      color: var(--green);
-      border: 1px solid rgba(34, 197, 94, 0.25);
-      padding: 0.15rem 0.45rem;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.25rem 0.6rem;
       border-radius: 999px;
       flex-shrink: 0;
     }
 
     /* ── Config snippet ── */
-    .config { margin-bottom: 2rem; }
-
-    .config h2 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
+    .config { margin-bottom: 3rem; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards; }
 
     pre {
       background: var(--bg-code);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 1rem 1.25rem;
+      padding: 1.5rem;
       overflow-x: auto;
-      font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
-      color: #c4c4d4;
+      font-family: "Fira Code", monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    pre .key   { color: #a5b4fc; }
-    pre .str   { color: #86efac; }
-    pre .punct { color: var(--muted); }
+    pre .key   { color: #a78bfa; }
+    pre .str   { color: #6ee7b7; }
+    pre .punct { color: #64748b; }
 
     /* ── Features grid ── */
-    .features { margin-bottom: 2rem; }
-
-    .features h2 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
+    .features { margin-bottom: 3rem; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards; }
 
     .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .features-grid { grid-template-columns: 1fr; }
     }
 
     .feature-card {
-      background: var(--bg-card);
+      background: linear-gradient(180deg, rgba(30, 30, 42, 0.6) 0%, rgba(18, 18, 26, 0.4) 100%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.25rem;
-      transition: border-color 0.15s;
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .feature-card::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .feature-card:hover { border-color: var(--border-bright); }
+    .feature-card:hover { 
+      border-color: rgba(139, 92, 246, 0.5); 
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.15);
+    }
+    
+    .feature-card:hover::after { opacity: 1; }
 
     .feature-icon {
-      font-size: 1.4rem;
-      margin-bottom: 0.6rem;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
       line-height: 1;
+      display: inline-block;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .feature-card h3 {
-      font-size: 0.95rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
       font-weight: 600;
-      margin-bottom: 0.35rem;
-      color: var(--text);
+      margin-bottom: 0.5rem;
+      color: #f8fafc;
     }
 
     .feature-card p {
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     /* ── Links ── */
-    .links { margin-bottom: 2rem; }
-
-    .links h2 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
+    .links { margin-bottom: 2rem; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s backwards; }
 
     .links-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
+      gap: 1rem;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       .links-grid { grid-template-columns: 1fr; }
     }
 
     .link-card {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.85rem 1rem;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
       background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
-      font-size: 0.875rem;
-      transition: border-color 0.15s, background 0.15s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .link-card:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      background: rgba(99, 102, 241, 0.06);
-      text-decoration: none;
-      color: #a5b4fc;
+      border-color: rgba(236, 72, 153, 0.4);
+      background: rgba(236, 72, 153, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
     }
 
     .link-card .link-arrow {
       margin-left: auto;
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 1.25rem;
+      transition: transform 0.2s, color 0.2s;
     }
 
-    .link-card:hover .link-arrow { color: var(--primary); }
+    .link-card:hover .link-arrow { 
+      color: #ec4899; 
+      transform: translateX(4px) scale(1.1);
+    }
+    
+    .link-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .link-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
 
     .link-label {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      display: block;
     }
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 1.25rem 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2rem 0;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--muted);
     }
 
-    footer a { color: var(--muted); }
-    footer a:hover { color: var(--text); }
+    footer a { 
+      color: #a78bfa; 
+      font-weight: 500;
+    }
+    footer a:hover { color: #c4b5fd; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -348,7 +447,7 @@ const HTML = `<!DOCTYPE html>
       </section>
 
       <section class="endpoints" aria-labelledby="endpoints-heading">
-        <h2 id="endpoints-heading">Endpoints</h2>
+        <h2 id="endpoints-heading" class="section-title">Endpoints</h2>
         <div class="card">
           <div class="endpoint-row">
             <span class="endpoint-dot" aria-hidden="true"></span>
@@ -363,18 +462,19 @@ const HTML = `<!DOCTYPE html>
       </section>
 
       <section class="config" aria-labelledby="config-heading">
-        <h2 id="config-heading">Claude Desktop / VS Code Config</h2>
+        <h2 id="config-heading" class="section-title">Claude Desktop / Cursor Config</h2>
         <pre aria-label="JSON configuration for MCP clients"><span class="punct">{</span>
   <span class="key">"mcpServers"</span><span class="punct">: {</span>
     <span class="key">"spike-land"</span><span class="punct">: {</span>
-      <span class="key">"url"</span><span class="punct">:</span> <span class="str">"https://spike.land/mcp"</span>
+      <span class="key">"command"</span><span class="punct">:</span> <span class="str">"mcp-cli"</span><span class="punct">,</span>
+      <span class="key">"args"</span><span class="punct">:</span> <span class="punct">[</span><span class="str">"call"</span><span class="punct">,</span> <span class="str">"https://spike.land/mcp"</span><span class="punct">]</span>
     <span class="punct">}</span>
   <span class="punct">}</span>
 <span class="punct">}</span></pre>
       </section>
 
       <section class="features" aria-labelledby="features-heading">
-        <h2 id="features-heading">What&rsquo;s included</h2>
+        <h2 id="features-heading" class="section-title">What&rsquo;s included</h2>
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon" aria-hidden="true">&#x1F9F0;</div>
@@ -395,34 +495,34 @@ const HTML = `<!DOCTYPE html>
       </section>
 
       <section class="links" aria-labelledby="links-heading">
-        <h2 id="links-heading">Explore</h2>
+        <h2 id="links-heading" class="section-title">Explore</h2>
         <div class="links-grid">
           <a class="link-card" href="/tools">
-            <span>
-              Browse Tools
+            <div class="link-content">
+              <span class="link-title">Browse Tools</span>
               <span class="link-label">All 80+ available tools</span>
-            </span>
+            </div>
             <span class="link-arrow" aria-hidden="true">&#x2192;</span>
           </a>
           <a class="link-card" href="/.well-known/oauth-authorization-server">
-            <span>
-              OAuth Discovery
+            <div class="link-content">
+              <span class="link-title">OAuth Discovery</span>
               <span class="link-label">Authorization server metadata</span>
-            </span>
+            </div>
             <span class="link-arrow" aria-hidden="true">&#x2192;</span>
           </a>
           <a class="link-card" href="https://spike.land/mcp" rel="noopener">
-            <span>
-              Full UI
+            <div class="link-content">
+              <span class="link-title">Full UI Dashboard</span>
               <span class="link-label">spike.land MCP dashboard</span>
-            </span>
+            </div>
             <span class="link-arrow" aria-hidden="true">&#x2197;</span>
           </a>
           <a class="link-card" href="https://spike.land/docs/mcp" rel="noopener">
-            <span>
-              Documentation
+            <div class="link-content">
+              <span class="link-title">Documentation</span>
               <span class="link-label">Guides, auth, tool reference</span>
-            </span>
+            </div>
             <span class="link-arrow" aria-hidden="true">&#x2197;</span>
           </a>
         </div>
@@ -441,8 +541,24 @@ const HTML = `<!DOCTYPE html>
 
 landingRoute.get("/", async (c: Context<{ Bindings: Env }>, next: Next) => {
   const accept = c.req.header("Accept") ?? "";
+
   if (!accept.includes("text/html")) {
-    return next();
+    // Graceful fallback for non-browser clients querying the root
+    return c.json(
+      {
+        name: "spike.land MCP Registry",
+        description: "80+ AI tools over the Model Context Protocol. One endpoint, every tool.",
+        mcp_endpoint: "https://spike.land/mcp",
+        docs: "https://spike.land/docs/mcp",
+        tools_browser: "https://spike.land/tools",
+        status: "online",
+        version: "1.0.0",
+      },
+      200,
+      {
+        "Cache-Control": "public, max-age=300",
+      },
+    );
   }
 
   return c.html(HTML, 200, {

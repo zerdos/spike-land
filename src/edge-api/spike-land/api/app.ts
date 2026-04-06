@@ -55,6 +55,8 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
     return c.json(payload, getHealthHttpStatus(payload));
   });
 
+  app.get("/favicon.ico", (c) => c.redirect("https://spike.land/favicon.ico", 301));
+
   // Internal routes (protected by x-internal-secret header)
   app.use("/internal/*", internalAuthMiddleware);
   app.route("/internal", internalByokRoute);
