@@ -1,4 +1,5 @@
 {
+  "name": "@vendor/zod-mini",
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",

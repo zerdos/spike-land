@@ -1,4 +1,5 @@
 {
+  "name": "@vendor/framer-motion-mini",
   "private": true,
   "types": "../dist/mini.d.ts",
   "main": "../dist/cjs/mini.js",
