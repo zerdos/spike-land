@@ -70,6 +70,18 @@ import Analytics from '../components/Analytics.astro';
               </a>
             </div>
           </div>
+
+          <div class="support-card">
+            <div class="card-icon">🏦</div>
+            <h2 class="card-title">Bank Transfer</h2>
+            <p class="card-desc">Send a direct bank transfer to Spike Land LTD.</p>
+            <dl class="bank-details">
+              <div class="bank-row"><dt>Account name</dt><dd>Spike Land LTD</dd></div>
+              <div class="bank-row"><dt>Sort code</dt><dd>04-00-05</dd></div>
+              <div class="bank-row"><dt>Account number</dt><dd>42632869</dd></div>
+              <div class="bank-row"><dt>Bank</dt><dd>Monzo Bank</dd></div>
+            </dl>
+          </div>
         </div>
 
         <section class="context-section" id="context-section" hidden>
@@ -327,5 +339,34 @@ import Analytics from '../components/Analytics.astro';
     font-size: 0.8125rem;
     color: var(--muted-fg);
     line-height: 1.5;
+  }
+
+  .bank-details {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .bank-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .bank-row dt {
+    font-size: 0.75rem;
+    color: var(--muted-fg);
+    font-weight: 500;
+  }
+
+  .bank-row dd {
+    font-size: 0.8125rem;
+    color: var(--fg);
+    font-weight: 600;
+    margin: 0;
+    font-family: var(--font-mono, monospace);
   }
 </style>
