@@ -892,7 +892,7 @@ export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("spike-
       );
       sentryDsnWarned = true;
     }
-    const instrumentedEnv = instrumentD1Bindings(env, ["DB"]);
+    const instrumentedEnv = instrumentD1Bindings(env, ["DB", "STATUS_DB"]);
     const startedAt = Date.now();
     const metricService = shouldTrackServiceMetricRequest(request)
       ? getSpikeEdgeMetricService(request)
@@ -903,7 +903,7 @@ export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("spike-
       try {
         ctx?.waitUntil(
           recordServiceRequestMetric(
-            instrumentedEnv.DB,
+            instrumentedEnv.STATUS_DB,
             metricService,
             Date.now() - startedAt,
           ).catch((error) => {

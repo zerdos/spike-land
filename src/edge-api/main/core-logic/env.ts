@@ -10,6 +10,7 @@ export interface Env {
   R2: R2Bucket;
   SPA_ASSETS: R2Bucket;
   DB: D1Database;
+  STATUS_DB: D1Database;
   LIMITERS: DurableObjectNamespace;
   SPIKE_CHAT_SESSIONS: DurableObjectNamespace;
   AUTH_MCP: Fetcher;
