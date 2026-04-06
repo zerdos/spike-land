@@ -44,10 +44,10 @@
     "!build/codemods/**/__tests__"
   ],
   "dependencies": {
-    "@tanstack/query-core": "5.90.20"
+    "@tanstack/query-core": "5.96.2"
   },
   "devDependencies": {
-    "@tanstack/query-persist-client-core": "5.91.19",
+    "@tanstack/query-persist-client-core": "5.96.2",
     "@testing-library/react": "^16.1.0",
     "@testing-library/react-render-stream": "^2.0.2",
     "@types/react": "^19.2.7",

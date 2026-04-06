@@ -53,7 +53,7 @@
     "node": ">=20.19"
   },
   "dependencies": {
-    "@tanstack/router-generator": "1.166.7",
+    "@tanstack/router-generator": "1.166.24",
     "chokidar": "^3.6.0",
     "yargs": "^17.7.2"
   },

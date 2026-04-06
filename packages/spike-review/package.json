@@ -30,7 +30,7 @@
     "deploy": "npx wrangler deploy"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.27.1",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "@octokit/rest": "22.0.1",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "zod": "4.3.6"

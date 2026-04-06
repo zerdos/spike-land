@@ -58,6 +58,9 @@ function getBaseURL(): string {
   ) {
     return window.location.origin;
   }
+  if (hostname.endsWith(".spike.land")) {
+    return window.location.origin;
+  }
   return "https://spike.land";
 }
 

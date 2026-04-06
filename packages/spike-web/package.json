@@ -17,10 +17,10 @@
     "lint": "eslint --quiet ."
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.0",
-    "@astrojs/react": "^5.0.0",
-    "@astrojs/sitemap": "^3.7.1",
-    "@sentry/browser": "^10.43.0",
+    "@astrojs/mdx": "^5.0.3",
+    "@astrojs/react": "^5.0.3",
+    "@astrojs/sitemap": "^3.7.2",
+    "@sentry/browser": "^10.47.0",
     "@spike-land-ai/shared": "workspace:*",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@sentry/vite-plugin": "^5.1.1",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/vite": "^4.2.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "tailwindcss": "^4.2.1",

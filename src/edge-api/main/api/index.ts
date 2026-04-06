@@ -285,6 +285,17 @@ app.use("*", async (c, next) => {
   ) {
     return next();
   }
+  // If the path already targets a known top-level route, do not force-prefix it.
+  // This keeps absolute links (e.g. /learn/*, /apps, /ai) working on vanity hosts
+  // like learnit.spike.land instead of rewriting them to /learnit/<route>.
+  const firstSegment = url.pathname.split("/")[1];
+  const targetsKnownRoute =
+    typeof firstSegment === "string" &&
+    firstSegment.length > 0 &&
+    KNOWN_VANITY_PREFIXES.includes(firstSegment as (typeof KNOWN_VANITY_PREFIXES)[number]);
+  if (targetsKnownRoute) {
+    return next();
+  }
   if (!url.pathname.startsWith(`/${prefix}`)) {
     const res = await forward(`/${prefix}${url.pathname}`);
     return new Response(res.body, res);
@@ -362,7 +373,12 @@ app.use("*", async (c, next) => {
 });
 
 // Auth middleware for proxy routes (S1: CRITICAL — protect API keys)
-app.use("/proxy/*", authMiddleware);
+app.use("/proxy/*", async (c, next) => {
+  if (c.req.path === "/proxy/tts") {
+    return next();
+  }
+  return authMiddleware(c, next);
+});
 
 // Credit metering for AI proxy (runs after auth, before handler)
 app.use("/proxy/ai", creditMeterMiddleware);
@@ -600,6 +616,81 @@ export const getApiLearnitSlugHandler = (
     forwardAccept: true,
   });
 app.get("/api/learnit/:slug", getApiLearnitSlugHandler);
+
+export const postApiLearnitGenerateHandler = async (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => {
+  const body = await c.req.text();
+  const response = await fetchMcpWithFallback(
+    c.env,
+    "https://mcp.spike.land/api/learnit/generate",
+    {
+      method: "POST",
+      headers: {
+        "X-Request-Id": c.get("requestId"),
+        ...(c.req.header("Content-Type")
+          ? { "Content-Type": c.req.header("Content-Type") as string }
+          : { "Content-Type": "application/json" }),
+        ...(c.req.header("Accept") ? { Accept: c.req.header("Accept") as string } : {}),
+      },
+      body,
+    },
+  );
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: new Headers(response.headers),
+  });
+};
+app.post("/api/learnit/generate", postApiLearnitGenerateHandler);
+
+export const postApiCreateGenerateHandler = async (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => {
+  const body = await c.req.text();
+  const response = await fetchMcpWithFallback(c.env, "https://mcp.spike.land/create/generate", {
+    method: "POST",
+    headers: {
+      "X-Request-Id": c.get("requestId"),
+      ...(c.req.header("Content-Type")
+        ? { "Content-Type": c.req.header("Content-Type") as string }
+        : { "Content-Type": "application/json" }),
+      ...(c.req.header("Accept") ? { Accept: c.req.header("Accept") as string } : {}),
+    },
+    body,
+  });
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: new Headers(response.headers),
+  });
+};
+app.post("/api/create/generate", postApiCreateGenerateHandler);
+
+export const getApiCreateSearchHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, `https://mcp.spike.land/create/search${new URL(c.req.url).search}`);
+app.get("/api/create/search", getApiCreateSearchHandler);
+
+export const getApiCreateListHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, `https://mcp.spike.land/create/list${new URL(c.req.url).search}`);
+app.get("/api/create/list", getApiCreateListHandler);
+
+export const getApiCreateHealthHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, `https://mcp.spike.land/create/health/${c.req.param("codespaceId")}`);
+app.get("/api/create/health/:codespaceId", getApiCreateHealthHandler);
+
+export const getApiCreateStatusHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, `https://mcp.spike.land/create/${c.req.param("slug")}/status`);
+app.get("/api/create/:slug/status", getApiCreateStatusHandler);
+
+export const getApiCreateSlugHandler = (
+  c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
+) => proxyMcpGet(c, `https://mcp.spike.land/create/${c.req.param("slug")}`);
+app.get("/api/create/:slug", getApiCreateSlugHandler);
 
 // Store tools endpoint — groups MCP registry tools by category for the store UI
 export const getApiStoreToolsHandler = async (

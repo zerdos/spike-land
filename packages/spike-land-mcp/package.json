@@ -22,8 +22,8 @@
     "db:migrate:remote": "wrangler d1 migrations apply spike-land-mcp --remote"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
-    "@sentry/cloudflare": "^10.43.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@sentry/cloudflare": "^10.47.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "@spike-land-ai/shared": "workspace:*",
     "drizzle-orm": "^0.45.1",
@@ -31,7 +31,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260312.1",
+    "@cloudflare/workers-types": "4.20260405.1",
     "@vitest/coverage-v8": "^4.1.0",
     "drizzle-kit": "^0.31.9",
     "typescript": "^5.9.3",

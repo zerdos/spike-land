@@ -37,15 +37,15 @@
     "url": "https://github.com/i18next/i18next-browser-languageDetector.git"
   },
   "dependencies": {
-    "@babel/runtime": "^7.23.2"
+    "@babel/runtime": "^7.29.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
-    "@babel/eslint-parser": "^7.23.3",
-    "@babel/plugin-transform-runtime": "^7.23.3",
-    "@babel/preset-env": "^7.23.3",
-    "@rollup/plugin-babel": "^5.3.1",
-    "@rollup/plugin-node-resolve": "^14.1.0",
+    "@babel/core": "^7.29.0",
+    "@babel/eslint-parser": "^7.28.6",
+    "@babel/plugin-transform-runtime": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@rollup/plugin-babel": "^7.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "babel-polyfill": "^6.26.0",
     "babelify": "^10.0.0",
     "browserify": "17.0.0",

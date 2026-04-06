@@ -33,7 +33,7 @@
     "lint": "eslint --quiet ."
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.27.1",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "cors": "^2.8.6",
     "express": "^5.2.1",

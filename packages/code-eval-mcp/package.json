@@ -30,7 +30,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.27.1",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "zod": "4.3.6"
   },

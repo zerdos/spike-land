@@ -90,7 +90,7 @@
     "dev:full": "bash scripts/dev-full.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@radix-ui/react-tabs": "workspace:*",
     "@remotion/cli": "workspace:*",
     "@remotion/transitions": "workspace:*",
@@ -113,7 +113,7 @@
     "zod": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.6",
+    "@biomejs/biome": "^2.4.10",
     "@changesets/cli": "2.30.0",
     "@cloudflare/puppeteer": "^1.0.6",
     "@spike-land-ai/mcp-server-base": "workspace:*",
