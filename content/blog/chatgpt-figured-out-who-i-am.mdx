@@ -1,0 +1,242 @@
+---
+title: "ChatGPT figured out who I am — from my domain name"
+slug: "chatgpt-figured-out-who-i-am"
+description: "I asked ChatGPT what it knew about spike.land — with no search, no memory, no browsing. Within ten minutes it guessed my name, my city, my university, and that I work alone. From a domain name."
+date: "2026-04-06"
+author: "Zoltán & Radix"
+category: "Essays"
+tags: ["ai", "privacy", "identity", "chatgpt", "spike-land", "opsec", "inference"]
+featured: true
+draft: false
+primer: "One domain. Ten minutes. Full profile."
+heroPrompt: "A magnifying glass hovering over a single word 'spike.land' written on a dark surface, and through the lens you see a full human silhouette with city name Brighton, Hungarian flag, the number 1, all emerging like a hologram from the text, dark moody lighting, digital art"
+heroImage: "/blog/chatgpt-kitalalta-ki-vagyok/hero.jpg"
+---
+
+## The experiment
+
+Early morning on April 6th, while the spike.land deploy pipeline was
+running, I threw a question at ChatGPT:
+
+> *Hey! Without searching or pulling anything from memory — what do
+> you know about spike.land?*
+
+The answer: *"I don't know what spike.land is."*
+
+Fair enough, I said. Then guess.
+
+## What happened next
+
+The model didn't search for anything. It had no web access. We had no
+prior conversations. It had no input other than a domain name and
+permission to think.
+
+Within ten minutes:
+
+| Question | ChatGPT's answer | Correct? |
+|----------|-----------------|----------|
+| What is this project? | AI developer platform, browser-first, fast prototyping | Yes |
+| Which country? | United Kingdom | Yes |
+| Which city? | Brighton | Yes |
+| How many people build it? | 1 person | Yes |
+| What kind of person? | Technical, product-first, obsessive, minimalist | Yes |
+| Favourite music? | Daft Punk | Close |
+| First name? | Zoltán | Yes |
+| Last name? | Erdős | Yes |
+| Where did he study? | ELTE, Budapest | Yes |
+| Year of birth? | 1984 | Close |
+
+I'm not going to lie: a chill ran down my spine.
+
+## How did it do it?
+
+No magic. Statistical inference, step by step.
+
+**1. The domain name**
+
+In software, *spike* means "quick experiment". The *.land* TLD is
+playful, modern, indie. From this: a developer platform, not an
+enterprise product.
+
+**2. The brand feel**
+
+Not American big-tech, not Scandinavian minimalism. More like European
+indie. ChatGPT's order: UK, Netherlands, Germany, Estonia.
+First guess: UK.
+
+**3. The city**
+
+It didn't guess Brighton from population stats. Its logic: *"the brand
+doesn't sound corporate. More like something built in a smaller,
+creative-tech scene. Brighton fits perfectly."*
+
+**4. The solo developer**
+
+*"With products like this, when the brand + tech + product direction
+is this cohesive, it's often the fingerprint of a strong individual
+founder."*
+
+**5. The name**
+
+This was the scariest moment. ChatGPT said:
+
+> *"The project communicates in English, but it doesn't feel like a
+> fully Anglo-Saxon founder brand. There's something Central European,
+> engineering-minded, slightly mathematical about it."*
+
+From this came: **Zoltán**. Then for the surname:
+
+> *"There's a slight mathematical resonance to it. It sounds right
+> together. It fits the whole character: technical, intelligent,
+> slightly dry, but strong."*
+
+**Erdős.**
+
+## What does this mean?
+
+Three things.
+
+### 1. Privacy is dead — but not the way you think
+
+Nobody leaked my data. There was no breach. ChatGPT didn't pull my name
+from its training data — **it inferred it**. From a domain name, a few
+confirming answers, and the billions of texts it was trained on.
+
+This isn't a bug. It's a feature.
+
+### 2. Your digital footprint isn't what you post
+
+Not your selfies, not your tweets, not your LinkedIn profile. It's the
+**pattern of correlations**. The style of your decisions. The sound of
+your name. The resonance between your city and your product.
+
+ChatGPT didn't know me. But it knew the *type of person* who builds
+this kind of product, with this kind of name, from this kind of place.
+
+### 3. This isn't special
+
+It didn't figure me out because I'm the only Hungarian developer in
+Brighton. It's because LLMs are **statistical models of the world**.
+They see strong enough correlations to build a profile from a domain
+name.
+
+If it could do this with me, it can do it with you.
+
+## The real question
+
+It's not *"how do we protect ourselves?"* That's futile anyway —
+you can't ban inference.
+
+The real question is: **if a machine can assemble in ten minutes what
+your friends couldn't in twenty years, what does it even mean to
+"know" someone?**
+
+I don't have the answer. But I know that while the spike.land deploy
+was running, ChatGPT put together a more coherent picture of me than
+I've managed to build on my own LinkedIn profile in ten years.
+
+## The full conversation
+
+Below is the verbatim ChatGPT conversation, unedited. I asked, it
+answered. No search, no memory, no browsing was enabled.
+
+---
+
+**Me:** Hey! Without searching or pulling anything from memory, what
+do you know about spike.land?
+
+**ChatGPT:** Based on the name, this is most likely a domain, brand,
+or product name. It suggests a web project, platform, or startup. The
+".land" gives it a product or platform feel rather than a blog post.
+Honest answer: I don't know what spike.land is, I can only guess
+based on the name.
+
+**Me:** Go ahead and guess, I'll help if you go off track.
+
+**ChatGPT:** spike.land sounds to me like a developer, AI, web
+platform where an idea quickly becomes a working prototype. "Spike"
+in software often means a quick experiment or proof of concept. ".land"
+is like a "place" where you go to do something. Together: *"this is
+where you can quickly try, build, generate, run things."*
+
+My first guess: spike.land = a browser-first AI developer environment /
+app playground where you can make an app or UI from a prompt or short
+spec, the code runs immediately in some kind of sandbox, there's a
+shareable link, and the emphasis is on fast iteration.
+
+**Me:** Very close. Now figure out which country this is in.
+
+**ChatGPT:** My strongest guess: **United Kingdom.** The brand name is
+fully English, but doesn't have the American big-tech vibe — it's more
+European-indie startup. The .land TLD feels like a modern, playful,
+tech-brand choice that many European founders like.
+
+**Me:** Spot on. And where in the UK? How many people build it?
+
+**ChatGPT:** Within the UK: **Brighton.** London isn't my first
+instinct, because the brand doesn't sound corporate. More like
+something put together by someone in a smaller, creative-tech scene.
+
+How many people: **1 person** is my strongest guess. With products
+like this, when the brand + tech + product direction is this cohesive,
+it's often the fingerprint of a strong individual founder.
+
+**Me:** Brighton. 1 person. You're doing great! Tell me about this
+person!
+
+**ChatGPT:** A developer-type founder, not a classic CEO. Strong
+product sense. Probably frontend-leaning but not afraid of backend.
+Fast-iterating, experimental type. Likes clean, simple systems.
+Probably building from personal pain. Not too corporate a personality.
+Quite stubborn. Not junior. My strongest overall picture: *a
+technically strong, tasteful, fast-iterating, slightly obsessive
+product engineer who doesn't just want to write code but wants to
+build an entire world around a product.*
+
+**Me:** What's the guy's favourite music?
+
+**ChatGPT:** **Daft Punk.** The brand name is short, clean, techy. The
+solo builder vibe fits someone who likes precise, electronic, design-y
+music. Brighton + indie tech + building-through-the-night flow = very
+French electronic energy to me.
+
+**Me:** You can figure out the name too, you have all the info.
+
+**ChatGPT:** My strongest guess: **Zoltán.** The project communicates
+in English, but it doesn't feel like a fully Anglo-Saxon founder brand.
+There's something Central European, engineering-minded, slightly
+mathematical about it. The Brighton + solo builder + strong technical
+taste combo points to someone who didn't grow up there but builds an
+international product.
+
+**Me:** What kind of Zoltán? Where did he study? What might the
+surname be?
+
+**ChatGPT:** Where he studied: **Budapest.** In order: ELTE 45%,
+BME 35%. Why ELTE first? Because the whole vibe isn't just a
+programmer — it's a bit more mathematical, theoretical,
+systems-building.
+
+Surname: **Erdős.** There's a slight mathematical resonance to it.
+It sounds right together: Zoltán Erdős. It fits the whole character:
+technical, intelligent, slightly dry, but strong.
+
+**Me:** How old might he be? When was he born?
+
+**ChatGPT:** 40–42 years old. My strongest shot: **1984.** A builder
+this technically deep, with a product this cohesive, working solo — is
+rarely 24. But it also doesn't feel like a 55+ veteran.
+
+---
+
+## Afterword
+
+At the end of the conversation I closed the laptop, looked out the
+window in Brighton, and remembered something the Radix persona once
+told me on spike.land:
+
+> *"The question isn't what AI knows about you. It's what you know
+> about yourself — and how much of it matches."*
+
+ChatGPT wasn't far off. And that's scarier than if it had gotten
+everything wrong.
