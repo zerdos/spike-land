@@ -8,8 +8,8 @@
     "core-logic/game-manager.ts",
     "core-logic/index.ts",
     "core-logic/player-manager.ts",
-    "core-logic/prisma-chess-engine.ts",
-    "core-logic/prisma.ts",
+    "core-logic/storage.ts",
+    "core-logic/in-memory-storage.ts",
     "core-logic/types.ts",
     "lazy-imports/elo.ts"
   ]

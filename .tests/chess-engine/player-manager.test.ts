@@ -1,18 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const mockPrisma = vi.hoisted(() => ({
-  chessPlayer: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
-  $executeRaw: vi.fn(),
-}));
-
-vi.mock("@/lib/prisma", () => ({ default: mockPrisma }));
-
+import { beforeEach, describe, expect, it } from "vitest";
+import { InMemoryChessStorage } from "../../src/core/chess/core-logic/in-memory-storage.js";
 import {
   createPlayer,
   deletePlayer,
@@ -20,158 +7,265 @@ import {
   getPlayersByUser,
   getPlayerStats,
   listOnlinePlayers,
+  setStorage,
   setPlayerOnline,
   updatePlayer,
   updatePlayerElo,
 } from "../../src/core/chess/core-logic/player-manager.js";
 
 describe("player-manager", () => {
+  let storage: InMemoryChessStorage;
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    storage = new InMemoryChessStorage();
+    setStorage(storage);
   });
 
   it("createPlayer creates with correct data", async () => {
-    const expected = { id: "p1", userId: "u1", name: "Alice", avatar: null };
-    mockPrisma.chessPlayer.create.mockResolvedValue(expected);
-
     const result = await createPlayer("u1", "Alice");
 
-    expect(mockPrisma.chessPlayer.create).toHaveBeenCalledWith({
-      data: { userId: "u1", name: "Alice" },
-    });
-    expect(result).toEqual(expected);
+    expect(result.userId).toBe("u1");
+    expect(result.name).toBe("Alice");
+    expect(result.avatar).toBeNull();
+    expect(result.id).toBeDefined();
   });
 
   it("createPlayer includes avatar when provided", async () => {
-    const expected = {
-      id: "p1",
-      userId: "u1",
-      name: "Alice",
-      avatar: "cat.png",
-    };
-    mockPrisma.chessPlayer.create.mockResolvedValue(expected);
-
     const result = await createPlayer("u1", "Alice", "cat.png");
 
-    expect(mockPrisma.chessPlayer.create).toHaveBeenCalledWith({
-      data: { userId: "u1", name: "Alice", avatar: "cat.png" },
-    });
-    expect(result).toEqual(expected);
+    expect(result.userId).toBe("u1");
+    expect(result.name).toBe("Alice");
+    expect(result.avatar).toBe("cat.png");
   });
 
   it("getPlayer returns player when found", async () => {
-    const player = { id: "p1", userId: "u1", name: "Alice" };
-    mockPrisma.chessPlayer.findUnique.mockResolvedValue(player);
-
-    const result = await getPlayer("p1");
-
-    expect(mockPrisma.chessPlayer.findUnique).toHaveBeenCalledWith({
-      where: { id: "p1" },
+    const created = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
-    expect(result).toEqual(player);
+
+    const result = await getPlayer(created.id);
+
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe(created.id);
+    expect(result?.name).toBe("Alice");
   });
 
   it("getPlayer returns null when not found", async () => {
-    mockPrisma.chessPlayer.findUnique.mockResolvedValue(null);
-
     const result = await getPlayer("nonexistent");
 
     expect(result).toBeNull();
   });
 
   it("getPlayersByUser returns all profiles for a user", async () => {
-    const players = [
-      { id: "p1", userId: "u1", name: "Alice" },
-      { id: "p2", userId: "u1", name: "Bob" },
-    ];
-    mockPrisma.chessPlayer.findMany.mockResolvedValue(players);
+    await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
+    await storage.createPlayer({
+      userId: "u1",
+      name: "Bob",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
     const result = await getPlayersByUser("u1");
 
-    expect(mockPrisma.chessPlayer.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: "u1" } }),
-    );
     expect(result).toHaveLength(2);
   });
 
-  it("updatePlayer uses atomic where clause with userId", async () => {
-    mockPrisma.chessPlayer.update.mockResolvedValue({
-      id: "p1",
+  it("updatePlayer updates name correctly", async () => {
+    const player = await storage.createPlayer({
       userId: "u1",
-      name: "NewName",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
 
-    const result = await updatePlayer("p1", "u1", { name: "NewName" });
+    const result = await updatePlayer(player.id, "u1", { name: "NewName" });
 
-    expect(mockPrisma.chessPlayer.update).toHaveBeenCalledWith({
-      where: { id: "p1", userId: "u1" },
-      data: { name: "NewName" },
-    });
     expect(result.name).toBe("NewName");
+
+    const persisted = await storage.getPlayer(player.id);
+    expect(persisted?.name).toBe("NewName");
   });
 
-  it("updatePlayer throws if not owner (Prisma record not found)", async () => {
-    mockPrisma.chessPlayer.update.mockRejectedValue(new Error("Record not found"));
+  it("updatePlayer throws if not owner", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
-    await expect(updatePlayer("p1", "u1", { name: "Hacked" })).rejects.toThrow(
+    await expect(updatePlayer(player.id, "wrong-user", { name: "Hacked" })).rejects.toThrow(
       "Not authorized to update this player",
     );
   });
 
-  it("deletePlayer uses atomic where clause with userId", async () => {
-    mockPrisma.chessPlayer.delete.mockResolvedValue({ id: "p1" });
-
-    await deletePlayer("p1", "u1");
-
-    expect(mockPrisma.chessPlayer.delete).toHaveBeenCalledWith({
-      where: { id: "p1", userId: "u1" },
+  it("deletePlayer removes the player record", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
+
+    await deletePlayer(player.id, "u1");
+
+    const result = await storage.getPlayer(player.id);
+    expect(result).toBeNull();
   });
 
-  it("deletePlayer throws if not owner (Prisma record not found)", async () => {
-    mockPrisma.chessPlayer.delete.mockRejectedValue(new Error("Record not found"));
-
-    await expect(deletePlayer("p1", "u1")).rejects.toThrow("Not authorized to delete this player");
-  });
-
-  it("setPlayerOnline updates status and lastSeenAt", async () => {
-    mockPrisma.chessPlayer.update.mockResolvedValue({});
-
-    await setPlayerOnline("p1", "u1", true);
-
-    expect(mockPrisma.chessPlayer.update).toHaveBeenCalledWith({
-      where: { id: "p1", userId: "u1" },
-      data: {
-        isOnline: true,
-        lastSeenAt: expect.any(Date),
-      },
+  it("deletePlayer throws if not owner", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
+
+    await expect(deletePlayer(player.id, "wrong-user")).rejects.toThrow(
+      "Not authorized to delete this player",
+    );
   });
 
-  it("listOnlinePlayers filters by isOnline=true", async () => {
-    const onlinePlayers = [{ id: "p1", isOnline: true }];
-    mockPrisma.chessPlayer.findMany.mockResolvedValue(onlinePlayers);
+  it("setPlayerOnline updates isOnline status and lastSeenAt", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
+
+    await setPlayerOnline(player.id, "u1", true);
+
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.isOnline).toBe(true);
+    expect(updated?.lastSeenAt).toBeInstanceOf(Date);
+  });
+
+  it("listOnlinePlayers returns only online players", async () => {
+    await storage.createPlayer({
+      userId: "u1",
+      name: "Online",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: true,
+      lastSeenAt: null,
+    });
+    await storage.createPlayer({
+      userId: "u2",
+      name: "Offline",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
     const result = await listOnlinePlayers();
 
-    expect(mockPrisma.chessPlayer.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { isOnline: true } }),
-    );
-    expect(result).toEqual(onlinePlayers);
+    expect(result).toHaveLength(1);
+    expect(result[0]?.name).toBe("Online");
   });
 
   it("getPlayerStats calculates winRate correctly", async () => {
-    mockPrisma.chessPlayer.findUnique.mockResolvedValue({
-      id: "p1",
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
       elo: 1300,
       bestElo: 1350,
       wins: 7,
       losses: 2,
       draws: 1,
       streak: 3,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
 
-    const stats = await getPlayerStats("p1");
+    const stats = await getPlayerStats(player.id);
 
     expect(stats.totalGames).toBe(10);
     expect(stats.winRate).toBeCloseTo(0.7);
@@ -181,55 +275,178 @@ describe("player-manager", () => {
   });
 
   it("getPlayerStats handles zero games (winRate = 0)", async () => {
-    mockPrisma.chessPlayer.findUnique.mockResolvedValue({
-      id: "p1",
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
       elo: 1200,
       bestElo: 1200,
       wins: 0,
       losses: 0,
       draws: 0,
       streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
     });
 
-    const stats = await getPlayerStats("p1");
+    const stats = await getPlayerStats(player.id);
 
     expect(stats.totalGames).toBe(0);
     expect(stats.winRate).toBe(0);
   });
 
   it("getPlayerStats throws if player not found", async () => {
-    mockPrisma.chessPlayer.findUnique.mockResolvedValue(null);
-
-    await expect(getPlayerStats("p1")).rejects.toThrow("Player not found");
+    await expect(getPlayerStats("nonexistent")).rejects.toThrow("Player not found");
   });
 
-  it("updatePlayerElo executes atomic SQL for win", async () => {
-    mockPrisma.$executeRaw.mockResolvedValue(1);
+  it("updatePlayerElo updates elo and increments wins on win", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
-    await updatePlayerElo("p1", 1220, "win");
+    await updatePlayerElo(player.id, 1220, "win");
 
-    expect(mockPrisma.$executeRaw).toHaveBeenCalled();
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.elo).toBe(1220);
+    expect(updated?.wins).toBe(1);
+    expect(updated?.losses).toBe(0);
+    expect(updated?.draws).toBe(0);
+    expect(updated?.streak).toBe(1);
   });
 
-  it("updatePlayerElo executes atomic SQL for loss", async () => {
-    mockPrisma.$executeRaw.mockResolvedValue(1);
+  it("updatePlayerElo updates elo and increments losses on loss", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
-    await updatePlayerElo("p1", 1280, "loss");
+    await updatePlayerElo(player.id, 1180, "loss");
 
-    expect(mockPrisma.$executeRaw).toHaveBeenCalled();
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.elo).toBe(1180);
+    expect(updated?.wins).toBe(0);
+    expect(updated?.losses).toBe(1);
+    expect(updated?.streak).toBe(-1);
   });
 
-  it("updatePlayerElo executes atomic SQL for draw", async () => {
-    mockPrisma.$executeRaw.mockResolvedValue(1);
+  it("updatePlayerElo updates elo and increments draws on draw", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
 
-    await updatePlayerElo("p1", 1250, "draw");
+    await updatePlayerElo(player.id, 1200, "draw");
 
-    expect(mockPrisma.$executeRaw).toHaveBeenCalled();
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.elo).toBe(1200);
+    expect(updated?.draws).toBe(1);
+    expect(updated?.streak).toBe(0);
   });
 
-  it("updatePlayerElo throws when player not found (0 rows affected)", async () => {
-    mockPrisma.$executeRaw.mockResolvedValue(0);
+  it("updatePlayerElo throws when player not found", async () => {
+    await expect(updatePlayerElo("nonexistent", 1220, "win")).rejects.toThrow("Player not found");
+  });
 
-    await expect(updatePlayerElo("p1", 1220, "win")).rejects.toThrow("Player not found");
+  it("updatePlayerElo extends positive streak on consecutive wins", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 2,
+      losses: 0,
+      draws: 0,
+      streak: 2,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
+
+    await updatePlayerElo(player.id, 1220, "win");
+
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.streak).toBe(3);
+  });
+
+  it("updatePlayerElo resets streak to 0 on draw", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 3,
+      losses: 0,
+      draws: 0,
+      streak: 3,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
+
+    await updatePlayerElo(player.id, 1200, "draw");
+
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.streak).toBe(0);
+  });
+
+  it("updatePlayerElo tracks bestElo correctly", async () => {
+    const player = await storage.createPlayer({
+      userId: "u1",
+      name: "Alice",
+      avatar: null,
+      elo: 1200,
+      bestElo: 1200,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      streak: 0,
+      soundEnabled: true,
+      isOnline: false,
+      lastSeenAt: null,
+    });
+
+    await updatePlayerElo(player.id, 1300, "win");
+
+    const updated = await storage.getPlayer(player.id);
+    expect(updated?.bestElo).toBe(1300);
+
+    await updatePlayerElo(player.id, 1250, "loss");
+
+    const afterLoss = await storage.getPlayer(player.id);
+    expect(afterLoss?.bestElo).toBe(1300);
   });
 });
