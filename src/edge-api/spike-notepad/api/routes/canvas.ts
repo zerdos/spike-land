@@ -404,7 +404,7 @@ canvas.get("/app", (c) => {
         note.content = content;
 
         // Parse tags
-        const tagMatches = content.match(/#(\\w+)/g);
+        const tagMatches = content.match(/#([\\p{L}\\p{N}_]+)/gu);
         const tags = tagMatches ? tagMatches.map(t => t.slice(1)) : [];
         note.tags = tags;
 
