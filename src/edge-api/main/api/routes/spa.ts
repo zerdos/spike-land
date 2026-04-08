@@ -150,7 +150,7 @@ spa.get("/*", async (c) => {
     const blogSlug = blogSlugMatch?.[1];
     if (blogSlug) {
       try {
-        const row = await getBlogPostRow(c.env.DB, blogSlug);
+        const row = await getBlogPostRow(c.env.DB, blogSlug, { allowSourceFallback: false });
         if (!row) {
           // No matching blog post — serve 404 shell with noindex
           html = html.replace(
