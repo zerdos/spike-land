@@ -800,7 +800,9 @@ spikeChat.post("/api/spike-chat", async (c) => {
     // DO binding unavailable (local dev without DO support)
   }
 
-  // Persona → model override: some personas have a preferred LLM
+  // Persona → model override: some personas have a preferred LLM.
+  // Default for all: gemini-3-flash-preview (via DEFAULT_PROVIDER_MODELS.google).
+  // Radix gets gemma-4-e4b as its primary model.
   const PERSONA_MODEL_OVERRIDES: Record<
     string,
     { provider: "google" | "anthropic" | "openai"; model: string }
@@ -810,6 +812,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
   const personaOverride = persona ? PERSONA_MODEL_OVERRIDES[persona] : undefined;
 
   // Resolve LLM provider (persona override → BYOK → platform fallback)
+  // All personas default to Google (gemini-3-flash-preview) with gemma-4 fallback.
   const llmTarget = await resolveSynthesisTarget(
     c.env,
     userId,
@@ -819,7 +822,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
           provider: personaOverride.provider,
           upstreamModel: personaOverride.model,
         }
-      : { publicModel: "spike-agent-v1", provider: "auto", upstreamModel: undefined },
+      : { publicModel: "spike-agent-v1", provider: "google", upstreamModel: undefined },
   );
   if (!llmTarget) {
     return c.json(

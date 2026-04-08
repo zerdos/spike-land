@@ -47,7 +47,7 @@ const spikeApi = new Hono<{ Bindings: Env; Variables: Variables }>();
 type ModelAlias = "fast" | "smart" | "vision" | "local" | "edge";
 
 const MODEL_ALIAS_MAP: Record<ModelAlias, { provider: string; model: string }> = {
-  fast: { provider: "google", model: "gemini-2.5-flash" },
+  fast: { provider: "google", model: "gemini-3-flash-preview" },
   smart: { provider: "anthropic", model: "claude-sonnet-4-20250514" },
   vision: { provider: "openai", model: "gpt-4.1" },
   local: { provider: "ollama", model: "qwen3:8b" },
