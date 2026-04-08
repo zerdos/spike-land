@@ -92,6 +92,38 @@ const MODEL_REGISTRY: ModelInfo[] = [
     capabilities: ["chat", "vision", "image-gen", "structured"],
     maxOutputTokens: 8192,
   },
+  {
+    id: "gemma-4-e2b",
+    displayName: "Gemma 4 E2B",
+    provider: "google",
+    aliases: ["gemma-e2b"],
+    capabilities: ["chat", "vision", "audio"],
+    maxOutputTokens: 8192,
+  },
+  {
+    id: "gemma-4-e4b",
+    displayName: "Gemma 4 E4B",
+    provider: "google",
+    aliases: ["gemma-e4b", "gemma", "edge"],
+    capabilities: ["chat", "vision", "audio"],
+    maxOutputTokens: 8192,
+  },
+  {
+    id: "gemma-4-27b",
+    displayName: "Gemma 4 27B",
+    provider: "google",
+    aliases: ["gemma-27b"],
+    capabilities: ["chat", "vision", "audio"],
+    maxOutputTokens: 8192,
+  },
+  {
+    id: "gemma-4-27b-a4b",
+    displayName: "Gemma 4 27B A4B (MoE)",
+    provider: "google",
+    aliases: ["gemma-moe", "gemma-a4b"],
+    capabilities: ["chat", "vision", "audio"],
+    maxOutputTokens: 8192,
+  },
 ];
 
 function resolveModel(modelInput: string): ModelInfo | undefined {

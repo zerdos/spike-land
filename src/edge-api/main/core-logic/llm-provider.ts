@@ -103,7 +103,12 @@ export function inferProviderFromRawModel(model: string): ProviderId | undefined
     return "openai";
   }
   if (normalized.startsWith("claude") || normalized.includes("anthropic")) return "anthropic";
-  if (normalized.startsWith("gemini") || normalized.includes("google")) return "google";
+  if (
+    normalized.startsWith("gemini") ||
+    normalized.startsWith("gemma") ||
+    normalized.includes("google")
+  )
+    return "google";
   if (normalized.startsWith("grok") || normalized.includes("xai")) return "xai";
   if (
     normalized.startsWith("ollama") ||
