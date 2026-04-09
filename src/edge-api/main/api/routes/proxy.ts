@@ -47,6 +47,8 @@ function sanitizeCallerHeaders(raw: Record<string, string> | undefined): Record<
   return safe;
 }
 
+const STRIPE_API_VERSION = "2024-06-20";
+
 const AI_PROVIDERS: Array<{
   prefix: string;
   envKey: keyof Env;
@@ -101,7 +103,7 @@ proxy.post("/proxy/stripe", async (c) => {
       ...sanitizeCallerHeaders(body.headers),
       Authorization: `Bearer ${c.env.STRIPE_SECRET_KEY}`,
       "Content-Type": "application/x-www-form-urlencoded",
-      "Stripe-Version": "2024-06-20",
+      "Stripe-Version": STRIPE_API_VERSION,
     },
     body: stripeBody,
   });

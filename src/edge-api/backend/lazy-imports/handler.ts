@@ -337,7 +337,7 @@ export class McpHandler {
       return;
     }
     const env = this.env;
-    hashClientId(codeSpace)
+    void hashClientId(codeSpace)
       .then((clientId) =>
         sendGA4Events(env.GA_MEASUREMENT_ID, env.GA_API_SECRET, clientId, [
           {

@@ -509,6 +509,7 @@ a{color:inherit;text-decoration:none}
         fetchJson('/analytics/ga4/devices').then(d => { data.devices = d; }),
         fetchJson('/analytics/ga4/retention').then(d => { data.retention = d; }),
         fetchJson('/analytics/ga4/content').then(d => { data.content = d; }),
+      // Expected: secondary tab data failure — overview already rendered; non-fatal
       ]).then(() => { if (currentTab !== 'overview') render(); }).catch(() => {});
     } catch (e) {
       if (e.message === 'auth') { renderAuthGate(); return; }

@@ -8,7 +8,7 @@ export class CodeRateLimiter {
   private readonly RATE_LIMIT = 0.5; // 0.5 seconds cooldown after grace period
 
   async fetch(request: Request) {
-    return await handleErrors(request, async () => {
+    return handleErrors(request, async () => {
       const now = Date.now() / 1000;
 
       // Reset counts if grace period has expired

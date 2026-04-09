@@ -22,8 +22,6 @@
     "@astrojs/sitemap": "^3.7.2",
     "@sentry/browser": "^10.47.0",
     "@spike-land-ai/shared": "workspace:*",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
     "astro": "^6.0.4",
     "better-auth": "^1.5.5",
     "framer-motion": "^12.36.0",

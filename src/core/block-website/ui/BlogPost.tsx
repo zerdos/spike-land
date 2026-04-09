@@ -1340,6 +1340,7 @@ function SupportWidget({ post }: { post: BlogPost }) {
           setSupporters(data.supporters);
         }
       })
+      // Expected: network failure — UI falls back to locally-stored counts
       .catch(() => {});
   }, [slug]);
 

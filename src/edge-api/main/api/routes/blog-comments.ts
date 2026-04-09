@@ -6,6 +6,7 @@ import { recordEloEvent } from "../../core-logic/elo-service.js";
 const blogComments = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 const DOWNVOTE_THRESHOLD = -10; // Net score threshold for ELO penalty
+const MAX_COMMENT_LENGTH = 5_000;
 
 /** GET /blog/:slug/comments — list comments for an article. */
 blogComments.get("/blog/:slug/comments", async (c) => {
@@ -39,8 +40,8 @@ blogComments.post("/blog/:slug/comments", authMiddleware, async (c) => {
     return c.json({ error: "content and user_name are required" }, 400);
   }
 
-  if (body.content.length > 5000) {
-    return c.json({ error: "Comment too long (max 5000 chars)" }, 400);
+  if (body.content.length > MAX_COMMENT_LENGTH) {
+    return c.json({ error: `Comment too long (max ${MAX_COMMENT_LENGTH} chars)` }, 400);
   }
 
   // Validate parent_id if provided

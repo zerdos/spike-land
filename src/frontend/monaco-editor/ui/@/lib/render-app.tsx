@@ -148,8 +148,9 @@ export const importFromString = async (code: string) => {
 
   // In a browser environment, try the Blob URL approach first
   if (isBrowser) {
-    const createJsBlob = async (code: string): Promise<string> =>
-      await URL.createObjectURL(
+    let blobUrl: string | null = null;
+    try {
+      blobUrl = URL.createObjectURL(
         new Blob(
           [
             importMapReplace(code.split("importMapReplace").join(""))
@@ -159,8 +160,9 @@ export const importFromString = async (code: string) => {
           { type: "application/javascript" },
         ),
       );
-
-    const { data: blobUrl } = await tryCatch(createJsBlob(code));
+    } catch {
+      /* Blob URL creation failed — fall through to next strategy */
+    }
 
     if (blobUrl) {
       const { data: module } = await tryCatch(import(/* @vite-ignore */ blobUrl));

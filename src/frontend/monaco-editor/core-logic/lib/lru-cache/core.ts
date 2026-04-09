@@ -961,6 +961,7 @@ export class LRUCache<K extends object | string | number, V extends object, FC =
                   cb(val as V | undefined, true);
                 }
               })
+              // Expected: fetch may have already settled via the main resolution path; ignore race errors
               .catch(() => {});
           }
         }

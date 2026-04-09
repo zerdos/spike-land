@@ -83,6 +83,7 @@ export function logWebhookError(
       )
       .bind("stripe-webhook", eventType, message, stack, null, null, "error")
       .run()
+      // Expected: DB unavailable during error logging — must not throw inside logWebhookError
       .catch(() => {});
     try {
       ctx?.waitUntil(work);

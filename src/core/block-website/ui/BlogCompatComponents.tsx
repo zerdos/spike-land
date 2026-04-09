@@ -231,6 +231,7 @@ export function ToolCount() {
           setCount((data as { total: number }).total);
         }
       })
+      // Expected: network failure — UI falls back to the "80+" placeholder
       .catch(() => {});
 
     return () => {

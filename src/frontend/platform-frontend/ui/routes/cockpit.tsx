@@ -331,6 +331,7 @@ function ExperimentCard({ exp }: { exp: DashboardExperiment }) {
     fetch(apiUrl(`/experiments/${exp.id}/metrics`))
       .then((r) => r.json() as Promise<ExperimentMetrics>)
       .then(setMetrics)
+      // Expected: network failure — panel stays empty until next expand
       .catch(() => {});
   }, [expanded, exp.id]);
 
@@ -485,6 +486,7 @@ function ExperimentsDashboard() {
     fetch(apiUrl("/experiments/dashboard"))
       .then((r) => r.json() as Promise<{ experiments: DashboardExperiment[]; revenue24h: number }>)
       .then(setData)
+      // Expected: network failure — dashboard stays in loading spinner state
       .catch(() => {});
   }, []);
 
@@ -551,6 +553,7 @@ function DevHealth() {
       .then((data) => {
         if (data) setErrorSummary(data);
       })
+      // Expected: network failure — error count badge stays hidden
       .catch(() => {});
   }, []);
 
@@ -631,6 +634,7 @@ function MetricsDashboard() {
         return r.json() as Promise<CockpitMetrics>;
       })
       .then(setData)
+      // Expected: network failure — metrics show "--" placeholders
       .catch(() => {});
   }, []);
 

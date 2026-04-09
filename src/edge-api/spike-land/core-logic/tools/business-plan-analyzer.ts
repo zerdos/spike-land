@@ -30,6 +30,11 @@ export interface ExtractedContent {
 const BROWSER_USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 
+/** Abort timeout for website fetch requests. */
+const FETCH_TIMEOUT_MS = 15_000;
+/** Maximum tokens for Claude analysis completions. */
+const ANALYSIS_MAX_TOKENS = 16_384;
+
 function decodeHtmlEntities(text: string): string {
   return text
     .replace(/&amp;/g, "&")
@@ -44,7 +49,7 @@ function decodeHtmlEntities(text: string): string {
 
 export async function fetchWebsiteContent(url: string): Promise<ExtractedContent> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   let response: Response;
   try {
@@ -326,7 +331,7 @@ export async function callAnthropicAnalysis(
 
   const body = {
     model: "claude-4-6-sonnet",
-    max_tokens: 16384,
+    max_tokens: ANALYSIS_MAX_TOKENS,
     temperature: 0.2,
     system: systemPrompt,
     messages: [{ role: "user" as const, content: message }],

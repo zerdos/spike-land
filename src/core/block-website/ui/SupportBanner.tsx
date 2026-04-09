@@ -87,6 +87,7 @@ function BlogBanner({
       .then((data) => {
         if (data) setBumpCount(data.fistBumps);
       })
+      // Expected: network failure — UI falls back to the locally-stored bump count
       .catch(() => {});
   }, [slug]);
 

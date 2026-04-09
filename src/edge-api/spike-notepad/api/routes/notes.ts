@@ -165,10 +165,12 @@ notes.put("/api/notes/:id", async (c) => {
   // Return updated note
   const updated = await c.env.DB.prepare("SELECT * FROM notes WHERE id = ?").bind(id).first();
 
+  if (!updated) return c.json({ error: "Note not found" }, 404);
+
   return c.json({
     ...updated,
-    tags: JSON.parse((updated!.tags as string) || "[]"),
-    pinned: Boolean(updated!.pinned),
+    tags: JSON.parse((updated.tags as string) || "[]"),
+    pinned: Boolean(updated.pinned),
   });
 });
 

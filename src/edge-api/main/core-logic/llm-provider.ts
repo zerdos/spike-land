@@ -840,6 +840,7 @@ export async function streamCompletionWithFallback(
       const response = await streamCompletion(target, messages, options);
       // Track community token success
       if (db && target.keySource === "community" && target.communityTokenId) {
+        // Expected: analytics write failure — best-effort usage tracking, must not break LLM response delivery
         recordCommunityTokenUsage(db, target.communityTokenId, true).catch(() => {});
       }
       return { response, usedTarget: target };
@@ -847,6 +848,7 @@ export async function streamCompletionWithFallback(
       lastError = err instanceof Error ? err : new Error(String(err));
       // Track community token failure
       if (db && target.keySource === "community" && target.communityTokenId) {
+        // Expected: analytics write failure — best-effort failure tracking, fallback to next provider continues regardless
         recordCommunityTokenUsage(db, target.communityTokenId, false, lastError.message).catch(
           () => {},
         );

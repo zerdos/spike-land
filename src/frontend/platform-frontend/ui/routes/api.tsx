@@ -345,6 +345,7 @@ function CodeBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
+    // Expected: clipboard API may be denied (non-HTTPS context or user permission denied)
     navigator.clipboard.writeText(code).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -814,6 +815,7 @@ function FeaturedCodeCopyButton() {
   -d '{"q": "Summarize this pull request"}'`;
 
   const handleCopy = useCallback(() => {
+    // Expected: clipboard API may be denied (non-HTTPS context or user permission denied)
     navigator.clipboard.writeText(FEATURED_CODE).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

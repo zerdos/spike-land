@@ -116,8 +116,10 @@ export function createBlockClient<
           // Start polling on first subscriber
           if (listeners.size === 1) {
             // Initial fetch
+            // Expected: transient DB or network error on background poll — UI retains stale data and retries next interval
             refresh().catch(() => {});
             timer = setInterval(() => {
+              // Expected: same — poll failure is non-fatal, next tick will retry
               refresh().catch(() => {});
             }, pollInterval);
           }

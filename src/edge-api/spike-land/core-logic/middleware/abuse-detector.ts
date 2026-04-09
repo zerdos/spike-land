@@ -32,9 +32,6 @@ export async function detectAbuse(
   state.calls++;
   if (outcome === "error") {
     state.errors++;
-  } else {
-    // Reset errors if there's a success, acting like a consecutive error counter within the window
-    state.errors = 0;
   }
 
   let shouldFlag = false;

@@ -26,7 +26,7 @@ async function transpileCode(code: string, origin: string): Promise<string> {
     throw new Error(`Transpilation failed: ${errorText}`);
   }
 
-  return await response.text();
+  return response.text();
 }
 
 export const updateCodeTool: Tool = {

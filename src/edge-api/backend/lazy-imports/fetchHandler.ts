@@ -36,17 +36,17 @@ export async function handleFetchApi(
     });
   }
 
-  const handlers: Record<string, () => Promise<Response>> = {
-    ping: async () => handlePing(),
-    websocket: async () => handleWebSocket(request),
-    node_modules: async () => handleUnpkg(path),
+  const handlers: Record<string, () => Response | Promise<Response>> = {
+    ping: () => handlePing(),
+    websocket: () => handleWebSocket(request),
+    node_modules: () => handleUnpkg(path),
 
-    "importMap.json": async () => handleImportMapJson(),
+    "importMap.json": () => handleImportMapJson(),
 
     // REST API: /api/{codeSpace}/{action}
     // This provides cleaner URLs than /api/room/{codeSpace}/{action}
-    "api-v1": async () => handleRestApiRequest(path.slice(1), request, env),
-    "robots.txt": async () => {
+    "api-v1": () => handleRestApiRequest(path.slice(1), request, env),
+    "robots.txt": () => {
       const cont = `
 User-agent: *
 Allow: /
@@ -77,11 +77,11 @@ Sitemap: ${new URL(request.url).origin}/sitemap.xml
         },
       });
     },
-    api: async () => handleApiRequest(path.slice(1), request, env),
-    ata: async () => handleApiRequest(path.slice(1), request, env),
-    ipns: async () => handleIpfsRequest(request),
-    ipfs: async () => handleIpfsRequest(request),
-    live: async () => handleLiveRequest(path, request, env),
+    api: () => handleApiRequest(path.slice(1), request, env),
+    ata: () => handleApiRequest(path.slice(1), request, env),
+    ipns: () => handleIpfsRequest(request),
+    ipfs: () => handleIpfsRequest(request),
+    live: () => handleLiveRequest(path, request, env),
   };
 
   // Serve manifest.webmanifest inline (referenced by index.html)

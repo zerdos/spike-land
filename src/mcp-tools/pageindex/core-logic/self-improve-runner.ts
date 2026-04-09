@@ -261,6 +261,7 @@ export async function runSelfImproveLoop(
 
   for (let index = 0; index < iterations; index++) {
     const target = targets[index % targets.length];
+    if (!target) continue;
     const step = (targetSteps.get(target.id) ?? 0) + 1;
     targetSteps.set(target.id, step);
 
@@ -296,7 +297,7 @@ export async function runSelfImproveLoop(
       targetCoverage: round(computeCoverage(answer, target)),
       usedPriorContext: Boolean(priorContext),
       insightId: rated.id,
-      topicId: rated.topicId,
+      ...(rated.topicId !== undefined ? { topicId: rated.topicId } : {}),
       confidence: round(rated.confidence),
       feedback: rated.feedback,
       hitCount: rated.hitCount,
@@ -334,8 +335,8 @@ export async function runSelfImproveLoop(
     iterationsCompleted: results.length,
     initialScore,
     finalScore: previousScore,
-    persistedTo: options.persistPath,
-    reportPath: options.reportPath,
+    ...(options.persistPath !== undefined ? { persistedTo: options.persistPath } : {}),
+    ...(options.reportPath !== undefined ? { reportPath: options.reportPath } : {}),
     stats: store.stats(),
     iterations: results,
   };

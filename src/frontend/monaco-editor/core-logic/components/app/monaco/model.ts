@@ -67,7 +67,6 @@ export async function startMonaco(
         return modelStore[codeSpace];
       } else {
         // Container is no longer in the DOM, clean up the old model
-        console.debug(`Container for ${codeSpace} is no longer in the DOM, creating new model`);
         // Use requestAnimationFrame to ensure we're not unmounting during render
         requestAnimationFrame(() => {
           delete modelStore[codeSpace];
@@ -185,14 +184,12 @@ async function createEditorModel(
 
       // Prevent recursive updates
       if (editorModel.silent) {
-        console.debug("Skipping setValue while silent");
         return;
       }
 
       // Check if this update is necessary
       const currentCode = model.getValue();
       if (currentCode === newCode) {
-        console.debug("Skipping identical content update");
         return;
       }
 
@@ -200,10 +197,8 @@ async function createEditorModel(
 
       // Handle recently changed content
       if (recentlyChanged.has(lastHash)) {
-        console.debug("Content was recently changed, debouncing update");
         await wait(1000);
         if (editorModel.lastValueHashToBeSet !== lastHash) {
-          console.debug("Newer update pending, skipping this one");
           return;
         }
       }

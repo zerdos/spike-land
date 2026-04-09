@@ -12,6 +12,8 @@ const log = createLogger("spike-edge");
 
 const support = new Hono<{ Bindings: Env }>();
 
+const STRIPE_API_VERSION = "2024-06-20";
+
 // ─── Migration Checkout (Stripe) ────────────────────────────────────────────
 
 const MIGRATION_TIERS = {
@@ -80,7 +82,7 @@ support.post("/api/support/migration-checkout", async (c) => {
     headers: {
       Authorization: `Bearer ${stripeKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
-      "Stripe-Version": "2024-06-20",
+      "Stripe-Version": STRIPE_API_VERSION,
     },
     body: params.toString(),
   });

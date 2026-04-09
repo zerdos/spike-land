@@ -16,6 +16,8 @@ const log = createLogger("spike-edge");
 
 const billing = new Hono<{ Bindings: Env; Variables: Variables }>();
 
+const STRIPE_API_VERSION = "2024-06-20";
+
 interface SubscriptionRow {
   plan: string;
   status: string;
@@ -94,7 +96,7 @@ async function handleBillingPortal(c: Context<{ Bindings: Env; Variables: Variab
       headers: {
         Authorization: `Bearer ${c.env.STRIPE_SECRET_KEY}`,
         "Content-Type": "application/x-www-form-urlencoded",
-        "Stripe-Version": "2024-06-20",
+        "Stripe-Version": STRIPE_API_VERSION,
       },
       body: new URLSearchParams({
         customer: stripeCustomerId,

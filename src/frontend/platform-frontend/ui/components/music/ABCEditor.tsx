@@ -263,10 +263,13 @@ export const ABCEditor = memo(function ABCEditor({ initialCode }: ABCEditorProps
     setRendering(false);
   }, [code, meta.tempo]);
 
-  // Auto-synthesize on first render
+  // Keep a stable ref to synthesize so the mount effect doesn't need it as a dep.
+  const synthesizeRef = useRef(synthesize);
+  synthesizeRef.current = synthesize;
+
+  // Auto-synthesize on first render only.
   useEffect(() => {
-    void synthesize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void synthesizeRef.current();
   }, []);
 
   return (

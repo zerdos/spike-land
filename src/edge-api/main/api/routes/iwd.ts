@@ -1977,6 +1977,7 @@ function renderClientScript(): string {
           return;
         }
         if(network === 'native' && navigator.share){
+          // Expected: user dismissed the share sheet — AbortError is not an application error
           navigator.share(payload).catch(function(){});
           return;
         }

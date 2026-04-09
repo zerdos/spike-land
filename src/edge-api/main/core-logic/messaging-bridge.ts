@@ -11,6 +11,9 @@ import { createLogger } from "@spike-land-ai/shared";
 
 const log = createLogger("messaging-bridge");
 
+/** Maximum tokens for channel message completions (xAI/Grok). */
+const MESSAGING_MAX_TOKENS = 2_048;
+
 export interface ChannelMessage {
   /** The user's message text. */
   text: string;
@@ -89,7 +92,7 @@ async function callXai(
         { role: "system", content: systemPrompt },
         { role: "user", content: message },
       ],
-      max_tokens: 2048,
+      max_tokens: MESSAGING_MAX_TOKENS,
       temperature: 0.3,
       user: userId,
     }),

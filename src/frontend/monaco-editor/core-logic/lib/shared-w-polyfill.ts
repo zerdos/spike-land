@@ -1,7 +1,5 @@
 const sharedWorkerSupported = typeof SharedWorker !== "undefined";
 
-import { tryCatch as _tryCatch } from "../../lazy-imports/try-catch"; // Added import
-
 class SharedWorkerPolyfill {
   private worker: Worker | null = null; // Can be null if construction fails
   public port: MessagePort = null as unknown as MessagePort; // Initialized in constructor

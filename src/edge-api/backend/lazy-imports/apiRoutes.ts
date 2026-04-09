@@ -297,7 +297,7 @@ export class ApiRoutes {
       throw new Error(`Transpilation failed: ${errorText}`);
     }
 
-    return await response.text();
+    return response.text();
   }
 
   private jsonResponse(data: Record<string, unknown>, status = 200): Response {

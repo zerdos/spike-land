@@ -24,7 +24,7 @@ function encodeRandom(len: number): string {
   return str;
 }
 
-export function ulid(seedTime: number = Date.now()): string {
+function ulid(seedTime: number = Date.now()): string {
   return encodeTime(seedTime, 10) + encodeRandom(16);
 }
 

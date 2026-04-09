@@ -95,15 +95,6 @@ export async function fakeServer(request: Request) {
   const { pathname: rawPathname } = new URL(request.url);
   const pathname = rawPathname;
   const codeSpace = getCodeSpace(pathname);
-  console.warn(
-    "CodeSpace:",
-    codeSpace,
-    "Request URL:",
-    request.url,
-    "Normalized Pathname:",
-    pathname,
-  );
-
   if (!cSessions[codeSpace]) {
     const sessionFetchPromise = fetch(`/live/${codeSpace}/session.json`).then((r) => {
       if (!r.ok) {
@@ -140,7 +131,6 @@ export async function fakeServer(request: Request) {
     }
   }
 
-  console.warn("Default request (no route matched):", request.url);
   return fetch(request);
 }
 
@@ -197,8 +187,6 @@ async function handleHtmlResponse(session: ICodeSession) {
 }
 
 function handleIndexCss(request: Request, session: ICodeSession) {
-  console.warn("css request:", request.url);
-
   return new Response(session.css, {
     headers: {
       "Content-Type": "text/css; charset=UTF-8",
@@ -217,8 +205,6 @@ async function handleIndexJs(request: Request, session: ICodeSession) {
 }
 
 function handleIndexTsx(request: Request, session: ICodeSession) {
-  console.warn("Index request:", request.url);
-
   return new Response(session.code, {
     headers: {
       "Content-Type": "application/javascript; charset=UTF-8",
@@ -233,7 +219,6 @@ async function handleSessionJson(
   request: Request,
   currentSession: ICodeSession, // Renamed to avoid confusion
 ) {
-  console.warn("Session request:", request.url);
   const codeSpace = getCodeSpace(request.url);
   let sessionToReturn = currentSession;
 

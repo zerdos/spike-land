@@ -10,6 +10,9 @@ import type { Tier } from "../../core-logic/whatsapp-commands.js";
 
 const whatsapp = new Hono<{ Bindings: Env; Variables: Variables }>();
 
+/** Pinned WhatsApp Cloud API version — update when Meta releases a breaking change. */
+const WHATSAPP_GRAPH_API_VERSION = "v21.0";
+
 // --- Helpers ---
 
 async function hashPhone(phone: string): Promise<string> {
@@ -94,19 +97,22 @@ async function checkRateLimit(
 }
 
 async function sendWhatsAppReply(env: Env, phone: string, message: string): Promise<void> {
-  await fetch(`https://graph.facebook.com/v21.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
+  await fetch(
+    `https://graph.facebook.com/${WHATSAPP_GRAPH_API_VERSION}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: phone,
+        type: "text",
+        text: { body: message },
+      }),
     },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: phone,
-      type: "text",
-      text: { body: message },
-    }),
-  });
+  );
 }
 
 // --- Linking API (requires authMiddleware applied in index.ts) ---

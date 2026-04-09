@@ -60,7 +60,7 @@ export class PostHandler {
 
       // Track ai_message_request event (fire-and-forget)
       if (this.env.GA_MEASUREMENT_ID && this.env.GA_API_SECRET) {
-        hashClientId(codeSpace)
+        void hashClientId(codeSpace)
           .then((clientId) =>
             sendGA4Events(this.env.GA_MEASUREMENT_ID, this.env.GA_API_SECRET, clientId, [
               {

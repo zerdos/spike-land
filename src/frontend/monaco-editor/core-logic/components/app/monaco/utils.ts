@@ -60,7 +60,6 @@ export async function refreshAta(
       }),
     );
 
-    console.warn("Setting extra libraries:", { extraLibs });
     typescript.typescriptDefaults.setExtraLibs(extraLibs);
 
     const mjsFiles = extraLibs.filter((lib) => lib.filePath.endsWith(".mjs"));
@@ -197,15 +196,12 @@ function getMessageText(diagnostic: { messageText: string | { messageText: strin
  */
 export async function checkTypeScriptErrors(model: editor.ITextModel, uri: Uri): Promise<void> {
   try {
-    console.warn("Running TypeScript check");
     const currentCode = model.getValue();
 
     // First, check for import statements that might need type definitions
     const imports = getImports(currentCode);
 
     if (imports.length > 0) {
-      console.warn("Detected imports:", imports);
-      // Wait a moment for types to be loaded
       await wait(100);
     }
 
@@ -218,11 +214,6 @@ export async function checkTypeScriptErrors(model: editor.ITextModel, uri: Uri):
       typeScriptWorker.getSuggestionDiagnostics(uri.toString()),
     ]);
 
-    // Log syntactic errors
-    if (syntacticDiagnostics.length > 0) {
-      console.error("Syntactic diagnostics:", syntacticDiagnostics);
-    }
-
     // Check for missing modules and try to resolve them
     const missingModuleErrors = semanticDiagnostics.filter(
       (d: { messageText: string | { messageText: string } }) =>
@@ -230,8 +221,6 @@ export async function checkTypeScriptErrors(model: editor.ITextModel, uri: Uri):
     );
 
     if (missingModuleErrors.length > 0) {
-      console.warn("Missing module errors detected:", missingModuleErrors);
-
       // Try another refresh with more aggressive settings
       typescript.typescriptDefaults.setDiagnosticsOptions({
         noSuggestionDiagnostics: false,
@@ -244,24 +233,11 @@ export async function checkTypeScriptErrors(model: editor.ITextModel, uri: Uri):
         uri.toString(),
       );
 
-      if (updatedSemanticDiagnostics.length < semanticDiagnostics.length) {
-        console.warn("Successfully resolved some type errors");
-      } else {
-        console.warn(
-          "Some modules still missing types:",
-          updatedSemanticDiagnostics.filter(
-            (d: { messageText: string | { messageText: string } }) =>
-              getMessageText(d).includes("Cannot find module"),
-          ),
-        );
+      if (updatedSemanticDiagnostics.length >= semanticDiagnostics.length) {
+        // Re-check did not resolve missing module errors — types may be unavailable
       }
     }
-
-    // Log suggestion diagnostics for debugging
-    if (suggestionDiagnostics.length > 0) {
-      console.warn("Suggestion diagnostics:", suggestionDiagnostics);
-    }
-  } catch (error) {
-    console.error("Error during TypeScript check:", error);
+  } catch {
+    // TypeScript check failed — diagnostics unavailable
   }
 }

@@ -226,6 +226,7 @@ async function handleCheckoutCompleted(db: D1Database, event: CreemEvent): Promi
     )
     .bind(JSON.stringify({ plan: tier, userId }), `user_${userId}`)
     .run()
+    // Expected: analytics write failure — best-effort, must not block the payment flow
     .catch(() => {});
 }
 
@@ -316,6 +317,7 @@ async function handleRefund(db: D1Database, event: CreemEvent): Promise<void> {
       obj.customer?.id ? `customer_${obj.customer.id}` : "unknown",
     )
     .run()
+    // Expected: analytics write failure — best-effort, must not block the refund acknowledgment
     .catch(() => {});
 }
 
@@ -333,6 +335,7 @@ async function handleDispute(db: D1Database, event: CreemEvent): Promise<void> {
       obj.customer?.id ? `customer_${obj.customer.id}` : null,
     )
     .run()
+    // Expected: error log write failure — best-effort, must not block webhook acknowledgment
     .catch(() => {});
 }
 
@@ -351,6 +354,7 @@ function logWebhookError(
       )
       .bind("creem-webhook", eventType, message, null, null, null, "error")
       .run()
+      // Expected: DB unavailable during error logging — must not throw inside logWebhookError
       .catch(() => {});
     try {
       ctx?.waitUntil(work);

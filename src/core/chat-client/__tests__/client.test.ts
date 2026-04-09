@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { SpikeChatClient } from "../core-logic/client.js";
 import type { ChatChannel, ChatMessage } from "../core-logic/types.js";
 

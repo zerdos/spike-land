@@ -158,6 +158,7 @@ createRoute.get("/:slug", async (c) => {
   )
     .bind(slug)
     .first()
+    // Expected: D1 read failure (row not found or transient) — treat as 404
     .catch(() => null);
 
   if (!row) {
@@ -178,6 +179,7 @@ createRoute.get("/:slug/status", async (c) => {
   )
     .bind(slug)
     .first()
+    // Expected: D1 read failure (row not found or transient) — treat as 404
     .catch(() => null);
 
   if (!row) {

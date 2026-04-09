@@ -386,7 +386,7 @@ export class Code implements DurableObject {
   }
 
   private async _saveSession(): Promise<void> {
-    return await this.state.blockConcurrencyWhile(async () => {
+    return this.state.blockConcurrencyWhile(async () => {
       const sessionToSave: ICodeSession = this.getSession();
 
       const { code, transpiled, html, css, ...sessionCoreData } = sessionToSave;

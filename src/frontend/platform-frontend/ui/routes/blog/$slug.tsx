@@ -120,6 +120,7 @@ function useSiblingPosts(currentSlug: string): SiblingPosts {
           next: idx < visible.length - 1 ? (visible[idx + 1] ?? null) : null,
         });
       })
+      // Expected: network failure — prev/next navigation links simply won't appear
       .catch(() => {});
   }, [currentSlug]);
 
@@ -327,6 +328,7 @@ export function BlogPostPage() {
       .then((data: { title?: string } | null) => {
         setPostTitle(data?.title ?? null);
       })
+      // Expected: network failure — post title falls back to slug for analytics
       .catch(() => {});
   }, [localLookupDone, localPost, normalizedSlug, lang]);
 

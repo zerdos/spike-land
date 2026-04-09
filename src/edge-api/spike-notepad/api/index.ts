@@ -12,7 +12,13 @@ const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 app.use(
   "*",
   cors({
-    origin: ["https://notepad.spike.land", "https://spike.land", "http://localhost:8790"],
+    origin: (origin, c) => {
+      const allowed = ["https://notepad.spike.land", "https://spike.land"];
+      if (c.env.APP_ENV !== "production") {
+        allowed.push("http://localhost:8792");
+      }
+      return allowed.includes(origin) ? origin : allowed[0]!;
+    },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     maxAge: 86400,

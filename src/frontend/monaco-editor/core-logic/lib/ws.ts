@@ -16,7 +16,7 @@ export const main = async (codeSpace: string) => {
         handleRunMessage: async (transpiled: string) => {
           const runMessagePromise = async () => {
             if (window.self !== window.parent) {
-              return await renderService.handleRender(
+              return renderService.handleRender(
                 await renderService.updateRenderedApp({ transpiled }),
               );
             } else {
@@ -73,7 +73,7 @@ export const testHandleRunMessage = async (
   webSocketManager: IWebSocketManager,
 ) => {
   if (window.self !== window.parent) {
-    return await webSocketManager.handleRunMessage(transpiled);
+    return webSocketManager.handleRunMessage(transpiled);
   } else {
     console.warn("Not in iframe: skipping code processing to prevent main window re-render.");
     return false;

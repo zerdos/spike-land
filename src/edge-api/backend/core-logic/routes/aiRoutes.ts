@@ -33,7 +33,7 @@ export class AiRoutes {
 
     // GET: Return all messages and the complete request body
     if (request.method === "GET") {
-      return await this.getHandler.handle(codeSpace);
+      return this.getHandler.handle(codeSpace);
     }
 
     // POST: Add a new message and call AI with MCP tools

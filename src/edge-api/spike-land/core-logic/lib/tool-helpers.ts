@@ -304,6 +304,9 @@ export function jsonResult(text: string, data: unknown): CallToolResult {
 
 export const SPIKE_LAND_BASE_URL = "https://spike.land";
 
+/** Abort timeout for outbound spike.land API requests. */
+const API_REQUEST_TIMEOUT_MS = 15_000;
+
 /**
  * Make an authenticated request to the spike.land API.
  */
@@ -321,7 +324,7 @@ export async function apiRequest<T>(
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
 
   try {
     const response = await fetch(url, {

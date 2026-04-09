@@ -120,6 +120,7 @@ export function createAuth(env: Env) {
                   metadata: { userId: user.id },
                 },
               ]),
+              // Expected: analytics ingest is best-effort; network failure must not break sign-up
             }).catch(() => {});
           },
         },

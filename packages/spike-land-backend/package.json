@@ -29,6 +29,7 @@
     "@changesets/cli": "2.30.0",
     "@cloudflare/vitest-pool-workers": "0.14.1",
     "@cloudflare/workers-types": "4.20260405.1",
+    "@types/node": "25.4.0",
     "@vitest/coverage-istanbul": "4.1.0",
     "@vitest/coverage-v8": "4.1.0",
     "react": "19.2.4",
@@ -43,7 +44,6 @@
     "@modelcontextprotocol/sdk": "1.29.0",
     "@sentry/cloudflare": "^10.47.0",
     "@spike-land-ai/code": "^0.9.58",
-    "@types/node": "25.4.0",
     "hono": "^4.12.7",
     "replicate": "1.4.0",
     "zod": "4.3.6"

@@ -35,8 +35,6 @@ export const initializeAppEnvironment = async (): Promise<void> => {
     useArchive,
     useSpeedy,
   });
-
-  console.warn("App environment initialized successfully");
 };
 
 /**
@@ -54,7 +52,6 @@ export const initializeWebSocket = async (codeSpace: string): Promise<void> => {
     console.error("WebSocket initialization failed:", wsError);
     throw wsError;
   }
-  console.warn(`WebSocket initialized for code space: ${codeSpace}`);
 };
 
 /**

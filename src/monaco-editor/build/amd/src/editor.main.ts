@@ -1,4 +1,4 @@
-/// @ts-ignore
+// @ts-expect-error "require" is an AMD global injected at runtime; no type declarations exist for it.
 import * as require from "require";
 
 if (
@@ -27,7 +27,9 @@ self.MonacoEnvironment = {
     if (label === "json") {
       return new Worker(
         getWorkerBootstrapUrl(
-          /// @ts-ignore
+          // @ts-expect-error Vite's urlToEsmPlugin rewrites new URL("...", import.meta.url) to
+          // require.toUrl() in the AMD output. TypeScript with module:CommonJS does not recognize
+          // import.meta.url; the build config (vite.config.mjs) handles the transformation.
           new URL("../../../src/languages/features/json/json.worker.ts?esm", import.meta.url),
         ),
       );
@@ -35,7 +37,7 @@ self.MonacoEnvironment = {
     if (label === "css" || label === "scss" || label === "less") {
       return new Worker(
         getWorkerBootstrapUrl(
-          /// @ts-ignore
+          // @ts-expect-error See above — Vite transforms import.meta.url to require.toUrl() for AMD.
           new URL("../../../src/languages/features/css/css.worker.ts?esm", import.meta.url),
         ),
       );
@@ -43,7 +45,7 @@ self.MonacoEnvironment = {
     if (label === "html" || label === "handlebars" || label === "razor") {
       return new Worker(
         getWorkerBootstrapUrl(
-          /// @ts-ignore
+          // @ts-expect-error See above — Vite transforms import.meta.url to require.toUrl() for AMD.
           new URL("../../../src/languages/features/html/html.worker.ts?esm", import.meta.url),
         ),
       );
@@ -51,14 +53,14 @@ self.MonacoEnvironment = {
     if (label === "typescript" || label === "javascript") {
       return new Worker(
         getWorkerBootstrapUrl(
-          /// @ts-ignore
+          // @ts-expect-error See above — Vite transforms import.meta.url to require.toUrl() for AMD.
           new URL("../../../src/languages/features/typescript/ts.worker.ts?esm", import.meta.url),
         ),
       );
     }
     return new Worker(
-      /// @ts-ignore
       getWorkerBootstrapUrl(
+        // @ts-expect-error See above — Vite transforms import.meta.url to require.toUrl() for AMD.
         new URL("../../../src/deprecated/editor/editor.worker.ts?esm", import.meta.url),
       ),
     );
