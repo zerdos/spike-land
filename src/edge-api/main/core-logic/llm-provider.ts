@@ -826,7 +826,11 @@ export async function streamCompletionWithFallback(
   const expandedTargets: ResolvedSynthesisTarget[] = [];
   for (const target of targets) {
     expandedTargets.push(target);
-    if (target.provider === "google" && target.upstreamModel !== GOOGLE_FALLBACK_MODEL) {
+    if (
+      target.provider === "google" &&
+      target.upstreamModel !== GOOGLE_FALLBACK_MODEL &&
+      !targets.some((t) => t.provider === "google" && t.upstreamModel === GOOGLE_FALLBACK_MODEL)
+    ) {
       expandedTargets.push({ ...target, upstreamModel: GOOGLE_FALLBACK_MODEL });
     }
   }

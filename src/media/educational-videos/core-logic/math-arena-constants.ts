@@ -166,7 +166,7 @@ export const ARENA_ROUNDS: ArenaRound[] = [
     if (!found) return false;
   } return true;
 }
-function modPow(b, e, m) { let r = 1; b %= m; while (e > 0) { if (e % 2 === 1) r = r * b % m; e = Math.floor(e / 2); b = b * b % m; } return r; }`,
+function modPow(b, e, m) { let r = 1n; b = BigInt(b) % BigInt(m); e = BigInt(e); m = BigInt(m); while (e > 0n) { if (e % 2n === 1n) r = r * b % m; e >>= 1n; b = b * b % m; } return Number(r); }`,
   },
   {
     id: "nt-5",
@@ -505,7 +505,7 @@ function mmul(A, B, p) {
   for (let i = 0; i < m; i++) { if (table.has(gamma)) return i * m + table.get(gamma); gamma = gamma * gm_inv % p; }
   return -1;
 }
-function modPow(b, e, m) { let r = 1; b %= m; while (e > 0) { if (e % 2 === 1) r = r * b % m; e = Math.floor(e / 2); b = b * b % m; } return r; }`,
+function modPow(b, e, m) { let r = 1n; b = BigInt(b) % BigInt(m); e = BigInt(e); m = BigInt(m); while (e > 0n) { if (e % 2n === 1n) r = r * b % m; e >>= 1n; b = b * b % m; } return Number(r); }`,
   },
   {
     id: "al-5",

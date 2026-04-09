@@ -361,7 +361,7 @@ blog.get("/api/blog/:slug", async (c) => {
     if (!BLOG_SLUG_RE.test(slug)) return c.json({ error: "Post not found" }, 404);
 
     try {
-      const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: false });
+      const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: true });
       if (!row) return c.json({ error: "Post not found" }, 404);
 
       // Fire analytics in the background
@@ -394,7 +394,7 @@ blog.get("/api/blog/:slug", async (c) => {
       c.req.raw,
       safeCtx(c),
       async () => {
-        const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: false });
+        const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: true });
 
         if (!row) return null;
 
@@ -406,7 +406,7 @@ blog.get("/api/blog/:slug", async (c) => {
     );
   } catch {
     // Cache API unavailable — fall back to direct D1
-    const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: false });
+    const row = await getBlogPostRow(c.env.DB, slug, { allowSourceFallback: true });
 
     if (row) {
       cached = new Response(JSON.stringify(rowToPost(row, true, lang)), {

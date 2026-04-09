@@ -122,7 +122,7 @@ FROM config AS round-01-sieve
 RUN node -e " \
   function primes(n) { const s = Array(n+1).fill(true); s[0]=s[1]=false; \
   for(let i=2;i*i<=n;i++) if(s[i]) for(let j=i*i;j<=n;j+=i) s[j]=false; \
-  return s.reduce((a,v,i)=>v?[...a,i]:a,[]); } \
+  return s.map((v,i)=>v?i:-1).filter(i=>i>=0); } \
   const r = primes(30); \
   console.assert(JSON.stringify(r)==='[2,3,5,7,11,13,17,19,23,29]','Round 1 FAIL'); \
   console.log('Round 01 ✓ Sieve of Eratosthenes — Erdos: Correct.'); \
@@ -144,7 +144,7 @@ RUN node -e " \
 
 FROM config AS round-04-miller-rabin
 RUN node -e " \
-  function modPow(b,e,m){let r=1;b%=m;while(e>0){if(e%2===1)r=r*b%m;e=Math.floor(e/2);b=b*b%m;}return r;} \
+  function modPow(b,e,m){let r=1n;b=BigInt(b)%BigInt(m);e=BigInt(e);m=BigInt(m);while(e>0n){if(e%2n===1n)r=r*b%m;e>>=1n;b=b*b%m;}return Number(r);} \
   function isPrimeMR(n){if(n<2)return false;if(n<4)return true;if(n%2===0)return false; \
   let d=n-1,s=0;while(d%2===0){d/=2;s++;}for(const a of[2,3,5,7,11,13]){if(a>=n)continue; \
   let x=modPow(a,d,n);if(x===1||x===n-1)continue;let f=false;for(let r=1;r<s;r++){x=modPow(x,2,n); \
@@ -314,7 +314,7 @@ RUN node -e " \
 
 FROM config AS round-22-baby-giant
 RUN node -e " \
-  function modPow(b,e,m){let r=1;b%=m;while(e>0){if(e%2===1)r=r*b%m;e=Math.floor(e/2);b=b*b%m;}return r;} \
+  function modPow(b,e,m){let r=1n;b=BigInt(b)%BigInt(m);e=BigInt(e);m=BigInt(m);while(e>0n){if(e%2n===1n)r=r*b%m;e>>=1n;b=b*b%m;}return Number(r);} \
   function discreteLog(g,h,p){const m=Math.ceil(Math.sqrt(p));const t=new Map(); \
   let pw=1;for(let j=0;j<m;j++){t.set(pw,j);pw=pw*g%p;} \
   const gi=modPow(modPow(g,m,p),p-2,p);let gamma=h; \

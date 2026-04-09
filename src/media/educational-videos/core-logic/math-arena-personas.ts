@@ -329,8 +329,12 @@ export function generateRoundCommentary(
   const line =
     outcome === "elegant" ? judge.onElegant : outcome === "pass" ? judge.onPass : judge.onFail;
 
-  // Pick 3 random commentators for each round
-  const shuffled = [...ARENA_COMMENTATORS].sort(() => Math.random() - 0.5);
+  // Pick 3 random commentators for each round (Fisher-Yates shuffle)
+  const shuffled = [...ARENA_COMMENTATORS];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   const selected = shuffled.slice(0, 3);
 
   return {

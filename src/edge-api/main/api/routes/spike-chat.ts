@@ -822,7 +822,7 @@ spikeChat.post("/api/spike-chat", async (c) => {
           provider: personaOverride.provider,
           upstreamModel: personaOverride.model,
         }
-      : { publicModel: "spike-agent-v1", provider: "google", upstreamModel: undefined },
+      : { publicModel: "spike-agent-v1", provider: "auto", upstreamModel: undefined },
   );
   if (!llmTarget) {
     return c.json(
