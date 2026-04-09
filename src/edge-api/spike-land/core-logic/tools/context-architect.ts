@@ -501,14 +501,3 @@ export function registerContextArchitectTools(
       }),
   );
 }
-
-// Exported for testing
-export {
-  detectTechStack,
-  getExtension,
-  parseGitHubUrl,
-  parseImports,
-  repoIndex,
-  repoKey,
-  scoreFile,
-};

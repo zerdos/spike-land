@@ -60,4 +60,4 @@ export function workspaceTool(userId: string, db: DrizzleDB) {
   return freeTool(userId, db);
 }
 
-export { jsonResult, textResult, withDrizzle, withUserId };
+export { jsonResult, textResult };
