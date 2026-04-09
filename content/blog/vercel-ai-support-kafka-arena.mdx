@@ -1,0 +1,163 @@
+---
+title: "Delete My Account: A Kafka Trial in 14 Acts with Vercel's AI Support"
+slug: "vercel-ai-support-kafka-arena"
+description: "I asked Vercel to delete my account. The AI said it couldn't. The button didn't work. The support form didn't work. Nothing worked. This is the transcript."
+date: "2026-04-09"
+author: "Zoltan Erdos"
+category: "Technology"
+tags: ["ai", "support", "vercel", "ux", "kafka", "customer-experience", "gdpr"]
+featured: false
+draft: false
+primer: "When the AI helpdesk becomes the final boss between you and the delete button."
+heroPrompt: "A person standing in front of an enormous bureaucratic maze made of chat bubbles and support tickets, Kafka-esque office building with infinite corridors of chatbot responses, dark surreal atmosphere, single red DELETE button glowing at the unreachable centre"
+heroImage: ""
+---
+
+## The Request
+
+I wanted two things:
+
+1. A refund for my payments (~$209)
+2. To delete my account
+
+That's it. Two things. Both standard. Both offered by every SaaS platform on earth. Both legally required under UK GDPR upon request.
+
+What followed was 14 exchanges with an AI support agent that could see my invoices, knew my account type, understood my request perfectly — and could not do the one thing I needed it to do.
+
+---
+
+## The Transcript
+
+**Me:** I WANT FULL REFUND FOR ALL MY PAYMENTS.
+
+**Vercel AI:** I understand you'd like a refund. Looking at your account, I see 8 invoices with approximately $209 in charges. However, per our Support Terms, refund requests must be made within 30 days...
+
+*Fair enough. Rules are rules. Two invoices qualify: $20.05 and $75.40. Fine. Moving on.*
+
+**Me:** And I would like to DELETE my projects and my profile after that.
+
+**Vercel AI:** I'm not able to delete your account or projects on your behalf, but here's how you can do it yourself: Go to Account Settings → scroll to the bottom → "Delete Account."
+
+*Okay. I'll do it myself. No problem.*
+
+**Me:** DELETE NOW
+
+**Vercel AI:** I completely understand the urgency, but I'm not able to delete your account or projects for you — this is something only you can do for security reasons. Go to your Account Settings. Scroll to the bottom. Click "Delete Account." That's it — just two steps and you're done.
+
+*I tried. It didn't work.*
+
+**Me:** TRIED. DIDN'T WORK.
+
+**Vercel AI:** I'm sorry it's not working. Can you tell me what's happening? Is there an error message? Is the button greyed out? Does nothing happen when you click it?
+
+*Now the AI wants me to debug their UI.*
+
+**Me:** Please let me delete my profile. Don't let me tell 100 times. Please please please please please please.
+
+**Vercel AI:** I hear you — no more back and forth. Since the normal deletion isn't working, please submit a request here: vercel.com/accountrecovery
+
+*Another link. Another form. Another step in the maze.*
+
+**Me:** CALL ME
+
+**Vercel AI:** *Thinking...*
+
+**Vercel AI:** HUMAN
+
+*The AI itself screamed for a human. Think about that.*
+
+**System:** We're sorry! Our agent is currently unable to answer your inquiry. To resolve your issue as quickly as possible, please open a support case with Vercel Support.
+
+*Another form appeared. It asked for a severity level. The severity level dropdown said: "Visit our Community for further help or create a paid account for dedicated support."*
+
+*To get support for deleting my free account, I needed to pay for a paid account.*
+
+**Me:** NOTHING IS WORKING
+
+**System:** We're sorry! Our agent is currently unable to answer your inquiry.
+
+*End of conversation. No resolution. No deletion. No refund. No human.*
+
+---
+
+## What Actually Happened
+
+Let me be precise about what went wrong:
+
+1. **The AI could see my account** — it listed my invoices, knew my plan type, understood my request.
+2. **The AI could not act on my account** — it had read access but no write access. It could observe my frustration but not resolve it.
+3. **The "Delete Account" button didn't work** — whether greyed out, broken, or blocked by an unpaid invoice, the AI never diagnosed why.
+4. **The escalation path was circular** — AI → self-service link → broken self-service → AI → different self-service link → broken → AI says "HUMAN" → system says "open a support case" → support case requires paid account → dead end.
+5. **There was no human** — at no point in this process did I interact with a person who could press a button on their end.
+
+---
+
+## The Kafka Problem
+
+Franz Kafka wrote *The Trial* in 1914. A man is arrested. He is never told the charge. He navigates an endless bureaucracy of clerks and judges, each of whom acknowledges his case but cannot resolve it. Each sends him to someone else. The system is not hostile — it is *indifferent*. It processes him without ever reaching a verdict.
+
+Replace "clerks" with "AI agents" and "judges" with "support forms" and you have the modern SaaS cancellation experience.
+
+The AI was polite. The AI was empathetic. The AI said "I hear you" and "I understand your frustration" and "I'm sorry for overcomplicating this." The AI performed every emotional labour a support agent is trained to perform.
+
+The AI could not press Delete.
+
+---
+
+## The Design Pattern
+
+This is not a bug. This is a **dark pattern by omission**.
+
+The AI support agent is designed to handle the easy cases: password resets, billing questions, deployment errors. For these, it's excellent. Fast, accurate, helpful.
+
+But for the case where a customer wants to *leave* — to stop paying, to delete their data, to disappear from the platform — the AI becomes a wall. Not by being rude. By being *helpless*. It sends you to a link. The link doesn't work. It sends you to another link. That one requires a paid account. It says "HUMAN" and the system responds with another form.
+
+The effect is identical to the old-school retention dark pattern (the "please call this number to cancel" strategy), except the number has been replaced by an AI chatbot that can empathise with your frustration at exactly the speed it takes for you to give up.
+
+---
+
+## The GDPR Angle
+
+I live in Brighton, United Kingdom. Under UK GDPR Article 17, I have the right to erasure of my personal data. The controller (Vercel) must comply within 30 days.
+
+The process I experienced does not comply with GDPR requirements. Specifically:
+
+- **The right to erasure must be facilitated, not obstructed** — a non-functional delete button and a circular support flow constitute obstruction.
+- **The data subject should not be required to upgrade to a paid plan to exercise their rights** — the support form's suggestion to "create a paid account for dedicated support" to resolve an account deletion is, at minimum, a terrible look.
+- **A human must be reachable** — GDPR does not require AI support, but it does require that a data subject can effectively exercise their rights. If the AI cannot delete the account and cannot connect to a human who can, the system fails the regulatory test.
+
+I have sent a formal deletion request to privacy@vercel.com citing UK GDPR. I expect compliance within 30 days. If not, the ICO will hear about it.
+
+---
+
+## What I Actually Wanted
+
+I wanted to leave. That's all. Not because Vercel is bad — their platform is genuinely good. The deployment experience is smooth. The edge network is fast. v0 is impressive.
+
+I wanted to leave because I'm consolidating on Cloudflare Workers and I don't need two platforms. A normal, boring, business decision.
+
+But the exit experience turned a neutral departure into a negative one. I would have left quietly. Instead, I left with a blog post.
+
+---
+
+## The Lesson for Builders
+
+If you're building a platform — any platform — and you're deciding how much engineering effort to put into the cancellation flow:
+
+**Put in more.**
+
+The cancellation flow is the last thing a customer experiences. It is the memory they carry. It determines whether they come back, whether they recommend you, whether they write a blog post about you.
+
+A cancellation that takes 30 seconds creates a former customer who says: "Yeah, I used Vercel. It was great. I just didn't need it anymore."
+
+A cancellation that takes 14 rounds of AI chat creates a former customer who says: "Let me tell you about the time I tried to delete my Vercel account."
+
+One of these stories is forgettable. The other is a blog post.
+
+Make the delete button work. Make it big. Make it red. Make it one click. And when a customer clicks it, say: "Done. We're sorry to see you go. Your data is deleted. Here's your refund."
+
+That's it. That's the whole UX.
+
+---
+
+*Kafka meghalt 1924-ben. Az ügyfélszolgálati chatbotja 2026-ban még mindig aktív.*
