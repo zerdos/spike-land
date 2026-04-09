@@ -196,6 +196,88 @@ const { Content } = await render(post);
 
   <Footer />
 
+  <!-- Auto-translation loader: detects browser language, fetches translation from API -->
+  <script define:vars={{ slug: post.id }}>
+    (function() {
+      const SUPPORTED = ['hu','de','ru','it','es','zh','fr','ja'];
+      const LANG_NAMES = {hu:'Magyar',de:'Deutsch',ru:'Русский',it:'Italiano',es:'Español',zh:'中文',fr:'Français',ja:'日本語'};
+
+      // Check URL param first, then browser language
+      const params = new URLSearchParams(location.search);
+      const urlLang = params.get('lang');
+      const browserLang = (navigator.language || '').split('-')[0].toLowerCase();
+      const lang = SUPPORTED.includes(urlLang) ? urlLang : SUPPORTED.includes(browserLang) ? browserLang : null;
+      if (!lang) return;
+
+      const article = document.querySelector('.article-content article');
+      const titleEl = document.querySelector('.article-title');
+      const descEl = document.querySelector('.article-description');
+      if (!article) return;
+
+      // Create language bar (hidden until translation loads)
+      const bar = document.createElement('div');
+      bar.className = 'lang-bar';
+      bar.style.cssText = 'display:none;padding:0.75rem 1rem;background:var(--surface-2,#f5f5f5);border-radius:var(--radius-lg,0.75rem);margin-bottom:1.5rem;font-size:0.875rem;color:var(--muted-fg,#666);display:flex;align-items:center;justify-content:space-between;gap:0.5rem';
+      const header = document.querySelector('.article-header');
+      if (header) header.after(bar);
+
+      fetch('/api/blog/' + slug + '?lang=' + lang)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data || data.lang === 'en' || !data.content) return;
+
+          // Show language bar
+          bar.style.display = 'flex';
+          bar.innerHTML = '<span>' + (LANG_NAMES[lang] || lang) + ' fordítás</span><a href="?lang=en" style="color:var(--accent,#0066cc);text-decoration:none;font-weight:500">English &rarr;</a>';
+
+          // Replace title if translated
+          if (data.title && titleEl) titleEl.textContent = data.title;
+          if (data.description && descEl) descEl.textContent = data.description;
+
+          // Convert markdown content to HTML and replace
+          const html = markdownToHtml(data.content);
+          article.innerHTML = html;
+        })
+        .catch(() => {});
+
+      function markdownToHtml(md) {
+        let html = md.replace(/^---[\s\S]*?---\s*/, '');
+        // Code blocks
+        html = html.replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        // Headings
+        html = html.replace(/^######\s+(.*)$/gm, '<h6>$1</h6>');
+        html = html.replace(/^#####\s+(.*)$/gm, '<h5>$1</h5>');
+        html = html.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
+        html = html.replace(/^###\s+(.*)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^##\s+(.*)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^#\s+(.*)$/gm, '<h1>$1</h1>');
+        // HR
+        html = html.replace(/^---+$/gm, '<hr>');
+        // Bold & italic
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+        // Images
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" />');
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        // Math blocks
+        html = html.replace(/\$\$([^$]+)\$\$/g, '<p class="math-block">$$$$1$$</p>');
+        // Inline math
+        html = html.replace(/\$([^$]+)\$/g, '<span class="math-inline">$$$1$</span>');
+        // Lists
+        html = html.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>');
+        html = html.replace(/^[-*]\s+(.*)$/gm, '<li>$1</li>');
+        // Wrap consecutive <li> in <ul>
+        html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+        // Paragraphs for remaining lines
+        html = html.replace(/^(?!<[hupol]|<li|<hr|<pre|<img|<ul|<div)(.+)$/gm, '<p>$1</p>');
+        return html;
+      }
+    })();
+  </script>
+
   <style>
     .article-header {
       display: flex;

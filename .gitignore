@@ -79,6 +79,12 @@ terraform.tfvars
 # Invoices / personal documents
 content/*.pdf
 
+# Large media files (too big for GitHub)
+content/screenshots/downloaded/
+content/screenshots/spike-land/*.mov
+content/video/drone-footage/
+content/video/phone-media/
+
 # Secrets / credentials
 *-client-secret*.json
 *-credentials*.json
