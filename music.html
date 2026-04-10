@@ -170,6 +170,74 @@
   }
 
   #chord-display.active { color: rgba(180, 210, 255, 0.4); }
+
+  #persona-btn {
+    pointer-events: all;
+    position: fixed;
+    top: 24px;
+    right: 28px;
+    z-index: 20;
+    background: rgba(8, 14, 28, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(100, 150, 255, 0.15);
+    border-radius: 40px;
+    padding: 8px 18px;
+    color: rgba(150, 190, 255, 0.55);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    white-space: nowrap;
+  }
+
+  #persona-btn:hover {
+    border-color: rgba(100, 150, 255, 0.35);
+    color: rgba(180, 210, 255, 0.85);
+    box-shadow: 0 0 24px rgba(80, 140, 255, 0.12);
+  }
+
+  #persona-btn.zimmer {
+    border-color: rgba(204, 85, 0, 0.35);
+    color: rgba(255, 160, 60, 0.75);
+    background: rgba(20, 8, 4, 0.6);
+    box-shadow: 0 0 24px rgba(204, 85, 0, 0.1);
+  }
+
+  #persona-btn.zimmer:hover {
+    border-color: rgba(204, 85, 0, 0.6);
+    color: rgba(255, 180, 80, 0.95);
+    box-shadow: 0 0 32px rgba(204, 85, 0, 0.2);
+  }
+
+  #persona-btn.daftpunk {
+    border-color: rgba(0, 212, 255, 0.45);
+    color: rgba(0, 212, 255, 0.85);
+    background: rgba(0, 4, 20, 0.65);
+    box-shadow: 0 0 24px rgba(0, 212, 255, 0.12), 0 0 48px rgba(255, 20, 147, 0.06);
+  }
+
+  #persona-btn.daftpunk:hover {
+    border-color: rgba(0, 212, 255, 0.75);
+    color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 32px rgba(0, 212, 255, 0.25), 0 0 60px rgba(255, 20, 147, 0.12);
+  }
+
+  #persona-btn.interstella {
+    border-color: rgba(255, 215, 0, 0.4);
+    color: rgba(255, 215, 0, 0.8);
+    background: rgba(4, 0, 20, 0.7);
+    box-shadow: 0 0 24px rgba(102, 0, 204, 0.15), 0 0 48px rgba(255, 215, 0, 0.06);
+  }
+
+  #persona-btn.interstella:hover {
+    border-color: rgba(255, 215, 0, 0.7);
+    color: rgba(255, 235, 100, 0.98);
+    box-shadow: 0 0 36px rgba(102, 0, 204, 0.25), 0 0 60px rgba(255, 215, 0, 0.14);
+  }
 </style>
 </head>
 <body>
@@ -190,6 +258,8 @@
   <div id="status">touch to begin</div>
 </div>
 
+<button id="persona-btn" aria-label="Switch music mode">AMBIENT</button>
+
 <div id="controls">
   <label for="vol-slider">vol</label>
   <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.72">
@@ -201,13 +271,14 @@
 // Brian Eno / Tycho inspired ambient synthesis
 // ─────────────────────────────────────────────────────────────────────────────
 
-const playBtn   = document.getElementById('play-btn');
-const btnIcon   = document.getElementById('btn-icon');
-const statusEl  = document.getElementById('status');
-const volSlider = document.getElementById('vol-slider');
-const chordDisp = document.getElementById('chord-display');
-const canvas    = document.getElementById('canvas');
-const ctx2d     = canvas.getContext('2d');
+const playBtn     = document.getElementById('play-btn');
+const btnIcon     = document.getElementById('btn-icon');
+const statusEl    = document.getElementById('status');
+const volSlider   = document.getElementById('vol-slider');
+const chordDisp   = document.getElementById('chord-display');
+const canvas      = document.getElementById('canvas');
+const ctx2d       = canvas.getContext('2d');
+const personaBtn  = document.getElementById('persona-btn');
 
 let audioCtx, masterGain, reverbNode, delayL, delayR, analyserNode;
 let isPlaying = false;
@@ -218,6 +289,10 @@ let beatCount = 0;
 let nextNoteTime = 0;
 let tempo = 74; // BPM — relaxed groove
 let schedulerInterval = null;
+
+// ─── Persona ──────────────────────────────────────────────────────────────────
+let currentPersona = 'ambient'; // 'ambient' | 'zimmer' | 'daftpunk' | 'interstella'
+const PERSONAS = ['ambient', 'zimmer', 'daftpunk', 'interstella'];
 
 // ─── Music Theory ────────────────────────────────────────────────────────────
 
@@ -250,6 +325,39 @@ const CHORDS = [
 
 // Pentatonic scale MIDI offsets from root
 const PENTATONIC = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];
+
+// ─── Zimmer Chord Progressions (cinematic minor) ──────────────────────────────
+// Cm → Ab → Eb → Bb → Fm → G — epic minor (Inception/Interstellar style)
+const ZIMMER_CHORDS = [
+  { name: 'Cm',  root: 48, tones: [48, 51, 55, 58],  color: [180, 40, 10]   }, // dark red
+  { name: 'Ab',  root: 44, tones: [44, 48, 51, 55],  color: [200, 80, 0]    }, // burnt orange
+  { name: 'Eb',  root: 51, tones: [51, 55, 58, 62],  color: [160, 50, 10]   }, // deep amber
+  { name: 'Bb',  root: 46, tones: [46, 50, 53, 57],  color: [190, 60, 0]    }, // amber-red
+  { name: 'Fm',  root: 41, tones: [41, 44, 48, 51],  color: [140, 30, 20]   }, // dark crimson
+  { name: 'G',   root: 55, tones: [55, 59, 62, 66],  color: [210, 90, 0]    }, // orange
+];
+
+// ─── Daft Punk Chord Progressions (French disco major 7ths) ──────────────────
+// Fmaj7 → Gm7 → Am7 → Bbmaj7 — Digital Love / Discovery vibes
+const DAFTPUNK_CHORDS = [
+  { name: 'Fmaj7', root: 53, tones: [53, 57, 60, 64],  color: [0, 212, 255]   }, // electric blue
+  { name: 'Gm7',  root: 55, tones: [55, 58, 62, 65],   color: [255, 20, 147]  }, // hot pink
+  { name: 'Am7',  root: 57, tones: [57, 60, 64, 67],   color: [148, 0, 211]   }, // purple
+  { name: 'Bbmaj7',root: 58, tones: [58, 62, 65, 69],  color: [0, 255, 210]   }, // cyan
+  { name: 'Em7',  root: 52, tones: [52, 55, 59, 62],   color: [255, 60, 200]  }, // neon pink
+  { name: 'Dm7',  root: 50, tones: [50, 53, 57, 60],   color: [60, 100, 255]  }, // blue-purple
+];
+
+// ─── Interstella 5555 Chord Progressions (euphoric house) ────────────────────
+// Bbm → Gb → Ab → Eb — One More Time / euphoric rave energy
+const INTERSTELLA_CHORDS = [
+  { name: 'Bbm',  root: 46, tones: [46, 49, 53, 56],   color: [26, 0, 51]     }, // deep indigo
+  { name: 'Gb',   root: 42, tones: [42, 46, 49, 53],   color: [255, 215, 0]   }, // stardust gold
+  { name: 'Ab',   root: 44, tones: [44, 48, 51, 55],   color: [102, 0, 204]   }, // cosmic purple
+  { name: 'Eb',   root: 51, tones: [51, 55, 58, 62],   color: [255, 105, 180] }, // nebula pink
+  { name: 'Fm',   root: 41, tones: [41, 44, 48, 51],   color: [0, 180, 255]   }, // space blue
+  { name: 'Cm',   root: 48, tones: [48, 51, 55, 58],   color: [200, 0, 255]   }, // ultraviolet
+];
 
 // ─── Web Audio Setup ─────────────────────────────────────────────────────────
 
@@ -661,6 +769,822 @@ function playShimmer(midi, startTime) {
   trem.start(startTime); trem.stop(startTime + duration + 0.1);
 }
 
+// ─── ZIMMER SYNTHESIS ────────────────────────────────────────────────────────
+
+// Deep sub-bass drone — 2-3 detuned sines at 30-60Hz with slow LFO on filter
+function playDrone(midiRoot, startTime, duration, velocity = 0.85) {
+  const baseFreq = midiToHz(midiRoot - 24); // two octaves down, sub territory
+  const droneGain = audioCtx.createGain();
+
+  const detunes = [0, -7, 5];
+  const types = ['sine', 'sine', 'triangle'];
+
+  detunes.forEach((detCents, i) => {
+    const osc = audioCtx.createOscillator();
+    const oscGain = audioCtx.createGain();
+    osc.type = types[i];
+    osc.frequency.value = baseFreq * (i === 2 ? 0.5 : 1); // third osc half-freq for ultra-sub
+    osc.detune.value = detCents;
+    oscGain.gain.value = i === 2 ? 0.4 : 0.55;
+    osc.connect(oscGain);
+    oscGain.connect(droneGain);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 5);
+  });
+
+  // Slow LFO on filter cutoff — the rumble breathes
+  const droneFilter = audioCtx.createBiquadFilter();
+  droneFilter.type = 'lowpass';
+  droneFilter.frequency.value = 120;
+  droneFilter.Q.value = 1.2;
+
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.08;
+  lfoGain.gain.value = 60;
+  lfo.connect(lfoGain);
+  lfoGain.connect(droneFilter.frequency);
+  lfo.start(startTime);
+  lfo.stop(startTime + duration + 5);
+
+  droneGain.connect(droneFilter);
+
+  const attack  = 4.0;
+  const sustain = 0.85;
+  const release = 4.0;
+  const peak    = velocity * 0.32;
+
+  createEnvelope(droneGain, startTime, attack, 0.5, sustain, release, peak);
+  releaseEnvelope(droneGain, startTime + duration, release);
+
+  droneFilter.connect(masterGain);
+  scheduledEvents.push({ node: droneGain, time: startTime + duration + release + 0.5 });
+}
+
+// Brass stabs — "BRAAAM" — square + sawtooth with aggressive filter sweep
+function playBrass(midiNotes, startTime, duration, velocity = 0.9) {
+  const brassGain = audioCtx.createGain();
+
+  midiNotes.forEach(midi => {
+    const freq = midiToHz(midi);
+
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    osc1.type = 'square';
+    osc2.type = 'sawtooth';
+    osc1.frequency.value = freq;
+    osc2.frequency.value = freq;
+    osc2.detune.value = -12; // slight detuning for width
+
+    const g1 = audioCtx.createGain(); g1.gain.value = 0.4;
+    const g2 = audioCtx.createGain(); g2.gain.value = 0.3;
+
+    osc1.connect(g1); osc2.connect(g2);
+    g1.connect(brassGain); g2.connect(brassGain);
+    osc1.start(startTime); osc1.stop(startTime + duration + 2);
+    osc2.start(startTime); osc2.stop(startTime + duration + 2);
+  });
+
+  // Aggressive filter envelope: 800 → 4000 → 1200 Hz
+  const brassFilter = audioCtx.createBiquadFilter();
+  brassFilter.type = 'lowpass';
+  brassFilter.frequency.setValueAtTime(800, startTime);
+  brassFilter.frequency.linearRampToValueAtTime(4200, startTime + 0.08);
+  brassFilter.frequency.exponentialRampToValueAtTime(1200, startTime + duration * 0.7);
+  brassFilter.Q.value = 2.5;
+
+  // Envelope: sharp attack, medium sustain, long tail
+  const attack  = 0.02;
+  const sustain = 0.7;
+  const release = 1.8;
+  const peak    = velocity * 0.22;
+
+  createEnvelope(brassGain, startTime, attack, 0.12, sustain, release, peak);
+  releaseEnvelope(brassGain, startTime + duration, release);
+
+  brassGain.connect(brassFilter);
+  brassFilter.connect(reverbNode);
+  brassFilter.connect(masterGain);
+  scheduledEvents.push({ node: brassGain, time: startTime + duration + release + 0.5 });
+}
+
+// Pulsing ostinato — rapid repeated staccato notes, the Dunkirk/Interstellar tick
+function playOstinato(midi, startTime, duration, velocity = 0.6) {
+  const freq = midiToHz(midi);
+  const ostGain = audioCtx.createGain();
+
+  const osc = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  osc.type = 'triangle';
+  osc2.type = 'square';
+  osc.frequency.value = freq;
+  osc2.frequency.value = freq;
+  osc2.detune.value = 1200; // octave up
+
+  const g1 = audioCtx.createGain(); g1.gain.value = 0.65;
+  const g2 = audioCtx.createGain(); g2.gain.value = 0.18;
+
+  osc.connect(g1); osc2.connect(g2);
+  g1.connect(ostGain); g2.connect(ostGain);
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = freq * 1.8;
+  filter.Q.value = 1.5;
+
+  // Staccato: very short attack and release
+  const attack  = 0.006;
+  const decay   = 0.04;
+  const sustain = 0.3;
+  const release = duration * 0.7;
+  const peak    = velocity * 0.09;
+
+  createEnvelope(ostGain, startTime, attack, decay, sustain, release, peak);
+  releaseEnvelope(ostGain, startTime + duration, release);
+
+  osc.connect(filter);
+  osc2.connect(filter);
+  filter.connect(ostGain);
+  osc.start(startTime); osc.stop(startTime + duration + release + 0.1);
+  osc2.start(startTime); osc2.stop(startTime + duration + release + 0.1);
+
+  ostGain.connect(delayL);
+  ostGain.connect(masterGain);
+  scheduledEvents.push({ node: ostGain, time: startTime + duration + release + 0.2 });
+}
+
+// Taiko / epic percussion — sine pitch sweep + noise burst, very impactful
+function playTaiko(startTime, velocity = 0.85) {
+  const taikoGain = audioCtx.createGain();
+
+  // Pitched sine sweep: 200 → 40 Hz
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(200, startTime);
+  osc.frequency.exponentialRampToValueAtTime(40, startTime + 1.5);
+
+  const oscGain = audioCtx.createGain();
+  oscGain.gain.value = 0.7;
+  osc.connect(oscGain);
+  oscGain.connect(taikoGain);
+  osc.start(startTime); osc.stop(startTime + 1.8);
+
+  // Noise burst for attack transient
+  const bufLen = audioCtx.sampleRate * 0.08;
+  const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufLen);
+  }
+  const noiseSrc = audioCtx.createBufferSource();
+  noiseSrc.buffer = buf;
+
+  const noiseFilter = audioCtx.createBiquadFilter();
+  noiseFilter.type = 'lowpass';
+  noiseFilter.frequency.value = 800;
+
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.value = velocity * 0.5;
+  noiseSrc.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(taikoGain);
+  noiseSrc.start(startTime); noiseSrc.stop(startTime + 0.1);
+
+  // Envelope: instant attack, long decay
+  const peak = velocity * 0.55;
+  taikoGain.gain.setValueAtTime(peak, startTime);
+  taikoGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.8);
+
+  taikoGain.connect(masterGain);
+  taikoGain.connect(reverbNode);
+  scheduledEvents.push({ node: taikoGain, time: startTime + 2.0 });
+}
+
+// String tremolo — sawtooth with fast LFO amplitude mod, bandpass filtered
+function playStringTremolo(midiNotes, startTime, duration, velocity = 0.6) {
+  const strGain = audioCtx.createGain();
+
+  midiNotes.forEach(midi => {
+    const freq = midiToHz(midi + 12); // up an octave for string register
+    const osc = audioCtx.createOscillator();
+    const oscGain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    osc.detune.value = (Math.random() - 0.5) * 10;
+
+    // Fast tremolo LFO: 8-12Hz
+    const tremoloLFO = audioCtx.createOscillator();
+    const tremoloGain = audioCtx.createGain();
+    tremoloLFO.frequency.value = 9 + Math.random() * 3;
+    tremoloGain.gain.value = 0.4;
+    tremoloLFO.connect(tremoloGain);
+
+    // LFO modulates the oscGain (amplitude tremolo)
+    oscGain.gain.value = 0.18;
+    tremoloGain.connect(oscGain.gain);
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = freq * 1.5;
+    filter.Q.value = 0.8;
+
+    osc.connect(filter);
+    filter.connect(oscGain);
+    oscGain.connect(strGain);
+
+    osc.start(startTime); osc.stop(startTime + duration + 2);
+    tremoloLFO.start(startTime); tremoloLFO.stop(startTime + duration + 2);
+  });
+
+  const attack  = 0.4;
+  const sustain = 0.72;
+  const release = 2.5;
+  const peak    = velocity * 0.14;
+
+  createEnvelope(strGain, startTime, attack, 0.3, sustain, release, peak);
+  releaseEnvelope(strGain, startTime + duration, release);
+
+  strGain.connect(reverbNode);
+  strGain.connect(masterGain);
+  scheduledEvents.push({ node: strGain, time: startTime + duration + release + 0.5 });
+}
+
+// Organ pad — multiple sine harmonics, Interstellar-style
+function playOrganPad(midiNotes, startTime, duration, velocity = 0.65) {
+  const organGain = audioCtx.createGain();
+  const harmonics = [1, 2, 3, 4, 6, 8];
+  const harmonicGains = [0.5, 0.25, 0.15, 0.1, 0.06, 0.04];
+
+  midiNotes.forEach(midi => {
+    const fundamental = midiToHz(midi);
+    harmonics.forEach((h, idx) => {
+      const osc = audioCtx.createOscillator();
+      const hGain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = fundamental * h;
+      osc.detune.value = (Math.random() - 0.5) * 6; // slight detuning for chorus
+      hGain.gain.value = harmonicGains[idx];
+      osc.connect(hGain);
+      hGain.connect(organGain);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 4);
+    });
+  });
+
+  // Warm lowpass
+  const warmFilter = audioCtx.createBiquadFilter();
+  warmFilter.type = 'lowpass';
+  warmFilter.frequency.value = 2200;
+  warmFilter.Q.value = 0.4;
+
+  organGain.connect(warmFilter);
+
+  const attack  = 0.8;
+  const sustain = 0.8;
+  const release = 4.0;
+  const peak    = velocity * 0.15;
+
+  createEnvelope(organGain, startTime, attack, 0.5, sustain, release, peak);
+  releaseEnvelope(organGain, startTime + duration, release);
+
+  warmFilter.connect(reverbNode);
+  warmFilter.connect(masterGain);
+  scheduledEvents.push({ node: organGain, time: startTime + duration + release + 0.5 });
+}
+
+// ─── DAFT PUNK SYNTHESIS ─────────────────────────────────────────────────────
+
+// Vocoder pad — multiple detuned sawtooth oscillators through formant bandpass banks
+function playVocoderPad(midiNotes, startTime, duration, velocity = 0.55) {
+  const padGain = audioCtx.createGain();
+
+  // Formant center frequencies: vocal tract approximation
+  const formants = [270, 730, 2300, 3000];
+  const formantGains = [0.5, 0.35, 0.2, 0.12];
+
+  midiNotes.forEach(midi => {
+    const freq = midiToHz(midi);
+    // 4 detuned sawtooth oscillators
+    const detunes = [-14, -5, 0, 7, 14];
+    detunes.forEach(det => {
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      osc.detune.value = det;
+      oscGain.gain.value = 0.06;
+      osc.connect(oscGain);
+
+      // Run through formant filters
+      formants.forEach((ffreq, fi) => {
+        const bpf = audioCtx.createBiquadFilter();
+        bpf.type = 'bandpass';
+        bpf.frequency.value = ffreq;
+        bpf.Q.value = 8 + fi * 2;
+        const fgain = audioCtx.createGain();
+        fgain.gain.value = formantGains[fi];
+        oscGain.connect(bpf);
+        bpf.connect(fgain);
+        fgain.connect(padGain);
+      });
+
+      // Slow LFO sweeps the first formant for that robotic breathing quality
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.value = 0.15 + Math.random() * 0.1;
+      lfoGain.gain.value = 120;
+      lfo.connect(lfoGain);
+
+      osc.start(startTime); osc.stop(startTime + duration + 3);
+      lfo.start(startTime); lfo.stop(startTime + duration + 3);
+    });
+  });
+
+  const attack  = 1.2 + Math.random() * 0.4;
+  const sustain = 0.7;
+  const release = 2.5;
+  const peak    = velocity * 0.14;
+
+  createEnvelope(padGain, startTime, attack, 0.6, sustain, release, peak);
+  releaseEnvelope(padGain, startTime + duration, release);
+  padGain.gain.setValueAtTime(0.0001, startTime + duration + release + 0.1);
+
+  padGain.connect(reverbNode);
+  padGain.connect(masterGain);
+  scheduledEvents.push({ node: padGain, time: startTime + duration + release + 0.5 });
+}
+
+// Disco bass — sine + square, funky octave-jumping, syncopated
+function playDiscoBass(midi, startTime, duration, velocity = 0.85) {
+  const freq = midiToHz(midi - 12); // one octave down
+  const bassGain = audioCtx.createGain();
+
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  osc1.type = 'sine';
+  osc2.type = 'square';
+  osc1.frequency.value = freq;
+  osc2.frequency.value = freq;
+  osc2.detune.value = 0;
+
+  const g1 = audioCtx.createGain(); g1.gain.value = 0.65;
+  const g2 = audioCtx.createGain(); g2.gain.value = 0.12;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 600;
+  filter.Q.value = 1.2;
+
+  osc1.connect(g1); osc2.connect(g2);
+  g1.connect(filter); g2.connect(filter);
+  filter.connect(bassGain);
+
+  const attack  = 0.006;
+  const decay   = 0.12;
+  const sustain = 0.55;
+  const release = 0.15;
+  const peak    = velocity * 0.38;
+
+  createEnvelope(bassGain, startTime, attack, decay, sustain, release, peak);
+  releaseEnvelope(bassGain, startTime + duration, release);
+
+  osc1.start(startTime); osc1.stop(startTime + duration + release + 0.1);
+  osc2.start(startTime); osc2.stop(startTime + duration + release + 0.1);
+
+  bassGain.connect(masterGain);
+  scheduledEvents.push({ node: bassGain, time: startTime + duration + release + 0.2 });
+}
+
+// Phaser lead — square wave with allpass chain (LFO modulated) for Daft Punk phaser
+function playPhaserLead(midi, startTime, duration, velocity = 0.6) {
+  const freq = midiToHz(midi);
+  const leadGain = audioCtx.createGain();
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.value = freq;
+
+  // Allpass chain — 4 stages approximates a phaser
+  let lastNode = osc;
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.5 + Math.random() * 0.3;
+  lfoGain.gain.value = 800;
+
+  for (let i = 0; i < 4; i++) {
+    const ap = audioCtx.createBiquadFilter();
+    ap.type = 'allpass';
+    ap.frequency.value = 800 + i * 400;
+    ap.Q.value = 0.5;
+    lfoGain.connect(ap.frequency);
+    lastNode.connect(ap);
+    lastNode = ap;
+  }
+
+  lastNode.connect(leadGain);
+
+  lfo.connect(lfoGain);
+  lfo.start(startTime); lfo.stop(startTime + duration + 0.2);
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 4000;
+  leadGain.connect(filter);
+
+  const attack  = 0.015;
+  const decay   = 0.1;
+  const sustain = 0.6;
+  const release = 0.35;
+  const peak    = velocity * 0.1;
+
+  createEnvelope(leadGain, startTime, attack, decay, sustain, release, peak);
+  releaseEnvelope(leadGain, startTime + duration, release);
+
+  osc.start(startTime); osc.stop(startTime + duration + release + 0.1);
+
+  filter.connect(reverbNode);
+  filter.connect(masterGain);
+  scheduledEvents.push({ node: leadGain, time: startTime + duration + release + 0.2 });
+}
+
+// Filtered disco chord stab — sawtooth chords through resonant LPF that sweeps open
+function playDiscoChord(midiNotes, startTime, duration, velocity = 0.75) {
+  const chordGain = audioCtx.createGain();
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(300, startTime);
+  filter.frequency.linearRampToValueAtTime(3500, startTime + 0.08);
+  filter.frequency.exponentialRampToValueAtTime(800 + Math.random() * 600, startTime + duration * 0.6);
+  filter.Q.value = 4.5;
+
+  midiNotes.forEach(midi => {
+    const freq = midiToHz(midi);
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    osc1.type = 'sawtooth';
+    osc2.type = 'sawtooth';
+    osc1.frequency.value = freq;
+    osc2.frequency.value = freq;
+    osc2.detune.value = 9;
+    const g1 = audioCtx.createGain(); g1.gain.value = 0.3;
+    const g2 = audioCtx.createGain(); g2.gain.value = 0.22;
+    osc1.connect(g1); osc2.connect(g2);
+    g1.connect(filter); g2.connect(filter);
+    osc1.start(startTime); osc1.stop(startTime + duration + 0.5);
+    osc2.start(startTime); osc2.stop(startTime + duration + 0.5);
+  });
+
+  filter.connect(chordGain);
+
+  const attack  = 0.005;
+  const sustain = 0.65;
+  const release = 0.4;
+  const peak    = velocity * 0.18;
+
+  createEnvelope(chordGain, startTime, attack, 0.08, sustain, release, peak);
+  releaseEnvelope(chordGain, startTime + duration, release);
+
+  chordGain.connect(masterGain);
+  chordGain.connect(reverbNode);
+  scheduledEvents.push({ node: chordGain, time: startTime + duration + release + 0.2 });
+}
+
+// Four-on-the-floor kick — punchy sine sweep 160→50Hz
+function playDiscoKick(startTime, velocity = 0.85) {
+  const kickGain = audioCtx.createGain();
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(160, startTime);
+  osc.frequency.exponentialRampToValueAtTime(50, startTime + 0.06);
+  osc.frequency.exponentialRampToValueAtTime(28, startTime + 0.25);
+
+  // Punchy click
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.008, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  const clickSrc = audioCtx.createBufferSource();
+  clickSrc.buffer = buf;
+  const clickGain = audioCtx.createGain();
+  clickGain.gain.value = velocity * 0.25;
+  clickSrc.connect(clickGain);
+  clickGain.connect(kickGain);
+
+  osc.connect(kickGain);
+  const peak = velocity * 0.45;
+  kickGain.gain.setValueAtTime(peak, startTime);
+  kickGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.38);
+
+  kickGain.connect(masterGain);
+  osc.start(startTime); osc.stop(startTime + 0.4);
+  clickSrc.start(startTime); clickSrc.stop(startTime + 0.01);
+}
+
+// Clap — noise burst with tight bandpass
+function playClap(startTime, velocity = 0.55) {
+  const clapGain = audioCtx.createGain();
+  const bufLen = audioCtx.sampleRate * 0.04;
+  const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  // Two noise bursts slightly offset (hand clap layering)
+  for (let i = 0; i < bufLen; i++) {
+    const t2 = i / audioCtx.sampleRate;
+    const env = Math.exp(-t2 * 60);
+    const env2 = i > bufLen * 0.35 ? Math.exp(-(t2 - 0.014) * 80) : 0;
+    data[i] = (Math.random() * 2 - 1) * (env + env2 * 0.7);
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+
+  const bpf = audioCtx.createBiquadFilter();
+  bpf.type = 'bandpass';
+  bpf.frequency.value = 1100;
+  bpf.Q.value = 0.9;
+  const hpf = audioCtx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 700;
+
+  src.connect(bpf);
+  bpf.connect(hpf);
+  hpf.connect(clapGain);
+
+  clapGain.gain.setValueAtTime(velocity * 0.22, startTime);
+  clapGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.06);
+
+  const pan = audioCtx.createStereoPanner();
+  pan.pan.value = (Math.random() - 0.5) * 0.35;
+  clapGain.connect(pan);
+  pan.connect(masterGain);
+  pan.connect(reverbNode);
+
+  src.start(startTime);
+  src.stop(startTime + 0.08);
+}
+
+// Disco open hi-hat — offbeat, bright
+function playDiscoHat(startTime, open = false, velocity = 0.35) {
+  const hhGain = audioCtx.createGain();
+  const bufSize = audioCtx.sampleRate * (open ? 0.18 : 0.025);
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+
+  const hpf = audioCtx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 9000;
+
+  src.connect(hpf);
+  hpf.connect(hhGain);
+
+  const rel = open ? 0.15 : 0.022;
+  hhGain.gain.setValueAtTime(0, startTime);
+  hhGain.gain.linearRampToValueAtTime(velocity * 0.12, startTime + 0.001);
+  hhGain.gain.exponentialRampToValueAtTime(0.0001, startTime + rel);
+
+  const pan = audioCtx.createStereoPanner();
+  pan.pan.value = (Math.random() - 0.5) * 0.5;
+  hhGain.connect(pan);
+  pan.connect(masterGain);
+
+  src.start(startTime);
+  src.stop(startTime + rel + 0.05);
+}
+
+// ─── INTERSTELLA 5555 SYNTHESIS ──────────────────────────────────────────────
+
+// Supersaw — 6+ detuned sawtooth oscillators, euphoric house unison
+function playSupersaw(midiNotes, startTime, duration, velocity = 0.8) {
+  const ssGain = audioCtx.createGain();
+
+  const detunes = [-24, -16, -8, -2, 0, 2, 8, 16, 24];
+  const hpf = audioCtx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 200;
+
+  midiNotes.forEach(midi => {
+    const freq = midiToHz(midi);
+    detunes.forEach(det => {
+      const osc = audioCtx.createOscillator();
+      const oGain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      osc.detune.value = det;
+      oGain.gain.value = 0.065;
+      osc.connect(oGain);
+      oGain.connect(hpf);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 1.5);
+    });
+  });
+
+  hpf.connect(ssGain);
+
+  // Sidechain-like pumping: volume dips on kick hits (every beat = quarterNote)
+  const beatSec = 60 / (currentPersona === 'interstella' ? 126 : 115);
+  // Schedule gain pumping for the duration
+  let pumpTime = startTime;
+  while (pumpTime < startTime + duration) {
+    ssGain.gain.setValueAtTime(0.0001, pumpTime);
+    ssGain.gain.linearRampToValueAtTime(velocity * 0.2, pumpTime + beatSec * 0.25);
+    ssGain.gain.linearRampToValueAtTime(velocity * 0.2, pumpTime + beatSec * 0.85);
+    ssGain.gain.linearRampToValueAtTime(0.0001, pumpTime + beatSec);
+    pumpTime += beatSec;
+  }
+
+  ssGain.connect(reverbNode);
+  ssGain.connect(masterGain);
+  scheduledEvents.push({ node: ssGain, time: startTime + duration + 1.5 });
+}
+
+// Acid bass — square wave + resonant filter sweep (TB-303 style)
+function playAcidBass(midi, startTime, duration, velocity = 0.82, slide = false, accent = false) {
+  const freq = midiToHz(midi - 12);
+  const acidGain = audioCtx.createGain();
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.value = freq;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  const accentMult = accent ? 1.6 : 1.0;
+  filter.frequency.setValueAtTime(accent ? 2200 : 800, startTime);
+  filter.frequency.exponentialRampToValueAtTime(200 + Math.random() * 150, startTime + duration * 0.7);
+  filter.Q.value = accent ? 18 : 12;
+
+  osc.connect(filter);
+  filter.connect(acidGain);
+
+  const attack  = slide ? 0.04 : 0.003;
+  const sustain = 0.55;
+  const release = 0.08;
+  const peak    = velocity * 0.42 * accentMult;
+
+  createEnvelope(acidGain, startTime, attack, 0.04, sustain, release, peak);
+  releaseEnvelope(acidGain, startTime + duration, release);
+
+  osc.start(startTime); osc.stop(startTime + duration + release + 0.1);
+
+  acidGain.connect(masterGain);
+  scheduledEvents.push({ node: acidGain, time: startTime + duration + release + 0.2 });
+}
+
+// Talkbox lead — formant-filtered square wave that morphs between vowels
+function playTalkbox(midi, startTime, duration, velocity = 0.55) {
+  const freq = midiToHz(midi);
+  const tbGain = audioCtx.createGain();
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.value = freq;
+
+  // Vowel formant pairs [F1, F2]: a=700/1220, e=400/2000, i=270/2400, o=500/800, u=300/600
+  const vowelFormants = [
+    [700, 1220],  // a
+    [400, 2000],  // e
+    [270, 2400],  // i
+    [500, 800],   // o
+    [300, 600],   // u
+  ];
+
+  const vowelDuration = duration / vowelFormants.length;
+  const vowelGain = audioCtx.createGain();
+  vowelGain.gain.value = 0.35;
+  osc.connect(vowelGain);
+
+  vowelFormants.forEach(([f1, f2], idx) => {
+    const bpf1 = audioCtx.createBiquadFilter();
+    const bpf2 = audioCtx.createBiquadFilter();
+    bpf1.type = 'bandpass'; bpf1.frequency.value = f1; bpf1.Q.value = 6;
+    bpf2.type = 'bandpass'; bpf2.frequency.value = f2; bpf2.Q.value = 4;
+
+    const vGain1 = audioCtx.createGain(); vGain1.gain.value = 0.5;
+    const vGain2 = audioCtx.createGain(); vGain2.gain.value = 0.3;
+
+    vowelGain.connect(bpf1); bpf1.connect(vGain1); vGain1.connect(tbGain);
+    vowelGain.connect(bpf2); bpf2.connect(vGain2); vGain2.connect(tbGain);
+  });
+
+  const attack  = 0.02;
+  const sustain = 0.65;
+  const release = 0.4;
+  const peak    = velocity * 0.12;
+
+  createEnvelope(tbGain, startTime, attack, 0.05, sustain, release, peak);
+  releaseEnvelope(tbGain, startTime + duration, release);
+
+  osc.start(startTime); osc.stop(startTime + duration + release + 0.1);
+
+  tbGain.connect(reverbNode);
+  tbGain.connect(masterGain);
+  scheduledEvents.push({ node: tbGain, time: startTime + duration + release + 0.2 });
+}
+
+// Arpeggiator synth — fast 16th note sawtooth through resonant LPF
+function playFastArp(midi, startTime, duration, velocity = 0.5) {
+  const freq = midiToHz(midi);
+  const arpGain = audioCtx.createGain();
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.value = freq;
+  osc.detune.value = (Math.random() - 0.5) * 8;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 3000 + Math.random() * 2000;
+  filter.Q.value = 2.0;
+
+  osc.connect(filter);
+  filter.connect(arpGain);
+
+  const attack  = 0.004;
+  const sustain = 0.5;
+  const release = duration * 0.8;
+  const peak    = velocity * 0.1;
+
+  createEnvelope(arpGain, startTime, attack, 0.03, sustain, release, peak);
+  releaseEnvelope(arpGain, startTime + duration, release);
+
+  osc.start(startTime); osc.stop(startTime + duration + release + 0.1);
+
+  arpGain.connect(delayL);
+  arpGain.connect(masterGain);
+  scheduledEvents.push({ node: arpGain, time: startTime + duration + release + 0.2 });
+}
+
+// Hard four-on-the-floor kick — more punch than disco kick
+function playHouseKick(startTime, velocity = 0.92) {
+  const kickGain = audioCtx.createGain();
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(220, startTime);
+  osc.frequency.exponentialRampToValueAtTime(55, startTime + 0.04);
+  osc.frequency.exponentialRampToValueAtTime(30, startTime + 0.22);
+
+  const distBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.006, audioCtx.sampleRate);
+  const distData = distBuf.getChannelData(0);
+  for (let i = 0; i < distData.length; i++) distData[i] = (Math.random() * 2 - 1) * (1 - i / distData.length);
+  const distSrc = audioCtx.createBufferSource();
+  distSrc.buffer = distBuf;
+  const distGain = audioCtx.createGain();
+  distGain.gain.value = velocity * 0.35;
+  distSrc.connect(distGain);
+  distGain.connect(kickGain);
+
+  osc.connect(kickGain);
+  const peak = velocity * 0.52;
+  kickGain.gain.setValueAtTime(peak, startTime);
+  kickGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.32);
+
+  const comp = audioCtx.createDynamicsCompressor();
+  comp.threshold.value = -6;
+  comp.ratio.value = 8;
+  comp.attack.value = 0.001;
+  comp.release.value = 0.12;
+  kickGain.connect(comp);
+  comp.connect(masterGain);
+
+  osc.start(startTime); osc.stop(startTime + 0.35);
+  distSrc.start(startTime); distSrc.stop(startTime + 0.008);
+}
+
+// Ride cymbal — 8th note energy driver
+function playRide(startTime, velocity = 0.28) {
+  const rideGain = audioCtx.createGain();
+  const bufLen = audioCtx.sampleRate * 0.35;
+  const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) {
+    const t2 = i / audioCtx.sampleRate;
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-t2 * 12);
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+
+  const hpf = audioCtx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 6000;
+  const bpf = audioCtx.createBiquadFilter();
+  bpf.type = 'bandpass';
+  bpf.frequency.value = 8500;
+  bpf.Q.value = 0.5;
+
+  src.connect(hpf); hpf.connect(bpf); bpf.connect(rideGain);
+  rideGain.gain.setValueAtTime(velocity * 0.18, startTime);
+  rideGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.32);
+
+  const pan = audioCtx.createStereoPanner();
+  pan.pan.value = 0.4;
+  rideGain.connect(pan);
+  pan.connect(masterGain);
+
+  src.start(startTime);
+  src.stop(startTime + 0.38);
+}
+
 // ─── SCHEDULER ───────────────────────────────────────────────────────────────
 
 const LOOK_AHEAD = 0.15;   // seconds to schedule ahead
@@ -674,6 +1598,39 @@ let lastChordChange = 0;
 const CHORD_DURATION_BEATS = 8; // bars (4 beats each = 32 beats)
 let beatsPerChord = 16 + Math.floor(Math.random() * 8); // vary
 
+// Zimmer-specific scheduler state
+let zimmerBuildPhase = 0;   // counts up to 64 bars before a build/drop
+let zimmerBuildActive = false;
+let zimmerBarsElapsed = 0;
+let lastBrassBar = -32;
+let ostStep = 0;
+let ostPattern = [];
+
+// Daft Punk scheduler state
+let daftBassStep = 0;
+let daftBassPattern = [];
+let daftArpStep = 0;
+let daftArpPattern = [];
+let daftPhaserStep = 0;
+let daftPhaserPattern = [];
+
+// Interstella scheduler state
+let stellaBarsElapsed = 0;
+let stellaAcidStep = 0;
+let stellaAcidPattern = [];
+let stellaArpStep2 = 0;
+let stellaArpPattern2 = [];
+let stellaTbStep = 0;
+let stellaTbPattern = [];
+let stellaBreakdown = false;
+
+function activeChords() {
+  if (currentPersona === 'zimmer')      return ZIMMER_CHORDS;
+  if (currentPersona === 'daftpunk')    return DAFTPUNK_CHORDS;
+  if (currentPersona === 'interstella') return INTERSTELLA_CHORDS;
+  return CHORDS;
+}
+
 function getChordTones(chord, octaveOffset = 0) {
   return chord.tones.map(m => m + octaveOffset * 12);
 }
@@ -686,6 +1643,30 @@ function getPentatonicInKey(rootMidi) {
     scale.forEach(s => notes.push(rootMidi + s + oct * 12));
   }
   return notes.filter(n => n >= 48 && n <= 84);
+}
+
+function buildOstinatoPattern(chord) {
+  // Pulsing repeated root + fifth for that driving Zimmer tick
+  const root = chord.root;
+  const fifth = root + 7;
+  // Eighth-note pattern: root root root fifth root root fifth root
+  return [root, root, root, fifth, root, root, fifth, root,
+          root, root, fifth, root, root, fifth, root, root];
+}
+
+function buildZimmerMelody(chord) {
+  // Sparse, wide intervals — octave leaps, fifths, dramatic phrasing
+  const root = chord.root;
+  const intervals = [0, 7, 12, 5, 10, 7, 0, 12, 19, 12, 7, 5]; // fifths, octaves, etc.
+  const line = [];
+  for (let i = 0; i < 6; i++) {
+    const interval = intervals[Math.floor(Math.random() * intervals.length)];
+    line.push(root + interval + 12); // up an octave for melody register
+    // More rests than ambient — sparse and dramatic
+    if (Math.random() < 0.45) line.push(null);
+    if (Math.random() < 0.2)  line.push(null);
+  }
+  return line;
 }
 
 function buildArpPattern(chord) {
@@ -722,6 +1703,74 @@ function buildMelodyLine(chord) {
   return line;
 }
 
+// ─── Daft Punk pattern builders ───────────────────────────────────────────────
+
+function buildDaftBassPattern(chord) {
+  // Funky syncopated 16th note bass: mix of root, 5th, octave with rests (null)
+  const r = chord.root;
+  const f = r + 7;    // fifth
+  const o = r + 12;   // octave
+  // Classic disco/funk bass pattern with syncopation
+  return [
+    r,    null, r,    null, f,    r,    null, o,
+    r,    null, null, r,    f,    null, r,    null,
+  ];
+}
+
+function buildDaftArpPattern(chord) {
+  const tones = chord.tones;
+  // Major 7th chord tones + upper octave for dreamy arpeggio
+  const up = tones.map(m => m + 12);
+  const sequence = [...tones, ...up, ...tones.slice().reverse()];
+  return sequence;
+}
+
+function buildDaftPhaserLine(chord) {
+  // Pentatonic major runs — more active than ambient
+  const root = chord.root;
+  const majorPenta = [0, 2, 4, 7, 9]; // major pentatonic offsets
+  const line = [];
+  for (let oct = 0; oct <= 1; oct++) {
+    majorPenta.forEach(s => line.push(root + s + oct * 12 + 12));
+  }
+  // Shuffle slightly for variation
+  return line.sort(() => Math.random() * 0.6 - 0.3);
+}
+
+// ─── Interstella pattern builders ─────────────────────────────────────────────
+
+function buildAcidPattern(chord) {
+  const r = chord.root;
+  const f = r + 7;
+  const m3 = r + chord.tones[1] - chord.root;
+  // 16-step acid pattern with slides (represented as negative = slide in)
+  return [
+    r,    r,    null, r,    f,    null, r,    m3,
+    r,    null, f,    r,    null, r,    f,    r,
+  ];
+}
+
+function buildStellaArpPattern(chord) {
+  const tones = chord.tones;
+  const up1 = tones.map(m => m + 12);
+  const up2 = tones.map(m => m + 24);
+  // Fast ascending arpeggio — "Aerodynamic" style
+  return [...tones, ...up1, ...up2, ...up1.slice().reverse()];
+}
+
+function buildTalkboxLine(chord) {
+  const root = chord.root;
+  const tones = chord.tones;
+  // Simple but catchy melodic fragments
+  const line = [];
+  tones.forEach(t => {
+    line.push(t + 12);
+    if (Math.random() < 0.4) line.push(t + 14);
+    if (Math.random() < 0.3) line.push(null);
+  });
+  return line;
+}
+
 function scheduler() {
   if (!isPlaying) return;
 
@@ -748,7 +1797,8 @@ function scheduleBeat(t) {
   const beat      = Math.floor(beatCount / 4) % 4; // beat 0-3
   const bar       = Math.floor(beatCount / 16);
 
-  const chord = CHORDS[currentChordIdx];
+  const chords    = activeChords();
+  const chord     = chords[currentChordIdx];
   const secondsPerBeat = 60 / tempo;
   const quarterNote = secondsPerBeat;
   const halfNote    = secondsPerBeat * 2;
@@ -762,106 +1812,459 @@ function scheduleBeat(t) {
     // Transition to next chord (with occasional skip)
     const chordJumps = [1, 1, 1, 2, -1, 3];
     const jump = chordJumps[Math.floor(Math.random() * chordJumps.length)];
-    currentChordIdx = ((currentChordIdx + jump) + CHORDS.length) % CHORDS.length;
+    currentChordIdx = ((currentChordIdx + jump) + chords.length) % chords.length;
 
-    // Rebuild patterns for new chord
-    arpPattern = buildArpPattern(CHORDS[currentChordIdx]);
-    arpStep = 0;
-    melodyNotes = buildMelodyLine(CHORDS[currentChordIdx]);
-    melodyStep = 0;
+    const nextChord = chords[currentChordIdx];
+
+    if (currentPersona === 'ambient') {
+      // Rebuild ambient patterns for new chord
+      arpPattern = buildArpPattern(nextChord);
+      arpStep = 0;
+      melodyNotes = buildMelodyLine(nextChord);
+      melodyStep = 0;
+
+      // Play pad on chord change
+      const padTones = getChordTones(nextChord, 0);
+      const velocity = 0.55 + Math.random() * 0.25;
+      playPad(padTones, t, wholeNote * (beatsPerChord / 4) * 0.9, velocity);
+    } else if (currentPersona === 'zimmer') {
+      // Rebuild Zimmer patterns
+      ostPattern = buildOstinatoPattern(nextChord);
+      ostStep = 0;
+      melodyNotes = buildZimmerMelody(nextChord);
+      melodyStep = 0;
+      zimmerBarsElapsed = 0;
+
+      // Play organ pad on chord change
+      const organTones = getChordTones(nextChord, 0);
+      const velocity = 0.65 + Math.random() * 0.2;
+      playOrganPad(organTones, t, wholeNote * (beatsPerChord / 4) * 0.92, velocity);
+
+      // Deep drone on chord root
+      playDrone(nextChord.root, t, wholeNote * (beatsPerChord / 4) * 0.95, 0.8);
+    } else if (currentPersona === 'daftpunk') {
+      // Rebuild Daft Punk patterns
+      daftBassPattern = buildDaftBassPattern(nextChord);
+      daftBassStep = 0;
+      daftArpPattern = buildDaftArpPattern(nextChord);
+      daftArpStep = 0;
+      daftPhaserPattern = buildDaftPhaserLine(nextChord);
+      daftPhaserStep = 0;
+
+      // Vocoder pad on chord change
+      const padTones = getChordTones(nextChord, 0);
+      const velocity = 0.6 + Math.random() * 0.2;
+      playVocoderPad(padTones, t, wholeNote * (beatsPerChord / 4) * 0.88, velocity);
+      // Filtered disco chord stab on change
+      playDiscoChord(getChordTones(nextChord, 0), t, quarterNote * 2, 0.8);
+    } else {
+      // Interstella: rebuild
+      stellaAcidPattern = buildAcidPattern(nextChord);
+      stellaAcidStep = 0;
+      stellaArpPattern2 = buildStellaArpPattern(nextChord);
+      stellaArpStep2 = 0;
+      stellaTbPattern = buildTalkboxLine(nextChord);
+      stellaTbStep = 0;
+      stellaBarsElapsed = 0;
+      stellaBreakdown = false;
+
+      // Supersaw stabs on drop
+      const ssTones = getChordTones(nextChord, 0);
+      const velocity = 0.75 + Math.random() * 0.2;
+      playSupersaw(ssTones, t, wholeNote * (beatsPerChord / 4) * 0.9, velocity);
+    }
 
     // Update chord display
+    let displayName;
+    if (currentPersona === 'zimmer')      displayName = `spike.land radio ∞ — ZIMMER  ·  ${nextChord.name}`;
+    else if (currentPersona === 'daftpunk')    displayName = `spike.land radio ∞ — DAFT PUNK  ·  ${nextChord.name}`;
+    else if (currentPersona === 'interstella') displayName = `spike.land radio ∞ — INTERSTELLA  ·  ${nextChord.name}`;
+    else displayName = nextChord.name;
+
     setTimeout(() => {
-      chordDisp.textContent = CHORDS[currentChordIdx].name;
+      chordDisp.textContent = displayName;
       chordDisp.classList.add('active');
       setTimeout(() => chordDisp.classList.remove('active'), 2000);
     }, (t - audioCtx.currentTime) * 1000);
-
-    // Play pad on chord change
-    const padTones = getChordTones(CHORDS[currentChordIdx], 0);
-    const velocity = 0.55 + Math.random() * 0.25;
-    playPad(padTones, t, wholeNote * (beatsPerChord / 4) * 0.9, velocity);
   }
 
-  // ── Initial pad ──
+  // ── Initial setup ──
   if (beatCount === 0) {
-    arpPattern = buildArpPattern(chord);
-    melodyNotes = buildMelodyLine(chord);
-    playPad(getChordTones(chord, 0), t, wholeNote * 4, 0.7);
-  }
-
-  // ── Kick: beats 0 and 2 (+ variation) ──
-  if (sixteenth === 0) {
-    playSoftKick(t, 0.45 + Math.random() * 0.15);
-  }
-  if (sixteenth === 8 && Math.random() < 0.75) {
-    playSoftKick(t, 0.3 + Math.random() * 0.1);
-  }
-  // Ghost notes
-  if ((sixteenth === 6 || sixteenth === 14) && Math.random() < 0.2) {
-    playSoftKick(t, 0.12);
-  }
-
-  // ── Hi-hats: 8th notes with variation ──
-  if (sixteenth % 2 === 0) {
-    const vel = 0.15 + Math.random() * 0.25;
-    const isOpen = sixteenth === 12 && Math.random() < 0.3;
-    playHihat(t, isOpen, vel);
-  }
-  // 16th note hi-hat rolls occasionally
-  if (sixteenth % 2 === 1 && Math.random() < 0.18) {
-    playHihat(t, false, 0.08 + Math.random() * 0.1);
-  }
-
-  // ── Bass: root on beat 0, passing on beat 2, occasional fills ──
-  if (sixteenth === 0) {
-    const vel = 0.65 + Math.random() * 0.2;
-    playBass(chord.root, t, quarterNote * 1.8, vel);
-  }
-  if (sixteenth === 8 && Math.random() < 0.7) {
-    // Sometimes play fifth or octave jump
-    const options = [chord.root, chord.root + 7, chord.root + 12];
-    const bassNote = options[Math.floor(Math.random() * options.length)];
-    playBass(bassNote, t, quarterNote * 0.9, 0.45 + Math.random() * 0.2);
-  }
-  if ((sixteenth === 12 || sixteenth === 4) && Math.random() < 0.25) {
-    playBass(chord.root + (Math.random() < 0.5 ? 5 : 7), t, quarterNote * 0.5, 0.35);
-  }
-
-  // ── Arpeggios: 8th note pattern ──
-  if (sixteenth % 2 === 0 && arpPattern.length > 0) {
-    const midi = arpPattern[arpStep % arpPattern.length];
-    const humanize = (Math.random() - 0.5) * 0.018;
-    const vel = 0.3 + Math.random() * 0.35;
-    playArp(midi, t + Math.max(0, humanize), quarterNote * 0.45, vel);
-    arpStep++;
-
-    // Occasional shimmering high note
-    if (Math.random() < 0.06) {
-      playShimmer(midi, t + quarterNote * 0.5);
-    }
-  }
-
-  // ── Melody: sparse, every few beats ──
-  if (sixteenth === 0 && Math.random() < 0.65 && melodyNotes.length > 0) {
-    const midi = melodyNotes[melodyStep % melodyNotes.length];
-    if (midi !== null) {
-      const vel = 0.3 + Math.random() * 0.25;
-      const dur = quarterNote * (0.5 + Math.random() * 1.5);
-      playMelody(midi, t + 0.01, dur, vel);
-    }
-    melodyStep++;
-    if (melodyStep >= melodyNotes.length) {
+    if (currentPersona === 'ambient') {
+      arpPattern = buildArpPattern(chord);
       melodyNotes = buildMelodyLine(chord);
-      melodyStep = 0;
+      playPad(getChordTones(chord, 0), t, wholeNote * 4, 0.7);
+    } else if (currentPersona === 'zimmer') {
+      ostPattern = buildOstinatoPattern(chord);
+      melodyNotes = buildZimmerMelody(chord);
+      playOrganPad(getChordTones(chord, 0), t, wholeNote * 4, 0.7);
+      playDrone(chord.root, t, wholeNote * 4, 0.85);
+    } else if (currentPersona === 'daftpunk') {
+      daftBassPattern = buildDaftBassPattern(chord);
+      daftArpPattern = buildDaftArpPattern(chord);
+      daftPhaserPattern = buildDaftPhaserLine(chord);
+      playVocoderPad(getChordTones(chord, 0), t, wholeNote * 4, 0.65);
+      playDiscoChord(getChordTones(chord, 0), t, quarterNote * 2, 0.75);
+    } else {
+      stellaAcidPattern = buildAcidPattern(chord);
+      stellaArpPattern2 = buildStellaArpPattern(chord);
+      stellaTbPattern = buildTalkboxLine(chord);
+      playSupersaw(getChordTones(chord, 0), t, wholeNote * 4, 0.8);
     }
   }
 
-  // ── Atmospheric shimmer ──
-  if (Math.random() < 0.012 && sixteenth === 0) {
-    const tones = getChordTones(chord, 1);
-    const midi = tones[Math.floor(Math.random() * tones.length)];
-    playShimmer(midi, t + quarterNote * Math.random());
+  // ══════════════════════════════════════════════════════════════════
+  // AMBIENT SCHEDULER
+  // ══════════════════════════════════════════════════════════════════
+  if (currentPersona === 'ambient') {
+
+    // ── Kick: beats 0 and 2 (+ variation) ──
+    if (sixteenth === 0) {
+      playSoftKick(t, 0.45 + Math.random() * 0.15);
+    }
+    if (sixteenth === 8 && Math.random() < 0.75) {
+      playSoftKick(t, 0.3 + Math.random() * 0.1);
+    }
+    // Ghost notes
+    if ((sixteenth === 6 || sixteenth === 14) && Math.random() < 0.2) {
+      playSoftKick(t, 0.12);
+    }
+
+    // ── Hi-hats: 8th notes with variation ──
+    if (sixteenth % 2 === 0) {
+      const vel = 0.15 + Math.random() * 0.25;
+      const isOpen = sixteenth === 12 && Math.random() < 0.3;
+      playHihat(t, isOpen, vel);
+    }
+    // 16th note hi-hat rolls occasionally
+    if (sixteenth % 2 === 1 && Math.random() < 0.18) {
+      playHihat(t, false, 0.08 + Math.random() * 0.1);
+    }
+
+    // ── Bass: root on beat 0, passing on beat 2, occasional fills ──
+    if (sixteenth === 0) {
+      const vel = 0.65 + Math.random() * 0.2;
+      playBass(chord.root, t, quarterNote * 1.8, vel);
+    }
+    if (sixteenth === 8 && Math.random() < 0.7) {
+      const options = [chord.root, chord.root + 7, chord.root + 12];
+      const bassNote = options[Math.floor(Math.random() * options.length)];
+      playBass(bassNote, t, quarterNote * 0.9, 0.45 + Math.random() * 0.2);
+    }
+    if ((sixteenth === 12 || sixteenth === 4) && Math.random() < 0.25) {
+      playBass(chord.root + (Math.random() < 0.5 ? 5 : 7), t, quarterNote * 0.5, 0.35);
+    }
+
+    // ── Arpeggios: 8th note pattern ──
+    if (sixteenth % 2 === 0 && arpPattern.length > 0) {
+      const midi = arpPattern[arpStep % arpPattern.length];
+      const humanize = (Math.random() - 0.5) * 0.018;
+      const vel = 0.3 + Math.random() * 0.35;
+      playArp(midi, t + Math.max(0, humanize), quarterNote * 0.45, vel);
+      arpStep++;
+
+      // Occasional shimmering high note
+      if (Math.random() < 0.06) {
+        playShimmer(midi, t + quarterNote * 0.5);
+      }
+    }
+
+    // ── Melody: sparse, every few beats ──
+    if (sixteenth === 0 && Math.random() < 0.65 && melodyNotes.length > 0) {
+      const midi = melodyNotes[melodyStep % melodyNotes.length];
+      if (midi !== null) {
+        const vel = 0.3 + Math.random() * 0.25;
+        const dur = quarterNote * (0.5 + Math.random() * 1.5);
+        playMelody(midi, t + 0.01, dur, vel);
+      }
+      melodyStep++;
+      if (melodyStep >= melodyNotes.length) {
+        melodyNotes = buildMelodyLine(chord);
+        melodyStep = 0;
+      }
+    }
+
+    // ── Atmospheric shimmer ──
+    if (Math.random() < 0.012 && sixteenth === 0) {
+      const tones = getChordTones(chord, 1);
+      const midi = tones[Math.floor(Math.random() * tones.length)];
+      playShimmer(midi, t + quarterNote * Math.random());
+    }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ZIMMER SCHEDULER
+  // ══════════════════════════════════════════════════════════════════
+  } else if (currentPersona === 'zimmer') {
+
+    // Track bars elapsed for build/drop logic
+    if (sixteenth === 0) zimmerBarsElapsed++;
+
+    // ── Build/Drop every 64 bars ──
+    const isInBuild = zimmerBarsElapsed % 64 >= 60; // last 4 bars before drop
+    const isOnDrop  = zimmerBarsElapsed % 64 === 0 && zimmerBarsElapsed > 0;
+    const buildIntensity = isInBuild ? ((zimmerBarsElapsed % 64 - 60) / 4) : 0;
+
+    // ── Taiko: beats 0 and 2, ~60% chance, louder during builds ──
+    if (sixteenth === 0) {
+      const taikoChance = isInBuild ? 0.85 : 0.60;
+      if (Math.random() < taikoChance) {
+        const vel = isInBuild
+          ? 0.75 + buildIntensity * 0.2 + Math.random() * 0.05
+          : 0.55 + Math.random() * 0.2;
+        playTaiko(t, vel);
+      }
+    }
+    if (sixteenth === 8) {
+      const taikoChance = isInBuild ? 0.75 : 0.55;
+      if (Math.random() < taikoChance) {
+        const vel = isInBuild
+          ? 0.65 + buildIntensity * 0.15 + Math.random() * 0.05
+          : 0.45 + Math.random() * 0.15;
+        playTaiko(t, vel);
+      }
+    }
+    // Extra taiko hits during build
+    if (isInBuild && (sixteenth === 4 || sixteenth === 12) && Math.random() < buildIntensity * 0.6) {
+      playTaiko(t, 0.35 + buildIntensity * 0.2);
+    }
+
+    // ── Hi-hats: sparser in Zimmer — only on beats ──
+    if (sixteenth % 4 === 0 && Math.random() < 0.45) {
+      playHihat(t, false, 0.1 + Math.random() * 0.12);
+    }
+    // 8th-note hats during builds
+    if (isInBuild && sixteenth % 2 === 0 && Math.random() < buildIntensity * 0.7) {
+      playHihat(t, false, 0.08 + buildIntensity * 0.08);
+    }
+
+    // ── Pulsing ostinato: every 8th note (constant drive) ──
+    if (sixteenth % 2 === 0 && ostPattern.length > 0) {
+      const midi = ostPattern[ostStep % ostPattern.length];
+      const vel = isInBuild
+        ? 0.5 + buildIntensity * 0.25 + Math.random() * 0.1
+        : 0.35 + Math.random() * 0.2;
+      const dur = quarterNote * 0.4; // staccato
+      playOstinato(midi, t, dur, vel);
+      ostStep++;
+
+      // Double the ostinato at 16th notes during intense build
+      if (isInBuild && buildIntensity > 0.5 && sixteenth % 2 === 1) {
+        playOstinato(midi, t, dur * 0.8, vel * 0.6);
+      }
+    }
+
+    // ── Brass stabs: every 16-32 bars (dramatic moments) ──
+    if (sixteenth === 0 && bar - lastBrassBar >= 16 + Math.floor(Math.random() * 16)) {
+      lastBrassBar = bar;
+      const brassTones = getChordTones(chord, 0).slice(0, 3); // root, 3rd, 5th
+      const vel = 0.8 + Math.random() * 0.15;
+      playBrass(brassTones, t, quarterNote * 2, vel);
+      // Follow-up stab half a bar later for that BRAAAM effect
+      if (Math.random() < 0.6) {
+        const brassTones2 = [chord.root - 5, chord.root, chord.root + 7];
+        playBrass(brassTones2, t + halfNote, quarterNote * 1.5, vel * 0.75);
+      }
+    }
+
+    // ── Brass during build/drop ──
+    if (isOnDrop && sixteenth === 0) {
+      const allTones = getChordTones(chord, 0);
+      playBrass(allTones, t, quarterNote * 4, 0.95);
+    }
+
+    // ── String tremolo: layers in and out every ~8 bars ──
+    if (sixteenth === 0 && bar % 8 === 0) {
+      if (Math.random() < 0.55 || isInBuild) {
+        const strTones = getChordTones(chord, 1).slice(0, 3);
+        const dur = wholeNote * (3 + Math.random() * 4);
+        const vel = isInBuild
+          ? 0.5 + buildIntensity * 0.3
+          : 0.3 + Math.random() * 0.25;
+        playStringTremolo(strTones, t, dur, vel);
+      }
+    }
+
+    // ── Melody: sparse, wide intervals, dramatic ──
+    if (sixteenth === 0 && Math.random() < 0.4 && melodyNotes.length > 0) {
+      const midi = melodyNotes[melodyStep % melodyNotes.length];
+      if (midi !== null) {
+        const vel = 0.35 + Math.random() * 0.25;
+        // Longer notes for cinematic feel
+        const dur = quarterNote * (1.0 + Math.random() * 3.0);
+        playMelody(midi, t + 0.01, dur, vel);
+      }
+      melodyStep++;
+      if (melodyStep >= melodyNotes.length) {
+        melodyNotes = buildZimmerMelody(chord);
+        melodyStep = 0;
+      }
+    }
+
+  // ══════════════════════════════════════════════════════════════════
+  // DAFT PUNK SCHEDULER — French disco house, 115 BPM
+  // ══════════════════════════════════════════════════════════════════
+  } else if (currentPersona === 'daftpunk') {
+
+    // ── Four-on-the-floor kick — every beat ──
+    if (sixteenth === 0 || sixteenth === 4 || sixteenth === 8 || sixteenth === 12) {
+      playDiscoKick(t, 0.82 + Math.random() * 0.12);
+    }
+
+    // ── Open hi-hat on offbeats (8th note between kicks) ──
+    if (sixteenth === 2 || sixteenth === 6 || sixteenth === 10 || sixteenth === 14) {
+      playDiscoHat(t, true, 0.4 + Math.random() * 0.2);
+    }
+    // Closed hi-hat fills on 16ths occasionally
+    if ((sixteenth % 2 === 1) && Math.random() < 0.22) {
+      playDiscoHat(t, false, 0.15 + Math.random() * 0.12);
+    }
+
+    // ── Clap on beats 2 and 4 (sixteenth 4 and 12) ──
+    if (sixteenth === 4 || sixteenth === 12) {
+      playClap(t, 0.65 + Math.random() * 0.18);
+    }
+    // Occasional ghost clap
+    if ((sixteenth === 6 || sixteenth === 14) && Math.random() < 0.15) {
+      playClap(t, 0.22);
+    }
+
+    // ── Funky disco bass — syncopated 16th note pattern ──
+    if (daftBassPattern.length > 0) {
+      const bassNote = daftBassPattern[sixteenth % daftBassPattern.length];
+      if (bassNote !== null) {
+        const vel = 0.7 + Math.random() * 0.2;
+        // Octave jump on certain beats for funk feel
+        const octJump = (sixteenth === 7 || sixteenth === 15) ? 12 : 0;
+        playDiscoBass(bassNote + octJump, t, quarterNote * 0.22, vel);
+      }
+    }
+
+    // ── Filtered chord stabs — on beat + occasional syncopated hits ──
+    if (sixteenth === 0 && Math.random() < 0.55) {
+      const chordTones = getChordTones(chord, 0);
+      playDiscoChord(chordTones, t, quarterNote * 0.5, 0.72 + Math.random() * 0.15);
+    }
+    if (sixteenth === 6 && Math.random() < 0.35) {
+      const chordTones = getChordTones(chord, 0);
+      playDiscoChord(chordTones, t, quarterNote * 0.35, 0.5 + Math.random() * 0.15);
+    }
+    if (sixteenth === 10 && Math.random() < 0.4) {
+      const chordTones = getChordTones(chord, 0);
+      playDiscoChord(chordTones, t, quarterNote * 0.4, 0.55 + Math.random() * 0.12);
+    }
+
+    // ── Dreamy arpeggio — 8th note pattern through major 7th tones ──
+    if (sixteenth % 2 === 0 && daftArpPattern.length > 0) {
+      const midi = daftArpPattern[daftArpStep % daftArpPattern.length];
+      const vel = 0.35 + Math.random() * 0.3;
+      playArp(midi, t + (Math.random() - 0.5) * 0.012, quarterNote * 0.4, vel);
+      daftArpStep++;
+    }
+
+    // ── Phaser lead — pentatonic major melody runs ──
+    if (sixteenth % 4 === 0 && Math.random() < 0.55 && daftPhaserPattern.length > 0) {
+      const midi = daftPhaserPattern[daftPhaserStep % daftPhaserPattern.length];
+      const vel = 0.45 + Math.random() * 0.3;
+      const dur = quarterNote * (0.25 + Math.random() * 0.5);
+      playPhaserLead(midi, t, dur, vel);
+      daftPhaserStep++;
+      if (daftPhaserStep >= daftPhaserPattern.length) {
+        daftPhaserPattern = buildDaftPhaserLine(chord);
+        daftPhaserStep = 0;
+      }
+    }
+
+    // ── Vocoder pad: sustained — already playing from chord change init ──
+    // Refresh every ~8 bars so it doesn't die out
+    if (sixteenth === 0 && bar % 8 === 4) {
+      const padTones = getChordTones(chord, 0);
+      playVocoderPad(padTones, t, wholeNote * 4, 0.5 + Math.random() * 0.15);
+    }
+
+  // ══════════════════════════════════════════════════════════════════
+  // INTERSTELLA 5555 SCHEDULER — Euphoric house, 126 BPM
+  // ══════════════════════════════════════════════════════════════════
+  } else {
+
+    // Track bars for breakdown logic
+    if (sixteenth === 0) stellaBarsElapsed++;
+
+    // Every 32 bars: 4-bar breakdown, then drop back in
+    const isBreakdown = stellaBarsElapsed % 32 >= 28;
+    const isDrop      = stellaBarsElapsed % 32 === 0 && stellaBarsElapsed > 0;
+
+    // ── Relentless four-on-the-floor kick ──
+    if (!isBreakdown) {
+      if (sixteenth === 0 || sixteenth === 4 || sixteenth === 8 || sixteenth === 12) {
+        playHouseKick(t, 0.88 + Math.random() * 0.1);
+      }
+    }
+
+    // ── 16th note hi-hats with accent pattern ──
+    if (!isBreakdown) {
+      const isAccented = sixteenth % 4 === 2; // upbeat accents
+      const vel = isAccented ? 0.45 + Math.random() * 0.2 : 0.18 + Math.random() * 0.14;
+      playDiscoHat(t, sixteenth === 14 && Math.random() < 0.3, vel);
+    }
+
+    // ── Ride cymbal on 8th notes for energy ──
+    if (!isBreakdown && sixteenth % 2 === 0) {
+      playRide(t, 0.25 + Math.random() * 0.12);
+    }
+
+    // ── Acid bass — 16th note TB-303 patterns ──
+    if (stellaAcidPattern.length > 0) {
+      const acidNote = stellaAcidPattern[stellaAcidStep % stellaAcidPattern.length];
+      if (acidNote !== null) {
+        const isAccent = sixteenth === 0 || sixteenth === 8;
+        const isSlide  = sixteenth === 3 || sixteenth === 11;
+        const vel = isBreakdown ? 0.5 : 0.78 + Math.random() * 0.15;
+        playAcidBass(acidNote, t, quarterNote * (isSlide ? 0.3 : 0.18), vel, isSlide, isAccent);
+      }
+      stellaAcidStep++;
+    }
+
+    // ── Supersaw stabs with sidechain pumping — every 4 bars, refreshed ──
+    if (sixteenth === 0 && bar % 4 === 0 && !isBreakdown) {
+      const ssTones = getChordTones(chord, 0);
+      const vel = isDrop ? 0.92 : 0.72 + Math.random() * 0.15;
+      playSupersaw(ssTones, t, wholeNote * 4, vel);
+    }
+
+    // ── Fast arpeggio — "Aerodynamic" style, every 16th note ──
+    if (stellaArpPattern2.length > 0) {
+      const midi = stellaArpPattern2[stellaArpStep2 % stellaArpPattern2.length];
+      const vel = isBreakdown ? 0.55 + Math.random() * 0.2 : 0.38 + Math.random() * 0.2;
+      const dur = quarterNote * 0.18;
+      playFastArp(midi, t, dur, vel);
+      stellaArpStep2++;
+      if (stellaArpStep2 >= stellaArpPattern2.length) {
+        stellaArpPattern2 = buildStellaArpPattern(chord);
+        stellaArpStep2 = 0;
+      }
+    }
+
+    // ── Talkbox lead — melodic fragments every few beats ──
+    if (sixteenth === 0 && Math.random() < 0.5 && stellaTbPattern.length > 0) {
+      const midi = stellaTbPattern[stellaTbStep % stellaTbPattern.length];
+      if (midi !== null) {
+        const vel = 0.45 + Math.random() * 0.25;
+        const dur = quarterNote * (0.35 + Math.random() * 0.6);
+        playTalkbox(midi, t + 0.01, dur, vel);
+      }
+      stellaTbStep++;
+      if (stellaTbStep >= stellaTbPattern.length) {
+        stellaTbPattern = buildTalkboxLine(chord);
+        stellaTbStep = 0;
+      }
+    }
+
+    // ── Euphoric drop: full supersaw + acid burst ──
+    if (isDrop && sixteenth === 0) {
+      playHouseKick(t, 0.97);
+      const ssTones = getChordTones(chord, 0);
+      playSupersaw(ssTones, t, wholeNote * 8, 0.95);
+    }
   }
 }
 
@@ -935,11 +2338,11 @@ function resizeCanvas() {
 // Geometric wave renderer
 let wavePhase = 0;
 
-function drawWaves(energy, hue1, hue2) {
+function drawWaves(energy, hue1, hue2, ampMult = 1.0) {
   const numWaves = 4;
   for (let w = 0; w < numWaves; w++) {
     ctx2d.beginPath();
-    const amp = (30 + energy * 60) * (1 - w * 0.18);
+    const amp = (30 + energy * 60) * (1 - w * 0.18) * ampMult;
     const freq = 0.008 + w * 0.003;
     const phaseOffset = wavePhase * (0.6 + w * 0.3) + w * Math.PI * 0.5;
     const yBase = H * (0.3 + w * 0.12);
@@ -977,19 +2380,48 @@ function animate() {
   animFrame = requestAnimationFrame(animate);
 
   const energy = isPlaying ? getAudioEnergy() : 0;
+  const isZimmer      = currentPersona === 'zimmer';
+  const isDaftPunk    = currentPersona === 'daftpunk';
+  const isInterstella = currentPersona === 'interstella';
 
-  gradPhase += gradSpeed * (1 + energy * 3);
+  const energyMult = isZimmer ? 5 : (isDaftPunk ? 6 : (isInterstella ? 7 : 3));
+  gradPhase += gradSpeed * (1 + energy * energyMult);
 
-  // Background gradient
-  const chord = CHORDS[currentChordIdx];
-  const [r, g, b] = chord.color;
-  const hue1 = (210 + Math.sin(gradPhase * 0.7) * 30) % 360;
-  const hue2 = (hue1 + 40 + Math.sin(gradPhase * 0.4) * 20) % 360;
+  let hue1, hue2, satCenter, satEdge, lumBase;
+
+  if (isZimmer) {
+    // Deep amber/red/orange palette
+    hue1 = (22 + Math.sin(gradPhase * 0.5) * 12) % 360;
+    hue2 = (hue1 + 25 + Math.sin(gradPhase * 0.3) * 10) % 360;
+    satCenter = 55 + energy * 20;
+    satEdge   = 30;
+    lumBase   = 5 + energy * 6;
+  } else if (isDaftPunk) {
+    // Electric blue / hot pink / neon purple cycling
+    hue1 = (195 + Math.sin(gradPhase * 1.1) * 25) % 360; // cyan-blue range
+    hue2 = (310 + Math.sin(gradPhase * 0.7) * 20) % 360; // pink-purple range
+    satCenter = 70 + energy * 25;
+    satEdge   = 45;
+    lumBase   = 4 + energy * 9; // pulses more with energy
+  } else if (isInterstella) {
+    // Deep space: indigo / cosmic purple / gold flashes
+    hue1 = (260 + Math.sin(gradPhase * 0.6) * 20) % 360; // indigo-purple
+    hue2 = (280 + Math.sin(gradPhase * 0.4) * 30) % 360; // cosmic purple
+    satCenter = 65 + energy * 22;
+    satEdge   = 40;
+    lumBase   = 3 + energy * 7;  // very dark space feel, pulses with drops
+  } else {
+    hue1 = (210 + Math.sin(gradPhase * 0.7) * 30) % 360;
+    hue2 = (hue1 + 40 + Math.sin(gradPhase * 0.4) * 20) % 360;
+    satCenter = 35;
+    satEdge   = 20;
+    lumBase   = 8 + energy * 4;
+  }
 
   const bg = ctx2d.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.5, Math.max(W, H));
-  const center = `hsla(${hue1}, 35%, ${8 + energy * 4}%, 1)`;
-  const mid    = `hsla(${(hue1 + hue2) / 2}, 28%, 6%, 1)`;
-  const edge   = `hsla(${hue2}, 20%, 4%, 1)`;
+  const center = `hsla(${hue1}, ${satCenter}%, ${lumBase}%, 1)`;
+  const mid    = `hsla(${(hue1 + hue2) / 2}, ${Math.round(satCenter * 0.8)}%, ${Math.round(lumBase * 0.75)}%, 1)`;
+  const edge   = `hsla(${hue2}, ${satEdge}%, ${Math.round(lumBase * 0.5)}%, 1)`;
   bg.addColorStop(0, center);
   bg.addColorStop(0.5, mid);
   bg.addColorStop(1, edge);
@@ -997,15 +2429,52 @@ function animate() {
   ctx2d.fillStyle = bg;
   ctx2d.fillRect(0, 0, W, H);
 
-  // Waves
-  drawWaves(energy, hue1, hue2);
+  // Daft Punk: second neon accent overlay — pink sweep
+  if (isDaftPunk && energy > 0.04) {
+    const neonHue = (320 + Math.sin(gradPhase * 2.2) * 40) % 360;
+    const neonGlow = ctx2d.createRadialGradient(W * 0.5, H * 0.6, 0, W * 0.5, H * 0.6, W * 0.6);
+    neonGlow.addColorStop(0, `hsla(${neonHue}, 100%, 55%, ${energy * 0.06})`);
+    neonGlow.addColorStop(1, 'transparent');
+    ctx2d.fillStyle = neonGlow;
+    ctx2d.fillRect(0, 0, W, H);
+  }
 
-  // Central glow on energy
-  if (energy > 0.05) {
-    const glowR = Math.max(W, H) * (0.3 + energy * 0.4);
+  // Interstella: gold stardust shimmer across top
+  if (isInterstella && energy > 0.03) {
+    const goldGlow = ctx2d.createLinearGradient(0, 0, W, H * 0.4);
+    goldGlow.addColorStop(0, `hsla(48, 100%, 60%, ${energy * 0.04})`);
+    goldGlow.addColorStop(0.5, `hsla(285, 90%, 55%, ${energy * 0.06})`);
+    goldGlow.addColorStop(1, 'transparent');
+    ctx2d.fillStyle = goldGlow;
+    ctx2d.fillRect(0, 0, W, H * 0.4);
+  }
+
+  const waveAmpMult = isZimmer ? 1.7 : (isDaftPunk ? 1.4 : (isInterstella ? 1.2 : 1.0));
+  const waveEnergy  = isZimmer ? 1.4 : (isDaftPunk ? 1.8 : (isInterstella ? 1.6 : 1.0));
+  drawWaves(energy * waveEnergy, hue1, hue2, waveAmpMult);
+
+  // Central glow
+  const glowThreshold = (isZimmer || isDaftPunk || isInterstella) ? 0.02 : 0.05;
+  if (energy > glowThreshold) {
+    const glowRMult = isZimmer ? 0.4 : (isDaftPunk ? 0.45 : (isInterstella ? 0.5 : 0.3));
+    const glowR = Math.max(W, H) * (glowRMult + energy * 0.5);
     const centerGlow = ctx2d.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, glowR);
-    centerGlow.addColorStop(0, `hsla(${hue1}, 70%, 70%, ${energy * 0.08})`);
-    centerGlow.addColorStop(0.4, `hsla(${hue2}, 60%, 50%, ${energy * 0.03})`);
+    let glowAlpha1, glowAlpha2;
+    if (isDaftPunk) {
+      glowAlpha1 = energy * 0.18;
+      glowAlpha2 = energy * 0.08;
+    } else if (isInterstella) {
+      glowAlpha1 = energy * 0.16;
+      glowAlpha2 = energy * 0.07;
+    } else if (isZimmer) {
+      glowAlpha1 = energy * 0.14;
+      glowAlpha2 = energy * 0.06;
+    } else {
+      glowAlpha1 = energy * 0.08;
+      glowAlpha2 = energy * 0.03;
+    }
+    centerGlow.addColorStop(0, `hsla(${hue1}, 85%, 65%, ${glowAlpha1})`);
+    centerGlow.addColorStop(0.4, `hsla(${hue2}, 70%, 45%, ${glowAlpha2})`);
     centerGlow.addColorStop(1, 'transparent');
     ctx2d.fillStyle = centerGlow;
     ctx2d.fillRect(0, 0, W, H);
@@ -1013,14 +2482,52 @@ function animate() {
 
   // Particles
   if (isPlaying) {
-    // Spawn new particles
-    if (Math.random() < 0.35 + energy * 1.2) {
-      if (particles.length < 200) particles.push(new Particle());
+    let spawnRate, maxParticles;
+    if (isDaftPunk) {
+      spawnRate    = 0.7 + energy * 2.8;
+      maxParticles = 320;
+    } else if (isInterstella) {
+      spawnRate    = 0.8 + energy * 3.5;
+      maxParticles = 380; // star-field density
+    } else if (isZimmer) {
+      spawnRate    = 0.55 + energy * 2.0;
+      maxParticles = 280;
+    } else {
+      spawnRate    = 0.35 + energy * 1.2;
+      maxParticles = 200;
     }
 
+    if (Math.random() < spawnRate) {
+      if (particles.length < maxParticles) {
+        const p = new Particle();
+        if (isZimmer) {
+          p.hue = 15 + Math.random() * 30; // orange-red
+          p.speedY *= 1.5;
+          p.size *= 1.4;
+        } else if (isDaftPunk) {
+          // Neon pink / electric blue / purple
+          const hues = [195, 210, 310, 330, 280];
+          p.hue = hues[Math.floor(Math.random() * hues.length)] + (Math.random() - 0.5) * 20;
+          p.speedY *= 1.8; // faster, more energetic
+          p.size *= 1.1;
+          p.maxOpacity = Math.random() * 0.65 + 0.1; // brighter
+        } else if (isInterstella) {
+          // Star-like: small, bright, many colors
+          const hues = [260, 48, 285, 330, 200];
+          p.hue = hues[Math.floor(Math.random() * hues.length)] + (Math.random() - 0.5) * 15;
+          p.speedY *= 0.9 + Math.random() * 1.4; // some slow, some fast
+          p.size = Math.random() * 1.5 + 0.2; // smaller, star-like
+          p.maxOpacity = Math.random() * 0.8 + 0.15; // bright stars
+          p.life = Math.random() * 600 + 300; // live longer
+        }
+        particles.push(p);
+      }
+    }
+
+    const energyScale = isDaftPunk ? 1.6 : (isInterstella ? 1.8 : (isZimmer ? 1.3 : 1.0));
     particles = particles.filter(p => {
-      const alive = p.update(energy);
-      if (alive) p.draw(ctx2d, energy);
+      const alive = p.update(energy * energyScale);
+      if (alive) p.draw(ctx2d, energy * energyScale);
       return alive;
     });
   } else {
@@ -1044,21 +2551,50 @@ async function startMusic() {
     await audioCtx.resume();
   }
 
+  // Set tempo and initial state based on persona
+  if      (currentPersona === 'zimmer')      tempo = 63;
+  else if (currentPersona === 'daftpunk')    tempo = 115;
+  else if (currentPersona === 'interstella') tempo = 126;
+  else                                       tempo = 74;
+
   isPlaying = true;
   beatCount = 0;
   nextNoteTime = audioCtx.currentTime + 0.1;
   currentChordIdx = 0;
   lastChordChange = 0;
-  arpPattern = buildArpPattern(CHORDS[0]);
-  melodyNotes = buildMelodyLine(CHORDS[0]);
-  arpStep = 0;
-  melodyStep = 0;
+  arpStep = 0; melodyStep = 0;
+  ostStep = 0; zimmerBarsElapsed = 0; lastBrassBar = -32;
+  daftBassStep = 0; daftArpStep = 0; daftPhaserStep = 0;
+  stellaBarsElapsed = 0; stellaAcidStep = 0; stellaArpStep2 = 0;
+  stellaTbStep = 0; stellaBreakdown = false;
+
+  const chords = activeChords();
+  if (currentPersona === 'ambient') {
+    arpPattern = buildArpPattern(chords[0]);
+    melodyNotes = buildMelodyLine(chords[0]);
+  } else if (currentPersona === 'zimmer') {
+    ostPattern = buildOstinatoPattern(chords[0]);
+    melodyNotes = buildZimmerMelody(chords[0]);
+  } else if (currentPersona === 'daftpunk') {
+    daftBassPattern   = buildDaftBassPattern(chords[0]);
+    daftArpPattern    = buildDaftArpPattern(chords[0]);
+    daftPhaserPattern = buildDaftPhaserLine(chords[0]);
+  } else {
+    stellaAcidPattern = buildAcidPattern(chords[0]);
+    stellaArpPattern2 = buildStellaArpPattern(chords[0]);
+    stellaTbPattern   = buildTalkboxLine(chords[0]);
+  }
 
   // Start scheduling
   schedulerInterval = setInterval(scheduler, SCHEDULE_INTERVAL);
 
   // Initial chord display
-  chordDisp.textContent = CHORDS[0].name;
+  let displayName;
+  if      (currentPersona === 'zimmer')      displayName = `spike.land radio ∞ — ZIMMER  ·  ${chords[0].name}`;
+  else if (currentPersona === 'daftpunk')    displayName = `spike.land radio ∞ — DAFT PUNK  ·  ${chords[0].name}`;
+  else if (currentPersona === 'interstella') displayName = `spike.land radio ∞ — INTERSTELLA  ·  ${chords[0].name}`;
+  else                                       displayName = chords[0].name;
+  chordDisp.textContent = displayName;
   chordDisp.classList.add('active');
 
   statusEl.textContent = 'now playing';
@@ -1083,8 +2619,77 @@ function stopMusic() {
   statusEl.textContent = 'paused';
   playBtn.classList.remove('playing');
   btnIcon.innerHTML = '<polygon points="5,3 19,12 5,21"/>';
-  chordDisp.textContent = 'spike.land radio ∞';
+  let idleChordText = 'spike.land radio ∞';
+  if      (currentPersona === 'zimmer')      idleChordText = 'spike.land radio ∞ — ZIMMER';
+  else if (currentPersona === 'daftpunk')    idleChordText = 'spike.land radio ∞ — DAFT PUNK';
+  else if (currentPersona === 'interstella') idleChordText = 'spike.land radio ∞ — INTERSTELLA';
+  chordDisp.textContent = idleChordText;
   chordDisp.classList.remove('active');
+}
+
+// ─── PERSONA SWITCH ───────────────────────────────────────────────────────────
+
+async function switchPersona() {
+  const wasPlaying = isPlaying;
+
+  // Fade out current music
+  if (wasPlaying) {
+    isPlaying = false;
+    clearInterval(schedulerInterval);
+    if (masterGain) {
+      const t = audioCtx.currentTime;
+      masterGain.gain.setValueAtTime(masterGain.gain.value, t);
+      masterGain.gain.linearRampToValueAtTime(0, t + 1.2);
+    }
+    await new Promise(r => setTimeout(r, 1300));
+    if (masterGain) masterGain.gain.value = parseFloat(volSlider.value);
+  }
+
+  // Cycle through all 4 personas
+  const idx = PERSONAS.indexOf(currentPersona);
+  currentPersona = PERSONAS[(idx + 1) % PERSONAS.length];
+
+  // Apply persona class to button and style play button
+  personaBtn.classList.remove('zimmer', 'daftpunk', 'interstella');
+  const titleEl = document.getElementById('title');
+
+  if (currentPersona === 'ambient') {
+    personaBtn.textContent = 'AMBIENT';
+    playBtn.style.borderColor = '';
+    playBtn.style.boxShadow   = '';
+    titleEl.style.color = '';
+  } else if (currentPersona === 'zimmer') {
+    personaBtn.textContent = 'ZIMMER';
+    personaBtn.classList.add('zimmer');
+    playBtn.style.borderColor = 'rgba(204, 85, 0, 0.35)';
+    playBtn.style.boxShadow   = '0 0 60px rgba(204, 85, 0, 0.15), inset 0 0 40px rgba(204, 85, 0, 0.07)';
+    titleEl.style.color = 'rgba(255, 160, 60, 0.55)';
+  } else if (currentPersona === 'daftpunk') {
+    personaBtn.textContent = 'DAFT PUNK';
+    personaBtn.classList.add('daftpunk');
+    playBtn.style.borderColor = 'rgba(0, 212, 255, 0.4)';
+    playBtn.style.boxShadow   = '0 0 60px rgba(0, 212, 255, 0.18), inset 0 0 40px rgba(255, 20, 147, 0.08)';
+    titleEl.style.color = 'rgba(0, 212, 255, 0.65)';
+  } else {
+    personaBtn.textContent = 'INTERSTELLA';
+    personaBtn.classList.add('interstella');
+    playBtn.style.borderColor = 'rgba(255, 215, 0, 0.35)';
+    playBtn.style.boxShadow   = '0 0 60px rgba(102, 0, 204, 0.2), inset 0 0 40px rgba(255, 215, 0, 0.06)';
+    titleEl.style.color = 'rgba(255, 215, 0, 0.6)';
+  }
+
+  // Update chord display to idle state
+  let idleText = 'spike.land radio ∞';
+  if      (currentPersona === 'zimmer')      idleText = 'spike.land radio ∞ — ZIMMER';
+  else if (currentPersona === 'daftpunk')    idleText = 'spike.land radio ∞ — DAFT PUNK';
+  else if (currentPersona === 'interstella') idleText = 'spike.land radio ∞ — INTERSTELLA';
+  chordDisp.textContent = idleText;
+  chordDisp.classList.remove('active');
+
+  // Restart if was playing
+  if (wasPlaying) {
+    await startMusic();
+  }
 }
 
 // ─── EVENT LISTENERS ──────────────────────────────────────────────────────────
@@ -1095,6 +2700,10 @@ playBtn.addEventListener('click', () => {
   } else {
     startMusic();
   }
+});
+
+personaBtn.addEventListener('click', () => {
+  switchPersona();
 });
 
 volSlider.addEventListener('input', () => {
@@ -1127,7 +2736,15 @@ setInterval(() => {
     pulseVal += pulseDir * 0.02;
     if (pulseVal >= 1) pulseDir = -1;
     if (pulseVal <= 0) pulseDir = 1;
-    playBtn.style.boxShadow = `0 0 ${40 + pulseVal * 40}px rgba(80, 140, 255, ${0.05 + pulseVal * 0.1}), inset 0 0 40px rgba(80, 140, 255, ${0.03 + pulseVal * 0.07})`;
+    if (currentPersona === 'zimmer') {
+      playBtn.style.boxShadow = `0 0 ${40 + pulseVal * 40}px rgba(204, 85, 0, ${0.08 + pulseVal * 0.12}), inset 0 0 40px rgba(204, 85, 0, ${0.04 + pulseVal * 0.08})`;
+    } else if (currentPersona === 'daftpunk') {
+      playBtn.style.boxShadow = `0 0 ${40 + pulseVal * 50}px rgba(0, 212, 255, ${0.1 + pulseVal * 0.16}), 0 0 ${20 + pulseVal * 30}px rgba(255, 20, 147, ${0.06 + pulseVal * 0.1}), inset 0 0 40px rgba(0, 212, 255, ${0.05 + pulseVal * 0.08})`;
+    } else if (currentPersona === 'interstella') {
+      playBtn.style.boxShadow = `0 0 ${40 + pulseVal * 50}px rgba(102, 0, 204, ${0.1 + pulseVal * 0.15}), 0 0 ${20 + pulseVal * 25}px rgba(255, 215, 0, ${0.08 + pulseVal * 0.12}), inset 0 0 40px rgba(102, 0, 204, ${0.05 + pulseVal * 0.08})`;
+    } else {
+      playBtn.style.boxShadow = `0 0 ${40 + pulseVal * 40}px rgba(80, 140, 255, ${0.05 + pulseVal * 0.1}), inset 0 0 40px rgba(80, 140, 255, ${0.03 + pulseVal * 0.07})`;
+    }
   }
 }, 50);
 
