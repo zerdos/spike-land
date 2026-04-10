@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sheila — Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a18;
+  --sheila:#ff7eb3;--sheila-glow:rgba(255,126,179,.25);
+  --pussy:#b388ff;--pussy-glow:rgba(179,136,255,.25);
+  --cat:#ffab91;--cat-glow:rgba(255,171,145,.25);
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:#eee;
+  font-family:'Rubik',system-ui,sans-serif;
+  user-select:none;-webkit-user-select:none;
+}
+
+canvas#bg{position:fixed;inset:0;z-index:0}
+
+.center{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+
+#word{
+  font-size:clamp(3rem,12vw,8rem);
+  font-variation-settings:'wght' 400;
+  letter-spacing:-.02em;
+  text-align:center;
+  transition:color .15s,opacity .1s;
+  opacity:.15;
+  line-height:1;
+  padding:0 1rem;
+}
+#word.on{
+  opacity:1;
+  font-variation-settings:'wght' 800;
+}
+
+#subtitle{
+  margin-top:1.5rem;
+  font-size:clamp(.7rem,2vw,1rem);
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.15);
+  font-weight:300;
+  text-align:center;
+}
+
+#counter{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:20;
+  font-size:clamp(.6rem,1.5vw,.85rem);
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.18);
+  font-weight:300;
+}
+
+#dots{
+  display:flex;gap:8px;margin-top:1.8rem;
+  align-items:center;justify-content:center;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.08);
+  transition:background .1s,transform .1s,box-shadow .1s;
+}
+.dot.on{
+  transform:scale(1.6);
+}
+
+#play-btn{
+  pointer-events:all;
+  width:clamp(90px,16vw,140px);
+  height:clamp(90px,16vw,140px);
+  border-radius:50%;
+  border:1.5px solid rgba(255,126,179,.25);
+  background:rgba(10,10,24,.6);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;
+  box-shadow:0 0 60px rgba(255,126,179,.08);
+}
+#play-btn:hover{
+  border-color:rgba(255,126,179,.5);
+  box-shadow:0 0 80px rgba(255,126,179,.15);
+  transform:scale(1.04);
+}
+#play-btn:active{transform:scale(.96)}
+#play-btn svg{
+  width:32px;height:32px;
+  fill:rgba(255,126,179,.8);
+  margin-left:4px;
+  transition:all .2s;
+}
+#play-btn.playing svg{margin-left:0}
+.hidden{display:none!important}
+
+#controls{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:20;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(10,10,24,.6);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:10px 22px;border-radius:40px;
+  border:1px solid rgba(255,255,255,.06);
+  pointer-events:all;
+  opacity:0;transition:opacity .5s;
+}
+#controls.show{opacity:1}
+
+#controls label{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);font-weight:400;
+}
+#vol{
+  -webkit-appearance:none;appearance:none;
+  width:clamp(70px,12vw,120px);height:2px;
+  background:rgba(255,255,255,.1);border-radius:2px;
+  outline:none;cursor:pointer;
+}
+#vol::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:rgba(255,126,179,.7);cursor:pointer;
+  box-shadow:0 0 8px rgba(255,126,179,.3);
+}
+
+#phase-label{
+  font-size:10px;letter-spacing:.15em;
+  color:rgba(255,255,255,.2);font-weight:300;
+  min-width:70px;text-align:right;
+}
+
+.credit{
+  position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:20;
+  font-size:.5rem;color:rgba(255,126,179,.12);white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="center">
+  <div id="counter"></div>
+  <div id="word">Sheila</div>
+  <div id="subtitle">she is cleaning the floors here in the ward</div>
+  <div id="dots"></div>
+  <button id="play-btn">
+    <svg viewBox="0 0 24 24"><polygon id="play-icon" points="6,3 20,12 6,21"/></svg>
+  </button>
+</div>
+
+<div id="controls">
+  <label>vol</label>
+  <input type="range" id="vol" min="0" max="100" value="70">
+  <div id="phase-label">6 &middot; 7 &middot; 6 &middot; 7</div>
+</div>
+
+<div class="credit">spike.land &mdash; sheila arena</div>
+
+<script>
+// ========================================================================
+// SHEILA — Arena
+// Generative beat + visual lyrics
+// 6-7-6-7 asymmetric groove — Sheila 42 times per mega-cycle
+// She is cleaning the floors here in the ward. Pussycats everywhere.
+// ========================================================================
+
+const BPM = 116;
+const BEAT = 60 / BPM;
+const LOOKAHEAD = 0.12;
+const TICK = 40;
+
+// Phases: 6-7-6-7 = 26 beats per cycle
+const PHASES = [
+  { word: 'Sheila',    beats: 6, hue: '#ff7eb3', glow: 'rgba(255,126,179,' },
+  { word: 'Pussy',     beats: 7, hue: '#b388ff', glow: 'rgba(179,136,255,' },
+  { word: 'Pussycats', beats: 6, hue: '#ffab91', glow: 'rgba(255,171,145,' },
+  { word: 'Sheila',    beats: 7, hue: '#ff7eb3', glow: 'rgba(255,126,179,' },
+];
+const CYCLE_BEATS = 26; // 6+7+6+7
+
+// Chords per phase (Bb major family — warm & playful)
+const CHORDS = [
+  { bass: 116.54, pad: [233.08, 293.66, 349.23] }, // Bb
+  { bass: 98.00,  pad: [196.00, 233.08, 293.66] }, // Gm
+  { bass: 77.78,  pad: [155.56, 196.00, 233.08] }, // Eb
+  { bass: 87.31,  pad: [174.61, 220.00, 261.63] }, // F
+];
+
+// ── State ──
+let ctx = null;
+let masterGain = null;
+let playing = false;
+let nextBeat = 0;
+let globalBeat = 0;
+let schedulerID = null;
+
+// ── Sheila counter (42 per 3 cycles) ──
+// Cycle: Sheila(6) + Pussy(7) + Pussycats(6) + Sheila(7) = 13 sheilas
+// 3 cycles = 39 sheilas, then bridge adds 3 = 42
+let sheilaCount = 0;
+const SHEILA_TARGET = 42;
+
+// ── DOM ──
+const wordEl = document.getElementById('word');
+const subtitleEl = document.getElementById('subtitle');
+const counterEl = document.getElementById('counter');
+const dotsEl = document.getElementById('dots');
+const playBtn = document.getElementById('play-btn');
+const playIcon = document.getElementById('play-icon');
+const controlsEl = document.getElementById('controls');
+const volEl = document.getElementById('vol');
+const phaseLabel = document.getElementById('phase-label');
+const canvas = document.getElementById('bg');
+const cctx = canvas.getContext('2d');
+
+// ── Helpers ──
+function phaseAt(beat) {
+  const pos = beat % CYCLE_BEATS;
+  let acc = 0;
+  for (let i = 0; i < PHASES.length; i++) {
+    acc += PHASES[i].beats;
+    if (pos < acc) return { idx: i, local: pos - (acc - PHASES[i].beats) };
+  }
+  return { idx: 0, local: 0 };
+}
+
+function isBridge(beat) {
+  // Every 3 cycles (78 beats), 12-beat bridge
+  const megaCycle = 78 + 15; // 3 cycles + bridge
+  const pos = beat % megaCycle;
+  return pos >= 78;
+}
+
+function bridgeBeat(beat) {
+  const megaCycle = 78 + 15;
+  return (beat % megaCycle) - 78;
+}
+
+// ── Audio Init ──
+function initAudio() {
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Master gain → reverb → destination
+  masterGain = ctx.createGain();
+  masterGain.gain.value = 0.7;
+
+  // Simple reverb via delay feedback
+  const delay = ctx.createDelay(1);
+  delay.delayTime.value = 0.3;
+  const feedback = ctx.createGain();
+  feedback.gain.value = 0.25;
+  const reverbFilter = ctx.createBiquadFilter();
+  reverbFilter.type = 'lowpass';
+  reverbFilter.frequency.value = 2000;
+
+  masterGain.connect(ctx.destination);
+  masterGain.connect(delay);
+  delay.connect(reverbFilter);
+  reverbFilter.connect(feedback);
+  feedback.connect(delay);
+  feedback.connect(ctx.destination);
+
+  volEl.addEventListener('input', () => {
+    masterGain.gain.value = volEl.value / 100;
+  });
+}
+
+// ── Synth Instruments ──
+
+function kick(time) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(150, time);
+  osc.frequency.exponentialRampToValueAtTime(40, time + 0.12);
+  gain.gain.setValueAtTime(0.8, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
+  osc.connect(gain);
+  gain.connect(masterGain);
+  osc.start(time);
+  osc.stop(time + 0.35);
+
+  // Click layer
+  const click = ctx.createOscillator();
+  const clickGain = ctx.createGain();
+  click.type = 'sine';
+  click.frequency.setValueAtTime(800, time);
+  click.frequency.exponentialRampToValueAtTime(100, time + 0.02);
+  clickGain.gain.setValueAtTime(0.3, time);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+  click.connect(clickGain);
+  clickGain.connect(masterGain);
+  click.start(time);
+  click.stop(time + 0.04);
+}
+
+function snare(time) {
+  // Noise burst
+  const bufSize = ctx.sampleRate * 0.12;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const noiseGain = ctx.createGain();
+  const noiseFilt = ctx.createBiquadFilter();
+  noiseFilt.type = 'bandpass';
+  noiseFilt.frequency.value = 4000;
+  noiseFilt.Q.value = 1.2;
+  noiseGain.gain.setValueAtTime(0.35, time);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+  noise.connect(noiseFilt);
+  noiseFilt.connect(noiseGain);
+  noiseGain.connect(masterGain);
+  noise.start(time);
+
+  // Body
+  const osc = ctx.createOscillator();
+  const oscGain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(200, time);
+  osc.frequency.exponentialRampToValueAtTime(100, time + 0.06);
+  oscGain.gain.setValueAtTime(0.25, time);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+  osc.connect(oscGain);
+  oscGain.connect(masterGain);
+  osc.start(time);
+  osc.stop(time + 0.1);
+}
+
+function hat(time, open) {
+  const bufSize = ctx.sampleRate * (open ? 0.15 : 0.04);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'highpass';
+  filt.frequency.value = 7000;
+  gain.gain.setValueAtTime(open ? 0.12 : 0.08, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + (open ? 0.15 : 0.04));
+  noise.connect(filt);
+  filt.connect(gain);
+  gain.connect(masterGain);
+  noise.start(time);
+}
+
+function bass(time, freq, dur) {
+  const osc = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass';
+  filt.frequency.setValueAtTime(800, time);
+  filt.frequency.exponentialRampToValueAtTime(200, time + dur * 0.6);
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  osc2.type = 'triangle';
+  osc2.frequency.value = freq;
+  gain.gain.setValueAtTime(0.35, time);
+  gain.gain.setValueAtTime(0.35, time + dur * 0.7);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+  osc.connect(filt);
+  osc2.connect(filt);
+  filt.connect(gain);
+  gain.connect(masterGain);
+  osc.start(time);
+  osc2.start(time);
+  osc.stop(time + dur + 0.05);
+  osc2.stop(time + dur + 0.05);
+}
+
+function pad(time, freqs, dur) {
+  freqs.forEach((f, i) => {
+    for (let d = -1; d <= 1; d++) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = f + d * 0.8;
+      const filt = ctx.createBiquadFilter();
+      filt.type = 'lowpass';
+      filt.frequency.value = 1200 - i * 200;
+      filt.Q.value = 0.5;
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.linearRampToValueAtTime(0.04, time + 0.3);
+      gain.gain.setValueAtTime(0.04, time + dur - 0.4);
+      gain.gain.linearRampToValueAtTime(0, time + dur);
+      osc.connect(filt);
+      filt.connect(gain);
+      gain.connect(masterGain);
+      osc.start(time);
+      osc.stop(time + dur + 0.1);
+    }
+  });
+}
+
+function pluck(time, freq) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  osc.type = 'triangle';
+  osc.frequency.value = freq * 2;
+  filt.type = 'lowpass';
+  filt.frequency.setValueAtTime(3000, time);
+  filt.frequency.exponentialRampToValueAtTime(500, time + 0.2);
+  gain.gain.setValueAtTime(0.12, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
+  osc.connect(filt);
+  filt.connect(gain);
+  gain.connect(masterGain);
+  osc.start(time);
+  osc.stop(time + 0.3);
+}
+
+// ── Beat Scheduler ──
+
+function scheduleBeat(time, beat) {
+  const bridge = isBridge(beat);
+
+  if (bridge) {
+    // Bridge: sparse beat, just kick + pad
+    const bb = bridgeBeat(beat);
+    if (bb === 0 || bb === 4 || bb === 8) kick(time);
+    if (bb === 0) {
+      pad(time, [233.08, 293.66, 349.23], BEAT * 4);
+      bass(time, 116.54, BEAT * 4);
+    }
+    if (bb >= 12) {
+      // Final 3 sheilas
+      pluck(time, 349.23);
+      kick(time);
+    }
+    return;
+  }
+
+  const { idx, local } = phaseAt(beat);
+  const phase = PHASES[idx];
+  const chord = CHORDS[idx];
+
+  // Kick: beat 0 and midpoint of phrase
+  if (local === 0) kick(time);
+  else if (local === Math.floor(phase.beats / 2)) kick(time);
+
+  // Snare: beat 2, and beat 5 for 7-beat phrases
+  if (local === 2) snare(time);
+  if (local === 5 && phase.beats === 7) snare(time);
+
+  // Hi-hat: every beat, open on offbeats
+  hat(time, local % 2 === 1);
+
+  // Bass: on beat 0 of each phase
+  if (local === 0) {
+    bass(time, chord.bass, BEAT * phase.beats * 0.9);
+  }
+
+  // Pad: on beat 0 of each phase
+  if (local === 0) {
+    pad(time, chord.pad, BEAT * phase.beats);
+  }
+
+  // Pluck arpeggios: scattered notes
+  if (local === 1 || local === 4) {
+    const note = chord.pad[local % chord.pad.length];
+    pluck(time, note);
+  }
+}
+
+// ── Visual State ──
+let vizPhase = { idx: 0, local: 0, bridge: false, bridgeBeat: 0, beat: 0 };
+let vizBeatTime = 0;
+
+function scheduleVisual(beat, time) {
+  const bridge = isBridge(beat);
+  if (bridge) {
+    vizPhase = { idx: -1, local: bridgeBeat(beat), bridge: true, bridgeBeat: bridgeBeat(beat), beat };
+  } else {
+    const { idx, local } = phaseAt(beat);
+    vizPhase = { idx, local, bridge: false, bridgeBeat: 0, beat };
+  }
+  vizBeatTime = time;
+}
+
+// ── Main Scheduler Loop ──
+function scheduler() {
+  while (nextBeat < ctx.currentTime + LOOKAHEAD) {
+    scheduleBeat(nextBeat, globalBeat);
+    scheduleVisual(globalBeat, nextBeat);
+    globalBeat++;
+    nextBeat += BEAT;
+  }
+}
+
+// ── Visual Render Loop ──
+let animFrame = null;
+let currentColor = '#ff7eb3';
+let targetColor = '#ff7eb3';
+let pulseIntensity = 0;
+// Sheila count tracking
+let displaySheilaCount = 0;
+let lastCountedBeat = -1;
+
+function updateVisuals() {
+  animFrame = requestAnimationFrame(updateVisuals);
+
+  const now = ctx ? ctx.currentTime : 0;
+  const sinceBeat = now - vizBeatTime;
+  pulseIntensity = Math.max(0, 1 - sinceBeat / (BEAT * 0.6));
+
+  if (vizPhase.bridge) {
+    const bb = vizPhase.bridgeBeat;
+    if (bb < 5) {
+      wordEl.textContent = 'She is cleaning';
+      wordEl.style.fontSize = 'clamp(1.5rem,6vw,3.5rem)';
+    } else if (bb < 9) {
+      wordEl.textContent = 'the floors';
+      wordEl.style.fontSize = '';
+    } else if (bb < 12) {
+      wordEl.textContent = 'here in the ward';
+      wordEl.style.fontSize = 'clamp(1.5rem,6vw,3.5rem)';
+    } else {
+      wordEl.textContent = 'Sheila';
+      wordEl.style.fontSize = '';
+      // Count bridge sheilas
+      if (vizPhase.beat !== lastCountedBeat) {
+        displaySheilaCount++;
+        lastCountedBeat = vizPhase.beat;
+      }
+    }
+    targetColor = '#ff7eb3';
+    wordEl.style.color = targetColor;
+  } else if (vizPhase.idx >= 0) {
+    const phase = PHASES[vizPhase.idx];
+    wordEl.textContent = phase.word;
+    wordEl.style.fontSize = '';
+    targetColor = phase.hue;
+    wordEl.style.color = targetColor;
+
+    // Count sheilas
+    if ((vizPhase.idx === 0 || vizPhase.idx === 3) && vizPhase.beat !== lastCountedBeat) {
+      displaySheilaCount++;
+      lastCountedBeat = vizPhase.beat;
+    }
+  }
+
+  // Pulse class
+  if (pulseIntensity > 0.3) {
+    wordEl.classList.add('on');
+  } else {
+    wordEl.classList.remove('on');
+  }
+
+  // Dots
+  if (!vizPhase.bridge && vizPhase.idx >= 0) {
+    const phase = PHASES[vizPhase.idx];
+    if (dotsEl.children.length !== phase.beats) {
+      dotsEl.innerHTML = '';
+      for (let i = 0; i < phase.beats; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        dotsEl.appendChild(d);
+      }
+    }
+    for (let i = 0; i < dotsEl.children.length; i++) {
+      const d = dotsEl.children[i];
+      if (i === vizPhase.local && pulseIntensity > 0.3) {
+        d.classList.add('on');
+        d.style.background = targetColor;
+        d.style.boxShadow = `0 0 12px ${targetColor}`;
+      } else if (i < vizPhase.local) {
+        d.classList.remove('on');
+        d.style.background = targetColor;
+        d.style.boxShadow = 'none';
+        d.style.opacity = '0.4';
+      } else {
+        d.classList.remove('on');
+        d.style.background = 'rgba(255,255,255,.08)';
+        d.style.boxShadow = 'none';
+        d.style.opacity = '1';
+      }
+    }
+  }
+
+  // Counter
+  const megaCycle = 78 + 15;
+  const cycleNum = Math.floor(globalBeat / megaCycle) + 1;
+  const sheilaDisplay = ((displaySheilaCount - 1) % SHEILA_TARGET) + 1;
+  counterEl.textContent = playing
+    ? `sheila ${sheilaDisplay > 0 ? sheilaDisplay : 1} / ${SHEILA_TARGET}`
+    : '';
+
+  // Phase label
+  if (playing && !vizPhase.bridge && vizPhase.idx >= 0) {
+    const beats = PHASES.map((p, i) => i === vizPhase.idx ? `[${p.beats}]` : p.beats);
+    phaseLabel.textContent = beats.join(' \u00b7 ');
+  } else if (playing && vizPhase.bridge) {
+    phaseLabel.textContent = 'bridge';
+  }
+
+  // Background canvas
+  drawBg(pulseIntensity);
+}
+
+// ── Background Canvas ──
+function resizeCanvas() {
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  cctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+const orbs = [];
+for (let i = 0; i < 5; i++) {
+  orbs.push({
+    x: Math.random(), y: Math.random(),
+    vx: (Math.random() - 0.5) * 0.0003,
+    vy: (Math.random() - 0.5) * 0.0003,
+    r: 0.15 + Math.random() * 0.2,
+    hue: [330, 270, 20, 330, 270][i],
+  });
+}
+
+function drawBg(pulse) {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  cctx.clearRect(0, 0, w, h);
+
+  if (!playing) {
+    cctx.fillStyle = 'rgba(10,10,24,1)';
+    cctx.fillRect(0, 0, w, h);
+    return;
+  }
+
+  cctx.fillStyle = 'rgba(10,10,24,0.3)';
+  cctx.fillRect(0, 0, w, h);
+
+  orbs.forEach(orb => {
+    orb.x += orb.vx;
+    orb.y += orb.vy;
+    if (orb.x < -0.2 || orb.x > 1.2) orb.vx *= -1;
+    if (orb.y < -0.2 || orb.y > 1.2) orb.vy *= -1;
+
+    const alpha = 0.06 + pulse * 0.08;
+    const radius = orb.r * Math.min(w, h) * (1 + pulse * 0.15);
+    const grad = cctx.createRadialGradient(
+      orb.x * w, orb.y * h, 0,
+      orb.x * w, orb.y * h, radius
+    );
+    grad.addColorStop(0, `hsla(${orb.hue},70%,55%,${alpha})`);
+    grad.addColorStop(1, `hsla(${orb.hue},70%,55%,0)`);
+    cctx.fillStyle = grad;
+    cctx.fillRect(0, 0, w, h);
+  });
+}
+
+// Initial static bg
+drawBg(0);
+
+// ── Play / Pause ──
+function togglePlay() {
+  if (!ctx) initAudio();
+
+  if (ctx.state === 'suspended') ctx.resume();
+
+  if (playing) {
+    playing = false;
+    clearInterval(schedulerID);
+    cancelAnimationFrame(animFrame);
+    animFrame = null;
+    playIcon.setAttribute('points', '6,3 20,12 6,21');
+    playBtn.classList.remove('playing');
+    controlsEl.classList.remove('show');
+    subtitleEl.style.opacity = '';
+    wordEl.classList.remove('on');
+    wordEl.textContent = 'Sheila';
+    wordEl.style.color = '#ff7eb3';
+    wordEl.style.fontSize = '';
+    counterEl.textContent = '';
+    dotsEl.innerHTML = '';
+    startIdle();
+    return;
+  }
+
+  playing = true;
+  globalBeat = 0;
+  displaySheilaCount = 0;
+  lastCountedBeat = -1;
+  nextBeat = ctx.currentTime + 0.05;
+  schedulerID = setInterval(scheduler, TICK);
+  playIcon.setAttribute('points', '6,4 10,4 10,20 6,20 14,4 18,4 18,20 14,20');
+  playBtn.classList.add('playing');
+  controlsEl.classList.add('show');
+  subtitleEl.style.opacity = '0.35';
+
+  if (!animFrame) updateVisuals();
+}
+
+playBtn.addEventListener('click', togglePlay);
+
+// Also start on spacebar
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+});
+
+// ── Idle animation loop (restarts when paused) ──
+function startIdle() {
+  requestAnimationFrame(function idle() {
+    if (!playing) {
+      drawBg(0);
+      requestAnimationFrame(idle);
+    }
+  });
+}
+startIdle();
+</script>
+</body>
+</html>

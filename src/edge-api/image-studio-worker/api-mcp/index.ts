@@ -26,22 +26,13 @@ import {
 import {
   buildStandardHealthResponse,
   getHealthHttpStatus,
+  timedCheck,
 } from "../../common/core-logic/health-contract";
 
 declare const __BUILD_SHA__: string;
 declare const __BUILD_TIME__: string;
 
 const app = new Hono<{ Bindings: Env }>();
-
-app.get("/version", (c) => c.json({ sha: __BUILD_SHA__, built: __BUILD_TIME__ }));
-
-app.get("/health", (c) => {
-  const payload = buildStandardHealthResponse({
-    service: "image-studio-mcp",
-    version: __BUILD_SHA__,
-  });
-  return c.json(payload, getHealthHttpStatus(payload));
-});
 
 app.use(
   "*",
@@ -62,6 +53,26 @@ app.use(
     credentials: true,
   }),
 );
+
+app.get("/version", (c) => c.json({ sha: __BUILD_SHA__, built: __BUILD_TIME__ }));
+
+app.get("/health", async (c) => {
+  const [r2, d1] = await Promise.all([
+    timedCheck(async () => {
+      await c.env.IMAGE_R2.head("__health_check__");
+    }),
+    timedCheck(async () => {
+      await c.env.IMAGE_DB.prepare("SELECT 1").first();
+    }),
+  ]);
+
+  const payload = buildStandardHealthResponse({
+    service: "image-studio-mcp",
+    version: __BUILD_SHA__,
+    checks: { r2, d1 },
+  });
+  return c.json(payload, getHealthHttpStatus(payload));
+});
 
 // Provide R2 image fetching (public)
 app.on("HEAD", "/r2/:key", async (c) => {
