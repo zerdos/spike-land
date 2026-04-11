@@ -4,11 +4,53 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
+
 const metrics = [
   { value: '80+', label: 'MCP Tools' },
   { value: '26', label: 'AI Personas' },
   { value: '100%', label: 'Open Source' },
   { value: '$0', label: 'To Start' },
+];
+
+const pillars = [
+  {
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    title: 'MCP Tools',
+    description: '80+ composable tools for code generation, image creation, data analysis, and automation. Every tool follows the MCP protocol.',
+  },
+  {
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    title: 'App Store',
+    description: 'Discover, install, and compose AI applications built on MCP. Every app is a bundle of tools with discovery metadata.',
+  },
+  {
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    title: 'AI Personas',
+    description: '26 distinct AI personalities — mathematicians, philosophers, engineers. Each with their own worldview and conversational style.',
+  },
+];
+
+const appShowcase = [
+  { name: 'Code Review', desc: 'AI-powered code review with GitHub integration', icon: 'CR' },
+  { name: 'Image Studio', desc: 'Generate, enhance, and compose images with AI', icon: 'IS' },
+  { name: 'Chess Arena', desc: 'Play chess against AI with ELO rating system', icon: 'CA' },
+  { name: 'Quiz Builder', desc: 'Create interactive quizzes and assessments', icon: 'QB' },
+  { name: 'Blog Engine', desc: 'Write and publish MDX blog posts with AI', icon: 'BE' },
+  { name: 'Vibe Code', desc: 'Docker-based development workflows', icon: 'VC' },
+  { name: 'Sandbox', desc: 'Safe code execution and evaluation', icon: 'SB' },
+  { name: 'TTS Studio', desc: 'Text-to-speech with ElevenLabs integration', icon: 'TS' },
+  { name: 'BugBook', desc: 'Bug tracking and feedback collection', icon: 'BB' },
+];
+
+const toolCategories = [
+  { name: 'Database', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>' },
+  { name: 'AI / ML', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.57-3.25 3.93"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.57 3.25 3.93"/><path d="M12 18v4"/><path d="M8 22h8"/><circle cx="12" cy="14" r="4"/></svg>' },
+  { name: 'File System', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' },
+  { name: 'Web & HTTP', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' },
+  { name: 'Git & VCS', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M6 9v12"/></svg>' },
+  { name: 'Testing', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>' },
+  { name: 'Analytics', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>' },
+  { name: 'Auth & Security', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
 ];
 
 const personas = [
@@ -21,9 +63,9 @@ const personas = [
   { slug: 'arnold', name: 'Arnold', role: 'UX Provocateur', accent: '#e11d48', pitch: 'Show me what you\'ve got. I\'ll tell you what it\'s missing.', initial: 'A' },
   { slug: 'peti', name: 'Peti', role: 'QA Engineer', accent: '#22c55e', pitch: 'Does it work on mobile Safari? Test there first.', initial: 'P' },
   { slug: 'diogenes', name: 'Diogenes', role: 'Cynic', accent: '#854d0e', pitch: 'I am looking for an honest man.', initial: 'D' },
-  { slug: 'arendt', name: 'Arendt', role: 'Political Thinker', accent: '#57534e', pitch: 'The sad truth is that most evil is done by people who never make up their minds to be good or evil.', initial: 'H' },
-  { slug: 'nietzsche', name: 'Nietzsche', role: 'Philosopher', accent: '#9f1239', pitch: 'He who has a why to live can bear almost any how.', initial: 'N' },
-  { slug: 'confucius', name: 'Confucius', role: 'Sage', accent: '#b91c1c', pitch: 'It does not matter how slowly you go as long as you do not stop.', initial: 'K' },
+  { slug: 'feynman', name: 'Feynman', role: 'Physicist', accent: '#f97316', pitch: 'What I cannot create, I do not understand.', initial: 'R' },
+  { slug: 'turing', name: 'Turing', role: 'Computer Scientist', accent: '#14b8a6', pitch: 'We can only see a short distance ahead, but plenty needs to be done.', initial: 'A' },
+  { slug: 'aristotle', name: 'Aristotle', role: 'Polymath', accent: '#059669', pitch: 'We are what we repeatedly do. Excellence is a habit.', initial: 'A' },
 ];
 
 // Fetch latest blog posts
@@ -31,15 +73,15 @@ const allPosts = await getCollection('blog');
 const latestPosts = allPosts
   .filter(post => !post.data.draft && !post.data.unlisted)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 10);
+  .slice(0, 4);
 
 const featuredPost = latestPosts[0];
-const morePosts = latestPosts.slice(1, 7);
+const morePosts = latestPosts.slice(1, 4);
 ---
 
 <Layout
-  title="spike.land — AI tools that actually work"
-  description="80+ MCP tools for code, images, data, and automation. 26 AI personas to think with. Open source. Free to start."
+  title="spike.land — Ship faster with AI agents"
+  description="Open-source AI development platform. 80+ MCP tools, 26 AI personas, app store. Free to start."
 >
   <Analytics slot="head" />
   <link slot="head" rel="manifest" href="/site.webmanifest" />
@@ -51,41 +93,38 @@ const morePosts = latestPosts.slice(1, 7);
     <Nav activePath="/" />
 
     <main id="main-content">
-      <!-- ── Hero ─────────────────────────────────────────────────────── -->
+      <!-- Hero -->
       <section class="hero-section gradient-mesh">
         <div class="rubik-container hero-inner stagger-in">
           <div class="hero-eyebrow">
             <span class="rubik-chip chip-live">
               <span class="live-dot"></span>
-              80+ AI tools, one platform
+              Open-source AI platform
             </span>
           </div>
 
           <h1 class="hero-title">
-            AI tools that<br class="sm-break" /> actually work.
+            Ship faster with<br class="sm-break" /> AI agents.
           </h1>
 
           <p class="rubik-lede hero-lede">
             80+ MCP tools for code, images, data, and automation.
-            26 AI personas to think with. Start free, upgrade when you need more.
+            26 AI personas to think with. Open source. Free to start.
           </p>
 
           <div class="hero-ctas">
-            <a href="/apps" class="cta-primary">
-              Browse the App Store
+            <a href="/login" class="cta-primary">
+              Start Building
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <a href="/chat" class="cta-secondary">
-              Talk to a persona
-            </a>
-            <a href="/pricing" class="cta-secondary">
-              See pricing
+            <a href="/learn" class="cta-secondary">
+              View Documentation
             </a>
           </div>
         </div>
       </section>
 
-      <!-- ── Metrics strip ───────────────────────────────────────────── -->
+      <!-- Metrics strip -->
       <section class="metrics-strip">
         <div class="rubik-container metrics-inner">
           {metrics.map(m => (
@@ -97,11 +136,85 @@ const morePosts = latestPosts.slice(1, 7);
         </div>
       </section>
 
-      <!-- ── Blog (first render path — high engagement) ───────────── -->
+      <!-- Three Pillars -->
+      <section class="pillars-section scroll-reveal">
+        <div class="rubik-container">
+          <div class="pillars-grid">
+            {pillars.map(p => (
+              <div class="pillar-card rubik-panel">
+                <div class="pillar-icon" set:html={p.icon} />
+                <h3 class="pillar-title">{p.title}</h3>
+                <p class="pillar-desc">{p.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- App Showcase -->
+      <section class="showcase-section scroll-reveal">
+        <div class="rubik-container">
+          <div class="section-header">
+            <p class="rubik-eyebrow">App Store</p>
+            <h2 class="section-title">Built on spike.land</h2>
+          </div>
+          <div class="showcase-grid">
+            {appShowcase.map(app => (
+              <a href="/apps" class="showcase-card rubik-panel">
+                <div class="showcase-icon">{app.icon}</div>
+                <h3 class="showcase-name">{app.name}</h3>
+                <p class="showcase-desc">{app.desc}</p>
+              </a>
+            ))}
+          </div>
+          <div class="showcase-cta">
+            <a href="/apps" class="cta-secondary">
+              Browse all apps
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- MCP Protocol -->
+      <section class="mcp-section scroll-reveal">
+        <div class="rubik-container">
+          <div class="section-header">
+            <p class="rubik-eyebrow">MCP Protocol</p>
+            <h2 class="section-title">One line to connect.</h2>
+          </div>
+
+          <div class="mcp-content">
+            <div class="connect-terminal rubik-panel">
+              <div class="terminal-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <pre class="terminal-code"><code><span class="code-comment">// Connect any MCP client in seconds</span>
+<span class="code-key">"mcpServers"</span>: &#123;
+  <span class="code-key">"spike-land"</span>: &#123;
+    <span class="code-key">"transport"</span>: <span class="code-str">"streamable-http"</span>,
+    <span class="code-key">"url"</span>: <span class="code-str">"https://spike.land/mcp"</span>
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="tool-categories">
+              {toolCategories.map(cat => (
+                <div class="tool-cat">
+                  <span class="tool-cat-icon" set:html={cat.icon} />
+                  <span class="tool-cat-name">{cat.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Blog -->
       <section class="blog-section scroll-reveal">
         <div class="rubik-container">
           <div class="section-header">
-            <p class="rubik-eyebrow">Writing</p>
+            <p class="rubik-eyebrow">Blog</p>
             <h2 class="section-title">From the Arena</h2>
           </div>
 
@@ -158,7 +271,7 @@ const morePosts = latestPosts.slice(1, 7);
         </div>
       </section>
 
-      <!-- ── Meet the personas ──────────────────────────────────────── -->
+      <!-- Personas -->
       <section class="hook-section hook-personas scroll-reveal">
         <div class="rubik-container">
           <div class="section-header">
@@ -179,7 +292,7 @@ const morePosts = latestPosts.slice(1, 7);
             ))}
           </div>
           <div style="text-align: center; margin-top: 2rem;">
-            <a href="/chat" class="cta-secondary">
+            <a href="/arena" class="cta-secondary">
               See all 26 personas
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
@@ -187,7 +300,7 @@ const morePosts = latestPosts.slice(1, 7);
         </div>
       </section>
 
-      <!-- ── For developers ──────────────────────────────────────────── -->
+      <!-- For developers -->
       <section class="hook-section hook-opensource">
         <div class="rubik-container hook-inner">
           <div class="hook-badge">For developers</div>
@@ -209,27 +322,30 @@ const morePosts = latestPosts.slice(1, 7);
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 4.238 9.617 9.634 10.828.576.106.788-.25.788-.556 0-.273-.01-1.185-.015-2.171-4.037.876-4.889-1.731-4.889-1.731-.66-1.676-1.61-2.122-1.61-2.122-1.318-.9.1-.882.1-.882 1.457.102 2.224 1.496 2.224 1.496 1.296 2.218 3.39 1.577 4.216 1.206.13-.938.533-1.577.976-1.94-3.221-.366-6.608-1.61-6.608-7.17 0-1.583.565-2.877 1.492-3.892-.15-.366-.647-1.84.142-3.838 0 0 1.217-.422 3.992 1.486 1.157-.322 2.397-.483 3.633-.488 1.235.005 2.476.166 3.635.488 2.772-1.908 3.987-1.486 3.987-1.486.791 1.998.294 3.472.144 3.838.929 1.015 1.49 2.309 1.49 3.892 0 5.574-3.393 6.801-6.624 7.16.524.452.991 1.344.991 2.709 0 1.957-.014 3.532-.014 4.012 0 .31.209.669.799.554 5.393-1.213 9.629-5.526 9.629-10.828 0-6.627-5.373-12-12-12z"/></svg>
               View on GitHub
             </a>
-            <a href="https://status.spike.land" class="cta-secondary" target="_blank" rel="noopener">
+            <a href="/status" class="cta-secondary">
               <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#22c55e"/></svg>
-              7/7 services up
+              All services operational
             </a>
           </div>
         </div>
       </section>
 
-      <!-- ── CTA band ────────────────────────────────────────────────── -->
+      <!-- CTA band -->
       <section class="cta-band">
         <div class="rubik-container cta-band-inner">
           <div class="cta-band-content">
-            <h2 class="cta-band-title">Ready to build?</h2>
+            <h2 class="cta-band-title">Ready to ship faster?</h2>
             <p class="rubik-lede cta-band-lede">
-              80+ tools. 26 personas. Free to start.
+              80+ tools. 26 personas. Open source. Free to start.
             </p>
           </div>
           <div class="cta-band-actions">
-            <a href="/apps" class="cta-primary">
-              Explore the App Store
+            <a href="/login" class="cta-primary">
+              Start Building
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="/learn" class="cta-secondary">
+              View Documentation
             </a>
           </div>
         </div>
@@ -257,41 +373,9 @@ const morePosts = latestPosts.slice(1, 7);
   </div>
 </Layout>
 
-<!-- GP audio player -->
+<!-- PWA Install + tracking script -->
 <script is:inline>
 (function() {
-  var btn = document.getElementById('gp-play');
-  var audio = document.getElementById('gp-audio');
-  var iconPlay = btn && btn.querySelector('.gp-icon-play');
-  var iconPause = btn && btn.querySelector('.gp-icon-pause');
-  if (!btn || !audio) return;
-
-  btn.addEventListener('click', function() {
-    if (audio.paused) {
-      audio.play();
-      btn.classList.add('is-playing');
-      iconPlay.style.display = 'none';
-      iconPause.style.display = 'block';
-    } else {
-      audio.pause();
-      btn.classList.remove('is-playing');
-      iconPlay.style.display = 'block';
-      iconPause.style.display = 'none';
-    }
-  });
-
-  audio.addEventListener('ended', function() {
-    btn.classList.remove('is-playing');
-    iconPlay.style.display = 'block';
-    iconPause.style.display = 'none';
-  });
-})();
-</script>
-
-<!-- PWA Install + A/B tracking script -->
-<script is:inline>
-(function() {
-  // ── PWA Install Prompt ──
   let deferredPrompt = null;
   const banner = document.getElementById('pwa-banner');
   const installBtn = document.getElementById('pwa-install');
@@ -330,19 +414,9 @@ const morePosts = latestPosts.slice(1, 7);
     });
   }
 
-  // ── Lightweight A/B experiment tracking ──
-  function getVariant(experimentId) {
-    var key = 'ab_' + experimentId;
-    var stored = localStorage.getItem(key);
-    if (stored) return stored;
-    var variant = Math.random() < 0.5 ? 'a' : 'b';
-    localStorage.setItem(key, variant);
-    return variant;
-  }
-
   function trackEvent(event, detail) {
     if (typeof navigator.sendBeacon === 'function') {
-      navigator.sendBeacon('/api/analytics/ingest', JSON.stringify([{
+      navigator.sendBeacon('/analytics/ingest', JSON.stringify([{
         source: 'frontend',
         eventType: event,
         metadata: {
@@ -354,7 +428,7 @@ const morePosts = latestPosts.slice(1, 7);
     }
   }
 
-  // Track scroll depth for engagement
+  // Track scroll depth
   var maxScroll = 0;
   var scrollTicks = [25, 50, 75, 100];
   window.addEventListener('scroll', function() {
@@ -375,7 +449,7 @@ const morePosts = latestPosts.slice(1, 7);
   setTimeout(function() { trackEvent('engaged', '30s'); }, 30000);
   setTimeout(function() { trackEvent('engaged', '60s'); }, 60000);
 
-  // iOS PWA hint (no beforeinstallprompt)
+  // iOS PWA hint
   var isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
   if (isIos && !isStandalone && !localStorage.getItem('pwa-dismissed')) {
@@ -401,7 +475,7 @@ const morePosts = latestPosts.slice(1, 7);
     background: var(--bg);
   }
 
-  /* ── Hero ──────────────────────────────────────────────────────────── */
+  /* Hero */
   .hero-section {
     padding-block: clamp(4rem, 10vw, 8rem) clamp(2.5rem, 5vw, 4rem);
     position: relative;
@@ -452,7 +526,7 @@ const morePosts = latestPosts.slice(1, 7);
     display: flex; gap: 0.875rem; flex-wrap: wrap; justify-content: center; padding-top: 0.5rem;
   }
 
-  /* ── CTAs ──────────────────────────────────────────────────────────── */
+  /* CTAs */
   .cta-primary {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.8125rem 1.625rem; background: var(--primary-color);
@@ -488,7 +562,7 @@ const morePosts = latestPosts.slice(1, 7);
     transform: translateY(-1px);
   }
 
-  /* ── Metrics strip ─────────────────────────────────────────────────── */
+  /* Metrics strip */
   .metrics-strip {
     border-block: 1px solid var(--border-color);
     background: var(--card-bg); padding-block: 2rem;
@@ -498,33 +572,102 @@ const morePosts = latestPosts.slice(1, 7);
   }
   .metric-item {
     display: flex; flex-direction: column; align-items: center; gap: 0.375rem;
-    position: relative;
   }
   .metric-value {
     font-size: clamp(1.875rem, 3.5vw, 2.5rem); font-weight: 900;
     font-family: var(--font-display); letter-spacing: -0.04em;
-    color: var(--fg); font-variation-settings: "wght" 900;
+    color: var(--fg);
   }
   .metric-label {
     font-size: 0.75rem; color: var(--muted-fg); font-weight: 500;
     text-transform: uppercase; letter-spacing: 0.08em;
   }
 
-  /* ── Connect section ────────────────────────────────────────────── */
-  .connect-section {
+  /* Pillars */
+  .pillars-section {
     padding-block: clamp(3rem, 6vw, 5rem);
   }
-  .connect-inner {
-    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem;
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem;
   }
-  .connect-title {
-    font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; letter-spacing: -0.03em;
+  .pillar-card {
+    display: flex; flex-direction: column; gap: 1rem;
+    padding: 2rem;
+  }
+  .pillar-icon {
+    width: 3rem; height: 3rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--primary-glow);
+    border-radius: var(--radius-lg);
+    color: var(--primary-color);
+  }
+  .pillar-title {
+    font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .pillar-desc {
+    font-size: 0.9rem; color: var(--muted-fg); line-height: 1.65;
+    margin: 0;
+  }
+
+  /* App Showcase */
+  .showcase-section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--border-color);
+  }
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1.25rem;
+  }
+  .showcase-card {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    padding: 1.5rem; text-decoration: none; color: inherit;
+    transition: transform var(--duration-normal) var(--ease),
+                box-shadow var(--duration-normal) var(--ease),
+                border-color var(--duration-normal) var(--ease);
+  }
+  .showcase-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: oklch(from var(--primary-color) l c h / 0.3);
+  }
+  .showcase-icon {
+    width: 2.75rem; height: 2.75rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--primary-glow);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem; font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: -0.02em;
+  }
+  .showcase-name {
+    font-size: 1rem; font-weight: 700; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .showcase-desc {
+    font-size: 0.8125rem; color: var(--muted-fg); margin: 0;
+    line-height: 1.5;
+  }
+  .showcase-cta {
+    margin-top: 2rem; display: flex; justify-content: center;
+  }
+
+  /* MCP Protocol */
+  .mcp-section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--border-color);
+    background: var(--primary-glow);
+  }
+  .mcp-content {
+    display: flex; flex-direction: column; align-items: center; gap: 2.5rem;
   }
   .connect-terminal {
-    width: 100%; max-width: 44rem; text-align: left;
-    padding: 1rem 1.25rem; font-family: ui-monospace, monospace;
-    font-size: 0.875rem; overflow-x: auto;
-    position: relative;
+    width: 100%; max-width: 36rem; text-align: left;
+    padding: 1.25rem 1.5rem; font-family: var(--font-mono);
+    font-size: 0.8125rem; overflow-x: auto;
   }
   .terminal-dots {
     display: flex; gap: 0.375rem; margin-bottom: 0.75rem;
@@ -536,9 +679,40 @@ const morePosts = latestPosts.slice(1, 7);
   .terminal-dots span:nth-child(1) { background: #ef4444aa; }
   .terminal-dots span:nth-child(2) { background: #f59e0baa; }
   .terminal-dots span:nth-child(3) { background: #22c55eaa; }
+  .terminal-code {
+    display: block; line-height: 1.7;
+    white-space: pre; color: var(--fg);
+  }
+  .code-comment { color: var(--muted-fg); font-style: italic; }
+  .code-key { color: var(--accent-teal); }
+  .code-str { color: var(--color-status-live); }
   .terminal-prompt { color: var(--primary-color); margin-right: 0.5rem; }
   .terminal-cmd { color: var(--fg); word-break: break-all; }
-  .connect-sub { font-size: 0.875rem; color: var(--muted-fg); }
+
+  .tool-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: 0.75rem; width: 100%; max-width: 48rem;
+  }
+  .tool-cat {
+    display: flex; align-items: center; gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration-fast) var(--ease),
+                background var(--duration-fast) var(--ease);
+  }
+  .tool-cat:hover {
+    border-color: oklch(from var(--primary-color) l c h / 0.3);
+    background: var(--muted-bg);
+  }
+  .tool-cat-icon {
+    display: flex; color: var(--primary-color); flex-shrink: 0;
+  }
+  .tool-cat-name {
+    font-size: 0.8125rem; font-weight: 600; color: var(--fg);
+  }
 
   .section-header {
     text-align: center; margin-bottom: 3rem;
@@ -546,11 +720,10 @@ const morePosts = latestPosts.slice(1, 7);
   }
   .section-title { max-width: 24ch; }
 
-  /* ── Blog section ──────────────────────────────────────────────────── */
+  /* Blog */
   .blog-section {
     padding-block: clamp(4rem, 8vw, 7rem);
     border-top: 1px solid var(--border-color);
-    background: var(--primary-glow);
   }
 
   .featured-post {
@@ -631,7 +804,7 @@ const morePosts = latestPosts.slice(1, 7);
 
   .blog-cta { margin-top: 2.5rem; display: flex; justify-content: center; }
 
-  /* ── CTA band ──────────────────────────────────────────────────────── */
+  /* CTA band */
   .cta-band {
     padding-block: clamp(4rem, 8vw, 6rem);
     background:
@@ -647,7 +820,7 @@ const morePosts = latestPosts.slice(1, 7);
   .cta-band-lede { margin: 0; }
   .cta-band-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; }
 
-  /* ── PWA Install Banner ─────────────────────────────────────────── */
+  /* PWA Install Banner */
   .pwa-banner {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
     background: var(--card-bg); border-top: 1px solid var(--border-color);
@@ -679,7 +852,7 @@ const morePosts = latestPosts.slice(1, 7);
   }
   .pwa-btn-dismiss:hover { background: var(--muted-bg); }
 
-  /* ── Hook sections (free tokens, personas, open source) ────────── */
+  /* Hook sections */
   .hook-section {
     padding-block: clamp(3rem, 6vw, 5rem);
     border-top: 1px solid var(--border-color);
@@ -706,53 +879,14 @@ const morePosts = latestPosts.slice(1, 7);
     font-size: 1.0625rem; line-height: 1.7; color: var(--muted-fg);
     max-width: 52ch; margin: 0;
   }
-  .hook-stats {
-    display: flex; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap;
-    justify-content: center; padding-top: 0.5rem;
-  }
-  .hook-stat {
-    display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-  }
-  .hook-stat-value {
-    font-size: clamp(2rem, 4vw, 3rem); font-weight: 900;
-    font-family: var(--font-display); letter-spacing: -0.04em;
-    color: var(--fg);
-  }
-  .hook-stat-label {
-    font-size: 0.8125rem; color: var(--muted-fg); font-weight: 500;
-  }
 
-  /* ── GP audio player ─────────────────────────────────────────────── */
-  .gp-audio-wrap {
-    display: flex; justify-content: center;
-  }
-  .gp-play-btn {
-    display: inline-flex; align-items: center; gap: 0.625rem;
-    padding: 0.625rem 1.25rem;
-    background: color-mix(in srgb, var(--primary-color) 8%, var(--card-bg));
-    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
-    border-radius: 999px; cursor: pointer;
-    color: var(--fg); font-size: 0.875rem; font-weight: 500;
-    transition: background 0.2s, border-color 0.2s, transform 0.15s;
-  }
-  .gp-play-btn:hover {
-    background: color-mix(in srgb, var(--primary-color) 14%, var(--card-bg));
-    border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
-    transform: translateY(-1px);
-  }
-  .gp-play-btn svg { color: var(--primary-color); flex-shrink: 0; }
-  .gp-label { color: var(--muted-fg); }
-  .gp-play-btn.is-playing { border-color: var(--primary-color); }
-  .gp-play-btn.is-playing .gp-label { color: var(--fg); }
-
-  /* Open source / developer hook accent */
   .hook-opensource {
     background:
       radial-gradient(ellipse 50% 40% at 30% 80%, oklch(from var(--accent-teal) l c h / 0.05), transparent),
       var(--primary-glow);
   }
 
-  /* ── Persona grid ────────────────────────────────────────────────── */
+  /* Persona grid */
   .persona-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
