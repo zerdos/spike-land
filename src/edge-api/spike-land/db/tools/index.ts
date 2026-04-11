@@ -14,6 +14,7 @@ export * from "./mcp-observability";
 export * from "./permissions";
 export * from "./reminders";
 export * from "./settings";
+export * from "./streaks";
 export * from "./swarm-monitoring";
 export * from "./swarm";
 export * from "./vault";

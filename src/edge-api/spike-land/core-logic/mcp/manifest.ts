@@ -104,6 +104,8 @@ import { registerByokTools } from "../../db/tools/byok";
 import { registerBeUniqTools } from "../tools/persona/beuniq";
 import { registerPlanGeneratorTools } from "../../db/tools/persona/plan-generator";
 import { registerAuditQuestionnaireTools } from "../../db/tools/persona/audit-questionnaire";
+import { registerToolOfTheDayTools } from "../tools/tool-of-the-day";
+import { registerStreakTools } from "../../db/tools/streaks";
 
 /**
  * Safely invoke a zero-argument thunk, catching and logging errors.
@@ -280,6 +282,8 @@ export async function registerAllTools(
   safeRegister("registerAuditQuestionnaireTools", () =>
     registerAuditQuestionnaireTools(registry, userId, db),
   );
+  safeRegister("registerToolOfTheDayTools", () => registerToolOfTheDayTools(registry, userId, db));
+  safeRegister("registerStreakTools", () => registerStreakTools(registry, userId, db));
 
   if (registrationFailures.length > 0) {
     console.warn(

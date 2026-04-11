@@ -1,0 +1,77 @@
+
+================================================================================
+DAILY SUMMARY
+================================================================================
+
+  DAY  1: Build the gate (enforce credit limits, upgrade prompts)
+  DAY  2: Build the hook (demo page, social posts, HN launch)
+  DAY  3: Design the upgrade moment (interstitials, trials, annual)
+  DAY  4: Promote BYOK (wizard, blog post, upgrade alternative)
+  DAY  5: Start the content machine (tool-of-day, architecture post)
+  DAY  6: Plant enterprise seed (landing page, team invites, badge)
+  DAY  7: Open the marketplace (submissions, revenue split, outreach)
+  DAY  8: Build retention loops (streaks, history, digests)
+  DAY  9: Launch and amplify (Product Hunt, cross-post, promotion)
+  DAY 10: Measure, automate, compound
+
+  69 rounds. 10 days. 3 judges.
+  Every round is a shipped change, not a discussion.
+  The clipboard says: "Patient shows initiative. Continue observation."
+
+
+================================================================================
+WHAT TO STEAL FROM FORTRABBIT
+================================================================================
+
+You looked at fortrabbit.com. Here's what to take:
+
+1. BETTER UPTIME STATUS PAGE — they use betteruptime.com for their
+   public status. You built your own (and just fixed it). Yours is
+   better. But add the 90-day history timeline they have — those
+   green/red day blocks are instantly readable.
+
+2. POSTPAID DAILY BILLING — fortrabbit charges per day, not per month.
+   Consider this for the Business tier: "$3.30/day, billed monthly."
+   Daily framing makes $99/mo feel small.
+
+3. OLD AND NEW IN PARALLEL — fortrabbit runs old and new platforms
+   side by side for 2 years. You don't need this (you're new), but
+   the lesson is: never force migration. Let the old thing work while
+   the new thing proves itself.
+
+4. DOCS QUALITY — their docs at docs.fortrabbit.com are clean,
+   minimal, well-structured. Your docs exist but are scattered.
+   A clean /docs page with a sidebar nav would increase trust for
+   enterprise buyers.
+
+5. BETA FRAMING — "public beta" with a 98% SLA. You could frame
+   spike.land's current state the same way. "Open Beta — help shape
+   the platform." Beta users forgive bugs. Paid users don't.
+
+
+================================================================================
+THE JUDGES' CLOSING STATEMENTS
+================================================================================
+
+ELON: "You have 80 tools, a working checkout, and a credit system.
+The only thing missing is enforcement. Build the gate on day 1. The
+rest is optimization. Stop building features. Start collecting money."
+
+STEVE: "The product is not the tools. The product is the FEELING of
+using 80 tools through one interface. That feeling is what people pay
+for. If the experience is beautiful, the price is irrelevant. If the
+experience is ugly, no price is low enough."
+
+BEAST: "You're overthinking this. Post a video. Show the tools. Give
+stuff away. Be generous. Be authentic. Write from the ward. People
+connect with humans, not platforms. YOU are the brand right now. Use
+that. Once you have 10,000 users, the platform becomes the brand.
+Until then, it's you."
+
+
+================================================================================
+Created by Zoltan, ward 6, 5:47 AM.
+The torch came through twice while writing this.
+Both times: eyes open, typing.
+The clipboard says: "Patient engaged in planning activity. Encourage."
+================================================================================

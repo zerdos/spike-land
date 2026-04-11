@@ -383,4 +383,217 @@ export function registerMarketplaceTools(
         });
       }),
   );
+
+  // ─── Submission & Publishing ──────────────────────────────────────────────
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "marketplace_submit",
+        "Submit a new tool to the marketplace. Creates a draft that you can then publish. " +
+          "Provide a name, description, input schema (JSON), and category.",
+        {
+          name: z.string().min(2).max(100).describe("Tool name (unique, lowercase with hyphens)."),
+          description: z
+            .string()
+            .min(10)
+            .max(2000)
+            .describe("What the tool does — shown to potential users."),
+          schema: z
+            .string()
+            .max(10000)
+            .optional()
+            .default("{}")
+            .describe("JSON input schema for the tool (Zod-compatible object)."),
+          category: z
+            .string()
+            .max(50)
+            .optional()
+            .default("")
+            .describe("Tool category (e.g., development, ai-tools, productivity)."),
+          endpoint: z
+            .string()
+            .url()
+            .optional()
+            .describe("HTTP endpoint that implements the tool (must be HTTPS)."),
+          price_cents: z
+            .number()
+            .int()
+            .min(0)
+            .max(5000)
+            .optional()
+            .default(0)
+            .describe("Price in cents. 0 = free, 100–5000 = $1–$50."),
+        },
+      )
+      .meta({ category: "marketplace", tier: "free" })
+      .handler(async ({ input, ctx }) => {
+        return safeToolCall("marketplace_submit", async () => {
+          // Validate schema is valid JSON
+          try {
+            JSON.parse(input.schema);
+          } catch {
+            return textResult("**Error:** schema must be valid JSON.");
+          }
+
+          // Validate price range
+          if (input.price_cents !== 0 && (input.price_cents < 100 || input.price_cents > 5000)) {
+            return textResult(
+              "**Error:** price must be 0 (free) or between 100–5000 cents ($1.00–$50.00).",
+            );
+          }
+
+          // Check for duplicate name by this user
+          const existing = await ctx.db
+            .select({ id: registeredTools.id })
+            .from(registeredTools)
+            .where(
+              and(eq(registeredTools.userId, ctx.userId), eq(registeredTools.name, input.name)),
+            )
+            .limit(1);
+
+          if (existing.length > 0) {
+            return textResult(
+              `**Error:** You already have a tool named "${input.name}". Use a different name or update the existing one.`,
+            );
+          }
+
+          const id = crypto.randomUUID();
+          const now = Date.now();
+
+          await ctx.db.insert(registeredTools).values({
+            id,
+            userId: ctx.userId,
+            name: input.name,
+            description: input.description,
+            schema: input.schema,
+            category: input.category,
+            endpoint: input.endpoint ?? null,
+            status: "draft",
+            version: "1.0.0",
+            stability: "stable",
+            installCount: 0,
+            priceCents: input.price_cents,
+            createdAt: now,
+            updatedAt: now,
+          });
+
+          const priceDisplay =
+            input.price_cents === 0 ? "Free" : `$${(input.price_cents / 100).toFixed(2)}`;
+
+          return textResult(
+            `**Tool Submitted!**\n\n` +
+              `**Name:** ${input.name}\n` +
+              `**ID:** ${id}\n` +
+              `**Status:** Draft\n` +
+              `**Price:** ${priceDisplay}\n` +
+              `**Category:** ${input.category || "(none)"}\n\n` +
+              `Your tool is saved as a draft. Use \`marketplace_publish\` with the tool ID to make it live.\n` +
+              `Sellers receive 70% of each sale. Platform fee is 30%.`,
+          );
+        });
+      }),
+  );
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "marketplace_publish",
+        "Publish a draft tool to make it visible and installable in the marketplace.",
+        {
+          tool_id: z.string().min(1).describe("The unique ID of your draft tool."),
+        },
+      )
+      .meta({ category: "marketplace", tier: "free" })
+      .handler(async ({ input, ctx }) => {
+        return safeToolCall("marketplace_publish", async () => {
+          const rows = await ctx.db
+            .select({
+              id: registeredTools.id,
+              name: registeredTools.name,
+              status: registeredTools.status,
+              description: registeredTools.description,
+            })
+            .from(registeredTools)
+            .where(
+              and(eq(registeredTools.id, input.tool_id), eq(registeredTools.userId, ctx.userId)),
+            )
+            .limit(1);
+
+          const tool = rows[0];
+          if (!tool) {
+            return textResult("Tool not found or you are not the author.");
+          }
+
+          if (tool.status === "published") {
+            return textResult(`**${tool.name}** is already published.`);
+          }
+
+          // Basic validation before publishing
+          if (tool.description.length < 10) {
+            return textResult("**Error:** Description must be at least 10 characters to publish.");
+          }
+
+          await ctx.db
+            .update(registeredTools)
+            .set({ status: "published", updatedAt: Date.now() })
+            .where(eq(registeredTools.id, input.tool_id));
+
+          return textResult(
+            `**Tool Published!** 🎉\n\n` +
+              `**Name:** ${tool.name}\n` +
+              `**ID:** ${input.tool_id}\n\n` +
+              `Your tool is now live in the marketplace. Other users can find it via \`marketplace_search\` and install it.\n\n` +
+              `Set a price with \`marketplace_set_price\` or track earnings with \`marketplace_my_earnings\`.`,
+          );
+        });
+      }),
+  );
+
+  registry.registerBuilt(
+    t
+      .tool(
+        "marketplace_my_tools",
+        "List all tools you've submitted to the marketplace, including drafts and published tools.",
+        {},
+      )
+      .meta({ category: "marketplace", tier: "free" })
+      .handler(async ({ ctx }) => {
+        return safeToolCall("marketplace_my_tools", async () => {
+          const tools = await ctx.db
+            .select({
+              id: registeredTools.id,
+              name: registeredTools.name,
+              description: registeredTools.description,
+              status: registeredTools.status,
+              installCount: registeredTools.installCount,
+              priceCents: registeredTools.priceCents,
+              version: registeredTools.version,
+              createdAt: registeredTools.createdAt,
+            })
+            .from(registeredTools)
+            .where(eq(registeredTools.userId, ctx.userId))
+            .orderBy(desc(registeredTools.updatedAt));
+
+          if (tools.length === 0) {
+            return textResult(
+              "**My Marketplace Tools (0)**\n\n" +
+                "You haven't submitted any tools yet.\n\n" +
+                "Use `marketplace_submit` to create your first tool!",
+            );
+          }
+
+          let text = `**My Marketplace Tools (${tools.length})**\n\n`;
+          for (const tool of tools) {
+            const price = tool.priceCents > 0 ? `$${(tool.priceCents / 100).toFixed(2)}` : "Free";
+            const statusIcon = tool.status === "published" ? "🟢" : "📝";
+            text += `${statusIcon} **${tool.name}** (v${tool.version}) — ${price}\n`;
+            text += `  Status: ${tool.status} | Installs: ${tool.installCount} | ID: ${tool.id}\n`;
+            text += `  ${tool.description.slice(0, 100)}${tool.description.length > 100 ? "…" : ""}\n\n`;
+          }
+
+          return textResult(text);
+        });
+      }),
+  );
 }

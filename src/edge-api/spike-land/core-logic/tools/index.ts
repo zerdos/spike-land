@@ -42,3 +42,4 @@ export * from "./testgen";
 export * from "./tool-factory";
 export * from "./tts";
 export * from "./categorizer";
+export * from "./tool-of-the-day";

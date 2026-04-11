@@ -36,11 +36,49 @@ export const creditMeterMiddleware: MiddlewareHandler<{
   const required = 1;
 
   if (balance < required) {
+    const dailyLimit = tier === "free" ? "50" : "500";
+    const upgradeOptions = [
+      ...(tier === "free"
+        ? [
+            {
+              action: "upgrade_pro",
+              label: "Go Pro — $29/mo (500 credits/day)",
+              url: "https://spike.land/pricing",
+              checkout: "https://edge.spike.land/api/checkout?tier=pro",
+            },
+          ]
+        : []),
+      {
+        action: "upgrade_business",
+        label: "Go Business — $99/mo (unlimited credits)",
+        url: "https://spike.land/pricing",
+        checkout: "https://edge.spike.land/api/checkout?tier=business",
+      },
+      {
+        action: "buy_credits",
+        label: "Buy a credit pack (from $5)",
+        url: "https://edge.spike.land/api/credits/purchase",
+      },
+      {
+        action: "byok",
+        label: "Use your own API key (free Pro access)",
+        url: "https://spike.land/pricing#byok",
+        hint: "Store your Anthropic, OpenAI, or Google API key to bypass credit limits entirely.",
+      },
+    ];
+
     return c.json(
       {
         error: "insufficient_credits",
         balance,
         required,
+        tier,
+        upgrade: {
+          message: `You've used all your ${dailyLimit} daily credits. Upgrade for more.`,
+          options: upgradeOptions,
+        },
+        retryAfter: "tomorrow",
+        resetAt: new Date(new Date().setUTCHours(24, 0, 0, 0)).toISOString(),
       },
       402,
     );
