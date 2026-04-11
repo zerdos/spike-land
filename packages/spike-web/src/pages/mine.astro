@@ -297,14 +297,16 @@
           : `(${pStr}, ${(p+2n).toString()})`;
         list.prepend(el);
 
-        // Report to server
-        fetch('/analytics/ingest', {
+        // Report to server — persist discovery
+        fetch('/api/erdos/submit', {
           method: 'POST',
-          body: JSON.stringify([{
-            source: 'erdos-miner',
-            eventType: 'twin_prime_found',
-            metadata: { p: pStr, digits, reward, ts: Date.now() }
-          }])
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prime: pStr, digits })
+        }).then(r => r.json()).then(data => {
+          if (data.totalEarned) {
+            erdosEarned = data.totalEarned;
+            updateUI();
+          }
         }).catch(() => {});
 
         updateUI();

@@ -51,6 +51,7 @@ import { githubStars } from "./routes/github-stars.js";
 import { docsApi } from "./routes/docs-api.js";
 import { qa } from "./routes/qa.js";
 import { email } from "./routes/email.js";
+import { erdos } from "./routes/erdos.js";
 import { handleScheduled } from "../lazy-imports/scheduled.js";
 import { applySecurityHeaders, isAllowedBrowserOrigin } from "./lib/security-headers.js";
 import {
@@ -157,6 +158,7 @@ const VANITY_HOST_EXCLUSIONS = new Set<string>([
 // These correspond to top-level routes in the SPA router.
 const KNOWN_VANITY_PREFIXES = [
   "analytics",
+  "arena",
   "gov",
   "dash",
   "blog",
@@ -170,8 +172,10 @@ const KNOWN_VANITY_PREFIXES = [
   "learn",
   "learnit",
   "quiz",
+  "rubik",
   "bugbook",
   "messages",
+  "next",
   "about",
   "privacy",
   "terms",
@@ -180,6 +184,7 @@ const KNOWN_VANITY_PREFIXES = [
   "login",
   "create",
   "packages",
+  "personas",
   "bazdmeg",
   "vibe-code",
   "lumevabarber",
@@ -972,6 +977,7 @@ app.route("/", githubStars);
 app.route("/", docsApi);
 app.route("/", qa);
 app.route("/", email);
+app.route("/", erdos);
 
 // Catch-all for unmatched API routes — return JSON 404 instead of SPA HTML
 export const apiCatchAllHandler = (
