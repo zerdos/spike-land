@@ -1,0 +1,165 @@
+---
+// $ERDOS — Twin Prime Discovery Token whitepaper
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>$ERDOS — Twin Prime Discovery Token</title>
+    <meta name="description" content="$ERDOS: A cryptocurrency that rewards mathematical discovery. Find twin primes, earn $ERDOS." />
+    <link rel="canonical" href="https://spike.land/erdos-token" />
+    <meta property="og:title" content="$ERDOS — Twin Prime Discovery Token" />
+    <meta property="og:description" content="A cryptocurrency that rewards mathematical discovery. Find twin primes, earn $ERDOS." />
+    <meta property="og:url" content="https://spike.land/erdos-token" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="spike.land" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'Rubik',sans-serif;background:#0a0a0a;color:#e5e5e5;line-height:1.7}
+      main{max-width:48rem;margin:0 auto;padding:3rem 1.5rem 5rem}
+      h1{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem}
+      h2{font-size:1.75rem;font-weight:700;color:#f59e0b;margin-top:3rem;margin-bottom:1rem;border-bottom:1px solid #333;padding-bottom:.5rem}
+      h3{font-size:1.25rem;font-weight:600;color:#fbbf24;margin-top:1.5rem;margin-bottom:.5rem}
+      p{margin-bottom:1rem;color:#d4d4d4}
+      strong{color:#fff}
+      .hero{text-align:center;padding:4rem 0 3rem}
+      .hero p{font-size:1.25rem;color:#a3a3a3}
+      .ticker{font-size:4rem;font-weight:900;color:#f59e0b;letter-spacing:-.02em}
+      .subtitle{font-size:1.1rem;color:#737373;margin-top:.5rem}
+      table{width:100%;border-collapse:collapse;margin:1.5rem 0}
+      th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid #262626}
+      th{color:#f59e0b;font-weight:600;border-bottom:2px solid #333}
+      td{color:#d4d4d4}
+      .formula{background:#1a1a1a;border:1px solid #333;border-radius:.5rem;padding:1.5rem;margin:1.5rem 0;font-family:'Courier New',monospace;font-size:1.1rem;color:#fbbf24;text-align:center}
+      ul{padding-left:1.5rem;margin-bottom:1rem}
+      li{margin-bottom:.5rem;color:#d4d4d4}
+      .highlight-box{background:linear-gradient(135deg,#1a1a0a,#1a0a0a);border:1px solid #f59e0b33;border-radius:.75rem;padding:2rem;margin:2rem 0}
+      .quote{border-left:3px solid #f59e0b;padding-left:1rem;font-style:italic;color:#a3a3a3;margin:1.5rem 0}
+      .footer{margin-top:4rem;padding-top:2rem;border-top:1px solid #262626;text-align:center;color:#525252;font-size:.875rem}
+      a{color:#f59e0b;text-decoration:none}
+      a:hover{text-decoration:underline}
+    </style>
+    <script>
+      if (typeof navigator.sendBeacon === 'function') {
+        navigator.sendBeacon('/analytics/ingest', JSON.stringify([{
+          source: 'frontend',
+          eventType: 'page_view',
+          metadata: { path: location.pathname, referrer: document.referrer || '', ts: Date.now() }
+        }]));
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <div class="hero">
+        <p class="ticker">$ERDOS</p>
+        <h1>Twin Prime Discovery Token</h1>
+        <p>A cryptocurrency that rewards mathematical discovery.</p>
+        <p class="subtitle">Find twin primes, earn $ERDOS. Advance the conjecture, change mathematics.</p>
+      </div>
+
+      <section>
+        <h2>Abstract</h2>
+        <p>$ERDOS is a Proof-of-Discovery token that rewards participants for finding twin prime pairs. Unlike traditional Proof-of-Work systems that waste energy on arbitrary hash puzzles, $ERDOS mining produces mathematically significant results — every mined block represents a verified twin prime discovery that contributes to humanity's understanding of prime number distribution.</p>
+        <p>Named after Paul Erdős, the most prolific mathematician in history, who offered prizes for solutions to mathematical problems and believed mathematics should be a collaborative, open pursuit.</p>
+      </section>
+
+      <section>
+        <h2>The Twin Prime Conjecture</h2>
+        <p>Twin primes are pairs of primes that differ by 2: (3,5), (5,7), (11,13), (17,19), (29,31)...</p>
+        <p>The <strong>Twin Prime Conjecture</strong> states that there are infinitely many twin primes. Despite being one of the oldest unsolved problems in mathematics (first stated by Alphonse de Polignac in 1849), it remains unproven.</p>
+        <div class="formula">∃ infinitely many p such that p and p+2 are both prime</div>
+        <p>In 2013, Yitang Zhang proved that there are infinitely many prime pairs with gap ≤ 70,000,000. The Polymath project reduced this to 246. The gap between 246 and 2 remains open.</p>
+        <p><strong>$ERDOS incentivizes the search.</strong></p>
+      </section>
+
+      <section>
+        <h2>Proof-of-Discovery</h2>
+        <p>Traditional mining:</p>
+        <div class="formula">SHA-256(nonce + block) &lt; target → waste</div>
+        <p>$ERDOS mining:</p>
+        <div class="formula">isPrime(p) ∧ isPrime(p+2) ∧ p &gt; currentRecord → reward</div>
+        <h3>Reward formula</h3>
+        <p>The reward scales with the size of the discovered twin prime pair:</p>
+        <div class="formula">reward = log₂(digits(p)) × baseReward</div>
+        <p>A 100-digit twin prime earns ~6.6× base reward. A 1000-digit twin prime earns ~10× base reward. A record-breaking twin prime earns a bonus multiplier.</p>
+      </section>
+
+      <section>
+        <h2>Tokenomics</h2>
+        <table>
+          <thead><tr><th>Allocation</th><th>Share</th><th>Holder</th></tr></thead>
+          <tbody>
+            <tr><td>Founder</td><td>28%</td><td>Zoltán Erdos</td></tr>
+            <tr><td>Angel Investor</td><td>24%</td><td>Eva Szakal</td></tr>
+            <tr><td>Angel Investor</td><td>24%</td><td>Matthew</td></tr>
+            <tr><td>Core Contributor</td><td>24%</td><td>Simone</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Total supply:</strong> 2,000,000,003 $ERDOS (prime number)</p>
+        <p><strong>Mining rewards:</strong> Released from a discovery pool over time as twin primes are found.</p>
+        <p><strong>Non-transferable founder/investor shares</strong> — locked forever. Only mined $ERDOS is tradeable.</p>
+      </section>
+
+      <section>
+        <h2>Math Arena</h2>
+        <p>The spike.land Math Arena is where $ERDOS comes alive:</p>
+        <ul>
+          <li><strong>Live competitions</strong> — timed twin prime search races</li>
+          <li><strong>ELO ratings</strong> — mathematical reputation on-chain</li>
+          <li><strong>Erdős Number</strong> — collaboration graph as soulbound NFT</li>
+          <li><strong>AI Personas</strong> — Einstein, Erdős, Euler as tutors and opponents</li>
+        </ul>
+        <div class="highlight-box">
+          <h3>The Erdős Prize</h3>
+          <p>Paul Erdős offered cash prizes ($25–$10,000) for solving problems. $ERDOS continues this tradition on-chain:</p>
+          <ul>
+            <li>$25 equivalent in $ERDOS — find a twin prime &gt; 10,000 digits</li>
+            <li>$500 equivalent — find a twin prime &gt; 100,000 digits</li>
+            <li>$10,000 equivalent — break the current world record</li>
+            <li>$1,000,000 equivalent — prove (or disprove) the Twin Prime Conjecture</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Technical Architecture</h2>
+        <ul>
+          <li><strong>Chain:</strong> spike.land-native (Cloudflare Durable Objects) with future L2 bridge</li>
+          <li><strong>Validation:</strong> Miller-Rabin + deterministic AKS for submitted primes</li>
+          <li><strong>Consensus:</strong> Discovery-weighted — larger primes = more validation authority</li>
+          <li><strong>Runtime:</strong> MCP tools on spike.land for prime submission and verification</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Roadmap</h2>
+        <table>
+          <thead><tr><th>Phase</th><th>Milestone</th></tr></thead>
+          <tbody>
+            <tr><td>Phase 0</td><td>Whitepaper + token page (now)</td></tr>
+            <tr><td>Phase 1</td><td>Twin prime validator MCP tool</td></tr>
+            <tr><td>Phase 2</td><td>Math Arena with ELO + leaderboard</td></tr>
+            <tr><td>Phase 3</td><td>On-chain token (spike.land native)</td></tr>
+            <tr><td>Phase 4</td><td>L2 bridge (Base/Solana)</td></tr>
+            <tr><td>Phase 5</td><td>Erdős Prizes live</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="quote">"A mathematician is a device for turning coffee into theorems." — Alfréd Rényi (often attributed to Erdős)</div>
+      <div class="quote">"My brain is open." — Paul Erdős</div>
+
+      <div class="footer">
+        <p>$ERDOS — spike.land — 2026</p>
+        <p><a href="/zoltan">About the founder</a></p>
+      </div>
+    </main>
+  </body>
+</html>
