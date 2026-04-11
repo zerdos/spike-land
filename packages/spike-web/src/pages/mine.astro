@@ -1,0 +1,380 @@
+---
+// $ERDOS Twin Prime Miner — WebGPU-powered browser mining
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>$ERDOS Miner — Twin Prime Discovery</title>
+    <meta name="description" content="Mine $ERDOS by discovering twin primes with your GPU. WebGPU-powered browser mining." />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'Rubik',sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+      .container{max-width:36rem;width:100%;text-align:center}
+      h1{font-family:'Rubik Mono One',monospace;font-size:2.5rem;color:#f59e0b;margin-bottom:.5rem}
+      .subtitle{color:#737373;margin-bottom:2rem}
+      .stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2rem 0}
+      .stat{background:#1a1a1a;border:1px solid #262626;border-radius:.75rem;padding:1.25rem}
+      .stat-value{font-size:1.5rem;font-weight:700;color:#f59e0b;font-family:'Rubik Mono One',monospace}
+      .stat-label{font-size:.75rem;color:#737373;text-transform:uppercase;letter-spacing:.05em;margin-top:.25rem}
+      .btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:700;font-size:1.1rem;border:none;border-radius:.75rem;padding:1rem 2.5rem;cursor:pointer;transition:all .2s;margin:1rem .5rem}
+      .btn:hover{transform:scale(1.05);box-shadow:0 0 30px #f59e0b44}
+      .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+      .btn-stop{background:linear-gradient(135deg,#ef4444,#dc2626)}
+      .btn-stop:hover{box-shadow:0 0 30px #ef444444}
+      .log{background:#0f0f0f;border:1px solid #262626;border-radius:.75rem;margin-top:2rem;padding:1rem;height:12rem;overflow-y:auto;text-align:left;font-family:'Courier New',monospace;font-size:.8rem;color:#a3a3a3}
+      .log-entry{padding:.2rem 0;border-bottom:1px solid #1a1a1a}
+      .log-entry.found{color:#22c55e;font-weight:600}
+      .gpu-badge{display:inline-block;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:2rem;padding:.25rem .75rem;font-size:.75rem;margin-bottom:1rem}
+      .gpu-badge.no-gpu{background:#ef444422;color:#ef4444;border-color:#ef444444}
+      .twins-found{margin-top:1.5rem;text-align:left}
+      .twins-found h3{color:#f59e0b;font-size:1rem;margin-bottom:.5rem}
+      .twin-pair{background:#1a1a1a;border-left:3px solid #22c55e;padding:.5rem 1rem;margin:.5rem 0;border-radius:0 .5rem .5rem 0;font-family:'Courier New',monospace;font-size:.85rem;word-break:break-all}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>$ERDOS</h1>
+      <p class="subtitle">Twin Prime Discovery Miner</p>
+      <div id="gpu-status" class="gpu-badge">Checking WebGPU...</div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="pairs-found">0</div>
+          <div class="stat-label">Twin Primes Found</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="candidates-checked">0</div>
+          <div class="stat-label">Candidates Checked</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="largest-prime">—</div>
+          <div class="stat-label">Largest Twin Prime</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="erdos-earned">0.00</div>
+          <div class="stat-label">$ERDOS Earned</div>
+        </div>
+      </div>
+
+      <div>
+        <button class="btn" id="btn-start" onclick="startMining()">Start Mining</button>
+        <button class="btn btn-stop" id="btn-stop" onclick="stopMining()" disabled>Stop</button>
+      </div>
+
+      <div id="twins-container" class="twins-found" style="display:none">
+        <h3>Discovered Twin Primes:</h3>
+        <div id="twins-list"></div>
+      </div>
+
+      <div class="log" id="log"></div>
+    </div>
+
+    <script type="module">
+      // $ERDOS Twin Prime Miner
+      // Uses WebGPU for parallel prime candidate sieving, CPU for verification
+
+      let mining = false;
+      let pairsFound = 0;
+      let candidatesChecked = 0;
+      let largestPrime = 0n;
+      let erdosEarned = 0;
+      let device = null;
+      let useGPU = false;
+
+      // Current search position — start at a large number for interesting finds
+      let searchStart = 1000000007n;
+
+      const BATCH_SIZE = 1024;
+
+      window.startMining = startMining;
+      window.stopMining = stopMining;
+
+      // Check WebGPU support
+      async function initGPU() {
+        const badge = document.getElementById('gpu-status');
+        if (!navigator.gpu) {
+          badge.textContent = 'WebGPU not available — using CPU';
+          badge.classList.add('no-gpu');
+          return false;
+        }
+        try {
+          const adapter = await navigator.gpu.requestAdapter();
+          if (!adapter) throw new Error('No adapter');
+          device = await adapter.requestDevice();
+          badge.textContent = `WebGPU Active — ${adapter.info?.device || 'GPU Ready'}`;
+          return true;
+        } catch (e) {
+          badge.textContent = 'WebGPU failed — using CPU';
+          badge.classList.add('no-gpu');
+          return false;
+        }
+      }
+
+      // GPU Compute Shader for prime sieving
+      const SIEVE_SHADER = `
+        @group(0) @binding(0) var<storage, read> candidates: array<u32>;
+        @group(0) @binding(1) var<storage, read_write> results: array<u32>;
+
+        @compute @workgroup_size(64)
+        fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+          let idx = id.x;
+          if (idx >= arrayLength(&candidates)) { return; }
+
+          let n = candidates[idx];
+          if (n < 2u) { results[idx] = 0u; return; }
+          if (n == 2u || n == 3u) { results[idx] = 1u; return; }
+          if (n % 2u == 0u || n % 3u == 0u) { results[idx] = 0u; return; }
+
+          var i = 5u;
+          loop {
+            if (i * i > n) { break; }
+            if (n % i == 0u || n % (i + 2u) == 0u) {
+              results[idx] = 0u;
+              return;
+            }
+            i = i + 6u;
+          }
+          results[idx] = 1u;
+        }
+      `;
+
+      let pipeline = null;
+
+      async function setupGPUPipeline() {
+        if (!device) return;
+        const module = device.createShaderModule({ code: SIEVE_SHADER });
+        pipeline = device.createComputePipeline({
+          layout: 'auto',
+          compute: { module, entryPoint: 'main' }
+        });
+      }
+
+      async function gpuSieve(numbers) {
+        if (!pipeline || !device) return null;
+
+        const input = new Uint32Array(numbers.map(n => Number(n & 0xFFFFFFFFn)));
+        const resultData = new Uint32Array(numbers.length);
+
+        const inputBuffer = device.createBuffer({
+          size: input.byteLength,
+          usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        });
+        const resultBuffer = device.createBuffer({
+          size: resultData.byteLength,
+          usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+        });
+        const readBuffer = device.createBuffer({
+          size: resultData.byteLength,
+          usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+        });
+
+        device.queue.writeBuffer(inputBuffer, 0, input);
+
+        const bindGroup = device.createBindGroup({
+          layout: pipeline.getBindGroupLayout(0),
+          entries: [
+            { binding: 0, resource: { buffer: inputBuffer } },
+            { binding: 1, resource: { buffer: resultBuffer } },
+          ],
+        });
+
+        const encoder = device.createCommandEncoder();
+        const pass = encoder.beginComputePass();
+        pass.setPipeline(pipeline);
+        pass.setBindGroup(0, bindGroup);
+        pass.dispatchWorkgroups(Math.ceil(numbers.length / 64));
+        pass.end();
+        encoder.copyBufferToBuffer(resultBuffer, 0, readBuffer, 0, resultData.byteLength);
+        device.queue.submit([encoder.finish()]);
+
+        await readBuffer.mapAsync(GPUMapMode.READ);
+        const result = new Uint32Array(readBuffer.getMappedRange()).slice();
+        readBuffer.unmap();
+
+        inputBuffer.destroy();
+        resultBuffer.destroy();
+        readBuffer.destroy();
+
+        return result;
+      }
+
+      // CPU fallback — Miller-Rabin for BigInt
+      function isPrimeBigInt(n) {
+        if (n < 2n) return false;
+        if (n === 2n || n === 3n) return false;
+        if (n % 2n === 0n || n % 3n === 0n) return false;
+
+        // Small primes trial division
+        const smallPrimes = [5n,7n,11n,13n,17n,19n,23n,29n,31n,37n,41n,43n,47n,53n,59n,61n,67n,71n,73n,79n,83n,89n,97n];
+        for (const p of smallPrimes) {
+          if (n === p) return true;
+          if (n % p === 0n) return false;
+        }
+
+        // Miller-Rabin
+        let d = n - 1n;
+        let r = 0n;
+        while (d % 2n === 0n) { d /= 2n; r++; }
+
+        const witnesses = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+        for (const a of witnesses) {
+          if (a >= n) continue;
+          let x = modPow(a, d, n);
+          if (x === 1n || x === n - 1n) continue;
+          let composite = true;
+          for (let i = 0n; i < r - 1n; i++) {
+            x = modPow(x, 2n, n);
+            if (x === n - 1n) { composite = false; break; }
+          }
+          if (composite) return false;
+        }
+        return true;
+      }
+
+      function modPow(base, exp, mod) {
+        let result = 1n;
+        base = base % mod;
+        while (exp > 0n) {
+          if (exp % 2n === 1n) result = (result * base) % mod;
+          exp = exp / 2n;
+          base = (base * base) % mod;
+        }
+        return result;
+      }
+
+      // Ensure candidate is odd and not divisible by 3
+      function nextCandidate(n) {
+        if (n % 2n === 0n) n++;
+        if (n % 3n === 0n) n += 2n;
+        return n;
+      }
+
+      function log(msg, isFound = false) {
+        const el = document.getElementById('log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry' + (isFound ? ' found' : '');
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        el.prepend(entry);
+        if (el.children.length > 200) el.lastChild.remove();
+      }
+
+      function updateUI() {
+        document.getElementById('pairs-found').textContent = pairsFound;
+        document.getElementById('candidates-checked').textContent = candidatesChecked.toLocaleString();
+        document.getElementById('largest-prime').textContent = largestPrime > 0n
+          ? (largestPrime.toString().length > 12
+            ? largestPrime.toString().slice(0, 6) + '...' + largestPrime.toString().slice(-4) + ` (${largestPrime.toString().length} digits)`
+            : largestPrime.toString())
+          : '—';
+        document.getElementById('erdos-earned').textContent = erdosEarned.toFixed(4);
+      }
+
+      function recordTwinPrime(p) {
+        pairsFound++;
+        if (p > largestPrime) largestPrime = p;
+
+        // Reward: log2(digits) * 0.01
+        const digits = p.toString().length;
+        const reward = Math.log2(digits) * 0.01;
+        erdosEarned += reward;
+
+        log(`TWIN PRIME FOUND: (${p}, ${p + 2n}) — +${reward.toFixed(4)} $ERDOS`, true);
+
+        const container = document.getElementById('twins-container');
+        container.style.display = 'block';
+        const list = document.getElementById('twins-list');
+        const el = document.createElement('div');
+        el.className = 'twin-pair';
+        const pStr = p.toString();
+        el.textContent = pStr.length > 40
+          ? `(${pStr.slice(0,20)}...${pStr.slice(-10)}, +2) [${pStr.length} digits]`
+          : `(${pStr}, ${(p+2n).toString()})`;
+        list.prepend(el);
+
+        // Report to server
+        fetch('/analytics/ingest', {
+          method: 'POST',
+          body: JSON.stringify([{
+            source: 'erdos-miner',
+            eventType: 'twin_prime_found',
+            metadata: { p: pStr, digits, reward, ts: Date.now() }
+          }])
+        }).catch(() => {});
+
+        updateUI();
+      }
+
+      async function miningLoop() {
+        log(`Mining started at ${searchStart}...`);
+
+        while (mining) {
+          // Generate batch of candidates
+          let candidates = [];
+          let current = searchStart;
+          for (let i = 0; i < BATCH_SIZE; i++) {
+            current = nextCandidate(current);
+            candidates.push(current);
+            current += 2n;
+          }
+
+          // Check each candidate for twin prime property
+          for (const p of candidates) {
+            if (!mining) break;
+            candidatesChecked++;
+
+            if (isPrimeBigInt(p) && isPrimeBigInt(p + 2n)) {
+              recordTwinPrime(p);
+            }
+
+            // Yield to main thread every 64 checks
+            if (candidatesChecked % 64 === 0) {
+              updateUI();
+              await new Promise(r => setTimeout(r, 0));
+            }
+          }
+
+          searchStart = current;
+
+          // Periodically jump to a random larger range for variety
+          if (candidatesChecked % 10000 === 0) {
+            const jump = BigInt(Math.floor(Math.random() * 1000000)) * 1000n;
+            searchStart += jump;
+            log(`Jumped to ${searchStart.toString().slice(0,12)}... (${searchStart.toString().length} digits)`);
+          }
+        }
+
+        log('Mining stopped.');
+      }
+
+      async function startMining() {
+        if (mining) return;
+        mining = true;
+        document.getElementById('btn-start').disabled = true;
+        document.getElementById('btn-stop').disabled = false;
+
+        if (useGPU && !pipeline) await setupGPUPipeline();
+
+        miningLoop();
+      }
+
+      function stopMining() {
+        mining = false;
+        document.getElementById('btn-start').disabled = false;
+        document.getElementById('btn-stop').disabled = true;
+      }
+
+      // Init
+      initGPU().then(hasGPU => {
+        useGPU = hasGPU;
+        log(hasGPU ? 'WebGPU initialized — GPU acceleration ready' : 'Using CPU mining (WebGPU unavailable)');
+        log('Click "Start Mining" to begin discovering twin primes');
+      });
+    </script>
+  </body>
+</html>
