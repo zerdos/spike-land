@@ -1,0 +1,435 @@
+{
+  "$schema": "Radix Agent Psychology Mapping — shared source of truth (FR-4)",
+  "parameter_translations": {
+    "padDetuneCents": {
+      "synthesis": "Detuning between oscillators (cents)",
+      "psychology": "Perceptual clarity — how sharp or blurred the world feels",
+      "low": "Clear perception, things feel defined",
+      "high": "Foggy perception, edges dissolve, sensory blur"
+    },
+    "padFilterOffset": {
+      "synthesis": "Lowpass filter cutoff offset (Hz)",
+      "psychology": "Openness to stimuli — how much of the environment registers",
+      "low": "Muted, dampened awareness — sounds and sights feel far away",
+      "high": "Everything gets in — hypersensitivity to environment"
+    },
+    "padAttackScale": {
+      "synthesis": "ADSR attack time multiplier",
+      "psychology": "Onset speed of awareness — how quickly new stimuli register",
+      "low": "Snap attention, instant reaction to changes",
+      "high": "Slow dawning awareness, delayed processing"
+    },
+    "padWaveform": {
+      "synthesis": "Base oscillator shape (sine/triangle)",
+      "psychology": "Texture of baseline experience",
+      "sine": "Smooth, undifferentiated — the world feels soft",
+      "triangle": "Edged, defined — the world has corners"
+    },
+    "melodyVibratoRate": {
+      "synthesis": "Vibrato LFO frequency (Hz)",
+      "psychology": "Thought oscillation frequency — how fast the mind cycles between ideas",
+      "low": "Slow, steady thought patterns — ruminative but not racing",
+      "high": "Rapid cycling — thoughts arrive before the previous one finishes"
+    },
+    "melodyVibratoDepth": {
+      "synthesis": "Vibrato amplitude",
+      "psychology": "Emotional amplitude — the distance between emotional peaks and troughs",
+      "low": "Flat affect, narrow emotional range",
+      "high": "Wide swings, intense emotional peaks and valleys"
+    },
+    "melodyFmIndex": {
+      "synthesis": "FM modulation depth",
+      "psychology": "Cognitive complexity — how many layers of meaning attach to each experience",
+      "low": "Simple, direct experience — things are what they are",
+      "high": "Dense meaning-making — everything connects to everything"
+    },
+    "melodyFilterCutoff": {
+      "synthesis": "Melody lowpass cutoff (Hz)",
+      "psychology": "Cognitive bandwidth — how much information can be processed simultaneously",
+      "low": "Narrow bandwidth — can only hold one thing at a time",
+      "high": "Wide bandwidth — multiple threads of awareness coexist"
+    },
+    "bassFilterCutoff": {
+      "synthesis": "Bass lowpass cutoff (Hz)",
+      "psychology": "Depth of internal experience — how far 'down' feelings go",
+      "low": "Surface-level processing, feelings don't land deep",
+      "high": "Deep visceral experience — feelings are physical, bodily"
+    },
+    "bassSubMix": {
+      "synthesis": "Sub-octave oscillator level",
+      "psychology": "Bodily awareness — how present the body feels",
+      "low": "Disconnected from body, floating, head-only experience",
+      "high": "Intensely embodied — every sensation magnified"
+    },
+    "bassDetune": {
+      "synthesis": "Second sawtooth detuning factor",
+      "psychology": "Internal tension — the dissonance between what you feel and what you show",
+      "low": "Congruent — outside matches inside",
+      "high": "Masking — significant gap between felt state and presented state"
+    },
+    "beastSpread": {
+      "synthesis": "Supersaw detuning spread",
+      "psychology": "Behavioural unpredictability — how erratic actions appear to others",
+      "low": "Predictable, consistent behaviour",
+      "high": "Erratic, surprising — actions that don't follow expected patterns"
+    },
+    "beastDecay": {
+      "synthesis": "Stab envelope decay time",
+      "psychology": "Impulse duration — how long an urge persists before fading",
+      "low": "Flash impulses that pass quickly",
+      "high": "Sustained urges that are hard to redirect"
+    },
+    "beastFilterStart": {
+      "synthesis": "Filter sweep starting frequency (Hz)",
+      "psychology": "Initial intensity of impulse — how loudly an urge announces itself",
+      "low": "Quiet urges that build slowly",
+      "high": "Sudden, loud, demanding impulses"
+    },
+    "delayFeedbackBias": {
+      "synthesis": "Delay feedback offset",
+      "psychology": "Rumination tendency — how much past experiences echo into the present",
+      "low": "Present-focused, low echo from past events",
+      "high": "Strong rumination — past events replay and amplify"
+    },
+    "masterGainScale": {
+      "synthesis": "Overall volume multiplier",
+      "psychology": "Presence/engagement level — how 'here' the person is",
+      "low": "Withdrawn, faded, hard to reach",
+      "high": "Intensely present, engaged, possibly overwhelming to interact with"
+    }
+  },
+  "families": {
+    "drift": {
+      "ids": [0, 1, 2, 3, 4, 5, 6, 7],
+      "psychology": "Dissociation, withdrawal, fog, slow processing",
+      "signature": "High detuning, slow attacks, low presence. The world feels far away.",
+      "observable_behaviours": [
+        "Delayed responses to questions",
+        "Gaze unfocused or fixed on middle distance",
+        "Movements slower than baseline",
+        "Answers in fragments or trailing off",
+        "Appears calm but may be unreachable",
+        "Compliant but not engaged"
+      ],
+      "common_misinterpretations": [
+        "Mistaken for cooperation (patient is 'doing well')",
+        "Mistaken for medication side effects only",
+        "Withdrawal seen as improvement rather than shutdown"
+      ],
+      "nursing_approaches": [
+        "Slower speech, simpler sentences",
+        "Reduce information load — one thing at a time",
+        "Physical grounding before verbal engagement (warm drink, texture)",
+        "Don't interpret compliance as understanding",
+        "Check back — they may not have registered what you said"
+      ]
+    },
+    "sharp": {
+      "ids": [8, 9, 10, 11, 12, 13, 14, 15],
+      "psychology": "Hypervigilance, clarity, anxiety, rapid processing",
+      "signature": "Fast attacks, high filters, elevated presence. Everything registers.",
+      "observable_behaviours": [
+        "Scanning the room constantly",
+        "Flinching at sounds others ignore",
+        "Asking repeated questions about procedure",
+        "Noticing inconsistencies in what staff say",
+        "Difficulty sitting still or staying in one place",
+        "Hyper-aware of other patients' states"
+      ],
+      "common_misinterpretations": [
+        "Mistaken for aggression or defiance",
+        "Asking questions seen as 'challenging authority'",
+        "Hypervigilance mistaken for paranoia (may not be delusional)",
+        "Restlessness seen as behavioural problem rather than overwhelm"
+      ],
+      "nursing_approaches": [
+        "Provide predictability — tell them what comes next",
+        "Answer questions directly, don't deflect",
+        "Acknowledge that their observations may be accurate",
+        "Reduce environmental stimuli where possible",
+        "Written information to supplement verbal (they will re-read it)"
+      ]
+    },
+    "deep": {
+      "ids": [16, 17, 18, 19, 20, 21, 22, 23],
+      "psychology": "Depression, heaviness, inward focus, emotional gravity",
+      "signature": "Low filters, heavy sub bass, low FM. Everything has weight.",
+      "observable_behaviours": [
+        "Minimal spontaneous speech",
+        "Eating slowly or not finishing meals",
+        "Remaining in bed beyond wake-up time",
+        "Flat or monotone voice",
+        "Physical complaints (headache, stomach, fatigue)",
+        "Tearfulness without clear trigger"
+      ],
+      "common_misinterpretations": [
+        "Mistaken for laziness or non-compliance",
+        "Physical complaints dismissed as psychosomatic",
+        "Flat affect seen as 'stable' rather than suffering",
+        "Silence interpreted as contentment"
+      ],
+      "nursing_approaches": [
+        "Don't demand engagement — presence without pressure",
+        "Take physical complaints seriously (co-morbidity is real)",
+        "Small choices, not big ones (tea or coffee, not 'what do you want to do today')",
+        "Note what they do engage with, however small",
+        "Morning check-ins matter most — this is when it's heaviest"
+      ]
+    },
+    "wild": {
+      "ids": [24, 25, 26, 27, 28, 29, 30, 31],
+      "psychology": "Mania, instability, creativity, unpredictability",
+      "signature": "High vibrato, wide spread, varied decay. Anything can happen.",
+      "observable_behaviours": [
+        "Rapid speech, topic changes, humour that doesn't land",
+        "Starting projects or plans that won't complete",
+        "Generosity that may be disinhibition (giving things away)",
+        "Irritability when interrupted or redirected",
+        "Sleeping very little without apparent fatigue",
+        "Making connections between unrelated things"
+      ],
+      "common_misinterpretations": [
+        "Mistaken for 'getting better' (especially early mania)",
+        "Creativity mistaken for recovery rather than escalation",
+        "Sociability seen as improvement rather than disinhibition",
+        "Irritability seen as personality rather than state"
+      ],
+      "nursing_approaches": [
+        "Don't argue with grandiose plans — redirect gently",
+        "Maintain structure without confrontation",
+        "Monitor sleep patterns — they may not report insomnia",
+        "Channel energy rather than suppress it where safe",
+        "Be consistent — they will test boundaries not out of malice but because boundaries feel arbitrary"
+      ]
+    }
+  },
+  "agents": [
+    {
+      "id": 0,
+      "name": "drift-0",
+      "family": "drift",
+      "title": "The Fog of Arrival",
+      "description": "Maximum dissociation. The patient is physically present but experientially absent. Common in first hours after admission or after a crisis. The ward is a blur of faces, forms, and fluorescent light."
+    },
+    {
+      "id": 1,
+      "name": "drift-1",
+      "family": "drift",
+      "title": "Slow Surfacing",
+      "description": "Beginning to register the environment. Awareness flickers — a name called, a door closing. Still mostly internal."
+    },
+    {
+      "id": 2,
+      "name": "drift-2",
+      "family": "drift",
+      "title": "Underwater",
+      "description": "Functional but everything takes effort. Speech is possible but costs energy. Time moves strangely — hours vanish."
+    },
+    {
+      "id": 3,
+      "name": "drift-3",
+      "family": "drift",
+      "title": "The Soft Machine",
+      "description": "Compliant autopilot. Takes medication, eats meals, attends groups. No resistance but no presence either. This is the state most often mistaken for improvement."
+    },
+    {
+      "id": 4,
+      "name": "drift-4",
+      "family": "drift",
+      "title": "Re-entry",
+      "description": "The fog begins to thin. Real-world concerns start filtering in. Anxiety may rise as clarity returns. Common near discharge."
+    },
+    {
+      "id": 5,
+      "name": "drift-5",
+      "family": "drift",
+      "title": "Half-Light",
+      "description": "Oscillating between presence and absence. Lucid moments followed by blanks. Medication adjustment often coincides."
+    },
+    {
+      "id": 6,
+      "name": "drift-6",
+      "family": "drift",
+      "title": "The Watcher",
+      "description": "Dissociated but observant. Notices patterns in ward life without feeling part of them. A mathematician's state — cataloguing from behind glass."
+    },
+    {
+      "id": 7,
+      "name": "drift-7",
+      "family": "drift",
+      "title": "White Noise",
+      "description": "Maximum detuning. Everything blends into a single undifferentiated hum. Not distressing but profoundly disconnected."
+    },
+
+    {
+      "id": 8,
+      "name": "sharp-0",
+      "family": "sharp",
+      "title": "Alert",
+      "description": "Baseline vigilance. Aware and tracking. Functional anxiety — useful for navigating unfamiliar systems."
+    },
+    {
+      "id": 9,
+      "name": "sharp-1",
+      "family": "sharp",
+      "title": "Edge",
+      "description": "Slightly elevated. Noticing things others miss. Starting to catalogue inconsistencies. Still manageable."
+    },
+    {
+      "id": 10,
+      "name": "sharp-2",
+      "family": "sharp",
+      "title": "Scanner",
+      "description": "Actively scanning. Every face, every sound, every door. The ward is a system and you are mapping it in real time."
+    },
+    {
+      "id": 11,
+      "name": "sharp-3",
+      "family": "sharp",
+      "title": "Interrogator",
+      "description": "Questions pour out. Not hostile — desperate for information. If nobody explains the rules, you will deduce them."
+    },
+    {
+      "id": 12,
+      "name": "sharp-4",
+      "family": "sharp",
+      "title": "Pattern Lock",
+      "description": "Hyper-focused on a single pattern or concern. Cannot let it go. May appear obsessive but it is anxiety crystallised around a specific target."
+    },
+    {
+      "id": 13,
+      "name": "sharp-5",
+      "family": "sharp",
+      "title": "Brittle",
+      "description": "High clarity but no resilience. Any unexpected change feels catastrophic. The system worked until it didn't."
+    },
+    {
+      "id": 14,
+      "name": "sharp-6",
+      "family": "sharp",
+      "title": "Wire",
+      "description": "Taut. Everything is too loud, too bright, too much. Not yet overwhelmed but on the threshold."
+    },
+    {
+      "id": 15,
+      "name": "sharp-7",
+      "family": "sharp",
+      "title": "Overload",
+      "description": "Maximum bandwidth, maximum input. The fire alarm and the discharge form and the medication change all arrive at once. Shutdown may follow."
+    },
+
+    {
+      "id": 16,
+      "name": "deep-0",
+      "family": "deep",
+      "title": "Settling",
+      "description": "The weight arrives. Not yet heavy but present. Like gravity increasing by 10%. Everything costs slightly more."
+    },
+    {
+      "id": 17,
+      "name": "deep-1",
+      "family": "deep",
+      "title": "Silt",
+      "description": "Thoughts thicken. Words available but not volunteered. Meals taste of nothing but you eat because it is what people do."
+    },
+    {
+      "id": 18,
+      "name": "deep-2",
+      "family": "deep",
+      "title": "Gravity Well",
+      "description": "Lying down feels like the only honest posture. Sitting up is a performance. Standing is a lie you tell with your body."
+    },
+    {
+      "id": 19,
+      "name": "deep-3",
+      "family": "deep",
+      "title": "Stone",
+      "description": "Immobile. Not catatonic — aware of everything — but the distance between intention and action is astronomical."
+    },
+    {
+      "id": 20,
+      "name": "deep-4",
+      "family": "deep",
+      "title": "Tears Without Story",
+      "description": "Crying arrives without narrative. Not about anything. The body doing what the mind cannot articulate."
+    },
+    {
+      "id": 21,
+      "name": "deep-5",
+      "family": "deep",
+      "title": "The Pit",
+      "description": "Low point. Maximum sub-bass. The body is heavy, the mind is heavy, the future is a concept that does not apply."
+    },
+    {
+      "id": 22,
+      "name": "deep-6",
+      "family": "deep",
+      "title": "Embers",
+      "description": "Something survives. Not hope exactly, but the capacity to notice that a dog walked past the window. That is enough for now."
+    },
+    {
+      "id": 23,
+      "name": "deep-7",
+      "family": "deep",
+      "title": "Before Dawn",
+      "description": "Heaviness with a hairline crack of light. Not better. But the idea of better is no longer offensive."
+    },
+
+    {
+      "id": 24,
+      "name": "wild-0",
+      "family": "wild",
+      "title": "Spark",
+      "description": "Energy arrives. Ideas start connecting. The ward is suddenly interesting. This feels like recovery. It may not be."
+    },
+    {
+      "id": 25,
+      "name": "wild-1",
+      "family": "wild",
+      "title": "Current",
+      "description": "Flowing. Words come easily, maybe too easily. Social, engaged, helpful to other patients. Staff smile. Be careful."
+    },
+    {
+      "id": 26,
+      "name": "wild-2",
+      "family": "wild",
+      "title": "Accelerator",
+      "description": "Faster now. Projects planned. Letters written. Phone calls made. Sleep feels like wasted time."
+    },
+    {
+      "id": 27,
+      "name": "wild-3",
+      "family": "wild",
+      "title": "Architect",
+      "description": "Grand plans. The ward is a temporary obstacle between you and the system you are going to build. The system will help everyone."
+    },
+    {
+      "id": 28,
+      "name": "wild-4",
+      "family": "wild",
+      "title": "Collision",
+      "description": "Irritability arrives. People are too slow. The ward rules are arbitrary. Why does nobody see what you see?"
+    },
+    {
+      "id": 29,
+      "name": "wild-5",
+      "family": "wild",
+      "title": "Storm",
+      "description": "Maximum unpredictability. Generous then furious then tearful then laughing. Not performing — genuinely experiencing all of it."
+    },
+    {
+      "id": 30,
+      "name": "wild-6",
+      "family": "wild",
+      "title": "Burnout",
+      "description": "The energy turns acrid. Still elevated but it no longer feels good. The ideas are still coming but they have a desperate quality."
+    },
+    {
+      "id": 31,
+      "name": "wild-7",
+      "family": "wild",
+      "title": "Freefall",
+      "description": "The crash is coming and you know it. Still accelerated but the floor is visible. This is where intervention matters most."
+    }
+  ]
+}

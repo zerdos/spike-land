@@ -138,6 +138,15 @@ canvas#bg{position:fixed;inset:0;z-index:0}
   min-width:70px;text-align:right;
 }
 
+#persona-tag{
+  font-size:clamp(.55rem,1.3vw,.75rem);
+  letter-spacing:.25em;text-transform:uppercase;
+  font-weight:400;
+  margin-bottom:.6rem;
+  opacity:0;transition:opacity .3s,color .3s;
+}
+#persona-tag.on{opacity:.5}
+
 .credit{
   position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:20;
   font-size:.5rem;color:rgba(255,126,179,.12);white-space:nowrap;
@@ -149,6 +158,7 @@ canvas#bg{position:fixed;inset:0;z-index:0}
 
 <div class="center">
   <div id="counter"></div>
+  <div id="persona-tag"></div>
   <div id="word">Sheila</div>
   <div id="subtitle">she is cleaning the floors here in the ward</div>
   <div id="dots"></div>
@@ -178,12 +188,20 @@ const BEAT = 60 / BPM;
 const LOOKAHEAD = 0.12;
 const TICK = 40;
 
+// Personas
+const PERSONAS = {
+  sheila:  { name: 'Sheila',                        color: '#ff7eb3' },
+  abba:    { name: 'ABBA',                          color: '#ffd700' },
+  mrbeast: { name: 'MR Beast',                      color: '#00e676' },
+  bbc:     { name: 'BBC (no TV licence required)',   color: '#64b5f6' },
+};
+
 // Phases: 6-7-6-7 = 26 beats per cycle
 const PHASES = [
-  { word: 'Sheila',    beats: 6, hue: '#ff7eb3', glow: 'rgba(255,126,179,' },
-  { word: 'Pussy',     beats: 7, hue: '#b388ff', glow: 'rgba(179,136,255,' },
-  { word: 'Pussycats', beats: 6, hue: '#ffab91', glow: 'rgba(255,171,145,' },
-  { word: 'Sheila',    beats: 7, hue: '#ff7eb3', glow: 'rgba(255,126,179,' },
+  { persona: 'abba',    word: 'Sheila',    beats: 6 },
+  { persona: 'mrbeast', word: 'Pussycats', beats: 7 },
+  { persona: 'bbc',     word: 'Pussycats', beats: 6 },
+  { persona: 'sheila',  word: 'Sheila',    beats: 7 },
 ];
 const CYCLE_BEATS = 26; // 6+7+6+7
 
@@ -204,7 +222,7 @@ let globalBeat = 0;
 let schedulerID = null;
 
 // ── Sheila counter (42 per 3 cycles) ──
-// Cycle: Sheila(6) + Pussy(7) + Pussycats(6) + Sheila(7) = 13 sheilas
+// Cycle: Sheila(6) + Pussycats(7) + Pussycats(6) + Sheila(7) = 13 sheilas
 // 3 cycles = 39 sheilas, then bridge adds 3 = 42
 let sheilaCount = 0;
 const SHEILA_TARGET = 42;
@@ -213,6 +231,7 @@ const SHEILA_TARGET = 42;
 const wordEl = document.getElementById('word');
 const subtitleEl = document.getElementById('subtitle');
 const counterEl = document.getElementById('counter');
+const personaTag = document.getElementById('persona-tag');
 const dotsEl = document.getElementById('dots');
 const playBtn = document.getElementById('play-btn');
 const playIcon = document.getElementById('play-icon');
@@ -519,6 +538,9 @@ function updateVisuals() {
 
   if (vizPhase.bridge) {
     const bb = vizPhase.bridgeBeat;
+    personaTag.textContent = 'Sheila';
+    personaTag.style.color = PERSONAS.sheila.color;
+    personaTag.classList.add('on');
     if (bb < 5) {
       wordEl.textContent = 'She is cleaning';
       wordEl.style.fontSize = 'clamp(1.5rem,6vw,3.5rem)';
@@ -537,14 +559,20 @@ function updateVisuals() {
         lastCountedBeat = vizPhase.beat;
       }
     }
-    targetColor = '#ff7eb3';
+    targetColor = PERSONAS.sheila.color;
     wordEl.style.color = targetColor;
   } else if (vizPhase.idx >= 0) {
     const phase = PHASES[vizPhase.idx];
+    const persona = PERSONAS[phase.persona];
     wordEl.textContent = phase.word;
     wordEl.style.fontSize = '';
-    targetColor = phase.hue;
+    targetColor = persona.color;
     wordEl.style.color = targetColor;
+
+    // Show persona tag
+    personaTag.textContent = persona.name;
+    personaTag.style.color = persona.color;
+    personaTag.classList.add('on');
 
     // Count sheilas
     if ((vizPhase.idx === 0 || vizPhase.idx === 3) && vizPhase.beat !== lastCountedBeat) {
@@ -627,7 +655,7 @@ for (let i = 0; i < 5; i++) {
     vx: (Math.random() - 0.5) * 0.0003,
     vy: (Math.random() - 0.5) * 0.0003,
     r: 0.15 + Math.random() * 0.2,
-    hue: [330, 270, 20, 330, 270][i],
+    hue: [330, 50, 145, 210, 330][i], // pink(sheila), gold(abba), green(mrbeast), blue(bbc), pink
   });
 }
 
@@ -684,9 +712,11 @@ function togglePlay() {
     subtitleEl.style.opacity = '';
     wordEl.classList.remove('on');
     wordEl.textContent = 'Sheila';
-    wordEl.style.color = '#ff7eb3';
+    wordEl.style.color = PERSONAS.sheila.color;
     wordEl.style.fontSize = '';
     counterEl.textContent = '';
+    personaTag.classList.remove('on');
+    personaTag.textContent = '';
     dotsEl.innerHTML = '';
     startIdle();
     return;
