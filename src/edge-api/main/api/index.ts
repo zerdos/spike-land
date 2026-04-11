@@ -72,15 +72,24 @@ function getRequestHost(request: Request): string {
   return (request.headers.get("host") ?? url.host).toLowerCase().split(":")[0] ?? "";
 }
 
-function getSpikeEdgeMetricService(request: Request): "Main Site" | "Edge API" | null {
+function getSpikeEdgeMetricService(
+  request: Request,
+): "Main Site" | "Edge API" | "Stripe Webhook" | null {
   const url = new URL(request.url);
   const host = getRequestHost(request);
 
   if (host.startsWith("api.spike.land") || host.startsWith("edge.spike.land")) {
+    if (url.pathname.startsWith("/stripe/webhook")) {
+      return "Stripe Webhook";
+    }
     return "Edge API";
   }
 
   if (host === "internal") {
+    if (url.pathname.startsWith("/stripe/webhook")) {
+      return "Stripe Webhook";
+    }
+
     if (url.pathname.startsWith("/api/")) {
       return "Edge API";
     }
@@ -91,6 +100,9 @@ function getSpikeEdgeMetricService(request: Request): "Main Site" | "Edge API" |
   }
 
   if (MAIN_SITE_HOST_SET.has(host)) {
+    if (url.pathname.startsWith("/stripe/webhook")) {
+      return "Stripe Webhook";
+    }
     return url.pathname.startsWith("/api/") ? "Edge API" : "Main Site";
   }
 

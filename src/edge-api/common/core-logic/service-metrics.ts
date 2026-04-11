@@ -237,7 +237,7 @@ export async function recordServiceRequestMetric(
 ): Promise<void> {
   await ensureServiceMetricSchema(db);
 
-  const roundedLatency = Math.max(0, latencyMs);
+  const roundedLatency = Math.max(1, latencyMs);
   const minuteBucket = floorToMinute(now);
 
   await db
