@@ -7724,13 +7724,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rolldown/pluginutils@npm:1.0.0-rc.7":
-  version: 1.0.0-rc.7
-  resolution: "@rolldown/pluginutils@npm:1.0.0-rc.7"
-  checksum: 10c0/9d5490b5805b25bcd1720ca01c4c032b55a0ef953dab36a8dd42c568e82214576baa464f3027cd5dff3fabcfbe3bf3db2251d12b60220f5d1cd2ffde5ee37082
-  languageName: node
-  linkType: hard
-
 "@rolldown/pluginutils@npm:1.0.0-rc.9":
   version: 1.0.0-rc.9
   resolution: "@rolldown/pluginutils@npm:1.0.0-rc.9"
@@ -9059,22 +9052,8 @@ __metadata:
     "@google/genai": "npm:^1.48.0"
     "@spike-land-ai/mcp-image-studio": "workspace:*"
     "@spike-land-ai/shared": "workspace:*"
-    "@testing-library/dom": "npm:^10.4.1"
-    "@testing-library/jest-dom": "npm:^6.9.1"
-    "@testing-library/react": "npm:^16.3.2"
-    "@testing-library/user-event": "npm:^14.6.1"
-    "@types/jsdom": "npm:^28.0.0"
-    "@types/react": "npm:^19.2.14"
-    "@types/react-dom": "npm:^19.2.3"
-    "@vitejs/plugin-react": "npm:^6.0.0"
     hono: "npm:^4.12.7"
-    jsdom: "npm:^28.1.0"
-    lucide-react: "npm:^0.577.0"
-    react: "npm:^19.2.4"
-    react-dom: "npm:^19.2.4"
-    sonner: "npm:^2.0.7"
     typescript: "npm:^5.9.3"
-    vite: "npm:^8.0.0"
     vitest: "npm:^4.1.0"
     wrangler: "npm:^4.72.0"
   languageName: unknown
@@ -9399,7 +9378,6 @@ __metadata:
   resolution: "@spike-land-ai/vibe-dev@workspace:packages/vibe-dev"
   dependencies:
     "@changesets/cli": "npm:2.30.0"
-    "@types/cross-spawn": "npm:^6.0.6"
     "@types/node": "npm:25.4.0"
     chokidar: "npm:5.0.0"
     commander: "npm:14.0.3"
@@ -10392,7 +10370,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^16.0.0, @testing-library/react@npm:^16.0.1, @testing-library/react@npm:^16.1.0, @testing-library/react@npm:^16.2.0, @testing-library/react@npm:^16.3.1, @testing-library/react@npm:^16.3.2":
+"@testing-library/react@npm:^16.0.0, @testing-library/react@npm:^16.0.1, @testing-library/react@npm:^16.1.0, @testing-library/react@npm:^16.2.0, @testing-library/react@npm:^16.3.1":
   version: 16.3.2
   resolution: "@testing-library/react@npm:16.3.2"
   dependencies:
@@ -10580,15 +10558,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/b5dd407040db7d8aa1bd36e79e5f3f32292f6b075abc287529e9f48df1a25fda3e3799ba30b4656667ffb931d3b75690c1d6ca71e39f7337ea6dfda8581916d0
-  languageName: node
-  linkType: hard
-
-"@types/cross-spawn@npm:^6.0.6":
-  version: 6.0.6
-  resolution: "@types/cross-spawn@npm:6.0.6"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/e3d476bb6b3a54a8934a97fe6ee4bd13e2e5eb29073929a4be76a52466602ffaea420b20774ffe8503f9fa24f3ae34817e95e7f625689fb0d1c10404f5b2889c
   languageName: node
   linkType: hard
 
@@ -10925,18 +10894,6 @@ __metadata:
   version: 2.2.7
   resolution: "@types/js-cookie@npm:2.2.7"
   checksum: 10c0/29196c6829982b5efa79117122a7d62cf4bc2f6397ce8eac1539319ff5dce3b44b2d86f2ac064f2ed3488fb24439358f24af6914fde5c5c4bab9a85728a13a6f
-  languageName: node
-  linkType: hard
-
-"@types/jsdom@npm:^28.0.0":
-  version: 28.0.0
-  resolution: "@types/jsdom@npm:28.0.0"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/tough-cookie": "npm:*"
-    parse5: "npm:^7.0.0"
-    undici-types: "npm:^7.21.0"
-  checksum: 10c0/7b4b06dee1c611e37766ae2c5f92b0a881e3a2da8e38cc34999e812ab030b54b7250b0b9cc9af24dbeadc0fc2d341cc4e0adc5e5ca7d624d134ced1414a1ea5e
   languageName: node
   linkType: hard
 
@@ -11309,13 +11266,6 @@ __metadata:
   version: 0.137.0
   resolution: "@types/three@npm:0.137.0"
   checksum: 10c0/545258eb39d3ca2624a6f278189d83329cdd35b1ff29e83d3c7615f1ab2a81fb2f9c4cbc5e1e0a53aa7a1bc29f9e8e6b0d82090c8c1afd3a95157eef2032394d
-  languageName: node
-  linkType: hard
-
-"@types/tough-cookie@npm:*":
-  version: 4.0.5
-  resolution: "@types/tough-cookie@npm:4.0.5"
-  checksum: 10c0/68c6921721a3dcb40451543db2174a145ef915bc8bcbe7ad4e59194a0238e776e782b896c7a59f4b93ac6acefca9161fccb31d1ce3b3445cb6faa467297fb473
   languageName: node
   linkType: hard
 
@@ -12152,24 +12102,6 @@ __metadata:
   peerDependencies:
     vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 10c0/bac0a409e71eee954a05bc41580411c369bd5f9ef0586a1f9743fba76ad6603c437d93d407d230780015361f93d1592c55e53314813cded6369c36d3c1e8edbf
-  languageName: node
-  linkType: hard
-
-"@vitejs/plugin-react@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@vitejs/plugin-react@npm:6.0.0"
-  dependencies:
-    "@rolldown/pluginutils": "npm:1.0.0-rc.7"
-  peerDependencies:
-    "@rolldown/plugin-babel": ^0.1.7
-    babel-plugin-react-compiler: ^1.0.0
-    vite: ^8.0.0
-  peerDependenciesMeta:
-    "@rolldown/plugin-babel":
-      optional: true
-    babel-plugin-react-compiler:
-      optional: true
-  checksum: 10c0/f65cb9846a3125b19e95cf96ee24b54b68003887b09fbb66b5521e1fed4308632c0ae3c1f08d9244920bb8d7def4ea2adb9cc87f74ba2b8778ec76f1f4786096
   languageName: node
   linkType: hard
 
@@ -23679,7 +23611,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:28.1.0, jsdom@npm:^28.1.0":
+"jsdom@npm:28.1.0":
   version: 28.1.0
   resolution: "jsdom@npm:28.1.0"
   dependencies:
@@ -32940,16 +32872,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sonner@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "sonner@npm:2.0.7"
-  peerDependencies:
-    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 10c0/6966ab5e892ed6aab579a175e4a24f3b48747f0fc21cb68c3e33cb41caa7a0eebeb098c210545395e47a18d585eb8734ae7dd12d2bd18c8a3294a1ee73f997d9
-  languageName: node
-  linkType: hard
-
 "sort-keys@npm:^4.0.0":
   version: 4.2.0
   resolution: "sort-keys@npm:4.2.0"
@@ -35306,13 +35228,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:^7.21.0":
-  version: 7.22.0
-  resolution: "undici-types@npm:7.22.0"
-  checksum: 10c0/5e6f2513c41d07404c719eb7c1c499b8d4cde042f1269b3bc2be335f059e6ef53eb04f316696c728d5e8064c4d522b98f63d7ae8938adf6317351e07ae9c943e
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~5.26.4":
   version: 5.26.5
   resolution: "undici-types@npm:5.26.5"
@@ -36435,7 +36350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.0 || ^7.0.0 || ^8.0.0-0, vite@npm:^8.0.0":
+"vite@npm:^6.0.0 || ^7.0.0 || ^8.0.0-0":
   version: 8.0.0
   resolution: "vite@npm:8.0.0"
   dependencies:
