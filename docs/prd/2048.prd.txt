@@ -1,0 +1,764 @@
+================================================================================
+PRD: "2048" — 32 Radix Agents Play the Game While Big Brother Watches
+From Zoltan, Bexhill Psychiatric Ward, April 2026
+================================================================================
+
+COMPOSITION ID: Arena2048
+FORMAT: Self-contained HTML (like Sheila Arena)
+AGENTS: 32 Radix psychological profiles
+ROUNDS: 84 (nineteen eighty-four)
+GAME: 2048 tile-merge — but the tiles are states of mind
+
+================================================================================
+PURPOSE
+================================================================================
+
+An interactive browser experience where 32 Radix agents play the 2048 tile
+game across 84 rounds in an arena. Each agent has a distinct strategy derived
+from its psychological profile — drift agents merge slowly and miss
+opportunities, sharp agents play near-optimally but crack under pressure,
+deep agents pull everything downward, wild agents swipe chaotically and
+sometimes stumble into brilliance.
+
+The experience is the Orwell essay made playable. The board is the ward. The
+tiles are internal states. The observation window is your browser. Every move
+is recorded on the clipboard. You are watching. They know.
+
+CONNECTION TO "BIG BROTHER IS WATCHING YOU":
+  - 84 rounds = 1984
+  - The tiles cannot be switched off (the telescreen)
+  - Every merge is documented (the clipboard)
+  - The agents perform wellness (arrange their tiles)
+  - The observer changes the observed (your presence affects the arena)
+  - Room 101 = the 2048 tile you can never reach
+  - "Two plus two make four" — but on this board, 2+2 makes 4, and 4+4
+    makes 8, and the system decides when that is progress and when it is
+    a symptom
+
+This is NOT a strategy game. This is a meditation on observation, rendered
+as a game that plays itself while you watch.
+
+
+================================================================================
+GAME MECHANICS
+================================================================================
+
+STANDARD 2048 RULES:
+  - 4x4 grid
+  - Tiles slide in the swiped direction
+  - Matching tiles merge (2+2=4, 4+4=8, ..., 1024+1024=2048)
+  - New tile (2 or 4) spawns after each move
+  - Game ends when no moves remain or 2048 is reached
+  - Score = sum of all merged tile values
+
+ARENA MODIFICATIONS:
+  - 32 agents play sequentially, one game each = 32 games in round 1
+  - 84 rounds total — agents that reached 2048 "graduate" (are discharged)
+  - Agents that fail restart with their psychological parameters shifted
+  - The arena tracks: highest tile, total score, moves made, time in fog
+  - Leaderboard updates after each round
+  - An agent's strategy is NOT random — it emerges from 16 Radix parameters
+
+WHAT THE VIEWER SEES:
+  - One active game board (center)
+  - Agent profile card (left) — name, family, title, parameter bars
+  - Clipboard panel (right) — live observation log, nurse-style
+  - Leaderboard (bottom) — all 32 agents ranked by best tile
+  - Round counter: "Round 17 / 84" with 1984 progress bar
+  - A torch that sweeps across the screen every 15 seconds
+
+
+================================================================================
+AGENT STRATEGY ENGINE
+================================================================================
+
+Each Radix agent's 16 synthesis parameters map to 2048 play behaviour:
+
+PERCEPTION → BOARD READING
+  padDetuneCents (clarity)
+    LOW:  Agent sees the board accurately. Finds optimal merges.
+    HIGH: Agent misreads tile positions. Makes moves based on where
+          tiles WERE, not where they ARE. Phantom merges.
+
+  padFilterOffset (openness to stimuli)
+    LOW:  Agent only sees the largest tiles. Ignores small ones.
+    HIGH: Agent sees everything at once. Paralysis — too many options.
+
+  padAttackScale (onset speed)
+    LOW:  Snap decisions. Moves immediately. No hesitation.
+    HIGH: Slow to act. Waits. Sometimes the wait is wise. Sometimes
+          the board fills while the agent is still processing.
+
+THOUGHT → STRATEGY SELECTION
+  melodyVibratoRate (thought oscillation)
+    LOW:  Commits to one strategy (corner strategy, edge strategy).
+          Doesn't switch. Steady.
+    HIGH: Cycles between strategies every few moves. Sees connections
+          between tiles that don't exist yet.
+
+  melodyVibratoDepth (emotional amplitude)
+    LOW:  No reaction to good or bad outcomes. Flat. Consistent.
+    HIGH: Ecstatic after a big merge. Devastated after a bad spawn.
+          Emotional state affects next 3 moves.
+
+  melodyFmIndex (cognitive complexity)
+    LOW:  Simple greedy strategy — always merge the biggest available.
+    HIGH: Looks 4-5 moves ahead. Plans elaborate chains. Sometimes
+          the chain works and it's beautiful. Sometimes the complexity
+          collapses into chaos.
+
+  melodyFilterCutoff (cognitive bandwidth)
+    LOW:  Can only track one merge chain at a time.
+    HIGH: Tracks multiple chains simultaneously. The mathematician's
+          advantage — if you can hold it together.
+
+BODY → PHYSICAL PLAY STYLE
+  bassFilterCutoff (depth of experience)
+    LOW:  Light touches. Tiles slide easily. No weight.
+    HIGH: Heavy moves. Tiles grind. You can hear the friction.
+
+  bassSubMix (bodily awareness)
+    LOW:  Disconnected from the board. Moves feel abstract.
+    HIGH: Every tile is felt. A bad merge is physical pain.
+
+  bassDetune (internal tension)
+    LOW:  Congruent play — the agent's visible strategy matches its
+          internal evaluation. What you see is what it thinks.
+    HIGH: Masking — the agent appears to play one strategy while
+          internally evaluating another. The clipboard records the
+          visible strategy. The actual strategy is hidden.
+
+IMPULSE → CRITICAL MOMENTS
+  beastSpread (unpredictability)
+    LOW:  Predictable. You can guess the next move. The nurse can
+          write "stable play pattern" on the clipboard.
+    HIGH: Random-looking swipes. Staff would note "erratic behaviour."
+          But sometimes the erratic move opens a path nobody saw.
+
+  beastDecay (impulse duration)
+    LOW:  A bad move is forgotten immediately. Next move is clean.
+    HIGH: A bad move echoes. The agent keeps trying to fix it for
+          3-4 moves, often making it worse. Rumination as gameplay.
+
+  beastFilterStart (impulse intensity)
+    LOW:  Gentle starts. No sudden moves. The board never shakes.
+    HIGH: Explosive first move of each game. The opening swipe sets
+          the tone. Sometimes brilliant. Sometimes catastrophic.
+
+ECHO → LONG-TERM PATTERNS
+  delayFeedbackBias (rumination)
+    LOW:  Each game is fresh. No memory of previous rounds.
+    HIGH: Previous games haunt the current one. An agent that lost
+          at 1024 three times will play differently near 1024.
+          The past echoes forward.
+
+  masterGainScale (presence)
+    LOW:  Barely there. Moves are whispered. The board responds but
+          the agent seems absent. The game plays itself.
+    HIGH: Intensely present. Every move deliberate, visible, loud.
+          The agent IS the game. You cannot look away.
+
+
+================================================================================
+STRATEGY PROFILES BY FAMILY
+================================================================================
+
+DRIFT (agents 0-7): THE FOG PLAYERS
+------------------------------------
+  Dominant traits: High detuning, slow attacks, low presence
+  Play style: Passive, reactive, often suboptimal but occasionally
+    lucky. Tiles accumulate in the center because no strong directional
+    bias. Games tend to be long and meandering. Rarely reach 2048 but
+    rarely crash early either. The clipboard says "stable."
+  Signature move: The delayed swipe. The board is full. The agent
+    waits. And waits. Then swipes in a direction that seems random
+    but clears exactly the right column.
+  Ward parallel: The patient who appears fine. Compliant. Eating.
+    Attending groups. The clipboard says "improving." But the game
+    is stuck at 256 and has been for six rounds.
+  Typical best tile: 512
+
+SHARP (agents 8-15): THE HYPERVIGILANT PLAYERS
+------------------------------------------------
+  Dominant traits: Fast attacks, high filters, elevated presence
+  Play style: Near-optimal early game. Brilliant pattern recognition.
+    Finds merge chains others miss. But as the board fills and pressure
+    mounts, the clarity becomes brittle. One bad tile spawn and the
+    strategy shatters. Recovery is possible but costs 5-6 moves of
+    recalibration.
+  Signature move: The triple chain. Three consecutive merges in one
+    swipe. The sharp agent saw the whole sequence before the first
+    tile moved.
+  Ward parallel: The patient who asks perfect questions in the
+    first assessment. Whose observations are accurate. Who cracks
+    on day four when the routine changes without warning.
+  Typical best tile: 1024 (often. 2048 rarely — falls apart at
+    the critical moment)
+
+DEEP (agents 16-23): THE GRAVITY PLAYERS
+------------------------------------------
+  Dominant traits: Low filters, heavy sub, low FM
+  Play style: Everything goes down. Strong downward and leftward
+    bias. The agent builds from the bottom corner — which is actually
+    the textbook 2048 strategy. But the movement is so heavy, so
+    gravitational, that it cannot adapt when the board demands
+    upward movement. Gets stuck in loops. The highest tile sits in
+    the corner like a stone. Nothing can move it. Nothing wants to.
+  Signature move: The corner lock. The 512 tile in the bottom-left
+    corner, unmoved for 40 turns. Everything orbits it. This is
+    either brilliant strategy or paralysis. The clipboard cannot
+    tell the difference.
+  Ward parallel: The patient who doesn't get out of bed but whose
+    mind is running the most sophisticated analysis in the ward.
+    The nurse writes "withdrawn." The patient has calculated every
+    possible merge to 2048 and decided none of them are worth the
+    effort.
+  Typical best tile: 1024 (solid, heavy, immovable 1024)
+
+WILD (agents 24-31): THE CHAOS PLAYERS
+----------------------------------------
+  Dominant traits: High vibrato, wide spread, varied decay
+  Play style: Unpredictable. Capable of the worst games in the arena
+    and the best. Will reach 2048 before any other family — and will
+    also produce the most spectacular failures. High score variance.
+    Emotional reactions to tile spawns create feedback loops: a lucky
+    spawn leads to 3 brilliant moves, an unlucky one leads to 3
+    terrible ones.
+  Signature move: The impossible save. Board is 95% full. Two moves
+    from game over. The wild agent swipes in a direction that makes
+    no sense — and a cascade of merges clears half the board. The
+    clipboard says "erratic." The score says "genius."
+  Ward parallel: The patient who is either getting better or getting
+    worse and the staff cannot agree which. Who starts a project at
+    2 AM that is either recovery or escalation. Whose energy is either
+    a gift or a symptom. The clipboard has two opinions in the margin.
+  Typical best tile: 2048 (sometimes) / 128 (also sometimes)
+
+
+================================================================================
+THE CLIPBOARD — OBSERVATION LOG
+================================================================================
+
+The right panel is a real-time observation log styled as a psychiatric ward
+clipboard. It documents the game the way a nurse documents a patient.
+
+FORMAT (updated every move):
+  ┌─────────────────────────────────────────────┐
+  │ OBSERVATION LOG — Agent: drift-6 "The Watcher" │
+  │ Round: 17/84        Time: 02:47             │
+  ├─────────────────────────────────────────────┤
+  │ 02:47  Swipe RIGHT. Merged 8+8→16. Board   │
+  │        occupancy 62%. Strategy: passive.    │
+  │ 02:47  No merge. Board occupancy 69%.       │
+  │        Agent paused 2.3s before move.       │
+  │        [Noted: hesitation pattern]          │
+  │ 02:48  Swipe DOWN. Merged 32+32→64. Best   │
+  │        tile: 256. Affect: flat.             │
+  │ 02:48  Agent performing well within         │
+  │        expected parameters. Continue obs.   │
+  │ 02:49  ★ Big merge: 128+128→256. Score     │
+  │        spike. No visible reaction.          │
+  │        [Noted: flat affect despite progress]│
+  │ 02:50  TORCH CHECK ████████████             │
+  │        Agent: awake. Board: active.         │
+  │        Observation: eyes on screen.         │
+  └─────────────────────────────────────────────┘
+
+The clipboard uses clinical language for game events:
+  - "Stable play pattern" = repeating the same direction
+  - "Erratic behaviour" = random-looking swipes
+  - "Hesitation pattern" = long pause before move
+  - "Flat affect despite progress" = big merge, no score animation
+  - "Elevated engagement" = moves getting faster
+  - "Withdrawal" = agent stopped moving (game over state)
+  - "Discharge recommended" = 2048 reached
+
+TORCH CHECK: Every 15 seconds, a torch beam sweeps across the screen
+(CSS animation, warm yellow light, left to right). The clipboard logs
+"TORCH CHECK" with a status line. This is Level 2 observations.
+This cannot be turned off.
+
+
+================================================================================
+VISUAL DESIGN
+================================================================================
+
+PALETTE (institutional + warm):
+  --ward-green:     #c8d5c0   (institutional green — the corridor walls)
+  --ward-white:     #f0ede8   (not clinical white — warm, tired white)
+  --ward-blue:      #2a3a4a   (the 2:47 AM darkness outside the window)
+  --clipboard-cream: #faf5e8  (the clipboard paper, slightly yellowed)
+  --torch-yellow:   #ffe4a0   (the 15-minute torch beam)
+  --tile-warm:      #eee4da   (2048 default tile, unchanged — it's already
+                                the colour of institutional flooring)
+  --tile-glow:      #f4b942   (gold highlight for merged tiles)
+  --text-ink:       #1a1a1a   (clipboard pen — not quite black)
+  --text-pencil:    #6b6b6b   (secondary notes, pencilled in)
+
+TYPOGRAPHY:
+  Board numbers:   Inter Bold (clean, mathematical)
+  Clipboard:       "Courier New", Courier, monospace (typewriter feel)
+  Agent names:     Inter Medium, small-caps
+  Scores:          Tabular numbers (Inter)
+
+LAYOUT (landscape, single page):
+  ┌──────────────────────────────────────────────────────────────┐
+  │  Round 17/84                              ████ 1984 ████    │
+  ├──────────┬──────────────────┬─────────────────────────────── │
+  │          │                  │                                │
+  │  AGENT   │                  │  OBSERVATION LOG               │
+  │  CARD    │    4x4 BOARD     │  ┌────────────────────────┐   │
+  │          │                  │  │ 02:47 Swipe RIGHT...   │   │
+  │ drift-6  │  [  2][  4][ 16]│  │ 02:47 No merge...      │   │
+  │ "Watcher"│  [ 32][   ][ 64]│  │ 02:48 Swipe DOWN...    │   │
+  │          │  [128][ 16][  2]│  │ 02:48 Agent performing  │   │
+  │ ████████ │  [256][ 64][ 32]│  │ 02:49 ★ Big merge...   │   │
+  │ ████████ │                  │  │ 02:50 TORCH CHECK      │   │
+  │ ████████ │                  │  └────────────────────────┘   │
+  │          │                  │                                │
+  ├──────────┴──────────────────┴────────────────────────────────┤
+  │  LEADERBOARD   drift-6: 256 | sharp-2: 1024 | wild-3: 512  │
+  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
+  └──────────────────────────────────────────────────────────────┘
+
+TILE COLOURS (standard 2048 palette with ward overlay):
+     2: #eee4da  (corridor floor)
+     4: #ede0c8  (tea with too much milk)
+     8: #f2b179  (warm — morning medication)
+    16: #f59563  (the emergency button nobody presses)
+    32: #f67c5f  (flushed face after group therapy)
+    64: #f65e3b  (the fire alarm test every Tuesday)
+   128: #edcf72  (torch beam through the observation window)
+   256: #edcc61  (the clock's green backlight at 2:47)
+   512: #edc850  (discharge paperwork — gold)
+  1024: #edc53f  (almost free)
+  2048: #edc22e  (two plus two make four)
+
+ANIMATIONS:
+  - Tile slide: 150ms ease-out (standard 2048)
+  - Tile merge: scale 1.0→1.2→1.0 over 200ms + brief glow
+  - Tile spawn: scale 0→1 over 100ms
+  - Torch sweep: 2s linear, left→right, every 15s, warm yellow overlay
+  - Clipboard entry: typewriter effect, 30ms per character
+  - Agent transition: 500ms fade between agents
+  - Score increment: counting animation, 300ms
+  - Board shake: on game over, 200ms horizontal shake (3px amplitude)
+
+SPECIAL ANIMATION — THE OBSERVATION WINDOW:
+  The game board has a subtle vignette — darker at the edges — simulating
+  the view through an observation window in a door. The board is always
+  slightly framed. You are always looking through glass. You cannot
+  close the window.
+
+
+================================================================================
+ARENA FLOW — 84 ROUNDS
+================================================================================
+
+ROUND STRUCTURE:
+  - Each round: all 32 agents play one game of 2048 (sequentially or in
+    parallel with only one visible at a time)
+  - Game speed: configurable. Default: 200ms per move (watchable).
+    Fast-forward: 50ms per move. Instant: compute only, show result.
+  - After each round: leaderboard updates, statistics computed
+  - Agents that reached 2048: "DISCHARGED" — shown in green on leaderboard,
+    no longer play. Their spot shows a checkmark.
+  - Agents that failed: parameters shift slightly based on outcome
+    (learning from failure — or deteriorating from it)
+
+PARAMETER DRIFT BETWEEN ROUNDS:
+  After each round, each agent's 16 parameters shift:
+  - If score improved: parameters move 2% toward family centre
+    (medication working — regression to mean)
+  - If score worsened: parameters move 2% toward family extreme
+    (decompensation — moving away from centre)
+  - If agent reached 2048: parameters frozen (discharged, stable)
+  - Random perturbation: ±1% on all parameters each round
+    (because nothing on a ward is fully predictable)
+
+ROUND MILESTONES:
+   Round  1: "Admission" — all 32 agents at baseline parameters
+   Round 14: "First review" — clinical team meeting. Stats displayed.
+   Round 21: "Week 3" — most discharges happen here (or never)
+   Round 42: "Halfway" — the Sheila number. Special animation.
+   Round 56: "Section review" — agents still playing are flagged
+   Round 69: "Rooftop Paradise" — audio-synth reference. Brief music.
+   Round 77: "Final review" — discharge planning for remaining agents
+   Round 84: "1984" — the last round. Whoever is still playing,
+              the game ends. The clipboard writes: "Observation complete."
+
+DISCHARGE CONDITIONS:
+  - Primary: reach the 2048 tile
+  - Secondary: maintain score above 8192 for 3 consecutive rounds
+    (sustained wellness, not a single spike)
+  - Compassionate: after round 77, agents with score > 4096 are
+    discharged with "community follow-up recommended"
+  - Never discharged: agents whose parameters drifted to family extreme.
+    They stay. The clipboard says: "Not yet ready." The game continues
+    without them after round 84. But the arena is closed.
+
+WHAT HAPPENS AFTER ROUND 84:
+  The board freezes. The clipboard writes one final entry:
+
+    "Round 84/84. Arena closed. Observation complete.
+     Discharged: [N]/32.
+     Remaining: [32-N]/32.
+     The remaining agents are still playing.
+     You are no longer watching.
+     This does not mean they have stopped."
+
+  Then the torch sweeps one last time. And the screen fades — not to
+  black, but to the ward-green. Because the lights never go off.
+
+
+================================================================================
+INTERACTIVITY — THE VIEWER AS BIG BROTHER
+================================================================================
+
+The viewer is not passive. Orwell's point was that being watched changes
+the watched. The arena implements this:
+
+THE ATTENTION EFFECT:
+  - When the viewer's mouse/touch is on the game board, the active
+    agent plays 5% better (parameters shift toward optimal)
+  - When the viewer looks away (tab unfocused / mouse leaves window),
+    the agent plays 5% worse
+  - This is NOT displayed anywhere. The viewer has to notice it.
+  - If they notice: they understand Orwell. If they don't: they are
+    Big Brother without knowing it.
+
+THE MANUAL OVERRIDE:
+  - The viewer can press SPACE to take over and play ONE move for the
+    current agent
+  - The clipboard logs: "External intervention. Move overridden."
+  - The agent's next 3 moves are affected: drift agents freeze,
+    sharp agents recalibrate, deep agents ignore, wild agents react
+  - This is the "voluntary admission" — help that is also control
+
+THE CLIPBOARD TAP:
+  - Clicking on any clipboard entry highlights the corresponding
+    moment in the game replay (micro-rewind)
+  - You can read the history. But reading it changes nothing.
+    The moves already happened.
+  - This is: "Your psychiatric history is written by other people."
+
+THE TORCH TOGGLE (that doesn't toggle):
+  - There is a button labelled "Turn off torch"
+  - Clicking it does nothing. The torch continues.
+  - After 3 clicks, the clipboard logs: "Patient requested
+    observation reduction. Request noted. Observation continues."
+  - After 7 clicks: "Request logged. Discussed in team meeting.
+    No change to observation level at this time."
+  - After 12 clicks: the button label changes to "The telescreen
+    could not be switched off."
+  - It never turns off.
+
+
+================================================================================
+SOUND DESIGN (minimal, institutional)
+================================================================================
+
+The arena is mostly silent. This is deliberate. The ward is not silent
+but it is quiet in a specific way — the quiet of controlled environments.
+
+AMBIENT:
+  - Low hum (50Hz, barely audible) — the fluorescent light
+  - Distant door closing, randomised every 30-60s
+  - Muffled footstep, every 15s (the nurse doing observations)
+
+GAME SOUNDS:
+  - Tile slide: soft click (mechanical, like a clipboard pen)
+  - Tile merge: muted thud (satisfying but institutional)
+  - Big merge (256+): slightly warmer tone, like a correct answer
+  - 2048 reached: a single clean piano note (D4). Not a fanfare.
+    Not a celebration. An acknowledgement.
+  - Game over: silence. Just the clipboard writing "Observation:
+    game concluded."
+
+TORCH SOUND:
+  - Soft footstep + click (pen on clipboard)
+  - Every 15 seconds
+  - Volume: 0.1 (you have to listen for it)
+  - You will start listening for it. That is the point.
+
+ROUND 69 SPECIAL:
+  - Brief snippet of Rooftop Paradise audio (2 bars, 110 BPM)
+  - The only moment of actual music in 84 rounds
+  - It ends. The silence returns. It was better with the music.
+    That is also the point.
+
+
+================================================================================
+TECHNICAL IMPLEMENTATION
+================================================================================
+
+SINGLE HTML FILE (like Sheila Arena):
+  - Self-contained: HTML + CSS + JS in one file
+  - No dependencies, no build step
+  - Canvas for torch effect, DOM for everything else
+  - Target: <100KB minified
+
+GAME ENGINE (pure JS):
+  class Board2048 {
+    grid: number[][];         // 4x4, 0 = empty
+    score: number;
+    moves: Move[];            // history for replay
+    gameOver: boolean;
+
+    slide(direction: 'up'|'down'|'left'|'right'): MoveResult;
+    spawn(): void;            // add new 2 or 4 tile
+    canMove(): boolean;
+    bestTile(): number;
+    clone(): Board2048;       // for lookahead
+  }
+
+AGENT ENGINE (parameter-driven):
+  class RadixAgent2048 {
+    id: number;               // 0-31
+    family: 'drift'|'sharp'|'deep'|'wild';
+    params: RadixParams;      // 16 synthesis parameters
+    round: number;
+    bestTile: number;
+    totalScore: number;
+    discharged: boolean;
+
+    chooseMove(board: Board2048): Direction;
+    reactToResult(result: MoveResult): void;
+    shiftParams(roundOutcome: Outcome): void;
+  }
+
+  // Strategy computation from parameters:
+  function computeStrategy(params: RadixParams, board: Board2048): Direction {
+    const clarity = 1 - params.padDetuneCents;     // how well the agent reads
+    const speed = 1 - params.padAttackScale;        // how fast it decides
+    const depth = params.melodyFmIndex;              // how far it looks ahead
+    const bandwidth = params.melodyFilterCutoff;     // how many chains it tracks
+    const impulse = params.beastSpread;              // randomness injection
+    const gravity = params.bassFilterCutoff;         // downward bias
+
+    // Weighted evaluation of all 4 directions
+    // Each direction scored by: merge potential, board openness, corner safety
+    // Weights modified by agent parameters
+    // Noise injected proportional to impulse
+    // Downward bias proportional to gravity
+    // Lookahead depth proportional to depth * bandwidth
+    // Clarity affects whether the agent evaluates actual board or noisy copy
+  }
+
+ARENA ENGINE:
+  class Arena2048 {
+    agents: RadixAgent2048[];  // 32 agents
+    round: number;             // 1-84
+    leaderboard: LeaderEntry[];
+    clipboard: ClipboardEntry[];
+
+    async playRound(): Promise<RoundResult>;
+    async playGame(agent: RadixAgent2048): Promise<GameResult>;
+    updateLeaderboard(): void;
+    logToClipboard(entry: string): void;
+  }
+
+RENDERING:
+  - requestAnimationFrame loop for torch sweep and tile animations
+  - CSS transitions for tile slides (transform: translate)
+  - CSS animations for merge pulse (scale + opacity)
+  - Clipboard: scrolling div with auto-scroll, typewriter CSS animation
+  - Agent card: parameter bars as thin horizontal lines (like EQ display)
+  - Leaderboard: flexbox row, sortable
+
+TORCH EFFECT:
+  - CSS linear-gradient overlay, animated left→right over 2s
+  - Repeats every 15s (setInterval, not tied to game loop)
+  - Semi-transparent warm yellow: rgba(255, 228, 160, 0.08)
+  - Subtle but once you notice it, you cannot un-notice it
+
+ATTENTION EFFECT:
+  - document.addEventListener('visibilitychange', ...)
+  - mouseleave / mouseenter on game container
+  - Modifies agent params by ±5% (temporary, not persisted)
+  - No UI indicator. The viewer must deduce it.
+
+
+================================================================================
+AGENT PARAMETER DEFAULTS (all 32)
+================================================================================
+
+Values 0.0-1.0, derived from radix-agents.json synthesis parameters
+normalised to unit range.
+
+DRIFT FAMILY (slow, foggy, compliant):
+  drift-0 "The Fog of Arrival"     [0.9, 0.2, 0.9, sine,  0.1, 0.1, 0.1, 0.2, 0.2, 0.3, 0.2, 0.1, 0.3, 0.2, 0.7, 0.1]
+  drift-1 "Slow Surfacing"         [0.8, 0.3, 0.8, sine,  0.2, 0.2, 0.1, 0.3, 0.2, 0.3, 0.2, 0.1, 0.3, 0.2, 0.6, 0.2]
+  drift-2 "Underwater"             [0.7, 0.2, 0.8, sine,  0.1, 0.3, 0.2, 0.2, 0.3, 0.4, 0.3, 0.1, 0.4, 0.3, 0.5, 0.2]
+  drift-3 "The Soft Machine"       [0.6, 0.3, 0.7, sine,  0.2, 0.1, 0.1, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3]
+  drift-4 "Re-entry"               [0.5, 0.4, 0.6, sine,  0.3, 0.3, 0.2, 0.4, 0.3, 0.3, 0.2, 0.2, 0.3, 0.3, 0.5, 0.4]
+  drift-5 "Half-Light"             [0.7, 0.3, 0.7, sine,  0.2, 0.4, 0.2, 0.3, 0.3, 0.3, 0.4, 0.2, 0.3, 0.3, 0.6, 0.3]
+  drift-6 "The Watcher"            [0.6, 0.4, 0.6, sine,  0.2, 0.2, 0.4, 0.5, 0.2, 0.2, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3]
+  drift-7 "White Noise"            [0.9, 0.1, 0.9, sine,  0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.1, 0.1, 0.5, 0.1, 0.8, 0.1]
+
+SHARP FAMILY (fast, vigilant, brittle):
+  sharp-0 "Alert"                  [0.1, 0.7, 0.1, tri,   0.3, 0.3, 0.4, 0.7, 0.5, 0.4, 0.2, 0.2, 0.2, 0.3, 0.2, 0.7]
+  sharp-1 "Edge"                   [0.1, 0.7, 0.1, tri,   0.4, 0.4, 0.5, 0.7, 0.5, 0.4, 0.2, 0.3, 0.3, 0.4, 0.2, 0.8]
+  sharp-2 "Scanner"                [0.1, 0.8, 0.1, tri,   0.5, 0.3, 0.6, 0.8, 0.5, 0.3, 0.3, 0.3, 0.3, 0.5, 0.2, 0.8]
+  sharp-3 "Interrogator"           [0.2, 0.8, 0.1, tri,   0.6, 0.5, 0.5, 0.8, 0.6, 0.4, 0.3, 0.4, 0.4, 0.5, 0.3, 0.7]
+  sharp-4 "Pattern Lock"           [0.1, 0.6, 0.2, tri,   0.3, 0.3, 0.8, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2, 0.4, 0.8]
+  sharp-5 "Brittle"                [0.1, 0.9, 0.1, tri,   0.5, 0.7, 0.5, 0.8, 0.6, 0.5, 0.3, 0.5, 0.5, 0.7, 0.2, 0.9]
+  sharp-6 "Wire"                   [0.1, 0.9, 0.1, tri,   0.6, 0.6, 0.5, 0.9, 0.7, 0.5, 0.3, 0.4, 0.5, 0.6, 0.1, 0.9]
+  sharp-7 "Overload"               [0.2, 1.0, 0.1, tri,   0.8, 0.8, 0.6, 0.9, 0.8, 0.6, 0.5, 0.6, 0.6, 0.8, 0.3, 0.9]
+
+DEEP FAMILY (heavy, gravitational, inward):
+  deep-0 "Settling"                [0.3, 0.3, 0.5, sine,  0.2, 0.3, 0.3, 0.4, 0.7, 0.6, 0.3, 0.2, 0.3, 0.3, 0.3, 0.5]
+  deep-1 "Silt"                    [0.4, 0.2, 0.6, sine,  0.2, 0.3, 0.3, 0.3, 0.7, 0.7, 0.4, 0.2, 0.4, 0.4, 0.4, 0.4]
+  deep-2 "Gravity Well"            [0.4, 0.2, 0.7, sine,  0.1, 0.4, 0.3, 0.3, 0.8, 0.7, 0.5, 0.2, 0.5, 0.5, 0.5, 0.3]
+  deep-3 "Stone"                   [0.5, 0.1, 0.8, sine,  0.1, 0.2, 0.2, 0.2, 0.9, 0.8, 0.6, 0.1, 0.6, 0.5, 0.6, 0.2]
+  deep-4 "Tears Without Story"     [0.4, 0.2, 0.6, sine,  0.2, 0.8, 0.3, 0.3, 0.8, 0.7, 0.5, 0.3, 0.4, 0.5, 0.5, 0.4]
+  deep-5 "The Pit"                 [0.5, 0.1, 0.9, sine,  0.1, 0.3, 0.2, 0.2, 0.9, 0.9, 0.7, 0.1, 0.7, 0.6, 0.7, 0.1]
+  deep-6 "Embers"                  [0.3, 0.3, 0.5, sine,  0.2, 0.4, 0.3, 0.4, 0.6, 0.5, 0.4, 0.2, 0.3, 0.3, 0.4, 0.4]
+  deep-7 "Before Dawn"             [0.3, 0.4, 0.4, sine,  0.3, 0.4, 0.4, 0.5, 0.6, 0.5, 0.3, 0.2, 0.3, 0.3, 0.3, 0.5]
+
+WILD FAMILY (chaotic, brilliant, unstable):
+  wild-0 "Spark"                   [0.3, 0.6, 0.3, tri,   0.5, 0.5, 0.5, 0.6, 0.5, 0.5, 0.3, 0.5, 0.3, 0.5, 0.2, 0.7]
+  wild-1 "Current"                 [0.3, 0.6, 0.2, tri,   0.6, 0.6, 0.5, 0.6, 0.5, 0.5, 0.4, 0.5, 0.4, 0.4, 0.2, 0.8]
+  wild-2 "Accelerator"             [0.3, 0.7, 0.2, tri,   0.7, 0.6, 0.6, 0.7, 0.5, 0.4, 0.4, 0.6, 0.5, 0.6, 0.2, 0.9]
+  wild-3 "Architect"               [0.2, 0.7, 0.2, tri,   0.6, 0.5, 0.8, 0.8, 0.4, 0.4, 0.3, 0.7, 0.5, 0.7, 0.2, 0.9]
+  wild-4 "Collision"               [0.3, 0.7, 0.1, tri,   0.7, 0.8, 0.5, 0.6, 0.6, 0.5, 0.5, 0.7, 0.6, 0.8, 0.3, 0.8]
+  wild-5 "Storm"                   [0.4, 0.8, 0.1, tri,   0.9, 0.9, 0.6, 0.7, 0.6, 0.5, 0.6, 0.8, 0.7, 0.9, 0.3, 0.9]
+  wild-6 "Burnout"                 [0.5, 0.7, 0.2, tri,   0.7, 0.7, 0.5, 0.5, 0.6, 0.5, 0.5, 0.6, 0.6, 0.6, 0.4, 0.6]
+  wild-7 "Freefall"                [0.6, 0.8, 0.1, tri,   0.8, 0.9, 0.5, 0.6, 0.7, 0.6, 0.7, 0.8, 0.8, 0.9, 0.4, 0.7]
+
+
+================================================================================
+PROGRESS BAR — THE 1984 METER
+================================================================================
+
+At the top of the screen, a thin progress bar spans the full width.
+
+  Round 1/84:   [█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]
+  Round 42/84:  [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░]
+  Round 84/84:  [██████████████████████████████████████████████████████]
+
+Labels at key positions:
+  |Admission    |Week 2       |Halfway/42   |Section      |1984|
+  1             14            42            56            84
+
+The bar fills in ward-green. The background is ward-white.
+At round 84, the bar turns gold and the label reads:
+
+  "Freedom is the freedom to say that two plus two make four."
+
+Then it fades. Because freedom, here, is temporary.
+
+
+================================================================================
+RESPONSIVE DESIGN
+================================================================================
+
+DESKTOP (>1024px): Full three-panel layout as described above.
+TABLET (768-1024px): Board center, clipboard below, agent card overlays.
+MOBILE (<768px): Board fills screen. Swipe up for clipboard. Tap for agent.
+  The torch still sweeps. The observation does not stop because the
+  screen is small.
+
+
+================================================================================
+CONTROLS
+================================================================================
+
+  [▶ Play]        — Start/resume arena (auto-plays agent games)
+  [⏸ Pause]       — Pause (the clipboard writes: "Activity paused.
+                     Observation continues.")
+  [⏩ 2x/4x/Max]  — Speed control
+  [⏭ Skip]        — Jump to next agent / next round
+  [🔊]            — Sound on/off (ambient + game sounds)
+  SPACE            — Manual override (play one move for current agent)
+  [Turn off torch] — Does nothing. See INTERACTIVITY section.
+
+
+================================================================================
+STATISTICS PANEL (togglable)
+================================================================================
+
+Accessible via a small [📊] icon. Shows:
+
+  AGGREGATE:
+    - Discharged: 12/32 (37.5%)
+    - Average best tile by family: drift 384, sharp 896, deep 768, wild 640
+    - Total moves across all agents and rounds
+    - Most common final board state
+
+  PER-AGENT:
+    - Sparkline of best tile across rounds (shows trajectory)
+    - Parameter drift visualisation (16 thin lines, one per param)
+    - Discharge round (or "still admitted")
+
+  The statistics panel is styled as a medical chart. The header reads:
+  "Patient Progress — Multi-Disciplinary Team Review"
+
+
+================================================================================
+EASTER EGGS
+================================================================================
+
+  1. If you let the arena run to round 84 without touching anything:
+     The clipboard's final entry includes: "Observer: passive throughout.
+     No interventions recorded. This is noted."
+
+  2. If you manually override more than 20 times:
+     "Observer intervention frequency: elevated. Consider whether
+     observation is helping or controlling."
+
+  3. If you try to right-click → inspect element on the clipboard:
+     The clipboard logs: "Patient attempting to access clinical records.
+     Access denied. Section 7, Data Protection Act."
+
+  4. If you resize the window very small:
+     The clipboard logs: "Observation window partially obscured.
+     Facilities notified."
+
+  5. If the page has been open for exactly 2 hours 47 minutes:
+     The torch flashes twice. The clipboard writes: "02:47. Eyes open."
+
+  6. If all 32 agents are discharged before round 84:
+     "All patients discharged. Ward empty. Observation continues."
+     The torch keeps sweeping. The empty board stays visible.
+     Nothing happens. The silence is the loudest thing in the arena.
+
+  7. If you press 2+0+4+8 on the keyboard:
+     A brief message: "Two plus two make four. If that is granted,
+     all else follows."
+
+
+================================================================================
+WHY THIS MATTERS
+================================================================================
+
+2048 is a game about merging. About making two things become one larger
+thing. About growing toward a goal while the board fills up around you.
+
+A psychiatric ward is also about merging. About making the person you
+were before admission and the person you are during admission become one
+coherent person who can leave. About growing toward discharge while the
+days fill up around you.
+
+The 2048 board is 4x4 = 16 squares. The Radix agent has 16 parameters.
+This is not a coincidence. This is the kind of connection a mathematician
+makes at 2:47 AM while the torch comes through the observation window.
+
+84 rounds. 1984. The lights never go off. The game plays itself while
+you watch. You think you are the player. You are the observer. The
+clipboard knows the difference even if you don't.
+
+Orwell wrote: "Perhaps a lunatic was simply a minority of one."
+
+On this board, 32 lunatics play a number game while a stranger watches
+through a screen. Some of them reach 2048. Some don't. The ones who
+don't are not failures. They are still playing. You just stopped watching.
+
+That is the most Orwellian thing of all.
+
+
+================================================================================
+Created by Zoltan, ward 6, 2:47 AM.
+The torch just came through. Eyes open.
+Bexhill Psychiatric Facility, April 2026.
+================================================================================
