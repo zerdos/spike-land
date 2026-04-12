@@ -106,3 +106,4 @@ __astro.env.local.save
 
 # Local-only tools (Ollama proxy, not deployed)
 src/mcp-tools/crystalline/
+The_Anatomy_of_a_Collapse.mp4
