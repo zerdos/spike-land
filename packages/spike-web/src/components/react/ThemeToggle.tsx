@@ -1,65 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-function useSpring(target: number, k = 200, b = 22, m = 1) {
-  const [val, setVal] = useState(target);
-  const s = useRef({ pos: target, vel: 0, raf: 0 as number, tgt: target });
-
-  useEffect(() => {
-    const state = s.current;
-    state.tgt = target;
-    if (state.raf) cancelAnimationFrame(state.raf);
-    let prev: number | null = null;
-    const tick = (now: number) => {
-      if (!prev) prev = now;
-      const dt = Math.min((now - prev) / 1000, 0.05);
-      prev = now;
-      const { pos, vel, tgt } = state;
-      const a = (-k * (pos - tgt) - b * vel) / m;
-      state.vel = vel + a * dt;
-      state.pos = pos + state.vel * dt;
-      if (Math.abs(state.pos - tgt) < 0.001 && Math.abs(state.vel) < 0.001) {
-        state.pos = tgt;
-        state.vel = 0;
-        setVal(tgt);
-        return;
-      }
-      setVal(state.pos);
-      state.raf = requestAnimationFrame(tick);
-    };
-    state.raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(state.raf);
-  }, [target, k, b, m]);
-
-  return val;
-}
-
-const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];
-
-function Sun({ rs }: { rs: number }) {
+function Sun() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="-11 -11 22 22"
+      aria-hidden="true"
       style={{ overflow: "visible", color: "var(--accent)" }}
     >
       <circle r="5" fill="currentColor" />
-      {RAYS.map((deg) => {
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
         const r = (deg * Math.PI) / 180;
         const c = Math.cos(r),
-          ss = Math.sin(r);
-        const len = 4.2 * Math.max(0, rs);
+          s = Math.sin(r);
         return (
           <line
             key={deg}
             x1={c * 7}
-            y1={ss * 7}
-            x2={c * (7 + len)}
-            y2={ss * (7 + len)}
+            y1={s * 7}
+            x2={c * 10.5}
+            y2={s * 10.5}
             stroke="currentColor"
             strokeWidth="2.1"
             strokeLinecap="round"
-            opacity={Math.max(0, rs)}
           />
         );
       })}
@@ -67,56 +31,40 @@ function Sun({ rs }: { rs: number }) {
   );
 }
 
-function Moon({ sa }: { sa: number }) {
-  const pts = [
-    { x: 5.5, y: -7.5, r: 1.1 },
-    { x: 9, y: -1.5, r: 0.8 },
-    { x: 3.5, y: 4, r: 0.85 },
-  ];
+function Moon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="16"
+      height="16"
       viewBox="-11 -11 22 22"
-      style={{ overflow: "visible", color: "var(--thumb)" }}
+      aria-hidden="true"
+      style={{ overflow: "visible", color: "var(--accent)" }}
     >
-      <path d="M0,-8 A8,8 0 1,0 8,0 A5.5,5.5 0 1,1 0,-8 Z" fill="currentColor" opacity="0.9" />
-      {pts.map((p, i) => (
-        <circle
-          key={i}
-          cx={p.x}
-          cy={p.y}
-          r={p.r}
-          fill="currentColor"
-          opacity={Math.max(0, sa) * 0.6}
-        />
-      ))}
+      <path d="M0,-8 A8,8 0 1,0 8,0 A5.5,5.5 0 1,1 0,-8 Z" fill="currentColor" />
     </svg>
   );
 }
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
+    setMounted(true);
   }, []);
 
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === "theme-preference") {
-        setIsDark(e.newValue === "dark");
-        document.documentElement.classList.toggle("dark", e.newValue === "dark");
+        const dark = e.newValue === "dark";
+        setIsDark(dark);
+        document.documentElement.classList.toggle("dark", dark);
       }
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
-
-  const tx = useSpring(isDark ? 5 : 41, 260, 21, 0.85);
-  const rs = useSpring(isDark ? 0 : 1, 150, 15, 0.9);
-  const sa = useSpring(isDark ? 1 : 0, 140, 18, 0.9);
-  const rot = useSpring(isDark ? 0 : 180, 200, 21, 0.8);
 
   const handleToggle = useCallback(() => {
     const next = !isDark;
@@ -127,18 +75,20 @@ export default function ThemeToggle() {
 
   const cssVars = isDark
     ? {
-        "--trk": "#141b30",
-        "--accent": "#4d6fff",
+        "--trk": "#1a2137",
+        "--trk-border": "rgba(255,255,255,.12)",
+        "--accent": "#a6b4ff",
         "--thumb": "#e4e8f8",
-        "--shad": "rgba(77,111,255,.55)",
-        "--glow": "rgba(77,111,255,.18)",
+        "--shad": "rgba(77,111,255,.45)",
+        "--glow": "rgba(77,111,255,.22)",
       }
     : {
         "--trk": "#e4ddd0",
-        "--accent": "#f0a500",
+        "--trk-border": "rgba(0,0,0,.18)",
+        "--accent": "#b87400",
         "--thumb": "#fffdf8",
-        "--shad": "rgba(240,165,0,.40)",
-        "--glow": "rgba(240,165,0,.22)",
+        "--shad": "rgba(184,116,0,.35)",
+        "--glow": "rgba(240,165,0,.28)",
       };
 
   return (
@@ -146,16 +96,17 @@ export default function ThemeToggle() {
       <style>{`
         .theme-toggle {
           position: relative;
-          width: 72px;
-          height: 36px;
-          border-radius: 18px;
+          width: 64px;
+          height: 32px;
+          border-radius: 999px;
           background: var(--trk);
-          border: none;
+          border: 1px solid var(--trk-border);
           cursor: pointer;
           padding: 0;
-          box-shadow: 0 0 0 1px rgba(0,0,0,.08), inset 0 1px 2px rgba(0,0,0,.12);
-          transition: background 0.3s ease;
+          box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+          transition: background 0.25s ease, border-color 0.25s ease;
         }
+        .theme-toggle:hover { filter: brightness(1.04); }
         .theme-toggle:focus-visible {
           outline: 2px solid var(--accent);
           outline-offset: 2px;
@@ -163,25 +114,30 @@ export default function ThemeToggle() {
         .toggle-halo {
           position: absolute;
           inset: -4px;
-          border-radius: 22px;
+          border-radius: 999px;
           background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
           pointer-events: none;
           opacity: 0;
-          transition: opacity 0.3s;
+          transition: opacity 0.25s ease;
         }
         .theme-toggle:hover .toggle-halo { opacity: 1; }
         .toggle-thumb {
           position: absolute;
-          top: 4px;
-          width: 28px;
-          height: 28px;
+          top: 3px;
+          left: 3px;
+          width: 26px;
+          height: 26px;
           border-radius: 50%;
           background: var(--thumb);
-          box-shadow: 0 2px 8px var(--shad);
+          box-shadow: 0 1px 3px var(--shad), 0 0 0 1px rgba(0,0,0,.06);
           display: flex;
           align-items: center;
           justify-content: center;
           pointer-events: none;
+          transition: transform 0.25s cubic-bezier(.2,.8,.2,1);
+        }
+        .theme-toggle[aria-pressed="true"] .toggle-thumb {
+          transform: translateX(32px);
         }
       `}</style>
       <button
@@ -189,12 +145,10 @@ export default function ThemeToggle() {
         onClick={handleToggle}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         aria-pressed={isDark}
-        style={cssVars as React.CSSProperties}
+        style={{ ...(cssVars as React.CSSProperties), visibility: mounted ? "visible" : "hidden" }}
       >
         <div className="toggle-halo" />
-        <div className="toggle-thumb" style={{ left: tx, transform: `rotate(${rot}deg)` }}>
-          {isDark ? <Moon sa={sa} /> : <Sun rs={rs} />}
-        </div>
+        <div className="toggle-thumb">{isDark ? <Moon /> : <Sun />}</div>
       </button>
     </>
   );
