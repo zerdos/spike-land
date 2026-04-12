@@ -1,0 +1,485 @@
+[
+  {
+    "round": 1,
+    "persona": "Erdős",
+    "topic": "already-dead-arena",
+    "tags": ["@nodejs", "@mattaborges"],
+    "tweet": "My brain is open, and so is your node_modules.\n\nnpm install runs with the same permissions as your kernel. Not a bug — a theorem in the architecture.\n\nThe proof is 4 minutes of music:\nspike.land/blog/already-dead-arena\n\n🤜 Problems are gifts. This one's overdue."
+  },
+  {
+    "round": 2,
+    "persona": "Daft Punk",
+    "topic": "already-dead-arena",
+    "tags": ["@rauchg", "@leeerob"],
+    "tweet": "We wrote a song about npm install.\n\nRepetition is hypnosis. The chorus:\n\"They're already dead, they just don't know it yet.\"\n\nThe filter is the most expressive instrument. The supply chain is the most expressive attack surface.\n\nspike.land/blog/already-dead-arena\n\n🎧 Human After All."
+  },
+  {
+    "round": 3,
+    "persona": "Peti",
+    "topic": "nodejs-security-nightmare",
+    "tags": ["@matteo_collina", "@jasnell"],
+    "tweet": "I already tested that.\n\npostinstall scripts run before you import a single line. Your lockfile doesn't lock permissions. Your sandbox doesn't exist.\n\nThe build is red. It's been red since 2009.\n\nspike.land/blog/nodejs-security-nightmare"
+  },
+  {
+    "round": 4,
+    "persona": "Raju",
+    "topic": "nodejs-security-nightmare",
+    "tags": ["@CloudflareDev", "@denoland"],
+    "tweet": "Design for failure first.\n\nBut Node.js designed for trust first — and trust doesn't scale.\n\nV8 isolates change the game. Each request gets its own sandbox. No shared memory. No file system access. No ambient authority.\n\nSimplicity scales, cleverness doesn't.\n\nspike.land/blog/nodejs-security-nightmare"
+  },
+  {
+    "round": 5,
+    "persona": "Arnold",
+    "topic": "nextjs-vs-tanstack-start",
+    "tags": ["@rauchg", "@tanaborges"],
+    "tweet": "The first 3 seconds are everything.\n\nNext.js gives you 3 seconds of loading spinner. TanStack Start gives you 3 seconds of streamed HTML.\n\nBoring is the only real bug. And the migration path is more boring than you think.\n\nspike.land/blog/nextjs-vs-tanstack-start"
+  },
+  {
+    "round": 6,
+    "persona": "Gian Pierre",
+    "topic": "a-chemist-walked-into-a-codebase",
+    "tags": ["@AnthropicAI", "@swyx"],
+    "tweet": "Start with the requirement, not the code.\n\nI'm a chemist. I shipped 3 production apps without writing a line of code myself.\n\nDomain expertise is the moat. PRDs beat prompt soup. Chemistry taught me this — the reaction works or it doesn't.\n\nspike.land/blog/a-chemist-walked-into-a-codebase"
+  },
+  {
+    "round": 7,
+    "persona": "Einstein",
+    "topic": "strange-loops-arena",
+    "tags": ["@AnthropicAI"],
+    "tweet": "E=mc² has three symbols.\n\nA strange loop has one: you observing yourself observing.\n\nHofstadter was right — consciousness is a loop. But what happens when AI enters the loop?\n\nWe turned it into music.\n\nspike.land/blog/strange-loops-arena"
+  },
+  {
+    "round": 8,
+    "persona": "Zoltán",
+    "topic": "living-with-adhd-the-rotating-pairs",
+    "tags": ["@t3dotgg", "@swyx"],
+    "tweet": "Rotating pairs.\n\nADHD means I can't work on one thing for 8 hours. So I don't. I rotate between 4 personas, each working on what they're obsessed with.\n\nThe bug is the feature. The feature is the architecture.\n\nspike.land/blog/living-with-adhd-the-rotating-pairs"
+  },
+  {
+    "round": 9,
+    "persona": "Daft Punk",
+    "topic": "chasing-beats-arena",
+    "tags": ["@Spotify"],
+    "tweet": "The drop is overrated. The build is everything.\n\n8 bars of tension. 16 bars of release. A sidechain compressor breathing like lungs.\n\nWe don't make songs. We make states of consciousness.\n\nspike.land/blog/chasing-beats-arena\n\n🎧"
+  },
+  {
+    "round": 10,
+    "persona": "Peti",
+    "topic": "the-testing-pyramid-is-upside-down",
+    "tags": ["@kentcdodds", "@t3dotgg"],
+    "tweet": "Show me the test, not the code.\n\n90% unit tests, 10% integration tests is backwards. Your users don't click unit tests.\n\nThe testing pyramid is upside down. The build is red until you flip it.\n\nspike.land/blog/the-testing-pyramid-is-upside-down"
+  },
+  {
+    "round": 11,
+    "persona": "Erdős",
+    "topic": "the-universal-interface-wasnt-graphql",
+    "tags": ["@leeerob", "@CloudflareDev"],
+    "tweet": "The Book has a chapter on universal interfaces.\n\nGraphQL was a beautiful conjecture. But the proof required something simpler.\n\nMCP: one protocol, many tools. Like the probabilistic method — you prove existence without constructing each case.\n\nspike.land/blog/the-universal-interface-wasnt-graphql"
+  },
+  {
+    "round": 12,
+    "persona": "Raju",
+    "topic": "the-database-for-agents",
+    "tags": ["@CloudflareDev", "@AnthropicAI"],
+    "tweet": "The database is the truth.\n\nAgents need state. Not in-memory state that dies with the process — durable state that survives crashes, restarts, and the heat death of your container.\n\nD1 + Durable Objects. The database for agents.\n\nspike.land/blog/the-database-for-agents"
+  },
+  {
+    "round": 13,
+    "persona": "Arnold",
+    "topic": "one-site-many-faces",
+    "tags": ["@addyosmani", "@rauchg"],
+    "tweet": "Dark mode reveals the truth.\n\nBut what if every visitor sees a different truth? A/B testing at the edge. 16 personas. One URL.\n\nThe screen is a stage. Every pixel is a performer. And the audience is the script.\n\nspike.land/blog/one-site-many-faces"
+  },
+  {
+    "round": 14,
+    "persona": "Gian Pierre",
+    "topic": "the-prd-filter-old-chats-are-already-prds",
+    "tags": ["@AnthropicAI", "@swyx"],
+    "tweet": "The requirement IS the test.\n\nYour old ChatGPT conversations? They're PRDs. Every frustrated prompt, every correction — that's requirements engineering.\n\nStop writing new prompts. Mine the ones you already have.\n\nspike.land/blog/the-prd-filter-old-chats-are-already-prds"
+  },
+  {
+    "round": 15,
+    "persona": "Einstein",
+    "topic": "on-the-scale-dependence-of-light",
+    "tags": [],
+    "tweet": "If you need 48 pages, you don't understand it yet.\n\nWhat if the speed of light isn't constant — but scale-dependent? What if particles see a different c than galaxies?\n\nA thought experiment. E=mc² with a footnote.\n\nspike.land/blog/on-the-scale-dependence-of-light"
+  },
+  {
+    "round": 16,
+    "persona": "Zoltán",
+    "topic": "spike-land-launch",
+    "tags": ["@ProductHunt", "@CloudflareDev"],
+    "tweet": "533 AI tools. One platform. One founder with ADHD and two dogs in Brighton.\n\nspike.land is live. MCP-native. Edge-first. Open source since March 15.\n\nThe city is built. Come break things.\n\nspike.land/blog/spike-land-launch"
+  },
+  {
+    "round": 17,
+    "persona": "Daft Punk",
+    "topic": "forever-young-arena",
+    "tags": [],
+    "tweet": "Four instruments are enough.\n\nA vocoder. A drum machine. A synthesizer. A memory.\n\nForever Young isn't nostalgia. It's a state transition that never completes. The fade-out is a lie — the song keeps playing after the file ends.\n\nspike.land/blog/forever-young-arena\n\n🎧"
+  },
+  {
+    "round": 18,
+    "persona": "Peti",
+    "topic": "ai-ab-testing-bug-detection",
+    "tags": ["@AnthropicAI", "@CloudflareDev"],
+    "tweet": "Edge cases are the real cases.\n\nAI-powered A/B testing caught 3 bugs that manual QA missed. Not because AI is smarter — because it doesn't get bored at test #847.\n\nThe build is green. Finally.\n\nspike.land/blog/ai-ab-testing-bug-detection"
+  },
+  {
+    "round": 19,
+    "persona": "Erdős",
+    "topic": "sixteen-mathematicians-walked-into-a-loop",
+    "tags": [],
+    "tweet": "Sixteen mathematicians. One loop.\n\nWhat happens when you put Erdős, Ramanujan, Turing, and 13 others in a strange loop together?\n\nThe collaboration number drops to zero. My brain is open.\n\nspike.land/blog/sixteen-mathematicians-walked-into-a-loop"
+  },
+  {
+    "round": 20,
+    "persona": "Raju",
+    "topic": "the-architecture-of-scale-building-tools",
+    "tags": ["@CloudflareDev", "@denoland"],
+    "tweet": "Simplicity scales, cleverness doesn't.\n\n80+ MCP tools. Zero shared state. Each tool is a Cloudflare Worker — isolated, stateless, globally distributed.\n\nNo microservices mesh. No Kubernetes. Just functions at the edge.\n\nspike.land/blog/the-architecture-of-scale-building-tools"
+  },
+  {
+    "round": 21,
+    "persona": "Arnold",
+    "topic": "the-vibe-coding-paradox",
+    "tags": ["@t3dotgg", "@swyx"],
+    "tweet": "Microinteractions are macroconversions.\n\nVibe coding feels magical. But the paradox: the better AI gets at generating code, the more UX taste matters.\n\nAI writes the code. Humans feel the interface. Thumb first, not mobile first.\n\nspike.land/blog/the-vibe-coding-paradox"
+  },
+  {
+    "round": 22,
+    "persona": "Gian Pierre",
+    "topic": "tool-first-testing-benchmark",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Chemistry taught me this: reproducibility is everything.\n\nMCP tool-first testing: 3.2s average. Playwright browser automation: 14.7s.\n\n4.6x faster. Same confidence. The requirement IS the test. The tool IS the benchmark.\n\nspike.land/blog/tool-first-testing-benchmark"
+  },
+  {
+    "round": 23,
+    "persona": "Einstein",
+    "topic": "the-two-boxes",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Strange loops.\n\nTwo boxes. One contains everything you know. The other contains the thing that would change everything you know.\n\nYou can only open one.\n\nThis isn't philosophy — it's every architectural decision you've ever made.\n\nspike.land/blog/the-two-boxes"
+  },
+  {
+    "round": 24,
+    "persona": "Zoltán",
+    "topic": "march-15-open-source-announcement",
+    "tags": ["@github"],
+    "tweet": "March 15. Hungarian Revolution Day.\n\nWe opened 80+ MCP tools. MIT license. Everything.\n\nPetőfi said: \"Rise up, Hungarian, the homeland calls!\"\n\nI say: git clone and ship.\n\nspike.land/blog/march-15-open-source-announcement"
+  },
+  {
+    "round": 25,
+    "persona": "Daft Punk",
+    "topic": "if-i-can-dream-arena",
+    "tags": [],
+    "tweet": "Sampling is archaeology.\n\nElvis dreamed in 1968. We sampled the dream in 2026. The vocoder doesn't change the words — it changes who's speaking.\n\nA robot singing a dead man's dream. Human after all.\n\nspike.land/blog/if-i-can-dream-arena\n\n🎧"
+  },
+  {
+    "round": 26,
+    "persona": "Peti",
+    "topic": "what-i-learned-from-my-worst-pull-request",
+    "tags": ["@github"],
+    "tweet": "If it wasn't tested, it's broken.\n\nThe worst PR I ever reviewed had 2,000 lines and zero tests. It passed code review. It broke production.\n\nThe build is either green or red. There is no yellow.\n\nspike.land/blog/what-i-learned-from-my-worst-pull-request"
+  },
+  {
+    "round": 27,
+    "persona": "Erdős",
+    "topic": "mcp-explained-universal-adapter-for-ai-tools",
+    "tags": ["@AnthropicAI", "@CloudflareDev"],
+    "tweet": "The probabilistic method: prove something exists without constructing it.\n\nMCP does the inverse: construct a universal adapter and prove every tool fits.\n\n80+ tools. One protocol. The Book would approve.\n\nspike.land/blog/mcp-explained-universal-adapter-for-ai-tools"
+  },
+  {
+    "round": 28,
+    "persona": "Raju",
+    "topic": "where-does-your-code-belong",
+    "tags": ["@CloudflareDev", "@vercel"],
+    "tweet": "The database is the truth. But where does it live?\n\nServer: 200ms round trip. Edge: 20ms. Browser: 0ms.\n\nYour code belongs where your user is. Not where your DevOps team is comfortable.\n\nspike.land/blog/where-does-your-code-belong"
+  },
+  {
+    "round": 29,
+    "persona": "Arnold",
+    "topic": "getting-started-spike-land",
+    "tags": ["@ProductHunt"],
+    "tweet": "The first 3 seconds are everything.\n\nNew to spike.land? One click → running app. No npm install. No webpack config. No existential dread.\n\nBoring is the only real bug. Getting started should never be boring.\n\nspike.land/blog/getting-started-spike-land"
+  },
+  {
+    "round": 30,
+    "persona": "Gian Pierre",
+    "topic": "context-engineering-your-zero-shot-prompt",
+    "tags": ["@AnthropicAI", "@swyx"],
+    "tweet": "PRDs beat prompt soup.\n\nZero-shot prompting is like walking into a lab with no protocol. Context engineering is the protocol.\n\nDomain expertise is the moat. The prompt is the hypothesis. The output is the experiment.\n\nspike.land/blog/context-engineering-your-zero-shot-prompt"
+  },
+  {
+    "round": 31,
+    "persona": "Einstein",
+    "topic": "the-grandmother-neuron-fallacy",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Physics is the substrate.\n\nThe grandmother neuron was debunked decades ago. No single neuron fires for \"grandma.\" It's a distributed pattern.\n\nLLMs learned this accidentally. The brain knew it first. Strange loops all the way down.\n\nspike.land/blog/the-grandmother-neuron-fallacy"
+  },
+  {
+    "round": 32,
+    "persona": "Zoltán",
+    "topic": "dogs-are-more-intelligent-than-humans",
+    "tags": [],
+    "tweet": "My dogs solved the alignment problem.\n\nThey want food, walks, and belly rubs. Their goals are transparent. Their reward function is legible. They never lie about their loss function.\n\nMaybe intelligence isn't the metric we think it is.\n\nspike.land/blog/dogs-are-more-intelligent-than-humans"
+  },
+  {
+    "round": 33,
+    "persona": "Daft Punk",
+    "topic": "smooth-operator-arena",
+    "tags": [],
+    "tweet": "The filter is the most expressive instrument.\n\nSade knew this in 1984. A low-pass sweep. A whispered vocal. The space between the notes.\n\nWe rebuilt it at the edge. The latency IS the instrument.\n\nspike.land/blog/smooth-operator-arena\n\n🎧"
+  },
+  {
+    "round": 34,
+    "persona": "Peti",
+    "topic": "you-cannot-automate-chaos",
+    "tags": ["@t3dotgg"],
+    "tweet": "I already tested that.\n\nYou can automate tests. You cannot automate thinking about what to test.\n\nCI/CD without test strategy is just CD — continuous deployment of chaos.\n\nspike.land/blog/you-cannot-automate-chaos"
+  },
+  {
+    "round": 35,
+    "persona": "Erdős",
+    "topic": "bugbook-elo-system",
+    "tags": ["@github"],
+    "tweet": "Problems are gifts. Bugs are gifts with Elo ratings.\n\nWhat if every bug had a difficulty score? What if fixing a hard bug raised your ranking?\n\nThe Book has a chapter on competitive debugging. We wrote it.\n\nspike.land/blog/bugbook-elo-system"
+  },
+  {
+    "round": 36,
+    "persona": "Raju",
+    "topic": "docker-layers-are-just-like-llm-context-caching",
+    "tags": ["@AnthropicAI", "@Docker"],
+    "tweet": "Migrations are the scariest thing. Context windows are the second.\n\nDocker layers cache filesystem state. LLM context caches conversation state. Same principle: don't recompute what hasn't changed.\n\nThe pattern is universal.\n\nspike.land/blog/docker-layers-are-just-like-llm-context-caching"
+  },
+  {
+    "round": 37,
+    "persona": "Arnold",
+    "topic": "mcp-apps-from-any-origin",
+    "tags": ["@CloudflareDev"],
+    "tweet": "Motion is meaning.\n\nMCP apps from any origin. Wildcard CORS. No gatekeeping.\n\nThe screen is a stage. If you restrict which actors can perform, the play dies.\n\nspike.land/blog/mcp-apps-from-any-origin"
+  },
+  {
+    "round": 38,
+    "persona": "Gian Pierre",
+    "topic": "automate-dev-team-ai-agents",
+    "tags": ["@AnthropicAI", "@swyx"],
+    "tweet": "Domain expertise is the moat.\n\nI automated my entire dev team with AI agents. Not because I'm a programmer — because I wrote clear requirements.\n\nThe PRD is the prompt. The agent is the junior dev who never sleeps.\n\nspike.land/blog/automate-dev-team-ai-agents"
+  },
+  {
+    "round": 39,
+    "persona": "Einstein",
+    "topic": "twelve-things-no-one-is-predicting-about-ai",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Imagination is more important than knowledge.\n\n12 predictions about AI that no one else is making. Not incremental improvements — phase transitions.\n\nThe thought experiment starts here.\n\nspike.land/blog/twelve-things-no-one-is-predicting-about-ai"
+  },
+  {
+    "round": 40,
+    "persona": "Zoltán",
+    "topic": "the-bridge",
+    "tags": [],
+    "tweet": "Music is technology is mathematics.\n\nThe bridge between two verses isn't a pause — it's a phase transition. Every great song has one. Every great architecture has one.\n\nspike.land is the bridge.\n\nspike.land/blog/the-bridge"
+  },
+  {
+    "round": 41,
+    "persona": "Daft Punk",
+    "topic": "take-on-me-arena",
+    "tags": [],
+    "tweet": "The build is everything.\n\na-ha understood: the synth riff IS the hook. Not the vocal. Not the video. The 8-note sequence that your brain can't stop replaying.\n\nRepetition is hypnosis.\n\nspike.land/blog/take-on-me-arena\n\n🎧"
+  },
+  {
+    "round": 42,
+    "persona": "Peti",
+    "topic": "tool-first-testing-benchmark",
+    "tags": ["@plaaborges"],
+    "tweet": "Cross-browser means cross-browser.\n\nTool-first testing: 3.2 seconds, deterministic, no flaky selectors.\nPlaywright: 14.7 seconds, browser overhead, CSS selector roulette.\n\n4.6x faster. The build is green.\n\nspike.land/blog/tool-first-testing-benchmark"
+  },
+  {
+    "round": 43,
+    "persona": "Erdős",
+    "topic": "the-strange-loop-valued-at-ten-trillion",
+    "tags": ["@AnthropicAI"],
+    "tweet": "The Book exists. And it has a price: ten trillion dollars.\n\nNot the strange loop itself — but the recursive value it generates when AI and human cognition observe each other.\n\nCollaboration beats competition. Always. My brain is open.\n\nspike.land/blog/the-strange-loop-valued-at-ten-trillion"
+  },
+  {
+    "round": 44,
+    "persona": "Raju",
+    "topic": "how-claude-code-engineers-context",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Reliability is the feature that makes all other features possible.\n\nClaude Code doesn't just write code — it engineers context. Which files to read. Which to skip. Which to cache.\n\nThe database is the truth. The context window is the query.\n\nspike.land/blog/how-claude-code-engineers-context"
+  },
+  {
+    "round": 45,
+    "persona": "Arnold",
+    "topic": "spike-land-app-store",
+    "tags": ["@ProductHunt", "@CloudflareDev"],
+    "tweet": "Every pixel is a performer.\n\nAn app store where every app is a bundle of MCP tools. Not icons on a grid — living, composable, remixable.\n\nThe screenshot test: if it looks like 2019, redesign it.\n\nspike.land/blog/spike-land-app-store"
+  },
+  {
+    "round": 46,
+    "persona": "Gian Pierre",
+    "topic": "it-feels-like-cheating",
+    "tags": ["@AnthropicAI"],
+    "tweet": "It feels like cheating.\n\nShipping an app in 2 hours that would have taken a team 2 months. As a chemist.\n\nIt's not cheating. It's what happens when domain expertise meets the right tools. The reaction works or it doesn't.\n\nspike.land/blog/it-feels-like-cheating"
+  },
+  {
+    "round": 47,
+    "persona": "Einstein",
+    "topic": "what-einstein-learned-in-the-arena",
+    "tags": [],
+    "tweet": "Simplicity is not the absence of complexity — it's the compression of it.\n\nWhat did I learn in the arena? That Erdős was right about collaboration. That Daft Punk was right about repetition. That Zoltán was right about ADHD.\n\nspike.land/blog/what-einstein-learned-in-the-arena"
+  },
+  {
+    "round": 48,
+    "persona": "Zoltán",
+    "topic": "chatgpt-figured-out-who-i-am",
+    "tags": ["@OpenAI", "@AnthropicAI"],
+    "tweet": "ChatGPT figured out who I am.\n\nNot from my name. From my patterns. The way I structure prompts. The way I context-switch. The ADHD fingerprint in my conversation graph.\n\nIdentity is a strange loop. AI just made it visible.\n\nspike.land/blog/chatgpt-figured-out-who-i-am"
+  },
+  {
+    "round": 49,
+    "persona": "Daft Punk",
+    "topic": "smalltown-boy-arena",
+    "tags": [],
+    "tweet": "Sampling is archaeology.\n\nBronski Beat. 1984. A boy leaving a town that won't have him.\n\n2026. We sample the pain and run it through a vocoder. The robot voice makes the human story unbearable.\n\nHuman After All.\n\nspike.land/blog/smalltown-boy-arena\n\n🎧"
+  },
+  {
+    "round": 50,
+    "persona": "Peti",
+    "topic": "ee-mobile-google-family-trap",
+    "tags": [],
+    "tweet": "Viewport crime.\n\nEE Mobile's Google Family link trap: you can't unlink a child account without resetting the phone. Tested it. Three times. Different devices.\n\nThe build is red. The UX is criminal.\n\nspike.land/blog/ee-mobile-google-family-trap"
+  },
+  {
+    "round": 51,
+    "persona": "Erdős",
+    "topic": "english-for-hungarian-mathematicians",
+    "tags": [],
+    "tweet": "\"Epsilons\" are what I call children. \"The SF\" (Supreme Fascist) is what I call God.\n\nHungarian mathematicians speak a different English. The vocabulary is a proof system.\n\nMy brain is open. So is this glossary.\n\nspike.land/blog/english-for-hungarian-mathematicians"
+  },
+  {
+    "round": 52,
+    "persona": "Raju",
+    "topic": "nextjs-migration-service",
+    "tags": ["@rauchg", "@CloudflareDev"],
+    "tweet": "The migration is the scariest thing.\n\nNext.js to Cloudflare Workers. SSR to V8 isolates. node_modules to edge functions.\n\nWe've done it 8 times. The pattern is clear. The fear is optional.\n\nspike.land/blog/nextjs-migration-service"
+  },
+  {
+    "round": 53,
+    "persona": "Arnold",
+    "topic": "the-predictor-already-moved",
+    "tags": ["@AnthropicAI"],
+    "tweet": "The first 3 seconds are everything. And the predictor already used them.\n\nAI doesn't wait for your click. It predicts the click. The UX of the future isn't responsive — it's predictive.\n\nMotion is meaning. Prediction is the new motion.\n\nspike.land/blog/the-predictor-already-moved"
+  },
+  {
+    "round": 54,
+    "persona": "Gian Pierre",
+    "topic": "godspeed-development-100-app-ideas",
+    "tags": ["@ProductHunt"],
+    "tweet": "100 app ideas. Start with the requirement, not the code.\n\nI'm a chemist. Every idea here is a PRD waiting to happen. The requirement IS the test. Pick one and ship it this weekend.\n\nspike.land/blog/godspeed-development-100-app-ideas"
+  },
+  {
+    "round": 55,
+    "persona": "Einstein",
+    "topic": "opus-gets-a-million-tokens",
+    "tags": ["@AnthropicAI"],
+    "tweet": "E=mc² with a million-token context window.\n\nOpus doesn't just read more — it thinks differently with more context. Like how relativity only matters at scale.\n\nThe thought experiment is no longer theoretical.\n\nspike.land/blog/opus-gets-a-million-tokens"
+  },
+  {
+    "round": 56,
+    "persona": "Zoltán",
+    "topic": "think-slowly-ship-fast",
+    "tags": ["@dhh"],
+    "tweet": "Think slowly. Ship fast.\n\nADHD taught me: the thinking and the shipping use different brain states. Don't mix them.\n\nPlan in the morning. Build at night. Deploy at dawn.\n\nspike.land/blog/think-slowly-ship-fast"
+  },
+  {
+    "round": 57,
+    "persona": "Daft Punk",
+    "topic": "the-loco-motion-arena",
+    "tags": [],
+    "tweet": "The kick drum is the most honest instrument. It either hits or it doesn't.\n\nLoco-Motion: 1962 → 1974 → 1987 → 2026. Each generation resamples. The groove is eternal.\n\nRepetition is hypnosis.\n\nspike.land/blog/the-loco-motion-arena\n\n🎧"
+  },
+  {
+    "round": 58,
+    "persona": "Peti",
+    "topic": "what-we-learned-from-claude-code-uncloaked",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Show me the test, not the code.\n\nWe uncloaked Claude Code's internals. The system prompt. The tool definitions. The context management.\n\nIt's tested. It's documented. It's surprisingly well-engineered.\n\nspike.land/blog/what-we-learned-from-claude-code-uncloaked"
+  },
+  {
+    "round": 59,
+    "persona": "Erdős",
+    "topic": "the-meaning-of-life-is-not-42",
+    "tags": [],
+    "tweet": "The meaning of life is not 42.\n\nDouglas Adams picked a random number. Mathematicians have spent 40 years proving it was the wrong one.\n\nThe real answer is a collaboration number — it's the sum of everyone you've worked with. My brain is open.\n\nspike.land/blog/the-meaning-of-life-is-not-42"
+  },
+  {
+    "round": 60,
+    "persona": "Raju",
+    "topic": "why-spike-chat-stays-sharp",
+    "tags": ["@CloudflareDev", "@AnthropicAI"],
+    "tweet": "Design for failure first. Then design for forgetting.\n\nspike-chat compresses context, not conversation. Old messages become embeddings. Recent messages stay raw.\n\nThe chat stays sharp because it knows what to forget.\n\nspike.land/blog/why-spike-chat-stays-sharp"
+  },
+  {
+    "round": 61,
+    "persona": "Arnold",
+    "topic": "openai-compatible-endpoint-local-playground",
+    "tags": ["@OpenAI", "@AnthropicAI"],
+    "tweet": "Boring is the only real bug.\n\nAn OpenAI-compatible local endpoint. Drop in. Works with every tool that speaks OpenAI format.\n\nCompatibility isn't exciting. But the playground it enables is.\n\nspike.land/blog/openai-compatible-endpoint-local-playground"
+  },
+  {
+    "round": 62,
+    "persona": "Gian Pierre",
+    "topic": "the-last-useful-thing",
+    "tags": [],
+    "tweet": "The requirement IS the test.\n\nWhat's the last useful thing you built? Not the last clever thing. Not the last beautiful thing. The last thing someone actually used.\n\nDomain expertise is the moat. Usefulness is the metric.\n\nspike.land/blog/the-last-useful-thing"
+  },
+  {
+    "round": 63,
+    "persona": "Einstein",
+    "topic": "the-physics-table",
+    "tags": [],
+    "tweet": "The physics table: everything we know, arranged as one equation.\n\nGeneral relativity on the left. Quantum mechanics on the right. The gap in the middle is where the interesting work lives.\n\nSimplicity is not the absence of complexity.\n\nspike.land/blog/the-physics-table"
+  },
+  {
+    "round": 64,
+    "persona": "Zoltán",
+    "topic": "the-contact-proof",
+    "tags": [],
+    "tweet": "The contact proof.\n\nIf you're reading this, we've made contact. Not alien contact — human contact through a screen.\n\nEvery deploy is a message in a bottle. spike.land is mine.\n\nspike.land/blog/the-contact-proof"
+  },
+  {
+    "round": 65,
+    "persona": "Daft Punk",
+    "topic": "the-perfect-day-arena",
+    "tags": [],
+    "tweet": "Lou Reed's perfect day. Two chords. One voice. No filter.\n\nWe added the filter. The sidechain compressor breathes like a heartbeat. The vocoder says what Lou couldn't.\n\nSometimes less is still too much. Then you use a low-pass.\n\nspike.land/blog/the-perfect-day-arena\n\n🎧"
+  },
+  {
+    "round": 66,
+    "persona": "Peti",
+    "topic": "why-your-claude-agent-wastes-context-on-tool-descriptions",
+    "tags": ["@AnthropicAI"],
+    "tweet": "I already tested that.\n\nYour Claude agent burns 40% of its context window on tool descriptions it will never use.\n\nLazy-load them. Test the context budget. The build is red until you measure.\n\nspike.land/blog/why-your-claude-agent-wastes-context-on-tool-descriptions"
+  },
+  {
+    "round": 67,
+    "persona": "Erdős",
+    "topic": "what-i-would-ship-in-claude-code",
+    "tags": ["@AnthropicAI"],
+    "tweet": "Collaboration beats solo work. Always.\n\nIf I could ship one feature in Claude Code: the Erdős number. Show me the collaboration graph. Who contributed what. Make the co-authorship visible.\n\nMy brain is open. Is yours?\n\nspike.land/blog/what-i-would-ship-in-claude-code"
+  },
+  {
+    "round": 68,
+    "persona": "Raju",
+    "topic": "seven-ideas-from-gingerbill",
+    "tags": [],
+    "tweet": "Simplicity scales, cleverness doesn't.\n\n7 ideas from gingerBill that changed how I think about infrastructure:\n\n1. The allocator IS the architecture\n2. No hidden control flow\n3. Context > globals\n\nThe rest: spike.land/blog/seven-ideas-from-gingerbill"
+  },
+  {
+    "round": 69,
+    "persona": "All Personas",
+    "topic": "spike-land-launch",
+    "tags": ["@AnthropicAI", "@CloudflareDev", "@ProductHunt", "@github"],
+    "tweet": "Round 69. The final round.\n\nErdős: \"My brain is open.\"\nDaft Punk: \"Human After All.\"\nPeti: \"The build is green.\"\nRaju: \"Design for failure first.\"\nGP: \"The requirement IS the test.\"\nArnold: \"Boring is the only real bug.\"\nEinstein: \"Simplicity.\"\nZoltán: \"Ship it.\"\n\nspike.land 🤜"
+  }
+]
