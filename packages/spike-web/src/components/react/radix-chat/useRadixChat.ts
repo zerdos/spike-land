@@ -34,6 +34,11 @@ const VALID_STAGES: ReadonlySet<string> = new Set<PipelineStage>([
   "idle",
 ]);
 
+// Abort the stream if no SSE bytes arrive for this long.
+// Chosen so slow-3G streaming still succeeds but a dropped connection
+// surfaces within ~15s instead of hanging on "Thinking..." for 30s+.
+const STREAM_STALL_TIMEOUT_MS = 15000;
+
 function toPipelineStage(value: string | undefined): PipelineStage {
   return value !== undefined && VALID_STAGES.has(value) ? (value as PipelineStage) : "idle";
 }
@@ -138,8 +143,19 @@ export function useRadixChat(persona?: string): UseRadixChatReturn {
 
       setMessages((prev) => [...prev, assistantMsg]);
 
+      let stalled = false;
+      let stallTimer: ReturnType<typeof setTimeout> | null = null;
+
       try {
         abortRef.current = new AbortController();
+
+        const resetStallTimer = () => {
+          if (stallTimer !== null) clearTimeout(stallTimer);
+          stallTimer = setTimeout(() => {
+            stalled = true;
+            abortRef.current?.abort();
+          }, STREAM_STALL_TIMEOUT_MS);
+        };
 
         const history = messages.map((m) => ({
           role: m.role,
@@ -183,9 +199,13 @@ export function useRadixChat(persona?: string): UseRadixChatReturn {
         const decoder = new TextDecoder();
         let buffer = "";
 
+        resetStallTimer();
+
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+          // Data arrived — reset the inactivity watchdog
+          resetStallTimer();
 
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
@@ -252,7 +272,19 @@ export function useRadixChat(persona?: string): UseRadixChatReturn {
           }
         }
       } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") return;
+        if (err instanceof Error && err.name === "AbortError") {
+          if (stalled) {
+            setError("Connection timed out. Please try again.");
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMsg.id && !m.content
+                  ? { ...m, content: "Connection timed out. Please try again." }
+                  : m,
+              ),
+            );
+          }
+          return;
+        }
         const msg = err instanceof Error ? err.message : "Failed to send message";
         setError(msg);
         setMessages((prev) =>
@@ -263,6 +295,7 @@ export function useRadixChat(persona?: string): UseRadixChatReturn {
           ),
         );
       } finally {
+        if (stallTimer !== null) clearTimeout(stallTimer);
         setIsStreaming(false);
         setCurrentStage("idle");
         abortRef.current = null;

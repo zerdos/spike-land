@@ -373,10 +373,37 @@ export default function RadixChat({ persona = "zoltan" }: Props) {
     useRadixChat(config.persona);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages.
+  // Deferred to next frame so iOS Safari's keyboard/layout settles first,
+  // preventing the input-jumps-when-keyboard-opens glitch.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const raf = requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+    return () => cancelAnimationFrame(raf);
   }, [messages]);
+
+  // iOS keyboard coordination: when the visual viewport resizes (keyboard
+  // opens/closes), re-anchor the bottom of the thread without smooth-scroll,
+  // which otherwise fights with iOS's own layout adjustment and causes the
+  // input field to jump.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
+    const onResize = () => {
+      if (settleTimer !== null) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+      }, 120);
+    };
+    vv.addEventListener("resize", onResize);
+    return () => {
+      vv.removeEventListener("resize", onResize);
+      if (settleTimer !== null) clearTimeout(settleTimer);
+    };
+  }, []);
 
   return (
     <div
