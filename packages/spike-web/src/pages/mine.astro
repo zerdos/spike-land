@@ -207,7 +207,7 @@
       // CPU fallback — Miller-Rabin for BigInt
       function isPrimeBigInt(n) {
         if (n < 2n) return false;
-        if (n === 2n || n === 3n) return false;
+        if (n === 2n || n === 3n) return true;
         if (n % 2n === 0n || n % 3n === 0n) return false;
 
         // Small primes trial division
@@ -316,7 +316,7 @@
         log(`Mining started at ${searchStart}...`);
 
         while (mining) {
-          // Generate batch of candidates
+          // 1. Generate batch of candidates
           let candidates = [];
           let current = searchStart;
           for (let i = 0; i < BATCH_SIZE; i++) {
@@ -325,17 +325,34 @@
             current += 2n;
           }
 
-          // Check each candidate for twin prime property
-          for (const p of candidates) {
+          let gpuResults = null;
+
+          // 2. GPU Sieve (only works if candidates fit in 32-bit for the current shader)
+          if (useGPU && pipeline && searchStart < 4294967295n) {
+            gpuResults = await gpuSieve(candidates);
+          }
+
+          // 3. Process the batch
+          for (let i = 0; i < candidates.length; i++) {
             if (!mining) break;
+
+            const p = candidates[i];
             candidatesChecked++;
 
-            if (isPrimeBigInt(p) && isPrimeBigInt(p + 2n)) {
-              recordTwinPrime(p);
+            // Optimization: If GPU says it's composite (0), skip the heavy CPU test
+            if (gpuResults && gpuResults[i] === 0) {
+              continue;
             }
 
-            // Yield to main thread every 64 checks
-            if (candidatesChecked % 64 === 0) {
+            // 4. Heavy CPU Verification (Miller-Rabin)
+            if (isPrimeBigInt(p)) {
+              if (isPrimeBigInt(p + 2n)) {
+                recordTwinPrime(p);
+              }
+            }
+
+            // UI update frequency
+            if (candidatesChecked % 128 === 0) {
               updateUI();
               await new Promise(r => setTimeout(r, 0));
             }
@@ -343,7 +360,7 @@
 
           searchStart = current;
 
-          // Periodically jump to a random larger range for variety
+          // Range jumping for discovery variety
           if (candidatesChecked % 10000 === 0) {
             const jump = BigInt(Math.floor(Math.random() * 1000000)) * 1000n;
             searchStart += jump;

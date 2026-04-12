@@ -24,7 +24,7 @@
     "@spike-land-ai/shared": "workspace:*",
     "astro": "^6.0.4",
     "better-auth": "^1.5.5",
-    "framer-motion": "^12.36.0",
+    "framer-motion": "11.18.2",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
