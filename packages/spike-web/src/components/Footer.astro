@@ -60,7 +60,7 @@ const legalLinks = [
         <div class="footer-column footer-subscribe">
           <h4 class="footer-column-title">Stay updated</h4>
           <p class="footer-subscribe-text">Get developer updates, new tools, and platform news.</p>
-          <form class="footer-subscribe-form" action="/api/subscribe" method="POST" data-subscribe-form>
+          <form class="footer-subscribe-form" data-subscribe-form>
             <input
               type="email"
               name="email"
@@ -71,9 +71,31 @@ const legalLinks = [
             />
             <button type="submit" class="footer-subscribe-btn">Subscribe</button>
           </form>
+          <p class="footer-subscribe-msg" data-subscribe-msg hidden></p>
         </div>
       </div>
     </div>
+
+    <script is:inline>
+      (function () {
+        var form = document.querySelector('[data-subscribe-form]');
+        var msg = document.querySelector('[data-subscribe-msg]');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var input = form.querySelector('input[name="email"]');
+          var email = (input && input.value || '').trim();
+          if (!email) return;
+          var subject = encodeURIComponent('Subscribe: ' + email);
+          var body = encodeURIComponent('Please add ' + email + ' to the spike.land update list.');
+          window.location.href = 'mailto:hello@spike.land?subject=' + subject + '&body=' + body;
+          if (msg) {
+            msg.textContent = 'Opening your email app — send to confirm.';
+            msg.hidden = false;
+          }
+        });
+      })();
+    </script>
 
     <div class="footer-bottom">
       <span class="footer-copy">&copy; {year} spike.land. All rights reserved.</span>
@@ -223,6 +245,12 @@ const legalLinks = [
   .footer-subscribe-btn:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
+  }
+
+  .footer-subscribe-msg {
+    font-size: 0.75rem;
+    color: var(--muted-fg);
+    margin: 0.5rem 0 0;
   }
 
   .footer-bottom {
