@@ -19,6 +19,7 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
         <h1 class="ov-title">spike.land music</h1>
         <p class="ov-sub">8-bar loop sequencer. Drums, bass, lead, pad.<br>Talk music with Daft Punk AI below.<br>No installs. Just your browser.</p>
         <button id="start-btn" class="ov-btn">Start</button>
+        <p id="start-error" class="ov-error" hidden></p>
         <p class="ov-hint">Press Space to play · Click grid to edit · Scroll down to chat</p>
       </div>
     </div>
@@ -271,16 +272,34 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
 
   function initAudio() {
     return new Promise(function (ok, fail) {
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/tone@14.7.77/build/Tone.js';
-      s.onload = function () {
-        T = window.Tone;
-        buildAudio();
-        inited = true;
-        ok();
-      };
-      s.onerror = fail;
-      document.head.appendChild(s);
+      // Try unpkg first, fall back to jsdelivr if it fails (some networks block unpkg).
+      var sources = [
+        'https://unpkg.com/tone@14.7.77/build/Tone.js',
+        'https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.js'
+      ];
+      var idx = 0;
+      function tryNext() {
+        if (idx >= sources.length) {
+          fail(new Error('Could not load Tone.js audio library. Check your network connection.'));
+          return;
+        }
+        var s = document.createElement('script');
+        s.src = sources[idx++];
+        s.onload = function () {
+          if (!window.Tone) { tryNext(); return; }
+          T = window.Tone;
+          try {
+            buildAudio();
+            inited = true;
+            ok();
+          } catch (err) {
+            fail(err);
+          }
+        };
+        s.onerror = tryNext;
+        document.head.appendChild(s);
+      }
+      tryNext();
     });
   }
 
@@ -689,9 +708,11 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
   });
 
   // ── Start ──────────────────────────────────────────────────────────────────
+  var startError = document.getElementById('start-error');
   startBtn.addEventListener('click', function () {
     startBtn.disabled = true;
-    startBtn.textContent = 'Loading...';
+    startBtn.textContent = 'Loading…';
+    if (startError) { startError.hidden = true; startError.textContent = ''; }
     initAudio().then(function () {
       return T.start();
     }).then(function () {
@@ -702,6 +723,10 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
       console.error(err);
       startBtn.disabled = false;
       startBtn.textContent = 'Retry';
+      if (startError) {
+        startError.textContent = (err && err.message) ? err.message : 'Could not start audio. Please try again.';
+        startError.hidden = false;
+      }
     });
   });
 
@@ -804,6 +829,12 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
   .ov-btn:hover { background: #2563eb; }
   .ov-btn:disabled { opacity: 0.5; cursor: wait; }
   .ov-hint { font-size: 0.75rem; color: #333; margin: 0; }
+  .ov-error {
+    font-size: 0.8125rem; color: #f87171; margin: 0.25rem 0 0;
+    padding: 0.5rem 0.75rem; background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25); border-radius: 0.375rem;
+    line-height: 1.4; text-align: left;
+  }
 
   /* ─── App ───────────────────────────────────────────────────────────── */
   .app { max-width: 72rem; margin: 0 auto; padding: 0.75rem 0.75rem 4rem; display: flex; flex-direction: column; gap: 0.75rem; }

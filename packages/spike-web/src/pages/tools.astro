@@ -35,7 +35,8 @@ import Analytics from '../components/Analytics.astro';
           <p class="tools-count" id="tools-count">Loading tools…</p>
           <div class="tools-grid" id="tools-grid"></div>
           <div class="tools-error" id="tools-error" hidden>
-            Failed to load tools. <button id="retry-btn" class="retry-btn">Retry</button>
+            <span id="tools-error-msg">Failed to load tools.</span>
+            <button id="retry-btn" class="retry-btn">Retry</button>
           </div>
         </div>
       </section>
@@ -52,6 +53,7 @@ import Analytics from '../components/Analytics.astro';
   var grid = document.getElementById('tools-grid');
   var countEl = document.getElementById('tools-count');
   var errorEl = document.getElementById('tools-error');
+  var errorMsgEl = document.getElementById('tools-error-msg');
   var searchInput = document.getElementById('tool-search');
   var retryBtn = document.getElementById('retry-btn');
   var allTools = [];
@@ -92,20 +94,33 @@ import Analytics from '../components/Analytics.astro';
     renderTools(filtered);
   }
 
+  function showFetchError(msg) {
+    countEl.textContent = '';
+    if (errorMsgEl) errorMsgEl.textContent = msg;
+    errorEl.hidden = false;
+  }
+
   function fetchTools() {
     countEl.textContent = 'Loading tools…';
     errorEl.hidden = true;
     grid.innerHTML = '';
 
     fetch('https://mcp.spike.land/tools')
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) throw new Error('Registry responded with HTTP ' + r.status);
+        return r.json();
+      })
       .then(function (data) {
-        allTools = data.tools || data || [];
+        var tools = (data && data.tools) || (Array.isArray(data) ? data : []);
+        if (!Array.isArray(tools) || tools.length === 0) {
+          showFetchError('Registry returned no tools.');
+          return;
+        }
+        allTools = tools;
         renderTools(allTools);
       })
-      .catch(function () {
-        countEl.textContent = '';
-        errorEl.hidden = false;
+      .catch(function (err) {
+        showFetchError('Failed to load tools: ' + ((err && err.message) || 'network error'));
       });
   }
 

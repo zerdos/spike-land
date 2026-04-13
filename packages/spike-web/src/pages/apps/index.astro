@@ -25,10 +25,9 @@ import { appCatalog as apps } from '../../data/apps';
             Every app is a bundle of composable MCP tools. Install, extend, and compose them together.
           </p>
 
-          <!-- Search bar (cosmetic for now) -->
           <div class="search-bar">
             <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="search" placeholder="Search apps…" class="search-input" />
+            <input type="search" placeholder="Search apps…" class="search-input" aria-label="Search apps" />
           </div>
         </div>
       </section>
@@ -36,7 +35,8 @@ import { appCatalog as apps } from '../../data/apps';
       <!-- Grid -->
       <section class="apps-grid-section">
         <div class="rubik-container">
-          <div class="apps-grid">
+          <p class="apps-empty" id="apps-empty" hidden>No apps match your search.</p>
+          <div class="apps-grid" id="apps-grid">
             {apps.map(app => (
               <a
                 href={`/apps/${app.id}`}
@@ -133,6 +133,14 @@ import { appCatalog as apps } from '../../data/apps';
 
   .apps-grid-section {
     padding-block: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .apps-empty {
+    color: var(--muted-fg);
+    font-size: 0.9375rem;
+    text-align: center;
+    padding: 3rem 1rem;
+    margin: 0 0 1rem;
   }
 
   .apps-grid {
@@ -250,18 +258,21 @@ import { appCatalog as apps } from '../../data/apps';
 </style>
 
 <script>
-  const searchInput = document.querySelector('.search-input');
-  const appCards = document.querySelectorAll('.app-card');
+  const searchInput = document.querySelector<HTMLInputElement>('.search-input');
+  const appCards = Array.from(document.querySelectorAll<HTMLElement>('.app-card'));
+  const emptyEl = document.getElementById('apps-empty');
 
-  if (searchInput instanceof HTMLInputElement) {
+  if (searchInput) {
     searchInput.addEventListener('input', () => {
       const query = searchInput.value.toLowerCase().trim();
+      let visible = 0;
       appCards.forEach(card => {
-        if (card instanceof HTMLElement) {
-          const text = card.textContent?.toLowerCase() || '';
-          card.style.display = query === '' || text.includes(query) ? '' : 'none';
-        }
+        const text = card.textContent?.toLowerCase() || '';
+        const show = query === '' || text.includes(query);
+        card.style.display = show ? '' : 'none';
+        if (show) visible += 1;
       });
+      if (emptyEl) emptyEl.hidden = visible !== 0;
     });
   }
 </script>

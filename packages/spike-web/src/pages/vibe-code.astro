@@ -62,21 +62,43 @@ import TrackPageView from '../components/TrackPageView.astro';
       var runBtn = document.getElementById('run-btn');
       var layoutBtn = document.getElementById('layout-btn');
       var split = document.getElementById('split');
+      var langSelect = document.getElementById('lang-select');
       var debounceTimer = null;
       var TRANSPILE_URL = 'https://esbuild.spikeland.workers.dev';
       var STORAGE_KEY = 'spike-vibe-editor';
-      var DEFAULT_CODE = 'import { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-8">\n      <h1 className="text-4xl font-bold tracking-tight">Vibe Code</h1>\n      <p className="text-gray-500 text-lg">\n        Edit this code and see changes live.\n      </p>\n      <p className="text-6xl font-bold">{count}</p>\n      <button\n        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors"\n        onClick={() => setCount((c) => c + 1)}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}';
+      var LANG_KEY = 'spike-vibe-lang';
+      var DEFAULT_SNIPPETS = {
+        tsx: 'import { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-8">\n      <h1 className="text-4xl font-bold tracking-tight">Vibe Code</h1>\n      <p className="text-gray-500 text-lg">\n        Edit this code and see changes live.\n      </p>\n      <p className="text-6xl font-bold">{count}</p>\n      <button\n        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors"\n        onClick={() => setCount((c) => c + 1)}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}',
+        typescript: 'const greet = (name: string): string => `Hello, ${name}!`;\n\ndocument.body.innerHTML = `<h1 style="font-family:system-ui;padding:2rem">${greet("spike.land")}</h1>`;',
+        javascript: 'const greet = (name) => `Hello, ${name}!`;\n\ndocument.body.innerHTML = `<h1 style="font-family:system-ui;padding:2rem">${greet("spike.land")}</h1>`;',
+        css: 'body {\n  margin: 0;\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  font-family: system-ui, sans-serif;\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  color: white;\n}\n\nh1 {\n  font-size: 3rem;\n  letter-spacing: -0.03em;\n}',
+        html: '<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: system-ui; padding: 2rem; background: #0a0a0a; color: #fafafa; }\n    h1 { color: #60a5fa; }\n  </style>\n</head>\n<body>\n  <h1>Hello from spike.land</h1>\n  <p>Edit this HTML and see changes live.</p>\n</body>\n</html>'
+      };
 
-      // Restore saved code or use default
-      try {
-        var saved = localStorage.getItem(STORAGE_KEY);
-        editor.value = saved || DEFAULT_CODE;
-      } catch (e) {
-        editor.value = DEFAULT_CODE;
+      function storageKeyFor(lang) { return STORAGE_KEY + ':' + lang; }
+
+      function loadLang() {
+        try { return localStorage.getItem(LANG_KEY) || 'tsx'; } catch (e) { return 'tsx'; }
       }
 
+      function loadCodeFor(lang) {
+        try {
+          var saved = localStorage.getItem(storageKeyFor(lang));
+          if (saved !== null) return saved;
+        } catch (e) {}
+        return DEFAULT_SNIPPETS[lang] || '';
+      }
+
+      var currentLang = loadLang();
+      langSelect.value = currentLang;
+      editor.value = loadCodeFor(currentLang);
+
       function saveCode() {
-        try { localStorage.setItem(STORAGE_KEY, editor.value); } catch (e) {}
+        try { localStorage.setItem(storageKeyFor(currentLang), editor.value); } catch (e) {}
+      }
+
+      function saveLang() {
+        try { localStorage.setItem(LANG_KEY, currentLang); } catch (e) {}
       }
 
       function showError(msg) {
@@ -89,10 +111,36 @@ import TrackPageView from '../components/TrackPageView.astro';
         errorOverlay.textContent = '';
       }
 
+      function errorFrame(msg) {
+        var safe = String(msg || 'Something went wrong')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return '<!DOCTYPE html><html><body style="background:#0a0a0a;color:#ef4444;font-family:ui-monospace,SF Mono,monospace;padding:1.5rem;white-space:pre-wrap;font-size:13px;line-height:1.5">' + safe + '</body></html>';
+      }
+
+      function renderHtml(html) {
+        frame.srcdoc = html;
+      }
+
+      function renderCss(css) {
+        var safe = String(css).replace(/<\/style>/g, '<\\/style>');
+        frame.srcdoc = '<!DOCTYPE html><html><head><style>' + safe + '</style></head><body><h1>CSS preview</h1><p>Edit the CSS — this body and these elements update live.</p><p><button>Button</button> <a href="#">Link</a></p></body></html>';
+      }
+
       function transpileAndRun() {
         clearError();
         saveCode();
         var code = editor.value;
+        var lang = currentLang;
+
+        // Non-JS languages don't go through the transpiler.
+        if (lang === 'html') {
+          renderHtml(code);
+          return;
+        }
+        if (lang === 'css') {
+          renderCss(code);
+          return;
+        }
 
         fetch(TRANSPILE_URL, {
           method: 'POST',
@@ -100,21 +148,39 @@ import TrackPageView from '../components/TrackPageView.astro';
           body: code,
         })
           .then(function (r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t || ('Transpile failed: HTTP ' + r.status)); });
             return r.text();
           })
           .then(function (transpiled) {
             // Safety check: if transpiler returns HTML (e.g. error page), don't run it as JS
             if (transpiled.trim().startsWith('<')) {
-              throw new Error('Invalid transpilation output');
+              throw new Error('Transpiler returned HTML instead of code');
             }
-            frame.srcdoc = buildHtml(transpiled);
+            if (lang === 'javascript' || lang === 'typescript') {
+              frame.srcdoc = buildPlainScriptHtml(transpiled);
+            } else {
+              frame.srcdoc = buildHtml(transpiled);
+            }
           })
           .catch(function (err) {
-            showError(err.message || 'Transpile failed');
-            // Clear frame on error to avoid showing stale/broken content
-            frame.srcdoc = '<!DOCTYPE html><html><body style="background:#0a0a0a;color:#ef4444;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui"><div>Transpilation Error</div></body></html>';
+            var msg = (err && err.message) || 'Transpile failed';
+            showError(msg);
+            renderHtml(errorFrame(msg));
           });
+      }
+
+      function buildPlainScriptHtml(code) {
+        var safe = String(code).replace(/<\/script>/g, '<\\/script>');
+        return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+          '<style>body{font-family:system-ui,sans-serif;padding:1rem;margin:0}</style>' +
+          '</head><body>' +
+          '<div id="error-display" style="display:none;padding:1rem;color:#ef4444;font-family:monospace;font-size:13px;white-space:pre-wrap;background:#1a0000;margin:1rem 0;border-radius:8px;border:1px solid #7f1d1d"></div>' +
+          '<script type="module">' +
+          'window.addEventListener("error",function(e){var el=document.getElementById("error-display");if(el){el.style.display="block";el.textContent=e.message;}});' +
+          'try{' + safe + '}catch(err){' +
+            'var el=document.getElementById("error-display");if(el){el.style.display="block";el.textContent=err.message;}' +
+          '}' +
+          '<\/script></body></html>';
       }
 
       function buildHtml(code) {
@@ -185,6 +251,15 @@ import TrackPageView from '../components/TrackPageView.astro';
       });
 
       runBtn.addEventListener('click', transpileAndRun);
+
+      langSelect.addEventListener('change', function () {
+        // Save current code under the old lang, switch, restore saved/default for new lang.
+        saveCode();
+        currentLang = langSelect.value;
+        saveLang();
+        editor.value = loadCodeFor(currentLang);
+        transpileAndRun();
+      });
 
       // Layout toggle
       var layouts = ['split', 'editor-only', 'preview-only'];
