@@ -1,5 +1,6 @@
 ---
 import TrackPageView from '../components/TrackPageView.astro';
+import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
 ---
 
 <html lang="en">
@@ -7,8 +8,8 @@ import TrackPageView from '../components/TrackPageView.astro';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Vibe Code — spike.land</title>
-    <meta name="description" content="Browser-based code editor with live preview. Write TypeScript, JSX, and see results instantly." />
-    <meta name="theme-color" content="#2563eb" />
+    <meta name="description" content="Chat with Zoltán and see ideas run live in your browser. Syntax-highlighted code editor and instant preview." />
+    <meta name="theme-color" content="#0a0a0a" />
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       html, body { height: 100%; overflow: hidden; -webkit-text-size-adjust: 100%; }
@@ -26,25 +27,44 @@ import TrackPageView from '../components/TrackPageView.astro';
       <header class="toolbar">
         <a href="/" class="logo">spike.land</a>
         <span class="toolbar-title">Vibe Code</span>
+
+        <div class="mode-tabs" role="tablist" aria-label="Layout">
+          <button type="button" class="mode-tab is-active" data-mode="chat" role="tab" aria-selected="true">Chat</button>
+          <button type="button" class="mode-tab" data-mode="code" role="tab" aria-selected="false">Code</button>
+          <button type="button" class="mode-tab" data-mode="all" role="tab" aria-selected="false">Split</button>
+        </div>
+
         <div class="toolbar-actions">
-          <select id="lang-select" class="lang-select">
+          <select id="lang-select" class="lang-select" aria-label="Language">
             <option value="tsx">TSX</option>
             <option value="typescript">TypeScript</option>
             <option value="javascript">JavaScript</option>
             <option value="css">CSS</option>
             <option value="html">HTML</option>
           </select>
-          <button id="run-btn" class="run-btn">Run</button>
-          <button id="layout-btn" class="layout-btn" title="Toggle layout">⟺</button>
+          <button id="run-btn" class="run-btn" title="Run code (Cmd/Ctrl+S)">Run</button>
         </div>
       </header>
 
-      <!-- Split pane -->
-      <div class="split" id="split">
-        <div class="pane pane-editor" id="pane-editor">
-          <textarea id="code-editor" class="code-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      <!-- Multi-pane workspace -->
+      <div class="split layout-chat" id="split">
+        <div class="pane pane-chat" id="pane-chat">
+          <div class="chat-mount">
+            <RadixChat client:only="react" persona="zoltan" />
+          </div>
         </div>
-        <div class="divider" id="divider"></div>
+
+        <div class="divider divider-chat-code" aria-hidden="true"></div>
+
+        <div class="pane pane-editor" id="pane-editor">
+          <div class="editor-scroll">
+            <div id="code-editor-mount" class="cm-mount"></div>
+          </div>
+          <div class="editor-loading" id="editor-loading">Loading editor…</div>
+        </div>
+
+        <div class="divider divider-code-preview" aria-hidden="true"></div>
+
         <div class="pane pane-preview" id="pane-preview">
           <iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts" title="Live preview"></iframe>
           <div id="error-overlay" class="error-overlay" hidden></div>
@@ -52,125 +72,186 @@ import TrackPageView from '../components/TrackPageView.astro';
       </div>
     </div>
 
-    <script is:inline>
-    (function () {
-      'use strict';
+    <script type="module">
+      // --- CodeMirror 6 via esm.sh (loads async, textarea fallback in meantime) ---
+      import { EditorView, keymap, lineNumbers, highlightActiveLine } from 'https://esm.sh/@codemirror/view@6';
+      import { EditorState, Compartment } from 'https://esm.sh/@codemirror/state@6';
+      import { defaultKeymap, history, historyKeymap, indentWithTab } from 'https://esm.sh/@codemirror/commands@6';
+      import { syntaxHighlighting, defaultHighlightStyle, bracketMatching, indentOnInput } from 'https://esm.sh/@codemirror/language@6';
+      import { javascript } from 'https://esm.sh/@codemirror/lang-javascript@6';
+      import { html as htmlLang } from 'https://esm.sh/@codemirror/lang-html@6';
+      import { css as cssLang } from 'https://esm.sh/@codemirror/lang-css@6';
+      import { oneDark } from 'https://esm.sh/@codemirror/theme-one-dark@6';
 
-      var editor = document.getElementById('code-editor');
-      var frame = document.getElementById('preview-frame');
-      var errorOverlay = document.getElementById('error-overlay');
-      var runBtn = document.getElementById('run-btn');
-      var layoutBtn = document.getElementById('layout-btn');
-      var split = document.getElementById('split');
-      var langSelect = document.getElementById('lang-select');
-      var debounceTimer = null;
-      var TRANSPILE_URL = 'https://esbuild.spikeland.workers.dev';
-      var STORAGE_KEY = 'spike-vibe-editor';
-      var LANG_KEY = 'spike-vibe-lang';
-      var DEFAULT_SNIPPETS = {
-        tsx: 'import { useState } from "react";\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-8">\n      <h1 className="text-4xl font-bold tracking-tight">Vibe Code</h1>\n      <p className="text-gray-500 text-lg">\n        Edit this code and see changes live.\n      </p>\n      <p className="text-6xl font-bold">{count}</p>\n      <button\n        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors"\n        onClick={() => setCount((c) => c + 1)}\n      >\n        Count++\n      </button>\n    </div>\n  );\n}',
-        typescript: 'const greet = (name: string): string => `Hello, ${name}!`;\n\ndocument.body.innerHTML = `<h1 style="font-family:system-ui;padding:2rem">${greet("spike.land")}</h1>`;',
-        javascript: 'const greet = (name) => `Hello, ${name}!`;\n\ndocument.body.innerHTML = `<h1 style="font-family:system-ui;padding:2rem">${greet("spike.land")}</h1>`;',
-        css: 'body {\n  margin: 0;\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  font-family: system-ui, sans-serif;\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  color: white;\n}\n\nh1 {\n  font-size: 3rem;\n  letter-spacing: -0.03em;\n}',
-        html: '<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: system-ui; padding: 2rem; background: #0a0a0a; color: #fafafa; }\n    h1 { color: #60a5fa; }\n  </style>\n</head>\n<body>\n  <h1>Hello from spike.land</h1>\n  <p>Edit this HTML and see changes live.</p>\n</body>\n</html>'
+      const TRANSPILE_URL = 'https://esbuild.spikeland.workers.dev';
+      const STORAGE_KEY = 'spike-vibe-editor';
+      const LANG_KEY = 'spike-vibe-lang';
+
+      const DEFAULT_SNIPPETS = {
+        tsx: `import { useState } from "react";
+
+export default function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-8">
+      <h1 className="text-4xl font-bold tracking-tight">Vibe Code</h1>
+      <p className="text-gray-500 text-lg">
+        Chat on the left. Code updates live on the right.
+      </p>
+      <p className="text-6xl font-bold">{count}</p>
+      <button
+        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors"
+        onClick={() => setCount((c) => c + 1)}
+      >
+        Count++
+      </button>
+    </div>
+  );
+}`,
+        typescript: `const greet = (name: string): string => \`Hello, \${name}!\`;
+
+document.body.innerHTML = \`<h1 style="font-family:system-ui;padding:2rem">\${greet("spike.land")}</h1>\`;`,
+        javascript: `const greet = (name) => \`Hello, \${name}!\`;
+
+document.body.innerHTML = \`<h1 style="font-family:system-ui;padding:2rem">\${greet("spike.land")}</h1>\`;`,
+        css: `body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: system-ui, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+h1 {
+  font-size: 3rem;
+  letter-spacing: -0.03em;
+}`,
+        html: `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: system-ui; padding: 2rem; background: #0a0a0a; color: #fafafa; }
+    h1 { color: #60a5fa; }
+  </style>
+</head>
+<body>
+  <h1>Hello from spike.land</h1>
+  <p>Edit this HTML and see changes live.</p>
+</body>
+</html>`,
       };
 
       function storageKeyFor(lang) { return STORAGE_KEY + ':' + lang; }
 
       function loadLang() {
-        try { return localStorage.getItem(LANG_KEY) || 'tsx'; } catch (e) { return 'tsx'; }
+        try { return localStorage.getItem(LANG_KEY) || 'tsx'; } catch { return 'tsx'; }
       }
 
       function loadCodeFor(lang) {
         try {
-          var saved = localStorage.getItem(storageKeyFor(lang));
+          const saved = localStorage.getItem(storageKeyFor(lang));
           if (saved !== null) return saved;
-        } catch (e) {}
-        return DEFAULT_SNIPPETS[lang] || '';
+        } catch {}
+        return DEFAULT_SNIPPETS[lang] ?? '';
       }
 
-      var currentLang = loadLang();
+      // --- DOM refs ---
+      const frame = document.getElementById('preview-frame');
+      const errorOverlay = document.getElementById('error-overlay');
+      const runBtn = document.getElementById('run-btn');
+      const langSelect = document.getElementById('lang-select');
+      const mount = document.getElementById('code-editor-mount');
+      const editorLoading = document.getElementById('editor-loading');
+      const split = document.getElementById('split');
+      const modeTabs = Array.from(document.querySelectorAll('.mode-tab'));
+
+      let currentLang = loadLang();
       langSelect.value = currentLang;
-      editor.value = loadCodeFor(currentLang);
 
+      // --- Language extensions ---
+      const langCompartment = new Compartment();
+      function languageExtension(lang) {
+        if (lang === 'css') return cssLang();
+        if (lang === 'html') return htmlLang();
+        // tsx / typescript / javascript — handle tsx via jsx flag
+        return javascript({ jsx: lang === 'tsx', typescript: lang !== 'javascript' });
+      }
+
+      // --- CodeMirror setup ---
+      let debounceTimer = null;
+      const editorView = new EditorView({
+        state: EditorState.create({
+          doc: loadCodeFor(currentLang),
+          extensions: [
+            lineNumbers(),
+            highlightActiveLine(),
+            history(),
+            bracketMatching(),
+            indentOnInput(),
+            syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+            keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
+            oneDark,
+            langCompartment.of(languageExtension(currentLang)),
+            EditorView.lineWrapping,
+            EditorView.updateListener.of((u) => {
+              if (u.docChanged) scheduleRun();
+            }),
+            EditorView.domEventHandlers({
+              keydown(event) {
+                if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+                  event.preventDefault();
+                  transpileAndRun();
+                  return true;
+                }
+                return false;
+              },
+            }),
+          ],
+        }),
+        parent: mount,
+      });
+      if (editorLoading) editorLoading.remove();
+
+      function getCode() { return editorView.state.doc.toString(); }
+      function setCode(value) {
+        editorView.dispatch({
+          changes: { from: 0, to: editorView.state.doc.length, insert: value },
+        });
+      }
       function saveCode() {
-        try { localStorage.setItem(storageKeyFor(currentLang), editor.value); } catch (e) {}
+        try { localStorage.setItem(storageKeyFor(currentLang), getCode()); } catch {}
       }
-
       function saveLang() {
-        try { localStorage.setItem(LANG_KEY, currentLang); } catch (e) {}
+        try { localStorage.setItem(LANG_KEY, currentLang); } catch {}
       }
 
+      // --- Error UI ---
       function showError(msg) {
         errorOverlay.textContent = msg;
         errorOverlay.hidden = false;
       }
-
       function clearError() {
         errorOverlay.hidden = true;
         errorOverlay.textContent = '';
       }
-
       function errorFrame(msg) {
-        var safe = String(msg || 'Something went wrong')
+        const safe = String(msg || 'Something went wrong')
           .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return '<!DOCTYPE html><html><body style="background:#0a0a0a;color:#ef4444;font-family:ui-monospace,SF Mono,monospace;padding:1.5rem;white-space:pre-wrap;font-size:13px;line-height:1.5">' + safe + '</body></html>';
       }
 
-      function renderHtml(html) {
-        frame.srcdoc = html;
-      }
-
+      // --- Preview renderers ---
+      function renderHtml(htmlStr) { frame.srcdoc = htmlStr; }
       function renderCss(css) {
-        var safe = String(css).replace(/<\/style>/g, '<\\/style>');
+        const safe = String(css).replace(/<\/style>/g, '<\\/style>');
         frame.srcdoc = '<!DOCTYPE html><html><head><style>' + safe + '</style></head><body><h1>CSS preview</h1><p>Edit the CSS — this body and these elements update live.</p><p><button>Button</button> <a href="#">Link</a></p></body></html>';
       }
 
-      function transpileAndRun() {
-        clearError();
-        saveCode();
-        var code = editor.value;
-        var lang = currentLang;
-
-        // Non-JS languages don't go through the transpiler.
-        if (lang === 'html') {
-          renderHtml(code);
-          return;
-        }
-        if (lang === 'css') {
-          renderCss(code);
-          return;
-        }
-
-        fetch(TRANSPILE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain', 'TR_ORIGIN': window.location.origin },
-          body: code,
-        })
-          .then(function (r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t || ('Transpile failed: HTTP ' + r.status)); });
-            return r.text();
-          })
-          .then(function (transpiled) {
-            // Safety check: if transpiler returns HTML (e.g. error page), don't run it as JS
-            if (transpiled.trim().startsWith('<')) {
-              throw new Error('Transpiler returned HTML instead of code');
-            }
-            if (lang === 'javascript' || lang === 'typescript') {
-              frame.srcdoc = buildPlainScriptHtml(transpiled);
-            } else {
-              frame.srcdoc = buildHtml(transpiled);
-            }
-          })
-          .catch(function (err) {
-            var msg = (err && err.message) || 'Transpile failed';
-            showError(msg);
-            renderHtml(errorFrame(msg));
-          });
-      }
-
       function buildPlainScriptHtml(code) {
-        var safe = String(code).replace(/<\/script>/g, '<\\/script>');
+        const safe = String(code).replace(/<\/script>/g, '<\\/script>');
         return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
           '<style>body{font-family:system-ui,sans-serif;padding:1rem;margin:0}</style>' +
           '</head><body>' +
@@ -183,11 +264,10 @@ import TrackPageView from '../components/TrackPageView.astro';
           '<\/script></body></html>';
       }
 
-      function buildHtml(code) {
-        // Strip export default and extract the component reference
-        var prepared = code;
-        var appRef = 'App';
-        var namedFn = prepared.match(/export\s+default\s+function\s+(\w+)/);
+      function buildReactHtml(code) {
+        let prepared = code;
+        let appRef = 'App';
+        const namedFn = prepared.match(/export\s+default\s+function\s+(\w+)/);
         if (namedFn) {
           appRef = namedFn[1];
           prepared = prepared.replace(/export\s+default\s+function\s+/, 'function ');
@@ -195,7 +275,6 @@ import TrackPageView from '../components/TrackPageView.astro';
           prepared = prepared.replace(/export\s+default\s+/, 'const App = ');
           appRef = 'App';
         }
-        // Remove remaining export statements
         prepared = prepared.replace(/^export\s+\{[^}]*\}\s*;?\s*$/gm, '');
         prepared = prepared.replace(/^export\s+/gm, '');
 
@@ -229,49 +308,80 @@ import TrackPageView from '../components/TrackPageView.astro';
           '<\/script></body></html>';
       }
 
+      // --- Run pipeline ---
+      function transpileAndRun() {
+        clearError();
+        saveCode();
+        const code = getCode();
+        const lang = currentLang;
+
+        if (lang === 'html') { renderHtml(code); return; }
+        if (lang === 'css')  { renderCss(code); return; }
+
+        fetch(TRANSPILE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain', 'TR_ORIGIN': window.location.origin },
+          body: code,
+        })
+          .then((r) => {
+            if (!r.ok) return r.text().then((t) => { throw new Error(t || ('Transpile failed: HTTP ' + r.status)); });
+            return r.text();
+          })
+          .then((transpiled) => {
+            if (transpiled.trim().startsWith('<')) {
+              throw new Error('Transpiler returned HTML instead of code');
+            }
+            if (lang === 'javascript' || lang === 'typescript') {
+              frame.srcdoc = buildPlainScriptHtml(transpiled);
+            } else {
+              frame.srcdoc = buildReactHtml(transpiled);
+            }
+          })
+          .catch((err) => {
+            const msg = (err && err.message) || 'Transpile failed';
+            showError(msg);
+            renderHtml(errorFrame(msg));
+          });
+      }
+
       function scheduleRun() {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(transpileAndRun, 500);
       }
 
-      editor.addEventListener('input', scheduleRun);
-      editor.addEventListener('keydown', function (e) {
-        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-          e.preventDefault();
-          transpileAndRun();
-        }
-        // Tab inserts 2 spaces
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          var start = editor.selectionStart;
-          var end = editor.selectionEnd;
-          editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
-          editor.selectionStart = editor.selectionEnd = start + 2;
-        }
-      });
-
+      // --- Wire controls ---
       runBtn.addEventListener('click', transpileAndRun);
 
-      langSelect.addEventListener('change', function () {
-        // Save current code under the old lang, switch, restore saved/default for new lang.
+      langSelect.addEventListener('change', () => {
         saveCode();
         currentLang = langSelect.value;
         saveLang();
-        editor.value = loadCodeFor(currentLang);
+        setCode(loadCodeFor(currentLang));
+        editorView.dispatch({
+          effects: langCompartment.reconfigure(languageExtension(currentLang)),
+        });
         transpileAndRun();
       });
 
-      // Layout toggle
-      var layouts = ['split', 'editor-only', 'preview-only'];
-      var layoutIdx = 0;
-      layoutBtn.addEventListener('click', function () {
-        layoutIdx = (layoutIdx + 1) % layouts.length;
-        split.className = 'split layout-' + layouts[layoutIdx];
-      });
+      // Layout modes: 'chat' | 'code' | 'all'
+      function setMode(mode) {
+        split.classList.remove('layout-chat', 'layout-code', 'layout-all');
+        split.classList.add('layout-' + mode);
+        modeTabs.forEach((t) => {
+          const active = t.dataset.mode === mode;
+          t.classList.toggle('is-active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        try { localStorage.setItem('spike-vibe-mode', mode); } catch {}
+      }
+      modeTabs.forEach((t) => t.addEventListener('click', () => setMode(t.dataset.mode)));
+      try {
+        const savedMode = localStorage.getItem('spike-vibe-mode');
+        if (savedMode === 'code' || savedMode === 'all') setMode(savedMode);
+      } catch {}
 
       // Initial run
       transpileAndRun();
-    })();
     </script>
 
     <style>
@@ -279,12 +389,13 @@ import TrackPageView from '../components/TrackPageView.astro';
         display: flex;
         flex-direction: column;
         height: 100vh;
+        height: 100dvh;
       }
 
       .toolbar {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
         padding: 0 1rem;
         height: 3rem;
         background: #111;
@@ -306,6 +417,28 @@ import TrackPageView from '../components/TrackPageView.astro';
         font-weight: 600;
       }
 
+      .mode-tabs {
+        display: flex;
+        gap: 2px;
+        margin-left: 0.5rem;
+        background: #1a1a1a;
+        border: 1px solid #262626;
+        border-radius: 0.375rem;
+        padding: 2px;
+      }
+      .mode-tab {
+        background: transparent;
+        border: none;
+        color: #737373;
+        font: 600 0.75rem/1 inherit;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s;
+      }
+      .mode-tab:hover { color: #e5e5e5; }
+      .mode-tab.is-active { background: #2563eb; color: #fff; }
+
       .toolbar-actions {
         margin-left: auto;
         display: flex;
@@ -318,7 +451,7 @@ import TrackPageView from '../components/TrackPageView.astro';
         border: 1px solid #333;
         color: #a3a3a3;
         font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+        padding: 0.3rem 0.5rem;
         border-radius: 0.25rem;
       }
 
@@ -332,68 +465,82 @@ import TrackPageView from '../components/TrackPageView.astro';
         font-weight: 600;
         cursor: pointer;
       }
-
       .run-btn:hover { background: #1d4ed8; }
-
-      .layout-btn {
-        background: none;
-        border: 1px solid #333;
-        color: #a3a3a3;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-      }
-
-      .layout-btn:hover { border-color: #555; color: #fafafa; }
 
       .split {
         display: flex;
         flex: 1;
+        min-height: 0;
         overflow: hidden;
       }
 
-      .pane { overflow: hidden; }
+      .pane { overflow: hidden; min-width: 0; }
+
+      /* Chat pane — wraps RadixChat (which wants 100dvh) and clips to flex height */
+      .pane-chat {
+        flex: 1;
+        background: #fafafa;
+        color: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .chat-mount {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        overflow: hidden;
+      }
+      /* Force RadixChat's 100dvh wrapper to fill its flex parent instead */
+      .chat-mount > div { height: 100% !important; max-height: 100% !important; }
 
       .pane-editor {
         flex: 1;
         display: flex;
+        flex-direction: column;
+        background: #282c34; /* oneDark bg matches */
+        position: relative;
       }
-
-      .code-textarea {
-        width: 100%;
+      .editor-scroll {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+      }
+      .cm-mount {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .cm-mount .cm-editor {
         height: 100%;
-        background: #0d0d0d;
-        color: #d4d4d8;
-        border: none;
-        padding: 1rem;
-        font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
         font-size: 0.875rem;
-        line-height: 1.6;
-        resize: none;
-        outline: none;
-        tab-size: 2;
+      }
+      .cm-mount .cm-scroller {
+        font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Menlo, Consolas, monospace;
+      }
+      .editor-loading {
+        padding: 1rem;
+        color: #737373;
+        font-size: 0.8125rem;
+        font-family: 'SF Mono', monospace;
       }
 
       .divider {
         width: 4px;
         background: #222;
-        cursor: col-resize;
         flex-shrink: 0;
       }
-
-      .divider:hover { background: #2563eb; }
 
       .pane-preview {
         flex: 1;
         position: relative;
         background: white;
       }
-
       .preview-frame {
         width: 100%;
         height: 100%;
         border: none;
+        display: block;
       }
 
       .error-overlay {
@@ -411,19 +558,34 @@ import TrackPageView from '../components/TrackPageView.astro';
         overflow-y: auto;
       }
 
-      .layout-editor-only .pane-preview,
-      .layout-editor-only .divider { display: none; }
-      .layout-editor-only .pane-editor { flex: 1; }
+      /* --- Layout modes --- */
+      /* chat: chat + preview (editor hidden) */
+      .layout-chat .pane-editor,
+      .layout-chat .divider-chat-code { display: none; }
 
-      .layout-preview-only .pane-editor,
-      .layout-preview-only .divider { display: none; }
-      .layout-preview-only .pane-preview { flex: 1; }
+      /* code: editor + preview (chat hidden) */
+      .layout-code .pane-chat,
+      .layout-code .divider-chat-code { display: none; }
+
+      /* all: chat + editor + preview */
+      /* (nothing to hide — all three panes visible) */
+
+      @media (max-width: 900px) {
+        /* On narrow screens, split mode collapses editor to keep chat readable */
+        .layout-all .pane-editor,
+        .layout-all .divider-chat-code { display: none; }
+      }
 
       @media (max-width: 640px) {
+        .toolbar { gap: 0.5rem; padding: 0 0.625rem; }
+        .toolbar-title { display: none; }
         .split { flex-direction: column; }
-        .divider { width: 100%; height: 4px; cursor: row-resize; }
-        .pane-editor { min-height: 40%; }
-        .pane-preview { min-height: 40%; }
+        .divider { width: 100%; height: 4px; }
+        .pane { min-height: 0; }
+        .layout-chat .pane-chat { flex: 1; }
+        .layout-chat .pane-preview { flex: 0 0 40%; }
+        .layout-code .pane-editor { flex: 1; }
+        .layout-code .pane-preview { flex: 0 0 40%; }
       }
     </style>
   </body>
