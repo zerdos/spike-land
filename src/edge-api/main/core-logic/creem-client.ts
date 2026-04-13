@@ -78,11 +78,18 @@ export function createBillingPortal(
 
 // ─── Webhook Signature Verification ────────────────────────────────────────
 
+const HEX_ONLY = /^[0-9a-f]+$/i;
+
 export async function verifyCreemSignature(
   rawBody: string,
   signature: string,
   secret: string,
 ): Promise<boolean> {
+  // Reject empty/malformed inputs before touching crypto.
+  if (!signature || !secret) return false;
+  // Hex-only guard prevents unicode-normalisation bypasses.
+  if (!HEX_ONLY.test(signature)) return false;
+
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -92,8 +99,17 @@ export async function verifyCreemSignature(
     ["sign"],
   );
   const sig = await crypto.subtle.sign("HMAC", key, enc.encode(rawBody));
-  const hex = Array.from(new Uint8Array(sig))
+  const expectedHex = Array.from(new Uint8Array(sig))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  return hex === signature;
+
+  // Length check is safe to short-circuit — it does not leak signature bytes.
+  if (expectedHex.length !== signature.length) return false;
+
+  // Constant-time XOR comparison (OWASP A02, CWE-208).
+  let diff = 0;
+  for (let i = 0; i < expectedHex.length; i++) {
+    diff |= expectedHex.charCodeAt(i) ^ signature.charCodeAt(i);
+  }
+  return diff === 0;
 }

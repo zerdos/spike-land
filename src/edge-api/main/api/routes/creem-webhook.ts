@@ -53,6 +53,37 @@ interface CreemEvent {
   object: CreemEventObject;
 }
 
+// ─── Replay Protection ─────────────────────────────────────────────────────
+
+// 10-minute window. Wider than Stripe's 5-min default because Creem does not
+// sign the timestamp in the header (only the body), so clock skew tolerance
+// matters more. created_at is trusted only AFTER HMAC signature verification.
+const REPLAY_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * Validates the event.created_at timestamp is within an acceptable window
+ * of the current time. Returns `null` if valid, or an error string if not.
+ *
+ * Accepts both unix-seconds (< 1e11) and unix-millis; auto-detects by
+ * magnitude. Rejects non-finite, non-positive, and out-of-window values.
+ */
+function validateEventTimestamp(createdAt: unknown): string | null {
+  if (typeof createdAt !== "number" || !Number.isFinite(createdAt) || createdAt <= 0) {
+    return "Missing or invalid created_at timestamp";
+  }
+  // Magnitude heuristic: values below 1e11 are seconds (~year 5138 in sec),
+  // values above are milliseconds.
+  const createdMs = createdAt < 1e11 ? createdAt * 1000 : createdAt;
+  const ageMs = Date.now() - createdMs;
+  if (ageMs > REPLAY_WINDOW_MS) {
+    return `Event timestamp too old (age ${Math.round(ageMs / 1000)}s)`;
+  }
+  if (ageMs < -REPLAY_WINDOW_MS) {
+    return `Event timestamp too far in future (skew ${Math.round(-ageMs / 1000)}s)`;
+  }
+  return null;
+}
+
 // ─── Idempotency ───────────────────────────────────────────────────────────
 
 async function checkIdempotency(db: D1Database, eventId: string): Promise<boolean> {
@@ -102,6 +133,15 @@ creemWebhook.post("/creem/webhook", async (c) => {
     event = JSON.parse(rawBody) as CreemEvent;
   } catch {
     return c.json({ error: "Invalid JSON" }, 400);
+  }
+
+  // Replay-attack protection. Signature covers the body, so created_at is
+  // tamper-proof post-verification: an attacker replaying an old valid body
+  // cannot update the timestamp without breaking the HMAC.
+  const tsError = validateEventTimestamp(event.created_at);
+  if (tsError) {
+    log.warn("Creem webhook rejected", { reason: tsError, eventId: event.id });
+    return c.json({ error: tsError }, 400);
   }
 
   const db = c.env.DB;

@@ -8,6 +8,20 @@ import type { StripeEvent, StripeSession } from "./subscription-service.js";
 
 const log = createLogger("spike-edge");
 
+/**
+ * Parse a user-supplied amount string (dollars) into cents, rejecting NaN,
+ * Infinity, negatives, and absurdly large values. Returns 0 for unparseable
+ * input so downstream INSERTs never bind NaN.
+ */
+function parseAmountCents(amountStr: string | undefined): number {
+  if (!amountStr) return 0;
+  const parsed = parseFloat(amountStr);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+  // Cap at $1,000,000 to catch malformed input without failing silently.
+  if (parsed > 1_000_000) return 0;
+  return Math.round(parsed * 100);
+}
+
 // ─── Blog Support Donation ──────────────────────────────────────────────────
 
 export async function handleBlogDonation(db: D1Database, event: StripeEvent): Promise<void> {
@@ -30,13 +44,7 @@ export async function handleBlogDonation(db: D1Database, event: StripeEvent): Pr
       .prepare(
         "INSERT INTO support_donations (id, slug, amount_cents, stripe_session_id, status, created_at) VALUES (?, ?, ?, ?, 'completed', ?)",
       )
-      .bind(
-        crypto.randomUUID(),
-        slug,
-        amountStr ? Math.round(parseFloat(amountStr) * 100) : 0,
-        sessionId,
-        Date.now(),
-      )
+      .bind(crypto.randomUUID(), slug, parseAmountCents(amountStr), sessionId, Date.now())
       .run();
   }
 
@@ -54,7 +62,7 @@ async function trackExperimentRevenue(
 ): Promise<void> {
   try {
     const metaClientId = metadata?.["client_id"];
-    const amountCents = amountStr ? Math.round(parseFloat(amountStr) * 100) : 0;
+    const amountCents = parseAmountCents(amountStr);
     if (!metaClientId || amountCents <= 0) return;
 
     const assignmentRows = await db

@@ -326,7 +326,6 @@ describe("billing route", () => {
           plan: "pro",
           status: "active",
           current_period_end: 9999999,
-          usage_count: 5,
           stripe_customer_id: "cus_123",
         }),
         all: vi.fn().mockResolvedValue({ results: [] }),
@@ -348,7 +347,8 @@ describe("billing route", () => {
     expect(res.status).toBe(200);
     const body = await res.json<{ plan: string; usage: number }>();
     expect(body.plan).toBe("pro");
-    expect(body.usage).toBe(5);
+    // usage is currently hardcoded to 0 until usage_count schema is actually rolled out
+    expect(body.usage).toBe(0);
   });
 
   it("returns 401 for POST billing/cancel when no userId", async () => {

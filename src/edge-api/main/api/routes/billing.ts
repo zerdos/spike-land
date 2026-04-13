@@ -22,7 +22,6 @@ interface SubscriptionRow {
   plan: string;
   status: string;
   current_period_end: number | null;
-  usage_count: number | null;
   creem_customer_id: string | null;
   stripe_customer_id: string | null;
 }
@@ -33,8 +32,13 @@ billing.get("/api/billing/status", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // NOTE: `usage` is always 0 — the `usage_count` column was read here
+  // previously but was never created in production or written to anywhere.
+  // Selecting it crashed every /api/billing/status call with
+  // "D1_ERROR: no such column: usage_count". Remove from the shape only
+  // once callers no longer read `usage`.
   const row = await c.env.DB.prepare(
-    `SELECT plan, status, current_period_end, usage_count, creem_customer_id, stripe_customer_id
+    `SELECT plan, status, current_period_end, creem_customer_id, stripe_customer_id
      FROM subscriptions WHERE user_id = ? LIMIT 1`,
   )
     .bind(userId)
@@ -53,7 +57,7 @@ billing.get("/api/billing/status", async (c) => {
     plan: row.plan,
     status: row.status,
     currentPeriodEnd: row.current_period_end,
-    usage: row.usage_count ?? 0,
+    usage: 0,
   });
 });
 
