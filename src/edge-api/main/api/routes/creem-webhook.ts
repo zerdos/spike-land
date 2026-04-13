@@ -9,6 +9,7 @@ import { Hono } from "hono";
 import type { Env } from "../../core-logic/env.js";
 import { createLogger } from "@spike-land-ai/shared";
 import { verifyCreemSignature } from "../../core-logic/creem-client.js";
+import { captureWorkerException } from "../../../common/core-logic/sentry.js";
 
 const log = createLogger("spike-edge");
 
@@ -113,6 +114,12 @@ creemWebhook.post("/creem/webhook", async (c) => {
   const webhookSecret = c.env.CREEM_WEBHOOK_SECRET;
   if (!webhookSecret) {
     log.error("CREEM_WEBHOOK_SECRET not configured");
+    // Page on misconfig — silent 503s were why it took days to notice.
+    captureWorkerException(
+      "creem-webhook",
+      new Error("CREEM_WEBHOOK_SECRET not configured — webhook calls returning 503"),
+      { level: "error", request: c.req.raw },
+    );
     return c.json({ error: "Webhook not configured" }, 503);
   }
 
@@ -187,6 +194,13 @@ creemWebhook.post("/creem/webhook", async (c) => {
     const msg = error instanceof Error ? error.message : "Unknown error";
     log.error(`Error handling Creem ${event.eventType}`, { error: msg });
     logWebhookError(db, c.executionCtx, event.eventType, msg);
+    // Payment-critical: route to Sentry so it pages via existing alert channels
+    // rather than sitting silently in D1 error_logs.
+    captureWorkerException("creem-webhook", error, {
+      level: "error",
+      tags: { eventType: event.eventType, eventId: event.id },
+      request: c.req.raw,
+    });
   }
 
   return c.json({ received: true });

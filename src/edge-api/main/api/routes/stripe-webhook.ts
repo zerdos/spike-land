@@ -22,6 +22,7 @@ import {
   type StripeSession,
 } from "../../lazy-imports/subscription-service.js";
 import { handleBlogDonation } from "../../lazy-imports/donation-service.js";
+import { captureWorkerException } from "../../../common/core-logic/sentry.js";
 
 const log = createLogger("spike-edge");
 
@@ -36,6 +37,11 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
   const webhookSecret = c.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
     log.error("STRIPE_WEBHOOK_SECRET not configured");
+    captureWorkerException(
+      "stripe-webhook",
+      new Error("STRIPE_WEBHOOK_SECRET not configured — webhook calls returning 503"),
+      { level: "error", request: c.req.raw },
+    );
     return c.json({ error: "Webhook not configured" }, 503);
   }
 
@@ -103,6 +109,12 @@ stripeWebhook.post("/stripe/webhook", async (c) => {
       msg,
       error instanceof Error ? (error.stack ?? null) : null,
     );
+    // Payment-critical: route to Sentry so it pages via existing channels.
+    captureWorkerException("stripe-webhook", error, {
+      level: "error",
+      tags: { eventType: event.type, eventId: event.id },
+      request: c.req.raw,
+    });
   }
 
   return c.json({ received: true });

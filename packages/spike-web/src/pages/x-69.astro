@@ -1,0 +1,217 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import rounds from '../../../../content/campaigns/x-69-rounds.json';
+
+type Round = {
+  round: number;
+  persona: string;
+  topic: string;
+  tags: string[];
+  tweet: string;
+};
+
+const campaign = rounds as Round[];
+
+const personaAccent: Record<string, string> = {
+  'Erdős': '#4f46e5',
+  'Daft Punk': '#e11d48',
+  'Peti': '#22c55e',
+  'Raju': '#0ea5e9',
+  'Arnold': '#f97316',
+  'Gian Pierre': '#a16207',
+  'Einstein': '#78716c',
+  'Zoltán': '#d97706',
+  'All Personas': '#111111',
+};
+
+const accentFor = (p: string) => personaAccent[p] ?? '#666';
+---
+
+<Layout
+  title="X-69 — 69 rounds, one launch — spike.land"
+  description="The X-69 campaign. 69 rounds of tweets from the personas of spike.land, soundtracked by 69 Is The New 42."
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav activePath="/x-69" />
+
+    <main id="main-content" class="x69">
+
+      <section class="x69-hero">
+        <div class="x69-container">
+          <p class="x69-eyebrow">X-69 · Launch Campaign</p>
+          <h1 class="x69-title">69 rounds. One launch. One song.</h1>
+          <p class="x69-lede">
+            A round per persona, a tweet per round. The soundtrack is <em>69 Is The New 42</em>.
+            Press play and scroll.
+          </p>
+
+          <figure class="x69-player">
+            <audio controls preload="metadata" src="/69-is-the-new-42.mp3">
+              <a href="/69-is-the-new-42.mp3">Download 69 Is The New 42 (MP3)</a>
+            </audio>
+            <figcaption>69 Is The New 42 — spike.land</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="x69-rounds">
+        <div class="x69-container">
+          <ol class="x69-list">
+            {campaign.map((r) => (
+              <li class="x69-card" style={`--accent:${accentFor(r.persona)}`}>
+                <header class="x69-card-head">
+                  <span class="x69-num">#{r.round}</span>
+                  <span class="x69-persona">{r.persona}</span>
+                  <a class="x69-topic" href={`/blog/${r.topic}`}>/{r.topic}</a>
+                </header>
+                <p class="x69-tweet">{r.tweet}</p>
+                {r.tags.length > 0 && (
+                  <ul class="x69-tags">
+                    {r.tags.map((t) => <li>{t}</li>)}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .x69 { color: var(--fg, #111); }
+
+  .x69-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .x69-hero {
+    padding: clamp(3rem, 8vw, 6rem) 0 2rem;
+  }
+
+  .x69-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-fg, #666);
+    margin-bottom: 0.75rem;
+  }
+
+  .x69-title {
+    font-family: var(--font-display, inherit);
+    font-size: clamp(2rem, 5vw + 1rem, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+
+  .x69-lede {
+    font-size: clamp(1rem, 0.5vw + 0.9rem, 1.25rem);
+    color: var(--muted-fg, #444);
+    max-width: 40rem;
+    line-height: 1.55;
+  }
+
+  .x69-player {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .x69-player audio {
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .x69-player figcaption {
+    font-size: 0.8125rem;
+    color: var(--muted-fg, #666);
+  }
+
+  .x69-rounds {
+    padding: 2rem 0 5rem;
+  }
+
+  .x69-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .x69-card {
+    border: 1px solid var(--border-color, #e5e5e5);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg, 0.75rem);
+    padding: 1.25rem 1.25rem 1rem;
+    background: var(--surface, #fff);
+  }
+
+  .x69-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+
+  .x69-num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    color: var(--muted-fg, #888);
+  }
+
+  .x69-persona {
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .x69-topic {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    color: var(--muted-fg, #666);
+    text-decoration: none;
+  }
+
+  .x69-topic:hover { text-decoration: underline; }
+
+  .x69-tweet {
+    white-space: pre-wrap;
+    font-size: 1rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .x69-tags {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .x69-tags li {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    color: var(--muted-fg, #666);
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--border-color, #e5e5e5);
+    border-radius: 999px;
+  }
+</style>

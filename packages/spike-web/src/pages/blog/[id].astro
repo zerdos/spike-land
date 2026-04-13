@@ -189,20 +189,6 @@ const { Content } = await render(post);
     </article>
   </div>
 
-  <!-- Default video: Anatomy of the Collapse -->
-  <aside class="default-video" aria-label="Anatomy of the Collapse">
-    <h2 class="default-video-title">Anatomy of the Collapse</h2>
-    <div class="default-video-frame">
-      <iframe
-        src="https://www.youtube.com/embed/YHVEZ7swj3c"
-        title="Anatomy of the Collapse"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
-    </div>
-  </aside>
-
   <!-- Support CTA -->
   <div class="not-prose" style="margin-block: 4rem 2rem;">
     <PersonalizedSupportBoxReact client:visible />
@@ -380,36 +366,5 @@ const { Content } = await render(post);
       margin-top: 2em;
     }
 
-    .default-video {
-      margin-block: 3rem 2rem;
-    }
-
-    .default-video-title {
-      font-family: var(--font-display, inherit);
-      font-size: clamp(1.125rem, 1.5vw + 0.75rem, 1.375rem);
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      margin-bottom: 0.75rem;
-      color: var(--muted-fg);
-    }
-
-    .default-video-frame {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-lg);
-      background: #000;
-    }
-
-    .default-video-frame iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
   </style>
 </ArticleLayout>
