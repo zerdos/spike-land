@@ -40,18 +40,112 @@ const links = [
 
       <!-- Right side -->
       <div class="nav-actions">
-        <a href="https://github.com/spike-land-ai/spike-land" class="nav-icon-link" target="_blank" rel="noopener" aria-label="GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 4.238 9.617 9.634 10.828.576.106.788-.25.788-.556 0-.273-.01-1.185-.015-2.171-4.037.876-4.889-1.731-4.889-1.731-.66-1.676-1.61-2.122-1.61-2.122-1.318-.9.1-.882.1-.882 1.457.102 2.224 1.496 2.224 1.496 1.296 2.218 3.39 1.577 4.216 1.206.13-.938.533-1.577.976-1.94-3.221-.366-6.608-1.61-6.608-7.17 0-1.583.565-2.877 1.492-3.892-.15-.366-.647-1.84.142-3.838 0 0 1.217-.422 3.992 1.486 1.157-.322 2.397-.483 3.633-.488 1.235.005 2.476.166 3.635.488 2.772-1.908 3.987-1.486 3.987-1.486.791 1.998.294 3.472.144 3.838.929 1.015 1.49 2.309 1.49 3.892 0 5.574-3.393 6.801-6.624 7.16.524.452.991 1.344.991 2.709 0 1.957-.014 3.532-.014 4.012 0 .31.209.669.799.554 5.393-1.213 9.629-5.526 9.629-10.828 0-6.627-5.373-12-12-12z"/></svg>
-        </a>
         <ThemeToggle client:load />
         <a href="/login" class="nav-sign-in">Sign In</a>
         <a href="/login" class="nav-cta">
           Start Building
         </a>
+        <button
+          id="nav-menu-toggle"
+          class="nav-menu-toggle"
+          type="button"
+          aria-label="Open menu"
+          aria-controls="nav-mobile-menu"
+          aria-expanded="false"
+        >
+          <svg class="nav-menu-icon nav-menu-icon--open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="nav-menu-icon nav-menu-icon--close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </button>
       </div>
     </nav>
   </div>
+
+  <!-- Mobile menu drawer -->
+  <div id="nav-mobile-menu" class="nav-mobile" hidden>
+    <div class="rubik-container nav-mobile-inner">
+      <ul class="nav-mobile-links" role="list">
+        {links.map(link => (
+          <li>
+            <a
+              href={link.href}
+              class={`nav-mobile-link ${activePath === link.href ? 'nav-mobile-link--active' : ''}`}
+              aria-current={activePath === link.href ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+        <li><a href="/login" class="nav-mobile-link">Sign In</a></li>
+        <li>
+          <a href="/login" class="nav-mobile-cta">
+            Start Building
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </header>
+
+<script is:inline>
+(function () {
+  var toggle = document.getElementById('nav-menu-toggle');
+  var menu = document.getElementById('nav-mobile-menu');
+  var header = document.querySelector('.nav-header');
+  if (!toggle || !menu || !header) return;
+
+  function setOpen(open) {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (open) {
+      menu.hidden = false;
+      // Next frame so the transition can play
+      requestAnimationFrame(function () {
+        menu.classList.add('nav-mobile--open');
+      });
+      header.classList.add('nav-header--menu-open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.remove('nav-mobile--open');
+      header.classList.remove('nav-header--menu-open');
+      document.body.style.overflow = '';
+      setTimeout(function () {
+        if (toggle.getAttribute('aria-expanded') === 'false') menu.hidden = true;
+      }, 220);
+    }
+  }
+
+  toggle.addEventListener('click', function () {
+    var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!isOpen);
+  });
+
+  // Close on link click (so anchor nav inside the panel feels right)
+  menu.addEventListener('click', function (e) {
+    var target = e.target;
+    while (target && target !== menu) {
+      if (target.tagName === 'A') {
+        setOpen(false);
+        break;
+      }
+      target = target.parentNode;
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Close if viewport grows past the mobile breakpoint
+  var mql = window.matchMedia('(min-width: 641px)');
+  function onChange(e) { if (e.matches) setOpen(false); }
+  if (mql.addEventListener) mql.addEventListener('change', onChange);
+  else if (mql.addListener) mql.addListener(onChange);
+})();
+</script>
 
 <style>
   .nav-header {
@@ -134,28 +228,120 @@ const links = [
     margin-left: auto;
   }
 
-  .nav-icon-link {
-    display: inline-flex;
+  .nav-menu-toggle {
+    display: none;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
+    background: transparent;
     color: var(--fg);
-    opacity: 0.7;
-    border-radius: 999px;
-    transition: opacity var(--duration-fast) var(--ease),
-                background var(--duration-fast) var(--ease);
+    border: 1px solid oklch(from var(--border-color) l c h / 0.8);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    padding: 0;
+    transition: background var(--duration-fast) var(--ease),
+                border-color var(--duration-fast) var(--ease);
   }
 
-  .nav-icon-link:hover {
-    opacity: 1;
+  .nav-menu-toggle:hover {
     background: var(--muted-bg);
   }
 
-  .nav-icon-link:focus-visible {
+  .nav-menu-toggle:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
+  }
+
+  .nav-menu-icon--close {
+    display: none;
+  }
+
+  .nav-menu-toggle[aria-expanded="true"] .nav-menu-icon--open {
+    display: none;
+  }
+
+  .nav-menu-toggle[aria-expanded="true"] .nav-menu-icon--close {
+    display: block;
+  }
+
+  .nav-mobile {
+    position: fixed;
+    top: 3.75rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 49;
+    background: oklch(from var(--bg) l c h / 0.98);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid oklch(from var(--border-color) l c h / 0.6);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity var(--duration-normal) var(--ease),
+                transform var(--duration-normal) var(--ease);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-mobile--open {
     opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-mobile-inner {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .nav-mobile-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-mobile-link {
+    display: block;
+    padding: 0.875rem 0.75rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    color: var(--fg);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: background var(--duration-fast) var(--ease);
+  }
+
+  .nav-mobile-link:hover,
+  .nav-mobile-link:focus-visible {
+    background: var(--muted-bg);
+    outline: none;
+  }
+
+  .nav-mobile-link--active {
+    color: var(--primary-color);
+    background: var(--muted-bg);
+  }
+
+  .nav-mobile-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--primary-color);
+    color: var(--primary-fg);
+    border-radius: var(--radius-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-mobile-cta:hover {
+    filter: brightness(1.08);
   }
 
   .nav-sign-in {
@@ -205,6 +391,18 @@ const links = [
     }
     .nav-sign-in {
       display: none;
+    }
+    .nav-cta {
+      display: none;
+    }
+    .nav-menu-toggle {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 641px) {
+    .nav-mobile {
+      display: none !important;
     }
   }
 </style>

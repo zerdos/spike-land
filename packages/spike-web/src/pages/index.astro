@@ -6,27 +6,27 @@ import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
 
 const metrics = [
-  { value: '80+', label: 'MCP Tools' },
-  { value: '26', label: 'AI Personas' },
-  { value: '100%', label: 'Open Source' },
-  { value: '$0', label: 'To Start' },
+  { value: '80+', label: 'Tools in the registry' },
+  { value: '26', label: 'Personas in the Arena' },
+  { value: 'MIT', label: 'Every line, every repo' },
+  { value: '$0', label: 'First spike is free' },
 ];
 
 const pillars = [
   {
     icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
-    title: 'MCP Tools',
-    description: '80+ composable tools for code generation, image creation, data analysis, and automation. Every tool follows the MCP protocol.',
+    title: 'Compose a tool',
+    description: 'Write one Zod schema. Get an MCP tool, a REST endpoint, and a storefront card. 80+ tools already live in the public registry.',
   },
   {
     icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-    title: 'App Store',
-    description: 'Discover, install, and compose AI applications built on MCP. Every app is a bundle of tools with discovery metadata.',
+    title: 'Ship a storefront',
+    description: 'Discovery metadata, OAuth, categories, install flows — all generated from the same schema. No CMS. No duplicated copy.',
   },
   {
     icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-    title: 'AI Personas',
-    description: '26 distinct AI personalities — mathematicians, philosophers, engineers. Each with their own worldview and conversational style.',
+    title: 'Think with 26 minds',
+    description: 'Mathematicians, philosophers, engineers. Pick a persona, pair on an idea, and keep the transcript. The Arena is the second keyboard.',
   },
 ];
 
@@ -80,8 +80,8 @@ const morePosts = latestPosts.slice(1, 4);
 ---
 
 <Layout
-  title="spike.land — Ship faster with AI agents"
-  description="Open-source AI development platform. 80+ MCP tools, 26 AI personas, app store. Free to start."
+  title="spike.land — Ship the app, not the setup"
+  description="An open AI app store built on MCP. Compose tools, publish a storefront, keep your data portable. 80+ tools, 26 personas, MIT-licensed, free to start."
 >
   <Analytics slot="head" />
   <link slot="head" rel="manifest" href="/site.webmanifest" />
@@ -104,21 +104,21 @@ const morePosts = latestPosts.slice(1, 4);
           </div>
 
           <h1 class="hero-title">
-            Ship faster with<br class="sm-break" /> AI agents.
+            Ship the app,<br class="sm-break" /> not the setup.
           </h1>
 
           <p class="rubik-lede hero-lede">
-            80+ MCP tools for code, images, data, and automation.
-            26 AI personas to think with. Open source. Free to start.
+            An open AI app store built on MCP. Compose tools, publish a
+            storefront, keep your data portable. No scaffolding week. No lock-in.
           </p>
 
           <div class="hero-ctas">
             <a href="/login" class="cta-primary">
-              Start Building
+              Start building
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <a href="/learn" class="cta-secondary">
-              View Documentation
+            <a href="/apps" class="cta-secondary">
+              See what others shipped
             </a>
           </div>
         </div>
@@ -279,7 +279,8 @@ const morePosts = latestPosts.slice(1, 4);
             <h2 class="section-title">Pick a mind. Start talking.</h2>
           </div>
           <p class="hook-sub" style="text-align:center; margin-bottom: 2rem;">
-            Mathematicians, philosophers, engineers. Each with their own worldview. Stay curious.
+            Mathematicians, philosophers, engineers. Each with a worldview
+            of their own. Curiosity is additive, never a substitute.
           </p>
           <div class="persona-grid stagger-in">
             {personas.map(p => (
@@ -304,9 +305,10 @@ const morePosts = latestPosts.slice(1, 4);
       <section class="hook-section hook-opensource">
         <div class="rubik-container hook-inner">
           <div class="hook-badge">For developers</div>
-          <h2 class="hook-title">Open source. 30 packages. MIT license.</h2>
+          <h2 class="hook-title">30 packages. MIT license. Zero vendor locks.</h2>
           <p class="hook-sub">
-            Read every line. Fork the whole thing. The code you see is the code that runs.
+            Read every line. Fork the whole thing. When you leave, block-sdk
+            hands your data back — same schema on D1, IndexedDB, or memory.
           </p>
           <div class="connect-terminal rubik-panel" style="max-width: 44rem; width: 100%;">
             <div class="terminal-dots">
@@ -334,18 +336,19 @@ const morePosts = latestPosts.slice(1, 4);
       <section class="cta-band">
         <div class="rubik-container cta-band-inner">
           <div class="cta-band-content">
-            <h2 class="cta-band-title">Ready to ship faster?</h2>
+            <h2 class="cta-band-title">Enough reading. Open the editor.</h2>
             <p class="rubik-lede cta-band-lede">
-              80+ tools. 26 personas. Open source. Free to start.
+              No sign-up wall for the first spike. Bring an idea; leave with
+              something a stranger can click.
             </p>
           </div>
           <div class="cta-band-actions">
             <a href="/login" class="cta-primary">
-              Start Building
+              Launch spike.land
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
             <a href="/learn" class="cta-secondary">
-              View Documentation
+              Read the docs first
             </a>
           </div>
         </div>
