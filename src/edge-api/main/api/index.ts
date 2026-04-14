@@ -362,6 +362,7 @@ app.use("*", async (c, next) => {
       "Cookie",
       "sentry-trace",
       "baggage",
+      "x-guest-access",
     ],
     exposeHeaders: ["Mcp-Session-Id", "Set-Cookie"],
     credentials: true,

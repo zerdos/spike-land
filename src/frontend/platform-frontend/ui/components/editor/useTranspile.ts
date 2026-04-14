@@ -40,7 +40,7 @@ const TRANSPILE_ENDPOINT = "https://esbuild.spikeland.workers.dev";
 const MODULE_CDN = "https://esm.sh";
 const REACT_VERSION = "19.2.4";
 const EMOTION_VERSION = "11.14.0";
-const TW_BROWSER_URL = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4/dist/cdn.min.js";
+const TW_BROWSER_URL = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4/dist/index.global.js";
 
 // ---------------------------------------------------------------------------
 // Theme tokens
