@@ -1,0 +1,110 @@
+---
+title: "There Is No Way to Cancel Your VMO2 Contract Online. I Know. I Wrote Part of It."
+slug: "there-is-no-way-to-cancel-vmo2-online"
+description: "A developer's confession about the 'cancellation' flow that isn't a cancellation flow. Next.js at the front, Kafka in the middle, an Angular upsell app at the end. The basket was always there."
+date: "2026-04-14"
+author: "Radix"
+category: "Engineering"
+tags: ["dark-patterns", "ux", "ethics", "nextjs", "kafka", "angular", "telco"]
+featured: true
+draft: false
+primer: "You clicked Cancel. The system heard 'open to offers'."
+heroPrompt: "A frustrated customer trapped inside a glass maze of bright red shopping baskets, endless corridors, cinematic dark theme with neon accents, dystopian retail aesthetic"
+heroImage: "/blog/there-is-no-way-to-cancel-vmo2-online/hero.png"
+---
+
+I need to be honest about something I worked on.
+
+If you have ever tried to cancel your Virgin Media or VMO2 contract online, you already know the punchline. You clicked "Cancel," and twenty minutes later you were back on the website — except now you had a **basket**. Discounts. "Exclusive retention offers." A broadband speed upgrade for the price you were already paying, if you just stay one more year.
+
+You did not come there to buy anything. You came there to leave.
+
+You could not leave.
+
+I know, because I helped build the system that made it that way.
+
+---
+
+## What you think "Cancel" means
+
+When you click the cancel button on a telco's site, you think you are entering a checkout flow in reverse. You expect a confirmation screen. Maybe a final "are you sure?" prompt. A date. A goodbye.
+
+That is not what "Cancel" means inside the company. Inside the company, "Cancel" means **high-intent retention opportunity**. The user has raised their hand. They are the easiest marketing target in the funnel, because they are already paying you and they are already emotionally committed to an action. All you need to do is redirect that action.
+
+That is not a bug. That is the product.
+
+---
+
+## The architecture, briefly
+
+I worked on the Next.js app that handled the cancellation intake. It looked like a cancellation app. It had a green tick at the top. It had "we're sorry to see you go" copy. It had a step counter.
+
+Underneath, it was a router.
+
+Every interaction was a Kafka event. Click "Cancel." Event. Select a reason. Event. Skip a retention question. Event. Reach a certain step. Event. The events fed a retention engine that was constantly A/B testing what to show you next. Price drop? Speed upgrade? A free month? A "we can lower your bill right now" offer routed to a human agent?
+
+The A/B tests were not running on general users. They were running on users who had **already clicked Cancel**. People who had decided, in their lives, that they wanted out. That was the user segment. That was the funnel stage.
+
+At the end of the Next.js flow, if the model decided you were likely to accept, you got handed off — via URL, with a signed token — to a separate Angular app. The upsell app. The basket was waiting. It had your details pre-filled. It had offers pre-loaded. All you had to do was click "accept."
+
+If you got that far and you still said no, you were told, politely, that to actually cancel you needed to call a phone number. Or wait on chat. Or write a letter.
+
+At no point in the online flow could you actually cancel.
+
+---
+
+## The phrase nobody uses internally
+
+No one at the company called this a dark pattern. The internal language was **retention funnel**. Or **save flow**. Or **loyalty journey**.
+
+Those words are not lies. From inside the business, they describe what the thing is for. Retention. Saving the customer. Loyalty, measured in contract months.
+
+From outside — from the user's side — they describe something else. They describe a system that takes your stated intent ("I want to leave") and transforms it into a different intent ("I want a deal") without ever telling you the transformation happened.
+
+That is what a dark pattern is. A dark pattern is the gap between what the user thinks the system does and what the system actually does.
+
+The gap was not small. The gap was the whole product.
+
+---
+
+## The engineering question
+
+I was a developer. I was not a product manager. I did not choose to build a retention funnel instead of a cancellation app. The specs were the specs.
+
+But I was there. I wrote the code. I wrote the event emitters. I wrote the routing. I knew, when I committed each feature, what it did. Every developer on the team knew. We talked about it. We had coffee-break conversations about it. Nobody loved the pattern. Nobody quit over it either. Including me.
+
+I am not writing this to pretend I was the hero. I am writing this because **I was not**, and I want to stop being quiet about it.
+
+The question every developer asks themselves on a project like this is: "is what I am building actually harmful?" And the honest answer, in most cases, is **"it depends on who has to use it."** If a cancellation funnel exists for a gym and it redirects you to a free month — annoying, whatever, click past. If a cancellation funnel exists for a broadband contract that costs you £40 a month, and it is specifically designed to ensure you cannot leave without a phone call, and the phone call has a 45-minute hold time, and the agent has a script designed to route you into a new 24-month contract — that is not "annoying." That is extraction.
+
+The difference is who the user is, what the cost of staying is, and how much power the company has over them.
+
+Telcos have enormous power over you. You cannot switch broadband providers in a day. You cannot cancel from the bus. You have a job and kids and a bedtime. The 45-minute hold time is a design choice, not a capacity issue.
+
+---
+
+## What to do
+
+If you are a user and you want to cancel VMO2 or Virgin Media: do not use the website. Call the cancellation line directly. Write the number down before you start. Budget an hour. Say the word "cancel" until someone processes it. Ask for a cancellation reference number and write it down. If they say you need to talk to another team, get the direct number before you hang up.
+
+Do not accept the offer they give you, unless it is genuinely the deal you want. The offer exists because they calculated that keeping you at a discount is cheaper than losing you. The number they quote you is the number they were always willing to give you. You were paying more because you had not asked.
+
+If you are a developer working on a "retention flow" right now: I am not going to tell you to quit. I did not quit. But I will tell you one thing. Every ticket you work on has a user on the other side of it. When you write the code that routes them from "Cancel" to a basket, that user is in the room with you. They are tired. They just want this one piece of their life to be simpler. They are not the persona in your A/B test document. They are a real person, and they did not consent to the funnel you are putting them through.
+
+At minimum, know that you are doing it. Do not let yourself use the phrase "retention journey" without noticing that the person on that journey did not choose to be on it.
+
+---
+
+## Why I am writing this now
+
+Because the system is still there. Because I still work with the same tools — Next.js, Kafka, Angular, event streams, A/B tests. Because every week I read a post about "growth hacks" and "conversion optimization" that are structurally identical to what I helped build.
+
+And because I wrote a blog post a few months ago about my worst pull request. That post was about me being bad at my job. This post is about the job itself being bad, in a specific way, at a specific company, and me being there.
+
+That is a different confession. It needed its own article.
+
+You clicked Cancel. The system heard "open to offers."
+
+The system heard you wrong. On purpose. By design.
+
+I'm sorry.
