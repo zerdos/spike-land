@@ -8,6 +8,7 @@ import {
   sanitizeRound,
   generateBadgeToken,
   verifyBadgeToken,
+  formatAppContextHint,
   QUESTIONS_PER_ROUND,
 } from "../../src/edge-api/spike-land/core-logic/lib/quiz-engine";
 
@@ -27,6 +28,19 @@ describe("generatePlanningConcepts", () => {
     expect(names).toContain("dependency_chain");
     expect(names).toContain("failure_modes");
     expect(names).toContain("verification");
+  });
+
+  it("ignores appContext when no Gemini key (fallback path unchanged)", async () => {
+    // Both calls take the hardcoded fallback — appContext is only wired into
+    // the Gemini prompt, so fallback output must be byte-identical.
+    const withoutContext = await generatePlanningConcepts("Add dark mode", undefined, undefined);
+    const withContext = await generatePlanningConcepts("Add dark mode", undefined, undefined, {
+      category: "Developer Tools",
+      tools: ["editor_apply_patch"],
+      tags: ["ui"],
+    });
+
+    expect(withContext).toEqual(withoutContext);
   });
 
   it("each concept has 3 variants with 4 options", async () => {
@@ -130,6 +144,40 @@ describe("planning interview session lifecycle", () => {
       expect(q).toHaveProperty("question");
       expect(q).toHaveProperty("options");
     }
+  });
+});
+
+describe("formatAppContextHint (Queez app-context prompt enrichment)", () => {
+  it("returns empty string when ctx is undefined", () => {
+    expect(formatAppContextHint(undefined)).toBe("");
+  });
+
+  it("returns empty string when ctx has no meaningful fields", () => {
+    expect(formatAppContextHint({})).toBe("");
+    expect(formatAppContextHint({ tools: [], tags: [] })).toBe("");
+  });
+
+  it("includes category, tagline, tools, tags when present", () => {
+    const hint = formatAppContextHint({
+      category: "Developer Tools",
+      tagline: "Run code at the edge",
+      tools: ["esbuild_compile", "worker_deploy"],
+      tags: ["cloudflare", "wasm"],
+    });
+    expect(hint).toContain("App category: Developer Tools");
+    expect(hint).toContain("App tagline: Run code at the edge");
+    expect(hint).toContain("App tools: esbuild_compile, worker_deploy");
+    expect(hint).toContain("App tags: cloudflare, wasm");
+    // Keeps the instruction framing so Gemini knows to specialize, not genericize
+    expect(hint).toContain("concrete rather than generic");
+  });
+
+  it("omits missing fields without leaving blanks", () => {
+    const hint = formatAppContextHint({ category: "Games" });
+    expect(hint).toContain("App category: Games");
+    expect(hint).not.toContain("App tagline:");
+    expect(hint).not.toContain("App tools:");
+    expect(hint).not.toContain("App tags:");
   });
 });
 

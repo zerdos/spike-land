@@ -602,14 +602,42 @@ function getDefaultPlanningConcepts(): ConceptDefinition[] {
 }
 
 /**
+ * Optional app/codespace metadata used to ground Gemini-generated planning
+ * questions in a specific spike.land app. When omitted, concept generation
+ * is byte-identical to the pre-appContext behavior.
+ */
+export interface PlanningAppContext {
+  tools?: string[];
+  category?: string;
+  tagline?: string;
+  tags?: string[];
+}
+
+export function formatAppContextHint(ctx: PlanningAppContext | undefined): string {
+  if (!ctx) return "";
+  const lines: string[] = [];
+  if (ctx.category) lines.push(`App category: ${ctx.category}`);
+  if (ctx.tagline) lines.push(`App tagline: ${ctx.tagline}`);
+  if (ctx.tools && ctx.tools.length > 0) lines.push(`App tools: ${ctx.tools.join(", ")}`);
+  if (ctx.tags && ctx.tags.length > 0) lines.push(`App tags: ${ctx.tags.join(", ")}`);
+  if (lines.length === 0) return "";
+  return `\n\nThe task targets a specific spike.land app. Use this context to make questions concrete rather than generic:\n${lines.join("\n")}`;
+}
+
+/**
  * Generate planning interview concepts using Gemini API with hardcoded fallback.
  * Unlike content-based quiz concepts, these are always structured around the
  * 6 BAZDMEG planning concepts, contextualized to the specific task.
+ *
+ * When `appContext` is provided, the userPrompt is enriched with app-specific
+ * metadata (tools, category, tagline, tags) so generated questions reflect the
+ * target app. When omitted, output matches the pre-appContext behavior exactly.
  */
 export async function generatePlanningConcepts(
   taskDescription: string,
   packageName: string | undefined,
   geminiApiKey: string | undefined,
+  appContext?: PlanningAppContext,
 ): Promise<ConceptDefinition[]> {
   if (geminiApiKey) {
     try {
@@ -630,7 +658,7 @@ Return strict JSON:
     }
   ]
 }`;
-      const userPrompt = `Task${pkgContext}: ${taskDescription}`;
+      const userPrompt = `Task${pkgContext}: ${taskDescription}${formatAppContextHint(appContext)}`;
 
       const body = {
         contents: [{ role: "user", parts: [{ text: userPrompt }] }],

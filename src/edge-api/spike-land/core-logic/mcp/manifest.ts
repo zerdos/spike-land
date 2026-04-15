@@ -65,6 +65,7 @@ import { registerBazdmegFaqTools } from "../tools/bazdmeg/faq";
 import { registerBazdmegTools } from "../tools/bazdmeg/bazdmeg-index.ts";
 import { registerBazdmegMemoryTools } from "../tools/bazdmeg/memory";
 import { registerBazdmegWorkflowTools } from "../tools/bazdmeg/workflow";
+import { registerQueezTools } from "../tools/queez";
 import { registerBazdmegTelemetryTools } from "../../db/tools/bazdmeg/telemetry";
 import { registerBazdmegGatesTools } from "../tools/bazdmeg/gates";
 import { registerBazdmegSkillSyncTools } from "../tools/bazdmeg/skill-sync";
@@ -215,6 +216,7 @@ export async function registerAllTools(
   safeRegister("registerBazdmegWorkflowTools", () =>
     registerBazdmegWorkflowTools(registry, userId, db, env),
   );
+  safeRegister("registerQueezTools", () => registerQueezTools(registry, userId, db, env));
   safeRegister("registerBazdmegTelemetryTools", () =>
     registerBazdmegTelemetryTools(registry, userId, db),
   );
