@@ -15,6 +15,8 @@ heroImage: "/blog/think-slowly-ship-fast/hero.png"
 
 ![A modern digital illustration for a blog post titled 'Think Slowly, Ship Fast'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/think-slowly-ship-fast/hero.png)
 
+*Az AI-od nem bugos kódot ír. A folyamatod ír bugos specifikációkat.*
+
 <Tldr>
 
 Az AI csapatok azért szállítanak bugokat, mert kihagyják a specifikációt. Az Homokóra Modell ezt javítja: alapos tervezés és E2E specifikációk felül, eldobható UI kód középen, golyóálló üzleti logika tesztek alul. Gondolkodj lassan felül, hogy az ágensek gyorsan szállíthassanak középen. Öt magyarázat következik — egy a csapatod minden szintjéhez.
@@ -72,6 +74,10 @@ A közepe szűk: [eldobható UI kód](/learnit/disposable-ui-code-ai-native-deve
 Az alja megint széles: unit tesztek az üzleti logikához, MCP tool-okként kiajánlva. Ezek a tesztek gyorsak, determinisztikusak és átfogóak. Minden szabályt ellenőriznek, amiben a csapatod megegyezett. Ezredmásodpercek alatt futnak. Soha nem flaky-k.
 
 Az homokóra azért működik, mert az emberi erőfeszítést oda teszi, ahol számít (specifikációk és üzleti logika), az AI erőfeszítést pedig oda, ahol olcsó (UI generálás). Lassan gondolkodsz felül. Az AI gyorsan szállít középen. A tesztek mindent elkapnak alul.
+
+> A piramist gépelésre tervezték. Az homokórát gondolkodásra.
+
+De *hol* az homokórán belül tartozik az egyes teszt? Az arányok döntik el, órákat nyersz-e vagy órákat pazarolsz.
 
 ---
 
@@ -171,6 +177,8 @@ Sokkal kevesebb kell belőlük, mint gondolnád. Ha az MCP tool teszt bizonyítj
 
 Az arány — 70/20/10 — nem szabály. Jelzés. Ha azon kapod magad, hogy több UI tesztet írsz, mint MCP tool tesztet, valószínűleg a DOM-on keresztül teszteled az üzleti logikát. Álljál. Emeld ki a logikát egy tool-ba. Teszteld ott.
 
+Tudni, hol laknak a tesztek, csak a munka fele. A másik fele annak biztosítása, hogy egyáltalán megíródjon a megfelelő teszt — itt kezd megtérülni a tervezés.
+
 ---
 
 ## 4. szint: Specifikáció-vezérelt fejlesztés BMAD-del
@@ -245,6 +253,8 @@ Ez a [context engineering alkalmazása a projektmenedzsmentre](/blog/how-claude-
 </div>
 
 A manifeszt az egyetlen igazságforrás. Nyomon követi, mi kész, mi van blokkolva, és mit kell látnia legközelebb minden personának. Amikor egy új ágens felugrik a következő szelethez, beolvassa a manifesztet, betölti az artefaktumait, és friss kontextussal indul, ami sűrű releváns információval és mentes a felhalmozott zajtól.
+
+A tervezés kész. A tesztelés kész. Most valaminek futtatnia kell — elég gyorsan ahhoz, hogy a visszajelzési hurok soha ne törjön meg.
 
 ---
 
@@ -322,11 +332,15 @@ A [lefedettségi küszöbök lépcsőzetesek](/learnit/gitclear-code-churn-refac
 
 **Költséggazdaságosság.** Egy monolitikus E2E suite, ami 200 Playwright tesztet futtat minden PR-nél, nagyjából 15-20 percnyi CI számítási kapacitásba kerül. Homokóra CI-vel ugyanaz a PR 15 unit tesztet futtat (5 másodperc), egy buildet (60 másodperc) és 2-3 célzott E2E tesztet (30 másodperc). Összesen: 2 percen belül. Ez nem inkrementális javulás — ez kategóriaváltás a fejlesztői visszajelzési sebességben.
 
+> Az Homokóra CI nem teszi gyorsabbá a teszteket. Csak megszünteti a büntetést, amit az iterálásért fizetsz.
+
 **Hatósugár elemzés.** Amikor egy PR módosít egy üzleti szabályt — mondjuk, megváltoztatja a lemondási szabályzatot "időszak végéig"-ről "azonnalira" — az homokóra CI három helyen kapja el. Az MCP tool teszt elbukik, mert megváltozott a várt `effectiveDate`. A build elbukhat, ha a komponens a régi mezőre hivatkozik. Az E2E teszt elbukik, ha a megerősítő üzenet hibás. Három független jel, mindegyik 2 percen belül. A rendszer háromszögeléssel lokalizálja a törést, ahogy a GPS háromszögeléssel határozza meg a pozíciót — több gyenge jel kombinálva precíz helymeghatározássá.
 
 Amikor egy PR csak UI-t módosít — mondjuk, áthelyez egy gombot az oldalsávból a fejlécbe — csak az E2E teszt fut, és az is csak akkor, ha a specifikáció hivatkozik arra a layoutra. A unit tesztek nem futnak, mert nem változott üzleti logika. A hatósugár arányos a kockázattal. A UI változtatások alacsony kockázatúak, alacsony teszt költségűek. A logika változtatások magas kockázatúak, magas teszt költségűek. Az homokóra oda allokálja a verifikációs erőfeszítést, ahol számít.
 
 Ez [Addy Osmani megfigyelése](/learnit/addy-osmani-spec-driven-development-waterfall-compressed) életre keltve: a specifikáció-vezérelt fejlesztés "percekbe tömörített vízesés." Úgy tervezel, mint a vízesés — szekvenciálisan, megfontoltan, specifikációkkal a kód előtt. Úgy hajtod végre, mint az agile — párhuzamosan, AI ágensekkel, percek alatt hetek helyett. Az homokóra az a forma, ami mindkettőt lehetővé teszi.
+
+Ami egyetlen dolgot hagy. Azt a részt, amit egyetlen pipeline sem tud lefuttatni helyetted.
 
 ---
 

@@ -15,6 +15,8 @@ heroImage: "/blog/think-slowly-ship-fast/hero.png"
 
 ![A modern digital illustration for a blog post titled 'Think Slowly, Ship Fast'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/think-slowly-ship-fast/hero.png)
 
+*Your AI is not writing buggy code. Your process is writing buggy specs.*
+
 <Tldr>
 
 AI teams ship bugs because they skip the spec. The Hourglass Model fixes this: heavy planning and E2E specs at the top, disposable UI code in the middle, bulletproof business-logic tests at the bottom. Think slowly at the top so agents can ship fast in the middle. Five explanations follow — one for every level of your team.
@@ -72,6 +74,10 @@ The middle is narrow: [disposable UI code](/learnit/disposable-ui-code-ai-native
 The bottom is wide again: unit tests for business logic, exposed as MCP tools. These tests are fast, deterministic, and comprehensive. They verify every rule your team agreed on. They run in milliseconds. They never flake.
 
 The hourglass works because it puts human effort where it matters (specs and business logic) and AI effort where it is cheap (UI generation). You think slowly at the top. The AI ships fast in the middle. The tests catch everything at the bottom.
+
+> The pyramid was built for typing. The hourglass is built for thinking.
+
+But *where* inside the hourglass does each test belong? The ratios are where this saves you hours or costs you them.
 
 ---
 
@@ -171,6 +177,8 @@ You need far fewer of these than you think. If the MCP tool test proves that can
 
 The ratio — 70/20/10 — is not a rule. It is a signal. If you find yourself writing more UI tests than MCP tool tests, you are probably testing business logic through the DOM. Stop. Extract the logic into a tool. Test it there.
 
+Knowing where tests live is half the job. The other half is making sure the right test gets written at all — which is where planning earns its keep.
+
 ---
 
 ## Level 4: Spec-Driven Development with BMAD
@@ -245,6 +253,8 @@ This is [context engineering applied to project management](/blog/how-claude-cod
 </div>
 
 The manifest is the single source of truth. It tracks what is done, what is blocked, and what each persona needs to see next. When a new agent spins up for the next slice, it reads the manifest, loads its artifacts, and starts with a fresh context that is dense with relevant information and free of accumulated noise.
+
+Planning, solved. Testing, solved. Now something has to run it — fast enough that the feedback loop never breaks.
 
 ---
 
@@ -322,11 +332,15 @@ The [coverage thresholds are tiered](/learnit/gitclear-code-churn-refactoring-de
 
 **Cost economics.** A monolithic E2E suite running 200 Playwright tests on every PR costs roughly 15-20 minutes of CI compute. With hourglass CI, the same PR runs 15 unit tests (5 seconds), one build (60 seconds), and 2-3 targeted E2E tests (30 seconds). Total: under 2 minutes. That is not incremental improvement — it is a category change in developer feedback speed.
 
+> Hourglass CI does not make tests faster. It stops punishing you for iterating.
+
 **Blast radius analysis.** When a PR modifies a business rule — say, changing the cancellation policy from "end of period" to "immediate" — the hourglass CI catches it in three places. The MCP tool test fails because the expected `effectiveDate` changed. The build might fail if the component references the old field. The E2E test fails if the confirmation message is wrong. Three independent signals, all within 2 minutes. The system triangulates the breakage the way GPS triangulates position — multiple weak signals combining into a precise location.
 
 When a PR only modifies UI — say, moving a button from the sidebar to the header — only the E2E test runs, and only if the spec references that layout. The unit tests do not run because no business logic changed. The blast radius is proportional to the risk. UI changes are low risk, low test cost. Logic changes are high risk, high test cost. The hourglass allocates verification effort where it matters.
 
 This is [Addy Osmani's observation](/learnit/addy-osmani-spec-driven-development-waterfall-compressed) come to life: spec-driven development is "waterfall compressed into minutes." You plan like a waterfall — sequentially, deliberately, with specs before code. You execute like agile — in parallel, with AI agents, in minutes instead of weeks. The hourglass is the shape that makes both possible.
+
+Which leaves one thing. The part no pipeline can run for you.
 
 ---
 
