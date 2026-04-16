@@ -15,6 +15,8 @@ heroImage: "/blog/nextjs-vs-tanstack-start-appendix/hero.png"
 
 ![A modern digital illustration for a blog post titled 'Appendix: Anticipated Pushback on the Next.js Migration Post'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/nextjs-vs-tanstack-start-appendix/hero.png)
 
+*Every honest post attracts the same five objections. I would rather answer them on my terms than in the replies.*
+
 <Tldr>
 
 - The main post is here: [Next.js vs TanStack Start](/blog/nextjs-vs-tanstack-start).
@@ -34,6 +36,8 @@ But that is part of the point.
 The default path of using Next.js on Vercel — the path the framework actively encourages — led me to a $92.26 build bill on a site with almost no traffic. I did not go looking for trouble. I followed the happy path, and the happy path got expensive.
 
 If the defense of a framework is "you should have configured it better," then the framework's defaults are part of the problem. A solo developer should not need to audit CI pipelines just to keep a marketing site affordable.
+
+> Defaults are not neutral. They are the framework making decisions for you, then sending the bill.
 
 There is a systems thinking principle here: **the behavior of a system is a function of its structure, not of the intentions of its participants.** I intended to build a simple site. The structure of the system — default config, default hosting, default billing — produced a $92 build bill. That is a structural outcome, not a user error.
 
@@ -69,6 +73,8 @@ This was the actual billing feedback flow I hit while trying to leave:
 
 When Build Adapters are stable and the self-hosting story is genuinely first-class across providers, I will happily update this post. But "it is getting better" is not the same as "the problem is solved," and I am not going to pretend otherwise.
 
+Roadmaps are a promise about the future. Invoices are a fact about the present.
+
 ## "Next.js 16 fixed the caching model. Your pain is outdated."
 
 This is probably the fairest pushback.
@@ -94,6 +100,8 @@ When those same conventions start generating $92 build bills, unpredictable rend
 For a different developer — someone on a team, with a bigger budget, with platform engineers handling CI — the math might be completely different. I said that in the original post, and I mean it.
 
 But for me, the weight exceeded the lift. That is the whole story.
+
+Leverage that you have to keep paying for is not leverage. It is a subscription.
 
 ## "Every framework has CVEs. That's not fair to single out."
 
