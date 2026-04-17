@@ -20,13 +20,54 @@ describe("campaign tools", () => {
     registerCampaignTools(server as unknown as McpServer, mockClient as unknown as GoogleAdsClient);
   });
 
-  it("registers all four campaign tools", () => {
-    expect(server.tool).toHaveBeenCalledTimes(4);
+  it("registers all five campaign tools", () => {
+    expect(server.tool).toHaveBeenCalledTimes(5);
     const toolNames = server.tool.mock.calls.map((c: unknown[]) => c[0]);
     expect(toolNames).toContain("ads_list_campaigns");
+    expect(toolNames).toContain("ads_get_campaign");
     expect(toolNames).toContain("ads_create_campaign");
     expect(toolNames).toContain("ads_update_campaign");
     expect(toolNames).toContain("ads_list_ad_groups");
+  });
+
+  describe("ads_get_campaign", () => {
+    it("returns NOT_FOUND when no row matches", async () => {
+      mockClient.search = vi.fn().mockResolvedValue([]);
+      const result = await server.call("ads_get_campaign", { campaign_id: "999" });
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain("NOT_FOUND");
+    });
+
+    it("returns parsed campaign details when row exists", async () => {
+      mockClient.search = vi.fn().mockResolvedValue([
+        {
+          campaign: {
+            id: "42",
+            name: "Single",
+            status: "ENABLED",
+            advertisingChannelType: "SEARCH",
+          },
+          campaignBudget: { amountMicros: "12000000" },
+          metrics: { impressions: "100", clicks: "5", costMicros: "3000000" },
+        },
+      ]);
+      const result = await server.call("ads_get_campaign", { campaign_id: "42" });
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.id).toBe("42");
+      expect(parsed.budget).toBe(12);
+      expect(parsed.cost).toBe(3);
+    });
+
+    it("declares a non-empty campaign_id in its Zod schema", () => {
+      const call = server.tool.mock.calls.find((c: unknown[]) => c[0] === "ads_get_campaign");
+      expect(call).toBeDefined();
+      const schema = (call as unknown as unknown[])[2] as Record<
+        string,
+        { safeParse(v: unknown): { success: boolean } }
+      >;
+      expect(schema.campaign_id.safeParse("").success).toBe(false);
+      expect(schema.campaign_id.safeParse("42").success).toBe(true);
+    });
   });
 
   describe("ads_list_campaigns", () => {

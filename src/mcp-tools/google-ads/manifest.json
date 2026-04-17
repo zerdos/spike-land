@@ -4,10 +4,13 @@
   "dependencies": ["@spike-land-ai/mcp-server-base"],
   "files": [
     "core-logic/ads-client.ts",
+    "core-logic/env.ts",
     "core-logic/google-oauth.ts",
     "mcp/campaigns.ts",
     "mcp/index.ts",
     "mcp/keywords.ts",
-    "mcp/reporting.ts"
+    "mcp/lifecycle.ts",
+    "mcp/reporting.ts",
+    "mcp/server.ts"
   ]
 }

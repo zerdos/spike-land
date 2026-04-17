@@ -93,6 +93,52 @@ export function registerReportingTools(server: McpServer, client: GoogleAdsClien
   });
 
   createZodTool(server, {
+    name: "ads_account_metrics",
+    description:
+      "Aggregate account-wide performance metrics (impressions, clicks, cost, conversions) " +
+      "for a date range, optionally segmented by date, device, or network",
+    schema: {
+      date_range: DATE_RANGE,
+      segment: z
+        .enum(["date", "device", "network"])
+        .optional()
+        .describe("Optional segmentation field"),
+    },
+    async handler({ date_range, segment }) {
+      const dateRange = String(date_range);
+
+      let segmentField = "";
+      if (segment === "date") segmentField = ", segments.date";
+      else if (segment === "device") segmentField = ", segments.device";
+      else if (segment === "network") segmentField = ", segments.ad_network_type";
+
+      const query = `SELECT metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions${segmentField} FROM customer WHERE segments.date DURING ${dateRange}`;
+
+      const result = await tryCatch(client.search(query));
+      if (!result.ok) {
+        return errorResult("API_ERROR", result.error.message, true);
+      }
+
+      const rows = (result.data as PerformanceRow[]).map((row) => ({
+        impressions: Number(row.metrics?.impressions ?? 0),
+        clicks: Number(row.metrics?.clicks ?? 0),
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
+        conversions: Number(row.metrics?.conversions ?? 0),
+        ...(segment === "date" && { date: row.segments?.date }),
+        ...(segment === "device" && { device: row.segments?.device }),
+        ...(segment === "network" && { network: row.segments?.adNetworkType }),
+      }));
+
+      return jsonResult({
+        date_range: dateRange,
+        segment: segment ?? null,
+        count: rows.length,
+        rows,
+      });
+    },
+  });
+
+  createZodTool(server, {
     name: "ads_search_terms_report",
     description: "Get search terms that triggered your ads with performance metrics",
     schema: {

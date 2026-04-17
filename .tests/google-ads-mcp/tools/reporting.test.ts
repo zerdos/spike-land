@@ -19,11 +19,64 @@ describe("reporting tools", () => {
     );
   });
 
-  it("registers both reporting tools", () => {
-    expect(server.tool).toHaveBeenCalledTimes(2);
+  it("registers all three reporting tools", () => {
+    expect(server.tool).toHaveBeenCalledTimes(3);
     const toolNames = server.tool.mock.calls.map((c: unknown[]) => c[0]);
     expect(toolNames).toContain("ads_campaign_performance");
+    expect(toolNames).toContain("ads_account_metrics");
     expect(toolNames).toContain("ads_search_terms_report");
+  });
+
+  describe("ads_account_metrics", () => {
+    it("aggregates account-wide metrics for the date range", async () => {
+      mockClient.search = vi.fn().mockResolvedValue([
+        {
+          metrics: {
+            impressions: "9999",
+            clicks: "111",
+            costMicros: "55000000",
+            conversions: "7",
+          },
+        },
+      ]);
+      const result = await server.call("ads_account_metrics", { date_range: "LAST_7_DAYS" });
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.count).toBe(1);
+      expect(parsed.segment).toBeNull();
+      expect(parsed.rows[0].impressions).toBe(9999);
+      expect(parsed.rows[0].cost).toBe(55);
+      expect(parsed.rows[0].conversions).toBe(7);
+    });
+
+    it("queries the customer table (account-wide), not a single campaign", async () => {
+      mockClient.search = vi.fn().mockResolvedValue([]);
+      await server.call("ads_account_metrics", { date_range: "LAST_30_DAYS" });
+      const query = (mockClient.search as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+      expect(query).toContain("FROM customer");
+      expect(query).not.toContain("campaign.id =");
+    });
+
+    it("includes the requested segment field in the query and result", async () => {
+      mockClient.search = vi
+        .fn()
+        .mockResolvedValue([{ metrics: { impressions: "1" }, segments: { device: "MOBILE" } }]);
+      const result = await server.call("ads_account_metrics", {
+        date_range: "TODAY",
+        segment: "device",
+      });
+      const query = (mockClient.search as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+      expect(query).toContain("segments.device");
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.segment).toBe("device");
+      expect(parsed.rows[0].device).toBe("MOBILE");
+    });
+
+    it("propagates API errors as retryable API_ERROR", async () => {
+      mockClient.search = vi.fn().mockRejectedValue(new Error("server unavailable"));
+      const result = await server.call("ads_account_metrics", { date_range: "LAST_7_DAYS" });
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain("API_ERROR");
+    });
   });
 
   describe("ads_campaign_performance", () => {
