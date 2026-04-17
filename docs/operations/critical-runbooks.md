@@ -3,9 +3,29 @@
 ## 1. Production Deployment Failure
 **Symptom:** The latest release causes 5xx errors or breaks core functionality.
 **Immediate Mitigation (Rollback):**
-1. Authenticate to Cloudflare: `npx wrangler login` (ensure using company credentials).
-2. List recent deployments: `npx wrangler deployments list`
-3. Rollback to the last known good deployment: `npx wrangler rollback <deployment-id>`
+
+Use the automated rollback script. It resolves the previous deployment for you,
+prints a plan, and prompts for confirmation before touching production. See
+[`docs/operations/ROLLBACK.md`](./ROLLBACK.md) for full details.
+
+```bash
+# Ensure CLOUDFLARE_API_TOKEN is exported (Workers Scripts: Edit permission).
+# Roll back a single worker to its previous deployment:
+./.github/scripts/rollback-workers.sh --worker spike-edge
+
+# Roll back every worker (wave 2 first, then wave 1), unattended:
+./.github/scripts/rollback-workers.sh --worker all --yes
+
+# Roll back to a specific version id:
+./.github/scripts/rollback-workers.sh --worker mcp-auth --version <deployment-id>
+```
+
+Manual fallback if the script is unavailable:
+
+1. Authenticate to Cloudflare: `npx wrangler login` (use company credentials).
+2. `cd packages/<pkg>` for the affected worker.
+3. List recent deployments: `npx wrangler deployments list`
+4. Roll back: `npx wrangler rollback <deployment-id> --message "manual rollback"`
 
 ## 2. D1 Schema Migration Failure
 **Symptom:** A database migration fails mid-execution or corrupts production state.
