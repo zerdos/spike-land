@@ -75,11 +75,12 @@
 
 - **Severity**: medium
 - **Category**: type-safety
-- **Status**: CANDIDATE
+- **Status**: RESOLVED (2026-04-06)
 - **Confidence**: 0.90
 - **ELO**: 1200
 - **Description**: One explicit `any` remains in first-party (non-vendored) code: `const prismaStub: any = new Proxy(...)`. This violates the monorepo convention of "never use `any`".
-- **Files**: `src/core/chess/core-logic/prisma.ts`
+- **Files**: `src/core/chess/core-logic/prisma.ts` (deleted)
+- **Resolution**: Fixed in commit `11ef84c3` ("refactor: replace Prisma stubs with ChessStorage interface in chess-engine"). The `prismaStub: any` proxy was eliminated entirely by deleting `src/core/chess/core-logic/prisma.ts` and `src/core/chess/lib/prisma.ts` and replacing them with a typed `ChessStorage` interface (`src/core/chess/core-logic/storage.ts`) plus an `InMemoryChessStorage` implementation. All three managers (game/player/challenge) now accept storage via `setStorage()` injection, and tests were rewritten from mock-checking to behavior-checking. Verified: zero `any` annotations remain in `src/core/chess`, `yarn typecheck` passes in `packages/chess-engine`, and 163 chess-engine tests pass.
 
 ### BUG-S6-06: ESLint type rules in warning mode
 
