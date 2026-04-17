@@ -29,6 +29,7 @@ import { apiKeys } from "./routes/api-keys.js";
 import { cockpit } from "./routes/cockpit.js";
 import { credits } from "./routes/credits.js";
 import { creditMeterMiddleware } from "./middleware/credit-meter.js";
+import { latencyRecorderMiddleware } from "./middleware/latency-recorder.js";
 import { requestIdMiddleware } from "./middleware/request-id.js";
 import { buildMcpProxyHeaders } from "./middleware/mcp-proxy-auth.js";
 import { support } from "./routes/support.js";
@@ -112,6 +113,11 @@ function getSpikeEdgeMetricService(
 }
 // Request ID middleware (must run before everything else)
 app.use("*", requestIdMiddleware);
+
+// Per-isolate latency ring buffer for /health p50/p99 reporting (BUG-S6-18).
+// Runs as early as possible so it captures the full request duration; the
+// /health probe itself is skipped inside the middleware to avoid self-pollution.
+app.use("*", latencyRecorderMiddleware);
 
 // Request body size limits — prevent abuse via oversized payloads
 const DEFAULT_MAX_BODY = 10 * 1024 * 1024; // 10 MB

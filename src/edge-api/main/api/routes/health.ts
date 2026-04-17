@@ -8,6 +8,10 @@ import {
   timedFetchCheck,
   type HealthCheckResult,
 } from "../../../common/core-logic/health-contract.js";
+import {
+  getLatencyBuffer,
+  resolveP99ThresholdMs,
+} from "../../../common/core-logic/latency-buffer.js";
 
 /** Critical tables that must exist for core functionality. */
 const CRITICAL_TABLES = [
@@ -47,9 +51,14 @@ async function healthHandler(c: Context<{ Bindings: Env }>) {
     await Promise.all(Object.entries(checks).map(async ([key, promise]) => [key, await promise])),
   );
 
+  const latencySummary = getLatencyBuffer("spike-edge").summary();
+  const p99ThresholdMs = resolveP99ThresholdMs(c.env.HEALTH_P99_THRESHOLD_MS);
+
   const payload = buildStandardHealthResponse({
     service: "spike-edge",
     checks: resolved,
+    latencySummary,
+    p99ThresholdMs,
   });
 
   return c.json(payload, getHealthHttpStatus(payload));
