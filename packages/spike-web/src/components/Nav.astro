@@ -59,32 +59,33 @@ const links = [
       </div>
     </nav>
   </div>
+</header>
 
-  <!-- Mobile menu drawer -->
-  <div id="nav-mobile-menu" class="nav-mobile" hidden>
-    <div class="rubik-container nav-mobile-inner">
-      <ul class="nav-mobile-links" role="list">
-        {links.map(link => (
-          <li>
-            <a
-              href={link.href}
-              class={`nav-mobile-link ${activePath === link.href ? 'nav-mobile-link--active' : ''}`}
-              aria-current={activePath === link.href ? 'page' : undefined}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
-        <li><a href="/login" class="nav-mobile-link">Sign In</a></li>
+<!-- Mobile menu drawer — sibling of header so backdrop-filter on
+     .nav-header doesn't trap `position: fixed` in a 3.75rem containing block -->
+<div id="nav-mobile-menu" class="nav-mobile" hidden>
+  <div class="rubik-container nav-mobile-inner">
+    <ul class="nav-mobile-links" role="list">
+      {links.map(link => (
         <li>
-          <a href="/login" class="nav-mobile-cta">
-            Start Building
+          <a
+            href={link.href}
+            class={`nav-mobile-link ${activePath === link.href ? 'nav-mobile-link--active' : ''}`}
+            aria-current={activePath === link.href ? 'page' : undefined}
+          >
+            {link.label}
           </a>
         </li>
-      </ul>
-    </div>
+      ))}
+      <li><a href="/login" class="nav-mobile-link">Sign In</a></li>
+      <li>
+        <a href="/login" class="nav-mobile-cta">
+          Start Building
+        </a>
+      </li>
+    </ul>
   </div>
-</header>
+</div>
 
 <script is:inline>
 (function () {
