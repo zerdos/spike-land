@@ -104,10 +104,9 @@ are prioritized P0 (critical) through P3 (minor/nice-to-have).
 
 #### TD-P3-6: Explicit `any` in chess Prisma stub
 
-- **Status**: Open
-- **Impact**: Violates monorepo "never use any" convention
-- **Details**: `src/core/chess/core-logic/prisma.ts` still declares `const prismaStub: any = new Proxy(...)`
-- **Action**: Replace the stub with a typed proxy shape or `unknown`-based adapter
+- **Status**: Resolved (2026-04-06) — fixed in commit `11ef84c3`
+- **Impact**: Violated monorepo "never use any" convention
+- **Details**: `src/core/chess/core-logic/prisma.ts` declared `const prismaStub: any = new Proxy(...)`. Both `core-logic/prisma.ts` and `lib/prisma.ts` were deleted and replaced with a typed `ChessStorage` interface in `src/core/chess/core-logic/storage.ts` (plus `InMemoryChessStorage` for tests). Managers now accept storage via `setStorage()` injection. See BUG-S6-05 in BUGBOOK_SPRINT6.md.
 
 #### TD-P3-7: Stale worktrees
 
