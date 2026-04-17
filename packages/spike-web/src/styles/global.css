@@ -92,7 +92,25 @@
 
   /* ── Semantic status colors ── */
   --color-status-live: oklch(0.65 0.2 145);
+  --color-status-live-bg: oklch(0.65 0.2 145 / 0.15);
+  --color-status-live-border: oklch(0.65 0.2 145 / 0.3);
   --color-status-beta: oklch(0.65 0.18 45);
+  --color-status-beta-bg: oklch(0.65 0.18 45 / 0.15);
+  --color-status-beta-border: oklch(0.65 0.18 45 / 0.3);
+  --color-status-coming-soon: oklch(0.627 0.265 304);
+  --color-status-coming-soon-bg: oklch(0.627 0.265 304 / 0.15);
+  --color-status-coming-soon-border: oklch(0.627 0.265 304 / 0.3);
+
+  /* ── Semantic feedback colors (success/warning/error) ── */
+  --color-success: oklch(0.696 0.17 162);
+  --color-success-bg: oklch(0.696 0.17 162 / 0.12);
+  --color-success-border: oklch(0.696 0.17 162 / 0.3);
+  --color-warning: oklch(0.769 0.188 70);
+  --color-warning-bg: oklch(0.769 0.188 70 / 0.15);
+  --color-warning-border: oklch(0.769 0.188 70 / 0.3);
+  --color-error: oklch(0.637 0.237 25);
+  --color-error-bg: oklch(0.637 0.237 25 / 0.1);
+  --color-error-border: oklch(0.637 0.237 25 / 0.3);
 
   /* ── Terminal / code block palette ── */
   --terminal-bg: oklch(0.16 0.02 260);
@@ -133,7 +151,25 @@
 
   /* ── Semantic status colors (dark) ── */
   --color-status-live: oklch(0.72 0.2 150);
+  --color-status-live-bg: oklch(0.72 0.2 150 / 0.18);
+  --color-status-live-border: oklch(0.72 0.2 150 / 0.35);
   --color-status-beta: oklch(0.72 0.16 50);
+  --color-status-beta-bg: oklch(0.72 0.16 50 / 0.18);
+  --color-status-beta-border: oklch(0.72 0.16 50 / 0.35);
+  --color-status-coming-soon: oklch(0.72 0.22 304);
+  --color-status-coming-soon-bg: oklch(0.72 0.22 304 / 0.18);
+  --color-status-coming-soon-border: oklch(0.72 0.22 304 / 0.35);
+
+  /* ── Semantic feedback colors — dark ── */
+  --color-success: oklch(0.75 0.16 162);
+  --color-success-bg: oklch(0.75 0.16 162 / 0.15);
+  --color-success-border: oklch(0.75 0.16 162 / 0.35);
+  --color-warning: oklch(0.82 0.17 70);
+  --color-warning-bg: oklch(0.82 0.17 70 / 0.18);
+  --color-warning-border: oklch(0.82 0.17 70 / 0.35);
+  --color-error: oklch(0.72 0.22 25);
+  --color-error-bg: oklch(0.72 0.22 25 / 0.12);
+  --color-error-border: oklch(0.72 0.22 25 / 0.35);
 
   /* ── Terminal / code block palette (dark) ── */
   --terminal-bg: oklch(0.09 0.015 265);

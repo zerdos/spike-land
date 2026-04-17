@@ -17,7 +17,7 @@ const prd = registry.resolve("/apps/chess-arena");
 // → platform constraints + domain rules
 //   + route requirements + app spec
 // = 2KB of pure context, not 200KB of noise`,
-    color: "#00ff88",
+    color: "oklch(0.88 0.27 152)",
     status: "live",
     video: true,
   },
@@ -31,7 +31,7 @@ const prd = registry.resolve("/apps/chess-arena");
   -d '{"q": "What is MCP?", "model": "fast"}'
 
 // → { "answer": "MCP is...", "provider": "google" }`,
-    color: "#00d4ff",
+    color: "oklch(0.81 0.14 220)",
     status: "live",
   },
   {
@@ -46,7 +46,7 @@ const prd = registry.resolve("/apps/chess-arena");
 // Continue the conversation
 { "thread_id": "abc-123", "q": "Now useEffect" }
 // → { "turn": 2, "answer": "useEffect is..." }`,
-    color: "#a855f7",
+    color: "oklch(0.627 0.265 304)",
     status: "live",
   },
   {
@@ -59,7 +59,7 @@ const prd = registry.resolve("/apps/chess-arena");
 
 // → { "tool": "search_tools",
 //     "output": [{"text": "Found 5 tools..."}] }`,
-    color: "#f59e0b",
+    color: "oklch(0.769 0.188 70)",
     status: "live",
   },
   {
@@ -70,7 +70,7 @@ const prd = registry.resolve("/apps/chess-arena");
     code: `{ "q": "What's in this architecture diagram?",
   "model": "vision",
   "context": "<base64 image>" }`,
-    color: "#ec4899",
+    color: "oklch(0.656 0.241 354)",
     status: "coming-soon",
   },
   {
@@ -82,7 +82,7 @@ const prd = registry.resolve("/apps/chess-arena");
   "model": "local" }
 // → Routes to Ollama (qwen3:8b)
 // → Zero network calls`,
-    color: "#22d3ee",
+    color: "oklch(0.789 0.154 211)",
     status: "beta",
   },
   {
@@ -96,7 +96,7 @@ const prd = registry.resolve("/apps/chess-arena");
 
 // → { "credits_earned": 10,
 //     "message": "Thank you! 🎉" }`,
-    color: "#10b981",
+    color: "oklch(0.696 0.17 162)",
     status: "live",
   },
 ];
@@ -273,8 +273,8 @@ const prd = registry.resolve("/apps/chess-arena");
     padding-block: clamp(4rem, 8vw, 7rem) clamp(3rem, 6vw, 5rem);
     border-bottom: 1px solid var(--border-color);
     background:
-      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0, 255, 136, 0.06), transparent),
-      radial-gradient(ellipse 40% 30% at 80% 20%, rgba(0, 212, 255, 0.04), transparent);
+      radial-gradient(ellipse 60% 40% at 50% 0%, oklch(0.88 0.27 152 / 0.06), transparent),
+      radial-gradient(ellipse 40% 30% at 80% 20%, oklch(0.81 0.14 220 / 0.04), transparent);
     overflow: hidden;
   }
 
@@ -291,11 +291,11 @@ const prd = registry.resolve("/apps/chess-arena");
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #00ff88;
-    border: 1px solid rgba(0, 255, 136, 0.3);
+    color: oklch(0.88 0.27 152);
+    border: 1px solid oklch(0.88 0.27 152 / 0.3);
     padding: 0.3rem 1rem;
     border-radius: 999px;
-    background: rgba(0, 255, 136, 0.06);
+    background: oklch(0.88 0.27 152 / 0.06);
   }
 
   .hero-title {
@@ -307,7 +307,7 @@ const prd = registry.resolve("/apps/chess-arena");
   }
 
   .hero-gradient {
-    background: linear-gradient(135deg, #00ff88, #00d4ff, #a855f7);
+    background: linear-gradient(135deg, oklch(0.88 0.27 152), oklch(0.81 0.14 220), oklch(0.627 0.265 304));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -324,7 +324,7 @@ const prd = registry.resolve("/apps/chess-arena");
   .hero-pricing {
     font-size: 0.9375rem;
     font-weight: 600;
-    color: #00ff88;
+    color: oklch(0.88 0.27 152);
     margin: 0;
   }
 
@@ -422,7 +422,7 @@ const prd = registry.resolve("/apps/chess-arena");
     gap: 0.5rem;
     padding: 0.625rem 1.25rem;
     background: var(--accent, var(--primary-color));
-    color: #000;
+    color: oklch(0 0 0);
     border-radius: var(--radius-lg);
     font-weight: 700;
     font-size: 0.875rem;
@@ -474,7 +474,7 @@ const prd = registry.resolve("/apps/chess-arena");
   }
 
   .product-card--flagship {
-    border-color: rgba(0, 255, 136, 0.3);
+    border-color: oklch(0.88 0.27 152 / 0.3);
     background: linear-gradient(
       135deg,
       color-mix(in srgb, var(--accent) 4%, var(--card-bg)),
@@ -501,8 +501,8 @@ const prd = registry.resolve("/apps/chess-arena");
     position: absolute;
     top: -0.625rem;
     left: 1.5rem;
-    background: #00ff88;
-    color: #000;
+    background: oklch(0.88 0.27 152);
+    color: oklch(0 0 0);
     font-size: 0.6875rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -535,21 +535,21 @@ const prd = registry.resolve("/apps/chess-arena");
   }
 
   .status-pill--live {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: var(--color-status-live-bg);
+    color: var(--color-status-live);
+    border: 1px solid var(--color-status-live-border);
   }
 
   .status-pill--beta {
-    background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: var(--color-status-beta-bg);
+    color: var(--color-status-beta);
+    border: 1px solid var(--color-status-beta-border);
   }
 
   .status-pill--coming-soon {
-    background: rgba(168, 85, 247, 0.15);
-    color: #a855f7;
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    background: var(--color-status-coming-soon-bg);
+    color: var(--color-status-coming-soon);
+    border: 1px solid var(--color-status-coming-soon-border);
   }
 
   .product-tagline {
@@ -567,7 +567,7 @@ const prd = registry.resolve("/apps/chess-arena");
   }
 
   .product-code {
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--code-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 1.25rem;
@@ -575,7 +575,7 @@ const prd = registry.resolve("/apps/chess-arena");
     font-size: 0.8125rem;
     line-height: 1.6;
     margin: 0;
-    color: #e2e8f0;
+    color: var(--terminal-fg);
     font-family: var(--font-mono, 'SF Mono', 'Fira Code', monospace);
   }
 
@@ -590,7 +590,7 @@ const prd = registry.resolve("/apps/chess-arena");
   .donate-section {
     padding-block: clamp(3rem, 6vw, 5rem);
     border-top: 1px solid var(--border-color);
-    background: radial-gradient(ellipse 50% 40% at 50% 100%, rgba(16, 185, 129, 0.05), transparent);
+    background: radial-gradient(ellipse 50% 40% at 50% 100%, oklch(0.696 0.17 162 / 0.05), transparent);
   }
 
   .donate-inner {
@@ -673,15 +673,15 @@ const prd = registry.resolve("/apps/chess-arena");
   }
 
   .donate-feedback.success {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-border);
   }
 
   .donate-feedback.error {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-border);
   }
 
   /* ── Feedback ────────────────────────────────────────────────── */

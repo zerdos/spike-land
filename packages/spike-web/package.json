@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "deploy": "bash ../../scripts/deploy-spa.sh",
     "test": "vitest run",
+    "test:responsive": "node scripts/responsive-screenshots.mjs",
     "lint": "eslint --quiet ."
   },
   "dependencies": {
