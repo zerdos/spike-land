@@ -36,11 +36,12 @@
 
 - **Severity**: high
 - **Category**: observability
-- **Status**: CANDIDATE
+- **Status**: FIXED (worker config); destination pending Cloudflare-account action
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Description**: `logpush = true` was removed from all 9 wrangler.toml files in Sprint 5, but no replacement log destination (Logpush job, tail worker, or external sink) was configured. Console logs from production workers are lost after the real-time tail window closes.
 - **Files**: All `packages/*/wrangler.toml`
+- **Fix**: `logpush = true` re-added to all 9 worker configs on branch `fix/bugbook-s6-01-logpush`. Destination (Workers Logs or Logpush job to R2/external sink) must still be configured at the Cloudflare account level — see `docs/operations/critical-runbooks.md` section 4.
 
 ### BUG-S6-02: Analytics Engine bound but unused
 
