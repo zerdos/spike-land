@@ -26,7 +26,7 @@ const CONTENT_SECURITY_POLICY = [
   "font-src 'self' https://fonts.gstatic.com https://esm.spike.land data:",
   "connect-src 'self' https://spike.land https://api.spike.land https://edge.spike.land https://auth-mcp.spike.land https://mcp.spike.land https://js.spike.land https://image-studio-mcp.spike.land https://chat.spike.land https://checkout.stripe.com wss://spike.land wss://chat.spike.land https://esm.sh https://esm.spike.land https://esbuild.spikeland.workers.dev https://esbuild.spike.land https://unpkg.com https://local.spike.land:5173 https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://www.google.com https://*.google.co.uk https://googleads.g.doubleclick.net https://td.doubleclick.net blob: data:",
   "worker-src 'self' blob: https://esm.sh https://esm.spike.land",
-  "frame-src 'self' https://edge.spike.land https://chat.spike.land https://checkout.stripe.com https://js.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com",
+  "frame-src 'self' https://edge.spike.land https://chat.spike.land https://checkout.stripe.com https://js.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com https://w.soundcloud.com",
   "object-src 'none'",
   "base-uri 'self'",
   // Restrict form-action to known targets; prevent exfiltration via form POST
