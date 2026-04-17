@@ -58,6 +58,32 @@ export class PresenceDurableObject extends DurableObject {
       });
     }
 
+    if (request.method === "POST" && url.pathname === "/heartbeat") {
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return new Response("Invalid JSON", { status: 400 });
+      }
+      if (typeof body !== "object" || body === null) {
+        return new Response("Invalid body", { status: 400 });
+      }
+      const obj = body as Record<string, unknown>;
+      const userId = typeof obj["userId"] === "string" ? obj["userId"] : null;
+      const rawStatus = typeof obj["status"] === "string" ? obj["status"] : "online";
+      if (!userId) return new Response("Missing userId", { status: 400 });
+      const allowed = ["online", "away", "dnd", "offline"] as const;
+      const status: "online" | "away" | "dnd" | "offline" = (allowed as readonly string[]).includes(
+        rawStatus,
+      )
+        ? (rawStatus as "online" | "away" | "dnd" | "offline")
+        : "online";
+      this.updatePresence(userId, status);
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     return new Response("Not found", { status: 404 });
   }
 

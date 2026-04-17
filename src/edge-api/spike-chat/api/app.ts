@@ -40,7 +40,9 @@ protectedApp.route("/messages", threadsRouter);
 protectedApp.route("/messages", reactionsRouter);
 protectedApp.route("/channels", pinsRouter);
 protectedApp.route("/bookmarks", bookmarksRouter);
-protectedApp.route("/channels", readCursorsRouter);
+// Read cursors mount at /me to avoid colliding with channels/:id.
+// Routes: GET /me/cursors, GET /me/channels/:channelId/cursor, POST /me/channels/read
+protectedApp.route("/me", readCursorsRouter);
 protectedApp.route("/presence", presenceRouter);
 protectedApp.route("/", dmRouter);
 

@@ -8,6 +8,13 @@
       "when": 1772960755859,
       "tag": "0000_rare_landau",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1772960756000,
+      "tag": "0001_endpoint_safety_net",
+      "breakpoints": true
     }
   ]
 }
