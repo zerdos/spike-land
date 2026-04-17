@@ -30,6 +30,7 @@ import { cockpit } from "./routes/cockpit.js";
 import { credits } from "./routes/credits.js";
 import { creditMeterMiddleware } from "./middleware/credit-meter.js";
 import { requestIdMiddleware } from "./middleware/request-id.js";
+import { analyticsMiddleware } from "./middleware/analytics.js";
 import { buildMcpProxyHeaders } from "./middleware/mcp-proxy-auth.js";
 import { support } from "./routes/support.js";
 import { pricingApi } from "./routes/pricing-api.js";
@@ -112,6 +113,10 @@ function getSpikeEdgeMetricService(
 }
 // Request ID middleware (must run before everything else)
 app.use("*", requestIdMiddleware);
+
+// Analytics Engine — record one data point per request (writes to spike_analytics dataset).
+// Runs early so it observes the final status of every response.
+app.use("*", analyticsMiddleware);
 
 // Request body size limits — prevent abuse via oversized payloads
 const DEFAULT_MAX_BODY = 10 * 1024 * 1024; // 10 MB
