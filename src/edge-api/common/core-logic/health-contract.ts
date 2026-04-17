@@ -5,6 +5,8 @@
  * Ensures every /health endpoint returns the same shape.
  */
 
+import type { LatencySummary } from "./latency-buffer.js";
+
 export type HealthStatus = "ok" | "degraded";
 
 export interface HealthCheckResult {
@@ -20,6 +22,17 @@ export interface HealthResponse {
   version: string;
   uptime_ms: number;
   checks?: Record<string, HealthCheckResult>;
+  /**
+   * p50/p99 latency stats from this isolate's recent request history.
+   * Sourced from the in-memory ring buffer (per-isolate, best-effort).
+   */
+  latency_summary?: LatencySummary;
+  /**
+   * True when all dependency checks pass but observed p99 latency exceeds
+   * the configured threshold. Status is still "ok" / HTTP 200 in this case
+   * so existing consumers polling for {status:"ok"} are not broken.
+   */
+  degraded?: boolean;
 }
 
 /** Module-level boot timestamp — set once per isolate. */
@@ -36,11 +49,22 @@ export interface BuildHealthResponseOptions {
   checks?: Record<string, HealthCheckResult>;
   version?: string;
   timestamp?: string;
+  /** Per-isolate latency summary (p50/p99/sample_count/window_seconds). */
+  latencySummary?: LatencySummary;
+  /**
+   * p99 threshold in ms. When latencySummary.p99_ms exceeds this AND all
+   * checks pass, the response will set degraded:true (status remains "ok"
+   * so HTTP status stays 200).
+   */
+  p99ThresholdMs?: number;
 }
 
 /**
  * Build a standard health response. Overall status is "degraded" if any check
- * is degraded; "ok" otherwise.
+ * is degraded; "ok" otherwise. When all checks pass but p99 exceeds the
+ * configured threshold, the `degraded` field is set to true while `status`
+ * remains "ok" (so HTTP status stays 200 and legacy consumers still see
+ * {status:"ok"} but new consumers can detect partial degradation).
  */
 export function buildStandardHealthResponse(options: BuildHealthResponseOptions): HealthResponse {
   const checks = options.checks;
@@ -54,6 +78,18 @@ export function buildStandardHealthResponse(options: BuildHealthResponseOptions)
     }
   }
 
+  const latencySummary = options.latencySummary;
+  let degraded: boolean | undefined;
+  if (
+    overall === "ok" &&
+    latencySummary &&
+    options.p99ThresholdMs !== undefined &&
+    latencySummary.p99_ms !== null &&
+    latencySummary.p99_ms > options.p99ThresholdMs
+  ) {
+    degraded = true;
+  }
+
   return {
     status: overall,
     service: options.service,
@@ -61,6 +97,8 @@ export function buildStandardHealthResponse(options: BuildHealthResponseOptions)
     version: options.version ?? getBuildSha(),
     uptime_ms: Date.now() - BOOT_TIME,
     ...(checks && Object.keys(checks).length > 0 ? { checks } : {}),
+    ...(latencySummary ? { latency_summary: latencySummary } : {}),
+    ...(degraded ? { degraded: true } : {}),
   };
 }
 

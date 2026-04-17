@@ -69,4 +69,10 @@ export interface Env {
   ANALYTICS: AnalyticsEngineDataset;
   /** Set to "development" or "local" in dev wrangler config to enable draft posts */
   ENVIRONMENT?: string;
+  /**
+   * p99 latency threshold (ms) used by /health to flag the worker as
+   * `degraded:true` while still returning HTTP 200. Defaults to 2000ms when
+   * unset, empty, or non-numeric. See BUG-S6-18.
+   */
+  HEALTH_P99_THRESHOLD_MS?: string;
 }
