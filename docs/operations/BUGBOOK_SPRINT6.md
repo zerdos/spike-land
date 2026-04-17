@@ -1,31 +1,33 @@
 # Bugbook — Sprint 6 DX Audit
 
-> Date: 2026-03-10 | Source: 16-engineer DX audit | Entries: 19
+> Date: 2026-03-10 | Source: 16-engineer DX audit | Entries: 20 | Last synced: 2026-04-17
 
 ## Summary
 
 | # | Title | Severity | Category | Status |
 |---|-------|----------|----------|--------|
-| 1 | No log persistence (logpush removed, no replacement) | high | observability | CANDIDATE |
-| 2 | Analytics Engine bound but unused | medium | observability | CANDIDATE |
-| 3 | Rollback script is a manual stub | medium | ci-cd | CANDIDATE |
-| 4 | No distributed tracing | medium | observability | CANDIDATE |
-| 5 | Explicit `any` in chess Prisma stub | medium | type-safety | CANDIDATE |
-| 6 | ESLint type rules in warning mode | low | type-safety | CANDIDATE |
+| 1 | No log persistence (logpush removed, no replacement) | high | observability | FIXED (CF-account dest pending) |
+| 2 | Analytics Engine bound but unused | medium | observability | FIXED |
+| 3 | Rollback script is a manual stub | medium | ci-cd | FIXED |
+| 4 | No distributed tracing | medium | observability | FIXED |
+| 5 | Explicit `any` in chess Prisma stub | medium | type-safety | RESOLVED |
+| 6 | ESLint type rules in warning mode | low | type-safety | FIXED |
 | 7 | 11 @ts-ignore in vendored monaco-editor | low | type-safety | CANDIDATE |
-| 8 | 6 spike-chat stub endpoints | high | feature-gap | CANDIDATE |
-| 9 | Reorganize pipeline missing incremental filtering | medium | feature-gap | CANDIDATE |
-| 10 | google-ads MCP tool incomplete | medium | feature-gap | CANDIDATE |
+| 8 | 6 spike-chat stub endpoints | high | feature-gap | FIXED |
+| 9 | Reorganize pipeline missing incremental filtering | medium | feature-gap | FIXED |
+| 10 | google-ads MCP tool incomplete | medium | feature-gap | FIXED |
 | 11 | 20 uncommitted config files | high | ci-cd | DISCARDED |
 | 12 | Transpile test config removed | medium | ci-cd | DISCARDED |
-| 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | IN PROGRESS |
-| 14 | Cloudflare API token is temporary | high | ci-cd | IN PROGRESS |
+| 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | IN PROGRESS (account-holder rotation) |
+| 14 | Cloudflare API token is temporary | high | ci-cd | IN PROGRESS (account-holder rotation) |
 | 15 | Stale worktrees wasting disk | low | maintenance | CANDIDATE |
-| 16 | No GitHub issue templates | low | dx | CANDIDATE |
+| 16 | No GitHub issue templates | low | dx | FIXED |
 | 17 | Error metadata size limits (64KB stack, 32KB metadata; head+tail truncation) | low | error-handling | RESOLVED |
-| 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
+| 18 | Health checks lack latency metrics | medium | observability | FIXED |
 | 19 | spike-chat D1 database not created | high | ci-cd | FIXED |
 | 20 | mcp-auth deploy build broken (better-auth peer chain) | high | ci-cd | FIXED |
+
+**Net open**: 2 `CANDIDATE` (S6-07, S6-15, both low), 2 `IN PROGRESS` awaiting account-holder token rotation (S6-13, S6-14), 1 follow-up (S6-01 logpush destination at Cloudflare account level). Everything else merged to `main`.
 
 **ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
@@ -48,30 +50,33 @@
 
 - **Severity**: medium
 - **Category**: observability
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.90
 - **ELO**: 1200
 - **Description**: `spike_analytics` dataset is bound as `ANALYTICS` in `packages/spike-edge/wrangler.toml` (line 64), but zero lines of code write to it. The binding exists but produces no data.
 - **Files**: `packages/spike-edge/wrangler.toml:64`
+- **Resolution**: Merged in `7103385a` (branch `fix/bugbook-s6-02-analytics`) — Analytics Engine writes wired from spike-edge.
 
 ### BUG-S6-03: Rollback script is a manual stub
 
 - **Severity**: medium
 - **Category**: ci-cd
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.85
 - **ELO**: 1200
 - **Description**: `.github/scripts/rollback-workers.sh` contains manual instructions rather than automated rollback logic. In an incident, operators must manually find version IDs and run wrangler commands.
 - **Files**: `.github/scripts/rollback-workers.sh`
+- **Resolution**: Merged in `5f77db0d` (branch `fix/bugbook-s6-03-rollback-script`) — automated worker rollback script.
 
 ### BUG-S6-04: No distributed tracing
 
 - **Severity**: medium
 - **Category**: observability
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.80
 - **ELO**: 1200
 - **Description**: No OpenTelemetry, request-id correlation, or tracing spans exist across the multi-worker architecture (spike-edge → mcp-auth → spike-land-mcp → spike-land-backend). Debugging cross-service issues requires manual log correlation.
+- **Resolution**: Merged in `a8640879` (branch `fix/bugbook-s6-04-distributed-tracing`) — request-id propagation across workers.
 
 ### BUG-S6-05: Explicit `any` in chess Prisma stub
 
@@ -88,11 +93,12 @@
 
 - **Severity**: low
 - **Category**: type-safety
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.85
 - **ELO**: 1200
 - **Description**: `src/monaco-editor/eslint.config.mjs` has a TODO comment to upgrade `no-explicit-any` and `no-unnecessary-type-assertion` from "warn" to "error". Until upgraded, violations pass CI.
 - **Files**: `src/monaco-editor/eslint.config.mjs`
+- **Resolution**: Merged in `bccdf852` (branch `fix/bugbook-s6-06-monaco-eslint-error`) — promoted both rules to `error`.
 
 ### BUG-S6-07: 11 @ts-ignore in vendored monaco-editor
 
@@ -107,30 +113,33 @@
 
 - **Severity**: high
 - **Category**: feature-gap
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Description**: Six spike-chat API endpoints return hardcoded empty responses: `read-cursors`, `bookmarks`, `threads`, `pins`, `presence`, `reactions`. These are advertised in the API surface but non-functional.
 - **Files**: spike-chat route handlers
+- **Resolution**: Merged in `6215a83a` (branch `fix/bugbook-s6-08-spike-chat-endpoints`) — all six endpoints implemented with D1-backed state.
 
 ### BUG-S6-09: Reorganize pipeline missing incremental filtering
 
 - **Severity**: medium
 - **Category**: feature-gap
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.85
 - **ELO**: 1200
 - **Description**: `src/mcp-tools/reorganize/core-logic/pipeline.ts` line 37 has a TODO for git diff-based incremental filtering. Currently the pipeline processes all files on every run.
 - **Files**: `src/mcp-tools/reorganize/core-logic/pipeline.ts:37`
+- **Resolution**: Merged in `802c61aa` (branch `fix/bugbook-s6-09-reorganize-incremental`) — git-diff-based incremental filtering added.
 
 ### BUG-S6-10: google-ads MCP tool incomplete
 
 - **Severity**: medium
 - **Category**: feature-gap
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.80
 - **ELO**: 1200
 - **Description**: The google-ads MCP tool was a bare `export {}` stub. It has been updated to `export * from "./mcp/index"` but the implementation may still be incomplete.
+- **Resolution**: Merged in `8fdd2b66` (branch `fix/bugbook-s6-10-google-ads-mcp`) — campaigns, ad groups, metrics surface implemented.
 
 ### BUG-S6-11: 20 uncommitted config files
 
@@ -185,10 +194,11 @@
 
 - **Severity**: low
 - **Category**: dx
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.90
 - **ELO**: 1200
 - **Description**: No `.github/ISSUE_TEMPLATE/` directory exists. Contributors have no structured templates for bug reports, feature requests, or tech debt items.
+- **Resolution**: Merged in `fd2883ef` (branch `fix/bugbook-s6-16-issue-templates`) — structured bug / feature / tech-debt templates added.
 
 ### BUG-S6-17: Error metadata size limits
 
@@ -204,10 +214,11 @@
 
 - **Severity**: medium
 - **Category**: observability
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.85
 - **ELO**: 1200
 - **Description**: `/health` endpoint only checks service connectivity (up/down). No p50/p99 response time tracking, no latency percentile reporting. Degraded-but-not-down states are invisible.
+- **Resolution**: Merged in `868973fd` (branch `fix/bugbook-s6-18-health-latency-metrics`) — p50/p99 latency added to `/health`.
 
 ### BUG-S6-19: spike-chat D1 database not created
 
