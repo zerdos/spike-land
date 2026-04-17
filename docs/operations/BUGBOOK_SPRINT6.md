@@ -18,8 +18,8 @@
 | 10 | google-ads MCP tool incomplete | medium | feature-gap | CANDIDATE |
 | 11 | 20 uncommitted config files | high | ci-cd | DISCARDED |
 | 12 | Transpile test config removed | medium | ci-cd | DISCARDED |
-| 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | ACTIVE |
-| 14 | Cloudflare API token is temporary | high | ci-cd | ACTIVE |
+| 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | IN PROGRESS |
+| 14 | Cloudflare API token is temporary | high | ci-cd | IN PROGRESS |
 | 15 | Stale worktrees wasting disk | low | maintenance | CANDIDATE |
 | 16 | No GitHub issue templates | low | dx | CANDIDATE |
 | 17 | Error metadata size limits (8KB stack, 4KB metadata) | low | error-handling | CANDIDATE |
@@ -153,19 +153,21 @@
 
 - **Severity**: medium
 - **Category**: ci-cd
-- **Status**: ACTIVE
+- **Status**: IN PROGRESS — runbook drafted, awaiting account-holder rotation
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Description**: The NPM_TOKEN for publishing to npmjs.org has expired. CI has `continue-on-error: true` as a workaround, meaning npm publish failures are silently ignored. Packages are not being published to the public registry.
+- **Resolution path**: see `docs/operations/TOKEN_ROTATION.md` (NPM_TOKEN section + Appendix A for the post-rotation cleanup PR removing `continue-on-error: true` from `.github/workflows/ci.yml:253`).
 
 ### BUG-S6-14: Cloudflare API token is temporary
 
 - **Severity**: high
 - **Category**: ci-cd
-- **Status**: ACTIVE
+- **Status**: IN PROGRESS — runbook drafted, awaiting account-holder rotation
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Description**: CI uses an OAuth token from `wrangler login` with ~1.5hr expiry instead of a permanent API token. Deployments fail when the token expires. Needs a permanent API token from dash.cloudflare.com/profile/api-tokens with Workers Scripts, D1, KV, R2, Zone permissions.
+- **Resolution path**: see `docs/operations/TOKEN_ROTATION.md` (Cloudflare API Token section). No code-side cleanup is required after rotation — the API token is consumed by all `deploy-workers` steps in `.github/workflows/ci.yml` and by `.github/scripts/rollback-workers.sh`.
 
 ### BUG-S6-15: Stale worktrees wasting disk
 
