@@ -14,13 +14,6 @@ const log = createLogger("spike-edge");
 
 const checkout = new Hono<{ Bindings: Env; Variables: Variables }>();
 
-// Stripe Price IDs — set these via wrangler secret or vars
-// For now, use lookup_key-based pricing which auto-resolves
-const STRIPE_PRICE_LOOKUP: Record<string, string> = {
-  pro: "pro_monthly",
-  business: "business_monthly",
-};
-
 checkout.post("/api/checkout", async (c) => {
   const stripeKey = c.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
@@ -45,7 +38,31 @@ checkout.post("/api/checkout", async (c) => {
   }
 
   const userEmail = c.get("userEmail") as string | undefined;
-  const lookupKey = STRIPE_PRICE_LOOKUP[tier];
+
+  // Prevent duplicate subscription: reject if the user already has an
+  // active or trialing subscription. Send them to the billing portal
+  // to change plans instead of creating a parallel Stripe subscription.
+  try {
+    const existing = await c.env.DB.prepare(
+      "SELECT id, plan FROM subscriptions WHERE user_id = ? AND status IN ('active', 'trialing') LIMIT 1",
+    )
+      .bind(userId)
+      .first<{ id: string; plan: string }>();
+    if (existing) {
+      return c.json(
+        {
+          error: "Subscription already active",
+          plan: existing.plan,
+          manage_url: "/settings?tab=billing",
+        },
+        409,
+      );
+    }
+  } catch (err) {
+    log.error("Active-subscription check failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
 
   // Create Stripe Checkout Session
   const params: Record<string, string> = {
@@ -53,6 +70,11 @@ checkout.post("/api/checkout", async (c) => {
     success_url: "https://spike.land/settings?tab=billing&success=1",
     cancel_url: "https://spike.land/pricing",
     "line_items[0][quantity]": "1",
+    // Session-level metadata so the webhook can resolve userId from
+    // session.metadata (subscription_data.metadata lives on the subscription
+    // object, not the session, and is not exposed by checkout.session.completed).
+    "metadata[userId]": userId,
+    "metadata[tier]": tier,
     "subscription_data[metadata][userId]": userId,
     "subscription_data[metadata][tier]": tier,
     client_reference_id: userId,
@@ -69,11 +91,16 @@ checkout.post("/api/checkout", async (c) => {
     params["customer_email"] = userEmail;
   }
 
+  // Idempotency key bucketed to a 60s window so rapid double-clicks
+  // collapse to a single Stripe checkout session. Stripe replays the
+  // cached response within 24h, so a legitimate retry after the bucket
+  // rolls over still works.
+  const idempotencyBucket = Math.floor(Date.now() / 60_000);
   const res = await stripePost(
     stripeKey,
     "/v1/checkout/sessions",
     params,
-    `${userId}-${tier}-${Date.now()}`,
+    `${userId}-${tier}-${idempotencyBucket}`,
   );
 
   if (!res.ok) {

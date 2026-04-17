@@ -904,13 +904,21 @@ const faqs = [
     feedback.textContent = message;
   }
 
+  // Module-level in-flight flag so a second tap on any pricing tile
+  // cannot start another checkout session while the first is still
+  // being created or the redirect is pending.
+  let checkoutInFlight = false;
+
   async function startCheckout(button: HTMLButtonElement) {
+    if (checkoutInFlight) return;
     const tier = button.dataset.checkoutTier;
     if (!tier) return;
 
     const originalLabel = button.textContent?.trim() || 'Continue';
     setFeedback(null);
-    button.disabled = true;
+    checkoutInFlight = true;
+    const allCheckoutButtons = document.querySelectorAll<HTMLButtonElement>('[data-checkout-tier]');
+    allCheckoutButtons.forEach(b => (b.disabled = true));
     button.textContent = 'Redirecting…';
 
     try {
@@ -926,6 +934,10 @@ const faqs = [
       }
 
       const data = await res.json().catch(() => null);
+      if (res.status === 409 && typeof data?.manage_url === 'string') {
+        window.location.href = data.manage_url;
+        return;
+      }
       if (!res.ok) {
         throw new Error(
           typeof data?.error === 'string' ? data.error : `Unable to start checkout (${res.status})`,
@@ -936,14 +948,17 @@ const faqs = [
         throw new Error('No checkout URL returned.');
       }
 
+      // Leave buttons disabled through navigation — if the redirect is
+      // cancelled the user can reload to reset.
       window.location.href = data.url;
     } catch (err) {
       console.error('Checkout error:', err);
       setFeedback(
         err instanceof Error ? err.message : 'Unable to start checkout right now. Please try again.',
       );
-    } finally {
-      button.disabled = false;
+      // Only re-enable on error. Success paths navigate away.
+      checkoutInFlight = false;
+      allCheckoutButtons.forEach(b => (b.disabled = false));
       button.textContent = originalLabel;
     }
   }

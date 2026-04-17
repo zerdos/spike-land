@@ -22,6 +22,7 @@ export interface StripeSession {
   customer_email?: string;
   customer?: string;
   subscription?: string;
+  client_reference_id?: string;
   metadata?: Record<string, string>;
 }
 
@@ -117,9 +118,13 @@ export async function handleCheckoutCompleted(db: D1Database, event: StripeEvent
     return;
   }
 
-  const userId = session.metadata?.["userId"];
+  // Fall back to client_reference_id when metadata.userId is missing —
+  // older checkout sessions only set subscription_data.metadata (which is
+  // not exposed on the session object), so the client_reference_id is
+  // the reliable way to recover the user.
+  const userId = session.metadata?.["userId"] ?? session.client_reference_id;
   if (!userId) {
-    log.warn("checkout.session.completed without userId in metadata");
+    log.warn("checkout.session.completed without userId in metadata or client_reference_id");
     return;
   }
 
