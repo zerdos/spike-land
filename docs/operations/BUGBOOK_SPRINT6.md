@@ -25,6 +25,7 @@
 | 17 | Error metadata size limits (64KB stack, 32KB metadata; head+tail truncation) | low | error-handling | RESOLVED |
 | 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
 | 19 | spike-chat D1 database not created | high | ci-cd | FIXED |
+| 20 | mcp-auth deploy build broken (better-auth peer chain) | high | ci-cd | CANDIDATE |
 
 **ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
@@ -218,3 +219,25 @@
 - **Description**: `packages/spike-chat/wrangler.toml` has `database_id = "TO_BE_CREATED"`. The D1 database was never provisioned, meaning the spike-chat worker cannot store any data and will fail on any DB operation.
 - **Files**: `packages/spike-chat/wrangler.toml`
 - **Resolution**: wrangler.toml already provisioned with real `database_id` (`4e93ca4f-84d4-4c50-9e03-5356ee092981`); migrations added under `packages/spike-chat/db/migrations/0001_initial.sql` (idempotent mirror of drizzle schema at `src/edge-api/spike-chat/db/`). Added `db/SETUP.md` runbook and `scripts/verify-d1.sh` sanity check. See branch `fix/bugbook-s6-19-spike-chat-d1`.
+
+### BUG-S6-20: mcp-auth deploy build broken (better-auth peer chain)
+
+- **Severity**: high
+- **Category**: ci-cd
+- **Status**: CANDIDATE
+- **Confidence**: 0.95
+- **ELO**: 1200
+- **Discovered**: 2026-04-17 during Sprint 6 prod deploy
+- **Description**: `npm run deploy` for `packages/mcp-auth` fails at the wrangler bundle step with `Could not resolve "@better-auth/core/db/adapter"` and, after pulling that in, `Could not resolve "better-call/error"`. Reproduced against the pre-Sprint-6 `package.json` (commit `7cd4ece9`) — the breakage is **not** caused by the Sprint 6 fixes; it is a pre-existing transitive peer-dep gap in the `better-auth` 1.5.x → `@better-auth/drizzle-adapter` 1.5.x chain. CI silently swallowed the failure because `.github/workflows/ci.yml:253` has `continue-on-error: true` on the deploy step (also tracked under BUG-S6-13/14).
+- **Impact**: `mcp-auth` worker has not been redeployed for the entire Sprint 6 cycle. All session-auth-dependent endpoints on `spike-edge` (`/proxy/*`, R2 mutations) still run against the previously deployed version of `mcp-auth`, but no schema or middleware changes can ship until the build is unblocked.
+- **Files**: `packages/mcp-auth/package.json`, `src/edge-api/auth/**`
+- **Reproduction**:
+  ```bash
+  cd packages/mcp-auth
+  npm run deploy   # → esbuild: Could not resolve "better-call/error"
+  ```
+- **Suggested fix**:
+  1. Audit the dep tree: `npm ls better-call @better-auth/core @better-auth/drizzle-adapter`.
+  2. Pin `better-auth` and `@better-auth/drizzle-adapter` to a known-working matched pair, or add the missing peers (`@better-auth/core`, `better-call`) explicitly with versions matching `better-auth`'s own `dependencies`.
+  3. Once the deploy succeeds, remove `continue-on-error: true` at `.github/workflows/ci.yml:253` so future regressions surface in CI.
+- **Workaround**: None — the previously deployed `mcp-auth` version still serves traffic. No data-plane impact, only deploy-blocked.
