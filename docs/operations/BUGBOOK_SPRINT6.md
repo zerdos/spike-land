@@ -25,7 +25,7 @@
 | 17 | Error metadata size limits (64KB stack, 32KB metadata; head+tail truncation) | low | error-handling | RESOLVED |
 | 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
 | 19 | spike-chat D1 database not created | high | ci-cd | FIXED |
-| 20 | mcp-auth deploy build broken (better-auth peer chain) | high | ci-cd | CANDIDATE |
+| 20 | mcp-auth deploy build broken (better-auth peer chain) | high | ci-cd | FIXED |
 
 **ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
@@ -224,20 +224,29 @@
 
 - **Severity**: high
 - **Category**: ci-cd
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Discovered**: 2026-04-17 during Sprint 6 prod deploy
-- **Description**: `npm run deploy` for `packages/mcp-auth` fails at the wrangler bundle step with `Could not resolve "@better-auth/core/db/adapter"` and, after pulling that in, `Could not resolve "better-call/error"`. Reproduced against the pre-Sprint-6 `package.json` (commit `7cd4ece9`) — the breakage is **not** caused by the Sprint 6 fixes; it is a pre-existing transitive peer-dep gap in the `better-auth` 1.5.x → `@better-auth/drizzle-adapter` 1.5.x chain. CI silently swallowed the failure because `.github/workflows/ci.yml:253` has `continue-on-error: true` on the deploy step (also tracked under BUG-S6-13/14).
-- **Impact**: `mcp-auth` worker has not been redeployed for the entire Sprint 6 cycle. All session-auth-dependent endpoints on `spike-edge` (`/proxy/*`, R2 mutations) still run against the previously deployed version of `mcp-auth`, but no schema or middleware changes can ship until the build is unblocked.
-- **Files**: `packages/mcp-auth/package.json`, `src/edge-api/auth/**`
-- **Reproduction**:
-  ```bash
-  cd packages/mcp-auth
-  npm run deploy   # → esbuild: Could not resolve "better-call/error"
-  ```
-- **Suggested fix**:
-  1. Audit the dep tree: `npm ls better-call @better-auth/core @better-auth/drizzle-adapter`.
-  2. Pin `better-auth` and `@better-auth/drizzle-adapter` to a known-working matched pair, or add the missing peers (`@better-auth/core`, `better-call`) explicitly with versions matching `better-auth`'s own `dependencies`.
-  3. Once the deploy succeeds, remove `continue-on-error: true` at `.github/workflows/ci.yml:253` so future regressions surface in CI.
-- **Workaround**: None — the previously deployed `mcp-auth` version still serves traffic. No data-plane impact, only deploy-blocked.
+- **Description**: `npm run deploy` for `packages/mcp-auth` fails at the wrangler bundle step with `Could not resolve "@better-auth/core/db/adapter"` and `"better-call/error"`. Two root causes: (1) **version drift** — `@better-auth/drizzle-adapter@^1.5.6` resolved to 1.5.6 while `better-auth@^1.5.5` resolved to 1.5.5, causing two parallel `@better-auth/core` copies (1.5.5 and 1.5.6) where neither is hoisted next to drizzle-adapter; (2) **unsatisfied peers** — `@better-auth/core@1.5.6` declares `better-call`, `jose`, `kysely`, `nanostores`, `@better-fetch/fetch`, `@better-auth/utils` as peer dependencies, and yarn berry's node-modules linker placed them under `better-auth/node_modules/` only, so any sibling reaching `@better-auth/core` from a different node_modules subtree (e.g., the hoisted drizzle-adapter) cannot resolve the peers. CI silently swallowed the failure because `.github/workflows/ci.yml:253` has `continue-on-error: true` on the deploy step (tracked under BUG-S6-13/14).
+- **Files**: `packages/mcp-auth/package.json`, `.yarnrc.yml`
+- **Resolution** (2026-04-17, deploy version `63a0dae1-88c0-453b-9af4-808462def81d`):
+  1. Pinned `better-auth` and `@better-auth/drizzle-adapter` to exact `1.5.6` (was `^1.5.5` and `^1.5.6`), eliminating the version drift.
+  2. Added two `packageExtensions` entries in `.yarnrc.yml` to convert the relevant peer-deps into hard deps so yarn's node-modules linker co-locates them with their consumer:
+     ```yaml
+     "@better-auth/core@*":
+       dependencies:
+         "@better-auth/utils": "*"
+         "@better-fetch/fetch": "*"
+         better-call: "*"
+         jose: "*"
+         kysely: "*"
+         nanostores: "*"
+     "@better-auth/drizzle-adapter@*":
+       dependencies:
+         "@better-auth/core": "*"
+         "@better-auth/utils": "*"
+     ```
+  3. After `yarn install`, `@better-auth/core` and its peers now nest under `node_modules/@better-auth/drizzle-adapter/node_modules/`, satisfying the wrangler/esbuild bundle from the source location in `src/edge-api/auth/`.
+- **Verified**: `cd packages/mcp-auth && npm run deploy` ships a 4398.70 KiB bundle (729.82 KiB gzip), 219 ms startup time, all 5 bindings (D1×3, R2, SPIKE_CHAT worker) wired, deployed at `https://mcp-auth.spikeland.workers.dev` and `auth-mcp.spike.land`.
+- **Follow-up**: Remove `continue-on-error: true` at `.github/workflows/ci.yml:253` once the NPM_TOKEN/CF API token rotation (BUG-S6-13/14) is complete, so any future regression surfaces immediately.
