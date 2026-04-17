@@ -22,7 +22,7 @@
 | 14 | Cloudflare API token is temporary | high | ci-cd | IN PROGRESS |
 | 15 | Stale worktrees wasting disk | low | maintenance | CANDIDATE |
 | 16 | No GitHub issue templates | low | dx | CANDIDATE |
-| 17 | Error metadata size limits (8KB stack, 4KB metadata) | low | error-handling | CANDIDATE |
+| 17 | Error metadata size limits (64KB stack, 32KB metadata; head+tail truncation) | low | error-handling | RESOLVED |
 | 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
 | 19 | spike-chat D1 database not created | high | ci-cd | CANDIDATE |
 
@@ -192,10 +192,11 @@
 
 - **Severity**: low
 - **Category**: error-handling
-- **Status**: CANDIDATE
+- **Status**: RESOLVED
 - **Confidence**: 0.75
 - **ELO**: 1200
-- **Description**: The `/errors/ingest` endpoint truncates stack traces at 8KB and metadata at 4KB. While reasonable limits, deep stack traces from async chains or large metadata payloads may lose diagnostic information.
+- **Description**: The `/errors/ingest` endpoint previously truncated stack traces at 8KB and metadata at 4KB, silently losing diagnostic information from deep async chains and large metadata payloads.
+- **Resolution**: Hard caps raised to 64KB stack / 32KB metadata. When a payload exceeds the cap a head+tail strategy keeps the first 8KB and last 4KB (stack) or first 8KB and last 4KB (metadata) joined by a `[truncated N bytes]` marker, preserving the most diagnostic frames. The endpoint response now includes `original_stack_bytes`, `original_metadata_bytes`, `stored_*_bytes`, `truncated`, and `truncation_strategy` per entry, plus a top-level `limits` block. R2 offload was deliberately not used to keep the hot path single-roundtrip; head+tail is sufficient for D1 row sizing. Files: `src/edge-api/main/api/routes/errors.ts`, `src/edge-api/main/api/__tests__/errors-ingest.test.ts`.
 
 ### BUG-S6-18: Health checks lack latency metrics
 
