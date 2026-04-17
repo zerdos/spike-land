@@ -4,6 +4,19 @@ export interface Variables {
   userId: string;
   userEmail: string;
   requestId: string;
+  /** Cross-service correlation id (BUG-S6-04). */
+  traceId: string;
+  /** Optional parent span id propagated from caller (BUG-S6-04). */
+  parentSpanId?: string;
+}
+
+/**
+ * Optional environment variable used by `tracingMiddleware` to label log
+ * lines. Workers may set `WORKER_NAME` in wrangler.toml as a fallback for
+ * the explicit `worker:` option passed to the middleware.
+ */
+export interface TracingEnv {
+  WORKER_NAME?: string;
 }
 
 export interface Env {

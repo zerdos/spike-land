@@ -1,5 +1,6 @@
 import { serverFetchUrl } from "@spike-land-ai/code";
 import * as Sentry from "@sentry/cloudflare";
+import { withTracingFetch } from "@spike-land-ai/shared";
 import { handleAnthropicRequest } from "../core-logic/anthropicHandler.js";
 import { KVLogger } from "../core-logic/Logs.js";
 import { handleMainFetch } from "../lazy-imports/mainFetchHandler.js";
@@ -253,8 +254,22 @@ export async function handleRequest(request: Request, env: Env, ctx: ExecutionCo
   return handleMainFetch(request, env, ctx);
 }
 
+// BUG-S6-04: wrap the raw fetch handler with tracing so traceId is extracted
+// or minted, propagated on the response, and a structured log line is emitted.
+const tracedHandleRequest = withTracingFetch<Env, ExecutionContext>(
+  "spike-land-backend",
+  (request, env, ctx) => {
+    if (!ctx) {
+      // Cloudflare Workers always supplies an ExecutionContext at runtime;
+      // this branch only triggers in misuse from tests.
+      throw new Error("ExecutionContext required");
+    }
+    return handleRequest(request, env, ctx);
+  },
+);
+
 const main = {
-  fetch: handleRequest,
+  fetch: tracedHandleRequest,
 };
 
 export { Code } from "../lazy-imports/chatRoom.js";

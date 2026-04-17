@@ -52,6 +52,25 @@ export {
   type BadgePayload,
 } from "./badge-token.js";
 
+// Distributed tracing (BUG-S6-04)
+export {
+  CF_RAY_HEADER,
+  PARENT_SPAN_ID_HEADER,
+  REQUEST_ID_HEADER,
+  TRACE_ID_HEADER,
+  getOrCreateTraceId,
+  tracingMiddleware,
+  withTraceHeaders,
+  withTracingFetch,
+  type MinimalExecutionContext as TracingMinimalExecutionContext,
+  type MinimalMiddleware as TracingMinimalMiddleware,
+  type MinimalNext as TracingMinimalNext,
+  type MinimalTracingContext,
+  type TracingLogEntry,
+  type TracingMiddlewareOptions,
+  type TracingVariables,
+} from "./tracing.js";
+
 // Support Amounts
 export {
   SUPPORT_AMOUNT_MAX,

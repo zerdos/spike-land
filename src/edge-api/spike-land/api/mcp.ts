@@ -142,6 +142,8 @@ interface PostRequestContext {
   rpcMethod: string;
   body: unknown;
   startTime: number;
+  /** BUG-S6-04: trace id forwarded to downstream service-binding fetches. */
+  traceId?: string;
 }
 
 /**
@@ -195,7 +197,7 @@ async function dispatchPostRequestAnalytics(
   responseStatus: number;
   responseHeaders: Headers;
 }> {
-  const { env, executionCtx, userId, agentId, isAgent, rpcMethod, body, startTime } = ctx;
+  const { env, executionCtx, userId, agentId, isAgent, rpcMethod, body, startTime, traceId } = ctx;
   const durationMs = Date.now() - startTime;
   const isToolCall = rpcMethod === "tools/call";
   const toolName = isToolCall
@@ -217,6 +219,7 @@ async function dispatchPostRequestAnalytics(
         headers: {
           "Content-Type": "application/json",
           "x-internal-secret": env.MCP_INTERNAL_SECRET,
+          ...(traceId ? { "x-trace-id": traceId } : {}),
         },
         body: JSON.stringify(payload),
       }).catch((err) => console.error("[mcp] Failed to report abuse:", err)),
@@ -342,12 +345,17 @@ mcpRoute.post("/", async (c) => {
   let callerTier: CallerTier = "free";
   let isAgent = false;
 
+  // BUG-S6-04: forward the inbound trace id on outgoing service-binding calls.
+  const traceId = c.var.traceId;
   try {
     if (agentId) {
       const res = await c.env.SPIKE_EDGE.fetch(
         `https://edge.spike.land/internal/agent-elo/${agentId}`,
         {
-          headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
+          headers: {
+            "x-internal-secret": c.env.MCP_INTERNAL_SECRET,
+            "x-trace-id": traceId,
+          },
         },
       );
       if (res.ok) {
@@ -358,7 +366,10 @@ mcpRoute.post("/", async (c) => {
       }
     } else {
       const res = await c.env.SPIKE_EDGE.fetch(`https://edge.spike.land/internal/elo/${userId}`, {
-        headers: { "x-internal-secret": c.env.MCP_INTERNAL_SECRET },
+        headers: {
+          "x-internal-secret": c.env.MCP_INTERNAL_SECRET,
+          "x-trace-id": traceId,
+        },
       });
       if (res.ok) {
         const data = (await res.json()) as { elo: number; tier: "free" | "pro" | "business" };
@@ -518,6 +529,7 @@ mcpRoute.post("/", async (c) => {
           rpcMethod,
           body,
           startTime,
+          traceId: c.var.traceId,
         },
         response,
       );
