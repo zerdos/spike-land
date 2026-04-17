@@ -62,12 +62,23 @@ const resolvedOgImage = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
 
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <slot name="head" />
+    <script is:inline define:vars={{ isDev: import.meta.env.DEV }}>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme-preference');
+          const def = isDev ? 'dark' : 'light';
+          document.documentElement.classList.toggle('dark', (stored ?? def) === 'dark');
+        } catch {}
+      })();
+    </script>
   </head>
   <body class="article-body font-sans article-base">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded">Skip to content</a>
+    <slot name="nav" />
     <main id="main-content" class="container mx-auto max-w-screen-md px-5 pt-8 pb-16">
       <slot />
     </main>
+    <slot name="footer" />
     <style>
       .article-body {
         background: var(--bg);

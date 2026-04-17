@@ -143,7 +143,7 @@ const { Content } = await render(post);
   {post.data.author && <meta slot="head" property="article:author" content={post.data.author} />}
   {post.data.tags?.map(tag => <meta slot="head" property="article:tag" content={tag} />)}
 
-  <Nav activePath="/blog" />
+  <Nav slot="nav" activePath="/blog" />
 
   <!-- Hero header -->
   <header class="article-header">
@@ -191,10 +191,10 @@ const { Content } = await render(post);
 
   <!-- Support CTA -->
   <div class="not-prose" style="margin-block: 4rem 2rem;">
-    <PersonalizedSupportBoxReact client:visible />
+    <PersonalizedSupportBoxReact client:only="react" />
   </div>
 
-  <Footer />
+  <Footer slot="footer" />
 
   <!-- Auto-translation loader: detects browser language, fetches translation from API -->
   <script define:vars={{ slug: post.id }}>
