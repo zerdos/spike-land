@@ -13,6 +13,10 @@ bindings = [
 tag = "v1"
 new_classes = ["ChannelDurableObject", "PresenceDurableObject"]
 
+# D1 binding for spike-chat. See db/SETUP.md for provisioning + migration steps.
+# If the database needs to be re-created on a different Cloudflare account,
+# replace `database_id` with the output of:
+#   database_id = "RUN: wrangler d1 create spike-chat-db && copy id here"
 [[d1_databases]]
 binding = "DB"
 database_name = "spike-chat"

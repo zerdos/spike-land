@@ -24,7 +24,7 @@
 | 16 | No GitHub issue templates | low | dx | CANDIDATE |
 | 17 | Error metadata size limits (8KB stack, 4KB metadata) | low | error-handling | CANDIDATE |
 | 18 | Health checks lack latency metrics | medium | observability | CANDIDATE |
-| 19 | spike-chat D1 database not created | high | ci-cd | CANDIDATE |
+| 19 | spike-chat D1 database not created | high | ci-cd | FIXED |
 
 **ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
@@ -207,8 +207,9 @@
 
 - **Severity**: high
 - **Category**: ci-cd
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.95
 - **ELO**: 1200
 - **Description**: `packages/spike-chat/wrangler.toml` has `database_id = "TO_BE_CREATED"`. The D1 database was never provisioned, meaning the spike-chat worker cannot store any data and will fail on any DB operation.
 - **Files**: `packages/spike-chat/wrangler.toml`
+- **Resolution**: wrangler.toml already provisioned with real `database_id` (`4e93ca4f-84d4-4c50-9e03-5356ee092981`); migrations added under `packages/spike-chat/db/migrations/0001_initial.sql` (idempotent mirror of drizzle schema at `src/edge-api/spike-chat/db/`). Added `db/SETUP.md` runbook and `scripts/verify-d1.sh` sanity check. See branch `fix/bugbook-s6-19-spike-chat-d1`.
