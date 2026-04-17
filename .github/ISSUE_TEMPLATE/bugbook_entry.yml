@@ -1,0 +1,95 @@
+name: BAZDMEG Bugbook Entry
+description: Promote a recurring observation to the BAZDMEG Bugbook for tracking and regression coverage.
+title: "[BUGBOOK] "
+labels: ["bugbook", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to nominate an issue for the BAZDMEG Bugbook (`docs/operations/BUGBOOK_SPRINT*.md`).
+        New entries start at status `CANDIDATE` and graduate to `ACTIVE` once seen across 2+ audit cycles.
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - low
+        - medium
+        - high
+        - critical
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - observability
+        - ci-cd
+        - type-safety
+        - feature-gap
+        - error-handling
+        - maintenance
+        - dx
+        - security
+        - performance
+        - documentation
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Initial status
+      description: New observations should default to CANDIDATE.
+      options:
+        - CANDIDATE
+        - ACTIVE
+        - DISCARDED
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: confidence
+    attributes:
+      label: Confidence (0.0 - 1.0)
+      description: How sure are you this is real and reproducible?
+      placeholder: "0.85"
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Files affected
+      description: List specific file paths (and line numbers where relevant).
+      placeholder: |
+        - packages/spike-edge/wrangler.toml:64
+        - src/edge-api/main/api/index.ts
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is the issue? Be specific and factual.
+    validations:
+      required: true
+  - type: textarea
+    id: prior_occurrences
+    attributes:
+      label: Prior occurrences
+      description: Previous audits, incidents, PRs, or bugbook entries where this surfaced.
+    validations:
+      required: false
+  - type: dropdown
+    id: regression_test
+    attributes:
+      label: Proposed regression test type
+      options:
+        - unit
+        - integration
+        - E2E
+        - agent (BAZDMEG bazdmeg-mcp check)
+        - lint / static analysis
+        - manual checklist
+    validations:
+      required: true

@@ -1,0 +1,92 @@
+name: Tech Debt
+description: Flag code, infra, or process debt that slows us down or adds risk.
+title: "[TECH-DEBT] "
+labels: ["tech-debt", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for known-suboptimal code, missing tests, brittle infra, or process gaps that are not user-facing bugs.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package / area
+      options:
+        - "@spike-land-ai/bazdmeg-mcp"
+        - "@spike-land-ai/block-sdk"
+        - "@spike-land-ai/block-tasks"
+        - "@spike-land-ai/blog"
+        - "@spike-land-ai/chess-engine"
+        - "@spike-land-ai/code-eval-mcp"
+        - "@spike-land-ai/hackernews-mcp"
+        - "@spike-land-ai/image-studio-worker"
+        - "@spike-land-ai/mcp-auth"
+        - "@spike-land-ai/mcp-image-studio"
+        - "@spike-land-ai/mcp-server-base"
+        - "@spike-land-ai/openclaw-mcp"
+        - "@spike-land-ai/qa-studio"
+        - "@spike-land-ai/react-ts-worker"
+        - "@spike-land-ai/shared"
+        - "@spike-land-ai/spike-chat"
+        - "@spike-land-ai/spike-cli"
+        - "@spike-land-ai/spike-edge"
+        - "@spike-land-ai/spike-land-backend"
+        - "@spike-land-ai/spike-land-mcp"
+        - "@spike-land-ai/spike-notepad"
+        - "@spike-land-ai/spike-review"
+        - "@spike-land-ai/spike-web"
+        - "@spike-land-ai/state-machine"
+        - "@spike-land-ai/transpile"
+        - "@spike-land-ai/vibe-dev"
+        - "@spike-land-ai/video"
+        - "esbuild-wasm"
+        - "esbuild-wasm-mcp"
+        - "CI / CD / tooling"
+        - "Cross-cutting"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior
+      description: What does the code or process do today? Link to files/lines if possible.
+    validations:
+      required: true
+  - type: textarea
+    id: why_debt
+    attributes:
+      label: Why it's debt
+      description: What makes this suboptimal? (workarounds, copy-paste, missing tests, deprecated API, etc.)
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Primary impact
+      options:
+        - velocity - slows feature work
+        - risk - increases incident likelihood
+        - maintainability - hard to read, change, or onboard onto
+        - performance - measurable runtime cost
+        - security - latent vulnerability surface
+    validations:
+      required: true
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Proposed remediation
+      description: Sketch the fix. A rough plan is fine.
+    validations:
+      required: false
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Effort estimate
+      options:
+        - XS - under an hour
+        - S - half a day
+        - M - 1-2 days
+        - L - 3-5 days
+        - XL - more than a week
+    validations:
+      required: true
