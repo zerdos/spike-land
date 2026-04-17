@@ -1,0 +1,106 @@
+name: Bug Report
+description: Report a reproducible defect in a published package or service.
+title: "[BUG] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please fill out the fields below so we can reproduce and triage quickly.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I have searched existing issues and this is not a duplicate.
+          required: true
+        - label: I can reproduce this on the `main` branch (or latest published version).
+          required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      description: Which package or service exhibits the bug?
+      options:
+        - "@spike-land-ai/bazdmeg-mcp"
+        - "@spike-land-ai/block-sdk"
+        - "@spike-land-ai/block-tasks"
+        - "@spike-land-ai/blog"
+        - "@spike-land-ai/chess-engine"
+        - "@spike-land-ai/code-eval-mcp"
+        - "@spike-land-ai/hackernews-mcp"
+        - "@spike-land-ai/image-studio-worker"
+        - "@spike-land-ai/mcp-auth"
+        - "@spike-land-ai/mcp-image-studio"
+        - "@spike-land-ai/mcp-server-base"
+        - "@spike-land-ai/openclaw-mcp"
+        - "@spike-land-ai/qa-studio"
+        - "@spike-land-ai/react-ts-worker"
+        - "@spike-land-ai/shared"
+        - "@spike-land-ai/spike-chat"
+        - "@spike-land-ai/spike-cli"
+        - "@spike-land-ai/spike-edge"
+        - "@spike-land-ai/spike-land-backend"
+        - "@spike-land-ai/spike-land-mcp"
+        - "@spike-land-ai/spike-notepad"
+        - "@spike-land-ai/spike-review"
+        - "@spike-land-ai/spike-web"
+        - "@spike-land-ai/state-machine"
+        - "@spike-land-ai/transpile"
+        - "@spike-land-ai/vibe-dev"
+        - "@spike-land-ai/video"
+        - "esbuild-wasm"
+        - "esbuild-wasm-mcp"
+        - "Other / unsure"
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How badly does this affect users?
+      options:
+        - low - cosmetic or minor inconvenience
+        - medium - noticeable impact, workaround exists
+        - high - blocks a key workflow, no easy workaround
+        - critical - data loss, security, or production outage
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal, deterministic steps. Include commands, URLs, or a repo link if useful.
+      placeholder: |
+        1. Run `npm run dev` in `packages/spike-edge`
+        2. POST to `/api/...`
+        3. Observe response
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected vs actual behavior
+      description: What did you expect to happen, and what actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, Node version, OS, package version, deploy target (local/preview/prod).
+      placeholder: |
+        - Node: 24.x
+        - OS: macOS 15.2
+        - Browser: Chrome 132
+        - Package version: 1.4.2
+        - Deploy: production worker
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Optional. Paste relevant logs, stack traces, or attach screenshots.
+    validations:
+      required: false

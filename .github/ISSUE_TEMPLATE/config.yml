@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or Discussion
+    url: https://github.com/spike-land-ai/spike.land/discussions
+    about: Ask a question or start a discussion instead of opening an issue.
+  - name: Security Vulnerability
+    url: https://github.com/spike-land-ai/spike.land/security/advisories/new
+    about: Report security vulnerabilities privately via GitHub Security Advisories. Do NOT open a public issue.

@@ -1,0 +1,83 @@
+name: Feature Request
+description: Propose a new capability or enhancement.
+title: "[FEAT] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a feature. Focus on the problem first, the solution second.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Target package
+      description: Which package or service would this land in?
+      options:
+        - "@spike-land-ai/bazdmeg-mcp"
+        - "@spike-land-ai/block-sdk"
+        - "@spike-land-ai/block-tasks"
+        - "@spike-land-ai/blog"
+        - "@spike-land-ai/chess-engine"
+        - "@spike-land-ai/code-eval-mcp"
+        - "@spike-land-ai/hackernews-mcp"
+        - "@spike-land-ai/image-studio-worker"
+        - "@spike-land-ai/mcp-auth"
+        - "@spike-land-ai/mcp-image-studio"
+        - "@spike-land-ai/mcp-server-base"
+        - "@spike-land-ai/openclaw-mcp"
+        - "@spike-land-ai/qa-studio"
+        - "@spike-land-ai/react-ts-worker"
+        - "@spike-land-ai/shared"
+        - "@spike-land-ai/spike-chat"
+        - "@spike-land-ai/spike-cli"
+        - "@spike-land-ai/spike-edge"
+        - "@spike-land-ai/spike-land-backend"
+        - "@spike-land-ai/spike-land-mcp"
+        - "@spike-land-ai/spike-notepad"
+        - "@spike-land-ai/spike-review"
+        - "@spike-land-ai/spike-web"
+        - "@spike-land-ai/state-machine"
+        - "@spike-land-ai/transpile"
+        - "@spike-land-ai/vibe-dev"
+        - "@spike-land-ai/video"
+        - "esbuild-wasm"
+        - "esbuild-wasm-mcp"
+        - "Cross-cutting / new package"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or developer problem does this solve? Who is affected?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work? Sketch the API, UX, or behavior.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you considered and why you rejected them.
+    validations:
+      required: false
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact area
+      description: Where is the impact felt most?
+      options:
+        - developer-experience
+        - end-user UX
+        - performance
+        - security
+        - observability
+        - cost / infra
+        - documentation
+    validations:
+      required: false
