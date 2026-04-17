@@ -2,7 +2,13 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import * as Sentry from "@sentry/cloudflare";
 import type { Env, Variables } from "../core-logic/env.js";
-import { createLogger, MAIN_SITE_HOSTS, PLATFORM_HOSTS } from "@spike-land-ai/shared";
+import {
+  createLogger,
+  MAIN_SITE_HOSTS,
+  PLATFORM_HOSTS,
+  tracingMiddleware,
+  withTraceHeaders,
+} from "@spike-land-ai/shared";
 import { RateLimiter } from "../edge/rate-limiter.js";
 import { authMiddleware } from "./middleware/auth.js";
 import { health } from "./routes/health.js";
@@ -110,7 +116,11 @@ function getSpikeEdgeMetricService(
 
   return null;
 }
-// Request ID middleware (must run before everything else)
+// Distributed tracing — must run first so traceId is available everywhere
+// downstream (auth, route handlers, error handlers). BUG-S6-04.
+app.use("*", tracingMiddleware({ worker: "spike-edge" }));
+
+// Request ID middleware (legacy header — kept for backward compat with downstream)
 app.use("*", requestIdMiddleware);
 
 // Request body size limits — prevent abuse via oversized payloads
@@ -564,13 +574,22 @@ const SERVICE_RETRY_MS = 30_000;
  * In local dev, the service binding may not be available if spike-land-mcp isn't running.
  * After a 503, skips the binding for 30s before retrying.
  */
-async function fetchMcpWithFallback(env: Env, url: string, init?: RequestInit): Promise<Response> {
+async function fetchMcpWithFallback(
+  env: Env,
+  url: string,
+  init?: RequestInit,
+  traceId?: string,
+): Promise<Response> {
   if (!mcpServiceAvailable && Date.now() - mcpServiceDownSince > SERVICE_RETRY_MS) {
     mcpServiceAvailable = true;
   }
+  // Propagate the trace id on every outgoing call (BUG-S6-04).
+  const tracedInit: RequestInit = traceId
+    ? { ...init, headers: withTraceHeaders(init?.headers, traceId) }
+    : (init ?? {});
   if (mcpServiceAvailable) {
     try {
-      const response = await env.MCP_SERVICE.fetch(new Request(url, init));
+      const response = await env.MCP_SERVICE.fetch(new Request(url, tracedInit));
       if (response.status === 503) {
         mcpServiceAvailable = false;
         mcpServiceDownSince = Date.now();
@@ -582,7 +601,7 @@ async function fetchMcpWithFallback(env: Env, url: string, init?: RequestInit): 
       mcpServiceDownSince = Date.now();
     }
   }
-  return fetch(url, init);
+  return fetch(url, tracedInit);
 }
 
 /**
@@ -594,12 +613,13 @@ async function proxyMcpGet(
   mcpUrl: string,
   { forwardAccept = false }: { forwardAccept?: boolean } = {},
 ): Promise<Response> {
+  const traceId = c.get("traceId");
   const headers: Record<string, string> = { "X-Request-Id": c.get("requestId") };
   if (forwardAccept) {
     const accept = c.req.header("Accept");
     if (accept) headers["Accept"] = accept;
   }
-  const response = await fetchMcpWithFallback(c.env, mcpUrl, { headers });
+  const response = await fetchMcpWithFallback(c.env, mcpUrl, { headers }, traceId);
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -655,6 +675,7 @@ export const postApiLearnitGenerateHandler = async (
       },
       body,
     },
+    c.get("traceId"),
   );
   return new Response(response.body, {
     status: response.status,
@@ -668,17 +689,22 @@ export const postApiCreateGenerateHandler = async (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
 ) => {
   const body = await c.req.text();
-  const response = await fetchMcpWithFallback(c.env, "https://mcp.spike.land/create/generate", {
-    method: "POST",
-    headers: {
-      "X-Request-Id": c.get("requestId"),
-      ...(c.req.header("Content-Type")
-        ? { "Content-Type": c.req.header("Content-Type") as string }
-        : { "Content-Type": "application/json" }),
-      ...(c.req.header("Accept") ? { Accept: c.req.header("Accept") as string } : {}),
+  const response = await fetchMcpWithFallback(
+    c.env,
+    "https://mcp.spike.land/create/generate",
+    {
+      method: "POST",
+      headers: {
+        "X-Request-Id": c.get("requestId"),
+        ...(c.req.header("Content-Type")
+          ? { "Content-Type": c.req.header("Content-Type") as string }
+          : { "Content-Type": "application/json" }),
+        ...(c.req.header("Accept") ? { Accept: c.req.header("Accept") as string } : {}),
+      },
+      body,
     },
-    body,
-  });
+    c.get("traceId"),
+  );
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -717,9 +743,12 @@ export const getApiStoreToolsHandler = async (
   c: import("hono").Context<{ Bindings: Env; Variables: Variables }>,
 ) => {
   const requestId = c.get("requestId");
-  const response = await fetchMcpWithFallback(c.env, "https://mcp.spike.land/tools", {
-    headers: { "X-Request-Id": requestId },
-  });
+  const response = await fetchMcpWithFallback(
+    c.env,
+    "https://mcp.spike.land/tools",
+    { headers: { "X-Request-Id": requestId } },
+    c.get("traceId"),
+  );
   if (!response.ok) {
     return c.json({ error: "Failed to fetch tools" }, 502);
   }
@@ -778,13 +807,18 @@ export async function mcpProxy(c: import("hono").Context<{ Bindings: Env; Variab
   });
   proxyHeaders.set("X-Request-Id", c.get("requestId"));
   const hasBody = newRequest.method !== "GET" && newRequest.method !== "HEAD";
-  const response = await fetchMcpWithFallback(c.env, newRequest.url, {
-    method: newRequest.method,
-    headers: Object.fromEntries(proxyHeaders.entries()),
-    ...(hasBody && newRequest.body != null
-      ? { body: newRequest.body, duplex: "half" as const }
-      : {}),
-  } as RequestInit);
+  const response = await fetchMcpWithFallback(
+    c.env,
+    newRequest.url,
+    {
+      method: newRequest.method,
+      headers: Object.fromEntries(proxyHeaders.entries()),
+      ...(hasBody && newRequest.body != null
+        ? { body: newRequest.body, duplex: "half" as const }
+        : {}),
+    } as RequestInit,
+    c.get("traceId"),
+  );
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -844,11 +878,14 @@ export const mainOauthDeviceApproveHandler = async (
   const body = await c.req.json<{ user_code: string }>();
   const newRequest = new Request(url.toString(), {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Internal-Secret": c.env.MCP_INTERNAL_SECRET,
-      "X-Request-Id": c.get("requestId"),
-    },
+    headers: withTraceHeaders(
+      {
+        "Content-Type": "application/json",
+        "X-Internal-Secret": c.env.MCP_INTERNAL_SECRET,
+        "X-Request-Id": c.get("requestId"),
+      },
+      c.get("traceId"),
+    ),
     body: JSON.stringify({ user_code: body.user_code, user_id: userId }),
   });
   const response = await c.env.MCP_SERVICE.fetch(newRequest);
@@ -942,6 +979,8 @@ export const apiAuthAllHandler = async (
   newRequest.headers.set("X-Forwarded-Host", "spike.land");
   newRequest.headers.set("X-Forwarded-Proto", "https");
   newRequest.headers.set("X-Request-Id", c.get("requestId"));
+  // BUG-S6-04: propagate trace id to mcp-auth so its log lines join the chain
+  newRequest.headers.set("x-trace-id", c.get("traceId"));
 
   let response: Response;
   try {

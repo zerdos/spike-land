@@ -18,7 +18,15 @@ const ANONYMOUS_TOOLS = new Set([
 
 export type UserRole = "user" | "admin" | "super_admin";
 
-export type AuthVariables = { userId: string; db: DrizzleDB; userRole: UserRole };
+export type AuthVariables = {
+  userId: string;
+  db: DrizzleDB;
+  userRole: UserRole;
+  /** Cross-service correlation id (BUG-S6-04). */
+  traceId: string;
+  /** Optional parent span id propagated from caller (BUG-S6-04). */
+  parentSpanId?: string;
+};
 
 /** Resolve a user's role from the database, defaulting to "user" on any error. */
 async function resolveUserRole(db: DrizzleDB, userId: string): Promise<UserRole> {

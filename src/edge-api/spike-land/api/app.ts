@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { tracingMiddleware, withTraceHeaders } from "@spike-land-ai/shared";
 import { captureWorkerException } from "../../common/core-logic/sentry";
 import {
   buildStandardHealthResponse,
@@ -24,6 +25,10 @@ import { createRoute } from "./create";
 
 export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
   const app = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
+
+  // Distributed tracing — must be FIRST so traceId propagates to all
+  // downstream middleware/handlers and outgoing fetches (BUG-S6-04).
+  app.use("*", tracingMiddleware({ worker: "spike-land-mcp" }));
 
   app.use(
     "*",
@@ -93,12 +98,11 @@ export function createApp(): Hono<{ Bindings: Env; Variables: AuthVariables }> {
     captureWorkerException("spike-land-mcp", err, { request: c.req.raw });
     console.error("[spike-land-mcp] Unhandled error:", err);
     if (c.env.SPIKE_EDGE) {
+      const traceId = c.get("traceId");
       c.executionCtx.waitUntil(
         c.env.SPIKE_EDGE.fetch("https://edge.spike.land/errors/ingest", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: withTraceHeaders({ "Content-Type": "application/json" }, traceId),
           body: JSON.stringify({
             errors: [
               {

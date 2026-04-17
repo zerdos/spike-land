@@ -3,7 +3,7 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import * as Sentry from "@sentry/cloudflare";
 import { z } from "zod";
 import { drizzle } from "drizzle-orm/d1";
-import { AUTH_ALLOWED_ORIGINS } from "@spike-land-ai/shared";
+import { AUTH_ALLOWED_ORIGINS, withTracingFetch } from "@spike-land-ai/shared";
 import * as schema from "./schema";
 import { createAuth, type Env } from "../db-auth/auth";
 import {
@@ -89,8 +89,10 @@ function normalizeAuthRequest(request: Request): Request {
   return request;
 }
 
-export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("mcp-auth", env), {
-  async fetch(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
+// BUG-S6-04: trace id extracted/created and structured log emitted per request.
+const tracedFetch = withTracingFetch<Env, ExecutionContext>(
+  "mcp-auth",
+  async (request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> => {
     const instrumentedEnv = instrumentD1Bindings(env, ["AUTH_DB", "STATUS_DB"]);
     const startedAt = Date.now();
     const shouldTrack = shouldTrackServiceMetricRequest(request);
@@ -351,4 +353,8 @@ export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("mcp-au
       }
     }
   },
+);
+
+export default Sentry.withSentry((env: Env) => createWorkerSentryOptions("mcp-auth", env), {
+  fetch: tracedFetch,
 } satisfies ExportedHandler<Env>);
