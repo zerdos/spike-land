@@ -210,6 +210,42 @@ export function registerCampaignTools(server: McpServer, client: GoogleAdsClient
   });
 
   createZodTool(server, {
+    name: "ads_get_campaign",
+    description: "Fetch a single Google Ads campaign by ID with budget and lifetime metrics",
+    schema: {
+      campaign_id: z.string().min(1).describe("Campaign ID to fetch"),
+    },
+    async handler({ campaign_id }) {
+      const campaignId = String(campaign_id);
+      const query = `SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, campaign_budget.amount_micros, metrics.impressions, metrics.clicks, metrics.cost_micros FROM campaign WHERE campaign.id = ${campaignId} LIMIT 1`;
+
+      const result = await tryCatch(client.search(query));
+      if (!result.ok) {
+        return errorResult("API_ERROR", result.error.message, true);
+      }
+
+      const rows = result.data as CampaignRow[];
+      const row = rows[0];
+      if (!row) {
+        return errorResult("NOT_FOUND", `Campaign ${campaignId} not found`, false);
+      }
+
+      return jsonResult({
+        id: row.campaign?.id,
+        name: row.campaign?.name,
+        status: row.campaign?.status,
+        channel_type: row.campaign?.advertisingChannelType,
+        budget: row.campaignBudget?.amountMicros
+          ? microsToCurrency(Number(row.campaignBudget.amountMicros))
+          : null,
+        impressions: Number(row.metrics?.impressions ?? 0),
+        clicks: Number(row.metrics?.clicks ?? 0),
+        cost: row.metrics?.costMicros ? microsToCurrency(Number(row.metrics.costMicros)) : 0,
+      });
+    },
+  });
+
+  createZodTool(server, {
     name: "ads_list_ad_groups",
     description: "List ad groups for a specific Google Ads campaign",
     schema: {
