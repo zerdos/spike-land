@@ -1,4 +1,5 @@
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { glob } from "glob";
 import { Project } from "ts-morph";
 
@@ -27,7 +28,78 @@ export interface PipelineResult {
   srcDir: string;
 }
 
-export async function runPipeline(srcDir?: string, _incremental = false): Promise<PipelineResult> {
+export interface PipelineOptions {
+  /**
+   * Legacy flag — when true, defaults the diff base to `HEAD` (uncommitted
+   * changes). Prefer `since` for an explicit ref.
+   */
+  incremental?: boolean;
+  /**
+   * Git ref (e.g. `HEAD~1`, `origin/main`, or a SHA). When set, the pipeline
+   * intersects its candidate file set with the output of
+   * `git diff --name-only --diff-filter=ACMR <since>...HEAD` and only
+   * processes files that appear in both. When unset, every TypeScript file in
+   * `srcDir` is processed (full sweep) — identical to legacy behavior.
+   *
+   * Falls back to the `REORGANIZE_SINCE` environment variable so CI can opt in
+   * without changing call sites.
+   */
+  since?: string;
+}
+
+/**
+ * Injection seam used by tests to swap the git invocation. Production code
+ * should not call this directly — pass `since` to {@link runPipeline} instead.
+ */
+export interface GitDiffRunner {
+  (since: string, cwd: string): string[] | null;
+}
+
+function defaultGitDiff(since: string, cwd: string): string[] | null {
+  const result = spawnSync(
+    "git",
+    ["diff", "--name-only", "--diff-filter=ACMR", `${since}...HEAD`],
+    { cwd, encoding: "utf-8" },
+  );
+  if (result.error || result.status !== 0) {
+    const reason =
+      result.error?.message ?? result.stderr?.trim() ?? `git exited with code ${result.status}`;
+    console.warn(
+      `[reorganize] git diff failed for since='${since}' (${reason}); falling back to full sweep.`,
+    );
+    return null;
+  }
+  return result.stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+let gitDiffRunner: GitDiffRunner = defaultGitDiff;
+
+/** Test-only helper to override the git diff invocation. */
+export function __setGitDiffRunnerForTests(runner: GitDiffRunner | null): void {
+  gitDiffRunner = runner ?? defaultGitDiff;
+}
+
+function normalizeOptions(arg: PipelineOptions | boolean | undefined): PipelineOptions {
+  if (typeof arg === "boolean") return { incremental: arg };
+  return arg ?? {};
+}
+
+function resolveSince(opts: PipelineOptions): string | undefined {
+  if (opts.since && opts.since.length > 0) return opts.since;
+  const envSince = process.env.REORGANIZE_SINCE;
+  if (envSince && envSince.length > 0) return envSince;
+  if (opts.incremental) return "HEAD";
+  return undefined;
+}
+
+export async function runPipeline(
+  srcDir?: string,
+  options?: PipelineOptions | boolean,
+): Promise<PipelineResult> {
+  const opts = normalizeOptions(options);
   const resolvedSrcDir = srcDir
     ? path.resolve(process.cwd(), srcDir)
     : path.resolve(process.cwd(), "src");
@@ -39,35 +111,39 @@ export async function runPipeline(srcDir?: string, _incremental = false): Promis
     skipAddingFilesFromTsConfig: true,
   });
 
-  // Incremental mode: only changed files
-  let filesToProcess: string[] = [];
-  if (_incremental) {
-    try {
-      const { execSync } = await import("node:child_process");
-      const stdout = execSync("git diff --name-only HEAD", { encoding: "utf-8" });
-      filesToProcess = stdout
-        .split("\n")
-        .filter((f) => f.startsWith("src/") && (f.endsWith(".ts") || f.endsWith(".tsx")))
-        .map((f) => path.resolve(process.cwd(), f));
-    } catch (_e) {
-      // git diff unavailable (not a git repo, git not installed, etc.) — proceed without diff context
-    }
-  }
-
   const allFiles = await glob("**/*.{ts,tsx}", {
     cwd: resolvedSrcDir,
     ignore: excludeGlobs,
     absolute: true,
   });
 
-  project.addSourceFilesAtPaths(allFiles);
+  // Incremental filtering — intersect candidate files with git diff output.
+  const since = resolveSince(opts);
+  let candidateFiles = allFiles;
+  if (since) {
+    const diff = gitDiffRunner(since, process.cwd());
+    if (diff !== null) {
+      const cwd = process.cwd();
+      const diffAbs = new Set(
+        diff
+          .filter((f) => f.endsWith(".ts") || f.endsWith(".tsx"))
+          .map((f) => path.resolve(cwd, f)),
+      );
+      candidateFiles = allFiles.filter((f) => diffAbs.has(f));
+    }
+    // If diff === null, defaultGitDiff has already logged a warning and we
+    // proceed with the full sweep — don't crash the pipeline.
+  }
+
+  project.addSourceFilesAtPaths(candidateFiles);
 
   const { nodes: allNodes, aliasMap } = await discoverFiles(project, resolvedSrcDir);
 
-  // Incremental mode: only keep nodes for files we wanted to process
+  // When filtering, candidateFiles is a strict subset of allFiles; intersect
+  // discovered nodes against it so callers only see the changed slice.
   const nodes =
-    filesToProcess.length > 0
-      ? allNodes.filter((node) => filesToProcess.includes(node.absPath))
+    since && candidateFiles.length !== allFiles.length
+      ? allNodes.filter((node) => candidateFiles.includes(node.absPath))
       : allNodes;
 
   propagateDeps(nodes);

@@ -14,10 +14,19 @@ export function registerDiscoverTool(server: McpServer): void {
       incremental: z.coerce
         .boolean()
         .optional()
-        .describe("Only process git-changed files (default: false)"),
+        .describe("Only process git-changed files vs HEAD (default: false)"),
+      since: z
+        .string()
+        .optional()
+        .describe(
+          "Git ref (e.g. 'origin/main', 'HEAD~1', a SHA). When set, only files in `git diff <since>...HEAD` are processed.",
+        ),
     },
-    handler: async ({ src, incremental }) => {
-      const { nodes, packageCategories } = await runPipeline(src, incremental ?? false);
+    handler: async ({ src, incremental, since }) => {
+      const opts: { incremental?: boolean; since?: string } = {};
+      if (incremental !== undefined) opts.incremental = incremental;
+      if (since !== undefined) opts.since = since;
+      const { nodes, packageCategories } = await runPipeline(src, opts);
 
       const byPackage = new Map<string, { fileCount: number; externalDeps: Set<string> }>();
       for (const n of nodes) {
