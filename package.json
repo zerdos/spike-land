@@ -266,6 +266,7 @@
     "tar": ">=7.5.11",
     "immutable": ">=5.1.5",
     "hono": ">=4.12.7",
-    "@hono/node-server": ">=1.19.11"
+    "@hono/node-server": ">=1.19.11",
+    "framer-motion": "npm:11.18.2"
   }
 }
