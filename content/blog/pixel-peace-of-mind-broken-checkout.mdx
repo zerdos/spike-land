@@ -1,0 +1,90 @@
+---
+title: "Google Pixel Peace of Mind: £75 You Cannot Give Them"
+slug: "pixel-peace-of-mind-broken-checkout"
+description: "Google Pixel 9 Pro insurance claim. £75 excess. Money in the account. Card declined four times by Google's own checkout. No human support wanted. Just the refund. Apple does this better."
+date: "2026-04-18"
+author: "Zoltán Erdős"
+category: "Rant"
+tags: ["google-pixel", "peace-of-mind", "insurance", "checkout", "payments", "ux", "apple", "frustration"]
+featured: false
+draft: false
+primer: "A checkout that refuses a working card four times is not a checkout. It is a wall with a logo on it."
+heroImage: "/blog/pixel-peace-of-mind-broken-checkout/hero.png"
+---
+
+## The Product
+
+Google sells a Pixel 9 Pro. Google sells **Preferred Care / Peace of Mind** with the phone. The pitch is simple: pay monthly, and when something goes wrong, pay a £75 excess and Google makes it right.
+
+That is the deal. That is what I bought.
+
+## The Claim
+
+Something went wrong. I opened a claim. The system accepted the claim. The system told me the excess was **£75**. The system asked for a card.
+
+I gave it a card. A card with money on it. My card. My money. My phone. My claim.
+
+**Declined.**
+
+Try again. Declined. Try again. Declined. Try again. Declined.
+
+Four attempts. Four declines. Zero explanation. The money is in the account. The card works everywhere else — supermarkets, fuel, other subscriptions, other merchants. The only place the card does not work is the one place I need it to work: Google's own Peace of Mind checkout.
+
+There is nothing *peaceful* about this.
+
+## The Script
+
+At this point the system offers me a human. "Chat with an agent." "Speak to support." "We'll call you back."
+
+**No.**
+
+I do not want to narrate my card number to a stranger. I do not want to explain to someone reading a script that yes, I have tried a different browser, and yes, I have cleared my cookies, and yes, the card has money. I do not want to be on hold. I do not want to be transferred. I do not want to be asked for a reference number I do not have because the claim never completed because the checkout broke.
+
+I want the thing I already bought, on the terms I already agreed to, through the interface Google built for exactly this transaction.
+
+Either the checkout works, or it does not. A human on the phone is not a checkout. A human on the phone is an apology wearing a headset.
+
+## The Ask
+
+So here is the new position.
+
+I am not paying the £75. I tried. Four times. Google's own system refused to take my money. That is Google's problem, not mine.
+
+I want **a refund** on the Peace of Mind subscription I have been paying for a product that, at the moment of truth, could not process the only transaction it exists to process. If the checkout cannot take my money when the policy is active, the policy is not active in any meaningful sense. It is a monthly direct debit with theatre.
+
+Give me the money back. Keep the phone programme. I will go elsewhere.
+
+## The Comparison
+
+I do not say this lightly, but it has to be said:
+
+**Apple does this better.**
+
+AppleCare+ claims go through the Apple Store app. You pick the device. You pick the issue. You pay the excess with the card already on your Apple ID — the one that handles every other Apple transaction you have ever made. It works. It has always worked. When it does not, you walk into an Apple Store and a human with authority — not a script — makes it right in under thirty minutes.
+
+I am not an Apple fan. I use a Pixel. I like the Pixel. I wrote a [love song to the Pixel](/blog/pixel-flashlight) yesterday. The hardware is good. The camera is good. The Tensor chip is good.
+
+The **service layer around the hardware** is not good. And service is what you are actually buying when you pay monthly for "Peace of Mind."
+
+## The Fix
+
+This is not a hard problem.
+
+1. **Log the decline reason.** When a card fails on Google's checkout, tell the user *why*. AVS mismatch? 3DS challenge failed? Fraud rule? Merchant category block? The bank knows. The processor knows. Google knows. The user does not know. Show them.
+2. **Retry with an alternate processor.** Four consecutive declines on the same PSP should automatically fail over. Stripe, Adyen, Braintree, GoCardless — pick a backup. This is a solved problem in 2026.
+3. **Allow Google Pay / Apple Pay / PayPal / bank transfer for the excess.** One rail is a single point of failure. Peace of Mind should have, at minimum, two.
+4. **If the checkout fails four times in a row, waive the excess.** It is cheaper than the churn, the refund request, and the blog post. Yes, this one.
+
+Four small changes. Zero collateral damage. Actual peace of mind.
+
+## The Line
+
+I paid for a service. The service has one job at the moment I need it. The service cannot do its one job.
+
+Sort your shit out, Google.
+
+Refund the subscription. Keep the £75. I am done.
+
+---
+
+*Written from Brighton, on a Pixel, with a working card that Google's checkout refuses to charge.*
