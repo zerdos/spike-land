@@ -29,7 +29,12 @@ const getCorsHeaders = (requestOrigin?: string | null) => {
   } as const;
 };
 
-export const handleGetRequest = async (codeSpace: string, origin: string) => {
+export const handleGetRequest = async (
+  codeSpace: string,
+  origin: string,
+  requestOrigin?: string | null,
+) => {
+  const cors = getCorsHeaders(requestOrigin);
   try {
     const results = await build({
       codeSpace,
@@ -41,13 +46,13 @@ export const handleGetRequest = async (codeSpace: string, origin: string) => {
     });
 
     if (!results) {
-      return new Response("No results", { status: 404 });
+      return new Response("No results", { status: 404, headers: cors });
     }
 
     if (typeof results === "string") {
       return new Response(results, {
         headers: {
-          ...getCorsHeaders(),
+          ...cors,
           "Content-Type": "application/javascript",
         },
       });
@@ -55,13 +60,13 @@ export const handleGetRequest = async (codeSpace: string, origin: string) => {
 
     return new Response(JSON.stringify(results), {
       headers: {
-        ...getCorsHeaders(),
+        ...cors,
         "Content-Type": "application/json",
       },
     });
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    return new Response(err.message, { status: 500 });
+    return new Response(err.message, { status: 500, headers: cors });
   }
 };
 
@@ -76,10 +81,11 @@ async function hashCode(code: string): Promise<string> {
 }
 
 export const handlePostRequest = async (request: Request, ctx?: ExecutionContext) => {
+  const cors = getCorsHeaders(request.headers.get("Origin"));
   try {
     const code = await request.text();
     if (!code) {
-      return new Response("Empty code body", { status: 400 });
+      return new Response("Empty code body", { status: 400, headers: cors });
     }
     const origin = request.headers.get("TR_ORIGIN") ?? "";
 
@@ -91,10 +97,9 @@ export const handlePostRequest = async (request: Request, ctx?: ExecutionContext
     const cached = await cache.match(cacheKey);
     if (cached) {
       const cloned = cached.clone();
-      const corsHeaders = getCorsHeaders(request.headers.get("Origin"));
       const headers = new Headers(cloned.headers);
-      headers.set("Access-Control-Allow-Origin", corsHeaders["Access-Control-Allow-Origin"]);
-      headers.set("Access-Control-Allow-Headers", corsHeaders["Access-Control-Allow-Headers"]);
+      headers.set("Access-Control-Allow-Origin", cors["Access-Control-Allow-Origin"]);
+      headers.set("Access-Control-Allow-Headers", cors["Access-Control-Allow-Headers"]);
       return new Response(cloned.body, {
         status: cloned.status,
         statusText: cloned.statusText,
@@ -106,7 +111,7 @@ export const handlePostRequest = async (request: Request, ctx?: ExecutionContext
 
     const response = new Response(respText, {
       headers: {
-        ...getCorsHeaders(request.headers.get("Origin")),
+        ...cors,
         "Content-Type": "application/javascript",
         "Cache-Control": "public, max-age=86400, immutable",
       },
@@ -122,7 +127,7 @@ export const handlePostRequest = async (request: Request, ctx?: ExecutionContext
     return response;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    return new Response(err.message || "Unknown error", { status: 500 });
+    return new Response(err.message || "Unknown error", { status: 500, headers: cors });
   }
 };
 
@@ -164,7 +169,7 @@ export default {
       }
 
       if (request.method === "GET") {
-        return handleGetRequest(codeSpace, origin);
+        return handleGetRequest(codeSpace, origin, request.headers.get("Origin"));
       }
 
       if (request.method === "POST") {
