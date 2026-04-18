@@ -37,20 +37,20 @@
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "playwright": "^1.58.2",
+    "playwright": "^1.59.1",
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@changesets/cli": "2.30.0",
+    "@changesets/cli": "^2.31.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "25.4.0",
-    "@vitest/coverage-v8": "4.1.0",
-    "eslint": "10.0.3",
-    "tsup": "8.5.1",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.57.0",
-    "vitest": "4.1.0"
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "eslint": "^10.2.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.4"
   },
   "keywords": [
     "qa",

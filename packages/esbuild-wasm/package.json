@@ -20,7 +20,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@changesets/cli": "2.30.0"
+    "@changesets/cli": "^2.31.0"
   },
   "overrides": {
     "@types/node": "22.0.0"

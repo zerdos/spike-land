@@ -24,11 +24,11 @@
     "@spike-land-ai/shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "25.4.0",
-    "@vitest/coverage-v8": "4.1.0",
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "chess.js": "^1.4.0",
-    "typescript": "5.9.3",
-    "vitest": "4.1.0"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
   },
   "peerDependencies": {
     "chess.js": ">=1.0.0"

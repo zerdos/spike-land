@@ -23,15 +23,15 @@
     "url": "https://github.com/remotion-dev/remotion/issues"
   },
   "dependencies": {
-    "@remotion/paths": "4.0.446",
-    "@remotion/shapes": "4.0.446",
+    "@remotion/paths": "^4.0.448",
+    "@remotion/shapes": "^4.0.448",
     "remotion": "4.0.435"
   },
   "devDependencies": {
-    "@happy-dom/global-registrator": "14.12.3",
-    "@remotion/player": "4.0.446",
-    "@typescript/native-preview": "7.0.0-dev.20260217.1",
-    "eslint": "9.19.0",
+    "@happy-dom/global-registrator": "^20.9.0",
+    "@remotion/player": "^4.0.448",
+    "@typescript/native-preview": "^7.0.0-dev.20260417.1",
+    "eslint": "^10.2.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.435"

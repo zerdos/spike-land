@@ -1,3 +1,4 @@
+/// <reference types="trusted-types" />
 import { editor } from "monaco-editor-core";
 
 /**

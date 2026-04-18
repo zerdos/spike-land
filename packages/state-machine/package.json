@@ -30,10 +30,10 @@
     "lint": "eslint --quiet ."
   },
   "devDependencies": {
-    "@types/node": "25.4.0",
-    "@vitest/coverage-v8": "4.1.0",
-    "typescript": "5.9.3",
-    "vitest": "4.1.0"
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
   },
   "publishConfig": {
     "access": "public"

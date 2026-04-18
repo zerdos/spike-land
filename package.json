@@ -113,30 +113,30 @@
     "zod": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
-    "@changesets/cli": "2.30.0",
-    "@cloudflare/puppeteer": "^1.0.6",
+    "@biomejs/biome": "^2.4.12",
+    "@changesets/cli": "^2.31.0",
+    "@cloudflare/puppeteer": "^1.1.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "@spike-land-ai/shared": "workspace:*",
     "@testing-library/user-event": "^14.6.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.4.0",
-    "@vitest/coverage-v8": "4.1.0",
-    "esbuild": "^0.27.4",
-    "eslint": "10.0.3",
-    "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "7.0.1",
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "fake-indexeddb": "^6.2.5",
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
-    "playwright": "^1.58.2",
-    "ts-morph": "^27.0.2",
+    "playwright": "^1.59.1",
+    "ts-morph": "^28.0.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "8.57.0",
-    "vitest": "4.1.0",
-    "wrangler": "^4.72.0"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.4",
+    "wrangler": "^4.83.0"
   },
   "dependenciesMeta": {
     "@biomejs/biome": {
@@ -261,14 +261,11 @@
     }
   },
   "resolutions": {
-    "eslint": "10.0.3",
-    "typescript": "5.9.3",
     "@modelcontextprotocol/sdk": "1.27.1",
     "dompurify": ">=3.3.1",
     "tar": ">=7.5.11",
     "immutable": ">=5.1.5",
     "hono": ">=4.12.7",
-    "@hono/node-server": ">=1.19.11",
-    "framer-motion": "npm:11.18.2"
+    "@hono/node-server": ">=1.19.11"
   }
 }
