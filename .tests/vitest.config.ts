@@ -65,6 +65,7 @@ const packagePathMap: Record<string, string> = {
   "spike-chat": "edge-api/spike-chat",
   "spike-land-backend": "edge-api/backend",
   "spike-land-mcp": "edge-api/spike-land",
+  "spike-notepad": "edge-api/spike-notepad",
   "spike-review": "mcp-tools/code-review",
   "stripe-analytics-mcp": "mcp-tools/stripe-analytics",
   "reorganize-mcp": "mcp-tools/reorganize",
@@ -467,6 +468,14 @@ const packages: Record<string, PkgConfig> = {
       "**/*.wasm",
       "**/esbuild-defs.ts",
     ],
+  },
+
+  "spike-notepad": {
+    tier: 3,
+    pool: "forks",
+    includeTests: [src("edge-api/spike-notepad/__tests__/**/*.test.ts")],
+    includeSrc: [src("edge-api/spike-notepad/api/routes/connections.ts")],
+    coverageExclude: [],
   },
 
   "spike-land-mcp": {

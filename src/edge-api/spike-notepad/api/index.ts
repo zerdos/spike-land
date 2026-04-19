@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 
 import type { Env, Variables } from "../core-logic/env";
 import { canvas } from "./routes/canvas";
+import { connections } from "./routes/connections";
 import { health } from "./routes/health";
 import { notes } from "./routes/notes";
 import { projects } from "./routes/projects";
@@ -37,6 +38,7 @@ app.use("*", async (c, next) => {
 app.route("/", health);
 app.route("/", projects);
 app.route("/", notes);
+app.route("/", connections);
 app.route("/", canvas);
 
 app.onError((err, c) => {

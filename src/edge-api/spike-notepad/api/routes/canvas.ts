@@ -55,9 +55,12 @@ canvas.get("/app", (c) => {
       position: fixed; top: 48px; left: 0; right: 0; bottom: 28px;
       overflow: hidden; cursor: crosshair;
     }
+    #canvas.pan-ready { cursor: grab; }
+    #canvas.panning { cursor: grabbing; }
     #canvas-inner {
-      position: absolute; width: 10000px; height: 10000px;
+      position: absolute; left: 0; top: 0; width: 10000px; height: 10000px;
       transform-origin: 0 0;
+      will-change: transform;
     }
 
     /* Grid */
@@ -122,6 +125,37 @@ canvas.get("/app", (c) => {
     }
     .note-pin:hover, .note.pinned .note-pin { opacity: 1; }
 
+    /* Connection anchor — visible on hover, used for shift+drag to connect */
+    .note-anchor {
+      position: absolute; left: -6px; top: 50%; width: 12px; height: 12px;
+      transform: translateY(-50%); border-radius: 50%; background: #7c8aff;
+      opacity: 0; cursor: crosshair; transition: opacity 0.15s;
+      box-shadow: 0 0 0 2px #0a0a0f;
+    }
+    .note:hover .note-anchor { opacity: 1; }
+
+    /* Connection SVG layer — inside canvas-inner so it pans/zooms together */
+    #conn-layer {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; overflow: visible;
+    }
+    #conn-layer .conn-line {
+      stroke: #3a3a55; stroke-width: 2; fill: none;
+      pointer-events: stroke; cursor: pointer;
+      transition: stroke 0.15s, stroke-width 0.15s;
+    }
+    #conn-layer .conn-hit {
+      stroke: transparent; stroke-width: 14; fill: none;
+      pointer-events: stroke; cursor: pointer;
+    }
+    #conn-layer g.conn:hover .conn-line { stroke: #f77; stroke-width: 3; }
+    #conn-layer g.conn:hover .conn-arrow { fill: #f77; }
+    #conn-layer .conn-arrow { fill: #3a3a55; transition: fill 0.15s; }
+    #conn-layer .conn-preview {
+      stroke: #7c8aff; stroke-width: 2; fill: none;
+      stroke-dasharray: 6 4; pointer-events: none;
+    }
+
     /* Empty state */
     #empty-state {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -160,9 +194,10 @@ canvas.get("/app", (c) => {
 
   <div id="canvas">
     <div id="canvas-inner">
+      <svg id="conn-layer" width="10000" height="10000" viewBox="0 0 10000 10000" preserveAspectRatio="none"></svg>
       <div id="empty-state">
         <h2>Click anywhere to create a note</h2>
-        <p>Double-click to edit &middot; Drag to move &middot; Right-click for options</p>
+        <p>Double-click to edit &middot; Drag to move &middot; Space+drag to pan &middot; Ctrl+scroll to zoom &middot; Shift-drag from a note's left anchor to connect</p>
       </div>
     </div>
   </div>
@@ -171,6 +206,8 @@ canvas.get("/app", (c) => {
     <span><span class="status-dot"></span> Connected</span>
     <span id="statusNotes">0 notes</span>
     <span id="statusSaved">Saved</span>
+    <span id="statusZoom" style="margin-left:auto;font-variant-numeric:tabular-nums">100%</span>
+    <span id="statusCoords" style="font-variant-numeric:tabular-nums;min-width:140px;text-align:right">0, 0</span>
   </div>
 
   <div id="context-menu">
@@ -181,18 +218,58 @@ canvas.get("/app", (c) => {
 
   <script>
     const API = '';
+    const MIN_ZOOM = 0.1;
+    const MAX_ZOOM = 3;
+    const NOTE_W = 280;
+    const NOTE_H_EST = 80;
     let projectId = null;
     let notesMap = new Map();
+    let connMap = new Map();
     let dragState = null;
+    let panState = null;
+    let connectState = null;
+    let spaceHeld = false;
     let editingNoteId = null;
     let contextNoteId = null;
     let saveTimers = new Map();
-    let panOffset = { x: 0, y: 0 };
+    let viewport = { x: 0, y: 0, zoom: 1 };
+    let lastPointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
     const canvasEl = document.getElementById('canvas');
     const innerEl = document.getElementById('canvas-inner');
+    const connLayer = document.getElementById('conn-layer');
     const emptyState = document.getElementById('empty-state');
     const ctxMenu = document.getElementById('context-menu');
+    const zoomEl = document.getElementById('statusZoom');
+    const coordsEl = document.getElementById('statusCoords');
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+
+    function applyViewport() {
+      innerEl.style.transform = 'translate(' + viewport.x + 'px,' + viewport.y + 'px) scale(' + viewport.zoom + ')';
+      zoomEl.textContent = Math.round(viewport.zoom * 100) + '%';
+    }
+
+    function screenToWorld(sx, sy) {
+      const rect = canvasEl.getBoundingClientRect();
+      return {
+        x: (sx - rect.left - viewport.x) / viewport.zoom,
+        y: (sy - rect.top - viewport.y) / viewport.zoom,
+      };
+    }
+
+    function zoomAt(screenX, screenY, newZoom) {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+      const rect = canvasEl.getBoundingClientRect();
+      const cx = screenX - rect.left;
+      const cy = screenY - rect.top;
+      const wx = (cx - viewport.x) / viewport.zoom;
+      const wy = (cy - viewport.y) / viewport.zoom;
+      viewport.zoom = newZoom;
+      viewport.x = cx - wx * newZoom;
+      viewport.y = cy - wy * newZoom;
+      applyViewport();
+    }
 
     // --- Init ---
     async function init() {
@@ -218,19 +295,131 @@ canvas.get("/app", (c) => {
     }
 
     async function loadNotes() {
-      const res = await fetch(API + '/api/projects/' + projectId + '/notes');
-      const data = await res.json();
+      const [notesRes, connsRes] = await Promise.all([
+        fetch(API + '/api/projects/' + projectId + '/notes'),
+        fetch(API + '/api/projects/' + projectId + '/connections'),
+      ]);
+      const notesData = await notesRes.json();
+      const connsData = await connsRes.json();
 
       // Clear existing
       document.querySelectorAll('.note').forEach(el => el.remove());
       notesMap.clear();
+      connMap.clear();
 
-      data.notes.forEach(n => {
+      notesData.notes.forEach(n => {
         notesMap.set(n.id, n);
         renderNote(n);
       });
+      (connsData.connections || []).forEach(c => connMap.set(c.id, c));
 
+      redrawConnections();
       updateCounts();
+    }
+
+    function noteCenter(note) {
+      const el = document.getElementById('note-' + note.id);
+      const h = el ? el.offsetHeight : NOTE_H_EST;
+      return { x: note.position_x + NOTE_W / 2, y: note.position_y + h / 2 };
+    }
+
+    function noteRectEdgePoint(note, towardX, towardY) {
+      const el = document.getElementById('note-' + note.id);
+      const h = el ? el.offsetHeight : NOTE_H_EST;
+      const cx = note.position_x + NOTE_W / 2;
+      const cy = note.position_y + h / 2;
+      const dx = towardX - cx;
+      const dy = towardY - cy;
+      if (dx === 0 && dy === 0) return { x: cx, y: cy };
+      const halfW = NOTE_W / 2;
+      const halfH = h / 2;
+      const scale = Math.min(halfW / Math.abs(dx || 1), halfH / Math.abs(dy || 1));
+      return { x: cx + dx * scale, y: cy + dy * scale };
+    }
+
+    function redrawConnections() {
+      while (connLayer.firstChild) connLayer.removeChild(connLayer.firstChild);
+      connMap.forEach(c => {
+        const src = notesMap.get(c.source_note_id);
+        const dst = notesMap.get(c.target_note_id);
+        if (!src || !dst) return;
+        const srcCenter = noteCenter(src);
+        const dstCenter = noteCenter(dst);
+        const a = noteRectEdgePoint(src, dstCenter.x, dstCenter.y);
+        const b = noteRectEdgePoint(dst, srcCenter.x, srcCenter.y);
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        // Perpendicular offset for a gentle curve
+        const curve = Math.min(80, dist * 0.25);
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        const mx = (a.x + b.x) / 2 + nx * curve;
+        const my = (a.y + b.y) / 2 + ny * curve;
+        const d = 'M ' + a.x + ' ' + a.y + ' Q ' + mx + ' ' + my + ' ' + b.x + ' ' + b.y;
+
+        // Arrow head — triangle pointing at b, tangent direction approximated from (mx,my)->b
+        const tdx = b.x - mx;
+        const tdy = b.y - my;
+        const tlen = Math.hypot(tdx, tdy) || 1;
+        const ux = tdx / tlen;
+        const uy = tdy / tlen;
+        const size = 10;
+        const base = 6;
+        const tipX = b.x;
+        const tipY = b.y;
+        const leftX = tipX - ux * size - uy * base;
+        const leftY = tipY - uy * size + ux * base;
+        const rightX = tipX - ux * size + uy * base;
+        const rightY = tipY - uy * size - ux * base;
+        const arrowPoints = tipX + ',' + tipY + ' ' + leftX + ',' + leftY + ' ' + rightX + ',' + rightY;
+
+        const g = document.createElementNS(SVG_NS, 'g');
+        g.setAttribute('class', 'conn');
+        g.dataset.connId = c.id;
+
+        const hit = document.createElementNS(SVG_NS, 'path');
+        hit.setAttribute('class', 'conn-hit');
+        hit.setAttribute('d', d);
+        g.appendChild(hit);
+
+        const line = document.createElementNS(SVG_NS, 'path');
+        line.setAttribute('class', 'conn-line');
+        line.setAttribute('d', d);
+        g.appendChild(line);
+
+        const arrow = document.createElementNS(SVG_NS, 'polygon');
+        arrow.setAttribute('class', 'conn-arrow');
+        arrow.setAttribute('points', arrowPoints);
+        g.appendChild(arrow);
+
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!confirm('Delete this connection?')) return;
+          deleteConnection(c.id);
+        });
+
+        connLayer.appendChild(g);
+      });
+    }
+
+    async function createConnection(sourceId, targetId) {
+      const res = await fetch(API + '/api/projects/' + projectId + '/connections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_note_id: sourceId, target_note_id: targetId }),
+      });
+      if (!res.ok) return;
+      const c = await res.json();
+      connMap.set(c.id, c);
+      redrawConnections();
+    }
+
+    async function deleteConnection(id) {
+      await fetch(API + '/api/connections/' + id, { method: 'DELETE' });
+      connMap.delete(id);
+      redrawConnections();
     }
 
     // --- Render ---
@@ -250,6 +439,7 @@ canvas.get("/app", (c) => {
         .join('');
 
       el.innerHTML =
+        '<div class="note-anchor" data-anchor="1"></div>' +
         '<span class="note-type type-' + note.type + '">' + note.type + '</span>' +
         '<span class="note-pin">' + (note.pinned ? '📌' : '📍') + '</span>' +
         '<div class="note-content">' + escHtml(note.content) + '</div>' +
@@ -292,10 +482,8 @@ canvas.get("/app", (c) => {
 
     function createNoteAtCenter() {
       const rect = canvasEl.getBoundingClientRect();
-      createNoteAt(
-        rect.width / 2 - 140 - panOffset.x,
-        rect.height / 2 - 30 - panOffset.y
-      );
+      const center = screenToWorld(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      createNoteAt(center.x - 140, center.y - 30);
     }
 
     // --- Canvas click to create ---
@@ -303,17 +491,23 @@ canvas.get("/app", (c) => {
       if (e.target !== canvasEl && e.target !== innerEl && !e.target.closest('#empty-state')) return;
       closeContextMenu();
       if (editingNoteId) { finishEdit(editingNoteId); return; }
-
-      const rect = canvasEl.getBoundingClientRect();
-      const x = e.clientX - rect.left - panOffset.x;
-      const y = e.clientY - rect.top - panOffset.y;
-      createNoteAt(x, y);
+      if (panState && panState.moved) return; // suppress create after pan
+      const w = screenToWorld(e.clientX, e.clientY);
+      createNoteAt(w.x, w.y);
     });
 
     // --- Drag ---
     function startDrag(e, noteId) {
       if (editingNoteId === noteId) return;
       if (e.button !== 0) return;
+      if (spaceHeld) return; // let canvas-level pan take over
+
+      const isAnchor = e.target && e.target.dataset && e.target.dataset.anchor === '1';
+      if (isAnchor || e.shiftKey) {
+        startConnectionDrag(e, noteId);
+        return;
+      }
+
       e.preventDefault();
 
       const el = document.getElementById('note-' + noteId);
@@ -329,24 +523,81 @@ canvas.get("/app", (c) => {
       };
     }
 
+    function startConnectionDrag(e, sourceId) {
+      e.preventDefault();
+      e.stopPropagation();
+      const src = notesMap.get(sourceId);
+      if (!src) return;
+      const start = noteCenter(src);
+      const preview = document.createElementNS(SVG_NS, 'line');
+      preview.setAttribute('class', 'conn-preview');
+      preview.setAttribute('x1', start.x);
+      preview.setAttribute('y1', start.y);
+      preview.setAttribute('x2', start.x);
+      preview.setAttribute('y2', start.y);
+      connLayer.appendChild(preview);
+      connectState = { sourceId, preview, start };
+    }
+
     document.addEventListener('mousemove', (e) => {
-      if (!dragState) return;
-      const dx = e.clientX - dragState.startX;
-      const dy = e.clientY - dragState.startY;
+      lastPointer.x = e.clientX; lastPointer.y = e.clientY;
+      if (panState) {
+        const dx = e.clientX - panState.startX;
+        const dy = e.clientY - panState.startY;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) panState.moved = true;
+        viewport.x = panState.origX + dx;
+        viewport.y = panState.origY + dy;
+        applyViewport();
+        coordsEl.textContent = Math.round(-viewport.x / viewport.zoom) + ', ' + Math.round(-viewport.y / viewport.zoom);
+        return;
+      }
+      if (connectState) {
+        const w = screenToWorld(e.clientX, e.clientY);
+        connectState.preview.setAttribute('x2', w.x);
+        connectState.preview.setAttribute('y2', w.y);
+        return;
+      }
+      if (!dragState) {
+        const w = screenToWorld(e.clientX, e.clientY);
+        coordsEl.textContent = Math.round(w.x) + ', ' + Math.round(w.y);
+        return;
+      }
+      const dx = (e.clientX - dragState.startX) / viewport.zoom;
+      const dy = (e.clientY - dragState.startY) / viewport.zoom;
       const el = document.getElementById('note-' + dragState.noteId);
       const newX = dragState.origX + dx;
       const newY = dragState.origY + dy;
       el.style.left = newX + 'px';
       el.style.top = newY + 'px';
+
+      // Live-update any connections touching this note
+      const note = notesMap.get(dragState.noteId);
+      if (note) { note.position_x = newX; note.position_y = newY; redrawConnections(); }
     });
 
     document.addEventListener('mouseup', (e) => {
+      if (panState) {
+        canvasEl.classList.remove('panning');
+        if (spaceHeld) canvasEl.classList.add('pan-ready');
+        setTimeout(() => { panState = null; }, 0);
+        return;
+      }
+      if (connectState) {
+        const targetEl = e.target && e.target.closest ? e.target.closest('.note') : null;
+        const targetId = targetEl ? targetEl.dataset.noteId : null;
+        connectState.preview.remove();
+        if (targetId && targetId !== connectState.sourceId) {
+          createConnection(connectState.sourceId, targetId);
+        }
+        connectState = null;
+        return;
+      }
       if (!dragState) return;
       const el = document.getElementById('note-' + dragState.noteId);
       el.classList.remove('dragging');
 
-      const dx = e.clientX - dragState.startX;
-      const dy = e.clientY - dragState.startY;
+      const dx = (e.clientX - dragState.startX) / viewport.zoom;
+      const dy = (e.clientY - dragState.startY) / viewport.zoom;
       const newX = dragState.origX + dx;
       const newY = dragState.origY + dy;
 
@@ -355,9 +606,70 @@ canvas.get("/app", (c) => {
         note.position_x = newX;
         note.position_y = newY;
         saveNote(dragState.noteId, { position_x: newX, position_y: newY });
+        redrawConnections();
       }
 
       dragState = null;
+    });
+
+    // --- Pan + zoom ---
+    function startPan(e) {
+      e.preventDefault();
+      canvasEl.classList.remove('pan-ready');
+      canvasEl.classList.add('panning');
+      panState = {
+        startX: e.clientX, startY: e.clientY,
+        origX: viewport.x, origY: viewport.y,
+        moved: false,
+      };
+    }
+
+    canvasEl.addEventListener('mousedown', (e) => {
+      if (e.button === 1 || (e.button === 0 && spaceHeld)) startPan(e);
+    });
+
+    canvasEl.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) {
+        const factor = Math.exp(-e.deltaY * 0.01);
+        zoomAt(e.clientX, e.clientY, viewport.zoom * factor);
+      } else {
+        viewport.x -= e.deltaX;
+        viewport.y -= e.deltaY;
+        applyViewport();
+      }
+    }, { passive: false });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !editingNoteId && !spaceHeld) {
+        spaceHeld = true;
+        canvasEl.classList.add('pan-ready');
+        e.preventDefault();
+      }
+      if (editingNoteId) return;
+      const rect = canvasEl.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      if ((e.key === '+' || e.key === '=') && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault(); zoomAt(cx, cy, viewport.zoom * 1.2);
+      } else if (e.key === '-' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault(); zoomAt(cx, cy, viewport.zoom / 1.2);
+      } else if (e.key === '0' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        viewport = { x: 0, y: 0, zoom: 1 };
+        applyViewport();
+      } else if ((e.key === 'n' || e.key === 'N') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        const w = screenToWorld(lastPointer.x, lastPointer.y);
+        createNoteAt(w.x - NOTE_W / 2, w.y - NOTE_H_EST / 2);
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        spaceHeld = false;
+        canvasEl.classList.remove('pan-ready');
+      }
     });
 
     // --- Edit ---
@@ -470,6 +782,13 @@ canvas.get("/app", (c) => {
       await fetch(API + '/api/notes/' + contextNoteId, { method: 'DELETE' });
       document.getElementById('note-' + contextNoteId).remove();
       notesMap.delete(contextNoteId);
+      // Server cascade-deletes connections; clean up our local map too
+      connMap.forEach((c, id) => {
+        if (c.source_note_id === contextNoteId || c.target_note_id === contextNoteId) {
+          connMap.delete(id);
+        }
+      });
+      redrawConnections();
       updateCounts();
       closeContextMenu();
     }
@@ -478,11 +797,16 @@ canvas.get("/app", (c) => {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         if (editingNoteId) finishEdit(editingNoteId);
+        if (connectState) {
+          connectState.preview.remove();
+          connectState = null;
+        }
         closeContextMenu();
       }
     });
 
     // --- Start ---
+    applyViewport();
     init();
   </script>
 </body>
