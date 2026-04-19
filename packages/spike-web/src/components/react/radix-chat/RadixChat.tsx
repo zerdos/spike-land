@@ -75,6 +75,20 @@ const PERSONAS: Record<string, PersonaConfig> = {
       "What makes a beat groove?",
     ],
   },
+  suno: {
+    persona: "suno",
+    title: "Suno",
+    accent: "#ec4899",
+    greeting:
+      "Mit \u00edrjunk? Mondj egy \u00e9rz\u00e9st vagy egy sort \u2014 a t\u00f6bbit \u00e9n \u00f6sszerakom.",
+    subtitle: "Songwriter. Suno-ready style prompts + lyrics. Magyarul is.",
+    placeholder: "Mondj egy \u00e9rz\u00e9st, egy sort, egy m\u0171fajt...",
+    suggestions: [
+      "\u00cdrj egy szomor\u00fa indie dalt \u0151szi Brightonr\u00f3l",
+      "Trap banger about debugging at 3am",
+      "Magyar synthpop dal a K\u00e1lvin t\u00e9rr\u0151l",
+    ],
+  },
   gp: {
     persona: "gp",
     title: "Gian Pierre",

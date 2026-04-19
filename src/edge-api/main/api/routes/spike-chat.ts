@@ -32,6 +32,7 @@ import { getArnoldPersonaPrompt } from "../../core-logic/arnold-persona-prompt.j
 import { getZoltanMegaPersonaPrompt } from "../../core-logic/zoltan-persona-prompt.js";
 import { getPetiPersonaPrompt } from "../../core-logic/peti-persona-prompt.js";
 import { getDaftPunkPersonaPrompt } from "../../core-logic/daftpunk-persona-prompt.js";
+import { getSunoPersonaPrompt } from "../../core-logic/suno-persona-prompt.js";
 import { getGPPersonaPrompt } from "../../core-logic/gp-persona-prompt.js";
 import { getRajuPersonaPrompt } from "../../core-logic/raju-persona-prompt.js";
 import { getSwitchboardPersonaPrompt } from "../../core-logic/switchboard-persona-prompt.js";
@@ -891,6 +892,11 @@ spikeChat.post("/api/spike-chat", async (c) => {
   // Daft Punk music production persona
   if (persona === "daftpunk") {
     fullSystemPrompt = `${fullSystemPrompt}\n\n${getDaftPunkPersonaPrompt()}`;
+  }
+
+  // Suno songwriting persona — generates Suno-ready style prompts + lyrics
+  if (persona === "suno") {
+    fullSystemPrompt = `${fullSystemPrompt}\n\n${getSunoPersonaPrompt()}`;
   }
 
   // Gian Pierre chemist/citizen-developer persona
