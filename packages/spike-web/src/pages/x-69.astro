@@ -56,6 +56,14 @@ const accentFor = (p: string) => personaAccent[p] ?? '#666';
             </audio>
             <figcaption>69 Is The New 42 — spike.land</figcaption>
           </figure>
+
+          <figure class="x69-video">
+            <video controls preload="metadata" playsinline>
+              <source src="/sixty-nine-rounds.mp4" type="video/mp4" />
+              <a href="/sixty-nine-rounds.mp4">Download Sixty-Nine Rounds (MP4)</a>
+            </video>
+            <figcaption>Sixty-Nine Rounds — spike.land</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -138,6 +146,26 @@ const accentFor = (p: string) => personaAccent[p] ?? '#666';
   }
 
   .x69-player figcaption {
+    font-size: 0.8125rem;
+    color: var(--muted-fg, #666);
+  }
+
+  .x69-video {
+    margin: 1.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .x69-video video {
+    width: 100%;
+    max-width: 40rem;
+    border-radius: var(--radius-lg, 0.75rem);
+    background: #000;
+  }
+
+  .x69-video figcaption {
     font-size: 0.8125rem;
     color: var(--muted-fg, #666);
   }
