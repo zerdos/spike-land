@@ -66,6 +66,7 @@ const packagePathMap: Record<string, string> = {
   "spike-land-backend": "edge-api/backend",
   "spike-land-mcp": "edge-api/spike-land",
   "spike-notepad": "edge-api/spike-notepad",
+  "spike-smtp": "edge-api/smtp",
   "spike-review": "mcp-tools/code-review",
   "stripe-analytics-mcp": "mcp-tools/stripe-analytics",
   "reorganize-mcp": "mcp-tools/reorganize",
@@ -475,6 +476,14 @@ const packages: Record<string, PkgConfig> = {
     pool: "forks",
     includeTests: [src("edge-api/spike-notepad/__tests__/**/*.test.ts")],
     includeSrc: [src("edge-api/spike-notepad/api/routes/connections.ts")],
+    coverageExclude: [],
+  },
+
+  "spike-smtp": {
+    tier: 3,
+    pool: "forks",
+    includeTests: [src("edge-api/smtp/__tests__/**/*.test.ts")],
+    includeSrc: [src("edge-api/smtp/api/**/*.ts"), src("edge-api/smtp/core-logic/**/*.ts")],
     coverageExclude: [],
   },
 

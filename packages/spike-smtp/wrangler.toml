@@ -1,0 +1,43 @@
+name = "spike-smtp"
+main = "./index.ts"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+logpush = true
+
+[dev]
+port = 8793
+
+[[d1_databases]]
+binding = "DB"
+database_name = "spike-smtp"
+database_id = "0a60164c-514f-4216-9188-2807f3edab04"
+migrations_dir = "db/migrations"
+
+[[r2_buckets]]
+binding = "RAW_EMAILS"
+bucket_name = "spike-smtp-raw"
+
+[[services]]
+binding = "AUTH_MCP"
+service = "mcp-auth"
+
+[[routes]]
+pattern = "smtp.spike.land/*"
+zone_name = "spike.land"
+
+[[routes]]
+pattern = "smtp.spike.land"
+custom_domain = true
+
+[vars]
+APP_ENV = "production"
+ALLOWED_INBOUND_DOMAINS = "spike.land"
+
+[env.staging]
+name = "spike-smtp-staging"
+vars = { APP_ENV = "staging", ALLOWED_INBOUND_DOMAINS = "spike.land" }
+
+[[env.staging.routes]]
+pattern = "staging-smtp.spike.land/*"
+zone_name = "spike.land"
