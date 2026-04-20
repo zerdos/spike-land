@@ -8,9 +8,41 @@
 import { Hono } from "hono";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { createLogger } from "@spike-land-ai/shared";
-import { stripePost } from "../../core-logic/stripe-client.js";
+import { stripeGet, stripePost } from "../../core-logic/stripe-client.js";
 
 const log = createLogger("spike-edge");
+
+// Launch promo: £20 off first month for Pro & Business until 2026-04-30.
+// £20 ≈ $25 at GBP/USD ~1.25. Applied via Stripe coupon (duration: once) so the
+// subscription reverts to the normal price from month 2 onwards.
+const LAUNCH_PROMO_UNTIL_MS = Date.parse("2026-04-30T23:59:59Z");
+const LAUNCH_PROMO_DISCOUNT_CENTS = 2500;
+const LAUNCH_PROMO_COUPON_ID = "launch-apr-2026-20off";
+
+function launchPromoActive(nowMs: number = Date.now()): boolean {
+  return Number.isFinite(LAUNCH_PROMO_UNTIL_MS) && nowMs <= LAUNCH_PROMO_UNTIL_MS;
+}
+
+async function ensureLaunchCoupon(stripeKey: string): Promise<string | null> {
+  const existing = await stripeGet(stripeKey, `/v1/coupons/${LAUNCH_PROMO_COUPON_ID}`, {});
+  if (existing.ok) return LAUNCH_PROMO_COUPON_ID;
+  const created = await stripePost(
+    stripeKey,
+    "/v1/coupons",
+    {
+      id: LAUNCH_PROMO_COUPON_ID,
+      amount_off: String(LAUNCH_PROMO_DISCOUNT_CENTS),
+      currency: "usd",
+      duration: "once",
+      name: "Launch offer — £20 off first month",
+      redeem_by: String(Math.floor(LAUNCH_PROMO_UNTIL_MS / 1000)),
+    },
+    `create-${LAUNCH_PROMO_COUPON_ID}`,
+  );
+  if (created.ok) return LAUNCH_PROMO_COUPON_ID;
+  log.warn("Failed to create launch coupon", { data: JSON.stringify(created.data) });
+  return null;
+}
 
 const checkout = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -25,9 +57,9 @@ checkout.post("/api/checkout", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  let body: { tier?: string };
+  let body: { tier?: string; billing?: string };
   try {
-    body = (await c.req.json()) as { tier?: string };
+    body = (await c.req.json()) as { tier?: string; billing?: string };
   } catch {
     return c.json({ error: "Invalid JSON body" }, 400);
   }
@@ -36,6 +68,7 @@ checkout.post("/api/checkout", async (c) => {
   if (tier !== "pro" && tier !== "business") {
     return c.json({ error: "Invalid tier. Must be 'pro' or 'business'." }, 400);
   }
+  const billing = body.billing === "annual" ? "annual" : "monthly";
 
   const userEmail = c.get("userEmail") as string | undefined;
 
@@ -64,28 +97,54 @@ checkout.post("/api/checkout", async (c) => {
     });
   }
 
+  // Price matrix (USD cents). Annual totals = annualPerMonth × 12, billed upfront.
+  const PRICES = {
+    pro: { monthly: 2900, annualTotal: 27600, label: "spike.land Pro" },
+    business: { monthly: 9900, annualTotal: 94800, label: "spike.land Business" },
+  } as const;
+  const tierPrice = PRICES[tier];
+  const isAnnual = billing === "annual";
+  const unitAmount = isAnnual ? tierPrice.annualTotal : tierPrice.monthly;
+  const interval = isAnnual ? "year" : "month";
+  const productName = isAnnual ? `${tierPrice.label} (annual)` : tierPrice.label;
+
   // Create Stripe Checkout Session
   const params: Record<string, string> = {
     mode: "subscription",
     success_url: "https://spike.land/settings?tab=billing&success=1",
     cancel_url: "https://spike.land/pricing",
     "line_items[0][quantity]": "1",
+    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][unit_amount]": String(unitAmount),
+    "line_items[0][price_data][recurring][interval]": interval,
+    "line_items[0][price_data][product_data][name]": productName,
     // Session-level metadata so the webhook can resolve userId from
     // session.metadata (subscription_data.metadata lives on the subscription
     // object, not the session, and is not exposed by checkout.session.completed).
     "metadata[userId]": userId,
     "metadata[tier]": tier,
+    "metadata[billing]": billing,
     "subscription_data[metadata][userId]": userId,
     "subscription_data[metadata][tier]": tier,
+    "subscription_data[metadata][billing]": billing,
     client_reference_id: userId,
   };
 
-  // Use lookup_key to resolve the price dynamically
-  params["line_items[0][price_data][currency]"] = "usd";
-  params["line_items[0][price_data][product_data][name]"] =
-    tier === "pro" ? "spike.land Pro" : "spike.land Business";
-  params["line_items[0][price_data][unit_amount]"] = tier === "pro" ? "2900" : "9900";
-  params["line_items[0][price_data][recurring][interval]"] = "month";
+  // Apply launch coupon (£20 off first charge) if within window. Stripe rejects
+  // setting both discounts[] and allow_promotion_codes on the same session, so
+  // the promo wins when active and promo-code entry is enabled otherwise.
+  let couponApplied = false;
+  if (launchPromoActive()) {
+    const couponId = await ensureLaunchCoupon(stripeKey);
+    if (couponId) {
+      params["discounts[0][coupon]"] = couponId;
+      params["metadata[promo]"] = "launch-apr-2026";
+      couponApplied = true;
+    }
+  }
+  if (!couponApplied) {
+    params["allow_promotion_codes"] = "true";
+  }
 
   if (userEmail) {
     params["customer_email"] = userEmail;
@@ -100,7 +159,7 @@ checkout.post("/api/checkout", async (c) => {
     stripeKey,
     "/v1/checkout/sessions",
     params,
-    `${userId}-${tier}-${idempotencyBucket}`,
+    `${userId}-${tier}-${billing}-${idempotencyBucket}`,
   );
 
   if (!res.ok) {

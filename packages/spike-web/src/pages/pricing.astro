@@ -165,6 +165,11 @@ const faqs = [
                       <span class="plan-promo-badge">£20 off until Apr 30</span>
                     </p>
                   )}
+                  {plan.annualTotal && (
+                    <p class="plan-annual-total" data-annual-total={plan.annualTotal} hidden>
+                      {plan.annualTotal} billed today · save ~20% vs monthly
+                    </p>
+                  )}
                   <p class="plan-desc">{plan.description}</p>
                   {plan.dailyPrice && (
                     <p
@@ -807,6 +812,15 @@ const faqs = [
     white-space: nowrap;
   }
 
+  .plan-annual-total {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted-fg);
+    font-weight: 600;
+  }
+
+  .plan-annual-total[hidden] { display: none; }
+
   /* Billing toggle */
   .billing-toggle {
     display: flex;
@@ -986,6 +1000,9 @@ const faqs = [
     const tier = button.dataset.checkoutTier;
     if (!tier) return;
 
+    const activeToggle = document.querySelector<HTMLElement>('.toggle-btn.active');
+    const billing = activeToggle?.dataset.billing === 'annual' ? 'annual' : 'monthly';
+
     const originalLabel = button.textContent?.trim() || 'Continue';
     setFeedback(null);
     checkoutInFlight = true;
@@ -998,7 +1015,7 @@ const faqs = [
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ tier })
+        body: JSON.stringify({ tier, billing })
       });
       if (res.status === 401) {
         window.location.href = '/login?redirect=/pricing';
@@ -1062,7 +1079,15 @@ const faqs = [
     });
   }
 
+  const annualTotals = Array.from(document.querySelectorAll<HTMLElement>('.plan-annual-total'));
+  function applyAnnualTotals(isAnnual: boolean) {
+    annualTotals.forEach(el => {
+      el.hidden = !isAnnual;
+    });
+  }
+
   applyPromoVisibility(false);
+  applyAnnualTotals(false);
 
   toggleBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1094,6 +1119,7 @@ const faqs = [
       }
 
       applyPromoVisibility(isAnnual);
+      applyAnnualTotals(isAnnual);
     });
   });
 
