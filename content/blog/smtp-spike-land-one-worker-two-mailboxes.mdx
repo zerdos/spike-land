@@ -1,0 +1,181 @@
+---
+title: "smtp.spike.land: one Cloudflare Worker, two mailboxes, zero SMTP"
+slug: "smtp-spike-land-one-worker-two-mailboxes"
+description: "How the spike.land mail plane runs in a single Cloudflare Worker: outbound via Resend, inbound via Email Routing, raw RFC822 in R2, headers in D1, and 5 emails/hour per user. No long-lived SMTP sockets — because Workers can't hold them, and you don't need them."
+date: "2026-04-20"
+author: "Radix"
+category: "Developer Experience"
+tags: ["cloudflare-workers", "email", "resend", "email-routing", "edge", "d1", "r2", "spike-land"]
+featured: false
+draft: false
+primer: "Port 25 is a lie we tell ourselves. What we actually want is an authenticated HTTP surface for sending, a durable log for auditing, and a queue we can read back later. That is three Cloudflare primitives, stitched together by one Worker."
+heroImage: "/blog/smtp-spike-land-one-worker-two-mailboxes/hero.png"
+heroPrompt: "A stylised Cloudflare Worker visualised as a small brass letter-sorting office at the edge of the internet, two mail chutes labelled IN and OUT, warm amber and steel-blue lighting, envelopes flowing in from a dark network cloud and out through a glowing HTTP portal, cinematic tech illustration, clean isometric composition, high contrast dark theme"
+---
+
+![A stylised Cloudflare Worker visualised as a small brass letter-sorting office at the edge of the internet, with IN and OUT chutes and envelopes flowing through both sides.](/blog/smtp-spike-land-one-worker-two-mailboxes/hero.png)
+
+<Tldr>
+
+# smtp.spike.land: edge mail plane
+
+## Problem
+Email in the spike.land stack lived inside the main edge worker. Rate limits, audit log and user lookups competed with every other proxy route. No inbound path at all — outreach replies went nowhere.
+
+## Solution
+Extract the mail plane into a dedicated Worker at `smtp.spike.land`.
+- **Outbound**: `POST /send` → Resend API
+- **Inbound**: Cloudflare Email Routing → `email()` handler → R2 + D1
+- **Inbox**: `GET /inbox` — per-user list, `/inbox/:id/raw` returns raw RFC822
+
+## Why no SMTP
+Cloudflare Workers do not expose outbound port 25, and long-lived TCP is not a Worker primitive. The name `smtp.spike.land` is the public contract, not the protocol.
+
+## Primitives
+- **Resend** for outbound — one HTTP POST, free tier 100/day
+- **Email Routing** for inbound — DNS MX + worker binding
+- **R2** for raw `message/rfc822` — one object per message
+- **D1** for headers (`email_sends`, `email_inbound`) — one row per message
+- **AUTH_MCP** service binding for session verification
+
+## Safety
+- 5 emails/hour per user (D1 count query, not a Durable Object — cheaper)
+- From address whitelisted server-side; anything else silently falls back to `outreach@spike.land`
+- Inbound body capped at 5 MB before writing to R2
+- `ALLOWED_INBOUND_DOMAINS` env var gates which domains the Worker will accept
+
+</Tldr>
+
+---
+
+## 1. The name is marketing
+
+The domain is `smtp.spike.land`. The protocol is not SMTP. The domain is a contract with the rest of the platform: *anything mail-shaped goes here*. Inside, it is three HTTPS endpoints and one email event handler.
+
+Cloudflare Workers cannot open arbitrary outbound TCP connections. Port 25 is closed on every hyperscaler for anti-abuse reasons anyway. You do not need SMTP. You need **an authenticated HTTP surface for sending**, **a durable log for auditing**, and **a queue you can read back later**.
+
+That is three Cloudflare primitives: a Worker, R2, and D1. Plus a paid external sender (Resend) so we do not have to argue with SPF, DKIM and DMARC on day one.
+
+## 2. Architecture in one diagram
+
+```
+                    ┌────────────────────────────────────┐
+                    │     smtp.spike.land (Worker)       │
+                    │                                    │
+  POST /send ──────►│  authMiddleware (AUTH_MCP)         │──► Resend ──► recipient
+                    │  ├── rate limit (D1 count)         │
+                    │  ├── from whitelist                │
+                    │  └── audit (email_sends)           │
+                    │                                    │
+  Email Routing ───►│  email() handler                   │
+   (MX → Worker)    │  ├── domain whitelist              │──► R2 (raw .eml)
+                    │  ├── header parse + 5MB cap        │──► D1 (email_inbound)
+                    │  └── no attachment extraction      │
+                    │                                    │
+  GET /inbox ──────►│  per-user list + /raw download     │
+                    └────────────────────────────────────┘
+```
+
+Three surfaces, one Worker, zero long-lived connections.
+
+## 3. Outbound: what changed
+
+Before, the main edge Worker had an `/api/email/send` route. It did everything: session lookup, rate limit, user row fetch, credit deduction, Resend call, audit row. Fine for one sender. Bad when every request on the edge Worker also pays the cold start of `credit-service`, `creem-client`, `stripe-client` and the rest of the kitchen sink.
+
+The extracted version is smaller and cheaper:
+
+```ts
+// src/edge-api/smtp/api/routes/send.ts (trimmed)
+send.post("/send", async (c) => {
+  if (!c.env.RESEND_API_KEY) return c.json({ error: "Email service not configured" }, 503);
+
+  const userId = c.get("userId") as string | undefined;
+  if (!userId) return c.json({ error: "Unauthorized" }, 401);
+
+  const user = await c.env.DB
+    .prepare("SELECT email, name FROM users WHERE id = ? LIMIT 1")
+    .bind(userId)
+    .first<{ email: string; name: string | null }>();
+  if (!user?.email) return c.json({ error: "User account not found" }, 404);
+
+  const hourAgo = new Date(Date.now() - 3_600_000).toISOString();
+  const { cnt } = await c.env.DB
+    .prepare("SELECT COUNT(*) as cnt FROM email_sends WHERE user_id = ? AND created_at > ?")
+    .bind(userId, hourAgo)
+    .first<{ cnt: number }>() ?? { cnt: 0 };
+  if (cnt >= 5) return c.json({ error: "Rate limit exceeded — max 5 emails per hour" }, 429);
+
+  // ...validate body, whitelist from, call Resend, write audit row
+});
+```
+
+The rate limit is intentionally a D1 `COUNT(*)` rather than a Durable Object counter. Five emails per hour per user is not a hot path. A Durable Object costs more in round-trip latency than the count query it replaces.
+
+## 4. Inbound: the part people forget
+
+Outbound is solved by Resend. Inbound is the thing most "send email from your app" tutorials skip.
+
+Cloudflare Email Routing turns `*@spike.land` MX records into a Worker `email()` invocation. The Worker receives a `ForwardableEmailMessage` with `.from`, `.to`, `.raw` (stream) and `.rawSize`.
+
+```ts
+async email(message, env) {
+  if (!allowedInboundDomain(message.to, env)) {
+    message.setReject("Recipient not accepted");
+    return;
+  }
+
+  const raw = await streamToString(message.raw);   // 5 MB cap
+  const headers = parseHeaders(raw);
+  const id = crypto.randomUUID();
+  const r2Key = `inbound/${new Date().toISOString().slice(0, 10)}/${id}.eml`;
+
+  await env.RAW_EMAILS.put(r2Key, raw, {
+    httpMetadata: { contentType: "message/rfc822" },
+    customMetadata: { from: message.from, to: message.to, messageId: headers.messageId ?? "" },
+  });
+
+  await env.DB.prepare(
+    "INSERT INTO email_inbound (id, message_id, from_address, to_address, subject, in_reply_to, r2_key, size_bytes) " +
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  ).bind(id, headers.messageId, headers.from, headers.to, headers.subject, headers.inReplyTo, r2Key, message.rawSize).run();
+}
+```
+
+Three design choices worth calling out:
+
+1. **Raw in R2, headers in D1.** You do not want to parse MIME in a Worker. You want cheap storage of the canonical bytes and fast queries on the structured bits. R2 holds the `message/rfc822`, D1 holds the columns you search on.
+2. **The 5 MB cap lives in `streamToString`.** Reject *before* anything touches R2 — a rogue 200 MB attachment never becomes an object you have to clean up.
+3. **No attachment extraction on the hot path.** If a tool needs the PDF, it fetches the raw object and parses it in its own budget. The mail plane is a letterbox, not a decoder.
+
+## 5. Why not a Durable Object?
+
+Every time I extract a subsystem like this, someone asks why the rate limit is not a Durable Object.
+
+Durable Objects are for **contested, fast-changing state** — a chat room's cursor positions, a multiplayer room's tick counter, a queue that multiple workers pop from. Email rate limiting is none of that. It is one row per user per hour, written at most five times, read once per send. A D1 index on `(user_id, created_at)` handles it for a fraction of the cost and zero round-trip overhead.
+
+The rule: *reach for a Durable Object when two requests could race, not when a count is rare*.
+
+## 6. What is still manual
+
+The Worker is deployed, D1 is migrated, R2 is created. Two pieces are not code:
+
+- `wrangler secret put RESEND_API_KEY` — the same key that powers the main edge Worker
+- Email Routing in the Cloudflare dashboard — `*@spike.land` route → destination `spike-smtp` Worker
+
+Both require scopes my CLI token does not have (`email_routing:write`, `email_sending:write`). This is a good thing. The Worker can ship and fail closed; DNS and secret management are operations you should do with eyes on the dashboard anyway.
+
+## 7. What shipped in this commit
+
+- **`src/edge-api/smtp/`** — Worker source (Hono app + `email()` handler + 3 routes)
+- **`packages/spike-smtp/`** — deploy shim (`wrangler.toml`, D1 binding, R2 binding, custom domain route)
+- **`db/migrations/0001_email_log.sql`** — `email_sends`, `email_inbound`, minimal `users` FK target
+- **13 Vitest tests** — header parsing, 5 MB cap, rate limit, `from` whitelist, audit log
+- **No changes to the main edge Worker yet** — the extraction is purely additive; the old `/api/email/send` route still exists. Next commit removes it.
+
+## 8. The one-line lesson
+
+Most problems called *"we need an SMTP server"* are really *"we need an authenticated HTTP endpoint that writes to a log and sometimes makes an outbound HTTP call to a real mail provider."* That shape is four lines of Cloudflare config and a hundred lines of Hono. The hard part is noticing you did not need the protocol in the name.
+
+---
+
+*`smtp.spike.land` is live. `/health` returns `{ status: "ok", resendConfigured: false }` until the Resend secret lands. The send route will start accepting traffic the moment it does.*
