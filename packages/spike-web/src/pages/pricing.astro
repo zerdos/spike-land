@@ -122,6 +122,18 @@ const faqs = [
       <section class="plans-section">
         <div class="rubik-container">
           <p id="pricing-feedback" class="pricing-feedback" role="status" aria-live="polite" hidden></p>
+          <div
+            class="promo-banner"
+            id="promo-banner"
+            data-promo-expires="2026-04-30T23:59:59Z"
+            hidden
+          >
+            <span class="promo-icon" aria-hidden="true">🎁</span>
+            <span class="promo-copy">
+              <strong>Launch offer:</strong> £20 off monthly Pro &amp; Business plans —
+              <time datetime="2026-04-30">offer ends April 30</time>.
+            </span>
+          </div>
           <div class="billing-toggle">
             <button class="toggle-btn active" data-billing="monthly" type="button">Monthly</button>
             <button class="toggle-btn" data-billing="annual" type="button">
@@ -139,9 +151,20 @@ const faqs = [
                 <div class="plan-header">
                   <h2 class="plan-name">{plan.name}</h2>
                   <div class="plan-price-row">
-                    <span class="plan-price">{plan.price}</span>
+                    <span class="plan-price" data-full-monthly={plan.price}>{plan.price}</span>
                     {plan.period && <span class="plan-period">{plan.period}</span>}
                   </div>
+                  {(plan.id === 'pro' || plan.id === 'business') && (
+                    <p
+                      class="plan-promo"
+                      data-promo-for="monthly"
+                      data-full-price={plan.price}
+                      hidden
+                    >
+                      <span class="plan-promo-strike">{plan.price}</span>
+                      <span class="plan-promo-badge">£20 off until Apr 30</span>
+                    </p>
+                  )}
                   <p class="plan-desc">{plan.description}</p>
                   {plan.dailyPrice && (
                     <p
@@ -735,6 +758,55 @@ const faqs = [
     .enterprise-benefits { grid-template-columns: 1fr; }
   }
 
+  /* Launch promo */
+  .promo-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 auto 1.25rem;
+    padding: 0.625rem 1rem;
+    max-width: 40rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--primary-color) 40%, transparent);
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
+    color: var(--fg);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .promo-banner[hidden] { display: none; }
+
+  .promo-icon { font-size: 1.125rem; line-height: 1; }
+
+  .promo-copy strong { font-weight: 700; color: var(--primary-color); }
+
+  .plan-promo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+
+  .plan-promo[hidden] { display: none; }
+
+  .plan-promo-strike {
+    color: var(--muted-fg);
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+
+  .plan-promo-badge {
+    background: var(--primary-color);
+    color: var(--primary-fg);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
   /* Billing toggle */
   .billing-toggle {
     display: flex;
@@ -975,6 +1047,23 @@ const faqs = [
   const annualPrices: Record<string, string> = { pro: '$23', business: '$79' };
   const monthlyPrices: Record<string, string> = { pro: '$29', business: '$99' };
 
+  // Launch promo: £20 off monthly plans, expires 2026-04-30
+  const promoBanner = document.getElementById('promo-banner');
+  const promoExpiresAttr = promoBanner?.dataset.promoExpires;
+  const promoExpiresAt = promoExpiresAttr ? Date.parse(promoExpiresAttr) : NaN;
+  const promoActive = Number.isFinite(promoExpiresAt) && Date.now() <= promoExpiresAt;
+  const planPromos = Array.from(document.querySelectorAll<HTMLElement>('.plan-promo'));
+
+  function applyPromoVisibility(isAnnual: boolean) {
+    const show = promoActive && !isAnnual;
+    if (promoBanner) promoBanner.hidden = !show;
+    planPromos.forEach(p => {
+      p.hidden = !show;
+    });
+  }
+
+  applyPromoVisibility(false);
+
   toggleBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const billing = (btn as HTMLElement).dataset.billing;
@@ -1003,6 +1092,8 @@ const faqs = [
         if (period) period.textContent = isAnnual ? '/mo (billed annually)' : '/month';
         if (daily) daily.textContent = daily.dataset[isAnnual ? 'dailyAnnual' : 'dailyMonthly'] || '';
       }
+
+      applyPromoVisibility(isAnnual);
     });
   });
 

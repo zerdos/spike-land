@@ -43,7 +43,11 @@ export function PersonalizedSupportBox({
 
       {/* Persona-aware support message + social sharing */}
       <div className="p-8 sm:p-12 rounded-[2rem] bg-card border border-border/50 shadow-[var(--panel-shadow)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+        <div
+          className="absolute top-0 right-0 p-8 pointer-events-none"
+          style={{ opacity: 0.03 }}
+          aria-hidden="true"
+        >
           <Heart size={200} fill="currentColor" />
         </div>
 
