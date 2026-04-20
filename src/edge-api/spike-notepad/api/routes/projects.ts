@@ -47,6 +47,23 @@ projects.get("/api/projects/:id", async (c) => {
   return c.json({ ...project, note_count: noteCount?.count ?? 0 });
 });
 
+// Rename project
+projects.put("/api/projects/:id", async (c) => {
+  const id = c.req.param("id");
+  const { name } = await c.req.json<{ name?: string }>();
+  if (!name?.trim()) return c.json({ error: "name is required" }, 400);
+
+  const now = Date.now();
+  const result = await c.env.DB.prepare("UPDATE projects SET name = ?, updated_at = ? WHERE id = ?")
+    .bind(name.trim(), now, id)
+    .run();
+
+  if (!result.meta.changes) return c.json({ error: "Project not found" }, 404);
+
+  const updated = await c.env.DB.prepare("SELECT * FROM projects WHERE id = ?").bind(id).first();
+  return c.json(updated);
+});
+
 // Delete project (cascades to notes, connections, syntheses)
 projects.delete("/api/projects/:id", async (c) => {
   const id = c.req.param("id");

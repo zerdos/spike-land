@@ -18,6 +18,9 @@ migrations_dir = "db/migrations"
 binding = "AUTH_MCP"
 service = "mcp-auth"
 
+[ai]
+binding = "AI"
+
 [[routes]]
 pattern = "notepad.spike.land/*"
 zone_name = "spike.land"

@@ -3,10 +3,12 @@ import { cors } from "hono/cors";
 
 import type { Env, Variables } from "../core-logic/env";
 import { canvas } from "./routes/canvas";
+import { classify } from "./routes/classify";
 import { connections } from "./routes/connections";
 import { health } from "./routes/health";
 import { notes } from "./routes/notes";
 import { projects } from "./routes/projects";
+import { seed } from "./routes/seed";
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -39,6 +41,8 @@ app.route("/", health);
 app.route("/", projects);
 app.route("/", notes);
 app.route("/", connections);
+app.route("/", classify);
+app.route("/", seed);
 app.route("/", canvas);
 
 app.onError((err, c) => {

@@ -8,5 +8,6 @@ export interface Variables {
 export interface Env {
   DB: D1Database;
   AUTH_MCP: Fetcher;
+  AI?: Ai;
   APP_ENV?: string;
 }
