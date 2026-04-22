@@ -466,6 +466,9 @@ h4 {
 .lq-section {
   padding-block: clamp(2rem, 5vw, 4rem);
 }
+.lq-section-top {
+  padding-block: clamp(1rem, 3vw, 2.5rem) clamp(2rem, 5vw, 4rem);
+}
 .lq-root {
   max-width: 48rem;
   margin: 0 auto;
