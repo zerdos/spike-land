@@ -1,4 +1,5 @@
 import { LandingHero } from "./LandingHero";
+import { LandingQuiz } from "./LandingQuiz";
 import { AppShowcase } from "../core-logic/AppShowcase";
 import { TryItNow } from "./TryItNow";
 import { BlogListView } from "./BlogList";
@@ -9,6 +10,8 @@ export function LandingPage() {
   return (
     <div className="font-sans text-foreground selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary/40 dark:selection:text-primary-light">
       <LandingHero />
+
+      <LandingQuiz />
 
       {/* Section 1: What is spike.land? */}
       <section aria-labelledby="what-is-heading" className="rubik-section rubik-container-wide">

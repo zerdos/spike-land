@@ -9,6 +9,7 @@ export * from "./ImageLoader";
 export * from "./InteractiveBlogErrorBoundary";
 export * from "./LandingHero";
 export * from "./LandingPage";
+export * from "./LandingQuiz";
 export * from "./MCPTerminalDemo";
 export * from "./ModelCascadeDemo";
 export * from "./TryItCta";
