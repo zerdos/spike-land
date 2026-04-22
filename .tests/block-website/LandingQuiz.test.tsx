@@ -16,16 +16,30 @@
 import { describe, it, expect, vi } from "vitest";
 
 vi.mock("lucide-react", () => ({
-  Activity: () => null,
+  Atom: () => null,
   Brain: () => null,
   Check: () => null,
   ChevronRight: () => null,
-  Headphones: () => null,
+  Compass: () => null,
+  Crown: () => null,
+  Eye: () => null,
+  Feather: () => null,
+  Flame: () => null,
+  Gift: () => null,
+  GraduationCap: () => null,
   Home: () => null,
+  Languages: () => null,
+  Leaf: () => null,
+  Lightbulb: () => null,
   Megaphone: () => null,
+  MessageCircle: () => null,
+  Rocket: () => null,
   RotateCcw: () => null,
+  Scale: () => null,
+  ScrollText: () => null,
   Share2: () => null,
   ShieldCheck: () => null,
+  Sparkles: () => null,
 }));
 
 // NOTE: Generic arrow functions (<T>) cannot appear in vi.mock factories because
@@ -167,24 +181,30 @@ describe("computeQuizWinner", () => {
     expect(computeQuizWinner([99, 99, 99, 99, 99, 99])).toBeNull();
   });
 
-  it("picks the persona with the highest weighted score", () => {
-    // Answer pattern heavy on 'zoltan': q1=d, q2=d, q3=a, q4=c, q5=d, q6=a
-    // (q5 option 'd' is arnold — still zoltan wins with 4 points.)
-    const zoltanHeavy = [3, 3, 0, 2, 3, 0];
-    expect(computeQuizWinner(zoltanHeavy)).toBe("zoltan");
+  it("picks arendt when two answers point at her (Q2.4 + Q5.3)", () => {
+    // q1=c peti, q2=d arendt, q3=b kant, q4=a zoltan, q5=c arendt, q6=c erdos
+    // arendt: 2, everyone else: 1. Winner: arendt.
+    const arendtHeavy = [2, 3, 1, 0, 2, 2];
+    expect(computeQuizWinner(arendtHeavy)).toBe("arendt");
   });
 
-  it("picks daftpunk for music-first answers", () => {
-    // q1=c daftpunk, q2=d zoltan, q3=b daftpunk, q4=a daftpunk,
-    // q5=c erdos, q6=c daftpunk → daftpunk 4, zoltan 1, erdos 1.
-    const daftpunkHeavy = [2, 3, 1, 0, 2, 2];
-    expect(computeQuizWinner(daftpunkHeavy)).toBe("daftpunk");
+  it("picks erdos when first-option / last-option cadence points at the framework builder", () => {
+    // All first options except Q6: [0,0,0,0,0,2]
+    // Q1.0 erdos, Q2.0 spinoza, Q3.0 wittgenstein, Q4.0 zoltan,
+    // Q5.0 plato, Q6.2 erdos → erdos has 2, others 1. Winner: erdos.
+    expect(computeQuizWinner([0, 0, 0, 0, 0, 2])).toBe("erdos");
   });
 
-  it("breaks ties by the first-encountered persona", () => {
-    // All six answers = option index 0. First options: erdos, peti, zoltan,
-    // daftpunk, raju, zoltan. Scores: zoltan 2, every other 1 — zoltan wins.
-    expect(computeQuizWinner([0, 0, 0, 0, 0, 0])).toBe("zoltan");
+  it("picks confucius for slow-and-steady answers (Q4.1 + Q6.0)", () => {
+    // Q1.1 socrates, Q2.1 camus, Q3.1 kant, Q4.1 confucius,
+    // Q5.0 plato, Q6.0 confucius → confucius has 2, others 1.
+    expect(computeQuizWinner([1, 1, 1, 1, 0, 0])).toBe("confucius");
+  });
+
+  it("breaks ties by the first-encountered persona across six distinct winners", () => {
+    // Six unique personas, one point each. Tie → first encountered wins.
+    // Q1.0 erdos is the first persona seen → erdos.
+    expect(computeQuizWinner([0, 0, 0, 0, 0, 0])).toBe("erdos");
   });
 });
 

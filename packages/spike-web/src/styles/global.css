@@ -461,3 +461,203 @@ h4 {
 @keyframes stagger-fade {
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Landing Quiz (React island) ───────────────────────────────────────── */
+.lq-section {
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
+.lq-root {
+  max-width: 48rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.lq-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.lq-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.1;
+}
+.lq-sub {
+  color: var(--muted-fg);
+  margin: 0;
+  font-size: 1rem;
+}
+.lq-body { width: 100%; }
+.lq-card {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.lq-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+.lq-progress-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-fg);
+  white-space: nowrap;
+}
+.lq-progress-track {
+  flex: 1;
+  height: 6px;
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.lq-progress-fill {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 999px;
+  transition: width 260ms ease;
+}
+.lq-prompt {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.3;
+}
+.lq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.lq-option {
+  appearance: none;
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  color: var(--fg);
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  line-height: 1.4;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.lq-option:hover {
+  background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 35%, transparent);
+  transform: translateY(-1px);
+}
+.lq-option:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+.lq-option-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  flex: 1;
+}
+.lq-option > svg {
+  flex-shrink: 0;
+  color: var(--muted-fg);
+}
+.lq-result {
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-top: 3px solid var(--lq-accent, var(--primary-color));
+}
+.lq-result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.lq-result-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--lq-accent, var(--primary-color)) 14%, transparent);
+  color: var(--lq-accent, var(--primary-color));
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.lq-result-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-fg);
+  margin: 0 0 0.25rem;
+}
+.lq-result-name {
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--lq-accent, var(--fg));
+}
+.lq-result-tagline {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0.125rem 0 0;
+  color: var(--fg);
+}
+.lq-result-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 0;
+}
+.lq-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+.lq-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition: background 160ms ease, transform 160ms ease, filter 160ms ease;
+}
+.lq-btn-primary {
+  background: var(--lq-accent, var(--primary-color));
+  color: #fff;
+}
+.lq-btn-primary:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.lq-btn-secondary {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border-color: color-mix(in srgb, var(--fg) 12%, transparent);
+  color: var(--fg);
+}
+.lq-btn-secondary:hover {
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+.lq-btn-ghost {
+  background: transparent;
+  color: var(--muted-fg);
+}
+.lq-btn-ghost:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+}

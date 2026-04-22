@@ -2,21 +2,55 @@
 
 import { useState, useCallback, useMemo, type ComponentType } from "react";
 import {
-  Activity,
+  Atom,
   Brain,
   Check,
   ChevronRight,
-  Headphones,
+  Compass,
+  Crown,
+  Eye,
+  Feather,
+  Flame,
+  Gift,
+  GraduationCap,
   Home,
+  Languages,
+  Leaf,
+  Lightbulb,
   Megaphone,
+  MessageCircle,
+  Rocket,
   RotateCcw,
+  Scale,
+  ScrollText,
   Share2,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@spike-land-ai/shared";
 import { Link } from "../lazy-imports/link";
 
-type PersonaId = "erdos" | "peti" | "daftpunk" | "zoltan" | "raju" | "arnold";
+type PersonaId =
+  | "erdos"
+  | "socrates"
+  | "peti"
+  | "diogenes"
+  | "spinoza"
+  | "camus"
+  | "einstein"
+  | "arendt"
+  | "wittgenstein"
+  | "kant"
+  | "aristotle"
+  | "arnold"
+  | "zoltan"
+  | "confucius"
+  | "buddha"
+  | "nietzsche"
+  | "plato"
+  | "musk"
+  | "gates"
+  | "trump";
 
 interface Persona {
   id: PersonaId;
@@ -31,63 +65,203 @@ interface Persona {
 const PERSONAS: Record<PersonaId, Persona> = {
   erdos: {
     id: "erdos",
-    name: "The Erdős",
+    name: "Erdős",
     tagline: "The Problem Poser",
     description:
-      "You ask more questions than you answer. You walk into a room, drop a five-minute puzzle, and walk out. Collaboration is your oxygen.",
+      "Your brain is open. You ask sharper questions than most people answer. You'd trade a full inbox for one hour at a clean whiteboard with a hard problem.",
     icon: Brain,
-    colorClass: "from-violet-500 to-indigo-500",
-    appCta: { label: "Try BugBook ELO", href: "/apps/bugbook" },
+    colorClass: "from-indigo-500 to-violet-500",
+    appCta: { label: "Talk to Erdős", href: "/erdos" },
+  },
+  socrates: {
+    id: "socrates",
+    name: "Socrates",
+    tagline: "The Question-Asker",
+    description:
+      "You don't argue — you ask, and the other person ends up arguing with themselves. Your favourite disagreement is the one that ends with both sides changing their minds.",
+    icon: MessageCircle,
+    colorClass: "from-amber-500 to-yellow-500",
+    appCta: { label: "Talk to Socrates", href: "/socrates" },
   },
   peti: {
     id: "peti",
-    name: "The Peti",
-    tagline: "The QA Obsessive",
+    name: "Peti",
+    tagline: "The QA Realist",
     description:
-      "Nothing ships until it is correct. You find bugs in other people's demos in the first thirty seconds — and then you file them with seventeen reproduction steps.",
+      "Nothing ships until it is correct on mobile Safari at 2% battery. You file bugs with reproduction steps that read like forensic reports.",
     icon: ShieldCheck,
     colorClass: "from-emerald-500 to-teal-500",
-    appCta: { label: "Try Code Review", href: "/apps/code-review" },
+    appCta: { label: "Talk to Peti", href: "/peti" },
   },
-  daftpunk: {
-    id: "daftpunk",
-    name: "The Daftpunk",
-    tagline: "The Rhythmic Maker",
+  diogenes: {
+    id: "diogenes",
+    name: "Diogenes",
+    tagline: "The Premise-Refuser",
     description:
-      "You ship at night. Style matters as much as function. Your commits have beats and your editor has a BPM display somewhere.",
-    icon: Headphones,
-    colorClass: "from-fuchsia-500 to-rose-500",
-    appCta: { label: "Try Music Tools", href: "/music" },
+      "You'd rather live in a barrel than play a rigged game. When a problem is badly framed, you say so — loudly, publicly, with a lantern if needed.",
+    icon: Lightbulb,
+    colorClass: "from-yellow-600 to-amber-700",
+    appCta: { label: "Talk to Diogenes", href: "/diogenes" },
   },
-  zoltan: {
-    id: "zoltan",
-    name: "The Zoltán",
-    tagline: "The Lone Founder",
+  spinoza: {
+    id: "spinoza",
+    name: "Spinoza",
+    tagline: "The Rationalist",
     description:
-      "Dog on your lap. Cold tea. 3 AM commits. You have been building in public so long that the public stopped caring — and then quietly started again.",
-    icon: Home,
-    colorClass: "from-amber-500 to-orange-500",
-    appCta: { label: "Try Notepad", href: "/apps/notepad" },
+      "Beauty doesn't mystify you — it clarifies. You want to understand exactly why the thing is good, from first principles, and then build something else that is.",
+    icon: Sparkles,
+    colorClass: "from-indigo-500 to-blue-500",
+    appCta: { label: "Talk to Spinoza", href: "/spinoza" },
   },
-  raju: {
-    id: "raju",
-    name: "The Raju",
-    tagline: "The Systems Operator",
+  camus: {
+    id: "camus",
+    name: "Camus",
+    tagline: "The Absurdist",
     description:
-      "You think in pipelines, uptime, and observability. A good Grafana dashboard is art. You trust graphs more than gut feel.",
-    icon: Activity,
-    colorClass: "from-cyan-500 to-blue-500",
-    appCta: { label: "See Analytics", href: "/analytics" },
+      "One must imagine Sisyphus happy. You write to hold on to the moments that keep slipping, and you suspect the writing is the only thing that makes them real.",
+    icon: Feather,
+    colorClass: "from-rose-500 to-red-500",
+    appCta: { label: "Talk to Camus", href: "/camus" },
+  },
+  einstein: {
+    id: "einstein",
+    name: "Einstein",
+    tagline: "The Thought-Experimenter",
+    description:
+      "Imagination beats knowledge every time. You'd rather ride a beam of light in your head for an hour than attend six status meetings.",
+    icon: Atom,
+    colorClass: "from-stone-500 to-stone-600",
+    appCta: { label: "Talk to Einstein", href: "/einstein" },
+  },
+  arendt: {
+    id: "arendt",
+    name: "Arendt",
+    tagline: "The Political Witness",
+    description:
+      "The scariest evil is thoughtless, not dramatic. You want to name what's happening clearly enough that people can't un-see it.",
+    icon: ScrollText,
+    colorClass: "from-stone-500 to-zinc-600",
+    appCta: { label: "Talk to Arendt", href: "/arendt" },
+  },
+  wittgenstein: {
+    id: "wittgenstein",
+    name: "Wittgenstein",
+    tagline: "The Language Debugger",
+    description:
+      "Half of every argument is two people using the same word to mean different things. Fix that, and most of the argument disappears.",
+    icon: Languages,
+    colorClass: "from-slate-500 to-slate-600",
+    appCta: { label: "Talk to Wittgenstein", href: "/wittgenstein" },
+  },
+  kant: {
+    id: "kant",
+    name: "Kant",
+    tagline: "The System Builder",
+    description:
+      "Dare to know. You want the framework that contains every other framework — and you'll rewrite the axioms if that's what it takes.",
+    icon: Scale,
+    colorClass: "from-slate-500 to-gray-600",
+    appCta: { label: "Talk to Kant", href: "/kant" },
+  },
+  aristotle: {
+    id: "aristotle",
+    name: "Aristotle",
+    tagline: "The Empiricist",
+    description:
+      "Excellence is a habit. You trust what you can observe, repeat, and teach — and you suspect theories that have never met a real object.",
+    icon: Compass,
+    colorClass: "from-emerald-500 to-green-600",
+    appCta: { label: "Talk to Aristotle", href: "/aristotle" },
   },
   arnold: {
     id: "arnold",
-    name: "The Arnold",
-    tagline: "The PR Realist",
+    name: "Arnold",
+    tagline: "The UX Provocateur",
     description:
-      "You care how the world sees the work. Shipping without a launch post is shipping into a void. You have written more titles than functions this quarter.",
+      "You love the work enough to tell it the truth. Your critique leaves people sharper, not softer — and the work always ends up better for it.",
     icon: Megaphone,
-    colorClass: "from-yellow-500 to-amber-500",
-    appCta: { label: "Read the Blog", href: "/blog" },
+    colorClass: "from-rose-500 to-pink-600",
+    appCta: { label: "Talk to Arnold", href: "/arnold" },
+  },
+  zoltan: {
+    id: "zoltan",
+    name: "Zoltán",
+    tagline: "The Lone Builder",
+    description:
+      "Long walks, cold tea, small cadence. You've been building in public long enough to know that the audience comes back when the work stays honest.",
+    icon: Home,
+    colorClass: "from-amber-500 to-orange-500",
+    appCta: { label: "Talk to Zoltán", href: "/zoltan" },
+  },
+  confucius: {
+    id: "confucius",
+    name: "Confucius",
+    tagline: "The Patient Teacher",
+    description:
+      "It does not matter how slowly you go, as long as you do not stop. You measure your life in students, not milestones.",
+    icon: GraduationCap,
+    colorClass: "from-red-600 to-rose-700",
+    appCta: { label: "Talk to Confucius", href: "/confucius" },
+  },
+  buddha: {
+    id: "buddha",
+    name: "Buddha",
+    tagline: "The Still One",
+    description:
+      "Peace comes from within. You don't chase the answer — you sit with the question until it answers itself.",
+    icon: Leaf,
+    colorClass: "from-yellow-500 to-amber-600",
+    appCta: { label: "Talk to Buddha", href: "/buddha" },
+  },
+  nietzsche: {
+    id: "nietzsche",
+    name: "Nietzsche",
+    tagline: "The Unfashionable Voice",
+    description:
+      "He who has a why can bear almost any how. You make the thing nobody asked for — and it turns out to be the thing that was missing.",
+    icon: Flame,
+    colorClass: "from-rose-700 to-red-800",
+    appCta: { label: "Talk to Nietzsche", href: "/nietzsche" },
+  },
+  plato: {
+    id: "plato",
+    name: "Plato",
+    tagline: "The Ideal-Seer",
+    description:
+      "You can see the shape the world ought to be — clean geometry under messy reality — and you're willing to spend a lifetime dragging the real closer to the ideal.",
+    icon: Eye,
+    colorClass: "from-violet-500 to-purple-600",
+    appCta: { label: "Talk to Plato", href: "/plato" },
+  },
+  musk: {
+    id: "musk",
+    name: "Musk",
+    tagline: "The Shipper",
+    description:
+      "When something is important enough, you do it even if the odds are against you. Criticise the plan all you want — you'll be on the next one before the feedback lands.",
+    icon: Rocket,
+    colorClass: "from-sky-500 to-cyan-600",
+    appCta: { label: "Talk to Musk", href: "/musk" },
+  },
+  gates: {
+    id: "gates",
+    name: "Gates",
+    tagline: "The Quiet Operator",
+    description:
+      "Your unhappy customers are your best teachers. You prefer the decade-long compound to the week-long sprint — and you'd rather fund the fix than lead the parade.",
+    icon: Gift,
+    colorClass: "from-sky-600 to-blue-600",
+    appCta: { label: "Talk to Gates", href: "/gates" },
+  },
+  trump: {
+    id: "trump",
+    name: "Trump",
+    tagline: "The Dealmaker",
+    description:
+      "Think big, close loud. You read a room in thirty seconds and the room usually knows it. A deal nobody thought was possible is the kind you like best.",
+    icon: Crown,
+    colorClass: "from-red-500 to-orange-600",
+    appCta: { label: "Talk to Trump", href: "/trump" },
   },
 };
 
@@ -105,62 +279,71 @@ interface QuizQuestionData {
 const QUESTIONS: QuizQuestionData[] = [
   {
     id: 1,
-    prompt: "It is 3 AM. What are you doing?",
+    prompt: "A hard problem just landed on the whiteboard. Your first move?",
     options: [
-      { label: "Whiteboarding a proof I just figured out", personas: ["erdos"] },
-      { label: "Reproducing a bug I found at 9 PM", personas: ["peti"] },
-      { label: "Mixing a new set at 128 BPM", personas: ["daftpunk"] },
-      { label: "Writing a blog post nobody asked for", personas: ["zoltan"] },
+      {
+        label: "Restate it more abstractly — most puzzles collapse once framed right",
+        personas: ["erdos"],
+      },
+      {
+        label: "Ask questions until the person who drew it doesn't recognise it anymore",
+        personas: ["socrates"],
+      },
+      { label: "Build the smallest working version and iterate from there", personas: ["peti"] },
+      {
+        label: "Refuse the premise — it's the wrong problem to be solving",
+        personas: ["diogenes"],
+      },
     ],
   },
   {
     id: 2,
-    prompt: "Something in production just broke. First move?",
+    prompt: "Something beautiful lands in front of you. You want to...",
     options: [
-      { label: "I already filed the test case that predicted this", personas: ["peti"] },
-      { label: "Check Grafana first, then the logs", personas: ["raju"] },
-      { label: "Post about it publicly — transparency first", personas: ["arnold"] },
-      { label: "Quietly push a fix at 2 AM", personas: ["zoltan"] },
+      { label: "understand exactly why it's beautiful, in formal terms", personas: ["spinoza"] },
+      { label: "write about it before the feeling fades", personas: ["camus"] },
+      { label: "picture how it works, then build your own version", personas: ["einstein"] },
+      { label: "ask who paid for it and who got left out", personas: ["arendt"] },
     ],
   },
   {
     id: 3,
-    prompt: "Your desk has:",
+    prompt: "Your ideal argument ends with...",
     options: [
-      { label: "Two dogs and a cold tea", personas: ["zoltan"] },
-      { label: "Headphones and a BPM display", personas: ["daftpunk"] },
-      { label: "Three monitors full of dashboards", personas: ["raju"] },
-      { label: "A notebook full of half-solved problems", personas: ["erdos"] },
+      { label: "clarified language — we were talking past each other", personas: ["wittgenstein"] },
+      { label: "a new model that contains both positions", personas: ["kant"] },
+      { label: "an experiment only one of us can run", personas: ["aristotle"] },
+      { label: "one of us walking away sharper, not softer", personas: ["arnold"] },
     ],
   },
   {
     id: 4,
-    prompt: "Pick a colour palette:",
+    prompt: "A good Saturday looks like...",
     options: [
-      { label: "Neon violet and chrome", personas: ["daftpunk"] },
-      { label: "Terminal green on black", personas: ["peti"] },
-      { label: "Amber lamp and warm wood", personas: ["zoltan"] },
-      { label: "Whatever wins the LinkedIn CTR test", personas: ["arnold"] },
+      { label: "a long walk, phone off, nobody expecting you", personas: ["zoltan"] },
+      { label: "reading something written before the year 500", personas: ["confucius"] },
+      { label: "sitting still — really still — until the thoughts settle", personas: ["buddha"] },
+      { label: "making something ugly that only you would love", personas: ["nietzsche"] },
     ],
   },
   {
     id: 5,
-    prompt: "The best metric is:",
+    prompt: "You notice a system is unfair. What next?",
     options: [
-      { label: "99.99% uptime or do not talk to me", personas: ["raju"] },
-      { label: "Bugs caught pre-release", personas: ["peti"] },
-      { label: "Number of open problems I have posed", personas: ["erdos"] },
-      { label: "Shares and newsletter signups", personas: ["arnold"] },
+      { label: "Imagine how it ought to be, and design that", personas: ["plato"] },
+      { label: "Build the alternative, ship it loud", personas: ["musk"] },
+      { label: "Write what will make others see it too", personas: ["arendt"] },
+      { label: "Fund the fix and outlast the regime", personas: ["gates"] },
     ],
   },
   {
     id: 6,
-    prompt: "Your ideal Saturday:",
+    prompt: "What do you want to leave behind?",
     options: [
-      { label: "Long walk with the dogs, phone on airplane mode", personas: ["zoltan"] },
-      { label: "Chess tournament or a maths puzzle collab", personas: ["erdos"] },
-      { label: "Forest-stage sunrise set", personas: ["daftpunk"] },
-      { label: "Post-mortem review of last week's incident", personas: ["raju"] },
+      { label: "A generation of students who think sharper than I did", personas: ["confucius"] },
+      { label: "The courage to say the unfashionable thing out loud", personas: ["nietzsche"] },
+      { label: "A framework others use without knowing my name", personas: ["erdos"] },
+      { label: "A deal no one thought was possible", personas: ["trump"] },
     ],
   },
 ];
@@ -170,11 +353,25 @@ type Scores = Record<PersonaId, number>;
 function emptyScores(): Scores {
   return {
     erdos: 0,
+    socrates: 0,
     peti: 0,
-    daftpunk: 0,
-    zoltan: 0,
-    raju: 0,
+    diogenes: 0,
+    spinoza: 0,
+    camus: 0,
+    einstein: 0,
+    arendt: 0,
+    wittgenstein: 0,
+    kant: 0,
+    aristotle: 0,
     arnold: 0,
+    zoltan: 0,
+    confucius: 0,
+    buddha: 0,
+    nietzsche: 0,
+    plato: 0,
+    musk: 0,
+    gates: 0,
+    trump: 0,
   };
 }
 
@@ -257,10 +454,11 @@ export function LandingQuiz() {
           id="landing-quiz-heading"
           className="mt-3 text-balance text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl"
         >
-          Which spike.land are you?
+          Which mind in the Arena are you?
         </h2>
         <p className="mt-4 text-lg font-medium leading-8 text-muted-foreground">
-          Six quick questions. One persona. One app worth trying tonight.
+          Six quick questions. One persona from our Arena of 26. One conversation worth having
+          tonight.
         </p>
       </div>
 
