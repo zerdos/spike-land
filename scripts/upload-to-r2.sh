@@ -81,6 +81,7 @@ get_content_type() {
     *.mp4)   echo "video/mp4" ;;
     *.webm)  echo "video/webm" ;;
     *.mp3)   echo "audio/mpeg" ;;
+    *.m4a)   echo "audio/mp4" ;;
     *.pdf)   echo "application/pdf" ;;
     *)       echo "application/octet-stream" ;;
   esac
@@ -222,13 +223,15 @@ if [ ${#FILES_TO_UPLOAD[@]} -gt 0 ]; then
     || true  # Don't exit on individual failures; we collect them
 fi
 
-# Upload HTML files last (sequentially for atomic switchover)
+# Upload HTML files last (parallel) — runs only after non-HTML files above have
+# finished, so referenced assets are already in R2 before any page HTML flips over.
 if [ ${#HTML_FILES_TO_UPLOAD[@]} -gt 0 ]; then
   echo ""
-  echo "  Uploading ${#HTML_FILES_TO_UPLOAD[@]} HTML files last (atomic switchover)..."
-  for file in "${HTML_FILES_TO_UPLOAD[@]}"; do
-    upload_file_with_retry "$file" "$DIST_DIR" "$TOTAL_TO_UPLOAD" "$PROGRESS_FILE" "$FAILURES_DIR" || true
-  done
+  echo "  Uploading ${#HTML_FILES_TO_UPLOAD[@]} HTML files (parallel, assets already live)..."
+  printf '%s\0' "${HTML_FILES_TO_UPLOAD[@]}" | \
+    xargs -0 -P "$CONCURRENCY" -I {} bash -c \
+      'upload_file_with_retry "$@" "'"$DIST_DIR"'" "'"$TOTAL_TO_UPLOAD"'" "'"$PROGRESS_FILE"'" "'"$FAILURES_DIR"'"' _ {} \
+    || true
 fi
 
 echo ""  # Clear the progress line
@@ -241,14 +244,34 @@ if [ -d "$FAILURES_DIR" ] && [ "$(ls -A "$FAILURES_DIR" 2>/dev/null)" ]; then
   done
 fi
 
-# Update caches (only for successfully uploaded keys)
+# Build a sorted set of failed remote_keys so we can exclude them from the cache.
+# Writing failed keys to the cache causes future runs to "skip" files that are
+# not actually on R2 (see checksum/hash skip logic above).
+FAILED_KEYS_FILE="$RUN_TMP/failed-keys.sorted"
+if [ ${#FAILED_FILES[@]} -gt 0 ]; then
+  printf '%s\n' "${FAILED_FILES[@]}" | sort -u > "$FAILED_KEYS_FILE"
+else
+  : > "$FAILED_KEYS_FILE"
+fi
+
+# Update uploaded-keys cache — exclude failed keys.
 if [ ${#NEW_KEYS[@]} -gt 0 ]; then
-  printf '%s\n' "${NEW_KEYS[@]}" >> "$UPLOADED_KEYS_FILE"
+  if [ -s "$FAILED_KEYS_FILE" ]; then
+    printf '%s\n' "${NEW_KEYS[@]}" | sort -u | comm -23 - "$FAILED_KEYS_FILE" >> "$UPLOADED_KEYS_FILE"
+  else
+    printf '%s\n' "${NEW_KEYS[@]}" >> "$UPLOADED_KEYS_FILE"
+  fi
   sort -u -o "$UPLOADED_KEYS_FILE" "$UPLOADED_KEYS_FILE"
 fi
 
+# Update checksums cache — exclude failed keys. Entries are "checksum<TAB>remote_key".
 if [ ${#NEW_CHECKSUMS[@]} -gt 0 ]; then
-  printf '%s\n' "${NEW_CHECKSUMS[@]}" > "$CHECKSUM_FILE"
+  if [ -s "$FAILED_KEYS_FILE" ]; then
+    printf '%s\n' "${NEW_CHECKSUMS[@]}" | \
+      awk -F'\t' 'NR==FNR{fail[$0]=1;next} !($2 in fail)' "$FAILED_KEYS_FILE" - > "$CHECKSUM_FILE"
+  else
+    printf '%s\n' "${NEW_CHECKSUMS[@]}" > "$CHECKSUM_FILE"
+  fi
 fi
 
 # Report results
