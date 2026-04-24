@@ -1,0 +1,163 @@
+---
+title: "Vibe Coding vs Intent-Driven Development: Two Ways To Stop Typing"
+slug: "idd-vs-vibe-coding"
+description: "Vibe coding and Intent-Driven Development look like the same move from the outside — 'I stopped writing code, the model does it' — but they are opposite moves. One throws the spec away. The other makes the spec the thing you ship. Here is what the difference actually costs you, and why I think IDD is what the next two years of AI-assisted engineering will be."
+date: "2026-04-24"
+author: "Zoltan Erdos"
+category: "AI & Tools"
+tags: ["ai", "intent-driven-development", "idd", "vibe-coding", "specifications", "llm", "engineering", "mcp", "essay"]
+featured: true
+draft: false
+primer: "Vibe coding and IDD look the same from across the room. They are not the same thing. One is writing poetry. The other is writing laws."
+heroPrompt: "A split illustration, left side a neon-soaked bedroom at 3am with a glowing laptop and a hand hovering over a keyboard blurred by motion, right side a clean architectural drawing of a building with annotations and measurements, same warm colour palette bridging both, the tension between feel and specification made visual, editorial illustration style"
+heroImage: "/blog/idd-vs-vibe-coding/hero.png"
+---
+
+*Written in one sitting, Ward garden, afternoon of the same day I wrote the bug list. Less frightened, more opinionated.*
+
+---
+
+## Two moves that look identical from the outside
+
+A year ago, if you watched me work, you would have seen me typing. Now, if you watch me work, you see me talking to my machine and the machine typing.
+
+If you watch **Andrej Karpathy** work, you see the same thing.
+
+If you watch one of the new **spec-driven, IDD, intent-first** engineers work — the ones posting screenshots of 4000-line Markdown files that compile to production apps — you also see the same thing. Prompt in, code out, ship.
+
+From the outside, these look like the same move. "I stopped writing the code, the model does it."
+
+They are **not the same move.** They are, in an interesting way, **opposite** moves. One of them is going to age badly, and one of them is going to become how software is actually written in 2027. I want to write down the difference, because I have finally built enough of each to have an opinion.
+
+---
+
+## What vibe coding actually is
+
+Karpathy's original post — February 2025 — is worth reading in the original, because people have since flattened it into a strawman. What he actually said:
+
+> There's a new kind of coding I call "vibe coding," where you fully give in to the vibes, embrace exponentials, and forget that the code even exists.
+
+The key move is the last six words. **Forget that the code even exists.** You are not reviewing the code. You are not versioning the code. You are not, in any meaningful sense, the author of the code. You are the person in the room when the code was generated, and you are evaluating only the *result* — does the button do the thing, does the colour feel right, does the app open.
+
+Vibe coding is, in that frame, a legitimate engineering stance. It is the stance of a designer using Figma, or a musician using a DAW — the underlying representation is not your problem, the output is. Karpathy was being honest about how he works on throwaway prototypes and one-off scripts, and he was right.
+
+But it has a shape. Vibe coding:
+- **Optimises for the last run.** The only truth is the current state of the running app.
+- **Does not accumulate.** There is no spec to inherit, no invariant to preserve, no decision to reopen.
+- **Scales to the length of your attention, not the length of the project.** Past about a weekend, the thing the model generated last Friday is a black box you are guessing at.
+- **Makes the repository a receipt, not a source.** The code is a frozen print-out of a conversation you have already forgotten.
+
+I want to be careful to say: **none of this is bad.** For the tasks vibe coding is meant for — prototypes, spikes, scripts, "can we even do this, let me see" — it is the right tool. I vibe-code at least twice a week. I am vibe-coding the little tool I use to rename files on my desktop. I am not building a bank on the vibes.
+
+---
+
+## What Intent-Driven Development actually is
+
+Intent-Driven Development (IDD, sometimes called spec-driven development, or *specification-as-code*) flips exactly one thing, and everything else follows from that flip:
+
+> **The specification is the thing you ship.** The code is a compilation artefact.
+
+In a vibe-coding workflow, the prompt is throwaway and the code is the thing. In an IDD workflow, **the prompt — the spec, the intent document, the set of assertions and examples and user stories — is the thing**, and the code is what you run to check that the spec was honoured. When the spec changes, you re-generate the code. When a bug appears, you do not fix the code — you fix the spec the code was generated from.
+
+This is not a new idea. Literate programming was pointing at it in 1984. Model-driven architecture was pointing at it in 2001. TLA+ was pointing at it in the nineties. What changed is that **LLMs finally make the compiler work.** The compiler from "a paragraph of intent in English" to "a working TypeScript module" is now roughly equivalent in quality to a mid-level engineer, and that was not true three years ago. The specification-as-source idea finally has a runtime.
+
+A good IDD repo, in 2026, looks like this:
+
+- A directory of *intent documents*. Markdown, sometimes with structured blocks. Each one describes what a piece of the system is for, in the language of the domain, not the language of the framework.
+- A directory of *executable checks*. Unit tests, property tests, example sessions, assertions. These encode the parts of the intent that are machine-verifiable.
+- A directory of *generated code*. This is what deploys. It is regenerable. It is not the source of truth. It is the *output* of the source of truth.
+- A pipeline that takes intent + checks and produces code, and fails loudly when the checks don't pass.
+
+The code in that last directory is **never** hand-edited. If you want to change behaviour, you change intent or a test. That's the whole discipline.
+
+---
+
+## The difference, made small
+
+Here is the smallest possible illustration of the difference.
+
+**Vibe coding:**
+> "make me a chess app where the pieces glow when they're about to be captured"
+
+…and you ship whatever the model produces, and if a bug appears you say "make it so the knight's glow is brighter," and you go again.
+
+**Intent-Driven:**
+> *`chess/glow-on-threat.intent.md`*:  A piece is "under threat" when any opposing piece could legally capture it next move. Threatened pieces render with a pulsing outline at 2Hz, opacity 40–100%. Threat is recomputed on every board state change, not on every tick. If the piece is the king and it is in check, the outline is red instead of yellow and does not pulse.
+>
+> *`chess/glow-on-threat.test.ts`*: seven example board states with the expected threat set encoded.
+
+Both fit on a single screen. Both get you the same app, roughly. The difference is what you have *accumulated* when you're done. In vibe coding, you have an app. In IDD, you have an app *and a document that survives the app being rewritten in a new framework three years from now.* That document is the thing that compounds.
+
+---
+
+## Where IDD eats vibe coding's lunch
+
+Three places.
+
+### 1. The model changes under you
+
+The model I am writing this with — Opus 4.7 — is better at code than the one I started spike.land with, which was Sonnet 3.5. The model I will be using in six months will probably be better still. A vibe-coded app is locked to the model that made it, in the sense that re-generating it with a better model produces a *different* app, not a better one. An IDD app, re-generated with a better model, produces *the same app, better implemented.* The intent is stable. The artefact is fungible.
+
+This is the single biggest reason to prefer IDD on anything with a lifetime over a month. You are going to want to re-generate. You cannot re-generate vibes.
+
+### 2. The team scales
+
+A vibe-coded repo is a repo where **only the person who had the conversation can reason about the code.** Everyone else is reading a transcript of a past discussion they weren't in. That works at team size one, barely works at team size three, and collapses at team size ten.
+
+An IDD repo onboards a new engineer the way a normal repo onboards them: they read the *intents*, not the code. The intent folder is the spec. The generated code is an implementation detail, the way bytecode is an implementation detail for a Python team.
+
+### 3. The regressions have somewhere to live
+
+In a vibe-coded repo, when a bug comes in, you go back to the conversation, you remember roughly what you were doing, and you reprompt. There is no test, because there is no unit to test — the unit of work was *a whole vibe*. In an IDD repo, every bug is a new assertion in a file that will outlive the bug. "Threatened pieces at the edge of the board should still pulse" is a sentence that now lives in `chess/glow-on-threat.intent.md`, and the next model that regenerates that file will honour it without being reminded.
+
+This is the compounding property. Vibe coding never compounds. IDD compounds on every bug.
+
+---
+
+## Where vibe coding still eats IDD's lunch
+
+I do not want to write a one-sided essay. Vibe coding wins on at least three axes, and pretending it doesn't is the kind of smug-architect move that has made "spec-driven" a dirty word for twenty years.
+
+### 1. Speed to first running thing
+
+Vibe coding is *fast*. You want to see if an idea works, you prompt, you run, you feel it. That loop is maybe 90 seconds. In IDD you are writing a document *before* you have seen whether the idea is worth documenting. That's a category error for an exploratory spike. **Do not IDD a prototype.** Vibe it, then IDD the one in a hundred prototypes that deserves to live.
+
+### 2. Taste-bound work
+
+Some code is fundamentally aesthetic. Microinteractions, animations, the way a menu feels, the exact easing curve on a transition. You cannot write "the menu should feel *elegant*" in a spec that a test runner can check. For that work, vibe coding — *specifically* the tight model-in-the-loop feedback where you say "no, softer, start slower" ten times in two minutes — is the right tool. IDD has no good answer here and pretending otherwise is dishonest.
+
+### 3. Genuinely small scripts
+
+The five-line script I use to rename screenshots does not deserve a spec. A spec for it would be longer than the script. I vibe-code it, it lives in `~/bin/`, I forget about it, and if it breaks, I vibe-code it again. IDD for a script is professional over-engineering, the same way writing a TDD suite for it would be.
+
+---
+
+## What I actually do at spike.land
+
+spike.land is, in practice, a two-layer thing.
+
+The **outer layer** — prompts, small tools, one-off transformations — is vibe-coded. I am not apologising for this. The throwaway stuff is throwaway and I let it be throwaway.
+
+The **inner layer** — the MCP runtime, the React-from-scratch engine, the chess engine, the statechart engine, the billing integration, the auth layer — is IDD, or as close to it as I can manage. Every one of those has:
+
+- An **intent doc** (usually a blog post, a README, or an initial chat transcript I've promoted to first-class status)
+- A **Vitest suite** that encodes the domain invariants
+- **Generated code** that I do edit by hand, because I'm not yet able to trust the regeneration loop for a Cloudflare Worker, but which I treat as disposable — I delete modules when I no longer want them, rather than refactor them, because the *spec plus tests* is the real asset and a module is just a frozen compilation of it.
+
+My internal name for this is the **bazdmeg method** — a checklist of quality gates I run before, during, and after AI-generated code. It's a Hungarian swear-word and a life philosophy. The checklist is public on this site. The point of the checklist is to *keep the spec honest and the tests loud* while the code underneath is allowed to be whatever the current best model wants it to be.
+
+That is IDD. That is what I believe the next two years of AI-assisted engineering look like, for anything serious.
+
+---
+
+## The one-sentence summary
+
+> **Vibe coding treats the code as the artefact and the prompt as throwaway. IDD treats the prompt as the artefact and the code as throwaway.**
+
+Both are legitimate. They pair well. You vibe-code the exploration, you IDD the production. If you catch yourself doing the opposite — IDD-ing a weekend hack, or vibe-coding a payments integration — you are about to have a bad month.
+
+And if you are a founder reading this and thinking *"wait, my whole product is vibe code"* — do not panic, and do not rewrite it. Just start a `spec/` folder tomorrow morning and begin writing, one module at a time, the intent documents you should have had from day one. You will know which modules need them first. They are the ones that keep breaking.
+
+---
+
+*If you want to see an IDD repo in action, poke around [spike.land's GitHub](https://github.com/zerdos/spike-land) — especially the `src/core/` directory. If you want to see a vibe-coded repo in action, open your own `~/bin/` folder. You probably already have one.*
