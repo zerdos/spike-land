@@ -29,6 +29,7 @@ const DB_NAME = "spike-edge-analytics";
 const R2_BUCKET = "spike-app-assets";
 
 const isRemote = process.argv.includes("--remote");
+const skipImages = process.argv.includes("--skip-images");
 
 const execAsync = promisify(exec);
 
@@ -116,6 +117,10 @@ async function seedD1(posts: BlogPost[]): Promise<void> {
 async function uploadImages(): Promise<void> {
   if (!isRemote) {
     console.log("Skipping image upload (local mode). Use --remote to upload to R2.");
+    return;
+  }
+  if (skipImages) {
+    console.log("Skipping image upload (--skip-images flag).");
     return;
   }
 

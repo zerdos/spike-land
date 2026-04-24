@@ -697,21 +697,28 @@ blog.get("/api/blog-images/:slug/:filename", async (c) => {
 });
 
 // Serve static HTML files from R2 (arena pages, interactive content)
+// For MDX blog posts, redirect to the canonical blog.spike.land domain.
 blog.get("/blog/:slug", async (c, next) => {
   const { slug } = c.req.param();
-  if (!slug.endsWith(".html") && !slug.includes("-arena")) return next();
 
-  // Try R2 key: blog-html/{slug}.html or blog-html/{slug}
-  const key = slug.endsWith(".html") ? `blog-html/${slug}` : `blog-html/${slug}.html`;
-  const obj = await c.env.SPA_ASSETS.get(key);
-  if (!obj) return next();
+  // Arena pages and explicit .html files — serve from R2.
+  if (slug.endsWith(".html") || slug.includes("-arena")) {
+    const key = slug.endsWith(".html") ? `blog-html/${slug}` : `blog-html/${slug}.html`;
+    const obj = await c.env.SPA_ASSETS.get(key);
+    if (!obj) return next();
 
-  return new Response(obj.body, {
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=300, s-maxage=600",
-    },
-  });
+    return new Response(obj.body, {
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=300, s-maxage=600",
+      },
+    });
+  }
+
+  // MDX blog posts live on blog.spike.land — redirect (canonical domain).
+  const url = new URL(c.req.url);
+  const query = url.search;
+  return c.redirect(`https://blog.spike.land/${slug}${query}`, 301);
 });
 
 // Backward-compatible: serve /blog/{slug}/{filename} for inline MDX media (images, video, audio)
