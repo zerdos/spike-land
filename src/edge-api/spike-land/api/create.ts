@@ -115,7 +115,16 @@ createRoute.get("/search", async (c) => {
   )
     .bind(pattern, pattern, pattern, limit)
     .all()
-    .catch(() => ({ results: [] }));
+    .catch((err) => {
+      console.error(
+        {
+          err: err instanceof Error ? err.message : String(err),
+          where: "create:search-apps",
+        },
+        "swallowed_error",
+      );
+      return { results: [] };
+    });
 
   return c.json({ apps: result.results ?? [] });
 });
@@ -138,7 +147,16 @@ createRoute.get("/list", async (c) => {
   )
     .bind(limit)
     .all()
-    .catch(() => ({ results: [] }));
+    .catch((err) => {
+      console.error(
+        {
+          err: err instanceof Error ? err.message : String(err),
+          where: "create:list-apps",
+        },
+        "swallowed_error",
+      );
+      return { results: [] };
+    });
 
   return c.json({ apps: result.results ?? [] });
 });

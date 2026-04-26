@@ -364,9 +364,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Warm prompt-driven blog hero images
+        id: warm-heroes
         continue-on-error: true
         timeout-minutes: 5
         run: node --import tsx scripts/warm-blog-heroes.ts --base https://spike-edge.spikeland.workers.dev
+
+      - name: Annotate warm-blog-heroes failure
+        if: steps.warm-heroes.outcome == 'failure'
+        run: echo "::warning title=Hero image warmup failed::First-load hero images may load slowly. Check logs for the warm-heroes step."
 
       - name: Purge Cloudflare cache after worker deploys
         run: bash scripts/purge-cache.sh

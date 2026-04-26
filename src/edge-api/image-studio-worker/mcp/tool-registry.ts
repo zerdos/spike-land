@@ -2,6 +2,7 @@ import type {
   CallToolResult,
   ImageStudioDeps,
   ImageStudioToolRegistry,
+  ToolDefinition,
 } from "@spike-land-ai/mcp-image-studio";
 import { registerImageStudioTools } from "@spike-land-ai/mcp-image-studio/register";
 
@@ -18,16 +19,18 @@ export function createToolRegistry(userId: string, deps: ImageStudioDeps) {
   const tools = new Map<string, StoredTool>();
 
   const registry: ImageStudioToolRegistry = {
-    register(def) {
-      const d = def as unknown as StoredTool;
-      const inputSchema = d.inputSchema as Record<string, unknown> | undefined;
-      tools.set(d.name, {
-        name: d.name,
-        description: d.description,
-        category: d.category ?? "general",
-        tier: d.tier ?? "free",
+    register(def: ToolDefinition<unknown>) {
+      const inputSchema: Record<string, unknown> | undefined =
+        def.inputSchema != null && typeof def.inputSchema === "object"
+          ? (def.inputSchema as Record<string, unknown>)
+          : undefined;
+      tools.set(def.name, {
+        name: def.name,
+        description: def.description,
+        category: def.category ?? "general",
+        tier: def.tier ?? "free",
         ...(inputSchema !== undefined ? { inputSchema } : {}),
-        handler: d.handler as (input: unknown) => Promise<CallToolResult> | CallToolResult,
+        handler: def.handler as (input: unknown) => Promise<CallToolResult> | CallToolResult,
       });
     },
   };

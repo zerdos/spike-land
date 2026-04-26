@@ -64,13 +64,31 @@ cockpit.get("/api/cockpit/metrics", async (c) => {
     `SELECT COUNT(*) as total FROM service_purchases WHERE status = 'completed'`,
   )
     .first<ServiceRevenueRow>()
-    .catch((): ServiceRevenueRow | null => null);
+    .catch((err: unknown): ServiceRevenueRow | null => {
+      console.error(
+        {
+          err: err instanceof Error ? err.message : String(err),
+          where: "cockpit:service-revenue",
+        },
+        "swallowed_error",
+      );
+      return null;
+    });
 
   const servicePurchasesQuery = c.env.DB.prepare(
     `SELECT service, email, status, created_at FROM service_purchases ORDER BY created_at DESC LIMIT 20`,
   )
     .all<ServicePurchaseRow>()
-    .catch((): { results: ServicePurchaseRow[] } => ({ results: [] }));
+    .catch((err: unknown): { results: ServicePurchaseRow[] } => {
+      console.error(
+        {
+          err: err instanceof Error ? err.message : String(err),
+          where: "cockpit:service-purchases",
+        },
+        "swallowed_error",
+      );
+      return { results: [] };
+    });
 
   const [
     userCountRow,

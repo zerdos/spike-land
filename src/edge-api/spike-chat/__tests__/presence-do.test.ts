@@ -117,8 +117,29 @@ describe("PresenceDurableObject", () => {
   });
 
   it("ignores non-string or invalid WS messages", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     await doInstance.webSocketMessage({} as unknown as WebSocket, new ArrayBuffer(8));
-    await doInstance.webSocketMessage({} as unknown as WebSocket, "invalid json");
+    await doInstance.webSocketMessage(
+      { send: vi.fn(), deserializeAttachment: vi.fn() } as unknown as WebSocket,
+      "invalid json",
+    );
+    warnSpy.mockRestore();
+  });
+
+  it("sends structured error frame on malformed JSON without crashing", async () => {
+    const mockWs = {
+      send: vi.fn(),
+      deserializeAttachment: vi.fn().mockReturnValue({ userId: "u1" }),
+    };
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    expect(() =>
+      doInstance.webSocketMessage(mockWs as unknown as WebSocket, "{not valid json"),
+    ).not.toThrow();
+    expect(mockWs.send).toHaveBeenCalledWith(
+      JSON.stringify({ type: "error", error: "invalid_frame" }),
+    );
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it("ignores messages without attachment", async () => {

@@ -120,21 +120,46 @@ export class PresenceDurableObject extends DurableObject {
   override webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer): void {
     if (typeof msg !== "string") return;
 
+    let data: unknown;
     try {
-      const data = JSON.parse(msg);
-      const attachment = ws.deserializeAttachment() as { userId: string } | null;
-      if (!attachment) return;
+      data = JSON.parse(msg);
+    } catch (err) {
+      console.warn(
+        {
+          err,
+          byteLength: typeof msg === "string" ? msg.length : (msg as ArrayBuffer).byteLength,
+          ws: (ws as unknown as { url?: string }).url ?? null,
+        },
+        "ws_invalid_frame",
+      );
+      try {
+        ws.send(JSON.stringify({ type: "error", error: "invalid_frame" }));
+      } catch {
+        // socket may already be closed; ignore
+      }
+      return;
+    }
 
-      if (data.type === "heartbeat" || data.type === "ping") {
+    if (typeof data !== "object" || data === null) return;
+    const payload = data as Record<string, unknown>;
+    const attachment = ws.deserializeAttachment() as { userId: string } | null;
+    if (!attachment) return;
+
+    try {
+      if (payload["type"] === "heartbeat" || payload["type"] === "ping") {
         this.updatePresence(attachment.userId, "online");
-        if (data.type === "ping") {
+        if (payload["type"] === "ping") {
           ws.send(JSON.stringify({ type: "pong" }));
         }
       } else if (
-        data.type === "presence_set" &&
-        ["online", "away", "dnd", "offline"].includes(data.status)
+        payload["type"] === "presence_set" &&
+        typeof payload["status"] === "string" &&
+        ["online", "away", "dnd", "offline"].includes(payload["status"])
       ) {
-        this.updatePresence(attachment.userId, data.status);
+        this.updatePresence(
+          attachment.userId,
+          payload["status"] as "online" | "away" | "dnd" | "offline",
+        );
       }
     } catch (err) {
       console.error("Invalid WS message", err);

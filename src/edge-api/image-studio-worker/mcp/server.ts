@@ -4,34 +4,39 @@ import {
   type CallToolResult,
   type ImageStudioDeps,
   type ImageStudioToolRegistry,
+  type ToolDefinition,
   registerImageStudioTools,
 } from "@spike-land-ai/mcp-image-studio";
 import { z } from "zod";
 
+/**
+ * Optional extension for tools registered via the `defineTool` builder, which
+ * attach a `fields` map alongside or instead of `inputSchema`. This property
+ * is not on the base ToolDefinition interface, so we extend it here to avoid
+ * unsafe casts.
+ */
+interface ToolDefinitionWithFields extends ToolDefinition<unknown> {
+  fields?: Record<
+    string,
+    {
+      type?: string;
+      enum?: string[];
+      description?: string;
+      optional?: boolean;
+      default?: unknown;
+    }
+  >;
+}
+
 function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
   return {
-    register(rawDef) {
-      const def = rawDef as unknown as {
-        name: string;
-        description: string;
-        fields?: Record<string, unknown>;
-        inputSchema?: Record<string, unknown>;
-        handler: (params: unknown, ctx: unknown) => Promise<CallToolResult>;
-      };
+    register(rawDef: ToolDefinition<unknown>) {
+      const def: ToolDefinitionWithFields = rawDef;
       const shape: Record<string, z.ZodTypeAny> = {};
 
       // Support new defineTool format
       if (def.fields) {
-        for (const [key, field] of Object.entries(def.fields) as [
-          string,
-          {
-            type?: string;
-            enum?: string[];
-            description?: string;
-            optional?: boolean;
-            default?: unknown;
-          },
-        ][]) {
+        for (const [key, field] of Object.entries(def.fields)) {
           let zField: z.ZodTypeAny = z.unknown();
           if (field.type === "string") {
             zField = field.enum ? z.enum(field.enum as [string, ...string[]]) : z.string();
@@ -69,8 +74,13 @@ function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
             userId: ((extra as Record<string, unknown>)?.["userId"] as string) || "demo-user",
             deps: {} as ImageStudioDeps, // The real deps are passed via the closure when registerImageStudioTools is called
           };
-          // The handler is already bound to the deps inside `registerImageStudioTools`
-          const result: CallToolResult = await def.handler(params, ctx);
+          // The handler is already bound to the deps inside `registerImageStudioTools`.
+          // The wrapped handler produced by `createToolFromExport` accepts a single
+          // `input` argument; passing `ctx` as a second argument is safe here because
+          // the wrapper ignores it — but we cast via a single-arg wrapper to satisfy
+          // the compiler without suppressing the whole definition.
+          const invoke = def.handler as (input: unknown) => Promise<CallToolResult>;
+          const result: CallToolResult = await invoke(params);
           return result as unknown as SdkCallToolResult;
         },
       );

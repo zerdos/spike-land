@@ -85,8 +85,20 @@ export class ChannelDurableObject extends DurableObject {
     let data: unknown;
     try {
       data = JSON.parse(msg);
-    } catch {
-      console.error("[ChannelDurableObject] Invalid JSON in WS message");
+    } catch (err) {
+      console.warn(
+        {
+          err,
+          byteLength: typeof msg === "string" ? msg.length : (msg as ArrayBuffer).byteLength,
+          ws: (ws as unknown as { url?: string }).url ?? null,
+        },
+        "ws_invalid_frame",
+      );
+      try {
+        ws.send(JSON.stringify({ type: "error", error: "invalid_frame" }));
+      } catch {
+        // socket may already be closed; ignore
+      }
       return;
     }
 

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { z } from "zod";
 import type { Env } from "../../core-logic/env";
 import type { Variables } from "../middleware";
 import { createDb } from "../../db/db-index";
@@ -7,6 +8,21 @@ import { eq } from "drizzle-orm";
 import { generateId } from "../../core-logic/id-gen";
 
 export const webhooksRouter = new Hono<{ Bindings: Env; Variables: Variables }>();
+
+/**
+ * Inbound webhook body schema.
+ * External services (Slack, GitHub, etc.) post arbitrary JSON; we only require
+ * that it is an object and look for the conventional message fields.
+ */
+const inboundWebhookBody = z
+  .object({
+    text: z.string().optional(),
+    content: z.string().optional(),
+    contentType: z.string().optional(),
+  })
+  .passthrough();
+
+type InboundWebhookBody = z.infer<typeof inboundWebhookBody>;
 
 /**
  * POST /webhooks/inbound/:token
@@ -24,13 +40,21 @@ webhooksRouter.post("/inbound/:token", async (c) => {
     return c.json({ error: "Invalid webhook token" }, 404);
   }
 
-  const body = (await c.req.json().catch((): null => null)) as Record<string, unknown> | null;
-  if (!body) {
-    return c.json({ error: "Invalid JSON body" }, 400);
+  let raw: unknown;
+  try {
+    raw = await c.req.json();
+  } catch {
+    return c.json({ error: "invalid_json" }, 400);
   }
+  const parsed = inboundWebhookBody.safeParse(raw);
+  if (!parsed.success) {
+    return c.json({ error: "invalid_body", issues: parsed.error.flatten() }, 400);
+  }
+  const body: InboundWebhookBody = parsed.data;
 
   // Accept either { text } or { content } as the message body
-  const content = String(body["text"] || body["content"] || JSON.stringify(body));
+  const content = body.text ?? body.content ?? JSON.stringify(body);
+  const contentType = body.contentType ?? "text";
 
   const id = generateId();
   const now = Date.now();
@@ -48,7 +72,7 @@ webhooksRouter.post("/inbound/:token", async (c) => {
     channelId: webhook.channelId,
     userId: `webhook-${webhook.id}`,
     content,
-    contentType: String(body["contentType"] || "text"),
+    contentType,
     threadId: null,
     createdAt: now,
   };

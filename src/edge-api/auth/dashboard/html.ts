@@ -1043,8 +1043,14 @@ async function loadApiKeys() {
   try {
     const [keysData, clientsData, codesData] = await Promise.all([
       fetchApi('/dashboard/api/api-keys'),
-      fetchApi('/dashboard/api/oauth-clients').catch(() => ({clients:[]})),
-      fetchApi('/dashboard/api/device-codes').catch(() => ({codes:[]})),
+      fetchApi('/dashboard/api/oauth-clients').catch((err) => {
+        console.error({err: err && err.message ? err.message : String(err), where: 'dashboard:oauth-clients'}, 'swallowed_error');
+        return {clients:[]};
+      }),
+      fetchApi('/dashboard/api/device-codes').catch((err) => {
+        console.error({err: err && err.message ? err.message : String(err), where: 'dashboard:device-codes'}, 'swallowed_error');
+        return {codes:[]};
+      }),
     ]);
 
     let html = '<p class="section-title" style="margin-top:0">API Keys</p>';
