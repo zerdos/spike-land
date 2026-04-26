@@ -30,8 +30,8 @@ interface ToolDefinitionWithFields extends ToolDefinition<unknown> {
 
 function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
   return {
-    register(rawDef: ToolDefinition<unknown>) {
-      const def: ToolDefinitionWithFields = rawDef;
+    register<T = unknown>(rawDef: ToolDefinition<T>) {
+      const def = rawDef as ToolDefinitionWithFields;
       const shape: Record<string, z.ZodTypeAny> = {};
 
       // Support new defineTool format
@@ -65,25 +65,11 @@ function createRegistryAdapter(server: McpServer): ImageStudioToolRegistry {
         }
       }
 
-      server.tool(
-        def.name,
-        def.description,
-        shape,
-        async (params, extra): Promise<SdkCallToolResult> => {
-          const ctx = {
-            userId: ((extra as Record<string, unknown>)?.["userId"] as string) || "demo-user",
-            deps: {} as ImageStudioDeps, // The real deps are passed via the closure when registerImageStudioTools is called
-          };
-          // The handler is already bound to the deps inside `registerImageStudioTools`.
-          // The wrapped handler produced by `createToolFromExport` accepts a single
-          // `input` argument; passing `ctx` as a second argument is safe here because
-          // the wrapper ignores it — but we cast via a single-arg wrapper to satisfy
-          // the compiler without suppressing the whole definition.
-          const invoke = def.handler as (input: unknown) => Promise<CallToolResult>;
-          const result: CallToolResult = await invoke(params);
-          return result as unknown as SdkCallToolResult;
-        },
-      );
+      server.tool(def.name, def.description, shape, async (params): Promise<SdkCallToolResult> => {
+        const invoke = def.handler as (input: unknown) => Promise<CallToolResult>;
+        const result: CallToolResult = await invoke(params);
+        return result as unknown as SdkCallToolResult;
+      });
     },
   };
 }

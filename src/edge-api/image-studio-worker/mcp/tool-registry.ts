@@ -19,7 +19,7 @@ export function createToolRegistry(userId: string, deps: ImageStudioDeps) {
   const tools = new Map<string, StoredTool>();
 
   const registry: ImageStudioToolRegistry = {
-    register(def: ToolDefinition<unknown>) {
+    register<T = unknown>(def: ToolDefinition<T>) {
       const inputSchema: Record<string, unknown> | undefined =
         def.inputSchema != null && typeof def.inputSchema === "object"
           ? (def.inputSchema as Record<string, unknown>)
