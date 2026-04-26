@@ -11,6 +11,7 @@ export interface CreateMcpServerOptions {
   spikeEdge?: Fetcher;
   spaAssets?: R2Bucket;
   geminiApiKey?: string;
+  badgeSigningSecret?: string;
 }
 
 export async function createMcpServer(
@@ -31,6 +32,7 @@ export async function createMcpServer(
     spikeEdge: options?.spikeEdge,
     spaAssets: options?.spaAssets,
     geminiApiKey: options?.geminiApiKey,
+    badgeSigningSecret: options?.badgeSigningSecret,
   });
 
   if (options?.enabledCategories && options.enabledCategories.length > 0) {

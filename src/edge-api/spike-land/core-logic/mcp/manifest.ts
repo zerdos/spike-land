@@ -19,6 +19,8 @@ export interface ToolRegistrationEnv {
   anthropicApiKey?: string | undefined;
   openaiApiKey?: string | undefined;
   elevenLabsApiKey?: string | undefined;
+  /** Required for badge token signing (quiz/queez/planning-interview). */
+  badgeSigningSecret?: string | undefined;
 }
 
 // ─── Static Imports ───

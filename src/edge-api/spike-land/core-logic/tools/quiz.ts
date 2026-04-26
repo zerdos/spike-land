@@ -175,7 +175,13 @@ export function registerQuizTools(
             score: session.score,
             ts: session.completedAt,
           };
-          const token = generateBadgeToken(badgePayload, "quiz-badge-secret");
+          const badgeSecret = env?.badgeSigningSecret;
+          if (!badgeSecret) {
+            throw new Error(
+              "Badge signing is not configured on this server (BADGE_SIGNING_SECRET missing).",
+            );
+          }
+          const token = generateBadgeToken(badgePayload, badgeSecret);
 
           return jsonResult("All concepts mastered! Quiz complete.", {
             results,
@@ -234,7 +240,13 @@ export function registerQuizTools(
           score: session.score,
           ts: session.completedAt ?? Date.now(),
         };
-        const token = generateBadgeToken(badgePayload, "quiz-badge-secret");
+        const badgeSecret = env?.badgeSigningSecret;
+        if (!badgeSecret) {
+          throw new Error(
+            "Badge signing is not configured on this server (BADGE_SIGNING_SECRET missing).",
+          );
+        }
+        const token = generateBadgeToken(badgePayload, badgeSecret);
 
         return jsonResult("Badge retrieved", {
           token,

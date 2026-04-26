@@ -21,6 +21,10 @@ export interface Env {
   // Vault
   VAULT_SECRET: string; // Server-side pepper for vault encryption (PBKDF2 input)
 
+  // Badge signing — required for quiz/queez/planning-interview badge issuance.
+  // Set via: wrangler secret put BADGE_SIGNING_SECRET
+  BADGE_SIGNING_SECRET?: string;
+
   // Analytics
   GA_MEASUREMENT_ID: string;
   GA_API_SECRET: string;

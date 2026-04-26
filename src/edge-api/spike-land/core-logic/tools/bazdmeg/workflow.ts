@@ -227,7 +227,13 @@ export function registerBazdmegWorkflowTools(
             score: session.score,
             ts: session.completedAt,
           };
-          const token = generateBadgeToken(badgePayload, "planning-interview-secret");
+          const badgeSecret = env?.badgeSigningSecret;
+          if (!badgeSecret) {
+            throw new Error(
+              "Badge signing is not configured on this server (BADGE_SIGNING_SECRET missing).",
+            );
+          }
+          const token = generateBadgeToken(badgePayload, badgeSecret);
 
           await saveSessionToDb(db, input.session_id, session.userId, session);
           return jsonResult(

@@ -100,6 +100,9 @@ async function createSession(
     spikeEdge: c.env.SPIKE_EDGE,
     spaAssets: c.env.SPA_ASSETS,
     geminiApiKey: c.env.GEMINI_API_KEY,
+    ...(c.env.BADGE_SIGNING_SECRET !== undefined
+      ? { badgeSigningSecret: c.env.BADGE_SIGNING_SECRET }
+      : {}),
   });
 
   const sessionId = crypto.randomUUID();
@@ -308,6 +311,9 @@ async function handleStatelessPost(
     spikeEdge: c.env.SPIKE_EDGE,
     spaAssets: c.env.SPA_ASSETS,
     geminiApiKey: c.env.GEMINI_API_KEY,
+    ...(c.env.BADGE_SIGNING_SECRET !== undefined
+      ? { badgeSigningSecret: c.env.BADGE_SIGNING_SECRET }
+      : {}),
   });
 
   applyCallerContext(mcpServer, callerElo, callerTier, isAgent, userRole);
