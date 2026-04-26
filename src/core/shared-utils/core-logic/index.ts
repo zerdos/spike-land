@@ -36,6 +36,9 @@ export { tryCatch, type Result as TryCatchResult } from "./try-catch.js";
 export { fnv1a } from "./hash.js";
 export { randn, sampleGamma, sampleBeta } from "./stats.js";
 
+// Numeric parsing utilities (BUG-S7-03)
+export { parsePositiveInt } from "./numbers.js";
+
 // ELO Rating
 export {
   expectedScore,

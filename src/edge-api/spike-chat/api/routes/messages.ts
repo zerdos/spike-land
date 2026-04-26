@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import type { Env } from "../../core-logic/env";
 import type { Variables } from "../middleware";
 import { createDb } from "../../db/db-index";
@@ -16,7 +17,7 @@ export const messagesRouter = new Hono<{ Bindings: Env; Variables: Variables }>(
 messagesRouter.get("/", async (c) => {
   const db = createDb(c.env.DB);
   const channelId = c.req.query("channelId");
-  const limit = parseInt(c.req.query("limit") || "50", 10);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 200);
   const since = c.req.query("since");
 
   if (!channelId) return c.json({ error: "Missing channelId" }, 400);

@@ -6,6 +6,7 @@
  * for fast aggregations.
  */
 import { Hono } from "hono";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import type { Env } from "../core-logic/env";
 
 const VALID_RANGES: Record<string, number> = {
@@ -30,7 +31,7 @@ export const internalAnalytics = new Hono<{ Bindings: Env }>();
  */
 internalAnalytics.get("/analytics/tools", async (c) => {
   const range = c.req.query("range") ?? "7d";
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "20", 10), 100);
+  const limit = parsePositiveInt(c.req.query("limit"), 20, 200);
 
   const days = VALID_RANGES[range];
   if (!days) {
