@@ -86,10 +86,10 @@
     "jest-resolve": "^30.3.0",
     "jest-ts-webcompat-resolver": "^1.0.1",
     "prettier": "^3.8.3",
-    "rollup": "^4.60.1",
+    "rollup": "^4.60.2",
     "tslib": "^2.8.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2"
+    "typescript-eslint": "^8.59.1"
   },
   "engines": {
     "node": ">= 14.6"

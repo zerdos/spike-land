@@ -18,14 +18,14 @@
     "lint": "eslint --quiet ."
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.3",
-    "@astrojs/react": "^5.0.3",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/react": "^5.0.4",
     "@astrojs/sitemap": "^3.7.2",
-    "@sentry/browser": "^10.49.0",
+    "@sentry/browser": "^10.50.0",
     "@spike-land-ai/shared": "workspace:*",
-    "astro": "^6.1.7",
-    "better-auth": "^1.6.5",
-    "framer-motion": "11.18.2",
+    "astro": "^6.1.9",
+    "better-auth": "^1.6.9",
+    "framer-motion": "12.38.0",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -36,10 +36,10 @@
   "devDependencies": {
     "@sentry/vite-plugin": "^5.2.0",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "tailwindcss": "^4.2.2",
+    "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"
   }
 }
