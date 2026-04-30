@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import type { Env } from "../../core-logic/env.js";
 import { createRateLimiter } from "../../core-logic/in-memory-rate-limiter.js";
 import { requireInternalSecret } from "../../core-logic/internal-auth.js";
@@ -207,7 +208,7 @@ errors.get("/errors", async (c) => {
   }
 
   const service = c.req.query("service");
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 200);
   const range = c.req.query("range") ?? "24h";
 
   const rangeMs: Record<string, number> = {

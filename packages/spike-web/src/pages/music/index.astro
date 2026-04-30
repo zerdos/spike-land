@@ -1,0 +1,53 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+const tracks = [
+  "Neon Horizon",
+  "Midnight Drive",
+  "Cybernetic Dreams",
+  "Synthwave Serenade",
+  "Galactic Groove",
+  "Electric Echoes",
+  "Quantum Lullaby",
+  "Nebula Nights",
+  "Starlight Symphony",
+  "Retro Resonance",
+  "Digital Dawn",
+  "Solar Flare"
+].map(t => ({
+  name: t,
+  slug: t.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+  price: "$0.99"
+}));
+---
+
+<Layout title="Music - spike.land" description="Listen and buy exclusive AI generated tracks.">
+  <div class="page-shell">
+    <Nav activePath="/music" />
+    <main class="flex-1 container mx-auto max-w-5xl py-12 px-4">
+      <h1 class="text-4xl font-bold mb-2">spike.land records</h1>
+      <p class="text-muted-foreground mb-8">Exclusive AI-generated tracks from Suno. Listen free, buy to own.</p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {tracks.map(track => (
+          <a href={`/music/${track.slug}`} class="block group">
+            <div class="glass-card p-6 rounded-2xl border border-border transition-all hover:border-primary/50 hover:shadow-lg">
+              <div class="w-full aspect-square bg-muted/30 rounded-xl mb-4 flex items-center justify-center text-4xl">
+                🎵
+              </div>
+              <h2 class="text-xl font-bold group-hover:text-primary transition-colors">{track.name}</h2>
+              <p class="text-sm text-muted-foreground mt-1">{track.price} — High Quality MP3</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </main>
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page-shell { min-height: 100svh; display: flex; flex-direction: column; background: var(--bg); }
+</style>

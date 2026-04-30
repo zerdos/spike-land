@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { parsePositiveInt } from "../../../../core/shared-utils/core-logic/numbers.js";
 import type { Env, Variables } from "../../core-logic/env.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { calculateBugEloChange } from "../../lazy-imports/elo.js";
@@ -36,8 +37,8 @@ bugbook.get(BUGBOOK_API_BASE, async (c) => {
   const status = c.req.query("status");
   const category = c.req.query("category");
   const sort = c.req.query("sort") ?? "elo";
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
-  const offset = parseInt(c.req.query("offset") ?? "0", 10);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 200);
+  const offset = parsePositiveInt(c.req.query("offset"), 0, 50000);
 
   const listQ = buildBugListQuery({ status, category, sort, limit, offset });
   const countQ = buildBugCountQuery({ status, category });
@@ -61,7 +62,7 @@ bugbook.get(BUGBOOK_API_BASE, async (c) => {
 
 /** GET /api/bugbook/leaderboard — bugs ranked by ELO. */
 bugbook.get(`${BUGBOOK_API_BASE}/leaderboard`, async (c) => {
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "25", 10), 100);
+  const limit = parsePositiveInt(c.req.query("limit"), 25, 100);
 
   const [bugs, reporters] = await Promise.all([
     c.env.DB.prepare(
@@ -84,7 +85,7 @@ bugbook.get(`${BUGBOOK_API_BASE}/leaderboard`, async (c) => {
 
 /** GET /api/bugbook/reporters — top bug reporters by user ELO. */
 bugbook.get(`${BUGBOOK_API_BASE}/reporters`, async (c) => {
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "25", 10), 100);
+  const limit = parsePositiveInt(c.req.query("limit"), 25, 100);
   const result = await c.env.DB.prepare(
     "SELECT user_id, elo, tier, event_count FROM user_elo ORDER BY elo DESC LIMIT ?",
   )
@@ -335,7 +336,7 @@ bugbook.patch(`${BUGBOOK_API_BASE}/:id/fix`, authMiddleware, async (c) => {
 /** GET /api/bugbook/my-reports — user's own reports. */
 bugbook.get(`${BUGBOOK_API_BASE}/my-reports`, authMiddleware, async (c) => {
   const userId = c.get("userId");
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 200);
 
   const [reports, userElo] = await Promise.all([
     c.env.DB.prepare(

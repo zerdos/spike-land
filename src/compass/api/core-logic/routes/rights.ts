@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import type {
   APIResponse,
   ContextVariables,
@@ -33,8 +34,8 @@ export function createRightsRouter(engine: RightsEngine) {
   // so that the literal segment "resources" is not swallowed by the first wildcard.
   router.get("/resources/:jurisdiction", async (c) => {
     const jurisdiction = c.req.param("jurisdiction");
-    const page = Math.max(1, parseInt(c.req.query("page") ?? "1", 10));
-    const pageSize = Math.min(100, Math.max(1, parseInt(c.req.query("pageSize") ?? "20", 10)));
+    const page = parsePositiveInt(c.req.query("page"), 1, 1000);
+    const pageSize = parsePositiveInt(c.req.query("pageSize"), 20, 100);
 
     const { items, total } = await engine.getLegalResources(jurisdiction, page, pageSize);
 

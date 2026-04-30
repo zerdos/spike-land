@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import type { AlbumPrivacy, AspectRatio, ImageStudioDeps } from "@spike-land-ai/mcp-image-studio";
 import { asAlbumHandle, asImageId, asJobId } from "@spike-land-ai/mcp-image-studio";
@@ -28,6 +29,7 @@ import {
   getHealthHttpStatus,
   timedCheck,
 } from "../../common/core-logic/health-contract";
+import { parsePositiveInt } from "../../../core/shared-utils/core-logic/numbers.ts";
 
 declare const __BUILD_SHA__: string;
 declare const __BUILD_TIME__: string;
@@ -342,7 +344,7 @@ app.post("/api/tool", async (c) => {
 app.get("/api/gallery", async (c) => {
   const { userId } = await buildDeps(c);
   const cursor = c.req.query("cursor");
-  const limit = parseInt(c.req.query("limit") ?? "50", 10);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 100);
   const search = c.req.query("search");
   const tag = c.req.query("tag");
 
@@ -365,7 +367,7 @@ app.get("/api/gallery", async (c) => {
 app.get("/api/gallery/albums", async (c) => {
   const { userId, deps } = await buildDeps(c);
   const limitParam = c.req.query("limit");
-  const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+  const limit = limitParam ? parsePositiveInt(limitParam, 50, 100) : undefined;
   const albums = await deps.db.albumFindMany({ userId, limit });
 
   // Enrich with coverUrl: resolve cover image URL or fall back to first album image

@@ -208,7 +208,7 @@ export async function checkTypeScriptErrors(model: editor.ITextModel, uri: Uri):
     // Now check for errors
     const typeScriptWorker = await (await typescript.getTypeScriptWorker())(uri);
 
-    const [syntacticDiagnostics, semanticDiagnostics, suggestionDiagnostics] = await Promise.all([
+    const [, semanticDiagnostics] = await Promise.all([
       typeScriptWorker.getSyntacticDiagnostics(uri.toString()),
       typeScriptWorker.getSemanticDiagnostics(uri.toString()),
       typeScriptWorker.getSuggestionDiagnostics(uri.toString()),

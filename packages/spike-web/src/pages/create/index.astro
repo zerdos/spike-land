@@ -1,0 +1,33 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import Analytics from '../../../components/Analytics.astro';
+import { CreateIndexPage } from '../../../components/react/create/CreateIndex';
+---
+
+<Layout
+  title="Create App - spike.land"
+  description="Build any app in seconds. Describe what you want to build and AI generates a fully functional React application."
+>
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav activePath="/create" />
+
+    <main class="flex-1">
+      <CreateIndexPage client:only="react" />
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+</style>

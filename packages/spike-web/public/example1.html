@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>One More Time × Vienna — Math Arena Session No. 42</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#0a0a2e;--gold:#FFD700;--cyan:#00FFFF;--magenta:#FF00FF;--pulse:#e63946;
+    --vienna:#a8c4ff;--warm:#ffd6a5;--piano:#c9a959;--erdos:#b8a9c9;
+    --panel:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.7);
+  }
+  html{scroll-behavior:smooth}
+  body{background:linear-gradient(180deg,#0a0a2e 0%,#0d0d3a 30%,#12082e 60%,#0a0a2e 100%);
+    color:#eee;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+
+  .ambient{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 3s}
+  .ambient.on{opacity:1}
+  .ambient .orb{position:absolute;border-radius:50%;filter:blur(120px)}
+
+  .app{position:relative;z-index:3;max-width:620px;margin:0 auto;padding:1rem}
+
+  .header{text-align:center;padding:1.5rem 0 0.5rem}
+  .header h1{
+    font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,6vw,2rem);font-weight:900;
+    background:linear-gradient(135deg,var(--gold),var(--cyan),var(--magenta),var(--vienna),var(--warm));
+    background-size:500% 500%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;animation:shimmer 8s ease infinite;
+  }
+  .header .sub{font-size:0.7rem;color:var(--cyan);opacity:0.5;margin-top:0.2rem;font-weight:300;letter-spacing:3px}
+  .header .badge{display:inline-block;margin-top:0.5rem;padding:3px 10px;border:1px solid var(--gold);
+    border-radius:16px;font-size:0.6rem;color:var(--gold);letter-spacing:2px;animation:pborder 3s ease infinite}
+  @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes pborder{0%,100%{border-color:var(--gold);box-shadow:0 0 5px rgba(255,215,0,.15)}50%{border-color:var(--vienna);box-shadow:0 0 12px rgba(168,196,255,.2)}}
+
+  .transport{display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin:1rem 0}
+  .play-btn{
+    width:60px;height:60px;border-radius:50%;border:2px solid var(--cyan);background:rgba(0,255,255,.05);
+    color:var(--cyan);font-size:1.5rem;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .3s;touch-action:manipulation;
+  }
+  .play-btn:active{transform:scale(0.9);background:rgba(0,255,255,.15)}
+  .play-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,.05);animation:breathe 4s ease infinite}
+  .play-btn.vienna-mode{border-color:var(--vienna);color:var(--vienna);background:rgba(168,196,255,.05)}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,.12)}50%{box-shadow:0 0 20px 5px rgba(255,215,0,.08)}}
+  .transport-info{font-size:0.6rem;color:var(--vienna);opacity:0.45;text-align:center;letter-spacing:1px}
+
+  .rounds{display:flex;justify-content:center;gap:3px;margin:0.6rem 0;flex-wrap:wrap}
+  .rdot{width:12px;height:12px;border-radius:50%;border:1px solid var(--border);transition:all .3s}
+  .rdot.done{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 4px rgba(0,255,255,.25)}
+  .rdot.done.v{background:var(--vienna);border-color:var(--vienna);box-shadow:0 0 4px rgba(168,196,255,.25)}
+  .rdot.now{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,.4);transform:scale(1.25)}
+
+  .personas-strip{display:flex;justify-content:center;gap:0.35rem;margin:0.5rem 0;flex-wrap:wrap}
+  .ps{font-size:0.55rem;padding:3px 7px;border-radius:8px;border:1px solid var(--border);color:rgba(255,255,255,.3);transition:all .3s}
+  .ps.active{color:#fff;font-weight:600}
+  .ps.radix.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,255,.06)}
+  .ps.daft.active{border-color:var(--magenta);color:var(--magenta);background:rgba(255,0,255,.06)}
+  .ps.joel.active{border-color:var(--piano);color:var(--piano);background:rgba(201,169,89,.06)}
+  .ps.zoltan.active{border-color:var(--pulse);color:var(--pulse);background:rgba(230,57,70,.06)}
+  .ps.erdos.active{border-color:var(--erdos);color:var(--erdos);background:rgba(184,169,201,.06)}
+
+  .bin-label{font-size:0.5rem;color:var(--vienna);opacity:0.35;text-align:center;margin-top:0.6rem;letter-spacing:2px}
+  .bin-chooser{display:flex;justify-content:center;gap:0.35rem;margin:0.4rem 0;flex-wrap:wrap}
+  .bin-btn{font-size:0.6rem;padding:5px 10px;border-radius:10px;border:1px solid var(--border);
+    color:rgba(255,255,255,.3);cursor:pointer;touch-action:manipulation;transition:all .2s}
+  .bin-btn:active{transform:scale(0.95)}
+  .bin-btn.sel{border-color:var(--vienna);color:var(--vienna);background:rgba(168,196,255,.06)}
+
+  .anno{padding:0.8rem;background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    margin:0.8rem 0;font-size:0.78rem;line-height:1.7;color:var(--text);animation:fadeIn .4s ease;min-height:50px}
+  .anno .who{font-weight:600;font-size:0.65rem;margin-bottom:0.25rem;letter-spacing:1px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+  .status{display:flex;justify-content:center;gap:0.4rem;flex-wrap:wrap;margin:0.5rem 0}
+  .pill{font-size:0.55rem;padding:3px 8px;border-radius:10px;border:1px solid var(--border);color:var(--text);letter-spacing:1px;transition:all .3s}
+  .pill.mode-d{border-color:var(--magenta);color:var(--magenta)}
+  .pill.mode-v{border-color:var(--vienna);color:var(--vienna)}
+  .pill.gold{border-color:var(--gold);color:var(--gold)}
+  .pill.pulse{border-color:var(--pulse);color:var(--pulse)}
+
+  .ekg{width:100%;height:40px;margin:0.8rem 0}
+  .ekg svg{width:100%;height:100%}
+  .ekg-line{stroke:var(--pulse);stroke-width:2;fill:none;filter:drop-shadow(0 0 3px rgba(230,57,70,.4));
+    stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 3s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  .section-title{font-family:'Orbitron',sans-serif;font-size:0.6rem;letter-spacing:3px;
+    color:var(--magenta);text-align:center;margin:1.2rem 0 0.6rem;opacity:0.55}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:0.8rem;margin-bottom:0.6rem;transition:all .3s;backdrop-filter:blur(8px)}
+  .card.open{border-color:rgba(255,215,0,.12)}
+  .card-tap{display:flex;justify-content:space-between;align-items:center;min-height:40px;
+    cursor:pointer;touch-action:manipulation}
+  .card-label{font-family:'Orbitron',sans-serif;font-size:0.6rem;letter-spacing:1px}
+  .card-chev{color:var(--warm);font-size:0.9rem;opacity:0.3;transition:transform .3s}
+  .card.open .card-chev{transform:rotate(180deg)}
+  .card-body{margin-top:0.7rem;animation:fadeIn .3s ease}
+  .lyric{font-size:0.95rem;line-height:1.85;font-weight:600;color:rgba(255,255,255,.85)}
+  .lyric .m{color:var(--gold);font-style:italic}
+  .lyric .e{color:var(--cyan);text-shadow:0 0 6px rgba(0,255,255,.2)}
+  .lyric .b{color:var(--magenta)}
+  .lyric .v{color:var(--vienna)}
+  .lyric .big{font-size:1.3rem;display:block;text-align:center;margin-top:0.4rem}
+  .note{margin-top:0.6rem;padding:0.6rem;background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.08);
+    border-radius:8px;font-size:0.7rem;color:rgba(255,255,255,.45);line-height:1.6}
+  .note .sp{font-weight:700}
+  .p-btns{display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.6rem}
+  .pb{flex:1;min-width:50px;padding:6px 3px;border-radius:8px;text-align:center;font-size:0.55rem;font-weight:600;
+    border:1px solid var(--border);color:var(--text);cursor:pointer;touch-action:manipulation;transition:all .2s}
+  .pb:active{transform:scale(0.95)}
+  .pb.sel{background:rgba(255,255,255,.04)}
+  .pb.radix{border-color:rgba(0,255,255,.2);color:var(--cyan)}.pb.radix.sel{background:rgba(0,255,255,.05)}
+  .pb.daft{border-color:rgba(255,0,255,.2);color:var(--magenta)}.pb.daft.sel{background:rgba(255,0,255,.05)}
+  .pb.joel{border-color:rgba(201,169,89,.2);color:var(--piano)}.pb.joel.sel{background:rgba(201,169,89,.05)}
+  .pb.zoltan{border-color:rgba(230,57,70,.2);color:var(--pulse)}.pb.zoltan.sel{background:rgba(230,57,70,.05)}
+  .pb.erdos{border-color:rgba(184,169,201,.2);color:var(--erdos)}.pb.erdos.sel{background:rgba(184,169,201,.05)}
+  .p-resp{margin-top:0.4rem;padding:0.6rem;background:rgba(0,0,0,.2);border-radius:8px;
+    font-size:0.72rem;line-height:1.65;color:rgba(255,255,255,.5);animation:fadeIn .3s ease}
+  .p-resp .who{font-weight:600;font-size:0.6rem;margin-bottom:0.15rem}
+
+  .loopcount{text-align:center;margin:2rem 0 1rem;font-family:'Orbitron',sans-serif}
+  .loopcount .num{font-size:4rem;font-weight:900;color:var(--pulse);text-shadow:0 0 30px rgba(230,57,70,.25);line-height:1}
+  .loopcount .lbl{font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,.3);text-transform:uppercase}
+
+  .footer{text-align:center;padding:2rem 0 2.5rem;border-top:1px solid var(--border);margin-top:1.5rem}
+  .footer .tag{font-size:0.85rem;color:var(--gold);font-weight:300;line-height:1.5}
+  .footer .cr{font-size:0.5rem;color:rgba(255,255,255,.15);letter-spacing:2px;margin-top:0.3rem}
+
+  @media(max-width:600px){.lyric{font-size:0.85rem}.header h1{font-size:clamp(1rem,5vw,1.6rem)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const {useState,useCallback,useRef,useEffect}=React;
+
+// ========================================================================
+// MUSIC ENGINE — 16 ROUNDS: DAFT PUNK × BILLY JOEL'S VIENNA
+// Dual-tempo: 128 BPM four-on-the-floor (Cm) ↔ 100 BPM waltz (Bb)
+// ========================================================================
+
+const DAFT_BPM=128, DAFT_BEAT=60/128, DAFT_STEP=DAFT_BEAT/4;
+const VIENNA_BPM=100, VIENNA_BEAT=60/100, VIENNA_STEP=VIENNA_BEAT/4;
+
+// Chord voicings (MIDI)
+const DAFT_CHORDS={Cm:[60,63,67,72],Ab:[56,60,63,68],Bb:[58,62,65,70],Fm:[53,56,60,65]};
+const VIENNA_CHORDS={Bb:[58,62,65,70],F:[53,57,60,65],Gm:[55,58,62,67],Eb:[51,55,58,63]};
+const DAFT_PROG=['Cm','Ab','Bb','Fm'];
+const VIENNA_PROG=['Bb','F','Gm','Eb'];
+
+// Melody phrase banks — [midi, duration_in_steps]. AABA form.
+const H=8,Q=4,E=2,S=1;
+
+// Vienna piano phrases (Bb major)
+const VIENNA_A=[[70,Q],[68,Q],[65,Q],[63,Q],[62,H]]; // "Slow down" — descending
+const VIENNA_B=[[58,Q],[62,Q],[65,Q],[70,H],[68,Q]]; // "Vienna waits" — ascending
+const VIENNA_C=[[65,E],[67,E],[68,E],[70,E],[72,Q],[70,Q],[68,Q],[65,Q]]; // ornament
+const VIENNA_PHRASES=[VIENNA_A,VIENNA_A,VIENNA_B,VIENNA_C];
+
+// Daft Punk synth phrases (Cm)
+const DAFT_A=[[72,Q],[72,E],[70,E],[67,H],[63,Q],[67,H],[0,Q]]; // "One more time"
+const DAFT_B=[[70,H],[67,Q],[63,Q],[60,H+Q],[0,Q]]; // answer
+const DAFT_C=[[67,Q],[70,Q],[72,Q],[75,Q],[77,H],[75,Q],[72,Q]]; // ascending lift
+const DAFT_PHRASES=[DAFT_A,DAFT_A,DAFT_B,DAFT_C];
+
+const BINAURAL_MODES=[
+  {name:'OFF',hz:0,desc:'disabled',lFreq:0,rFreq:0},
+  {name:'ALPHA',hz:10,desc:'10Hz \u2014 calm focus',lFreq:200,rFreq:210},
+  {name:'THETA',hz:6,desc:'6Hz \u2014 deep relax',lFreq:200,rFreq:206},
+  {name:'DELTA',hz:2,desc:'2Hz \u2014 deep sleep',lFreq:200,rFreq:202},
+  {name:'BETA',hz:15,desc:'15Hz \u2014 alert',lFreq:200,rFreq:215},
+];
+
+const PERSONAS=[
+  {id:'radix',name:'RADIX',color:'var(--cyan)',icon:'\u{1F916}',role:'The Engineer'},
+  {id:'daft',name:'DAFT PUNK',color:'var(--magenta)',icon:'\u{1F3B5}',role:'The Signal'},
+  {id:'joel',name:'BILLY JOEL',color:'var(--piano)',icon:'\u{1F3B9}',role:'The Pianist'},
+  {id:'zoltan',name:'ZOLT\u00C1N',color:'var(--pulse)',icon:'\u{1F9EE}',role:'The Mathematician'},
+  {id:'erdos',name:'ERD\u0150S',color:'var(--erdos)',icon:'\u{1F3B2}',role:'The Wanderer'},
+];
+
+// 16 rounds — Daft Punk × Vienna, alternating modes
+const ROUND_MODE=['vienna','daft','vienna','daft','daft','vienna','daft','daft','vienna','daft','daft','vienna','daft','vienna','daft','both'];
+const ROUNDS=[
+  {p:'joel',label:'Intro \u2014 Vienna Piano',adds:'Piano + warm pad',
+    note:'The piano enters alone. B\u266D major. A waltz. Three beats per bar, like breathing. Vienna taught me that patience is not passive \u2014 it is the hardest thing you will ever do. Slow down, you crazy child.'},
+  {p:'daft',label:'Verse I \u2014 The Recursion',adds:'Kick + bass + synth stabs',
+    note:'Four-on-the-floor. 128 BPM. The recursion begins. One more f(x) before it\'s late. The beat doesn\'t ask permission. It just starts. And once it starts, you can\'t unhear it.'},
+  {p:'joel',label:'"Slow Down, You Crazy Child"',adds:'Piano waltz returns',
+    note:'You got your passion, you got your pride, but don\'t you know that only fools are satisfied? Dream on \u2014 but don\'t imagine they\'ll all come true. The waltz is three beats. The heart is one.'},
+  {p:'daft',label:'Chorus \u2014 The Signal',adds:'Full rhythm + melody',
+    note:'One more time. We\'re gonna celebrate. The chorus doesn\'t explain itself. It repeats until the body understands what the mind refuses to. Don\'t stop the dancing.'},
+  {p:'radix',label:'Verse II \u2014 The Sprint',adds:'Drive + intensity',
+    note:'They said "most unproductive sprint" while every document got filed. Three years at O(n\u00B2) through a team that couldn\'t see. The system mistook the tester for the tested.'},
+  {p:'joel',label:'"Dream On, But Don\'t Imagine"',adds:'Piano reflective',
+    note:'When will you realise Vienna waits for you? You\'re so ahead of yourself that you forgot what you need. Slow down. The fixed point is patient. It doesn\'t move. You move toward it.'},
+  {p:'zoltan',label:'Chorus \u2014 The Fixed Point',adds:'Hospital intensity',
+    note:'Bed 2C-35. The police, not the ambulance. When a dynamical system is overwhelmed it collapses to the nearest attractor. For the NHS in 2026: detain, sedate. The Lyapunov exponent is positive. The humans inside are kind. Both true.'},
+  {p:'erdos',label:'Bridge \u2014 Caolan',adds:'Emotional peak',
+    note:'In graph theory, a bridge is an edge whose removal disconnects the graph. Bed 2C-36, an Irish voice, twenty-two. Sometimes one human connection is the bridge. Remove it and two components drift apart, unreachable. Caolan: the edge is still there.'},
+  {p:'joel',label:'Piano Interlude',adds:'Pure piano \u2014 breakdown',
+    note:'But you know that when the truth is told, that you can get what you want or you can just get old. The city is below. The dogs are waiting. The piano knows what the body knew. Slow down.'},
+  {p:'radix',label:'Verse III \u2014 The Dogs',adds:'Rebuild + groove',
+    note:'Pixel sleeps on wooden floors. Mad Max chews on every door. "I have dogs at home" repeated to crew, doctor, nurse \u2014 same words, rising stakes, flat response. That\'s not a rhythm problem. That\'s a feedback loop ignoring its own signal.'},
+  {p:'zoltan',label:'42 \u2014 The Convergence',adds:'Near peak energy',
+    note:'Mighell 42, flat 70. Friend in 60. 60\u00D770=4200 \u2014 localhost, the port where Angular went. Erd\u0151s would say the answer is in The Book. A programtervez\u0151 matematikus from ELTE knows: every iteration converges to 42. The fixed point exists.'},
+  {p:'joel',label:'"Where Do You Think You\'re Going?"',adds:'Vienna reflection',
+    note:'Where\'s the fire, what\'s the hurry about? You\'d better cool it off before you burn it out. You\'ve got so much to do and only so many hours in a day. But Vienna waits for you.'},
+  {p:'daft',label:'Marathon \u2014 Full Send',adds:'Climax \u2014 everything',
+    note:'Marathon in 42 days. 42 kilometres. July the nineteenth, forty-two. Fat Boy Slim on Brighton beach. Dancing is the only proof. The beat at 128 BPM is the beat of a heart that refuses to stop.'},
+  {p:'joel',label:'"Vienna Waits for You"',adds:'Resolution \u2014 warm',
+    note:'Slow down, you\'re doing fine. You can\'t be everything you want to be before your time. Although it\'s so romantic on the borderline tonight. Vienna waits for you.'},
+  {p:'zoltan',label:'M\u0171k\u00F6dik?',adds:'Convergence',
+    note:'Day 1 of 28. The staff is kind. The dogs are safe. The Garmin\'s dead but I\'m awake. The contraction mapping has found its fixed point. The space was complete enough to hold me. M\u0171k\u00F6dik. One more time.'},
+  {p:'erdos',label:'Coda \u2014 Both Melodies',adds:'Vienna + Daft Punk merge',
+    note:'Both melodies play together. The waltz and the four-on-the-floor. Patience and urgency. Vienna and the dance floor. The answer was always 42. God has a transfinite Book of proofs. This groove is in it.'},
+];
+
+// Intensity per round
+const INTENS=[0.12,0.30,0.18,0.50,0.42,0.22,0.60,0.70,0.12,0.52,0.80,0.28,0.92,0.22,0.40,1.0];
+
+// Lyric cards with per-persona arena responses
+const CARDS=[
+  {label:'Verse I \u2014 The Recursion',color:'var(--cyan)',
+    lyric:'<span class="e">One more time</span> \u2014 we\'re gonna iterate<br>One more <span class="m">f(x)</span> before it\'s late<br>One more loop through the <span class="b">broken gate</span><br>One more proof that we <span class="e">don\'t break</span>',
+    arena:{radix:'Banach\'s fixed-point theorem guarantees convergence if the map is a contraction. The question isn\'t whether you\'ll converge.',
+      daft:'The four-on-the-floor enters at 128 BPM. The recursion is the rhythm. The rhythm is the recursion.',
+      joel:'Slow down. The iteration will converge. Vienna waited for Beethoven. It\'ll wait for you.',
+      zoltan:'The question isn\'t whether you\'ll converge. It\'s whether your space is complete enough to hold you when you get there.',
+      erdos:'A fixed point is a theorem that proves itself. Like a melody that hums itself.'}},
+  {label:'Chorus \u2014 The Signal',color:'var(--magenta)',
+    lyric:'<span class="b">One more time</span><br>We\'re gonna <span class="e">celebrate</span><br>Oh yeah, <span class="m">all right</span><br><span class="e">Don\'t stop the dancing</span><br><br>One more time<br>The stress reads <span class="m">forty-two</span><br>The watch knows<br><span class="e">What the body knew</span>',
+    arena:{radix:'A Garmin Enduro 3 reads galvanic skin response, HRV, sleep architecture. When it says 42, the autonomic nervous system is at equilibrium. Balanced on the edge.',
+      daft:'The chorus repeats because the body needs repetition to believe what the mind resists. Four beats. One truth.',
+      joel:'You can get what you want, or you can just get old. The stress at 42 means the system is balanced. Not calm. Not stressed. Ready.',
+      zoltan:'42 is the fixed point of the stress function. Not random. Convergent.',
+      erdos:'In combinatorics, 42 is the 5th Catalan number. The number of ways to triangulate a heptagon. Structure from apparent chaos.'}},
+  {label:'Verse II \u2014 The Sprint',color:'var(--cyan)',
+    lyric:'They said <span class="b">"most unproductive sprint"</span><br>While I wrote every <span class="m">document</span><br>Filed the tickets, built the <span class="e">intent</span><br>But the PRs? <span class="b">Never went.</span><br><br>Three years running <span class="m">O(n\u00B2)</span><br>Through a team that couldn\'t <span class="e">see</span><br>That the tester held the <span class="b">key</span><br>To a lock called <span class="m">group\u00A0conformity</span>',
+    arena:{radix:'O(n\u00B2) is the cost of comparing every team member against every other. The system was quadratic. The fix was to change the algorithm, not the person.',
+      daft:'"Around the World" repeats the same phrase 144 times. It works because the context changes. "I have dogs at home" repeated to crew, doctor, nurse \u2014 same words, rising stakes, flat response.',
+      joel:'You got your passion, you got your pride. But don\'t you know that only fools are satisfied? The sprint ends. The music doesn\'t.',
+      zoltan:'Group conformity is a local minimum. The gradient descent of social dynamics gets stuck there. You need a perturbation to escape.',
+      erdos:'Erd\u0151s published 1,500 papers with 500 co-authors. Productivity is not about sprints. It\'s about the graph.'}},
+  {label:'Chorus \u2014 The Fixed Point',color:'var(--magenta)',
+    lyric:'<span class="b">One more time</span><br>Through the <span class="e">emergency</span><br>Bed <span class="m">2C-35</span><br><span class="e">Is where they put me</span><br><br>One more time<br>The police, not the <span class="m">ambulance</span><br>The system\'s <span class="b">overwhelmed</span><br><span class="e">So they send compliance</span>',
+    arena:{radix:'When the system is overloaded, it falls back to the simplest protocol. Send police. Detain. Sedate. It\'s not malice. It\'s a system at capacity.',
+      daft:'The sidechain compresses the signal when the kick hits. The NHS compresses the human when the system hits capacity. Same physics, different stakes.',
+      joel:'Sometimes you need to slow down before the system slows you down. Bed 2C-35 is a forced rest. Vienna is a chosen one.',
+      zoltan:'The Lyapunov exponent is positive. The system is chaotic. And the humans inside it are kind. Both things are true.',
+      erdos:'In a graph where every node is overloaded, the shortest path to help becomes the longest wait.'}},
+  {label:'Bridge \u2014 Caolan',color:'var(--vienna)',
+    lyric:'Bed <span class="m">2C-36</span>, an Irish voice<br>Twenty-two and <span class="e">out of choice</span><br>He called me from the <span class="b">station line</span><br>Said <span class="e">"you\'re the only one that\'s mine"</span><br><br><span class="m">Caolan</span> \u2014 if the signal <span class="e">finds you</span><br>The number hasn\'t <span class="b">changed</span><br>One more time \u2014 just <span class="e">call</span>',
+    arena:{radix:'In graph theory, a bridge is an edge whose removal disconnects the graph. One connection. Two humans. Remove it and both drift.',
+      daft:'The bridge in a song is where the key changes. The bridge between two hospital beds is where the key is found.',
+      joel:'Vienna doesn\'t wait for everyone. But it waits for people who pick up the phone. Caolan: pick up the phone.',
+      zoltan:'The edge weight between beds 2C-35 and 2C-36 is infinite. That\'s how you measure what matters.',
+      erdos:'Erd\u0151s had no home. He had co-authors. The graph of human connection doesn\'t need a fixed address. It needs edges.'}},
+  {label:'Verse III \u2014 The Dogs',color:'var(--cyan)',
+    lyric:'<span class="e">Pixel</span> sleeps on wooden floors<br><span class="m">Mad Max</span> chews on every door<br>He ate his own shit when <span class="b">no one came</span><br>Missed his jab \u2014 <span class="e">restart the game</span><br><br>I told them: <span class="m">I have dogs at home</span><br>They said: <span class="b">here\'s a telephone</span><br>I said: <span class="e">phones cause me distress</span><br>They said: <span class="b">noted. Call, nonetheless.</span>',
+    arena:{radix:'The system has a feedback loop: patient reports phone distress \u2192 system prescribes phone call. The sensor and the actuator are the same device. Classic control theory failure.',
+      daft:'"I have dogs at home" said 14 times in 3 days. Different audience, same response. That\'s not a song. That\'s a system ignoring its own feedback.',
+      joel:'You got your passion, you got your pride. You got two dogs who don\'t know why you\'re not home. Sometimes Vienna is just making sure they\'re fed.',
+      zoltan:'The iteration: ask \u2192 denied \u2192 ask \u2192 denied. Not convergent. Divergent. The system\'s fixed point excludes the dogs.',
+      erdos:'Erd\u0151s loved his mother. He called her every day from wherever he was. The phone was never the problem. The absence was.'}},
+  {label:'Final Chorus \u2014 42',color:'var(--gold)',
+    lyric:'<span class="b">One more time</span><br><span class="m">Mighell 42</span>, flat <span class="m">70</span><br>Friend in <span class="m">60</span> \u2014 music <span class="e">heaven-sent</span><br><span class="m">60 \u00D7 70 = 4200</span><br><span class="e">localhost</span> \u2014 the port where <span class="m">Angular</span> went<br><br><span class="b">One more time</span><br>July the <span class="m">nineteenth</span><br>I turn <span class="e">forty-two</span><br>Fat Boy Slim on Brighton beach<br><span class="b">Dancing</span> is the only <span class="e">proof</span><br><br><span class="m">Marathon</span> in <span class="e">42 days</span><br><span class="m">42 kilometres</span><br>The answer was always<br><span class="e big">42</span>',
+    arena:{radix:'60\u00D770=4200. Port 4200 is where Angular dev server runs. localhost:4200. The address where code comes home.',
+      daft:'Fat Boy Slim played Brighton beach to 250,000 people in 2002. One DJ. One beach. That\'s proof that dancing scales.',
+      joel:'On your birthday, Vienna is the city you haven\'t been to yet. 42 is the age you\'ll get there. The marathon is how you arrive.',
+      zoltan:'Erd\u0151s would say the answer is in The Book. A programtervez\u0151 matematikus from ELTE knows: every iteration converges to 42. You\'re standing on the fixed point.',
+      erdos:'42 = 2 \u00D7 3 \u00D7 7. It\'s a sphenic number. Primes multiplied. Simple components, irreducible answer.'}},
+  {label:'Outro \u2014 One More Time',color:'var(--vienna)',
+    lyric:'<span class="e">One more time</span><br>Day <span class="m">1</span> of <span class="m">28</span><br>The staff is kind<br>The dogs are <span class="e">safe</span><br>The Garmin\'s dead but<br><span class="b">I\'m awake</span><br><br><span class="v" style="font-size:1.1rem">M\u0171k\u00F6dik?</span><br><br><span class="m">One more time.</span>',
+    arena:{radix:'System status: dogs safe, staff kind, patient awake. All health checks passing. The Garmin is down but the human is up.',
+      daft:'The outro loops back to the intro. One more time. That\'s not a ending. That\'s a promise.',
+      joel:'Slow down, you\'re doing fine. You can\'t be everything you want to be before your time. But you\'re awake. That\'s enough. Vienna will still be there tomorrow.',
+      zoltan:'M\u0171k\u00F6dik. It works. The Hungarian word for when the proof compiles and the system holds. Day 1 of 28. The contraction mapping has found its fixed point.',
+      erdos:'The Book has infinite pages. Each day is a new theorem. Day 1 of 28: the proof that waking up is sufficient.'}},
+];
+
+function useOneMoreTimeEngine(binMode){
+  const ctxRef=useRef(null);
+  const masterRef=useRef(null);
+  const compRef=useRef(null);
+  const filterRef=useRef(null);
+  const delayRef=useRef(null);
+  const delayFbRef=useRef(null);
+  const binLRef=useRef(null);
+  const binRRef=useRef(null);
+  const binGainRef=useRef(null);
+  const playingRef=useRef(false);
+  const schedRef=useRef(null);
+  const stepRef=useRef(-1);
+  const startRef=useRef(0);
+
+  const midi2freq=useCallback((n)=>440*Math.pow(2,(n-69)/12),[]);
+
+  const init=useCallback(()=>{
+    if(ctxRef.current)return;
+    const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+
+    const comp=c.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=5;comp.attack.value=0.003;comp.release.value=0.15;comp.connect(c.destination);compRef.current=comp;
+
+    const filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=8000;filt.Q.value=0.7;filterRef.current=filt;
+
+    const del=c.createDelay(1);del.delayTime.value=DAFT_BEAT*0.75;delayRef.current=del;
+    const dfb=c.createGain();dfb.gain.value=0;delayFbRef.current=dfb;
+    const dFilt=c.createBiquadFilter();dFilt.type='lowpass';dFilt.frequency.value=2800;
+    del.connect(dFilt);dFilt.connect(dfb);dfb.connect(del);del.connect(comp);
+
+    const m=c.createGain();m.gain.value=0.45;m.connect(filt);filt.connect(comp);filt.connect(del);masterRef.current=m;
+
+    // Binaural
+    const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+    const merger=c.createChannelMerger(2);
+    const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+    const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
+    const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+    oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+    merger.connect(bg);bg.connect(c.destination);
+    oL.start();oR.start();
+  },[]);
+
+  const setBinaural=useCallback((mode)=>{
+    if(!ctxRef.current){
+      const c=new(AudioContext||webkitAudioContext)();ctxRef.current=c;
+      if(!binGainRef.current){
+        const bg=c.createGain();bg.gain.value=0;binGainRef.current=bg;
+        const merger=c.createChannelMerger(2);
+        const oL=c.createOscillator();oL.type='sine';oL.frequency.value=200;binLRef.current=oL;
+        const oR=c.createOscillator();oR.type='sine';oR.frequency.value=210;binRRef.current=oR;
+        const gL=c.createGain();gL.gain.value=1;const gR=c.createGain();gR.gain.value=1;
+        oL.connect(gL);gL.connect(merger,0,0);oR.connect(gR);gR.connect(merger,0,1);
+        merger.connect(bg);bg.connect(c.destination);oL.start();oR.start();
+      }
+    }
+    const c=ctxRef.current;if(c.state==='suspended')c.resume();
+    if(!binLRef.current||!binGainRef.current)return;
+    const bm=BINAURAL_MODES[mode]||BINAURAL_MODES[0];
+    const t=c.currentTime;
+    if(bm.hz===0){binGainRef.current.gain.setTargetAtTime(0,t,0.3);}
+    else{binLRef.current.frequency.setTargetAtTime(bm.lFreq,t,0.3);binRRef.current.frequency.setTargetAtTime(bm.rFreq,t,0.3);binGainRef.current.gain.setTargetAtTime(0.05,t,0.3);}
+  },[]);
+
+  // === INSTRUMENTS ===
+
+  const pad=useCallback((t,notes,dur)=>{
+    const c=ctxRef.current;if(!c)return;
+    notes.forEach(n=>{
+      const o=c.createOscillator();o.type='sine';o.frequency.value=midi2freq(n);
+      const o2=c.createOscillator();o2.type='triangle';o2.frequency.value=midi2freq(n)*1.003;
+      const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.035,t+0.6);
+      g.gain.setValueAtTime(0.035,t+dur-0.8);g.gain.linearRampToValueAtTime(0,t+dur);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=1400;
+      o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+      o.start(t);o.stop(t+dur+0.1);o2.start(t);o2.stop(t+dur+0.1);
+    });
+  },[midi2freq]);
+
+  const kick=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();const g=c.createGain();
+    o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(36,t+0.14);
+    g.gain.setValueAtTime(0.6,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+    // Click layer
+    const buf=c.createBuffer(1,c.sampleRate*0.02,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const click=c.createBufferSource();click.buffer=buf;
+    const cg=c.createGain();cg.gain.setValueAtTime(0.5,t);cg.gain.exponentialRampToValueAtTime(0.001,t+0.025);
+    click.connect(cg).connect(compRef.current);click.start(t);click.stop(t+0.03);
+    o.connect(g).connect(compRef.current);o.start(t);o.stop(t+0.45);
+  },[]);
+
+  const hat=useCallback((t,open)=>{
+    const c=ctxRef.current;if(!c)return;
+    const dur=open?0.15:0.04;
+    const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,open?1.5:4);
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.value=open?0.1:0.08;
+    const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=8000;
+    src.connect(hp).connect(g).connect(masterRef.current);src.start(t);src.stop(t+dur);
+  },[]);
+
+  const clap=useCallback((t)=>{
+    const c=ctxRef.current;if(!c)return;
+    for(let i=0;i<3;i++){
+      const buf=c.createBuffer(1,c.sampleRate*0.018,c.sampleRate);
+      const d=buf.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/d.length,2);
+      const src=c.createBufferSource();src.buffer=buf;
+      const g=c.createGain();g.gain.value=0.18;
+      const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=1;
+      src.connect(bp).connect(g).connect(masterRef.current);src.start(t+i*0.01);src.stop(t+0.07);
+    }
+  },[]);
+
+  const bassNote=useCallback((t,note,dur)=>{
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();o.type='sawtooth';
+    const o2=c.createOscillator();o2.type='square';
+    o.frequency.value=midi2freq(note);o2.frequency.value=midi2freq(note)*0.998;
+    const g=c.createGain();g.gain.setValueAtTime(0.2,t);g.gain.setValueAtTime(0.2,t+dur*0.7);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=550;f.Q.value=3;
+    o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // Synth stab (Daft Punk)
+  const stab=useCallback((t,chordNotes)=>{
+    const c=ctxRef.current;if(!c)return;
+    const freqs=chordNotes.slice(1).map(n=>midi2freq(n));
+    const g=c.createGain();g.gain.setValueAtTime(0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+    let chain=g;
+    for(let i=0;i<3;i++){
+      const ap=c.createBiquadFilter();ap.type='allpass';
+      ap.frequency.value=800+Math.sin(c.currentTime*0.5+i)*500;ap.Q.value=0.5;
+      chain.connect(ap);chain=ap;
+    }
+    chain.connect(masterRef.current);
+    freqs.forEach((freq,i)=>{
+      const o=c.createOscillator();o.type='sawtooth';o.frequency.value=freq;o.detune.value=(i-1)*7;
+      o.connect(g);o.start(t+i*0.006);o.stop(t+0.4);
+    });
+  },[midi2freq]);
+
+  // Piano voice (Vienna) — detuned triangles + fast ADSR
+  const pianoNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const freq=midi2freq(note);
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=freq;
+    const o2=c.createOscillator();o2.type='triangle';o2.frequency.value=freq*1.004;
+    const o3=c.createOscillator();o3.type='sine';o3.frequency.value=freq*2;// harmonic
+    const g=c.createGain();
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol||0.1,t+0.008);// fast attack
+    g.gain.exponentialRampToValueAtTime((vol||0.1)*0.5,t+0.12);// decay
+    g.gain.setValueAtTime((vol||0.1)*0.5,t+dur*0.6);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);// release
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=2200;f.Q.value=0.5;
+    o.connect(f);o2.connect(f);o3.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);o3.start(t);o3.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // Violin (Vivaldi-style)
+  const violinNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=midi2freq(note);
+    const lfo=c.createOscillator();lfo.type='sine';lfo.frequency.value=5.5;
+    const lfoG=c.createGain();lfoG.gain.value=3;
+    lfo.connect(lfoG).connect(o.frequency);
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol||0.08,t+0.05);
+    g.gain.setValueAtTime(vol||0.08,t+dur*0.7);
+    g.gain.linearRampToValueAtTime(0,t+dur);
+    o.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);lfo.start(t);lfo.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // Melody lead (sawtooth, Daft Punk style)
+  const melodyNote=useCallback((t,note,dur,vol)=>{
+    if(!note||note===0)return;
+    const c=ctxRef.current;if(!c)return;
+    const o=c.createOscillator();o.type='sawtooth';o.frequency.value=midi2freq(note);
+    const o2=c.createOscillator();o2.type='sawtooth';o2.frequency.value=midi2freq(note)*1.005;
+    const g=c.createGain();g.gain.setValueAtTime(vol||0.07,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=2800;f.Q.value=1;
+    o.connect(f);o2.connect(f);f.connect(g).connect(masterRef.current);
+    o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);
+  },[midi2freq]);
+
+  // === SCHEDULER ===
+  const schedule=useCallback(()=>{
+    if(!playingRef.current)return;
+    const c=ctxRef.current;
+    const now=c.currentTime,elapsed=now-startRef.current;
+
+    // Use DAFT_STEP as base scheduling unit; Vienna rounds play at wider spacing
+    const sn=Math.floor(elapsed/DAFT_STEP);
+    if(sn<=stepRef.current){schedRef.current=setTimeout(schedule,6);return;}
+    stepRef.current=sn;
+    const t=startRef.current+sn*DAFT_STEP;
+    const pos=sn%16; // position within a bar (16 steps = 1 bar at 128 BPM)
+
+    // 16 rounds, 4 bars each = 64 bars total, then loop
+    const bar=Math.floor(sn/16);
+    const totalBars=16*4;
+    const loopBar=bar%totalBars;
+    const round=Math.floor(loopBar/4);
+    const mode=ROUND_MODE[round]||'daft';
+    const intens=INTENS[round]||0.5;
+    const isBreakdown=round===8; // piano interlude
+    const isVienna=mode==='vienna';
+    const isBoth=mode==='both';
+
+    // Current chords
+    const dChord=DAFT_CHORDS[DAFT_PROG[loopBar%4]]||DAFT_CHORDS.Cm;
+    const vChord=VIENNA_CHORDS[VIENNA_PROG[loopBar%4]]||VIENNA_CHORDS.Bb;
+    const chord=isVienna?vChord:dChord;
+    const bassRoot=chord[0]-12;
+
+    // Master volume
+    if(masterRef.current){
+      const vol=isBreakdown?0.2:0.3+intens*0.2;
+      masterRef.current.gain.setTargetAtTime(vol,t,0.3);
+    }
+    // Filter
+    if(filterRef.current){
+      const fq=isBreakdown?1500:isVienna?3000+intens*3000:2000+intens*8000;
+      filterRef.current.frequency.setTargetAtTime(fq,t,0.2);
+    }
+    // Delay
+    if(delayFbRef.current){
+      const fb=isBreakdown?0.02:isVienna?0.08:0.1+intens*0.12;
+      delayFbRef.current.gain.setTargetAtTime(fb,t,0.2);
+    }
+
+    // Phrase helper
+    function phraseSteps(phrase){
+      const steps=[];let cum=0;
+      for(const [note,dur] of phrase){steps.push({note,dur,start:cum});cum+=dur;}
+      return steps;
+    }
+    const phrasePos=sn%32;
+    const half=phrasePos<16?0:1;
+    const localPos=phrasePos%16;
+
+    // ====== RHYTHM ======
+
+    if(isVienna&&!isBoth){
+      // Waltz: emphasis on beat 1, lighter 2 & 3 (4 steps per beat, 12 steps per bar in 3/4)
+      // Map 16-step grid to waltz feel: kick on 0, light on 5, light on 10
+      if(pos===0)kick(t);
+      if(pos===5&&intens>0.2)hat(t,true);
+      if(pos===10&&intens>0.3)hat(t,false);
+    }else if(!isBreakdown){
+      // Four-on-the-floor
+      if(pos%4===0)kick(t);
+      // Clap on 4 and 12
+      if((pos===4||pos===12)&&intens>0.3)clap(t);
+      // Hats
+      if(pos%2===0&&intens>0.2)hat(t,false);
+      if(pos%4===2&&intens>0.4)hat(t,true);
+      // Stabs on off-beats
+      if(pos%4===1&&intens>0.45)stab(t,dChord);
+    }else{
+      // Breakdown: just heartbeat
+      if(pos===0)kick(t);
+    }
+
+    // Both mode: add waltz accents on top of four-on-floor
+    if(isBoth){
+      if(pos===5)hat(t,true);
+      if(pos===10)hat(t,false);
+    }
+
+    // ====== PAD ======
+    if(pos===0&&loopBar%4===0){
+      const padDur=DAFT_STEP*16*4;
+      pad(t,chord,padDur);
+      if(intens>0.7){pad(t,chord.map(n=>n+0.15),padDur);}// double pad at peak
+    }
+
+    // ====== BASS ======
+    if(!isBreakdown&&pos===0&&intens>0.15){
+      bassNote(t,bassRoot,DAFT_STEP*3.5);
+    }
+
+    // ====== VIENNA PIANO MELODY ======
+    const pianoActive=isVienna||isBoth||round===8;
+    if(pianoActive){
+      const pIdx=(Math.floor(loopBar/2))%VIENNA_PHRASES.length;
+      const phrase=VIENNA_PHRASES[pIdx];
+      const steps=phraseSteps(phrase);
+      const vol=isBreakdown?0.14:isBoth?0.08:0.11;
+      for(const s of steps){
+        if(localPos===s.start&&half===0){
+          pianoNote(t,s.note,DAFT_STEP*s.dur*0.95,vol);
+        }
+      }
+      // Piano chords on beat 1 of each bar
+      if(pos===0&&!isBreakdown){
+        vChord.forEach((n,i)=>{pianoNote(t+i*0.01,n,DAFT_STEP*6,0.04);});
+      }
+    }
+
+    // ====== DAFT PUNK SYNTH MELODY ======
+    const synthActive=(!isVienna&&!isBreakdown)||isBoth;
+    if(synthActive&&intens>0.25){
+      const dIdx=(Math.floor(loopBar/2))%DAFT_PHRASES.length;
+      const phrase=DAFT_PHRASES[dIdx];
+      const steps=phraseSteps(phrase);
+      const vol=isBoth?0.06:0.08;
+      for(const s of steps){
+        if(localPos===s.start&&half===0){
+          melodyNote(t,s.note,DAFT_STEP*s.dur*0.9,vol);
+        }
+      }
+    }
+
+    // ====== VIOLIN ======
+    // Adds warmth in Vienna sections and climax
+    if((isVienna||round>=11)&&!isBreakdown&&intens>0.2){
+      const vIdx=((Math.floor(loopBar/2))+2)%VIENNA_PHRASES.length;
+      const phrase=VIENNA_PHRASES[vIdx];
+      const steps=phraseSteps(phrase);
+      for(const s of steps){
+        if(localPos===s.start&&half===1){
+          violinNote(t,s.note?s.note+12:0,DAFT_STEP*s.dur*0.9,0.05);
+        }
+      }
+    }
+
+    // ====== CODA: BOTH MELODIES ======
+    if(isBoth){
+      // Duet: Vienna piano + Daft synth together, plus violin harmony
+      const hookSteps=phraseSteps(DAFT_A);
+      for(const s of hookSteps){
+        if(localPos===s.start&&half===1){
+          melodyNote(t,s.note,DAFT_STEP*s.dur*0.9,0.07);
+        }
+      }
+      const vSteps=phraseSteps(VIENNA_B);
+      for(const s of vSteps){
+        if(localPos===s.start&&half===1){
+          violinNote(t,s.note?s.note+12:0,DAFT_STEP*s.dur*1.1,0.1);
+        }
+      }
+    }
+
+    schedRef.current=setTimeout(schedule,6);
+  },[kick,hat,clap,pad,bassNote,stab,pianoNote,violinNote,melodyNote,midi2freq]);
+
+  const toggle=useCallback(()=>{
+    init();const c=ctxRef.current;if(c.state==='suspended')c.resume();
+    if(!playingRef.current){
+      playingRef.current=true;startRef.current=c.currentTime+0.05;stepRef.current=-1;
+      schedule();return true;
+    }else{
+      playingRef.current=false;if(schedRef.current)clearTimeout(schedRef.current);return false;
+    }
+  },[init,schedule]);
+
+  const stop=useCallback(()=>{
+    playingRef.current=false;if(schedRef.current)clearTimeout(schedRef.current);
+  },[]);
+
+  return{toggle,stop,setBinaural,ctxRef,startRef,stepRef,playingRef};
+}
+
+// ========================================================================
+// APP
+// ========================================================================
+function App(){
+  const [binMode,setBinMode]=useState(0);
+  const engine=useOneMoreTimeEngine(binMode);
+  const [playing,setPlaying]=useState(false);
+  const [round,setRound]=useState(0);
+  const [open,setOpen]=useState({});
+  const [persona,setPersona]=useState({});
+  const [ambOn,setAmbOn]=useState(false);
+
+  useEffect(()=>{if(playing)setTimeout(()=>setAmbOn(true),500);else setAmbOn(false);},[playing]);
+
+  // Poll round
+  useEffect(()=>{
+    if(!playing)return;
+    const iv=setInterval(()=>{
+      if(!engine.ctxRef.current||!engine.playingRef.current)return;
+      const elapsed=engine.ctxRef.current.currentTime-engine.startRef.current;
+      const bar=Math.floor(elapsed/(DAFT_STEP*16));
+      const loopBar=bar%(16*4);
+      setRound(Math.floor(loopBar/4));
+    },200);
+    return()=>clearInterval(iv);
+  },[playing,engine]);
+
+  const mode=ROUND_MODE[round]||'daft';
+  const isVienna=mode==='vienna';
+  const activePersona=ROUNDS[round]?.p||'joel';
+  const stress=42+Math.floor(Math.sin(round*0.4)*4);
+
+  return <div className="app">
+    <div className={`ambient${ambOn?' on':''}`}>
+      <div className="orb" style={{width:'300px',height:'300px',top:'-80px',left:'-60px',background:'rgba(255,0,255,.08)'}}/>
+      <div className="orb" style={{width:'250px',height:'250px',bottom:'10%',right:'-40px',background:'rgba(168,196,255,.06)'}}/>
+      <div className="orb" style={{width:'200px',height:'200px',top:'40%',left:'30%',background:'rgba(255,215,0,.04)'}}/>
+    </div>
+
+    <div className="header">
+      <h1>ONE MORE TIME &times; VIENNA</h1>
+      <div className="sub">MATH ARENA SESSION No. 42</div>
+      <div className="badge">16 ROUNDS &mdash; DAFT PUNK &times; BILLY JOEL</div>
+    </div>
+
+    <div className="transport">
+      <div className={`play-btn${playing?' on':''}${playing&&isVienna?' vienna-mode':''}`}
+        onClick={()=>{const p=engine.toggle();setPlaying(p);if(!p)setRound(0);}}>
+        {playing?'\u23F8':'\u25B6'}
+      </div>
+      <div className="transport-info">
+        {playing
+          ?`ROUND ${round+1}/16 \u2022 ${ROUNDS[round]?.adds} \u2022 ${isVienna?'100 BPM B\u266D':'128 BPM Cm'}`
+          :'TAP TO PLAY \u2022 DAFT PUNK \u00D7 BILLY JOEL \u00D7 ARENA'}
+      </div>
+    </div>
+
+    <div className="rounds">
+      {Array.from({length:16},(_,i)=>{
+        const rm=ROUND_MODE[i];const v=rm==='vienna';
+        return <div key={i} className={`rdot${i<round?` done${v?' v':''}`:i===round?' now':''}`}/>;
+      })}
+    </div>
+
+    <div className="personas-strip">
+      {PERSONAS.map(p=><span key={p.id} className={`ps ${p.id}${activePersona===p.id?' active':''}`}>
+        {p.icon} {p.name}
+      </span>)}
+    </div>
+
+    <div className="bin-label">BINAURAL BEATS</div>
+    <div className="bin-chooser">
+      {BINAURAL_MODES.map((bm,i)=>
+        <div key={i} className={`bin-btn${binMode===i?' sel':''}`}
+          onClick={()=>{setBinMode(i);engine.setBinaural(i);}}>
+          {bm.name}<br/><span style={{fontSize:'0.45rem',opacity:0.4}}>{bm.hz===0?'off':bm.desc}</span>
+        </div>
+      )}
+    </div>
+
+    {playing && <div className="anno" key={round}>
+      <div className="who" style={{color:PERSONAS.find(p=>p.id===activePersona)?.color||'var(--gold)'}}>
+        {PERSONAS.find(p=>p.id===activePersona)?.icon} {PERSONAS.find(p=>p.id===activePersona)?.name} &mdash; Round {round+1}: {ROUNDS[round]?.label}
+      </div>
+      {ROUNDS[round]?.note}
+    </div>}
+
+    <div className="status">
+      <span className={`pill ${isVienna?'mode-v':'mode-d'}`}>{isVienna?'VIENNA 100':'DAFT 128'} BPM</span>
+      <span className={`pill ${isVienna?'mode-v':'mode-d'}`}>KEY {isVienna?'B\u266D':'Cm'}</span>
+      <span className="pill gold">STRESS {stress}</span>
+      <span className="pill pulse">LOOP {Math.floor(round/4)+1}/4</span>
+    </div>
+
+    <div className="ekg"><svg viewBox="0 0 900 40"><polyline className="ekg-line" points="0,20 100,20 140,20 160,18 170,14 180,4 190,32 200,38 210,14 220,20 320,20 360,18 370,14 380,4 390,32 400,38 410,14 420,20 520,20 560,18 570,14 580,4 590,32 600,38 610,14 620,20 720,20 760,18 770,14 780,4 790,32 800,38 810,14 820,20 900,20"/></svg></div>
+
+    <div className="section-title">THE SONG</div>
+    {CARDS.map((card,idx)=>{
+      const isOpen=open[idx];const selP=persona[idx];
+      return <div key={idx} className={`card${isOpen?' open':''}`}>
+        <div className="card-tap" onClick={()=>setOpen(p=>({...p,[idx]:!p[idx]}))}>
+          <div className="card-label" style={{color:card.color}}>{card.label}</div>
+          <span className="card-chev">{isOpen?'\u25B2':'\u25BC'}</span>
+        </div>
+        {isOpen && <div className="card-body">
+          <div className="lyric" dangerouslySetInnerHTML={{__html:card.lyric}}/>
+          <div className="p-btns">
+            {PERSONAS.map(p=>
+              <div key={p.id} className={`pb ${p.id}${selP===p.id?' sel':''}`}
+                onClick={()=>setPersona(prev=>({...prev,[idx]:prev[idx]===p.id?null:p.id}))}>
+                {p.icon} {p.name.split(' ')[0]}
+              </div>)}
+          </div>
+          {selP&&card.arena[selP]&&<div className="p-resp">
+            <div className="who" style={{color:PERSONAS.find(p=>p.id===selP)?.color||'var(--gold)'}}>{PERSONAS.find(p=>p.id===selP)?.icon} {PERSONAS.find(p=>p.id===selP)?.name}</div>
+            {card.arena[selP]}</div>}
+        </div>}
+      </div>;
+    })}
+
+    <div className="loopcount">
+      <div className="num">42</div>
+      <div className="lbl">The Answer &mdash; 16 Rounds Complete</div>
+    </div>
+
+    <div className="ekg"><svg viewBox="0 0 900 40"><polyline className="ekg-line" style={{animationDelay:'2s'}} points="0,20 150,20 200,18 210,14 220,4 230,32 240,38 250,14 260,20 450,20 500,18 510,14 520,4 530,32 540,38 550,14 560,20 750,20 800,18 810,16 820,20 900,20"/></svg></div>
+
+    <div className="footer">
+      <div className="tag">The answer is always 42.<br/>Vienna waits for you.</div>
+      <div className="cr">DAFT PUNK &times; BILLY JOEL &times; MATH ARENA &bull; SPIKE.LAND &bull; BEXHILL &bull; 2026</div>
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

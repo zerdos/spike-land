@@ -20,7 +20,7 @@ import {
   highPass,
   bandPass,
   midiToFreq,
-} from "./dsp.js";
+} from "./dsp.ts";
 import {
   STEP,
   STEPS_BAR,
@@ -43,8 +43,7 @@ import {
   phraseSteps,
   mulberry32,
   type RadixAgent,
-  type Phrase,
-} from "./render-rooftop-shared.js";
+} from "./render-rooftop-shared.ts";
 
 const { startRound, endRound, seed } = workerData as {
   startRound: number;
@@ -150,7 +149,7 @@ function renderBass(t: number, note: number, dur: number, agent: RadixAgent | nu
   mixInto(local, filtered, sAt(t), 0.2);
 }
 
-function renderPiano(t: number, note: number, dur: number, vol: number) {
+function renderPiano(t: number, note: number, _dur: number, vol: number) {
   if (!note) return;
   const f = m2f(note);
   const s1 = sine(f, 1.5);
@@ -188,7 +187,7 @@ function renderHat(t: number) {
   mixInto(local, sig, sAt(t), 0.08);
 }
 
-function renderBeastStab(t: number, note: number, dur: number, agent: RadixAgent | null) {
+function renderBeastStab(t: number, note: number, _dur: number, agent: RadixAgent | null) {
   if (!note) return;
   const f = m2f(note);
   const spread = agent?.beastSpread ?? 0.008;

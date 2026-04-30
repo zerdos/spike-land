@@ -12,6 +12,7 @@ import type { McpTool } from "../core-logic/mcp/mcp-index.ts";
 import { StorageService } from "../core-logic/services/storageService";
 import type { ErrorResponse, PostRequestBody } from "../lazy-imports/types";
 import { DEFAULT_CORS_HEADERS } from "../core-logic/utils";
+import { parsePositiveInt } from "../../../core/shared-utils/core-logic/numbers.ts";
 
 type ProcessedToolsRecord = Record<string, ToolDef>;
 
@@ -32,7 +33,10 @@ export class PostHandler {
     try {
       // Validate request size
       const contentLength = request.headers.get("content-length");
-      if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
+      if (
+        contentLength &&
+        parsePositiveInt(contentLength, 0, Number.MAX_SAFE_INTEGER) > 10 * 1024 * 1024
+      ) {
         return this.createErrorResponse("Request too large", 413);
       }
 

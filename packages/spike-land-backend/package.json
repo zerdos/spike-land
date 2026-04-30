@@ -44,6 +44,7 @@
     "@modelcontextprotocol/sdk": "1.29.0",
     "@sentry/cloudflare": "^10.50.0",
     "@spike-land-ai/code": "^0.9.58",
+    "@spike-land-ai/shared": "workspace:*",
     "hono": "^4.12.15",
     "replicate": "^1.4.0",
     "zod": "4.3.6"

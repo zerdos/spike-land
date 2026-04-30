@@ -21,7 +21,6 @@ import {
   STEP,
   TOTAL_SEC,
   roundCfgs,
-  RADIX_AGENTS,
 } from "./render-rooftop-shared.js";
 
 const NUM_WORKERS = Math.min(cpus().length, 8);

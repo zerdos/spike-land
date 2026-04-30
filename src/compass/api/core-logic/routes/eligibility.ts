@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { parsePositiveInt } from "@spike-land-ai/shared";
 import type {
   APIResponse,
   ContextVariables,
@@ -66,8 +67,8 @@ export function createEligibilityRouter(engine: EligibilityEngine) {
   // GET /eligibility/programs/:jurisdiction
   router.get("/programs/:jurisdiction", async (c) => {
     const jurisdiction = c.req.param("jurisdiction");
-    const page = Math.max(1, parseInt(c.req.query("page") ?? "1", 10));
-    const pageSize = Math.min(100, Math.max(1, parseInt(c.req.query("pageSize") ?? "20", 10)));
+    const page = parsePositiveInt(c.req.query("page"), 1, 1000);
+    const pageSize = parsePositiveInt(c.req.query("pageSize"), 20, 100);
 
     const { items, total } = await engine.listPrograms(jurisdiction, page, pageSize);
 

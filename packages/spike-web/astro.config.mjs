@@ -18,6 +18,7 @@ export default defineConfig({
   site: "https://spike.land",
 
   vite: {
+    resolve: { tsconfigPaths: true },
     build: {
       sourcemap: sentryBuildEnabled ? "hidden" : false,
     },

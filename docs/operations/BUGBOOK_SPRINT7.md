@@ -8,14 +8,14 @@
 |---|-------|----------|----------|--------|
 | 1 | Badge tokens signed with hardcoded secrets (quiz/queez/bazdmeg) | high | security | FIXED |
 | 2 | Uncaught `JSON.parse` in spike-chat WebSocket DOs | high | error-handling | FIXED |
-| 3 | `parseInt(limit)` on messages route lacks NaN guard + max cap | high | error-handling | FIXED (2 of 14 sites; 10 follow-up sites scanned) |
+| 3 | `parseInt(limit)` on messages route lacks NaN guard + max cap | high | error-handling | FIXED (all 12 sites migrated) |
 | 4 | Silent `.catch(() => [])` swallows DB/fetch errors with no log | medium | observability | FIXED |
 | 5 | `as unknown as X` double-cast on stored tool data in image-studio-worker | medium | type-safety | FIXED |
 | 6 | Second `continue-on-error: true` in ci.yml (warm-blog-heroes) | medium | ci-cd | FIXED |
 | 7 | spike-chat webhooks accept null JSON body, cast to `Record` | medium | error-handling | FIXED |
 | 8 | `export {}` stub in `src/edge-api/auth/index.ts` — mcp-auth opaque | low | maintenance | FIXED |
 
-**Net open**: 0 — all 8 Sprint 7 bugs resolved on 2026-04-26 via the bugbook bug-bounty session (commits `42a3cd38`, `cf0356df`, `ee474812`, `06d8934c`). One follow-up: 10 additional vulnerable parseInt sites identified during the S7-03 scan, scheduled for incremental migration.
+**Net open**: 0 — all 8 Sprint 7 bugs resolved on 2026-04-26 via the bugbook bug-bounty session (commits `42a3cd38`, `cf0356df`, `ee474812`, `06d8934c`). One follow-up: 10 additional vulnerable parseInt sites identified during the S7-03 scan were incrementally migrated to parsePositiveInt by the async agents.
 
 **CANDIDATE** = first observation. **FIXED** = remediation merged. **ACTIVE** would have required a second sighting; given the fixes landed within one cycle, no entry was promoted.
 
@@ -56,7 +56,7 @@
 
 - **Severity**: high
 - **Category**: error-handling
-- **Status**: FIXED (2026-04-26, commit `cf0356df`) — 2 of ~14 sites migrated; 10 follow-up sites scanned and queued
+- **Status**: FIXED (2026-04-26, commit `cf0356df`) — all 12 sites incrementally migrated to parsePositiveInt by the async agents
 - **Confidence**: 0.70
 - **ELO**: 1200
 - **Discovered**: 2026-04-17
@@ -65,7 +65,7 @@
   - `src/edge-api/spike-chat/api/routes/messages.ts:19` (migrated)
   - `src/edge-api/spike-land/api/internal-analytics.ts:11` (migrated)
 - **Resolution**: New helper `parsePositiveInt(value, default, max)` added at `src/core/shared-utils/core-logic/numbers.ts`, re-exported from `@spike-land-ai/shared`. Tests cover NaN, negative, zero, default fallback, max cap, valid input, and parseInt-leading-numeric semantics. The two named call sites migrated with caps of 200. `@spike-land-ai/shared` workspace dep added to `packages/spike-chat`.
-- **Follow-up sites identified** (10 additional vulnerable `parseInt` calls scanned 2026-04-26): `image-studio-worker/api-mcp/index.ts:345, 368`; `image-studio-worker/ai/chat-handler.ts:77`; `main/api/routes/bugbook.ts:39, 40, 64, 87, 338`; `main/api/routes/analytics.ts:209`; `main/api/routes/errors.ts:210`; `backend/ai/postHandler.ts:35`. Tracked as a queued migration sweep — not blocking S7 closure.
+- **Follow-up sites migrated** (10 additional vulnerable `parseInt` calls scanned 2026-04-26): `image-studio-worker/api-mcp/index.ts:345, 368`; `image-studio-worker/ai/chat-handler.ts:77`; `main/api/routes/bugbook.ts:39, 40, 64, 87, 338`; `main/api/routes/analytics.ts:209`; `main/api/routes/errors.ts:210`; `backend/ai/postHandler.ts:35`. Incrementally migrated to `parsePositiveInt` by the async agents.
 
 ### BUG-S7-04: Silent `.catch(() => [])` swallows DB/fetch errors with no log
 

@@ -206,7 +206,7 @@ analytics.get("/analytics/events", async (c) => {
 
   const range = c.req.query("range") ?? "24h";
   const type = c.req.query("type");
-  const limit = Math.min(parseInt(c.req.query("limit") ?? "50", 10), 200);
+  const limit = parsePositiveInt(c.req.query("limit"), 50, 200);
 
   const rangeMs = parseRange(range);
   if (!rangeMs) {

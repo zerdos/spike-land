@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rooftop Paradise — Music Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a12;--beast:#00e676;--jobs:#c0c0c0;--zoltan:#2a9d8f;--radix:#e63946}
+body{background:var(--bg);color:#eee;font-family:'Inter',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  user-select:none;-webkit-user-select:none}
+
+.app{max-width:500px;width:100%;padding:1.5rem 1rem}
+
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1rem,5vw,1.5rem);
+  text-align:center;color:rgba(255,255,255,.12);letter-spacing:5px;margin:1.5rem 0 .3rem}
+.sub{text-align:center;font-size:.55rem;letter-spacing:3px;opacity:.2;margin-bottom:1.5rem}
+
+.transport{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1rem 0}
+.play{width:56px;height:56px;border-radius:50%;border:1.5px solid rgba(255,255,255,.1);
+  background:transparent;color:rgba(255,255,255,.5);font-size:1.4rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .3s}
+.play.on{border-color:rgba(255,255,255,.25)}
+.play:active{transform:scale(.92)}
+.skip{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.06);
+  background:transparent;color:rgba(255,255,255,.2);font-size:.8rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.skip:active{transform:scale(.9)}
+
+.info{text-align:center;font-size:.5rem;letter-spacing:2px;color:rgba(255,255,255,.15);margin:.5rem 0}
+
+.bar-wrap{width:85%;margin:1rem auto;cursor:pointer}
+.bar{height:3px;border-radius:2px;background:rgba(255,255,255,.04);overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s,background .3s}
+.bar-label{text-align:center;font-size:.5rem;letter-spacing:2px;color:rgba(255,255,255,.15);margin-top:4px}
+
+.personas{display:flex;justify-content:center;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}
+.ptag{font-size:.5rem;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.04);
+  color:rgba(255,255,255,.15);letter-spacing:1px;transition:all .3s}
+.ptag.active{color:#fff;font-weight:500}
+.ptag.beast.active{border-color:rgba(0,230,118,.3);color:var(--beast);background:rgba(0,230,118,.04)}
+.ptag.jobs.active{border-color:rgba(192,192,192,.3);color:var(--jobs);background:rgba(192,192,192,.04)}
+.ptag.zoltan.active{border-color:rgba(42,157,143,.3);color:var(--zoltan);background:rgba(42,157,143,.04)}
+.ptag.radix.active{border-color:rgba(230,57,70,.3);color:var(--radix);background:rgba(230,57,70,.04)}
+
+.yt{margin:1.5rem 0;padding:.8rem;background:rgba(255,255,255,.01);border:1px solid rgba(255,255,255,.03);border-radius:10px}
+.yt-title{font-size:.45rem;color:rgba(255,255,255,.15);letter-spacing:3px;text-align:center;margin-bottom:.5rem}
+.yt a{color:rgba(255,255,255,.25);text-decoration:none;font-size:.6rem;display:block;text-align:center;transition:color .2s}
+.yt a:hover{color:rgba(255,255,255,.5)}
+.yt-comments{margin-top:.5rem}
+.yt-c{font-size:.6rem;color:rgba(255,255,255,.2);line-height:1.5;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.02)}
+.yt-c:last-child{border:none}
+.yt-u{font-size:.5rem;color:var(--radix);opacity:.3}
+
+.card{padding:1rem;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);
+  border-radius:12px;margin:1rem 0;font-size:.75rem;line-height:1.8;color:rgba(255,255,255,.4);
+  animation:fadeIn .5s}
+.card .who{font-weight:500;font-size:.55rem;letter-spacing:2px;margin-bottom:.3rem;opacity:.7}
+.card .layers{font-size:.5rem;color:rgba(255,255,255,.15);margin-top:.5rem;font-style:italic}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.footer{text-align:center;margin-top:2rem;padding:1.5rem 0}
+.footer .tag{font-size:.7rem;color:rgba(255,255,255,.12);font-weight:300}
+.footer .cr{font-size:.4rem;color:rgba(255,255,255,.06);letter-spacing:3px;margin-top:.3rem}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const {useState,useCallback,useRef,useEffect}=React;
+
+// ========================================================================
+// ROOFTOP PARADISE — Weval (2013) synthesised
+// D major, 110 BPM — MR BEAST · STEVE JOBS · ZOLTAN · RADIX
+// ========================================================================
+
+const BPM=110, BEAT=60/BPM, STEP=BEAT/4;
+const STEPS_PER_BAR=16, BARS_PER_ROUND=4;
+const TOTAL_ROUNDS=69, TOTAL_BARS=TOTAL_ROUNDS*BARS_PER_ROUND;
+const AABA=[0,0,1,0];
+
+// Chords — D major family
+const CHORDS={
+  Dmaj7:[50,62,66,69,73],   // D3 D4 F#4 A4 C#5
+  Gmaj7:[55,59,62,66,71],   // G3 B3 D4 F#4 B4
+  Bm7:  [47,50,54,57,59],   // B2 D3 F#3 A3 B3
+  A:    [45,52,57,61,64],    // A2 E3 A3 C#4 E4
+};
+const PROG=['Dmaj7','Gmaj7','Bm7','A'];
+
+// Melodies — transposed to D major
+const HOOK=[[71,8],[69,4],[66,4],[62,8],[0,8]];           // B-A-F#-D---...
+const HOOK_B=[[66,8],[69,8],[71,4],[74,4],[71,8]];         // F#--A--B-D-B--
+const BASS_A=[[38,8],[0,4],[45,4],[38,4],[0,4],[0,8]];     // D2---..A2-D2-.....
+const BASS_B=[[43,8],[42,4],[40,4],[38,8],[0,8]];           // G2--F#2-E2-D2--....
+const PIANO_A=[[62,2],[64,2],[66,4],[69,2],[66,2],[64,4],[62,4],[0,4]]; // D-E-F#--A.F#.E--D-...
+const PIANO_B=[[66,4],[69,2],[71,2],[69,4],[66,2],[64,2],[62,8]];       // F#-A.B.A-F#.E.D---
+const BEAST_RIF=[[62,2],[0,2],[62,2],[59,2],[57,4],[59,2],[0,2],[62,4]]; // D-.D-.B-.-A-B-...-D-
+
+const PERSONAS=[
+  {id:'beast',name:'MR BEAST',color:'var(--beast)',icon:'\u{1F525}'},
+  {id:'jobs',name:'STEVE JOBS',color:'var(--jobs)',icon:'\u{1F4A1}'},
+  {id:'zoltan',name:'ZOLT\u00C1N',color:'var(--zoltan)',icon:'\u{1F319}'},
+  {id:'radix',name:'RADIX',color:'var(--radix)',icon:'\u{1F916}'},
+];
+
+// ── 32 Radix sub-agents across 4 families ──
+function _lerp(a,b,t){return a+(b-a)*t}
+function _buildRadixAgents(){
+  const agents=[];
+  // Family 0-7: Drift — high detuning, slow attacks, sine pads. Ambient.
+  for(let i=0;i<8;i++){const t=i/7;agents.push({
+    id:i,name:`drift-${i}`,family:'drift',
+    padDetuneCents:_lerp(5,15,t),padFilterOffset:_lerp(-400,-100,t),padAttackScale:_lerp(2,3,t),padWaveform:'sine',
+    melodyVibratoRate:_lerp(2,3.5,t),melodyVibratoDepth:_lerp(1,2.5,t),melodyFmIndex:_lerp(.05,.12,t),melodyFilterCutoff:_lerp(2000,3500,t),
+    bassFilterCutoff:_lerp(200,300,t),bassSubMix:_lerp(.6,.9,t),bassDetune:_lerp(1.001,1.003,t),
+    beastSpread:_lerp(.004,.008,t),beastDecay:_lerp(.05,.08,t),beastFilterStart:_lerp(3000,5000,t),
+    delayFeedbackBias:_lerp(.05,.15,t),masterGainScale:_lerp(.85,.95,t)});}
+  // Family 8-15: Sharp — fast attacks, high filters, triangle pads. Crisp.
+  for(let i=0;i<8;i++){const t=i/7;agents.push({
+    id:8+i,name:`sharp-${i}`,family:'sharp',
+    padDetuneCents:_lerp(.5,3,t),padFilterOffset:_lerp(200,600,t),padAttackScale:_lerp(.3,.6,t),padWaveform:'triangle',
+    melodyVibratoRate:_lerp(4.5,6,t),melodyVibratoDepth:_lerp(.5,1.5,t),melodyFmIndex:_lerp(.15,.25,t),melodyFilterCutoff:_lerp(4500,6000,t),
+    bassFilterCutoff:_lerp(300,450,t),bassSubMix:_lerp(.2,.5,t),bassDetune:_lerp(1.004,1.008,t),
+    beastSpread:_lerp(.008,.012,t),beastDecay:_lerp(.02,.04,t),beastFilterStart:_lerp(6000,9000,t),
+    delayFeedbackBias:_lerp(-.05,.05,t),masterGainScale:_lerp(1,1.15,t)});}
+  // Family 16-23: Deep — low filters, heavy sub bass. Warm.
+  for(let i=0;i<8;i++){const t=i/7;agents.push({
+    id:16+i,name:`deep-${i}`,family:'deep',
+    padDetuneCents:_lerp(1,6,t),padFilterOffset:_lerp(-300,-50,t),padAttackScale:_lerp(1,1.8,t),padWaveform:'sine',
+    melodyVibratoRate:_lerp(3,4.5,t),melodyVibratoDepth:_lerp(1.5,3,t),melodyFmIndex:_lerp(.05,.1,t),melodyFilterCutoff:_lerp(2500,3500,t),
+    bassFilterCutoff:_lerp(150,250,t),bassSubMix:_lerp(.8,1,t),bassDetune:_lerp(1.002,1.005,t),
+    beastSpread:_lerp(.005,.009,t),beastDecay:_lerp(.04,.06,t),beastFilterStart:_lerp(3500,5500,t),
+    delayFeedbackBias:_lerp(0,.1,t),masterGainScale:_lerp(.9,1.05,t)});}
+  // Family 24-31: Wild — high vibrato, wide beast spread. Expressive.
+  for(let i=0;i<8;i++){const t=i/7;agents.push({
+    id:24+i,name:`wild-${i}`,family:'wild',
+    padDetuneCents:_lerp(3,12,t),padFilterOffset:_lerp(-200,400,t),padAttackScale:_lerp(.5,2,t),padWaveform:i%2===0?'sine':'triangle',
+    melodyVibratoRate:_lerp(5,7,t),melodyVibratoDepth:_lerp(2.5,4,t),melodyFmIndex:_lerp(.2,.3,t),melodyFilterCutoff:_lerp(3000,5500,t),
+    bassFilterCutoff:_lerp(200,500,t),bassSubMix:_lerp(.3,.7,t),bassDetune:_lerp(1.006,1.01,t),
+    beastSpread:_lerp(.01,.015,t),beastDecay:_lerp(.02,.07,t),beastFilterStart:_lerp(5000,9000,t),
+    delayFeedbackBias:_lerp(-.1,.15,t),masterGainScale:_lerp(.85,1.2,t)});}
+  return agents;
+}
+const RADIX_AGENTS=_buildRadixAgents();
+// Interleave families for maximum sonic contrast between consecutive radix rounds
+const RADIX_AGENT_MAP=[0,24,8,16,4,28,12,20,2,26,10,18,6,30,14,22,1,25,9];
+
+// 69 rounds — procedurally generated
+// Layer presets from minimal to maximal
+const LP={
+  silent:['pad'],
+  whisper:['pad','melody'],
+  gentle:['pad','melody','piano'],
+  deep:['pad','melody','piano','bass'],
+  groove:['pad','melody','bass','piano','kick'],
+  drive:['pad','melody','bass','piano','kick','beast'],
+  full:['pad','melody','bass','piano','pianoL','kick','hat'],
+  beast:['pad','padDbl','melody','bass','piano','kick','hat','beast'],
+  peak:['pad','padDbl','melody','bass','piano','pianoL','kick','hat','beast','air'],
+  air:['pad','melody','piano','air'],
+  strip:['pad','melody'],
+};
+
+// 69-round arc: persona rotation + layer progression
+// Pattern: 3 big arcs of 23 rounds each
+// Each arc: build(8) → peak(4) → breathe(3) → build(5) → peak(2) → fade(1)
+const ARC_LAYERS=['silent','whisper','gentle','deep','groove','drive','full','beast',
+                  'peak','peak','peak','peak',
+                  'air','strip','gentle',
+                  'deep','groove','drive','full','beast',
+                  'peak','peak','strip'];
+const ARC_PERSONAS=[
+  // Arc 1: Radix lays foundation, Zoltan brings melody
+  ['radix','radix','zoltan','zoltan','jobs','beast','radix','beast',
+   'beast','zoltan','radix','beast',
+   'jobs','zoltan','jobs',
+   'radix','beast','jobs','zoltan','beast',
+   'radix','zoltan','zoltan'],
+  // Arc 2: Jobs leads, Radix engineers the builds
+  ['jobs','radix','jobs','zoltan','beast','radix','beast','zoltan',
+   'radix','beast','zoltan','jobs',
+   'zoltan','radix','beast',
+   'beast','jobs','radix','beast','jobs',
+   'radix','beast','jobs'],
+  // Arc 3: Beast & Radix grand finale
+  ['beast','radix','zoltan','jobs','beast','radix','zoltan','beast',
+   'radix','zoltan','jobs','beast',
+   'zoltan','radix','zoltan',
+   'beast','radix','jobs','zoltan','beast',
+   'radix','zoltan','radix'],
+];
+
+function buildRounds(){
+  const rounds=[];
+  let radixCounter=0;
+  for(let arc=0;arc<3;arc++){
+    for(let pos=0;pos<23;pos++){
+      if(rounds.length>=69)break;
+      const r=rounds.length;
+      const persona=ARC_PERSONAS[arc][pos];
+      const layerKey=ARC_LAYERS[pos];
+      const isRadix=persona==='radix';
+      const agent=isRadix?RADIX_AGENTS[RADIX_AGENT_MAP[radixCounter++%RADIX_AGENT_MAP.length]]:null;
+      const pName=isRadix&&agent?`Radix [${agent.name}]`:{beast:'MR Beast',jobs:'Steve Jobs',zoltan:'Zolt\u00e1n',radix:'Radix'}[persona];
+      const notes={
+        silent:pName+' lays the first tone.',
+        whisper:'The melody enters, floating.',
+        gentle:'Piano joins. Gentle and clear.',
+        deep:'Bass arrives. Deep and minimal.',
+        groove:'The kick drops. Movement begins.',
+        drive:pName+(persona==='beast'?' cranks the supersaw.':' adds drive.'),
+        full:'All layers open.',
+        beast:'BEAST MODE. Supersaw through everything.',
+        peak:r===8?'THE PEAK. Round '+(r+1)+'. Everything at once.':'Peak intensity. '+pName+' leads.',
+        air:pName+' strips it back. Just melody and air.',
+        strip:'Breathing space. The rooftop at dusk.',
+      };
+      rounds.push({
+        p:persona,
+        layers:LP[layerKey]||LP.gentle,
+        note:notes[layerKey]||'Round '+(r+1),
+        radixAgent:agent,
+      });
+    }
+  }
+  return rounds.slice(0,69);
+}
+const ROUNDS=buildRounds();
+
+// Intensity — 3 arcs with wave patterns
+const INTENSITY=Array.from({length:69},(_,i)=>{
+  const arcPos=i%23;
+  const wave=[.1,.18,.3,.42,.55,.68,.82,.95,1,1,1,1,.25,.15,.35,.45,.6,.72,.85,.95,1,1,.15][arcPos];
+  const arcFade=i>=64?Math.max(0.15,1-(i-64)/5*0.7):1;
+  return wave*arcFade;
+});
+
+// ── Engine ──
+function useEngine(){
+  const ctx=useRef(null), master=useRef(null), comp=useRef(null);
+  const filter=useRef(null), del=useRef(null), delFb=useRef(null);
+  const on=useRef(false), sched=useRef(null), step=useRef(-1), t0=useRef(0);
+
+  const m2f=n=>440*Math.pow(2,(n-69)/12);
+
+  const init=useCallback(()=>{
+    if(ctx.current)return;
+    const c=new(AudioContext||webkitAudioContext)();ctx.current=c;
+    const cm=c.createDynamicsCompressor();cm.threshold.value=-10;cm.ratio.value=6;
+    cm.connect(c.destination);comp.current=cm;
+    const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=2000;f.Q.value=0.7;
+    filter.current=f;
+    const d=c.createDelay(2);d.delayTime.value=BEAT*0.75;del.current=d;
+    const fb=c.createGain();fb.gain.value=0;delFb.current=fb;
+    const df=c.createBiquadFilter();df.type='lowpass';df.frequency.value=2200;
+    d.connect(df);df.connect(fb);fb.connect(d);d.connect(cm);
+    const m=c.createGain();m.gain.value=0.35;
+    m.connect(f);f.connect(cm);f.connect(d);master.current=m;
+  },[]);
+
+  // ── Instruments ──
+  const pad=useCallback((t,notes,dur,lpF,ag)=>{
+    const c=ctx.current;if(!c)return;
+    const detuneFactor=1+(ag?.padDetuneCents??0.2)/100;
+    const atkScale=ag?.padAttackScale??1;
+    const filterOff=ag?.padFilterOffset??0;
+    notes.forEach(n=>{if(n<45)return;const f=m2f(n);
+      const o1=c.createOscillator();o1.type=ag?.padWaveform||'sine';o1.frequency.value=f;
+      const o2=c.createOscillator();o2.type=ag?.padWaveform||'sine';o2.frequency.value=f*detuneFactor;
+      const lfo=c.createOscillator();lfo.type='sine';lfo.frequency.value=0.25;
+      const lg=c.createGain();lg.gain.value=0.015;
+      const atk=1*atkScale;
+      const g=c.createGain();g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.04,t+atk);
+      g.gain.setValueAtTime(0.04,t+dur-1.5);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      lfo.connect(lg).connect(g.gain);
+      const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=(lpF||900)+filterOff;fl.Q.value=0.5;
+      o1.connect(fl);o2.connect(fl);fl.connect(g).connect(master.current);
+      o1.start(t);o1.stop(t+dur+.2);o2.start(t);o2.stop(t+dur+.2);
+      lfo.start(t);lfo.stop(t+dur+.2);
+    });
+  },[]);
+
+  const melody=useCallback((t,note,dur,vol,ag)=>{
+    if(!note)return;const c=ctx.current;if(!c)return;const f=m2f(note);
+    const fmIdx=ag?.melodyFmIndex??0.15;
+    const vibRate=ag?.melodyVibratoRate??4.5;
+    const vibDepth=ag?.melodyVibratoDepth??2;
+    const fCut=ag?.melodyFilterCutoff??4000;
+    const gScale=ag?.masterGainScale??1;
+    const mod=c.createOscillator();mod.type='sine';mod.frequency.value=f*1.5;
+    const mg=c.createGain();mg.gain.value=f*fmIdx;mod.connect(mg);
+    const o=c.createOscillator();o.type='triangle';o.frequency.value=f;mg.connect(o.frequency);
+    const vib=c.createOscillator();vib.type='sine';vib.frequency.value=vibRate;
+    const vg=c.createGain();vg.gain.value=vibDepth;vib.connect(vg).connect(o.frequency);
+    const v=(vol||0.07)*gScale;
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(v,t+0.06);
+    g.gain.setValueAtTime(v*0.8,t+dur*0.5);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur+1.2);
+    const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=fCut;fl.Q.value=0.7;
+    o.connect(fl);fl.connect(g).connect(master.current);
+    o.start(t);o.stop(t+dur+1.3);mod.start(t);mod.stop(t+dur+1.3);vib.start(t);vib.stop(t+dur+1.3);
+  },[]);
+
+  const bass=useCallback((t,note,dur,ag)=>{
+    if(!note)return;const c=ctx.current;if(!c)return;
+    if(Math.random()>0.8)return;
+    const f=m2f(note);
+    const detune=ag?.bassDetune??1.004;
+    const subMix=ag?.bassSubMix??0.5;
+    const fCut=ag?.bassFilterCutoff??300;
+    const o1=c.createOscillator();o1.type='sawtooth';o1.frequency.value=f;
+    const o2=c.createOscillator();o2.type='sawtooth';o2.frequency.value=f*detune;
+    const sub=c.createOscillator();sub.type='sine';sub.frequency.value=f*0.5;
+    const subG=c.createGain();subG.gain.value=subMix;
+    const g=c.createGain();g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.2,t+0.08);
+    g.gain.setValueAtTime(0.2,t+dur*0.35);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=fCut;fl.Q.value=0.8;
+    o1.connect(fl);o2.connect(fl);sub.connect(subG);subG.connect(fl);fl.connect(g).connect(master.current);
+    o1.start(t);o1.stop(t+dur+.1);o2.start(t);o2.stop(t+dur+.1);sub.start(t);sub.stop(t+dur+.1);
+  },[]);
+
+  const piano=useCallback((t,note,dur,vol)=>{
+    if(!note)return;const c=ctx.current;if(!c)return;const f=m2f(note);
+    const o1=c.createOscillator();o1.type='sine';o1.frequency.value=f;
+    const o2=c.createOscillator();o2.type='sine';o2.frequency.value=f*2;
+    const o3=c.createOscillator();o3.type='sine';o3.frequency.value=f*3;
+    const g1=c.createGain();g1.gain.value=1;
+    const g2=c.createGain();g2.gain.value=0.3;
+    const g3=c.createGain();g3.gain.value=0.08;
+    const env=c.createGain();env.gain.setValueAtTime(vol||0.07,t);
+    env.gain.setValueAtTime((vol||0.07)*0.7,t+0.05);
+    env.gain.exponentialRampToValueAtTime(0.001,t+Math.min(dur*1.2,1.5));
+    const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=3000+f*2;fl.Q.value=0.5;
+    o1.connect(g1);o2.connect(g2);o3.connect(g3);
+    g1.connect(fl);g2.connect(fl);g3.connect(fl);
+    fl.connect(env).connect(master.current);
+    o1.start(t);o1.stop(t+2);o2.start(t);o2.stop(t+2);o3.start(t);o3.stop(t+2);
+  },[]);
+
+  const kick=useCallback((t)=>{
+    const c=ctx.current;if(!c)return;
+    const o=c.createOscillator();const g=c.createGain();
+    o.frequency.setValueAtTime(100,t);o.frequency.exponentialRampToValueAtTime(30,t+0.16);
+    g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+    o.connect(g).connect(comp.current);o.start(t);o.stop(t+0.45);
+  },[]);
+
+  const hat=useCallback((t)=>{
+    const c=ctx.current;if(!c)return;
+    const buf=c.createBuffer(1,c.sampleRate*0.018,c.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,5)*0.12;
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.value=0.02;
+    const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=7000;
+    src.connect(hp).connect(g).connect(master.current);src.start(t);src.stop(t+0.025);
+  },[]);
+
+  const beastStab=useCallback((t,note,dur,ag)=>{
+    if(!note)return;const c=ctx.current;if(!c)return;const f=m2f(note);
+    const spread=ag?.beastSpread??0.008;
+    const decay=ag?.beastDecay??0.04;
+    const fStart=ag?.beastFilterStart??6000;
+    for(let v=-1;v<=1;v++){
+      const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f*(1+v*spread);
+      const g=c.createGain();g.gain.setValueAtTime(0.06,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+Math.max(decay,Math.min(dur*0.7,0.18)));
+      const fl=c.createBiquadFilter();fl.type='lowpass';
+      fl.frequency.setValueAtTime(fStart,t);fl.frequency.exponentialRampToValueAtTime(1500,t+0.12);fl.Q.value=1.5;
+      o.connect(fl);fl.connect(g).connect(master.current);o.start(t);o.stop(t+0.3);
+    }
+  },[]);
+
+  const air=useCallback((t,dur)=>{
+    const c=ctx.current;if(!c)return;
+    const len=c.sampleRate*Math.min(dur,20);
+    const buf=c.createBuffer(2,len,c.sampleRate);
+    for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.08;}
+    const src=c.createBufferSource();src.buffer=buf;
+    const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.015,t+2);
+    g.gain.setValueAtTime(0.015,t+dur-2);g.gain.linearRampToValueAtTime(0,t+dur);
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=200;bp.Q.value=0.5;
+    bp.frequency.linearRampToValueAtTime(8000,t+dur*0.8);
+    src.connect(bp).connect(g).connect(master.current);src.start(t);src.stop(t+dur);
+  },[]);
+
+  // ── Helpers ──
+  function steps(phrase){const s=[];let c=0;for(const[n,d]of phrase){s.push({n,d,s:c});c+=d;}return s;}
+
+  // ── Scheduler ──
+  const schedule=useCallback(()=>{
+    if(!on.current)return;
+    const c=ctx.current, now=c.currentTime, elapsed=now-t0.current;
+    const sn=Math.floor(elapsed/STEP);
+    if(sn<=step.current){sched.current=setTimeout(schedule,8);return;}
+    step.current=sn;
+    const t=t0.current+sn*STEP;
+    const pos=sn%STEPS_PER_BAR;
+    const bar=Math.floor(sn/STEPS_PER_BAR);
+    const loopBar=bar%TOTAL_BARS;
+    const round=Math.floor(loopBar/BARS_PER_ROUND);
+    const barInRound=loopBar%BARS_PER_ROUND;
+    const fi=AABA[barInRound];
+    const cfg=ROUNDS[round];
+    const L=cfg.layers;
+    const intens=INTENSITY[round];
+    const chord=CHORDS[PROG[barInRound]];
+    const roundDur=STEP*STEPS_PER_BAR*BARS_PER_ROUND;
+
+    const ag=cfg.radixAgent;
+
+    // Master dynamics
+    if(master.current){
+      let vol=0.25+intens*0.2;
+      if(ag)vol*=ag.masterGainScale;
+      if(round>=64)vol*=Math.max(0.3,1-((round-64)/5)*(barInRound/BARS_PER_ROUND)*0.7);
+      master.current.gain.setTargetAtTime(vol,t,0.6);
+    }
+    if(filter.current){
+      filter.current.frequency.setTargetAtTime(L.length>6?5000+intens*4000:2000+intens*4000,t,0.3);
+    }
+    if(delFb.current){
+      let fb=L.length<=4?0.45:intens>0.4?0.15+intens*0.15:0.05;
+      if(ag)fb=Math.max(0,fb+(ag.delayFeedbackBias||0));
+      delFb.current.gain.setTargetAtTime(fb,t,0.4);
+    }
+
+    // Pad
+    if(L.includes('pad')&&pos===0&&barInRound===0){
+      pad(t,chord.filter(n=>n>=45),roundDur,L.length<=4?1000:900+intens*800,ag);
+    }
+    if(L.includes('padDbl')&&pos===0&&barInRound===0){
+      pad(t,chord.filter(n=>n>=45).map(n=>n+0.12),roundDur,800+intens*800,ag);
+    }
+
+    // Melody
+    if(L.includes('melody')){
+      const ph=[HOOK,HOOK_B][fi];
+      for(const s of steps(ph)){if(pos===s.s)melody(t,s.n,STEP*s.d*0.95,L.length>6?0.1:0.07,ag);}
+    }
+
+    // Bass
+    if(L.includes('bass')&&pos===0){
+      const ph=[BASS_A,BASS_B][fi];
+      for(const s of steps(ph)){if(s.n)bass(t+s.s*STEP,s.n,STEP*s.d*0.9,ag);}
+    }
+
+    // Piano
+    if(L.includes('piano')){
+      const ph=[PIANO_A,PIANO_B][fi];
+      for(const s of steps(ph)){if(pos===s.s)piano(t,s.n,STEP*s.d,intens>0.5?0.09:0.07);}
+    }
+    if(L.includes('pianoL')){
+      // Left hand arpeggios — D major
+      const arp=fi===0?[50,54,57,62,57,54,50,0]:[55,59,62,67,62,59,55,0];
+      arp.forEach((n,i)=>{if(pos===i*2)piano(t,n,STEP*2,0.04);});
+    }
+
+    // Kick + Hat
+    if(L.includes('kick')&&(pos===0||pos===8))kick(t);
+    if(L.includes('hat')){if(pos%4===2)hat(t);if(pos%2===0&&Math.random()<0.3)hat(t);}
+
+    // Beast stab
+    if(L.includes('beast')){
+      const ph=[BEAST_RIF,BEAST_RIF][fi];
+      for(const s of steps(ph)){if(pos===s.s&&s.n)beastStab(t,s.n+12,STEP*s.d,ag);}
+    }
+
+    // Air
+    if(L.includes('air')&&pos===0&&barInRound===0)air(t,roundDur);
+
+    sched.current=setTimeout(schedule,8);
+  },[pad,melody,bass,piano,kick,hat,beastStab,air]);
+
+  const skipTo=useCallback((r)=>{
+    if(!ctx.current)return;
+    const now=ctx.current.currentTime;
+    t0.current=now-(r*BARS_PER_ROUND*STEPS_PER_BAR*STEP);
+    step.current=r*BARS_PER_ROUND*STEPS_PER_BAR-1;
+  },[]);
+
+  const toggle=useCallback(()=>{
+    init();const c=ctx.current;if(c.state==='suspended')c.resume();
+    if(!on.current){on.current=true;t0.current=c.currentTime+0.05;step.current=-1;schedule();return true;}
+    else{on.current=false;if(sched.current)clearTimeout(sched.current);return false;}
+  },[init,schedule]);
+
+  return{toggle,skipTo,ctx,t0,step,on};
+}
+
+// ── App ──
+function App(){
+  const engine=useEngine();
+  const[playing,setPlaying]=useState(false);
+  const[round,setRound]=useState(0);
+
+  useEffect(()=>{
+    if(!playing)return;
+    const iv=setInterval(()=>{
+      if(!engine.ctx.current||!engine.on.current)return;
+      const e=engine.ctx.current.currentTime-engine.t0.current;
+      const bar=Math.floor(e/(STEP*STEPS_PER_BAR));
+      setRound(Math.floor((bar%TOTAL_BARS)/BARS_PER_ROUND));
+    },200);
+    return()=>clearInterval(iv);
+  },[playing,engine]);
+
+  const p=PERSONAS.find(x=>x.id===ROUNDS[round]?.p);
+
+  return <div className="app">
+    <h1>ROOFTOP PARADISE</h1>
+    <div className="sub">MR BEAST &middot; STEVE JOBS &middot; ZOLT&Aacute;N &middot; RADIX</div>
+
+    <div className="transport">
+      <div className={`play${playing?' on':''}`} onClick={()=>{
+        const r=engine.toggle();setPlaying(r);if(!r)setRound(0);
+      }}>{playing?'\u23F8':'\u25B6'}</div>
+      <div className="skip" onClick={()=>{
+        if(!playing)return;const next=(round+1)%TOTAL_ROUNDS;
+        engine.skipTo(next);setRound(next);
+      }}>{'\u23ED'}</div>
+    </div>
+    <div className="info">{playing
+      ?`ROUND ${round+1}/${TOTAL_ROUNDS} \u2022 ${ROUNDS[round]?.layers.length} LAYERS \u2022 ${BPM} BPM`
+      :'TAP TO PLAY'}</div>
+
+    <div className="bar-wrap" onClick={e=>{if(!playing)return;
+      const pct=(e.clientX-e.currentTarget.getBoundingClientRect().left)/e.currentTarget.offsetWidth;
+      const r=Math.floor(pct*TOTAL_ROUNDS);engine.skipTo(r);setRound(r);}}>
+      <div className="bar"><div className="bar-fill" style={{
+        width:`${((round+1)/TOTAL_ROUNDS)*100}%`,background:p?.color||'#fff'}}/></div>
+      <div className="bar-label">{playing&&ROUNDS[round]?.note}</div>
+    </div>
+
+    <div className="personas">
+      {PERSONAS.map(x=><span key={x.id} className={`ptag ${x.id}${ROUNDS[round]?.p===x.id?' active':''}`}>
+        {x.icon} {x.name}</span>)}
+    </div>
+
+    {playing&&<div className="card" key={round}>
+      <div className="who" style={{color:p?.color}}>{p?.icon} {p?.name} &mdash; ROUND {round+1}</div>
+      {ROUNDS[round]?.note}
+      {ROUNDS[round]?.radixAgent&&<div className="layers" style={{color:'var(--radix)',opacity:.5}}>
+        agent: {ROUNDS[round].radixAgent.name} ({ROUNDS[round].radixAgent.family})</div>}
+      <div className="layers">{ROUNDS[round]?.layers.length} layers: {ROUNDS[round]?.layers.join(', ')}</div>
+    </div>}
+
+    <div className="yt">
+      <div className="yt-title">THE ORIGINAL</div>
+      <a href="https://www.youtube.com/watch?v=KMc-eRsA3BQ" target="_blank" rel="noopener">
+        Weval &mdash; Rooftop Paradise (2013) &middot; 110 BPM &middot; D major &middot; Deep House
+      </a>
+      <div className="yt-comments">
+        <div className="yt-c"><span className="yt-u">@imfurman</span> "after 2:45 amazing"</div>
+        <div className="yt-c"><span className="yt-u">@DSAforever1</span> "Hypnotic. Je kiffe"</div>
+        <div className="yt-c"><span className="yt-u">@pellullis</span> "Out of space MOOD"</div>
+        <div className="yt-c"><span className="yt-u">@ABDsang</span> "the people want more of this. help us will you"</div>
+      </div>
+    </div>
+
+    <div className="footer">
+      <div className="tag">The rooftop is forever.</div>
+      <div className="cr">MR BEAST &middot; STEVE JOBS &middot; ZOLT&Aacute;N &middot; RADIX &middot; 2026</div>
+    </div>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

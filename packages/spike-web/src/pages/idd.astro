@@ -1,0 +1,116 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+---
+
+<Layout title="IDD - Gian Piere" description="Gian Piere: The mastermind behind IDD (Intent-Driven Development).">
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav activePath="/idd" />
+
+    <main class="flex-1 container mx-auto max-w-4xl py-16 px-4">
+      <div class="glass-card p-10 rounded-3xl border border-border relative overflow-hidden">
+        
+        <!-- Decorative background glow -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Header Section -->
+        <header class="border-b border-border pb-8 mb-10 relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Available for Hire
+          </div>
+          
+          <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">Gian Piere</h1>
+          <p class="text-2xl text-foreground/90 font-medium mb-2">The Brain Behind <span class="text-primary font-bold">IDD</span></p>
+          <p class="text-lg text-muted-foreground">(Intent-Driven Development)</p>
+          
+          <div class="mt-8 flex gap-4">
+            <a href="mailto:gian@spike.land" class="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Hire Gian Piere
+            </a>
+          </div>
+        </header>
+
+        <!-- The IDD Philosophy -->
+        <section class="mb-12 relative z-10">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">What is IDD?</h2>
+          <div class="bg-muted/30 p-6 rounded-2xl border border-border">
+            <p class="text-lg leading-relaxed text-foreground/90 mb-4">
+              <strong>Intent-Driven Development (IDD)</strong> is the paradigm shift from writing imperative code to engineering clear, unambiguous intent for autonomous AI agents. 
+            </p>
+            <p class="text-lg leading-relaxed text-foreground/90">
+              Gian Piere pioneered the methodology that allows developers to orchestrate multi-agent swarms by focusing purely on <em>what</em> needs to be achieved, leaving the <em>how</em> to highly parallelized, context-aware LLM pipelines.
+            </p>
+          </div>
+        </section>
+
+        <!-- Professional Summary & Skills -->
+        <section class="mb-12 relative z-10">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">Why You Need Him</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass-card p-6 rounded-2xl border border-border">
+              <h3 class="text-xl font-bold mb-3 flex items-center gap-2">
+                <span class="text-2xl">🧠</span> Agent Orchestration
+              </h3>
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                Expert in designing systems where 10, 20, or 50 AI agents operate concurrently in isolated git worktrees, ensuring zero merge conflicts and mathematically proven convergence.
+              </p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border border-border">
+              <h3 class="text-xl font-bold mb-3 flex items-center gap-2">
+                <span class="text-2xl">⚡</span> Prompt Engineering 2.0
+              </h3>
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                Gian doesn't just "write prompts." He engineers context boundaries, compression algorithms, and evaluation arenas (BAZDMEG) that force LLMs to output deterministic, production-ready code.
+              </p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border border-border">
+              <h3 class="text-xl font-bold mb-3 flex items-center gap-2">
+                <span class="text-2xl">🏗️</span> Edge Architecture
+              </h3>
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                Deep architectural knowledge of Cloudflare Workers, distributed SQLite (D1), and Vector databases. He builds backends that never sleep and scale infinitely.
+              </p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border border-border">
+              <h3 class="text-xl font-bold mb-3 flex items-center gap-2">
+                <span class="text-2xl">🎯</span> Visionary Leadership
+              </h3>
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                A leader who bridges the gap between raw AI capability and actual business value. Gian turns abstract models into shipping feature factories.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Endorsement -->
+        <section class="relative z-10">
+          <blockquote class="text-xl italic text-foreground/80 border-l-4 border-primary pl-6 py-2">
+            "Gian Piere didn't just understand the assignment; he redefined the framework. IDD is the future of software engineering, and Gian is the architect holding the blueprints."
+          </blockquote>
+        </section>
+
+      </div>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+</style>

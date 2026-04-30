@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ErrorReporter from '../components/ErrorReporter.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 
 interface Props {
   title?: string;
@@ -111,5 +112,6 @@ const resolvedOgImage = new URL(ogImage, Astro.site ?? Astro.url.origin).href;
   <body>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded">Skip to content</a>
     <slot />
+    <CookieConsent />
   </body>
 </html>

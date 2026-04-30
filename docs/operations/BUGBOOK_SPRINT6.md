@@ -12,7 +12,7 @@
 | 4 | No distributed tracing | medium | observability | FIXED |
 | 5 | Explicit `any` in chess Prisma stub | medium | type-safety | RESOLVED |
 | 6 | ESLint type rules in warning mode | low | type-safety | FIXED |
-| 7 | 11 @ts-ignore in vendored monaco-editor | low | type-safety | CANDIDATE |
+| 7 | 11 @ts-ignore in vendored monaco-editor | low | type-safety | FIXED |
 | 8 | 6 spike-chat stub endpoints | high | feature-gap | FIXED |
 | 9 | Reorganize pipeline missing incremental filtering | medium | feature-gap | FIXED |
 | 10 | google-ads MCP tool incomplete | medium | feature-gap | FIXED |
@@ -20,14 +20,14 @@
 | 12 | Transpile test config removed | medium | ci-cd | DISCARDED |
 | 13 | NPM_TOKEN expired for npmjs.org | medium | ci-cd | IN PROGRESS (account-holder rotation) |
 | 14 | Cloudflare API token is temporary | high | ci-cd | IN PROGRESS (account-holder rotation) |
-| 15 | Stale worktrees wasting disk | low | maintenance | CANDIDATE |
+| 15 | Stale worktrees wasting disk | low | maintenance | FIXED |
 | 16 | No GitHub issue templates | low | dx | FIXED |
 | 17 | Error metadata size limits (64KB stack, 32KB metadata; head+tail truncation) | low | error-handling | RESOLVED |
 | 18 | Health checks lack latency metrics | medium | observability | FIXED |
 | 19 | spike-chat D1 database not created | high | ci-cd | FIXED |
 | 20 | mcp-auth deploy build broken (better-auth peer chain) | high | ci-cd | FIXED |
 
-**Net open**: 2 `CANDIDATE` (S6-07, S6-15, both low), 2 `IN PROGRESS` awaiting account-holder token rotation (S6-13, S6-14), 1 follow-up (S6-01 logpush destination at Cloudflare account level). Everything else merged to `main`.
+**Net open**: 0 `CANDIDATE`, 2 `IN PROGRESS` awaiting account-holder token rotation (S6-13, S6-14), 1 follow-up (S6-01 logpush destination at Cloudflare account level). Everything else merged to `main`.
 
 **ACTIVE** = confirmed across 2+ audit cycles. **CANDIDATE** = first observation. **DISCARDED** = not reproducible on the committed branch.
 
@@ -104,7 +104,7 @@
 
 - **Severity**: low
 - **Category**: type-safety
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.75
 - **ELO**: 1200
 - **Description**: 11 `@ts-ignore` directives exist in vendored monaco-editor code. Acceptable for vendored code but worth tracking as they may mask real type errors when upgrading the vendored dependency.
@@ -184,7 +184,7 @@
 
 - **Severity**: low
 - **Category**: maintenance
-- **Status**: CANDIDATE
+- **Status**: FIXED
 - **Confidence**: 0.85
 - **ELO**: 1200
 - **Description**: `.claude/worktrees/agent-acf30152/` and `agent-abe5a242/` contain full copies of `packages/` directory, wasting disk space.
