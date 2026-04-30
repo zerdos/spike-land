@@ -29,7 +29,6 @@ import {
   getHealthHttpStatus,
   timedCheck,
 } from "../../common/core-logic/health-contract";
-import { parsePositiveInt } from "../../../core/shared-utils/core-logic/numbers.ts";
 
 declare const __BUILD_SHA__: string;
 declare const __BUILD_TIME__: string;

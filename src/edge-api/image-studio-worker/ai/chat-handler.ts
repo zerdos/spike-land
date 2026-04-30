@@ -1,4 +1,3 @@
-import { parsePositiveInt } from "@spike-land-ai/shared";
 import { SYSTEM_PROMPT } from "../core-logic/system-prompt.ts";
 import { BROWSER_TOOLS, isBrowserTool } from "../core-logic/browser-tools.ts";
 import type { createToolRegistry } from "../mcp/tool-registry.ts";
