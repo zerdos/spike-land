@@ -118,6 +118,22 @@ function getSpikeEdgeMetricService(
 
   return null;
 }
+
+// Redirects for old MCP routes
+app.use("*", async (c, next) => {
+  const host = getRequestHost(c.req.raw);
+  const path = c.req.path;
+
+  if (host === "next.spike.land" && path.startsWith("/mcp")) {
+    return c.redirect("https://spike.land/mcp", 301);
+  }
+  if (host === "mcp.spike.land" && (path === "/" || path === "/index.html")) {
+    return c.redirect("https://spike.land/mcp", 301);
+  }
+
+  return next();
+});
+
 // Distributed tracing — must run first so traceId is available everywhere
 // downstream (auth, route handlers, error handlers). BUG-S6-04.
 app.use("*", tracingMiddleware({ worker: "spike-edge" }));
