@@ -1,7 +1,7 @@
 {
   "insights": [
     {
-      "id": "ins_1775442210211_r6c316",
+      "id": "ins_1777621472936_t2t2j4",
       "docId": "pageindex:self-improve",
       "query": "Radix: locate the self-improving loop in this project",
       "queryNorm": "radix locate self improving loop project",
@@ -12,16 +12,16 @@
         "src/mcp-tools/pageindex/mcp/index.ts",
         "src/prd-registry/prds/apps/pageindex.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.211Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.936Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["loop", "radix", "self", "pageindex", "memory"],
-      "topicId": "topic_1775442210212_t08y"
+      "topicId": "topic_1777621472936_mk05"
     },
     {
-      "id": "ins_1775442210212_6wiiib",
+      "id": "ins_1777621472936_s82qk1",
       "docId": "pageindex:chat-flow",
       "query": "Zoltan: explain how pageindex_chat feeds the loop",
       "queryNorm": "zoltan explain pageindex_chat feeds loop",
@@ -31,16 +31,16 @@
         "src/mcp-tools/pageindex/core-logic/self-improve.ts",
         "src/mcp-tools/pageindex/mcp/index.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.212Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.936Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["pageindex_chat", "zoltan", "loop", "pass", "query"],
-      "topicId": "topic_1775442210212_13lv"
+      "topicId": "topic_1777621472936_zehy"
     },
     {
-      "id": "ins_1775442210212_amq0j8",
+      "id": "ins_1777621472936_9t4t2t",
       "docId": "pageindex:topic-graph",
       "query": "Erdos: describe the graph structure inside the self-improving loop",
       "queryNorm": "erdos describe graph structure inside self improving loop",
@@ -49,16 +49,16 @@
         "src/mcp-tools/pageindex/core-logic/self-improve.ts",
         ".tests/pageindex-mcp/self-improve.test.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.212Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.936Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["topic", "erdos", "graph", "loop", "memory"],
-      "topicId": "topic_1775442210212_vacb"
+      "topicId": "topic_1777621472936_w9h1"
     },
     {
-      "id": "ins_1775442210212_85wocm",
+      "id": "ins_1777621472936_q4qq4o",
       "docId": "pageindex:memory-management",
       "query": "Radix: explain how the loop manages memory over time",
       "queryNorm": "radix explain loop manages memory over time",
@@ -67,16 +67,16 @@
         "src/mcp-tools/pageindex/core-logic/self-improve.ts",
         "src/mcp-tools/pageindex/core-logic/tools.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.212Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.936Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["memory", "loop", "radix", "instead", "explain"],
-      "topicId": "topic_1775442210212_t08y"
+      "topicId": "topic_1777621472936_mk05"
     },
     {
-      "id": "ins_1775442210212_tg901e",
+      "id": "ins_1777621472937_cl1mu0",
       "docId": "pageindex:better-each-pass",
       "query": "Zoltan: why does each iteration get better in the loop",
       "queryNorm": "zoltan why does each iteration get better loop",
@@ -85,16 +85,16 @@
         "src/mcp-tools/pageindex/core-logic/self-improve.ts",
         "src/mcp-tools/pageindex/core-logic/tools.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.212Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.937Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["zoltan", "loop", "query", "memory", "does"],
-      "topicId": "topic_1775442210212_13lv"
+      "topicId": "topic_1777621472936_zehy"
     },
     {
-      "id": "ins_1775442210213_ch2ork",
+      "id": "ins_1777621472937_b1scld",
       "docId": "pageindex:health-metrics",
       "query": "Erdos: what metrics prove the loop is improving",
       "queryNorm": "erdos metrics prove loop improving",
@@ -103,15 +103,15 @@
         "src/mcp-tools/pageindex/core-logic/self-improve.ts",
         "src/mcp-tools/pageindex/core-logic/tools.ts"
       ],
-      "createdAt": "2026-04-06T02:23:30.213Z",
-      "lastUsedAt": "2026-04-06T02:23:30.216Z",
+      "createdAt": "2026-05-01T07:44:32.937Z",
+      "lastUsedAt": "2026-05-01T07:44:32.939Z",
       "confidence": 1,
       "hitCount": 7,
       "feedback": 7,
       "tags": ["loop", "erdos", "memory", "average", "metrics"],
-      "topicId": "topic_1775442210213_f0xc"
+      "topicId": "topic_1777621472937_p0um"
     }
   ],
-  "topicTree": "{\"id\":\"root\",\"name\":\"Root\",\"summary\":\"\",\"children\":[{\"id\":\"topic_1775442210212_t08y\",\"name\":\"loop radix self\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210211_r6c316\",\"ins_1775442210212_85wocm\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210212_13lv\",\"name\":\"pageindex_chat zoltan loop\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210212_6wiiib\",\"ins_1775442210212_tg901e\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210212_vacb\",\"name\":\"topic erdos graph\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210212_amq0j8\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.212Z\",\"frozen\":false},{\"id\":\"topic_1775442210213_f0xc\",\"name\":\"loop erdos memory\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1775442210213_ch2ork\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.213Z\",\"frozen\":false}],\"insightIds\":[],\"avgFeedback\":0,\"lastUpdated\":\"2026-04-06T02:23:30.210Z\",\"frozen\":false}",
+  "topicTree": "{\"id\":\"root\",\"name\":\"Root\",\"summary\":\"\",\"children\":[{\"id\":\"topic_1777621472936_mk05\",\"name\":\"loop radix self\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1777621472936_t2t2j4\",\"ins_1777621472936_q4qq4o\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-05-01T07:44:32.936Z\",\"frozen\":false},{\"id\":\"topic_1777621472936_zehy\",\"name\":\"pageindex_chat zoltan loop\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1777621472936_s82qk1\",\"ins_1777621472937_cl1mu0\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-05-01T07:44:32.937Z\",\"frozen\":false},{\"id\":\"topic_1777621472936_w9h1\",\"name\":\"topic erdos graph\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1777621472936_9t4t2t\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-05-01T07:44:32.936Z\",\"frozen\":false},{\"id\":\"topic_1777621472937_p0um\",\"name\":\"loop erdos memory\",\"summary\":\"\",\"children\":[],\"insightIds\":[\"ins_1777621472937_b1scld\"],\"avgFeedback\":0,\"lastUpdated\":\"2026-05-01T07:44:32.937Z\",\"frozen\":false}],\"insightIds\":[],\"avgFeedback\":0,\"lastUpdated\":\"2026-05-01T07:44:32.935Z\",\"frozen\":false}",
   "version": 2
 }
