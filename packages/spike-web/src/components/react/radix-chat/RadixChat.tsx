@@ -424,7 +424,7 @@ export default function RadixChat({ persona = "zoltan" }: Props) {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100dvh",
+        height: "100%",
         width: "100%",
         background: "#fafafa",
         color: "#1a1a1a",
