@@ -1,0 +1,179 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import { Plug, Shield, Layers, ArrowRight, Copy, Check } from 'lucide-react';
+
+const MCP_CONFIG_SNIPPET = `{
+  "mcpServers": {
+    "spike-land": {
+      "command": "npx",
+      "args": ["-y", "@spike-land-ai/mcp-cli"],
+      "env": {
+        "SPIKE_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}`;
+
+const WHAT_IS_MCP_CARDS = [
+  {
+    title: "Model Context Protocol",
+    body: "An open standard by Anthropic that lets AI models connect to external tools, data sources, and services through a unified interface.",
+  },
+  {
+    title: "One Connection, Everything",
+    body: "Connect your AI client once and get access to the entire spike.land tool registry — no per-tool configuration or separate API keys.",
+  },
+  {
+    title: "Secure by Default",
+    body: "OAuth 2.0 device flow authentication means your credentials never leave your device. Fine-grained scopes control exactly what tools each client can use.",
+  },
+];
+
+const HOW_TO_CONNECT_CARDS = [
+  {
+    step: 1,
+    title: "Device Flow Auth",
+    body: "Open your MCP client, point it at https://spike.land/mcp and follow the device authorization prompt.",
+    linkTo: "/login",
+    linkLabel: "Authorize device",
+  },
+  {
+    step: 2,
+    title: "API Keys",
+    body: "Generate a long-lived API key in your settings and pass it as a Bearer token — ideal for server-to-server integrations.",
+    linkTo: "/dashboard/settings",
+    linkLabel: "Manage API keys",
+  },
+  {
+    step: 3,
+    title: "SDK Integration",
+    body: "Use the MCP TypeScript SDK or any compatible client library. Full documentation covers all transports and auth flows.",
+    linkTo: "/docs",
+    linkLabel: "Read the docs",
+  },
+];
+---
+
+<Layout title="MCP Registry - spike.land" description="Model Context Protocol tools and registry at spike.land.">
+  <Analytics slot="head" />
+
+  <div class="page-shell">
+    <Nav activePath="/mcp" />
+
+    <main class="flex-1 container mx-auto max-w-5xl py-12 px-4">
+      <div class="rubik-stack space-y-12">
+        {/* Hero */}
+        <section class="glass-card px-8 py-16 text-center rounded-3xl border border-border relative overflow-hidden">
+          <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="space-y-6 relative z-10">
+            <div class="flex justify-center">
+              <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse" aria-hidden="true"></span>
+                80+ Tools Live
+              </span>
+            </div>
+
+            <h1 class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              80+ AI Tools, <span class="text-primary">One Protocol</span>
+            </h1>
+
+            <p class="text-lg leading-relaxed text-muted-foreground max-w-2xl mx-auto">
+              spike.land's MCP registry gives every AI model instant access to web search, databases, code execution, and more — through a single, authenticated connection.
+            </p>
+
+            <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center pt-4">
+              <a href="/apps" class="rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90">
+                Browse Apps
+              </a>
+              <a href="/docs" class="rounded-xl border border-border bg-background px-8 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-muted">
+                Read Docs
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Quick-start config */}
+        <section class="space-y-4 max-w-3xl mx-auto">
+          <p class="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Add to your MCP client config (e.g. Claude Desktop)
+          </p>
+
+          <div class="relative overflow-hidden rounded-xl border border-border bg-card">
+            <div class="flex items-start justify-between gap-4 px-5 py-4">
+              <pre class="flex-1 overflow-x-auto text-sm leading-relaxed text-foreground font-mono">
+                <code>{MCP_CONFIG_SNIPPET}</code>
+              </pre>
+            </div>
+          </div>
+        </section>
+
+        {/* What is MCP */}
+        <section class="space-y-8">
+          <h2 class="text-3xl font-bold text-foreground text-center mb-8">What is MCP?</h2>
+
+          <div class="grid gap-6 sm:grid-cols-3">
+            {WHAT_IS_MCP_CARDS.map((card) => (
+              <div class="glass-card space-y-4 p-8 rounded-2xl border border-border">
+                <h3 class="text-xl font-bold text-foreground">{card.title}</h3>
+                <p class="text-sm text-muted-foreground leading-relaxed">{card.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* How to Connect */}
+        <section class="space-y-8">
+          <h2 class="text-3xl font-bold text-foreground text-center mb-8">How to Connect</h2>
+
+          <div class="grid gap-6 lg:grid-cols-3">
+            {HOW_TO_CONNECT_CARDS.map((card) => (
+              <div class="glass-card space-y-5 p-8 rounded-2xl border border-border">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-xl font-bold text-primary">
+                  {card.step}
+                </div>
+                <h3 class="text-xl font-bold text-foreground">{card.title}</h3>
+                <p class="text-sm text-muted-foreground leading-relaxed">{card.body}</p>
+                <a href={card.linkTo} class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline mt-2">
+                  {card.linkLabel}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section class="glass-card px-8 py-12 text-center space-y-6 rounded-3xl border border-border mt-12 bg-primary/5">
+          <h2 class="text-3xl font-bold text-foreground">Ready to give your AI superpowers?</h2>
+          <p class="text-lg text-muted-foreground max-w-xl mx-auto">
+            Connect in minutes. No credit card required for the free minimum tier.
+          </p>
+          <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center pt-4">
+            <a href="/login" class="rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90">
+              Get Started Free
+            </a>
+            <a href="/pricing" class="rounded-xl border border-border bg-background px-8 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-muted">
+              View Pricing
+            </a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page-shell {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+</style>
