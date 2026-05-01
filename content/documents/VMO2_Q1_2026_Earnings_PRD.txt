@@ -1,0 +1,67 @@
+# Product Requirements Document (PRD): Virgin Media O2 Q1 2026 Earnings Data Integration
+
+## 1. Overview
+This document outlines the requirements for integrating, analyzing, and reporting on the Virgin Media O2 (VMO2) Q1 2026 Earnings Release data. The objective is to extract key financial and operational metrics, provide mathematical and strategic analysis, and disseminate the findings through an engaging blog article for our audience.
+
+## 2. Objectives
+- **Data Extraction:** Accurately pull key financial figures, operational statistics, and strategic progress indicators from the Q1 2026 Earnings Release PDF.
+- **Mathematical Analysis:** "Roast" the data with our mathematical arena to uncover trends, validate stated guidance metrics, and analyze the true impact of the "Daisy Transaction" and network investments.
+- **Content Creation:** Produce a compelling, data-backed blog article summarizing the VMO2 Q1 2026 performance, aimed at industry professionals and stakeholders.
+
+## 3. Scope of Data Integration
+
+### 3.1 Key Financial Metrics (Q1 2026)
+- **Total Revenue:** £2,390.1 million (6.5% YoY decrease, adjusted for Daisy Transaction).
+- **Total Service Revenue:** £2,007.9 million (3.0% YoY decrease).
+- **Consumer Revenue:** £1,813.7 million (3.8% YoY decrease).
+- **Business Revenue:** £308.7 million (5.1% YoY decrease).
+- **Wholesale Revenue:** £256.9 million (5.1% YoY increase).
+- **Adjusted EBITDA:** £901.7 million (3.4% YoY decrease, adjusted for Daisy Transaction).
+- **Adjusted EBITDA Margin:** 37.7% (up from 36.9% in Q1 2025).
+- **Adjusted Free Cash Flow (FCF):** Outflow of £468.3 million.
+- **Adjusted EBITDA less Capex:** £367.9 million (8.4% YoY decrease).
+
+### 3.2 Key Operational Statistics (Q1 2026)
+- **Homes Serviceable:** 18,796,600.
+- **Homes Passed:** 16,226,400.
+- **Consumer Fixed-Line Customer Relationships:** 5,534,500 (Net loss: 6,900).
+- **Total Mobile Connections:** 46,446,500 (Net loss: 311,800).
+- **Mobile Contract Connections:** 24,467,900.
+- **ARPU (Consumer Fixed-Line):** £46.50 (1.6% YoY decrease).
+- **ARPU (Consumer Mobile Contract):** £17.21 (broadly stable).
+
+### 3.3 Strategic Progress
+- **Network:** Full fibre footprint reached 8.7 million premises; 5G+ footprint reached 86% of the UK outdoor population.
+- **Innovation:** O2 Satellite launched (first UK mobile network for direct-to-device satellite connectivity, reaching 95% landmass).
+- **M&A/Integration:** O2 Business brand launched with the Daisy Group integration continuing at pace.
+- **Capital Structure:** Proactive refinancing in Q1, including a EUR 920M term loan and consolidation of Term Loans AC1 and AC2.
+
+## 4. Mathematical Arena "Roast" Requirements (The Analysis)
+
+The mathematics team (arena) will analyze the following areas:
+
+### 4.1 The Daisy Transaction Obfuscation
+- **Task:** Strip out the adjustments made for the "Daisy Transaction".
+- **Analysis:** Compare the reported "adjusted" YoY declines against the raw numbers to evaluate the true underlying health of the legacy B2B business versus the acquired Daisy assets. 
+- **Focus:** Analyze the 23.8% raw *increase* in Business Revenue versus the 5.1% adjusted *decrease*.
+
+### 4.2 The Capex Conundrum
+- **Task:** Analyze the correlation between network investment (Capex) and revenue returns.
+- **Analysis:** VMO2 cites "continuation of significant targeted investments," resulting in an 8.4% decline in Adjusted EBITDA less Capex. Project the ROI timeline for the £80M spectrum acquisition and the fibre rollout. Is the top-line revenue decline (3.0%) sustainable given the heavy capital output?
+
+### 4.3 The Churn vs. ARPU Trade-off
+- **Task:** Evaluate the pricing strategy.
+- **Analysis:** VMO2 reported reduced fixed-line net losses (6,900) but a 1.6% drop in fixed ARPU due to "promotional intensity." Mathematically model the lifetime value (LTV) of retaining these customers at a discounted rate versus losing them to competitors (AltNets).
+
+### 4.4 Debt and Leverage Sustainability
+- **Task:** Stress-test the leverage ratios.
+- **Analysis:** Total third-party debt is £22.5 billion. The Net Total Debt to Annualised Adjusted EBITDA ratio is 4.38x (restrictive covenant calculation) but rises to 5.86x if all obligations are included. Model the impact of potential interest rate fluctuations on their £468.3M FCF outflow.
+
+## 5. Deliverables
+1.  **Arena Analysis Report:** A raw data output from the mathematicians detailing the findings from Section 4.
+2.  **Blog Article:** A polished article translating the financial and mathematical analysis into a narrative format.
+
+## 6. Timeline
+- **T0:** Document ingestion and PRD creation (Complete).
+- **T+1:** Arena data extraction and mathematical analysis.
+- **T+2:** Blog article drafting and publishing.
