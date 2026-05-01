@@ -125,12 +125,7 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
 
     <!-- Daft Punk Chat -->
     <div class="chat-section" id="chat-section">
-      <div class="chat-toggle-bar">
-        <button id="chat-toggle" class="chat-toggle-btn">
-          <span id="chat-toggle-text">Talk to Daft Punk</span>
-        </button>
-      </div>
-      <div id="chat-container" class="chat-container">
+      <div id="chat-container" class="chat-container open">
         <RadixChat client:visible persona="daftpunk" />
       </div>
     </div>
@@ -734,17 +729,6 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
   load();
   syncUI();
 
-  // ── Chat toggle ───────────────────────────────────────────────────────────
-  var chatToggle = document.getElementById('chat-toggle');
-  var chatContainer = document.getElementById('chat-container');
-  var chatToggleText = document.getElementById('chat-toggle-text');
-  if (chatToggle && chatContainer) {
-    chatToggle.addEventListener('click', function () {
-      var isOpen = chatContainer.classList.toggle('open');
-      chatToggleText.textContent = isOpen ? 'Hide Chat' : 'Talk to Daft Punk';
-    });
-  }
-
   // ── Music Tool Bridge ──────────────────────────────────────────────────────
   window.getMusicState = function() {
     return {
@@ -1002,22 +986,11 @@ import RadixChat from '../components/react/radix-chat/RadixChat.tsx';
     max-width: 72rem; margin: 0 auto; padding: 0 0.75rem 2rem;
     width: 100%;
   }
-  .chat-toggle-bar {
-    display: flex; justify-content: center; padding: 0.5rem 0;
-  }
-  .chat-toggle-btn {
-    background: #7c3aed; color: white; border: none; border-radius: 0.75rem;
-    padding: 0.75rem 2rem; font-size: 1rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; transition: background 0.15s;
-    min-height: 48px;
-  }
-  .chat-toggle-btn:hover { background: #6d28d9; }
   .chat-container {
     height: 500px; border: 1px solid #2a2a2a; border-radius: 0.75rem;
-    overflow: hidden; margin-top: 0.5rem;
-    display: none;
+    overflow: hidden; margin-top: 1rem;
+    display: block;
   }
-  .chat-container.open { display: block; }
 
   @media (max-width: 600px) {
     .chat-section { padding: 0 0.375rem 2rem; }

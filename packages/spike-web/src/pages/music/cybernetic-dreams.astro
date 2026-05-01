@@ -18,18 +18,25 @@ const price = "$0.99";
         <h1 class="text-4xl font-bold mb-4">{trackName}</h1>
         <p class="text-muted-foreground mb-8">Generated via Suno AI. Exclusive to spike.land.</p>
         
-        <div class="audio-player bg-muted/30 p-8 rounded-xl border border-border mb-8">
-          <!-- Placeholder for Suno MP3 -->
-          <audio controls class="w-full outline-none">
+        <div class="audio-player bg-muted/30 p-8 rounded-xl border border-border mb-8 relative overflow-hidden">
+          <div id="locked-overlay" class="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden">
+            <p class="text-xl font-bold mb-2">Preview Ended</p>
+            <p class="text-sm text-muted-foreground mb-4">Purchase the full track to continue listening.</p>
+            <button id="overlay-buy-btn" class="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-opacity">
+              Unlock for {price}
+            </button>
+          </div>
+          
+          <audio id="track-audio" controls class="w-full outline-none">
             <source src="/audio/suno-placeholder.wav" type="audio/wav" />
             Your browser does not support the audio element.
           </audio>
         </div>
 
         <div class="buy-section flex items-center gap-4 border-t border-border pt-8">
-          <button class="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+          <button id="buy-btn" class="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-            Buy Now for {price}
+            <span id="buy-btn-text">Buy Now for {price}</span>
           </button>
           <span class="text-sm text-muted-foreground flex flex-col">
             <span>✓ High-quality MP3 download</span>
@@ -41,6 +48,71 @@ const price = "$0.99";
     <Footer />
   </div>
 </Layout>
+
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('track-audio');
+    const buyBtn = document.getElementById('buy-btn');
+    const overlayBuyBtn = document.getElementById('overlay-buy-btn');
+    const overlay = document.getElementById('locked-overlay');
+    const buyBtnText = document.getElementById('buy-btn-text');
+    
+    const TRACK_ID = 'cybernetic-dreams-purchased';
+    const PREVIEW_LIMIT = 30; // 30 seconds
+    
+    let hasPurchased = localStorage.getItem(TRACK_ID) === 'true';
+
+    function updateUI() {
+      if (hasPurchased) {
+        buyBtnText.textContent = 'Purchased - Download MP3';
+        buyBtn.classList.remove('bg-primary');
+        buyBtn.classList.add('bg-green-600');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Enforce 30 second limit
+    audio.addEventListener('timeupdate', () => {
+      if (!hasPurchased && audio.currentTime >= PREVIEW_LIMIT) {
+        audio.pause();
+        audio.currentTime = PREVIEW_LIMIT;
+        overlay.classList.remove('hidden');
+      }
+    });
+
+    // Handle dragging the seek bar past 30s
+    audio.addEventListener('seeking', () => {
+      if (!hasPurchased && audio.currentTime > PREVIEW_LIMIT) {
+        audio.currentTime = PREVIEW_LIMIT;
+      }
+    });
+
+    function handlePurchase() {
+      if (hasPurchased) {
+        // Mock download
+        alert('Downloading High-Quality MP3...');
+        return;
+      }
+      
+      // Mock Stripe Checkout Flow
+      buyBtn.style.opacity = '0.5';
+      buyBtnText.textContent = 'Processing...';
+      
+      setTimeout(() => {
+        hasPurchased = true;
+        localStorage.setItem(TRACK_ID, 'true');
+        updateUI();
+        alert('Payment successful! Full track unlocked.');
+      }, 800);
+    }
+
+    if (buyBtn) buyBtn.addEventListener('click', handlePurchase);
+    if (overlayBuyBtn) overlayBuyBtn.addEventListener('click', handlePurchase);
+    
+    updateUI();
+  });
+</script>
 
 <style>
   .page-shell { min-height: 100svh; display: flex; flex-direction: column; background: var(--bg); }

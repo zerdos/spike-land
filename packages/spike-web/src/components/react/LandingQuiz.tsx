@@ -254,71 +254,92 @@ interface QuizQuestionData {
 const QUESTIONS: QuizQuestionData[] = [
   {
     id: 1,
-    prompt: "A hard problem just landed on the whiteboard. Your first move?",
+    prompt: "A complex AI agent just failed a test. Your first move?",
     options: [
       {
-        label: "Restate it more abstractly — most puzzles collapse once framed right",
+        label: "Restate the system boundary — most bugs collapse once framed right",
         personas: ["erdos"],
       },
       {
-        label: "Ask questions until the person who drew it doesn't recognise it anymore",
+        label: "Ask the LLM to explain its logic step-by-step until it finds the flaw",
         personas: ["socrates"],
       },
-      { label: "Build the smallest working version and iterate from there", personas: ["peti"] },
+      { label: "Write a failing reproduction script with exact steps", personas: ["peti"] },
       {
-        label: "Refuse the premise — it's the wrong problem to be solving",
+        label: "Refuse the premise — the entire architecture is wrong",
         personas: ["diogenes"],
       },
     ],
   },
   {
     id: 2,
-    prompt: "Something beautiful lands in front of you. You want to...",
+    prompt: "You need to ship a new feature by Friday. What's your approach?",
     options: [
-      { label: "understand exactly why it's beautiful, in formal terms", personas: ["spinoza"] },
-      { label: "write about it before the feeling fades", personas: ["camus"] },
-      { label: "picture how it works, then build your own version", personas: ["einstein"] },
-      { label: "ask who paid for it and who got left out", personas: ["arendt"] },
+      {
+        label: "Define the exact Zod schemas before writing a line of code",
+        personas: ["spinoza"],
+      },
+      { label: "Vibe-code the prototype while the inspiration is fresh", personas: ["camus"] },
+      { label: "Run a thought experiment on how the database might scale", personas: ["einstein"] },
+      {
+        label: "Audit who wrote the legacy code and why they made those trade-offs",
+        personas: ["arendt"],
+      },
     ],
   },
   {
     id: 3,
-    prompt: "Your ideal argument ends with...",
+    prompt: "Your ideal code review ends with...",
     options: [
-      { label: "clarified language — we were talking past each other", personas: ["wittgenstein"] },
-      { label: "a new model that contains both positions", personas: ["kant"] },
-      { label: "an experiment only one of us can run", personas: ["aristotle"] },
-      { label: "one of us walking away sharper, not softer", personas: ["arnold"] },
+      {
+        label: "Refactored variable names — we were confusing two concepts",
+        personas: ["wittgenstein"],
+      },
+      {
+        label: "A new overarching design pattern that unifies both approaches",
+        personas: ["kant"],
+      },
+      { label: "An empirical A/B test because data beats opinions", personas: ["aristotle"] },
+      { label: "The developer walking away sharper, not softer", personas: ["arnold"] },
     ],
   },
   {
     id: 4,
-    prompt: "A good Saturday looks like...",
+    prompt: "Your perfect weekend side project involves...",
     options: [
-      { label: "a long walk, phone off, nobody expecting you", personas: ["zoltan"] },
-      { label: "reading something written before the year 500", personas: ["confucius"] },
-      { label: "sitting still — really still — until the thoughts settle", personas: ["buddha"] },
-      { label: "making something ugly that only you would love", personas: ["nietzsche"] },
+      { label: "Zero notifications, and building a tool from scratch alone", personas: ["zoltan"] },
+      {
+        label: "Reading the original source code of a legendary framework",
+        personas: ["confucius"],
+      },
+      {
+        label: "Sitting still until the perfect architecture reveals itself",
+        personas: ["buddha"],
+      },
+      { label: "Building a controversial app that nobody asked for", personas: ["nietzsche"] },
     ],
   },
   {
     id: 5,
-    prompt: "You notice a system is unfair. What next?",
+    prompt: "A SaaS tool just raised its prices again. What next?",
     options: [
-      { label: "Imagine how it ought to be, and design that", personas: ["plato"] },
-      { label: "Build the alternative, ship it loud", personas: ["musk"] },
-      { label: "Write what will make others see it too", personas: ["arendt"] },
-      { label: "Fund the fix and outlast the regime", personas: ["gates"] },
+      { label: "Design the ideal open-source architecture to replace it", personas: ["plato"] },
+      { label: "Build an MVP clone over the weekend and launch it loudly", personas: ["musk"] },
+      { label: "Write a blog post exposing their lock-in tactics", personas: ["arendt"] },
+      { label: "Quietly fund an open-source team to outlast them", personas: ["gates"] },
     ],
   },
   {
     id: 6,
-    prompt: "What do you want to leave behind?",
+    prompt: "What is your ultimate goal when building software?",
     options: [
-      { label: "A generation of students who think sharper than I did", personas: ["confucius"] },
-      { label: "The courage to say the unfashionable thing out loud", personas: ["nietzsche"] },
-      { label: "A framework others use without knowing my name", personas: ["erdos"] },
-      { label: "A deal no one thought was possible", personas: ["trump"] },
+      { label: "Mentoring junior devs who will code better than I do", personas: ["confucius"] },
+      { label: "Having the courage to ship raw, unfashionable ideas", personas: ["nietzsche"] },
+      {
+        label: "A core library that thousands depend on without knowing my name",
+        personas: ["erdos"],
+      },
+      { label: "A massive exit and a deal no one thought was possible", personas: ["trump"] },
     ],
   },
 ];

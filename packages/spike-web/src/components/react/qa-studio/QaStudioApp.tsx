@@ -144,82 +144,34 @@ export default function QaStudioPage() {
         </div>
       )}
 
-      {mcp.connected && (
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <BrowserBar
-            onNavigate={handleNavigate}
-            onRefresh={handleRefresh}
-            onScreenshot={handleScreenshot}
-            onGetForms={handleGetForms}
-            onGetTabs={handleGetTabs}
-            isCalling={mcp.isCalling}
-          />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <BrowserBar
+          onNavigate={handleNavigate}
+          onRefresh={handleRefresh}
+          onScreenshot={handleScreenshot}
+          onGetForms={handleGetForms}
+          onGetTabs={handleGetTabs}
+          isCalling={mcp.isCalling}
+        />
 
-          <div className="flex flex-1 overflow-hidden">
-            <div className="w-1/2 min-w-[400px] border-r border-border overflow-hidden flex flex-col">
-              <NarrationPanel
-                text={narrationText}
-                onRefClick={handleRefClick}
-                isCalling={mcp.isCalling}
-              />
-            </div>
-
-            <div className="w-1/2 min-w-[400px] overflow-hidden flex flex-col">
-              <SidePanel
-                {...(screenshotData !== undefined && { screenshotData })}
-                tabsData={tabsData}
-                formsData={formsData}
-              />
-            </div>
+        <div className="flex flex-1 overflow-hidden">
+          <div className="w-1/2 min-w-[400px] border-r border-border overflow-hidden flex flex-col">
+            <NarrationPanel
+              text={narrationText}
+              onRefClick={handleRefClick}
+            />
           </div>
 
-          <ConsolePanel history={mcp.history} />
-        </div>
-      )}
-
-      {!mcp.connected && (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground p-8 text-center flex-col gap-4">
-          <div className="bg-muted/30 p-8 rounded-2xl border border-border mt-4 w-full max-w-2xl shadow-sm flex flex-col items-center">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 mb-6">
-              <div className="w-8 h-8 bg-primary rounded-lg" />
-            </div>
-            <div className="text-2xl font-bold text-foreground mb-2">Connect to QA Studio</div>
-            <div className="text-base text-muted-foreground mb-8 max-w-md text-center">
-              Use browser automation as the thin smoke layer around a tool-first test stack. Connect
-              to a local MCP server to inspect flows, capture evidence, and exercise high-friction
-              journeys.
-            </div>
-
-            <div className="w-full text-left space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">
-                  1
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground mb-2">Start the local server</div>
-                  <div className="bg-background border border-border p-3 rounded-lg shadow-inner">
-                    <code className="font-mono text-sm text-primary">
-                      npx @spike-land-ai/qa-studio --http --visible
-                    </code>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 border border-primary/20">
-                  2
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground mb-1">Connect from the header</div>
-                  <div className="text-sm text-muted-foreground">
-                    Click the Connect button in the top right corner of this page.
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="w-1/2 min-w-[400px] overflow-hidden flex flex-col">
+            <SidePanel
+              {...(screenshotData !== undefined && { screenshotData })}
+              tabsData={tabsData}
+              formsData={formsData}
+            />
           </div>
         </div>
-      )}
+
+        <ConsolePanel history={mcp.history} />
     </div>
   );
 }

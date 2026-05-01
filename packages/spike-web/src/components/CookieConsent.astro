@@ -3,9 +3,14 @@
 ---
 
 <div id="cookie-consent-banner" class="cookie-banner" hidden>
+  <button id="cookie-close" class="cookie-close-btn" aria-label="Close cookie banner">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M18 6L6 18M6 6l12 12"></path>
+    </svg>
+  </button>
   <div class="cookie-content">
     <p>
-      We use cookies and similar tracking technologies to improve your browsing experience, 
+      We use cookies and similar tracking technologies to improve your browsing experience,
       analyze site traffic, and understand where our audience is coming from.
     </p>
     <div class="cookie-actions">
@@ -14,7 +19,6 @@
     </div>
   </div>
 </div>
-
 <style>
   .cookie-banner {
     position: fixed;
@@ -108,6 +112,36 @@
   :global(.dark) .cookie-decline:hover {
     background: var(--muted-bg, #27272a);
   }
+
+  .cookie-close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--muted-fg, #6b7280);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .cookie-close-btn:hover {
+    color: var(--fg, #111827);
+  }
+
+  :global(.dark) .cookie-close-btn:hover {
+    color: var(--fg, #f9fafb);
+  }
+
+  @media (min-width: 768px) {
+    .cookie-banner {
+      padding-right: 3rem; /* Space for close button */
+    }
+  }
 </style>
 
 <script>
@@ -117,8 +151,9 @@
     const banner = document.getElementById('cookie-consent-banner');
     const acceptBtn = document.getElementById('cookie-accept');
     const declineBtn = document.getElementById('cookie-decline');
+    const closeBtn = document.getElementById('cookie-close');
     
-    if (!banner || !acceptBtn || !declineBtn) return;
+    if (!banner || !acceptBtn || !declineBtn || !closeBtn) return;
     
     const hasConsent = localStorage.getItem(CONSENT_KEY);
     
@@ -143,6 +178,7 @@
     
     acceptBtn.addEventListener('click', () => hideBanner('accepted'));
     declineBtn.addEventListener('click', () => hideBanner('declined'));
+    closeBtn.addEventListener('click', () => hideBanner('dismissed'));
   }
 
   // Initialize when DOM is ready

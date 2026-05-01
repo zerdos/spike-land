@@ -44,9 +44,20 @@ import { appCatalog as apps } from '../../data/apps';
         <div class="rubik-container">
           <p class="apps-empty" id="apps-empty" hidden>No apps match your search.</p>
           <div class="apps-grid" id="apps-grid">
-            {apps.map(app => (
+            {apps.map(app => {
+              // Determine the direct link to the app's web UI so visitors don't hit the MCP wall
+              let directLink = `/playground/${app.id}`;
+              if (app.id === 'chess-arena') directLink = '/chess';
+              if (app.id === 'qa-arena') directLink = '/qa';
+              if (app.id === 'spike-chat') directLink = '/chat';
+              if (app.id === 'qa-studio') directLink = '/apps/qa-studio';
+              if (app.id === 'music-arena') directLink = '/music';
+              if (app.id === 'app-creator') directLink = '/create';
+              if (app.id === 'ops-dash') directLink = '/dashboard';
+
+              return (
               <a
-                href={`/apps/${app.id}`}
+                href={directLink}
                 class="app-card rubik-panel"
                 data-has-prd={app.hasPrd ? 'true' : 'false'}
                 style={`--app-accent: ${app.accent}; --app-accent-bg: ${app.accentBg};`}
@@ -71,7 +82,8 @@ import { appCatalog as apps } from '../../data/apps';
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </span>
               </a>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
