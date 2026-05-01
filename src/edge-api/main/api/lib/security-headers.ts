@@ -53,7 +53,7 @@ export function isAllowedBrowserOrigin(
 
 export function applySecurityHeaders(headers: Headers): void {
   headers.set("X-Content-Type-Options", "nosniff");
-  headers.set("X-Frame-Options", "SAMEORIGIN");
+  // headers.set("X-Frame-Options", "SAMEORIGIN"); // We rely on CSP frame-ancestors instead
   headers.set(
     "Permissions-Policy",
     'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")',
