@@ -96,7 +96,7 @@ export function useRadixChat(persona?: string): UseRadixChatReturn {
   const storageKey = personaSlug ? `${personaSlug}-chat-messages` : "spike-chat-messages";
   const messagePrefix = personaSlug || "spike-chat";
 
-  const [messages, setMessages] = useState<RadixMessage[]>(() => loadStoredMessages(storageKey));
+  const [messages, setMessages] = useState<RadixMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [currentStage, setCurrentStage] = useState<PipelineStage>("idle");
   const [error, setError] = useState<string | null>(null);
