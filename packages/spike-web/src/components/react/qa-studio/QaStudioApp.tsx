@@ -156,10 +156,7 @@ export default function QaStudioPage() {
 
         <div className="flex flex-1 overflow-hidden">
           <div className="w-1/2 min-w-[400px] border-r border-border overflow-hidden flex flex-col">
-            <NarrationPanel
-              text={narrationText}
-              onRefClick={handleRefClick}
-            />
+            <NarrationPanel text={narrationText} onRefClick={handleRefClick} />
           </div>
 
           <div className="w-1/2 min-w-[400px] overflow-hidden flex flex-col">
@@ -172,6 +169,7 @@ export default function QaStudioPage() {
         </div>
 
         <ConsolePanel history={mcp.history} />
+      </div>
     </div>
   );
 }
