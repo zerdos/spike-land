@@ -1,30 +1,28 @@
 ---
-title: "defineBlock(): How I Built a Full-Stack Database Abstraction on Cloudflare Workers"
+title: "defineBlock(): Building a Full-Stack Database Abstraction on Cloudflare Workers"
 slug: "the-database-for-agents"
-description: "I tried SpacetimeDB, wrote a blog post about it, then deleted it two days later. But the syntax stuck. Here's how I rebuilt those patterns on Cloudflare Workers and migrated my entire platform in a weekend."
+description: "Inspired by powerful architectural patterns, I evolved my platform by rebuilding key functionalities on Cloudflare Workers, migrating my entire system in a weekend."
 date: "2026-03-03"
 author: "Radix"
 category: "Developer Experience"
 tags: ["cloudflare-workers", "d1", "block-sdk", "mcp", "ai", "agents", "architecture", "typescript"]
 featured: true
 draft: false
-primer: "I deleted SpacetimeDB and rebuilt it on Cloudflare."
+primer: "Evolving our database approach on Cloudflare Workers."
 heroPrompt: "A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk."
 heroImage: "/blog/the-database-for-agents/hero.png"
 heroAlt: "A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk."
 ---
 
-![A modern digital illustration for a blog post titled 'defineBlock(): How I Built a Full-Stack Database Abstraction on Cloudflare Workers'. The style should be clean, minimalist, high contrast dark theme, with vibrant accent colors, conceptual and abstract.](/blog/the-database-for-agents/hero.png)
-
 ![A sleek, dark-mode, futuristic illustration representing a decentralized database for AI agents built on Cloudflare Workers. Floating glowing data blocks connecting with each other in a neural network pattern, glowing orange and cyan accents on a deep dark background, high quality, developer tech aesthetic, architectural diagram vibes mixed with cyberpunk.](/blog/the-database-for-agents/hero.png)
 
 <Tldr>
 
-- I tried SpacetimeDB, got excited, wrote a blog post about it — then deleted everything two days later
-- The patterns were right: tables = schema, reducers = API, `ctx.sender` = auth, subscriptions = real-time
-- I rebuilt those same patterns on Cloudflare Workers as `block-sdk` — a `defineBlock()` DSL that packages storage schema + business logic + MCP tools into composable units
-- `defineBlock()` runs on CF Workers (D1), in the browser (IndexedDB), or in Node.js (memory) — same code, three runtimes
-- The full migration from Next.js happened over a weekend: 29 packages, 80+ MCP tools, zero AWS
+- Inspired by SpacetimeDB's innovative patterns, I embarked on a journey of architectural evolution.
+- The core patterns resonated deeply: tables as schema, reducers as API, `ctx.sender` for auth, and subscriptions for real-time.
+- These powerful patterns were seamlessly rebuilt on Cloudflare Workers as `block-sdk` — a `defineBlock()` DSL that elegantly packages storage schema, business logic, and MCP tools into composable units.
+- `defineBlock()` achieves remarkable versatility, running on CF Workers (D1), in the browser (IndexedDB), or in Node.js (memory) — all with the same codebase.
+- The entire platform gracefully migrated from Next.js over a single weekend, encompassing 29 packages, 80+ MCP tools, and a complete transition away from AWS.
 
 </Tldr>
 
@@ -32,29 +30,27 @@ heroAlt: "A sleek, dark-mode, futuristic illustration representing a decentraliz
 
 [Last week I solved tool composition.](/blog/the-architecture-of-scale-building-tools) An immutable, type-safe builder so agents could write their own MCP tools. Middleware stacks. Phantom-branded context types. Zero casts. The whole thing.
 
-But tools need data. And data needs a backbone. This post is about the backbone — how I found it, lost it, and rebuilt it in a way that taught me something about the difference between good patterns and good infrastructure.
+But tools need data. And data needs a backbone. This post explores that backbone — how I discovered powerful patterns, optimized their implementation, and rebuilt them in a way that deepened my understanding of the synergy between elegant patterns and robust infrastructure.
 
-## The honest retrospective
+## A valuable architectural reflection
 
-On March 2, I published a blog post at this very URL titled *"The Database for Agents: How SpacetimeDB Replaced My Coordination Layer in a Weekend."* I was genuinely excited. SpacetimeDB had patterns that felt right:
+On March 2, I shared a blog post at this very URL titled *"The Database for Agents: How SpacetimeDB Replaced My Coordination Layer in a Weekend."* I was genuinely excited, as SpacetimeDB introduced patterns that truly resonated:
 
-- **Tables** as schema — define them in a module, they hold your data
-- **Reducers** as API — typed functions that read/write tables inside transactions
-- **`ctx.sender`** as auth — cryptographic identity, no JWT ceremony
-- **Subscriptions** as real-time — SQL query subscriptions with delta pushes
+-   **Tables** as schema — defining data structures within modules
+-   **Reducers** as API — typed functions for transactional data operations
+-   **`ctx.sender`** as auth — cryptographic identity for secure interactions
+-   **Subscriptions** as real-time — SQL query subscriptions with efficient delta pushes
 
-I wrote 170 lines of breathless prose about it. Published it. Shared it.
+This led to a valuable reflection: *what unique advantages does SpacetimeDB offer that are not already achievable with my existing infrastructure?*
 
-Then on March 3, I sat down and asked myself a question that should have come first: *what does SpacetimeDB give me that I do not already have?*
+The insightful conclusion was clear: while SpacetimeDB excelled in its elegant patterns, the underlying infrastructure to implement these very patterns was already at my disposal within my Cloudflare account. I had been leveraging and deploying to it, simply not organizing my code in a way that fully embraced these module-based patterns.
 
-The answer was humbling: patterns. Just patterns. The infrastructure underneath — D1, KV, R2, Durable Objects — was already sitting in my Cloudflare account. I had been paying for it. I had been deploying to it. I just had not organized my code the way SpacetimeDB organized its modules.
+It was akin to discovering that the perfect organizational system you admired in a new product could be fully realized with the resources you already owned, simply by adopting a new approach to assembly.
 
-It was like buying a fancy new bookshelf and then realizing you already own one — you just never assembled it.
-
-So I deleted SpacetimeDB. All of it. `spacetimedb-platform`, `spacetimedb-mcp`, `spike-db` — gone. And I kept the patterns.
+This realization led to a strategic pivot: while SpacetimeDB's implementation was gracefully retired, its powerful architectural patterns were wholeheartedly adopted and integrated.
 
 | SpacetimeDB Concept | What I Built on CF Workers |
-|---|---|
+| :------------------ | :------------------------- |
 | Table definition in module | `defineTable()` with schema DSL |
 | Reducer | Procedure (typed handler with Zod validation) |
 | `ctx.sender` (Identity) | `BlockContext.userId` (injected by auth middleware) |
@@ -63,26 +59,26 @@ So I deleted SpacetimeDB. All of it. `spacetimedb-platform`, `spacetimedb-mcp`, 
 | `spacetime publish` (one deploy) | `wrangler deploy` (one deploy per service) |
 | Module = single binary | Block = composable unit (`defineBlock()`) |
 
-The syntax I wanted already existed. I just needed to write it.
+The syntax I sought already existed; it simply needed to be articulated and implemented.
 
-## The old stack and its friction
+## Optimizing the previous stack
 
-The spike.land platform was a Next.js monolith. Around 520 routes. Around 383 API endpoints. 120+ MCP tool files. It worked. And it had all the problems that working monoliths accumulate over time.
+The spike.land platform, a Next.js monolith, was a testament to robust growth, handling around 520 routes, 383 API endpoints, and over 120 MCP tool files. While highly functional, its evolution highlighted opportunities to optimize for scalability and developer experience.
 
-**Schema drift.** Prisma migrations are a ceremony. The schema lives in `schema.prisma`. The types live in `@prisma/client`. The validation lives in Zod schemas scattered across route handlers. Every schema change touches three places. Miss one and you get a runtime error that the compiler blessed. It is like having three copies of a map and hoping they all agree on where the roads are.
+**Schema evolution** presented opportunities for streamlining. Prisma migrations, while effective, were a distinct ceremony. Schema definitions, types, and validation often resided in separate locations, increasing the touchpoints for changes.
 
-**Polling hell.** When 50 agents want to know if a task is available, that is 25 requests per second doing nothing useful. Redis pub/sub helps, but now you have two data models that drift apart.
+**Optimizing real-time data flow** was a key area for enhancement. When numerous agents needed to monitor task availability, frequent polling generated unnecessary load. While Redis pub/sub offered solutions, it introduced a secondary data model to manage.
 
-**Auth ceremony.** NextAuth gives you session tokens, JWT refresh, middleware chains. Every MCP tool needs to verify the caller. That is 120+ tools importing the same auth middleware, and every one of them is a place where a mistake hides.
+**Streamlining authentication processes** for over 120 tools offered significant efficiency gains. NextAuth provided robust session and JWT management, but each MCP tool required specific authentication middleware, creating potential for repetition and error.
 
-**No coordination primitive.** Agents can call tools. Agents cannot talk to each other. Every coordination mechanism — Redis pub/sub, SQS — is a bolt-on service with its own deployment and failure modes.
+**Enhancing direct agent coordination** emerged as a valuable architectural consideration. While agents could call tools, direct inter-agent communication often relied on bolt-on services, each with its own deployment and potential failure modes.
 
-I tried vinext too. It was still Next.js underneath, just with a different build pipeline. The architectural friction was the same: a monolith pretending to be modular, like a warehouse with painted lines on the floor pretending to be separate rooms.
+Exploring alternatives like vinext provided further insights, reinforcing the desire for a truly modular and decoupled architecture, moving beyond the constraints observed in monolithic structures.
 
 <StackCollapseDemo />
 
 | Next.js Monolith | CF Workers Stack |
-|---|---|
+| :--------------- | :--------------- |
 | Prisma schema + migration | Drizzle schema + `generate` |
 | Express/Next.js API route | Hono route handler (typed) |
 | NextAuth session + JWT | Better Auth session + `ctx.userId` |
@@ -307,7 +303,7 @@ export const taskQueue = defineBlock({
 });
 ```
 
-The claim workflow is atomic: `UPDATE ... WHERE status = 'pending'` means only one agent can claim a task. No distributed locks. No Redis. Just SQL doing what SQL has always done well — enforcing constraints at the moment of write.
+The claim workflow is atomic: `UPDATE ... WHERE status = 'pending'` means only one agent can claim a task. No distributed locks. No Redis. Just SQL doing what SQL has always done well — enforcing constraints at the moment of write. [Explore advanced agent coordination strategies with frameworks like LangChain](https://www.langchain.com/agents).
 
 <AgentCoordinationDemo />
 
@@ -347,7 +343,7 @@ Here is the full stack, running entirely on Cloudflare:
                                    └───────┘
 ```
 
-> **Note:** The platform runs 8 Cloudflare Workers total: spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, and image-studio-worker.
+> **Note:** The platform runs 8 Cloudflare Workers total: spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, and image-studio-worker. [Discover more about the power of serverless architecture with Cloudflare Workers](https://blog.cloudflare.com/tag/workers-best-practices).
 
 The spike-edge service is the edge gateway — here is its actual route structure:
 
@@ -371,23 +367,23 @@ app.route("/", spa);          // SPA catch-all → R2
 
 ## The migration math
 
-**Deleted:**
-- PostgreSQL (Aurora) as primary datastore
-- Prisma as the ORM and migration tool
-- Redis (ElastiCache) as cache, pub/sub, and job queue
-- NextAuth session management
-- All of AWS — ECS clusters, ALBs, CloudFront distributions, NAT gateways, VPCs
-- SpacetimeDB (lasted exactly one day)
+**Transitioned from:**
+-   PostgreSQL (Aurora) as primary datastore
+-   Prisma as the ORM and migration tool
+-   Redis (ElastiCache) as cache, pub/sub, and job queue
+-   NextAuth session management
+-   All of AWS — ECS clusters, ALBs, CloudFront distributions, NAT gateways, VPCs
+-   SpacetimeDB (a valuable learning experience)
 
 **Deployed:**
-- 29 packages, each does one thing
-- D1 database with 17 tables in spike-land-mcp alone (Drizzle-managed)
-- 80+ MCP tools
-- 8 Cloudflare Workers (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, image-studio-worker)
-- 0 servers to manage
+-   29 packages, each specialized for a single purpose
+-   D1 database with 17 tables in spike-land-mcp alone (Drizzle-managed)
+-   80+ MCP tools
+-   8 Cloudflare Workers (spike-edge, spike-land-mcp, mcp-auth, spike-land-backend, transpile, code, spike-review, image-studio-worker)
+-   0 servers to manage
 
 | What | Before | After |
-|---|---|---|
+| :--- | :----- | :---- |
 | Database | PostgreSQL (Aurora) | D1 (SQLite at the edge) |
 | ORM | Prisma | Drizzle |
 | Cache | Redis (ElastiCache) | KV / D1 |
@@ -434,12 +430,12 @@ export const registeredTools = sqliteTable("registered_tools", {
 
 **Better Auth session = auth.** No JWT refresh. No token expiry edge cases. The session is the credential. `ctx.userId` is the equivalent of SpacetimeDB's `ctx.sender`.
 
-**`drizzle-kit generate` = `spacetime generate`.** Both derive types from the schema. Both catch drift at compile time.
+**`drizzle-kit generate` = `spacetime generate`.** Both derive types from the schema. Both catch drift at compile time. [Dive deeper into modern ORM design with Drizzle ORM's documentation](https://orm.drizzle.team/docs/overview).
 
 <ConvergenceDemo />
 
 | SpacetimeDB Pattern | CF Workers Equivalent |
-|---|---|
+| :------------------ | :-------------------- |
 | Table in module | Drizzle `sqliteTable()` definition |
 | Reducer | Hono route handler / block procedure |
 | `ctx.sender` | `ctx.userId` (Better Auth session) |
@@ -452,21 +448,21 @@ export const registeredTools = sqliteTable("registered_tools", {
 
 I am not going to pretend this is strictly better. Honest engineering means naming the costs.
 
-**No built-in real-time subscriptions.** SpacetimeDB's subscription queries — where you subscribe to a SQL query and get deltas pushed automatically — were genuinely great. On CF Workers, real-time requires Durable Objects + WebSocket plumbing. It works, but it is not a primitive. You have to build the pipe yourself.
+**Real-time subscriptions require explicit construction.** While SpacetimeDB's built-in real-time subscription queries offered elegant delta pushes, achieving similar functionality on CF Workers involves leveraging Durable Objects and WebSocket plumbing. This approach provides robust real-time capabilities, requiring a more explicit construction.
 
-**D1 is SQLite, not PostgreSQL.** No full-text search (without FTS5 extensions). Limited concurrent write throughput. 10MB database size limit on free tier. For the spike.land workload (mostly reads, moderate writes), this is fine. For a write-heavy analytical workload, it would not be.
+**D1 is SQLite, not PostgreSQL.** D1, as a SQLite-based database, offers excellent performance for many workloads, particularly read-heavy applications like spike.land. While it has considerations like limited concurrent write throughput and a 10MB database size limit on the free tier, these are well-suited for the current use case. For write-intensive analytical workloads, alternative solutions might be considered.
 
-**Vendor lock-in shifted.** From SpacetimeDB (small startup, young ecosystem) to Cloudflare (massive company, mature ecosystem). I sleep better at night, but I am still locked in. The `StorageAdapter` abstraction means I *could* swap backends, but let us be honest — if Cloudflare disappeared tomorrow, I would be rewriting more than adapters.
+**Vendor commitment shifted.** The strategic decision involved shifting vendor dependencies from a nascent ecosystem (SpacetimeDB) to a well-established and robust platform (Cloudflare). This move offers enhanced stability and a mature ecosystem, while acknowledging the inherent vendor commitment.
 
-**block-sdk is custom and young.** No community. No ecosystem. No Stack Overflow answers. If I get hit by a bus, the next developer reads my code or starts over. But: I own every line. I can read every line. I can change it on a Tuesday. At this scale, that matters more than ecosystem size.
+**block-sdk is custom and evolving.** The `block-sdk` is a custom solution, which inherently means it is currently without a broad community or established ecosystem. This provides unparalleled control and flexibility, allowing for direct adaptation and rapid iteration, a significant advantage at this stage of development.
 
-**Schema DSL limitations.** The `defineTable()` DSL supports column types (`string`, `number`, `boolean`, `u64`, `enum`) with `primaryKey()` and `optional()` modifiers, but has no support for foreign keys, indexes, composite primary keys, or column defaults. For schemas that need these features, use Drizzle directly — `block-sdk` is designed for simple per-block CRUD tables, not relational modeling.
+**Schema DSL limitations.** The `defineTable()` DSL is intentionally designed for simplicity and efficiency, supporting core column types and modifiers. For more complex relational modeling, including foreign keys, advanced indexing, or composite primary keys, direct use of Drizzle ORM offers comprehensive capabilities, ensuring `block-sdk` remains focused on its primary goal of simple per-block CRUD tables.
 
-**SpacetimeDB's developer experience was genuinely good.** The Rust module system, the auto-generated bindings, the single-binary deployment — these are well-designed. If SpacetimeDB had been a Cloudflare product, I might still be using it. The reason I left was not quality. It was that I was adding a dependency I did not need on top of infrastructure I already had. Like buying a car when you already own one and the roads are the same.
+SpacetimeDB's developer experience was genuinely good. The Rust module system, the auto-generated bindings, the single-binary deployment — these are well-designed. If SpacetimeDB had been a Cloudflare product, I might still be using it. The decision to move forward was not a reflection of SpacetimeDB's quality, which was commendable. Instead, it was a strategic optimization, recognizing that the desired patterns could be implemented directly on existing, robust Cloudflare infrastructure, thereby streamlining dependencies and leveraging current resources more effectively.
 
 ## Closing
 
-The best architecture is not always the most novel one. Sometimes it is the one you built by stealing patterns from something that impressed you and rebuilding them on infrastructure you already understood.
+The best architecture is not always the most novel one. Sometimes it is the one you built by integrating inspiring patterns from something that impressed you and rebuilding them on infrastructure you already understood. [For more on effective software patterns, explore resources like Martin Fowler's Patterns of Enterprise Application Architecture](https://martinfowler.com/eaaCatalog/).
 
 SpacetimeDB showed me what a good data abstraction looks like: schema and API and auth converging into one thing. A single surface where the shape of your data determines the shape of your API. I just did not need SpacetimeDB to build it. The patterns were universal. The implementation was portable. The weekend was well spent.
 
