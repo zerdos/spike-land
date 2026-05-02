@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
 import process from "node:process";
 
-const MAX_CONCURRENCY = 16;
+const MAX_CONCURRENCY = 32;
 const ARENA_DIR = join(process.cwd(), ".arena-worktrees-infinite");
 
 const BLOG_TOPICS = [
