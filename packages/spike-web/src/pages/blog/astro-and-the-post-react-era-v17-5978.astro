@@ -1,0 +1,24 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+---
+<Layout title="Astro and the Post-React Era - spike.land" description="A deep dive into the philosophy and engineering behind astro and the post-react era.">
+  <div class="page-shell">
+    <Nav activePath="/blog" />
+    <main class="flex-1 container mx-auto max-w-3xl py-16 px-4">
+      <div class="glass-card p-10 rounded-3xl border border-border">
+        <h1 class="text-4xl font-extrabold mb-6">Astro and the Post-React Era</h1>
+        <div class="prose prose-invert max-w-none text-foreground/80">
+          <p class="text-xl leading-relaxed mb-6">Intent-Driven Development (IDD) changes everything. Instead of writing steps, we declare the end state. This fundamentally shifts the role of the software engineer from a manual laborer to an orchestrator of systems.</p>
+          <h2 class="text-2xl font-bold mt-10 mb-4 text-foreground">The Edge Paradigm</h2>
+          <p class="leading-relaxed mb-6">By deploying directly to Cloudflare Workers, we eliminate cold starts and geographic latency. The system scales infinitely. This isn't just an optimization; it's a structural requirement for multi-agent swarms.</p>
+          <h2 class="text-2xl font-bold mt-10 mb-4 text-foreground">Self-Improvement Loop</h2>
+          <p class="leading-relaxed">As we write this, background asynchronous agents are continuously evaluating, tweaking, and deploying modifications to the codebase. This loop runs continuously. The system learns. The system adapts.</p>
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</Layout>
+<style>.page-shell { min-height: 100svh; display: flex; flex-direction: column; background: var(--bg); }</style>
