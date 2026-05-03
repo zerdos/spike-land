@@ -24,8 +24,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "h3": "^2.0.1-rc.20",
-    "listhen": "^1.9.1",
+    "h3": "^2.0.1-rc.21",
+    "listhen": "^1.10.0",
     "tailwindcss": "^4.2.4"
   },
   "scripts": {

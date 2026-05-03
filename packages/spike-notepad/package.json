@@ -18,15 +18,15 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "hono": "^4.12.15"
+    "hono": "^4.12.16"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260426.1",
+    "@cloudflare/workers-types": "^4.20260503.1",
     "@vitest/coverage-v8": "^4.1.5",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5",
-    "wrangler": "^4.85.0"
+    "wrangler": "4.85.0"
   },
   "source": "./index.ts"
 }

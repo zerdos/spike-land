@@ -23,20 +23,20 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@sentry/cloudflare": "^10.50.0",
+    "@sentry/cloudflare": "^10.51.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
     "@spike-land-ai/shared": "workspace:*",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.15",
-    "zod": "4.3.6"
+    "hono": "^4.12.16",
+    "zod": "4.4.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260426.1",
+    "@cloudflare/workers-types": "^4.20260503.1",
     "@vitest/coverage-v8": "^4.1.5",
     "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5",
-    "wrangler": "^4.85.0"
+    "wrangler": "4.85.0"
   },
   "source": "./index.ts"
 }

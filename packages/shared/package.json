@@ -49,9 +49,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "lucide-react": "^0.577.0",
-    "react": "^19.2.4",
-    "zod": "4.3.6"
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.5",
+    "zod": "4.4.2"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",

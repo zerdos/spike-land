@@ -44,10 +44,10 @@
     "!build/codemods/**/__tests__"
   ],
   "dependencies": {
-    "@tanstack/query-core": "^5.100.5"
+    "@tanstack/query-core": "^5.100.8"
   },
   "devDependencies": {
-    "@tanstack/query-persist-client-core": "^5.100.5",
+    "@tanstack/query-persist-client-core": "^5.100.8",
     "@testing-library/react": "^16.3.2",
     "@testing-library/react-render-stream": "^2.0.2",
     "@types/react": "^19.2.14",
@@ -55,8 +55,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "cpy-cli": "^7.0.0",
     "npm-run-all2": "^8.0.4",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-error-boundary": "^6.1.1"
   },
   "peerDependencies": {

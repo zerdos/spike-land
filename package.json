@@ -90,7 +90,7 @@
     "dev:full": "bash scripts/dev-full.sh"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.1",
+    "@anthropic-ai/sdk": "^0.92.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@radix-ui/react-tabs": "workspace:*",
     "@remotion/cli": "workspace:*",
@@ -114,7 +114,7 @@
     "zod": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.13",
+    "@biomejs/biome": "^2.4.14",
     "@changesets/cli": "^2.31.0",
     "@cloudflare/puppeteer": "^1.1.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
@@ -125,7 +125,7 @@
     "@types/node": "^25.6.0",
     "@vitest/coverage-v8": "^4.1.5",
     "esbuild": "^0.28.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "fake-indexeddb": "^6.2.5",
@@ -137,7 +137,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5",
-    "wrangler": "^4.85.0"
+    "wrangler": "4.85.0"
   },
   "dependenciesMeta": {
     "@biomejs/biome": {

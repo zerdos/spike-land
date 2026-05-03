@@ -16,6 +16,6 @@
   "devDependencies": {
     "@spike-land-ai/tsconfig": "workspace:*",
     "tsx": "4.21.0",
-    "vitest": "4.1.0"
+    "vitest": "4.1.5"
   }
 }
