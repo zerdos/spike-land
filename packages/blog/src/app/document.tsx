@@ -40,6 +40,45 @@ export function Document({ children, ctx }: { children: React.ReactNode } & Requ
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/styles.css" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+          integrity="sha384-n8MVd4RsEw0911VqYESoT6i1B9B1Z0Bps/yT25uLz1S22yofZ2e2O23G83m2g81S"
+          crossOrigin="anonymous"
+        />
+        <script
+          defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+          integrity="sha384-Hjjb47/o3bB6Ym0R1b/GqE3uO+e2f8yH//vH+YlI07eZ2zY8gYmN+YxQ70Yp/wV/"
+          crossOrigin="anonymous"
+        ></script>
+        <script
+          defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+          integrity="sha384-b/xMbtbA6o2e5P5z2gQ/G+BEMw/Z14A19fHkR8/s0E1mN4W/o0TqXvD7V0bF92mN"
+          crossOrigin="anonymous"
+          dangerouslySetInnerHTML={{
+            __html: "",
+          }}
+          onLoad={() => {}}
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener("DOMContentLoaded", function() {
+                  if (typeof renderMathInElement !== "undefined") {
+                      renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                      });
+                  }
+              });
+            `,
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

@@ -129,6 +129,20 @@ function formatDate(dateStr: string): string {
 function markdownToHtml(markdown: string): string {
   let html = markdown;
 
+  // Protect math blocks
+  const mathBlocks: string[] = [];
+  html = html.replace(/\$\$([\s\S]+?)\$\$/g, (match) => {
+    mathBlocks.push(match);
+    return `___MATH_BLOCK_${mathBlocks.length - 1}___`;
+  });
+
+  // Protect inline math
+  const mathInline: string[] = [];
+  html = html.replace(/\$([^$]+)\$/g, (match) => {
+    mathInline.push(match);
+    return `___MATH_INLINE_${mathInline.length - 1}___`;
+  });
+
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_match, lang, code) => {
     const escaped = escapeHtml(code.trimEnd());
     return `<pre><code class="language-${lang || "text"}">${escaped}</code></pre>`;
@@ -162,9 +176,15 @@ function markdownToHtml(markdown: string): string {
       const trimmed = block.trim();
       if (!trimmed) return "";
       if (trimmed.startsWith("<")) return trimmed;
+      // Don't wrap math blocks in p tags if they are standalone
+      if (trimmed.startsWith("___MATH_BLOCK_")) return trimmed;
       return `<p>${trimmed.replace(/\n/g, "<br />")}</p>`;
     })
     .join("\n");
+
+  // Restore math
+  html = html.replace(/___MATH_BLOCK_(\d+)___/g, (_, i) => mathBlocks[parseInt(i)]);
+  html = html.replace(/___MATH_INLINE_(\d+)___/g, (_, i) => mathInline[parseInt(i)]);
 
   return html;
 }
