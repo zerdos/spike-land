@@ -167,7 +167,7 @@ export async function deploySPA(): Promise<{ uploaded: number; skipped: number }
 
   // Upload all files in parallel with limit
   const localFiles = getAllFiles(distDir);
-  const CONCURRENCY = 5; // Much safer
+  const CONCURRENCY = 1; // Rate limit protection
   let uploaded = 0;
   const total = localFiles.length;
 
