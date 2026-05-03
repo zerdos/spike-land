@@ -3,9 +3,11 @@ title: "Gradient Relativity, Monoids, and the Boundaries of Rigor"
 description: "A deep dive into the friction between academic discipline and outsider intuition, exploring Gradient Relativity, IEEE754 floats as Monoids, and the physics of compression."
 author: "Zoltán Erdős"
 date: "2026-05-03"
+heroPrompt: "A surreal blend of deep space, intersecting grids of mathematics, and floating 16-bit float registers. A black hole in the center emits glowing lines of code and formulas representing a harmonic oscillator. Deep, rich cosmic colors with a futuristic cyber-physical aesthetic, high contrast, cinematic lighting, 8k resolution."
+heroImage: "/blog/gradient-relativity-and-monoids/hero.jpg"
 ---
 
-![Image Generation Prompt: A surreal blend of deep space, intersecting grids of mathematics, and floating 16-bit float registers. A black hole in the center emits glowing lines of code and formulas representing a harmonic oscillator. Deep, rich cosmic colors with a futuristic cyber-physical aesthetic, high contrast, cinematic lighting, 8k resolution.](/content/blog-images/monoids-hero.jpg)
+![A surreal blend of deep space, intersecting grids of mathematics, and floating 16-bit float registers. A black hole in the center emits glowing lines of code and formulas representing a harmonic oscillator. Deep, rich cosmic colors with a futuristic cyber-physical aesthetic, high contrast, cinematic lighting, 8k resolution.](/blog/gradient-relativity-and-monoids/hero.jpg)
 
 *An essay shaped by systems thinker Donatella Mellow, finalized by Zoltán Erdős.*
 
@@ -23,7 +25,7 @@ The discussion began with a pushback against the perceived elitism of quantum ph
 
 From this, Cale posited that if electrons are condensed space that solidify as they excite, it logically follows that energy flows between 100% space and 100% mass (found at the center of a black hole). He proposed a model governed by a driven harmonic oscillator:
 
-$$ E^2 = (MC^2)^2 + (pv)^2 + E_{universe} = F(x)\cos(\omega t) \le 1 $$
+$$E^2 = (MC^2)^2 + (pv)^2 + E_{universe} = F(x)\cos(\omega t) \le 1$$
 
 ### The Rigor Check
 
@@ -33,7 +35,7 @@ Enter Bob, the voice of empirical constraint. Bob immediately did what rigorous 
 * What is the force $F(x)$ representing in this context? 
 * Where do these velocities come from?
 
-This friction is necessary. Without dimensional consistency, an equation is just a string of symbols. Cale revised his stance, recognizing that as the universe expands, measuring distances to infinity breaks the standard conservation models. To prevent the heat death of the universe, he introduced a dark matter term, reformulating the energy conservation into a bounded system: $-1 < E_{total} < 1$.
+This friction is necessary. Without dimensional consistency, an equation is just a string of symbols. Cale revised his stance, recognizing that as the universe expands, measuring distances to infinity breaks the standard conservation models. To prevent the heat death of the universe, he introduced a dark matter term, reformulating the energy conservation into a bounded system: $-1 \le E_{total} \le 1$.
 
 When the speed of light is treated not as a constant, but as a complex number, Cale argued, the math avoids the asymptotes that plague General Relativity. 
 
@@ -43,7 +45,7 @@ But the conversation didn’t stop at cosmology; it pivoted into pure computer s
 
 This led to a discussion on **Monoid AI** and the paper *"Compression is all you need: Modeling Mathematics"*. A monoid is a mathematical structure consisting of a set equipped with an associative binary operation and an identity element. In programming, it means combining two things of a certain type always yields a thing of that same type.
 
-Cale proposed constructing a monoid out of 16-bit floats by exploiting IEEE754 rounding rules. By carefully defining symmetry rules and redefining operations on `NaN` and `Infinity`, one could theoretically ensure that any operation `Float16 * Float16` strictly results in a valid `Float16`. 
+Cale proposed constructing a monoid out of 16-bit floats by exploiting IEEE754 rounding rules. By carefully defining symmetry rules and redefining operations on `NaN` and `Infinity`, one could theoretically ensure that any operation $S \times S \rightarrow S$ strictly results in a valid `Float16`. 
 
 Bob rightly pointed out that traditional floating-point math involves rounding and invalid states that break strict monoid properties. If you have to filter out invalid numbers, you’re dealing with two different sets ($S \times T \rightarrow S$), which violates the definition of a monoid. 
 
