@@ -54,6 +54,7 @@ security, and business docs that matter today.
 | [develop/OFFLINE_BUNDLE_GUIDE.md](./develop/OFFLINE_BUNDLE_GUIDE.md) | IndexedDB, local WASM assets, service worker strategy |
 | [best-practices/offline-first.md](./best-practices/offline-first.md) | Design patterns for offline-first MCP apps |
 | [develop/EDGE_STACK.md](./develop/EDGE_STACK.md) | Cloudflare service map and architecture |
+| [../.agents/skills/bazdmeg/SKILL.md](../.agents/skills/bazdmeg/SKILL.md) | BAZDMEG Quality Gates and AI-assisted development workflow |
 
 ---
 

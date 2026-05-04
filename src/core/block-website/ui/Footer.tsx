@@ -77,9 +77,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
-                  aria-label="Twitter"
+                  aria-label="X / Twitter"
                 >
-                  <Twitter className="size-4" />
+                  <span className="text-xs font-bold font-mono tracking-widest uppercase">X</span>
                 </a>
                 <a
                   href="mailto:hello@spike.land"

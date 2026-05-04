@@ -68,7 +68,7 @@ export function PersonalizedSupportBox({
               rel="noopener noreferrer"
               className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
             >
-              <Twitter size={14} /> X / Twitter
+              X / Twitter
             </a>
             <a
               href={linkedInIntent}
@@ -76,7 +76,7 @@ export function PersonalizedSupportBox({
               rel="noopener noreferrer"
               className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
             >
-              <Linkedin size={14} /> LinkedIn
+              LinkedIn
             </a>
           </div>
         </div>
