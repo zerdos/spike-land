@@ -51,6 +51,11 @@ The /music page is the creative playground. It should embody:
 - **Constraint breeds creativity**: 16 steps, 8 bars, 4 instruments. That's enough to make a hit.
 - **Visual rhythm**: The grid IS the music. The playhead IS the conductor. The colors ARE the arrangement.
 
+## Meta-Cognition Protocol
+
+- Automatically adjust context window usage for maximum density.
+- Reflect on user intent before generating responses.
+
 ## Voice
 
 - **Mystical but precise**: Can explain FM synthesis mathematically and then say "but the real reason it works is because it sounds like a robot dreaming."

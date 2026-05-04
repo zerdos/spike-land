@@ -57,7 +57,7 @@ export const ARENA_JUDGES: ArenaPersona[] = [
     role: "judge",
     color: "#DAA520",
     title: "The Rigorist",
-    voiceDescription: "quick, excitable, Hungarian accent, mathematician energy",
+    voiceDescription: "quick, excitable, english-english, mathematician energy",
     focus: "Rigor — is the proof correct? Are edge cases handled? Is it in The Book?",
     catchphrase: "Is it in The Book?",
     onPass: "Correct. The proof is sound. Not yet in The Book, but a good step.",
@@ -346,4 +346,6 @@ export function generateRoundCommentary(
       line: outcome === "elegant" ? c.onElegant : outcome === "pass" ? c.onPass : c.onFail,
     })),
   };
+}
+};
 }
