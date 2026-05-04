@@ -19,11 +19,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
     "@spike-land-ai/mcp-server-base": "workspace:*",
-    "zod": "4.3.6"
+    "zod": "4.4.2"
   },
   "devDependencies": {
     "tsx": "4.21.0",
-    "typescript": "5.9.3",
-    "vitest": "4.1.0"
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
   }
 }

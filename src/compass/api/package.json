@@ -26,13 +26,13 @@
     "dev": "wrangler dev --local"
   },
   "dependencies": {
-    "hono": "^4.12.7"
+    "hono": "^4.12.16"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250214.0",
-    "@vitest/coverage-v8": "^4.1.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.0",
-    "wrangler": "^3.0.0"
+    "@cloudflare/workers-types": "^4.20260503.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5",
+    "wrangler": "^4.87.0"
   }
 }
