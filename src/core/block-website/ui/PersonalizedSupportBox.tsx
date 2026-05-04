@@ -1,4 +1,4 @@
-import { Heart, Twitter, Linkedin } from "lucide-react";
+import { Heart } from "lucide-react";
 import { getPersonaSlug, getContentVariant } from "../core-logic/persona-content-variants";
 import { SupportBanner } from "./SupportBanner";
 import { coerceBooleanProp } from "../core-logic/blog-mdx";

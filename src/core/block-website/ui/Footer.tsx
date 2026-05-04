@@ -1,5 +1,5 @@
 import { Link } from "../lazy-imports/link";
-import { Github, Twitter, Mail, ShieldCheck, Globe, Cpu, Zap } from "lucide-react";
+import { Github, Mail, ShieldCheck, Globe, Cpu, Zap } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
