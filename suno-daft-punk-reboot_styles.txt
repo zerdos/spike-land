@@ -1,0 +1,22 @@
+# Style Profile: Reboot Protocol
+# Inspiration: Daft Punk, Steve Jobs (Minimalism/Precision), Weval
+
+1. **Sonic Texture (Daft Punk Influence):**
+   - High-fidelity vocoder processing on vocals.
+   - 126 BPM funk-infused disco basslines.
+   - Crunchy analog side-chain compression.
+
+2. **Aesthetic Philosophy (Steve Jobs Influence):**
+   - Structural minimalism: remove all unnecessary elements.
+   - Precision-engineered frequency balance.
+   - "It just works" rhythmic flow: zero latency in impact.
+
+3. **Atmospheric Depth (Weval Influence):**
+   - Melancholic, cinematic synth layering.
+   - Organic, slightly detuned textures contrasting with the digital crispness.
+   - Emotive, evolving chord progressions that build through the track.
+
+4. **Production Notes (69 Rounds of Iteration):**
+   - Round 1-23: Establish the robotic foundation.
+   - Round 24-46: Apply the "Apple-style" reductionist polish.
+   - Round 47-69: Infuse the Weval-style emotive, atmospheric drift.
