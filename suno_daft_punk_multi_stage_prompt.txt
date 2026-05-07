@@ -1,0 +1,21 @@
+[Style]: French House, Electro-Funk, Daft Punk (Discovery era), Vocoder, Analog Synthesizers, 124 BPM, Funky Bassline, Robotic Vocals
+
+[Structure]:
+Intro: Driving, filter-swept synth sequence.
+Verse 1 (Vocoder):
+"Build, break, scan, clean.
+The container logic, a machine.
+Layers stacking, one by one,
+The heavy tools, they must be gone."
+
+Chorus (Robotic/Layered):
+"Leaner, faster, safer, strong.
+Multi-stage, where we belong.
+Throw away what's left behind,
+Only the binary for the mind."
+
+Bridge (Funky Solo):
+"Disconnected environments,
+Pure runtime, pure intent."
+
+Outro: Repetitive, phased-out vocal hook: "Leaner. Faster. Leaner. Faster..." fading into analog white noise.
